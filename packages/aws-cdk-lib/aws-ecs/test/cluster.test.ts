@@ -3,6 +3,8 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
+import * as events from '../../aws-events';
+import * as targets from '../../aws-events-targets';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
@@ -4858,4 +4860,103 @@ test('throws when InstanceWarmupPeriod is greater than 10000', () => {
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: 99999./);
+});
+
+describe('Cluster onEvent method', () => {
+  test('creates EventBridge rule with default options', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    cluster.onEvent('TestRule');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['aws.ecs'],
+        detail: {
+          clusterArn: [Match.anyValue()],
+        },
+      },
+      State: 'ENABLED',
+    });
+  });
+
+  test('creates EventBridge rule with custom event pattern', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    cluster.onEvent('TestRule', {
+      eventPattern: {
+        'source': ['aws.ecs'],
+        'detail-type': ['ECS Cluster State Change'],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        'source': ['aws.ecs'],
+        'detail-type': ['ECS Cluster State Change'],
+        'detail': {
+          clusterArn: [Match.anyValue()],
+        },
+      },
+      State: 'ENABLED',
+    });
+  });
+
+  test('creates EventBridge rule with target', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const logGroup = new logs.LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    cluster.onEvent('TestRule', {
+      target: new targets.CloudWatchLogGroup(logGroup),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['aws.ecs'],
+        detail: {
+          clusterArn: [Match.anyValue()],
+        },
+      },
+      State: 'ENABLED',
+      Targets: [
+        {
+          Arn: Match.anyValue(),
+          Id: Match.anyValue(),
+        },
+      ],
+    });
+  });
+
+  test('creates Custom Resource when enableRuleNameGeneration is true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    cluster.onEvent('TestRule', {
+      enableRuleNameGeneration: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
+      ServiceToken: Match.anyValue(),
+      ClusterArn: Match.anyValue(),
+      ClusterName: Match.anyValue(),
+    });
+  });
 });
