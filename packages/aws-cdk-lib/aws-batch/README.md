@@ -241,7 +241,7 @@ const tagCE = new batch.ManagedEc2EcsComputeEnvironment(this, 'CEThatMakesTagged
 Tags.of(tagCE).add('super', 'salamander');
 ```
 
-You can also tag the ComputeEnvironment resource directly:
+Tags can be applied directly to the underlying ComputeEnvironment resource.:
 
 ```ts
 declare const vpc: ec2.IVpc;
