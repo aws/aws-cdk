@@ -731,6 +731,7 @@ export class CodePipeline extends PipelineBase {
             additionalInformation: step.comment,
             externalEntityLink: step.reviewUrl,
             notificationTopic: step.notificationTopic,
+            role: step.role || this._pipeline?.role,
           }));
           return { runOrdersConsumed: 1 };
         },
