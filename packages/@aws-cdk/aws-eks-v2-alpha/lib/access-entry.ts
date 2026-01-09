@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
 import { Resource, IResource, Aws, Lazy } from 'aws-cdk-lib/core';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.

@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnVirtualNode } from './appmesh.generated';
+import { VirtualNodeGrants } from './appmesh-grants.generated';
+import { CfnVirtualNode, IVirtualNodeRef, VirtualNodeReference } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { renderMeshOwner, renderTlsClientPolicy } from './private/utils';
 import { ServiceDiscovery, ServiceDiscoveryConfig } from './service-discovery';
@@ -13,7 +14,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface which all VirtualNode based classes must implement
  */
-export interface IVirtualNode extends cdk.IResource {
+export interface IVirtualNode extends cdk.IResource, IVirtualNodeRef {
   /**
    * The name of the VirtualNode
    *
@@ -116,12 +117,19 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    */
   public abstract readonly mesh: IMesh;
 
+  /**
+   * Collection of grants for this Virtual Node
+   */
+  public readonly grants = VirtualNodeGrants.fromVirtualNode(this);
+
+  public get virtualNodeRef(): VirtualNodeReference {
+    return {
+      virtualNodeArn: this.virtualNodeArn,
+    };
+  }
+
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['appmesh:StreamAggregatedResources'],
-      resourceArns: [this.virtualNodeArn],
-    });
+    return this.grants.streamAggregatedResources(identity);
   }
 }
 
