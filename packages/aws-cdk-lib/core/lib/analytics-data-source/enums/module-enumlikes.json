@@ -1074,7 +1074,8 @@
       "WIN_SERVER_CORE_2022_BASE_3_0"
     ],
     "MacBuildImage": [
-      "BASE_14"
+      "BASE_14",
+      "BASE_15"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/ecs/deployment-config.ts": {
@@ -1660,11 +1661,13 @@
       "BACKUP_GATEWAY",
       "BATCH",
       "BEDROCK",
+      "BEDROCK_FIPS",
       "BEDROCK_AGENT",
       "BEDROCK_AGENT_RUNTIME",
       "BEDROCK_AGENTCORE",
       "BEDROCK_AGENTCORE_GATEWAY",
       "BEDROCK_RUNTIME",
+      "BEDROCK_RUNTIME_FIPS",
       "BEDROCK_DATA_AUTOMATION",
       "BEDROCK_DATA_AUTOMATION_FIPS",
       "BEDROCK_DATA_AUTOMATION_RUNTIME",
@@ -1674,6 +1677,8 @@
       "BILLING_AND_COST_MANAGEMENT_TAX",
       "BILLING_CONDUCTOR",
       "BRAKET",
+      "CERTIFICATE_MANAGER",
+      "CERTIFICATE_MANAGER_FIPS",
       "CLEAN_ROOMS",
       "CLEAN_ROOMS_ML",
       "CLOUD_CONTROL_API",
@@ -1751,6 +1756,7 @@
       "EC2_MESSAGES",
       "ECR",
       "ECR_DOCKER",
+      "ECR_PUBLIC",
       "ECS",
       "ECS_AGENT",
       "ECS_TELEMETRY",
@@ -1767,6 +1773,8 @@
       "ELASTICACHE_FIPS",
       "ELEMENTAL_MEDIACONNECT",
       "EMAIL_SMTP",
+      "EMAIL",
+      "EMAIL_FIPS",
       "EMR",
       "EMR_EKS",
       "EMR_SERVERLESS",
@@ -1910,6 +1918,7 @@
       "POLLY",
       "PRIVATE_5G",
       "PRIVATE_CERTIFICATE_AUTHORITY",
+      "PRIVATE_CERTIFICATE_AUTHORITY_FIPS",
       "PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_AD",
       "PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_SCEP",
       "PROMETHEUS",
@@ -1946,6 +1955,7 @@
       "S3_OUTPOSTS",
       "S3_MULTI_REGION_ACCESS_POINTS",
       "S3_TABLES",
+      "S3_VECTORS",
       "SAVINGS_PLANS",
       "SAGEMAKER_API",
       "SAGEMAKER_API_FIPS",
@@ -2326,7 +2336,8 @@
       "VERSION_1_0_317_0",
       "VERSION_1_0_333_0",
       "VERSION_1_0_391_0",
-      "VERSION_1_0_404_0"
+      "VERSION_1_0_404_0",
+      "VERSION_1_0_498_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/runtime-management.ts": {
@@ -2370,6 +2381,7 @@
       "DOTNET_6",
       "DOTNET_8",
       "DOTNET_9",
+      "DOTNET_10",
       "DOTNET_CORE_1",
       "DOTNET_CORE_2",
       "DOTNET_CORE_2_1",
@@ -2677,7 +2689,8 @@
       "VER_3_10_0",
       "VER_3_10_1",
       "VER_3_10_2",
-      "VER_3_11_0"
+      "VER_3_11_0",
+      "VER_3_11_1"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -3601,6 +3614,8 @@
       "SYNTHETICS_NODEJS_PUPPETEER_9_1",
       "SYNTHETICS_NODEJS_PUPPETEER_10_0",
       "SYNTHETICS_NODEJS_PUPPETEER_11_0",
+      "SYNTHETICS_NODEJS_PUPPETEER_12_0",
+      "SYNTHETICS_NODEJS_PUPPETEER_13_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_3_0",

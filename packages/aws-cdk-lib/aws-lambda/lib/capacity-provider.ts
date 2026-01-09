@@ -8,11 +8,12 @@ import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, IResource, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { CapacityProviderReference, ICapacityProviderRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * Represents a Lambda capacity provider.
  */
-export interface ICapacityProvider extends IResource {
+export interface ICapacityProvider extends IResource, ICapacityProviderRef {
   /**
    * The ARN of the capacity provider.
    *
@@ -238,6 +239,13 @@ abstract class CapacityProviderBase extends Resource implements ICapacityProvide
    * The Amazon Resource Name (ARN) of the capacity provider.
    */
   public abstract readonly capacityProviderArn: string;
+
+  public get capacityProviderRef(): CapacityProviderReference {
+    return {
+      capacityProviderName: this.capacityProviderName,
+      capacityProviderArn: this.capacityProviderArn,
+    };
+  }
 }
 
 /**

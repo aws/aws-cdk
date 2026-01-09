@@ -4,11 +4,12 @@ import { CfnReceiptRuleSet } from './ses.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IReceiptRuleSetRef, ReceiptRuleSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A receipt rule set.
  */
-export interface IReceiptRuleSet extends IResource {
+export interface IReceiptRuleSet extends IResource, IReceiptRuleSetRef {
   /**
    * The receipt rule set name.
    * @attribute
@@ -57,6 +58,12 @@ abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
   public abstract readonly receiptRuleSetName: string;
 
   private lastAddedRule?: ReceiptRule;
+
+  public get receiptRuleSetRef(): ReceiptRuleSetReference {
+    return {
+      ruleSetName: this.receiptRuleSetName,
+    };
+  }
 
   /**
    * Adds a new receipt rule in this rule set. The new rule is added after

@@ -1,13 +1,12 @@
 import { Construct } from 'constructs';
 import { IpAddressType } from './api';
 import { CfnDomainName, CfnDomainNameProps } from '.././index';
-import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from '../../../core';
+import { IResource, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
+import { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -38,7 +37,7 @@ export enum EndpointType {
  * Represents an APIGatewayV2 DomainName
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-domainname.html
  */
-export interface IDomainName extends IResource, IDomainNameRef {
+export interface IDomainName extends IResource {
   /**
    * The custom domain name
    * @attribute
@@ -102,7 +101,7 @@ export interface EndpointOptions {
    * The ACM certificate for this domain name.
    * Certificate can be both ACM issued or imported.
    */
-  readonly certificate: ICertificate;
+  readonly certificate: ICertificateRef;
 
   /**
    * The user-friendly name of the certificate that will be used by the endpoint for this domain name.
@@ -128,7 +127,7 @@ export interface EndpointOptions {
    * for `certificate`. The ownership certificate validates that you have permissions to use the domain name.
    * @default - only required when configuring mTLS
    */
-  readonly ownershipCertificate?: ICertificate;
+  readonly ownershipCertificate?: ICertificateRef;
 
   /**
    * The IP address types that can invoke the API.
@@ -179,15 +178,6 @@ export class DomainName extends Resource implements IDomainName {
       public readonly regionalDomainName = attrs.regionalDomainName;
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
       public readonly name = attrs.name;
-      public readonly domainNameRef: DomainNameReference = {
-        domainName: attrs.regionalDomainName,
-        domainNameArn: Stack.of(this).formatArn({
-          service: 'apigateway',
-          arnFormat: ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
-          resource: 'domainnames',
-          resourceName: attrs.regionalDomainName,
-        }),
-      };
     }
     return new Import(scope, id);
   }
@@ -195,7 +185,6 @@ export class DomainName extends Resource implements IDomainName {
   public readonly name: string;
   public readonly regionalDomainName: string;
   public readonly regionalHostedZoneId: string;
-  private readonly domainNameArn: string;
   private readonly domainNameConfigurations: CfnDomainName.DomainNameConfigurationProperty[] = [];
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
@@ -222,7 +211,6 @@ export class DomainName extends Resource implements IDomainName {
     this.name = resource.ref;
     this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
     this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
-    this.domainNameArn = Token.asString(resource.getAtt('DomainNameArn'));
 
     if (props.certificate) {
       this.addEndpoint(props);
@@ -244,10 +232,10 @@ export class DomainName extends Resource implements IDomainName {
   @MethodMetadata()
   public addEndpoint(options: EndpointOptions): void {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
-      certificateArn: options.certificate.certificateArn,
+      certificateArn: options.certificate.certificateRef.certificateId,
       certificateName: options.certificateName,
       endpointType: options.endpointType ? options.endpointType?.toString() : 'REGIONAL',
-      ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateArn,
+      ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateRef.certificateId,
       securityPolicy: options.securityPolicy?.toString(),
       ipAddressType: options.ipAddressType,
     };
@@ -263,12 +251,5 @@ export class DomainName extends Resource implements IDomainName {
         throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
       }
     }
-  }
-
-  public get domainNameRef(): DomainNameReference {
-    return {
-      domainName: this.name,
-      domainNameArn: this.domainNameArn,
-    };
   }
 }

@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-import { IConfigurationSet } from './configuration-set';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
 import { Grant, IGrantable } from '../../aws-iam';
@@ -9,11 +8,12 @@ import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * An email identity
  */
-export interface IEmailIdentity extends IResource {
+export interface IEmailIdentity extends IResource, IEmailIdentityRef {
   /**
    * The name of the email identity
    *
@@ -60,7 +60,7 @@ export interface EmailIdentityProps {
    *
    * @default - do not use a specific configuration set
    */
-  readonly configurationSet?: IConfigurationSet;
+  readonly configurationSet?: IConfigurationSetRef;
 
   /**
    * Whether the messages that are sent from the identity are signed using DKIM
@@ -353,6 +353,12 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
    */
   public abstract readonly emailIdentityArn: string;
 
+  public get emailIdentityRef(): EmailIdentityReference {
+    return {
+      emailIdentity: this.emailIdentityName,
+    };
+  }
+
   /**
    * Adds an IAM policy statement associated with this email identity to an IAM principal's policy.
    *
@@ -494,7 +500,7 @@ export class EmailIdentity extends EmailIdentityBase {
     const identity = new CfnEmailIdentity(this, 'Resource', {
       emailIdentity: props.identity.value,
       configurationSetAttributes: undefinedIfNoKeys({
-        configurationSetName: props.configurationSet?.configurationSetName,
+        configurationSetName: props.configurationSet?.configurationSetRef.configurationSetName,
       }),
       dkimAttributes: undefinedIfNoKeys({
         signingEnabled: props.dkimSigning,

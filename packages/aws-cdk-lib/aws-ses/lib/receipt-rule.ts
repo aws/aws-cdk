@@ -1,17 +1,17 @@
 import { Construct } from 'constructs';
 import { IReceiptRuleAction } from './receipt-rule-action';
-import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import { Aws, IResource, Lazy, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
+import { IReceiptRuleSetRef, IReceiptRuleRef, ReceiptRuleReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A receipt rule.
  */
-export interface IReceiptRule extends IResource {
+export interface IReceiptRule extends IResource, IReceiptRuleRef {
   /**
    * The name of the receipt rule.
    * @attribute
@@ -52,7 +52,7 @@ export interface ReceiptRuleOptions {
    *
    * @default - The new rule is inserted at the beginning of the rule list.
    */
-  readonly after?: IReceiptRule;
+  readonly after?: IReceiptRuleRef;
 
   /**
    * Whether the rule is active.
@@ -98,7 +98,7 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
   /**
    * The name of the rule set that the receipt rule will be added to.
    */
-  readonly ruleSet: IReceiptRuleSet;
+  readonly ruleSet: IReceiptRuleSetRef;
 }
 
 /**
@@ -114,12 +114,24 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
     class Import extends Resource implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;
+
+      public get receiptRuleRef(): ReceiptRuleReference {
+        return {
+          receiptRuleId: this.receiptRuleName,
+        };
+      }
     }
     return new Import(scope, id);
   }
 
   public readonly receiptRuleName: string;
   private readonly actions = new Array<CfnReceiptRule.ActionProperty>();
+
+  public get receiptRuleRef(): ReceiptRuleReference {
+    return {
+      receiptRuleId: this.receiptRuleName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
     super(scope, id, {
@@ -129,7 +141,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     addConstructMetadata(this, props);
 
     const resource = new CfnReceiptRule(this, 'Resource', {
-      after: props.after?.receiptRuleName,
+      after: props.after?.receiptRuleRef.receiptRuleId,
       rule: {
         actions: Lazy.any({ produce: () => this.renderActions() }),
         enabled: props.enabled ?? true,
@@ -138,7 +150,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
         scanEnabled: props.scanEnabled,
         tlsPolicy: props.tlsPolicy,
       },
-      ruleSetName: props.ruleSet.receiptRuleSetName,
+      ruleSetName: props.ruleSet.receiptRuleSetRef.ruleSetName,
     });
 
     this.receiptRuleName = resource.ref;

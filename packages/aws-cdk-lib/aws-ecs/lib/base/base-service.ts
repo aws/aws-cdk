@@ -25,6 +25,7 @@ import {
   ValidationError,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
+import { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import {
@@ -42,7 +43,7 @@ import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 /**
  * The interface for a service.
  */
-export interface IService extends IResource {
+export interface IService extends IResource, IServiceRef {
   /**
    * The Amazon Resource Name (ARN) of the service.
    *
@@ -603,6 +604,12 @@ export abstract class BaseService extends Resource
       public readonly serviceArn = serviceArn;
       public readonly serviceName = serviceName;
       public readonly cluster = cluster;
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -629,6 +636,15 @@ export abstract class BaseService extends Resource
    * @attribute
    */
   public readonly serviceName: string;
+
+  /**
+   * A reference to this service.
+   */
+  public get serviceRef(): ServiceReference {
+    return {
+      serviceArn: this.serviceArn,
+    };
+  }
 
   /**
    * The task definition to use for tasks in the service.

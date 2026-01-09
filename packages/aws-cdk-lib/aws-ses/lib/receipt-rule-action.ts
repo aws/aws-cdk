@@ -1,4 +1,4 @@
-import { IReceiptRule } from './receipt-rule';
+import { IReceiptRuleRef } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * An abstract action for a receipt rule.
@@ -7,7 +7,7 @@ export interface IReceiptRuleAction {
   /**
    * Returns the receipt rule action specification
    */
-  bind(receiptRule: IReceiptRule): ReceiptRuleActionConfig;
+  bind(receiptRule: IReceiptRuleRef): ReceiptRuleActionConfig;
 
 }
 

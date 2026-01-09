@@ -3196,6 +3196,8 @@
       "m7a",
       "standard8-amd",
       "m8a",
+      "standard9-graviton",
+      "m9g",
       "high-compute-memory1",
       "z1d",
       "inference1",
@@ -5300,6 +5302,10 @@
       "SVCB",
       "TLSA",
       "TXT"
+    ],
+    "Failover": [
+      "PRIMARY",
+      "SECONDARY"
     ],
     "CaaTag": [
       "issue",

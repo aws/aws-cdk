@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { IHttpApi, IHttpApiRef, toIHttpApi } from './api';
+import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
-import { CfnIntegration, IntegrationReference } from '.././index';
+import { CfnIntegration } from '.././index';
 import { IRoleRef } from '../../../aws-iam';
 import { Aws, Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -162,7 +162,7 @@ export interface HttpIntegrationProps {
   /**
    * The HTTP API to which this integration should be bound.
    */
-  readonly httpApi: IHttpApiRef;
+  readonly httpApi: IHttpApi;
 
   /**
    * Integration type
@@ -254,7 +254,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpIntegration';
   public readonly integrationId: string;
 
-  private readonly _httpApi: IHttpApiRef;
+  public readonly httpApi: IHttpApi;
 
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
@@ -270,7 +270,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
-      apiId: props.httpApi.apiRef.apiId,
+      apiId: props.httpApi.apiId,
       integrationType: props.integrationType,
       integrationSubtype: props.integrationSubtype,
       integrationUri: props.integrationUri,
@@ -290,18 +290,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
     }
 
     this.integrationId = integ.ref;
-    this._httpApi = props.httpApi;
-  }
-
-  public get httpApi(): IHttpApi {
-    return toIHttpApi(this._httpApi);
-  }
-
-  public get integrationRef(): IntegrationReference {
-    return {
-      apiId: this._httpApi.apiRef.apiId,
-      integrationId: this.integrationId,
-    };
+    this.httpApi = props.httpApi;
   }
 }
 
