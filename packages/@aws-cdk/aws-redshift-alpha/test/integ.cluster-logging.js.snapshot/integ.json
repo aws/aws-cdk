@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "CloudWatchLoggingInteg/DefaultTest": {
+      "stacks": [
+        "redshift-cloudwatch-logging-integ"
+      ],
+      "assertionStack": "CloudWatchLoggingInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudWatchLoggingIntegDefaultTestDeployAssertEDAD8A84"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
