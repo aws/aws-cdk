@@ -4810,6 +4810,40 @@ test('throws when ASG Capacity Provider with no capacityProviderName but stack n
 
     cluster.addAsgCapacityProvider(capacityProvider);
   }).not.toThrow();
+
+  // Verify the capacity provider name is set and starts with 'cp-'
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+    Name: Match.stringLikeRegexp('^cp-'),
+  });
+});
+
+test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with ECS (case-insensitive)', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'EcsCp');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  expect(() => {
+    // WHEN Capacity Provider when stack name starts with ECS (uppercase).
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+  }).not.toThrow();
+
+  // Verify the capacity provider name is set and starts with 'cp-'
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+    Name: Match.stringLikeRegexp('^cp-'),
+  });
 });
 
 test('throws when InstanceWarmupPeriod is less than 0', () => {
