@@ -371,6 +371,24 @@ topicRule.addAction(
 );
 ```
 
+You can enable batching to reduce costs and improve efficiency:
+
+```ts
+import { Duration, Size } from 'aws-cdk-lib';
+
+topicRule.addAction(
+  new actions.HttpsAction('https://example.com/endpoint', {
+    batchConfig: {
+      maxBatchOpenDuration: Duration.millis(100),
+      maxBatchSize: 5,
+      maxBatchSizeBytes: Size.kibibytes(1),
+    },
+  }),
+);
+```
+
+For more information about the batching configuration, see the [AWS IoT Core documentation](https://docs.aws.amazon.com/iot/latest/developerguide/http_batching.html).
+
 ## Write Data to Open Search Service
 
 The code snippet below creates an AWS IoT Rule that writes data
