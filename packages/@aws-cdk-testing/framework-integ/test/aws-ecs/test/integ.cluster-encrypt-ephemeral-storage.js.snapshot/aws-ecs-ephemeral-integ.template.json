@@ -435,7 +435,7 @@
         "Service": "fargate.amazonaws.com"
        },
        "Resource": "*",
-       "Sid": "Allow generate data key access for Fargate tasks."
+       "Sid": "AllowGenerateDataKeyAccessForFargateTasks"
       },
       {
        "Action": "kms:CreateGrant",
@@ -458,7 +458,7 @@
         "Service": "fargate.amazonaws.com"
        },
        "Resource": "*",
-       "Sid": "Allow grant creation permission for Fargate tasks."
+       "Sid": "AllowGrantCreationPermissionForFargateTasks"
       }
      ],
      "Version": "2012-10-17"
@@ -526,7 +526,7 @@
         "Service": "fargate.amazonaws.com"
        },
        "Resource": "*",
-       "Sid": "Allow generate data key access for Fargate tasks."
+       "Sid": "AllowGenerateDataKeyAccessForFargateTasks"
       },
       {
        "Action": "kms:CreateGrant",
@@ -552,7 +552,7 @@
         "Service": "fargate.amazonaws.com"
        },
        "Resource": "*",
-       "Sid": "Allow grant creation permission for Fargate tasks."
+       "Sid": "AllowGrantCreationPermissionForFargateTasks"
       }
      ],
      "Version": "2012-10-17"
