@@ -855,19 +855,48 @@ describe('S3 destination', () => {
     });
   });
 
-  it('sets customTimeZone', () => {
-    const destination = new firehose.S3Bucket(bucket, {
-      role: destinationRole,
-      timeZone: cdk.TimeZone.ASIA_TOKYO,
-    });
-    new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destination: destination,
+  describe('customTimeZone', () => {
+    it('sets customTimeZone', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        timeZone: cdk.TimeZone.ASIA_TOKYO,
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CustomTimeZone: 'Asia/Tokyo',
+        },
+      });
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
-      ExtendedS3DestinationConfiguration: {
-        CustomTimeZone: 'Asia/Tokyo',
-      },
+    it('throws when customTimeZone pattern does not match', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        timeZone: cdk.TimeZone.ETC_GMT_MINUS_1,
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('Member must satisfy regular expression pattern: ^$|[a-zA-Z/_]+');
+    });
+
+    test.each([
+      cdk.TimeZone.EST,
+      cdk.TimeZone.ETC_UTC,
+    ])('throws when customTimeZone is 3-latter IANA time zones: %s', (timezone: cdk.TimeZone) => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        timeZone: timezone,
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('Custom time zones are limited to UTC and non-3-letter IANA time zones');
     });
   });
 
