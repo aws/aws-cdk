@@ -4,11 +4,12 @@ import * as ec2 from '../../aws-ec2';
 import { IResource, RemovalPolicy, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { aws_rds } from '../../interfaces';
 
 /**
  * Interface for a subnet group.
  */
-export interface ISubnetGroup extends IResource {
+export interface ISubnetGroup extends IResource, aws_rds.IDBSubnetGroupRef {
   /**
    * The name of the subnet group.
    * @attribute
@@ -69,10 +70,24 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
   public static fromSubnetGroupName(scope: Construct, id: string, subnetGroupName: string): ISubnetGroup {
     return new class extends Resource implements ISubnetGroup {
       public readonly subnetGroupName = subnetGroupName;
+      public get dbSubnetGroupRef(): aws_rds.DBSubnetGroupReference {
+        return {
+          dbSubnetGroupName: this.subnetGroupName,
+        };
+      }
     }(scope, id);
   }
 
   public readonly subnetGroupName: string;
+
+  /**
+   * A reference to this subnet group
+   */
+  public get dbSubnetGroupRef(): aws_rds.DBSubnetGroupReference {
+    return {
+      dbSubnetGroupName: this.subnetGroupName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: SubnetGroupProps) {
     super(scope, id);
