@@ -29,6 +29,17 @@ export interface UniqueResourceNameOptions {
    * @default - none
    */
   readonly allowedSpecialCharacters?: string;
+
+  /**
+   * An optional discriminator string to differentiate multiple unique names
+   * generated from the same construct. The discriminator is included in the
+   * hash calculation but not in the human-readable portion, ensuring different
+   * discriminators produce different unique names while maintaining consistent
+   * output length.
+   *
+   * @default - none
+   */
+  readonly discriminator?: string;
 }
 
 /**
@@ -79,8 +90,26 @@ export class Names {
    * @param construct The construct
    * @param options Options for defining the unique resource name
    * @returns a unique resource name based on the construct path
+   *
+   * @example
+   * // Basic usage
+   * const name = Names.uniqueResourceName(construct);
+   *
+   * @example
+   * // Generate multiple unique names from the same construct using discriminators
+   * const name1 = Names.uniqueResourceName(construct, { discriminator: '1' });
+   * const name2 = Names.uniqueResourceName(construct, { discriminator: '2' });
+   * // name1 and name2 will be different
+   *
+   * @example
+   * // Customize name format
+   * const name = Names.uniqueResourceName(construct, {
+   *   maxLength: 50,
+   *   separator: '-',
+   *   allowedSpecialCharacters: '-_',
+   * });
    */
-  public static uniqueResourceName(construct: IConstruct, options: UniqueResourceNameOptions) {
+  public static uniqueResourceName(construct: IConstruct, options: UniqueResourceNameOptions = {}) {
     const node = Node.of(construct);
 
     const scopes = node.scopes;
