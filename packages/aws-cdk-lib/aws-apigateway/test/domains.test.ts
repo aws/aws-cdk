@@ -3,7 +3,6 @@ import * as acm from '../../aws-certificatemanager';
 import { Bucket } from '../../aws-s3';
 import { Stack } from '../../core';
 import * as apigw from '../lib';
-import { EndpointAccessMode } from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
 
