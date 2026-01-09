@@ -432,5 +432,19 @@ describe('Inbound Auth Tests', () => {
         expect(rendered.customJwtAuthorizer.customClaims).toHaveLength(1);
       });
     });
+
+    describe('withNoAuth', () => {
+      test('Should create No Auth authorizer', () => {
+        const authorizer = GatewayAuthorizer.withNoAuth();
+        expect(authorizer).toBeDefined();
+        expect(authorizer.authorizerType).toBe('NONE');
+      });
+
+      test('Should render No Auth authorizer as undefined', () => {
+        const authorizer = GatewayAuthorizer.withNoAuth();
+        const rendered = authorizer._render();
+        expect(rendered).toBeUndefined();
+      });
+    });
   });
 });
