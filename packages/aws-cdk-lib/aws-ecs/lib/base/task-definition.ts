@@ -816,6 +816,8 @@ export class TaskDefinition extends TaskDefinitionBase {
    *   - ecs:RunTask
    *   - iam:PassRole
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant consume rights to
    */
   @MethodMetadata()

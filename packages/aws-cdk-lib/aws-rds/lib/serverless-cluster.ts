@@ -48,6 +48,8 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
   /**
    * Grant the given identity to access to the Data API.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   grantDataApiAccess(grantee: iam.IGrantable): iam.Grant;
@@ -359,6 +361,8 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
 
   /**
    * Grant the given identity to access to the Data API, including read access to the secret attached to the cluster if present
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */

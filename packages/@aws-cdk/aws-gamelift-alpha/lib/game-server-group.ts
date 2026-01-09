@@ -158,6 +158,9 @@ export abstract class GameServerGroupBase extends cdk.Resource implements IGameS
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.gameServerGroupArn],
