@@ -32,7 +32,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-use-resource-based.html#eb-api-gateway-permissions
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig { // FIXABLE
     if (this.props?.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }

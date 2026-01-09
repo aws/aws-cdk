@@ -76,7 +76,7 @@ export class BatchJob implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger queue this batch job as a
    * result from an EventBridge event.
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     this.validateJobName(rule, this.props.jobName);
     const jobName = this.props.jobName ?? Names.uniqueResourceName(rule, {
       maxLength: 128,
@@ -113,7 +113,7 @@ export class BatchJob implements events.IRuleTarget {
     };
   }
 
-  private validateJobName(rule: events.IRule, name?: string) {
+  private validateJobName(rule: IConstruct, name?: string) {
     if (!Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 128)) {
       throw new ValidationError(`Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`, rule);
     }

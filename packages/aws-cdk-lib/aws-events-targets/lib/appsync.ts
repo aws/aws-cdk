@@ -41,7 +41,7 @@ export class AppSync implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this AppSync GraphQL API
    * as a result from an EventBridge event.
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
