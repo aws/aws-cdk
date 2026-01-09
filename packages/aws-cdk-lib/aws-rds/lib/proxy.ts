@@ -320,7 +320,7 @@ export interface DatabaseProxyOptions {
    * The default authentication scheme that the proxy uses for client connections to the proxy and connections from the proxy to the underlying database.
    * When set to `DefaultAuthScheme.IAM_AUTH`, the proxy uses end-to-end IAM authentication to connect to the database.
    *
-   * @default undefined - RDS Proxy default setting is `DefaultAuthScheme.NONE`.
+   * @default DefaultAuthScheme.NONE
    */
   readonly defaultAuthScheme?: DefaultAuthScheme;
 }
