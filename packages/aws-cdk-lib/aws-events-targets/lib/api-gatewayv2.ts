@@ -23,7 +23,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
    * Returns the target IHttpApi
    */
   public get iHttpApi(): apigwv2.IHttpApi {
-    return apigwv2.toIHttpApi(this._httpApi);
+    return this._httpApi;
   }
 
   /**
