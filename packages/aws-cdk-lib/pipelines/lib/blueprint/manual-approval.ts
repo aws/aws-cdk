@@ -1,4 +1,5 @@
 import { Step } from './step';
+import { IRole } from '../../../aws-iam';
 import { ITopic } from '../../../aws-sns';
 /**
  * Construction properties for a `ManualApprovalStep`
@@ -24,6 +25,13 @@ export interface ManualApprovalStepProps {
    * @default - No notifications
    */
   readonly notificationTopic?: ITopic;
+
+  /**
+   * Optional IAM Role
+   *
+   * @default - Pipeline role
+   */
+  readonly role?: IRole;
 }
 
 /**
@@ -57,12 +65,20 @@ export class ManualApprovalStep extends Step {
    */
   public readonly notificationTopic?: ITopic;
 
+  /**
+   * Optional IAM Role
+   *
+   * @default - Pipeline role
+   */
+  public readonly role?: IRole;
+
   constructor(id: string, props: ManualApprovalStepProps = {}) {
     super(id);
 
     this.comment = props.comment;
     this.reviewUrl = props.reviewUrl;
     this.notificationTopic = props.notificationTopic;
+    this.role = props.role;
 
     this.discoverReferencedOutputs(props.comment);
   }
