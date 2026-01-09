@@ -87,6 +87,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -100,6 +101,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all write operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -113,6 +115,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read and write operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */

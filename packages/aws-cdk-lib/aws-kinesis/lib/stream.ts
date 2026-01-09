@@ -445,6 +445,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...READ_OPERATIONS);
@@ -462,6 +464,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to ues the key to encrypt the
    * contents of the stream will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...WRITE_OPERATIONS);
@@ -476,6 +480,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
@@ -486,6 +492,8 @@ abstract class StreamBase extends Resource implements IStream {
 
   /**
    * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipalOrResource({

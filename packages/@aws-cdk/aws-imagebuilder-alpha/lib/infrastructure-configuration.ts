@@ -293,6 +293,7 @@ abstract class InfrastructureConfigurationBase extends cdk.Resource implements I
 
   /**
    * Grant custom actions to the given grantee for the infrastructure configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The principal
    * @param actions - The list of actions
@@ -308,6 +309,7 @@ abstract class InfrastructureConfigurationBase extends cdk.Resource implements I
 
   /**
    * Grant read permissions to the given grantee for the infrastructure configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The principal
    */

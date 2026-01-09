@@ -218,6 +218,9 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
     return { statementAdded: false };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(identity: iam.IGrantable, tableId: string) {
     return this.grant(
       identity,
@@ -228,6 +231,9 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
     );
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(identity: iam.IGrantable, tableId: string) {
     return this.grant(
       identity,
@@ -238,6 +244,9 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
     );
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantReadWrite(identity: iam.IGrantable, tableId: string) {
     return this.grant(
       identity,

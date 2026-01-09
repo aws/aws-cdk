@@ -538,6 +538,9 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   protected abstract enableIamAuthentication?: boolean;
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (this.enableIamAuthentication === false) {
       throw new ValidationError('Cannot grant permissions when IAM authentication is disabled', this);
@@ -560,6 +563,9 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantConnect(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'neptune-db:*');
   }

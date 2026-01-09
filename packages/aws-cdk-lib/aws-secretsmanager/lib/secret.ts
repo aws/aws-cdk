@@ -392,6 +392,9 @@ abstract class SecretBase extends Resource implements ISecret {
 
   public get secretFullArn(): string | undefined { return this.secretArn; }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
@@ -426,6 +429,9 @@ abstract class SecretBase extends Resource implements ISecret {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const result = iam.Grant.addToPrincipalOrResource({
