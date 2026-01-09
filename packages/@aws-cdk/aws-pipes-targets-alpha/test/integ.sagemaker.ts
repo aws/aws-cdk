@@ -42,6 +42,7 @@ interface FakePipelineProps {
 }
 
 class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
+  public readonly pipelineRef: sagemaker.PipelineReference;
   public readonly pipelineArn;
   public readonly pipelineName;
 
@@ -125,6 +126,8 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
       resourceName: pipeline.pipelineName,
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
+
+    this.pipelineRef = { pipelineName: this.pipelineName };
   }
 
   public grantStartPipelineExecution(grantee: iam.IGrantable): iam.Grant {

@@ -1,10 +1,11 @@
 import { Grant, IGrantable } from '../../aws-iam';
 import { IResource } from '../../core';
+import { IPipelineRef } from '../../interfaces/generated/aws-sagemaker-interfaces.generated';
 
 /**
  * The interface for a SageMaker Pipeline resource.
  */
-export interface IPipeline extends IResource {
+export interface IPipeline extends IResource, IPipelineRef {
   /**
    * The ARN of the pipeline.
    *
