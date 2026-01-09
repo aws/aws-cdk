@@ -626,7 +626,7 @@ export class DatabaseProxy extends DatabaseProxyBase
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
       if (!this.secrets?.length) {
-        throw new ValidationError('When the Proxy has no Secrets, you must specify a dbUser to grantConnect()', this);
+        throw new ValidationError('When using IAM authentication without secrets, you must specify a dbUser parameter in grantConnect().', this);
       }
       if (this.secrets.length > 1) {
         throw new ValidationError('When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()', this);

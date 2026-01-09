@@ -216,7 +216,7 @@ describe('proxy', () => {
     });
   });
 
-  test('One or more secrets are required when defaultAuthScheme is NONE.', () => {
+  test('throws when defaultAuthScheme is NONE and no secrets are provided', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
@@ -234,7 +234,7 @@ describe('proxy', () => {
     }).toThrow('One or more secrets are required when the `defaultAuthScheme` is not specified or is set to NONE.');
   });
 
-  test('One or more secrets are required when defaultAuthScheme is undefined.', () => {
+  test('throws when defaultAuthScheme is undefined and no secrets are provided', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
@@ -452,7 +452,7 @@ describe('proxy', () => {
     }).toThrow(/When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
   });
 
-  test('new Proxy with no secrets throws when grantConnect() is used without a dbUser', () => {
+  test('throws when grantConnect() is used without dbUser on Proxy with no secrets', () => {
     // GIVEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.postgres({
@@ -476,7 +476,7 @@ describe('proxy', () => {
     // THEN
     expect(() => {
       proxy.grantConnect(role);
-    }).toThrow(/When the Proxy has no Secrets, you must specify a dbUser to grantConnect/);
+    }).toThrow(/When using IAM authentication without secrets, you must specify a dbUser parameter in grantConnect/);
   });
 
   test('new Proxy with no secrets can use grantConnect() with a dbUser specified', () => {

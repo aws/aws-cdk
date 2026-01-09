@@ -1019,7 +1019,7 @@ When using `DefaultAuthScheme.IAM_AUTH`, the proxy uses end-to-end IAM authentic
 declare const vpc: ec2.Vpc;
 const instance = new rds.DatabaseInstance(this, 'Database', {
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_16_3,
+    version: rds.PostgresEngineVersion.VER_17_7,
   }),
   vpc,
   iamAuthentication: true,
@@ -1034,26 +1034,6 @@ const proxy = new rds.DatabaseProxy(this, 'Proxy', {
 // Grant IAM permissions for database connection
 const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
 proxy.grantConnect(role, 'database-user'); // Database user must be specified when using IAM auth
-```
-
-The default behavior (`DefaultAuthScheme.NONE`) continues to work with secrets-based authentication:
-
-```ts
-declare const vpc: ec2.Vpc;
-const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
-  }),
-  writer: rds.ClusterInstance.provisioned('writer'),
-  vpc,
-});
-
-const proxy = new rds.DatabaseProxy(this, 'Proxy', {
-  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
-  secrets: [cluster.secret!], // Required when using DefaultAuthScheme.NONE (default)
-  vpc,
-  defaultAuthScheme: rds.DefaultAuthScheme.NONE, // Optional - this is the default
-});
 ```
 
 ### Cluster
