@@ -1,10 +1,9 @@
 import { IResource } from '../../../core';
-import { IRouteRef } from '../apigatewayv2.generated';
 
 /**
  * Represents a route.
  */
-export interface IRoute extends IResource, IRouteRef {
+export interface IRoute extends IResource {
   /**
    * Id of the Route
    * @attribute

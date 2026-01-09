@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.234.1](https://github.com/aws/aws-cdk/compare/v2.234.0...v2.234.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* `RuntimeError: apiEndpoint is not configured on the imported HttpApi` (revert of "chore(apigatewayv2): reference interfaces") ([#36623](https://github.com/aws/aws-cdk/issues/36623)) ([1c10d49](https://github.com/aws/aws-cdk/commit/1c10d495ffd81a90a91cc6779c75e59f27bbc1e0)), closes [aws/aws-cdk#36378](https://github.com/aws/aws-cdk/issues/36378)
+
 ## [2.234.0](https://github.com/aws/aws-cdk/compare/v2.233.0...v2.234.0) (2026-01-08)
 
 
