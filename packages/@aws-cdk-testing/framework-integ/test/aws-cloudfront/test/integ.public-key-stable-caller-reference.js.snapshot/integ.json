@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "PublicKeyStableCallerReferenceTest/DefaultTest": {
+      "stacks": [
+        "PublicKeyStableCallerReferenceStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "PublicKeyStableCallerReferenceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PublicKeyStableCallerReferenceTestDefaultTestDeployAssert83A9524E"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}
