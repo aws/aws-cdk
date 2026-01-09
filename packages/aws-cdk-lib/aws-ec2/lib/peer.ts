@@ -8,26 +8,36 @@ import { Token, UnscopedValidationError } from '../../core';
 export interface IngressRuleConfig {
   /**
    * The IPv4 address range, in CIDR format
+   *
+   * @default - No IPv4 CIDR
    */
   readonly cidrIp?: string;
 
   /**
    * The IPv6 address range, in CIDR format
+   *
+   * @default - No IPv6 CIDR
    */
   readonly cidrIpv6?: string;
 
   /**
    * The ID of a source prefix list
+   *
+   * @default - No source prefix list
    */
   readonly sourcePrefixListId?: string;
 
   /**
    * The ID of a source security group
+   *
+   * @default - No source security group
    */
   readonly sourceSecurityGroupId?: string;
 
   /**
    * The AWS account ID of the owner of a source security group
+   *
+   * @default - No source security group owner ID
    */
   readonly sourceSecurityGroupOwnerId?: string;
 }
@@ -38,21 +48,29 @@ export interface IngressRuleConfig {
 export interface EgressRuleConfig {
   /**
    * The IPv4 address range, in CIDR format
+   *
+   * @default - No IPv4 CIDR
    */
   readonly cidrIp?: string;
 
   /**
    * The IPv6 address range, in CIDR format
+   *
+   * @default - No IPv6 CIDR
    */
   readonly cidrIpv6?: string;
 
   /**
    * The ID of a destination prefix list
+   *
+   * @default - No destination prefix list
    */
   readonly destinationPrefixListId?: string;
 
   /**
    * The ID of a destination security group
+   *
+   * @default - No destination security group
    */
   readonly destinationSecurityGroupId?: string;
 }
