@@ -53,4 +53,8 @@ class FakeEndpoint extends cdk.Resource implements sagemaker.IEndpoint {
       resourceArns: [this.endpointArn],
     });
   }
+
+  public get endpointRef(): sagemaker.EndpointReference {
+    return { endpointArn: this.endpointArn };
+  }
 }
