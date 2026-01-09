@@ -703,15 +703,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     this.secret?.grantRead(grantee);
     return ret;
   }
-
-  /**
-   * The average number of read I/O operations per second.
-   *
-   * Represents the average of the ReadIOPS values across all instances in the cluster.
-   */
-  public metricReadIOPS(props?: cloudwatch.MetricOptions) {
-    return this.metric('ReadIOPS', { statistic: 'Average', ...props });
-  }
 }
 
 /**
@@ -1156,6 +1147,15 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public metricACUUtilization(props?: cloudwatch.MetricOptions) {
     return this.metric('ACUUtilization', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The number of billed read I/O operations from a cluster volume, reported at 5-minute intervals.
+   *
+   * This metric represents the number of read I/O operations at the cluster level.
+   */
+  public metricVolumeReadIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeReadIOPs', { statistic: 'Average', ...props });
   }
 
   private validateServerlessScalingConfig(config: ClusterEngineConfig): void {

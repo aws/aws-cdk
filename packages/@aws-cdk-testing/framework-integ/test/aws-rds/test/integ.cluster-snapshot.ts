@@ -1,5 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
@@ -17,7 +17,7 @@ class TestStack extends Stack {
       isFromLegacyInstanceProps: true,
     };
     const cluster = new rds.DatabaseCluster(this, 'Cluster', {
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_10_0 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_04_0 }),
       writer: ClusterInstance.provisioned('Instance1', {
         ...instanceProps,
       }),
@@ -38,7 +38,7 @@ class TestStack extends Stack {
     const fromSnapshot = new rds.DatabaseClusterFromSnapshot(this, 'FromSnapshot', {
       snapshotIdentifier: snapshoter.snapshotArn,
       snapshotCredentials: rds.SnapshotCredentials.fromGeneratedSecret('admin'),
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_10_0 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_04_0 }),
       writer: ClusterInstance.provisioned('Instance1', {
         ...instanceProps,
       }),
@@ -51,13 +51,6 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
     fromSnapshot.addRotationSingleUser();
-
-    fromSnapshot.metricReadIOPS({
-      period: Duration.minutes(10),
-    }).createAlarm(this, 'ReadIOPsAlarm', {
-      threshold: 1000,
-      evaluationPeriods: 3,
-    });
   }
 }
 

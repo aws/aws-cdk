@@ -431,7 +431,7 @@
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.10.0",
+    "EngineVersion": "8.0.mysql_aurora.3.04.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -617,7 +617,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7531d12b1fd853bba70fda1369698d729b1ef9986621d19d7cbdbf9648a32ba5.zip"
+     "S3Key": "4de3506ba5bc3aa77711f1a81ad7f975144fea4ee7137acca0654b62bdc610f2.zip"
     },
     "Handler": "index.onEventHandler",
     "Role": {
@@ -736,7 +736,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7531d12b1fd853bba70fda1369698d729b1ef9986621d19d7cbdbf9648a32ba5.zip"
+     "S3Key": "4de3506ba5bc3aa77711f1a81ad7f975144fea4ee7137acca0654b62bdc610f2.zip"
     },
     "Handler": "index.isCompleteHandler",
     "Role": {
@@ -877,7 +877,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1036,7 +1036,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1192,7 +1192,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1522,7 +1522,7 @@
      "Ref": "FromSnapshotSubnets9ED4B8EE"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.10.0",
+    "EngineVersion": "8.0.mysql_aurora.3.04.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1676,26 +1676,6 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "ReadIOPsAlarmFB02F871": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "DBClusterIdentifier",
-      "Value": {
-       "Ref": "FromSnapshotEE0682C5"
-      }
-     }
-    ],
-    "EvaluationPeriods": 3,
-    "MetricName": "ReadIOPS",
-    "Namespace": "AWS/RDS",
-    "Period": 600,
-    "Statistic": "Average",
-    "Threshold": 1000
-   }
   }
  },
  "Mappings": {
