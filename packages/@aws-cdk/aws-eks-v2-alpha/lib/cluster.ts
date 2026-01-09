@@ -6,9 +6,10 @@ import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack, FeatureFlags } from 'aws-cdk-lib/core';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
@@ -22,7 +23,7 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { OpenIdConnectProvider } from './oidc-provider';
+import { OpenIdConnectProvider, OpenIdConnectProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -246,8 +247,8 @@ export interface ClusterAttributes {
 
   /**
    * An Open ID Connect provider for this cluster that can be used to configure service accounts.
-   * You can either import an existing provider using `iam.OpenIdConnectProvider.fromProviderArn`,
-   * or create a new provider using `new eks.OpenIdConnectProvider`
+   * You can either import an existing provider using `iam.OpenIdConnectProviderNative.fromProviderArn`,
+   * or create a new provider using `new eks.OpenIdConnectProviderNative`
    * @default - if not specified `cluster.openIdConnectProvider` and `cluster.addServiceAccount` will throw an error.
    */
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
@@ -1515,11 +1516,17 @@ export class Cluster extends ClusterBase {
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
    */
-  public get openIdConnectProvider() {
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.clusterOpenIdConnectIssuerUrl,
-      });
+      if (FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)) {
+        this._openIdConnectProvider = new OpenIdConnectProviderNative(this, 'OpenIdConnectProviderNative', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+        });
+      } else {
+        this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+        });
+      }
     }
 
     return this._openIdConnectProvider;

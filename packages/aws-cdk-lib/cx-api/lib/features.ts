@@ -110,6 +110,7 @@ export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeli
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
+export const EKS_USE_NATIVE_OIDC_PROVIDER = '@aws-cdk/aws-eks:useNativeOidcProvider';
 export const ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID = '@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
@@ -1143,6 +1144,19 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.139.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_USE_NATIVE_OIDC_PROVIDER]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, EKS clusters will use the native OIDC provider resource  AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource.',
+    detailsMd: `
+      When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OIDCProvider
+      CloudFormation resource instead of the custom resource provider for creating OIDC providers.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use the custom resource provider.',
   },
 
   //////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnOIDCProvider, IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
-import { Arn, IResource, Resource, Token, ValidationError } from '../../core';
+import { Arn, IResource, RemovalPolicy, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -94,6 +94,13 @@ export interface OidcProviderNativeProps {
    * of idenity provider server cerctificate
    */
   readonly thumbprints?: string[];
+
+  /**
+   * The removal policy to apply to the OpenID Connect Provider.
+   *
+   * @default - RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -183,15 +190,17 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    if (!props.url.startsWith('https://')) {
-      throw new ValidationError(
-        'The URL of the identity provider must start with https://', scope,
-      );
-    }
+    if (!Token.isUnresolved(props.url)) {
+      if (!props.url.startsWith('https://')) {
+        throw new ValidationError(
+          'The URL of the identity provider must start with https://', scope,
+        );
+      }
 
-    // maximum length of url is 255 characters
-    if (props.url.length > 255) {
-      throw new ValidationError('The maximum length allowed for url is 255 characters', scope);
+      // maximum length of url is 255 characters
+      if (props.url.length > 255) {
+        throw new ValidationError('The maximum length allowed for url is 255 characters', scope);
+      }
     }
 
     // clientids cannot be more than 100
@@ -200,7 +209,7 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     }
 
     // clientId max length is 255
-    if (props.clientIds?.some((clientId) => clientId.length > 255)) {
+    if (props.clientIds?.some((clientId) => !Token.isUnresolved(clientId) && clientId.length > 255)) {
       throw new ValidationError('The maximum length of a client ID is 255 characters', scope);
     }
 
@@ -210,12 +219,12 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     }
 
     // thumbprint length is 40
-    if (props.thumbprints?.some((thumbprint) => thumbprint.length !== 40)) {
+    if (props.thumbprints?.some((thumbprint) => !Token.isUnresolved(thumbprint) && thumbprint.length !== 40)) {
       throw new ValidationError('The length of a thumbprint must be 40 characters', scope);
     }
 
     // thumbprint must be hex
-    if (props.thumbprints?.some((thumbprint) => !/^[0-9a-fA-F]+$/.test(thumbprint))) {
+    if (props.thumbprints?.some((thumbprint) => !Token.isUnresolved(thumbprint) && !/^[0-9a-fA-F]+$/.test(thumbprint))) {
       throw new ValidationError('All thumbprints must be in hexadecimal format', scope);
     }
 
@@ -224,6 +233,10 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
       clientIdList: props.clientIds,
       thumbprintList: props.thumbprints,
     });
+
+    if (props.removalPolicy) {
+      resource.applyRemovalPolicy(props.removalPolicy);
+    }
 
     this.oidcProviderArn = Token.asString(resource.ref);
     this.oidcProviderIssuer = Arn.extractResourceName(

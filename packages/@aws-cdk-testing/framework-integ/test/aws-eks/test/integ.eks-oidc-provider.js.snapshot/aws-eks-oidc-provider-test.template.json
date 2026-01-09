@@ -25,7 +25,7 @@
      ]
     },
     "RejectUnauthorized": false,
-    "CodeHash": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4"
+    "CodeHash": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -80,7 +80,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4.zip"
+     "S3Key": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -96,6 +96,26 @@
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
    ]
+  },
+  "OpenIdConnectProviderNative79C2FF59": {
+   "Type": "AWS::IAM::OIDCProvider",
+   "Properties": {
+    "ClientIdList": [
+     "sts.amazonaws.com"
+    ],
+    "Url": {
+     "Fn::Join": [
+      "",
+      [
+       "https://oidc.eks.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/id/test3"
+      ]
+     ]
+    }
+   }
   }
  },
  "Parameters": {

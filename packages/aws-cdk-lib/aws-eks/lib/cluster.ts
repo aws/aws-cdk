@@ -15,7 +15,7 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { IKubectlProvider, KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { OpenIdConnectProvider } from './oidc-provider';
+import { OpenIdConnectProvider, OpenIdConnectProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -26,9 +26,10 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies } from '../../core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies, FeatureFlags } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from '../../cx-api';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -365,8 +366,8 @@ export interface ClusterAttributes {
 
   /**
    * An Open ID Connect provider for this cluster that can be used to configure service accounts.
-   * You can either import an existing provider using `iam.OpenIdConnectProvider.fromProviderArn`,
-   * or create a new provider using `new eks.OpenIdConnectProvider`
+   * You can either import an existing provider using `iam.OpenIdConnectProviderNative.fromProviderArn`,
+   * or create a new provider using `new eks.OpenIdConnectProviderNative`
    * @default - if not specified `cluster.openIdConnectProvider` and `cluster.addServiceAccount` will throw an error.
    */
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
@@ -2101,11 +2102,17 @@ export class Cluster extends ClusterBase {
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
    */
-  public get openIdConnectProvider() {
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.clusterOpenIdConnectIssuerUrl,
-      });
+      if (FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)) {
+        this._openIdConnectProvider = new OpenIdConnectProviderNative(this, 'OpenIdConnectProviderNative', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+        });
+      } else {
+        this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+        });
+      }
     }
 
     return this._openIdConnectProvider;

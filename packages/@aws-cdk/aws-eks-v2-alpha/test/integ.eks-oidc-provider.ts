@@ -14,6 +14,12 @@ new eks.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {
   url: `https://oidc.eks.${Stack.of(stack).region}.amazonaws.com/id/test2`,
 });
 
+new eks.OpenIdConnectProviderNative(stack, 'OpenIdConnectProviderNative', {
+  url: `https://oidc.eks.${Stack.of(stack).region}.amazonaws.com/id/test3`,
+});
+
 new integ.IntegTest(app, 'aws-cdk-eks-oidc-provider', {
   testCases: [stack],
 });
+
+app.synth();
