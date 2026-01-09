@@ -50,6 +50,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
+    "gen": "gen-cdk",
     "build": "cdk-build",
     "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "lint": "cdk-lint",

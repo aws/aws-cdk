@@ -1,21 +1,22 @@
 import * as path from 'node:path';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { createLibraryReadme } from '@aws-cdk/pkglint';
-import { topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
+import { ModuleMap, ModuleMapEntry } from '../module-topology';
 
 /**
  * Make sure that a number of expected files exist for every service submodule
  *
  * Non-service submodules should not be passed to this function.
  */
-export default async function generateServiceSubmoduleFiles(modules: topo.ModuleMap, outPath: string) {
+export default async function generateServiceSubmoduleFiles(modules: ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
     await ensureSubmodule(submodule, outPath);
     await ensureInterfaceSubmoduleJsiiJsonRc(submodule, path.join(outPath, 'interfaces'));
   }
 }
 
-async function ensureSubmodule(submodule: topo.ModuleMapEntry, outPath: string) {
+async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   const modulePath = path.join(outPath, submodule.name);
 
   // README.md
@@ -73,7 +74,7 @@ async function ensureSubmodule(submodule: topo.ModuleMapEntry, outPath: string) 
  * Do that by taking the namespaces of the parent `interfaces` submodule and concatenating the last part
  * of the names corresponding services namespace.
  */
-async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: topo.ModuleMapEntry, interfacesModulePath: string) {
+async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: ModuleMapEntry, interfacesModulePath: string) {
   if (!submodule.definition) {
     throw new Error(`Cannot infer path or namespace for submodule named "${submodule.name}".`);
   }
