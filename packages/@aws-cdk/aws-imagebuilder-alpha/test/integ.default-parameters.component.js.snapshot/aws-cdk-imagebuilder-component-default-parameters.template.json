@@ -10,6 +10,16 @@
    }
   }
  },
+ "Outputs": {
+  "ComponentVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Component0EED0119",
+     "Version"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

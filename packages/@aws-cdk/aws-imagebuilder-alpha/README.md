@@ -55,7 +55,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(this, 'MyImageRecipe', {
 });
 
 const imagePipeline = new imagebuilder.ImagePipeline(this, 'MyImagePipeline', {
-  recipe: exampleImageRecipe
+  recipe: exampleImageRecipe.imageRecipeLatestVersion
 });
 ```
 
@@ -70,7 +70,7 @@ const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecip
 });
 
 const containerPipeline = new imagebuilder.ImagePipeline(this, 'MyContainerPipeline', {
-  recipe: exampleContainerRecipe
+  recipe: exampleContainerRecipe.containerRecipeLatestVersion
 });
 ```
 
@@ -84,7 +84,7 @@ Create a pipeline that runs only when manually triggered:
 const manualPipeline = new imagebuilder.ImagePipeline(this, 'ManualPipeline', {
   imagePipelineName: 'my-manual-pipeline',
   description: 'Pipeline triggered manually for production builds',
-  recipe: exampleImageRecipe
+  recipe: exampleImageRecipe.imageRecipeLatestMajorVersion
   // No schedule property - manual execution only
 });
 
@@ -99,7 +99,7 @@ Schedule a pipeline to run automatically using cron expressions:
 ```ts
 const weeklyPipeline = new imagebuilder.ImagePipeline(this, 'WeeklyPipeline', {
   imagePipelineName: 'weekly-build-pipeline',
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestMinorVersion,
   schedule: {
     expression: events.Schedule.cron({
       minute: '0',
@@ -114,7 +114,7 @@ Use rate expressions for regular intervals:
 
 ```ts
 const dailyPipeline = new imagebuilder.ImagePipeline(this, 'DailyPipeline', {
-  recipe: exampleContainerRecipe,
+  recipe: exampleContainerRecipe.containerRecipeLatestPatchVersion,
   schedule: {
     expression: events.Schedule.rate(Duration.days(1))
   }
@@ -127,7 +127,7 @@ Configure advanced scheduling options:
 
 ```ts
 const advancedSchedulePipeline = new imagebuilder.ImagePipeline(this, 'AdvancedSchedulePipeline', {
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestVersion,
   schedule: {
     expression: events.Schedule.rate(Duration.days(7)),
     // Only trigger when dependencies are updated (new base images, components, etc.)
@@ -163,7 +163,7 @@ distributionConfiguration.addAmiDistributions({
 });
 
 const productionPipeline = new imagebuilder.ImagePipeline(this, 'ProductionPipeline', {
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestVersion,
   infrastructureConfiguration: infrastructureConfiguration,
   distributionConfiguration: distributionConfiguration
 });
@@ -185,7 +185,7 @@ const imageLogGroup = new logs.LogGroup(this, 'ImageLogGroup', {
 });
 
 const loggedPipeline = new imagebuilder.ImagePipeline(this, 'LoggedPipeline', {
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestVersion,
   imagePipelineLogGroup: pipelineLogGroup,
   imageLogGroup: imageLogGroup
 });
@@ -197,7 +197,7 @@ Use AWS-managed workflows for common pipeline phases:
 
 ```ts
 const workflowPipeline = new imagebuilder.ImagePipeline(this, 'WorkflowPipeline', {
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestVersion,
   workflows: [
     { workflow: imagebuilder.AmazonManagedWorkflow.buildImage(this, 'BuildWorkflow') },
     { workflow: imagebuilder.AmazonManagedWorkflow.testImage(this, 'TestWorkflow') }
@@ -209,7 +209,7 @@ For container pipelines, use container-specific workflows:
 
 ```ts
 const containerWorkflowPipeline = new imagebuilder.ImagePipeline(this, 'ContainerWorkflowPipeline', {
-  recipe: exampleContainerRecipe,
+  recipe: exampleContainerRecipe.containerRecipeLatestVersion,
   workflows: [
     { workflow: imagebuilder.AmazonManagedWorkflow.buildContainer(this, 'BuildContainer') },
     { workflow: imagebuilder.AmazonManagedWorkflow.testContainer(this, 'TestContainer') },
@@ -226,7 +226,7 @@ Configure image scanning for container pipelines:
 const scanningRepository = new ecr.Repository(this, 'ScanningRepo');
 
 const scannedContainerPipeline = new imagebuilder.ImagePipeline(this, 'ScannedContainerPipeline', {
-  recipe: exampleContainerRecipe,
+  recipe: exampleContainerRecipe.containerRecipeLatestVersion,
   imageScanningEnabled: true,
   imageScanningEcrRepository: scanningRepository,
   imageScanningEcrTags: ['security-scan', 'latest']
@@ -237,7 +237,7 @@ Control metadata collection and testing:
 
 ```ts
 const controlledPipeline = new imagebuilder.ImagePipeline(this, 'ControlledPipeline', {
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestVersion,
   enhancedImageMetadataEnabled: true,  // Collect detailed OS and package info
   imageTestsEnabled: false  // Skip testing phase for faster builds
 });
@@ -308,7 +308,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(this, 'MyImageRecipe', {
 });
 
 const amiImage = new imagebuilder.Image(this, 'MyAmiImage', {
-  recipe: imageRecipe
+  recipe: imageRecipe.imageRecipeLatestVersion
 });
 ```
 
@@ -323,7 +323,7 @@ const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecip
 });
 
 const containerImage = new imagebuilder.Image(this, 'MyContainerImage', {
-  recipe: containerRecipe
+  recipe: containerRecipe.containerRecipeLatestVersion
 });
 ```
 
@@ -400,7 +400,7 @@ distributionConfiguration.addAmiDistributions({
 });
 
 const productionImage = new imagebuilder.Image(this, 'ProductionImage', {
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestVersion,
   infrastructureConfiguration: infrastructureConfiguration,
   distributionConfiguration: distributionConfiguration
 });
@@ -417,7 +417,7 @@ const logGroup = new logs.LogGroup(this, 'ImageLogGroup', {
 });
 
 const loggedImage = new imagebuilder.Image(this, 'LoggedImage', {
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestVersion,
   logGroup: logGroup
 });
 ```
@@ -428,7 +428,7 @@ Use workflows for custom build, test, and distribution processes:
 
 ```ts
 const imageWithWorkflows = new imagebuilder.Image(this, 'ImageWithWorkflows', {
-  recipe: exampleImageRecipe,
+  recipe: exampleImageRecipe.imageRecipeLatestVersion,
   workflows: [
     { workflow: imagebuilder.AmazonManagedWorkflow.buildImage(this, 'BuildWorkflow') },
     { workflow: imagebuilder.AmazonManagedWorkflow.testImage(this, 'TestWorkflow') }
@@ -444,7 +444,7 @@ Configure image scanning, metadata collection, and testing:
 const scanningRepository = new ecr.Repository(this, 'ScanningRepository');
 
 const advancedContainerImage = new imagebuilder.Image(this, 'AdvancedContainerImage', {
-  recipe: exampleContainerRecipe,
+  recipe: exampleContainerRecipe.containerRecipeLatestVersion,
   imageScanningEnabled: true,
   imageScanningEcrRepository: scanningRepository,
   imageScanningEcrTags: ['security-scan', 'latest'],
@@ -586,7 +586,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(this, 'ComponentImageRecipe', {
   ),
   components: [
     {
-      component: customComponent
+      component: customComponent.componentLatestVersion
     }
   ]
 });

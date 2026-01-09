@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7f05e8929df6def492f41c2400f2b534b913990112bd26b477fad8ef75447269.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/71263e8d44d7415be5cb7d62328b9430f6f7303e3c845faebbe27bfce02f3aee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -799,6 +799,28 @@
             "data": "AMIDistributionConfigurationA286FE05"
           }
         ],
+        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/CustomBuildWorkflow": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/CustomBuildWorkflow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomBuildWorkflow21831B01"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ImagePipeline-AMI": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ImagePipeline-AMI/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -889,12 +911,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImagePipelineAMIImageBuildCVEDetectedTriggerRule84FC4210"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ImagePipeline-AMI/Image/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineAMIImage2B4B0347"
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/BootstrapVersion": [
@@ -1457,10 +1473,14 @@
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1031.2"
+  "minimumCliVersion": "2.1033.0"
 }
