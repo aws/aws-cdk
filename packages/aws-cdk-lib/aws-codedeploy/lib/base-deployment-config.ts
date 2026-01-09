@@ -4,12 +4,13 @@ import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-c
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
 import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../core';
+import { DeploymentConfigReference, IDeploymentConfigRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
  * and LambdaDeploymentConfig deployment configurations.
  */
-export interface IBaseDeploymentConfig {
+export interface IBaseDeploymentConfig extends IDeploymentConfigRef {
   /**
    * The physical, human-readable name of the Deployment Configuration.
    * @attribute
@@ -143,16 +144,25 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
    */
   protected static fromDeploymentConfigName(scope: Construct, id: string, deploymentConfigName: string): IBaseDeploymentConfig {
     ignore(id);
-    const arn = Stack.of(scope).formatArn({
+    const stack = Stack.of(scope);
+    const arn = stack.formatArn({
       service: 'codedeploy',
       resource: 'deploymentconfig',
       resourceName: deploymentConfigName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-    return {
-      deploymentConfigName: deploymentConfigName,
-      deploymentConfigArn: arn,
-    };
+
+    class Import extends Resource implements IBaseDeploymentConfig {
+      public readonly deploymentConfigName = deploymentConfigName;
+      public readonly deploymentConfigArn = arn;
+      public get deploymentConfigRef(): DeploymentConfigReference {
+        return {
+          deploymentConfigName: this.deploymentConfigName,
+        };
+      }
+    }
+
+    return new Import(scope, `${id}:Imported`);
   }
 
   /**
@@ -166,6 +176,12 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
    * @attribute
    */
   public readonly deploymentConfigArn: string;
+
+  public get deploymentConfigRef(): DeploymentConfigReference {
+    return {
+      deploymentConfigName: this.deploymentConfigName,
+    };
+  }
 
   public constructor(scope: Construct, id: string, props?: BaseDeploymentConfigProps) {
     super(scope, id, {

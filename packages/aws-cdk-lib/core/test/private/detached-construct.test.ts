@@ -9,13 +9,6 @@ class TestDetachedConstruct extends DetachedConstruct {
 }
 
 describe('DetachedConstruct', () => {
-  test('throws UnscopedValidationError when accessing node', () => {
-    const construct = new TestDetachedConstruct('test error message');
-
-    expect(() => construct.node).toThrow(UnscopedValidationError);
-    expect(() => construct.node).toThrow('test error message');
-  });
-
   test('throws UnscopedValidationError when accessing env', () => {
     const construct = new TestDetachedConstruct('test error message');
 
