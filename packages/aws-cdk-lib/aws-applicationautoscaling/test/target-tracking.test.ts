@@ -174,4 +174,49 @@ describe('target tracking', () => {
 
     });
   });
+
+  test('throws error when using cross-account custom metric', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
+    const target = createScalableTarget(stack);
+
+    // THEN
+    expect(() => {
+      target.scaleToTrackMetric('Tracking', {
+        customMetric: new cloudwatch.Metric({
+          namespace: 'Test',
+          metricName: 'Metric',
+          account: '222222222222', // Different account
+        }),
+        targetValue: 30,
+      });
+    }).toThrow(/Cross-account metrics are not supported for Application Auto Scaling target tracking policies/);
+  });
+
+  test('allows custom metric from same account', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.Metric({
+        namespace: 'Test',
+        metricName: 'Metric',
+        account: '111111111111', // Same account
+      }),
+      targetValue: 30,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          MetricName: 'Metric',
+          Namespace: 'Test',
+        },
+        TargetValue: 30,
+      },
+    });
+  });
 });
