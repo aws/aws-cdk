@@ -2342,4 +2342,47 @@ describe('Gateway M2M Authentication Tests', () => {
     // Domain name is auto-generated using Names.uniqueResourceName()
     template.resourceCountIs('AWS::Cognito::UserPoolDomain', 1);
   });
+
+  test('Should set tokenEndpointUrl property with default Cognito authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeDefined();
+    expect(gateway.tokenEndpointUrl).toContain('.auth.us-east-1.amazoncognito.com/oauth2/token');
+  });
+
+  test('Should set oauthScopes property with default Cognito authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.oauthScopes).toBeDefined();
+    expect(gateway.oauthScopes).toHaveLength(2);
+    expect(gateway.oauthScopes![0]).toContain('/read');
+    expect(gateway.oauthScopes![1]).toContain('/write');
+  });
+
+  test('Should not set tokenEndpointUrl and oauthScopes when using custom authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeUndefined();
+    expect(gateway.oauthScopes).toBeUndefined();
+  });
+
+  test('Should not set tokenEndpointUrl and oauthScopes when using custom JWT authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+        allowedAudience: ['my-app'],
+      }),
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeUndefined();
+    expect(gateway.oauthScopes).toBeUndefined();
+  });
 });
