@@ -43,6 +43,7 @@ running on AWS Lambda, or any web application.
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Endpoint Configuration](#endpoint-configuration)
   - [Private Integrations](#private-integrations)
+    - [Application Load Balancer Integration](#application-load-balancer-integration)
   - [Gateway response](#gateway-response)
   - [OpenAPI Definition](#openapi-definition)
     - [Endpoint configuration](#endpoint-configuration-1)
@@ -1609,6 +1610,55 @@ Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLin
 
 ```ts
 const awesomeLink = apigateway.VpcLink.fromVpcLinkId(this, 'awesome-vpc-link', 'us-east-1_oiuR12Abd');
+```
+
+### Application Load Balancer Integration
+
+API Gateway REST APIs can integrate directly with Application Load Balancers (ALBs) using
+VPC Link V2, without requiring a Network Load Balancer as an intermediary. This provides a
+simpler architecture for exposing internal ALB-based services through API Gateway.
+
+Use the `AlbIntegration` class for a simplified ALB integration experience:
+
+```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+
+declare const vpc: ec2.Vpc;
+const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', { vpc });
+
+const api = new apigateway.RestApi(this, 'my-api');
+const integration = new apigateway.AlbIntegration(alb);
+api.root.addMethod('GET', integration);
+```
+
+The `AlbIntegration` automatically creates a VPC Link V2 for the ALB's VPC if one is not provided.
+You can also specify an existing VPC Link V2:
+
+```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
+
+declare const vpc: ec2.Vpc;
+declare const alb: elbv2.ApplicationLoadBalancer;
+
+const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
+const api = new apigateway.RestApi(this, 'my-api');
+const integration = new apigateway.AlbIntegration(alb, {
+  vpcLink,
+});
+api.root.addMethod('GET', integration);
+```
+
+By default, `AlbIntegration` uses HTTP proxy integration. You can disable proxy mode:
+
+```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+
+declare const alb: elbv2.ApplicationLoadBalancer;
+
+const integration = new apigateway.AlbIntegration(alb, {
+  proxy: false,
+});
 ```
 
 ## Gateway response
