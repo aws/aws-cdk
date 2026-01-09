@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallLambdagetFunction7a567ed03bb6f9bfe8aa853222f63fa0": {
-   "Type": "Custom::DeployAssert@SdkCallLambdagetFunction",
+  "AwsApiCallbedrockagentcoreinvokeAgentRuntime4322870f3524eb4c64bc414591ebbbc1": {
+   "Type": "Custom::DeployAssert@SdkCallbedrock-agentcoreinvokeAgentRunt",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,14 +9,31 @@
       "Arn"
      ]
     },
-    "service": "Lambda",
-    "api": "getFunction",
-    "expected": "{\"$ObjectLike\":{\"Configuration\":{\"FunctionName\":\"integ-test-gateway-lambda\",\"Handler\":\"index.handler\"}}}",
+    "service": "bedrock-agentcore",
+    "api": "invokeAgentRuntime",
+    "expected": "{\"$StringLike\":\".*Hello from Gateway Lambda.*\"}",
+    "actualPath": "response.output.result.content[0].text",
     "parameters": {
-     "FunctionName": "\"integ-test-gateway-lambda\""
+     "agentRuntimeArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "BedrockAgentCoreRuntimeGatewayM2MIntegTest:ExportsOutputFnGetAttTestRuntime65042BB5AgentRuntimeArnE8B3C8DA"
+        },
+        "\""
+       ]
+      ]
+     },
+     "runtimeSessionId": "\"fa4e9c2b-018c-466f-a42b-5b723ea3adba\"",
+     "payload": "\"{\\\"input\\\":{\\\"prompt\\\":\\\"Test Gateway M2M authentication\\\"}}\""
     },
-    "flattenResponse": "false",
-    "salt": "1765252315889"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "response.output.result.content[0].text"
+    ],
+    "salt": "1765958047689"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -49,7 +66,7 @@
        "Statement": [
         {
          "Action": [
-          "lambda:GetFunction"
+          "bedrock-agentcore:InvokeAgentRuntime"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -70,7 +87,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ca235e6258b11c240506ff06f79037eca461b8d0d9464a947a386d38d8163515.zip"
+     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -84,10 +101,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallLambdagetFunction7a567ed03bb6f9bfe8aa853222f63fa0": {
+  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime4322870f3524eb4c64bc414591ebbbc1": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallLambdagetFunction7a567ed03bb6f9bfe8aa853222f63fa0",
+     "AwsApiCallbedrockagentcoreinvokeAgentRuntime4322870f3524eb4c64bc414591ebbbc1",
      "assertion"
     ]
    }
