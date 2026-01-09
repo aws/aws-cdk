@@ -29,7 +29,6 @@ class TestStack extends cdk.Stack {
       }),
     );
 
-    // batchConfig付きのTopicRule
     const topicRuleWithBatch = new iot.TopicRule(this, 'TopicRuleWithBatch', {
       sql: iot.IotSql.fromStringAsVer20160323(
         "SELECT topic(2) as device_id FROM 'device/+/batch'",
@@ -55,7 +54,6 @@ const integ = new IntegTest(app, 'IoTHttpsAction', {
   testCases: [stack],
 });
 
-// batchConfigが正しく設定されていることを検証
 integ.assertions.awsApiCall('IoT', 'getTopicRule', {
   ruleName: stack.topicRuleName,
 }).expect(
@@ -77,5 +75,3 @@ integ.assertions.awsApiCall('IoT', 'getTopicRule', {
     },
   }),
 );
-
-app.synth();
