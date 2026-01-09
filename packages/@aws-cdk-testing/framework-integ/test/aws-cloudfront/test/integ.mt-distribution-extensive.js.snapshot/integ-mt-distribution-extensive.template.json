@@ -1,0 +1,121 @@
+{
+ "Resources": {
+  "MyDistLoggingBucket9B8976BC": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "ObjectWriter"
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyDistDB88FD9A": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "Comment": "a test",
+     "ConnectionMode": "tenant-only",
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integmtdistributionextensiveMyDistOrigin1C5EC8670",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "DefaultRootObject": "index.html",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "Logging": {
+      "Bucket": {
+       "Fn::GetAtt": [
+        "MyDistLoggingBucket9B8976BC",
+        "RegionalDomainName"
+       ]
+      },
+      "IncludeCookies": true,
+      "Prefix": "logs/"
+     },
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integmtdistributionextensiveMyDistOrigin1C5EC8670"
+      }
+     ],
+     "Restrictions": {
+      "GeoRestriction": {
+       "Locations": [
+        "US",
+        "GB"
+       ],
+       "RestrictionType": "whitelist"
+      }
+     },
+     "TenantConfig": {
+      "ParameterDefinitions": [
+       {
+        "Definition": {
+         "StringSchema": {
+          "Comment": "tenantName",
+          "DefaultValue": "root",
+          "Required": false
+         }
+        },
+        "Name": "tenantName"
+       }
+      ]
+     }
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
