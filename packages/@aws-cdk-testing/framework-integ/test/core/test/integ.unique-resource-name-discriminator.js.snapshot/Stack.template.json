@@ -1,0 +1,70 @@
+{
+ "Resources": {
+  "ParentConstructQueue1B0CD8C94": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "QueueName": "StackParentConstruct18DE8C2B"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ParentConstructQueue2AB38D19F": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "QueueName": "StackParentConstruct8BE93FA9"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ParentConstructQueue356BCFF09": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "QueueName": "StackParentConstruct48846341"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ParentConstructQueueWithoutDiscriminator69125BAE": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "QueueName": "StackParentConstructDCA98D43"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

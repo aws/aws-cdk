@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Construct } from 'constructs';
 
 /**
  * This test demonstrates the discriminator feature of uniqueResourceName.
@@ -10,10 +11,10 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'UniqueResourceNameDiscriminatorTest');
+const stack = new cdk.Stack(app, 'Stack');
 
 // Create a parent construct
-const parentConstruct = new cdk.Construct(stack, 'ParentConstruct');
+const parentConstruct = new Construct(stack, 'ParentConstruct');
 
 // Generate unique names using discriminators before creating child resources
 const name1 = cdk.Names.uniqueResourceName(parentConstruct, { discriminator: 'queue1' });
