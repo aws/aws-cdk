@@ -570,6 +570,7 @@ new Queue(parentConstruct, 'Queue2', {
 ```
 
 The discriminator is included in the hash calculation but not in the human-readable portion, ensuring:
+
 - Different discriminators produce different unique names
 - Output length remains consistent
 - The discriminator doesn't appear in the generated name
