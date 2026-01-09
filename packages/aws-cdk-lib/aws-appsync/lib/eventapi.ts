@@ -700,7 +700,7 @@ export class EventApi extends EventApiBase {
     if (props.domainName) {
       this.domainNameResource = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
-        certificateArn: props.domainName.certificate.certificateArn,
+        certificateArn: props.domainName.certificate.certificateRef.certificateId,
         description: `domain for ${props.apiName} Event API`,
       });
       const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
