@@ -745,6 +745,11 @@ export abstract class BaseService extends Resource
   private canaryConfig?: CfnService.CanaryConfigurationProperty;
 
   /**
+   * The deployment strategy for the service
+   */
+  private readonly deploymentStrategy?: DeploymentStrategy;
+
+  /**
    * Constructs a new instance of the BaseService class.
    */
   constructor(
@@ -773,6 +778,7 @@ export abstract class BaseService extends Resource
 
     // Determine if this service is using the ECS deployment controller
     this.isEcsDeploymentController = !deploymentController || deploymentController.type === DeploymentControllerType.ECS;
+    this.deploymentStrategy = props.deploymentStrategy;
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -787,8 +793,8 @@ export abstract class BaseService extends Resource
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
-        linearConfiguration: Lazy.any({ produce: () => this.linearConfig }, { omitEmptyArray: true }),
-        canaryConfiguration: Lazy.any({ produce: () => this.canaryConfig }, { omitEmptyArray: true }),
+        linearConfiguration: Lazy.any({ produce: () => this.linearConfig }),
+        canaryConfiguration: Lazy.any({ produce: () => this.canaryConfig }),
         lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
@@ -1214,11 +1220,15 @@ export abstract class BaseService extends Resource
    * Validate Canary Configuration
    */
   private validateCanaryConfiguration(config: TrafficShiftConfig) {
+    if (this.deploymentStrategy !== DeploymentStrategy.CANARY) {
+      throw new ValidationError('Canary configuration requires deploymentStrategy to be set to CANARY', this);
+    }
+
     if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
       if (!Number.isFinite(config.stepPercent) || config.stepPercent < 0.1 || config.stepPercent > 100.0) {
         throw new ValidationError(`Canary deployment stepPercent must be between 0.1 and 100.0, received ${config.stepPercent}`, this);
       }
-      if ((config.stepPercent * 10) % 1 !== 0) {
+      if (!Number.isInteger(config.stepPercent * 10)) {
         throw new ValidationError(`Canary deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
       }
     }
@@ -1238,11 +1248,15 @@ export abstract class BaseService extends Resource
    * Validate Linear Configuration
    */
   private validateLinearConfiguration(config: TrafficShiftConfig) {
+    if (this.deploymentStrategy !== DeploymentStrategy.LINEAR) {
+      throw new ValidationError('Linear configuration requires deploymentStrategy to be set to LINEAR', this);
+    }
+
     if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
       if (!Number.isFinite(config.stepPercent) || config.stepPercent < 3.0 || config.stepPercent > 100.0) {
         throw new ValidationError(`Linear deployment stepPercent must be between 3.0 and 100.0, received ${config.stepPercent}`, this);
       }
-      if ((config.stepPercent * 10) % 1 !== 0) {
+      if (!Number.isInteger(config.stepPercent * 10)) {
         throw new ValidationError(`Linear deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
       }
     }

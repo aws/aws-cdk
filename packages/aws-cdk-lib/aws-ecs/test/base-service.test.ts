@@ -637,6 +637,19 @@ describe('Linear Deployment', () => {
       },
     });
   });
+
+  test('should throw error when deployment strategy is not LINEAR', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        linearConfiguration: {
+          stepPercent: 10.0,
+        },
+      });
+    }).toThrow(/Linear configuration requires deploymentStrategy to be set to LINEAR/);
+  });
 });
 
 describe('Canary Deployment', () => {
@@ -759,5 +772,18 @@ describe('Canary Deployment', () => {
         },
       },
     });
+  });
+
+  test('should throw error when deployment strategy is not CANARY', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        canaryConfiguration: {
+          stepPercent: 5.0,
+        },
+      });
+    }).toThrow(/Canary configuration requires deploymentStrategy to be set to CANARY/);
   });
 });
