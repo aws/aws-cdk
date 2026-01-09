@@ -266,3 +266,4 @@ export * as aws_workspacesinstances from './aws-workspacesinstances';
 export * as aws_workspacesthinclient from './aws-workspacesthinclient';
 export * as aws_workspacesweb from './aws-workspacesweb';
 export * as aws_xray from './aws-xray';
+export * as dev_servicecatalog from './dev-servicecatalog';

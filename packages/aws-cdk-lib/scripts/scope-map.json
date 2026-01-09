@@ -1949,6 +1949,13 @@
       }
     ]
   },
+  "dev-servicecatalog": {
+    "scopes": [
+      {
+        "namespace": "Dev::ServiceCatalog"
+      }
+    ]
+  },
   "interfaces": {
     "scopes": []
   }

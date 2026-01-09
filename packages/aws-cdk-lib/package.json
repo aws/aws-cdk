@@ -519,6 +519,7 @@
     "./custom-resources": "./custom-resources/index.js",
     "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",
+    "./dev-servicecatalog": "./dev-servicecatalog/index.js",
     "./interfaces": "./interfaces/index.js",
     "./lambda-layer-awscli": "./lambda-layer-awscli/index.js",
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",
