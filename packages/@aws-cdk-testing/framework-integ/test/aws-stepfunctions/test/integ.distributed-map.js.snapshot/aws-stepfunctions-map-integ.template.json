@@ -210,7 +210,11 @@
        {
         "Ref": "Bucket83908E77"
        },
-       "\",\"Key\":\"my-key.csv\"}}}}}"
+       "\",\"Key\":\"my-key.csv\",\"ExpectedBucketOwner\":\"",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\"}}}}}"
       ]
      ]
     },
