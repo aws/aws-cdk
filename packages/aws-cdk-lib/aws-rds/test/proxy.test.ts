@@ -231,7 +231,7 @@ describe('proxy', () => {
         vpc,
         defaultAuthScheme: rds.DefaultAuthScheme.NONE,
       });
-    }).toThrow('One or more secrets are required when the `defaultAuthScheme` is not specified or is set to NONE.');
+    }).toThrow('One or more secrets are required when defaultAuthScheme is not specified or is NONE.');
   });
 
   test('throws when defaultAuthScheme is undefined and no secrets are provided', () => {
@@ -249,7 +249,7 @@ describe('proxy', () => {
         vpc,
         // defaultAuthScheme is not specified (undefined)
       });
-    }).toThrow('One or more secrets are required when the `defaultAuthScheme` is not specified or is set to NONE.');
+    }).toThrow('One or more secrets are required when defaultAuthScheme is not specified or is NONE.');
   });
 
   test('fails when trying to create a proxy for a target without an engine', () => {
