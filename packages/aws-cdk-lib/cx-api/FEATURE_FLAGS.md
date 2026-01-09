@@ -109,6 +109,8 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
+| [@aws-cdk/aws-iam:policyStatementValidateSid](#aws-cdkaws-iampolicystatementvalidatesid) | Validate PolicyStatement SID is alphanumeric | V2NEXT | fix |
+
 
 <!-- END table -->
 
@@ -187,6 +189,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
     "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
+    "@aws-cdk/aws-iam:policyStatementValidateSid": true,
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
@@ -2293,6 +2296,17 @@ When this feature flag is enabled, Network Load Balancer will be created with a 
 **Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
 
 
+### @aws-cdk/aws-iam:policyStatementValidateSid
+
+*Validate PolicyStatement SID is alphanumeric*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, PolicyStatement SID validation enforces alphanumeric characters only (A-Z, a-z, 0-9)
+per IAM requirements. Invalid SIDs will throw an error at synthesis time.
+
+When disabled, no SID validation occurs, maintaining backward compatibility with existing code
+that may use invalid SID characters.
 ### @aws-cdk/aws-route53-patterns:useDistribution
 
 *Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
