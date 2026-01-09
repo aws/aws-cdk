@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDomainName, DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
-import { EndpointType, IRestApi } from './restapi';
+import { EndpointAccessMode, EndpointType, IRestApi } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import * as acm from '../../aws-certificatemanager';
 import { IBucket } from '../../aws-s3';
@@ -37,6 +37,17 @@ export enum SecurityPolicy {
 
   /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'TLS_1_2',
+
+  /** Cipher suite TLS 1.3 2025 for EDGE endpoint */
+  SecurityPolicy_TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+  SecurityPolicy_TLS12_PFS_2025_EDGE = 'SecurityPolicy_TLS12_PFS_2025_EDGE',
+  SecurityPolicy_TLS12_2018_EDGE = 'SecurityPolicy_TLS12_2018_EDGE',
+
+  /** Cipher suite TLS 1.3 2025 for REGIONAL endpoint */
+  SecurityPolicy_TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
+  SecurityPolicy_TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
+  SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+  SecurityPolicy_TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
 }
 
 export interface DomainNameOptions {
@@ -51,6 +62,11 @@ export interface DomainNameOptions {
    * needs to be in the US East (N. Virginia) region.
    */
   readonly certificate: acm.ICertificate;
+
+  /**
+   * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
+   */
+  readonly endpointAccessMode?: EndpointAccessMode
 
   /**
    * The type of endpoint for this DomainName.
@@ -160,6 +176,10 @@ export class DomainName extends Resource implements IDomainName {
 
     this.endpointType = props.endpointType || EndpointType.REGIONAL;
     const edge = this.endpointType === EndpointType.EDGE;
+
+    if (props.securityPolicy?.startsWith('SecurityPolicy_') && !props.endpointAccessMode ) {
+      throw new ValidationError('When using a SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified.', this);
+    }
     this.securityPolicy = props.securityPolicy;
 
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
@@ -174,6 +194,7 @@ export class DomainName extends Resource implements IDomainName {
       endpointConfiguration: { types: [this.endpointType] },
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
+      endpointAccessMode: props.endpointAccessMode? props.endpointAccessMode : undefined,
     });
 
     this.domainName = resource.ref;
