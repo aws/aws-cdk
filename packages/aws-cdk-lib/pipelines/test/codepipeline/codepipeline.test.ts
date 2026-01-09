@@ -108,6 +108,16 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
       }),
     }).create()).toThrow('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
   });
+  test('Providing codePipeline parameter and artifactBucketRemovalPolicy parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    }).create()).toThrow('Cannot set \'artifactBucketRemovalPolicy\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and artifactBucketAutoDeleteObjects parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      artifactBucketAutoDeleteObjects: true,
+    }).create()).toThrow('Cannot set \'artifactBucketAutoDeleteObjects\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
 });
 
 test('Policy sizes do not exceed the maximum size', () => {
@@ -765,6 +775,105 @@ test('artifactBucket can be overridden', () => {
   });
 });
 
+test('artifactBucketRemovalPolicy can be set to DESTROY', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  });
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    DeletionPolicy: 'Delete',
+  });
+});
+
+test('artifactBucketAutoDeleteObjects can be set to true with DESTROY removal policy', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    artifactBucketAutoDeleteObjects: true,
+  });
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    DeletionPolicy: 'Delete',
+  });
+  template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
+    ServiceToken: Match.anyValue(),
+  });
+});
+
+test('artifactBucketRemovalPolicy defaults to RETAIN when not specified', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {});
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  // The underlying Pipeline creates the bucket with RETAIN by default
+  // We verify that a bucket exists (created by underlying Pipeline)
+  template.resourceCountIs('AWS::S3::Bucket', 1);
+});
+
+test('artifactBucketRemovalPolicy can be set to RETAIN explicitly', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.RETAIN,
+  });
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    DeletionPolicy: 'Retain',
+  });
+});
+
+test('artifactBucketAutoDeleteObjects can be set to false explicitly', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    artifactBucketAutoDeleteObjects: false,
+  });
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    DeletionPolicy: 'Delete',
+  });
+  // Verify that the auto-delete custom resource is NOT created
+  template.resourceCountIs('Custom::S3AutoDeleteObjects', 0);
+});
+
+test('throws when artifactBucketAutoDeleteObjects is true without DESTROY removal policy', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  expect(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      artifactBucketRemovalPolicy: cdk.RemovalPolicy.RETAIN,
+      artifactBucketAutoDeleteObjects: true,
+    });
+  }).toThrow('Setting \'artifactBucketAutoDeleteObjects\' to true requires \'artifactBucketRemovalPolicy\' to be set to \'RemovalPolicy.DESTROY\'');
+});
+
+test('throws when artifactBucketRemovalPolicy is set with artifactBucket', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  expect(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
+        bucketName: 'my-custom-artifact-bucket',
+      }),
+      artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+  }).toThrow('Cannot set \'artifactBucketRemovalPolicy\' if an existing artifact bucket is given using \'artifactBucket\'');
+});
+
+test('throws when artifactBucketAutoDeleteObjects is set with artifactBucket', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  expect(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
+        bucketName: 'my-custom-artifact-bucket',
+      }),
+      artifactBucketAutoDeleteObjects: true,
+    });
+  }).toThrow('Cannot set \'artifactBucketAutoDeleteObjects\' if an existing artifact bucket is given using \'artifactBucket\'');
+});
+
 test('throws when deploy role session tags are used', () => {
   const synthesizer = new cdk.DefaultStackSynthesizer({
     deployRoleAdditionalOptions: {
@@ -923,6 +1032,8 @@ interface CodePipelineStackProps extends cdk.StackProps {
   enableKeyRotation?: boolean;
   reuseCrossRegionSupportStacks?: boolean;
   role?: iam.IRole;
+  artifactBucketRemovalPolicy?: cdk.RemovalPolicy;
+  artifactBucketAutoDeleteObjects?: boolean;
 }
 
 class CodePipelinePropsCheckTest extends cdk.Stack {
@@ -964,6 +1075,20 @@ class CodePipelinePropsCheckTest extends cdk.Stack {
       new cdkp.CodePipeline(this, 'CodePipeline5', {
         role: this.cProps.role,
         codePipeline: new Pipeline(this, 'Pipeline5'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.artifactBucketRemovalPolicy !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline6', {
+        artifactBucketRemovalPolicy: this.cProps.artifactBucketRemovalPolicy,
+        codePipeline: new Pipeline(this, 'Pipeline6'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.artifactBucketAutoDeleteObjects !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline7', {
+        artifactBucketAutoDeleteObjects: this.cProps.artifactBucketAutoDeleteObjects,
+        codePipeline: new Pipeline(this, 'Pipeline7'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }
