@@ -39,7 +39,7 @@ export class AddHeader implements ses.IReceiptRuleAction {
     this.value = props.value;
   }
 
-  public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(_rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     return {
       addHeaderAction: {
         headerName: this.name,

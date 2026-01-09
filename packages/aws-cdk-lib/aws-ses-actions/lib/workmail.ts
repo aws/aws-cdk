@@ -37,7 +37,7 @@ export class WorkMail implements ses.IReceiptRuleAction {
   constructor(private readonly props: WorkMailProps) {
   }
 
-  public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(_rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     return {
       workmailAction: {
         organizationArn: this.props.organizationArn,

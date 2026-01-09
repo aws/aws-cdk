@@ -109,9 +109,10 @@ Log events matching a particular filter can be sent to either a Lambda function
 or a Kinesis stream.
 
 If the Kinesis stream lives in a different account, a `CrossAccountDestination`
-object needs to be added in the destination account which will act as a proxy
-for the remote Kinesis stream. This object is automatically created for you
-if you use the CDK Kinesis library.
+object must be explicitly created in the destination account which will act as a proxy
+for the remote Kinesis stream.
+
+Note: The aws-cdk-lib/aws-logs-destinations KinesisDestination construct does not automatically create a CrossAccountDestination for cross-account scenarios.
 
 Create a `SubscriptionFilter`, initialize it with an appropriate `Pattern` (see
 below) and supply the intended destination:

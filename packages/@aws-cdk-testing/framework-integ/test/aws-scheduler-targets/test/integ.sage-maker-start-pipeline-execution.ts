@@ -94,6 +94,10 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
     });
   }
 
+  public get pipelineRef(): cdk.aws_sagemaker.PipelineReference {
+    return { pipelineName: this.pipelineName };
+  }
+
   public grantStartPipelineExecution(grantee: IGrantable): Grant {
     return Grant.addToPrincipal({
       grantee,

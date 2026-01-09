@@ -33,5 +33,5 @@ function pipelineArn(pipeline: IPipelineRef) : string {
 }
 
 function isIPipeline(pipeline: IPipelineRef): pipeline is IPipeline {
-  return !!(pipeline as IPipeline).pipelineArn;
+  return 'pipelineArn' in pipeline;
 }

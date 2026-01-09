@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { AccountRootPrincipal, Grant, IGrantable, Role } from '../../aws-iam';
-import { IPipeline } from '../../aws-sagemaker';
+import { IPipeline, PipelineReference } from '../../aws-sagemaker';
 import { ScheduleExpression, Schedule, ScheduleGroup } from '../../aws-scheduler';
 import * as sqs from '../../aws-sqs';
 import { App, Duration, Resource, Stack } from '../../core';
@@ -590,6 +590,10 @@ class FakePipeline extends Resource implements IPipeline {
     super(scope, id);
     this.pipelineArn = props.pipelineName;
     this.pipelineName = props.pipelineName;
+  }
+
+  public get pipelineRef(): PipelineReference {
+    return { pipelineName: this.pipelineName };
   }
 
   public grantStartPipelineExecution(grantee: IGrantable): Grant {
