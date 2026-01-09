@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress, ISecurityGroupRef, SecurityGroupReference } from './ec2.generated';
-import { IPeer, Peer } from './peer';
+import { EgressRuleConfig, IngressRuleConfig, IPeer, Peer } from './peer';
 import { Port } from './port';
 import { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -136,11 +136,11 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     }
   }
 
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return { sourceSecurityGroupId: this.securityGroupId };
   }
 
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 
