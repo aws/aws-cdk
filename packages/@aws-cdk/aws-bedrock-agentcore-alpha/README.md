@@ -1188,7 +1188,7 @@ const oauthScopes = gateway.oauthScopes;
 // oauthScopes are in the format: ['{resourceServerId}/read', '{resourceServerId}/write']
 ```
 
-To authenticate with the gateway, request an access token using the client credentials flow and use it to call Gateway endpoints. For more information about the token endpoint, see [Token endpoint](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html).
+To authenticate with the gateway, request an access token using the client credentials flow and use it to call Gateway endpoints. For more information about the token endpoint, see [The token issuer endpoint](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html).
 
 The following is an example of a token request using curl:
 
