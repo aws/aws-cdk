@@ -280,12 +280,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       advertiseTrustStoreCaNames = props.mutualAuthentication.advertiseTrustStoreCaNames ? 'on' : 'off';
     }
 
+    // Calculate SSL policy before calling super()
+    // Only set explicit policy when feature flag is enabled to avoid BC
+    const sslPolicy = props.sslPolicy ?? (protocol === ApplicationProtocol.HTTPS &&
+      FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY) ?
+      SslPolicy.RECOMMENDED_TLS_PQ : undefined);
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
-      sslPolicy: props.sslPolicy,
+      sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
         advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,

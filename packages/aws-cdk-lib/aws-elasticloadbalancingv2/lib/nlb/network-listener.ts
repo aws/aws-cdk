@@ -4,10 +4,11 @@ import { NetworkListenerCertificate } from './network-listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Resource, Lazy, Token } from '../../../core';
+import { Duration, Resource, Lazy, Token, FeatureFlags } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import * as cxapi from '../../../cx-api';
 import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -221,11 +222,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       throw new ValidationError('Protocol must be TLS when alpnPolicy have been specified', scope);
     }
 
+    // Calculate SSL policy before calling super()
+    // Only set explicit policy when feature flag is enabled to avoid BC
+    const sslPolicy = props.sslPolicy ?? (proto === Protocol.TLS &&
+      FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY) ?
+      SslPolicy.RECOMMENDED_TLS_PQ : undefined);
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: proto,
       port: props.port,
-      sslPolicy: props.sslPolicy,
+      sslPolicy: sslPolicy,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
