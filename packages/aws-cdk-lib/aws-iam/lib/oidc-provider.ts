@@ -109,52 +109,6 @@ export interface OpenIdConnectProviderProps {
  * 2. Discuss with the CDK team before proceeding
  * 3. Ensure any changes maintain strict backward compatibility
  *
- * ## Migration from OpenIdConnectProvider to OidcProviderNative
- *
- * Migrating from `OpenIdConnectProvider` to `OidcProviderNative` requires a two-step
- * deployment process due to AWS IAM's constraint that only one OIDC provider per URL
- * can exist in an account. Attempting to replace both constructs in a single deployment
- * will result in an `EntityAlreadyExistsException` because CloudFormation attempts to
- * create the new provider before deleting the old one during resource replacement.
- *
- * ### Migration Steps
- *
- * **Step 1: Remove OpenIdConnectProvider**
- *
- * Remove the `OpenIdConnectProvider` from your code:
- *
- * ```ts
- * // Remove this:
- * // const provider = new iam.OpenIdConnectProvider(this, 'Provider', {
- * //   url: 'https://your-oidc-endpoint',
- * //   clientIds: ['your-client-id'],
- * // });
- * ```
- *
- * Deploy this change. CloudFormation will delete the custom resource-based OIDC provider.
- *
- * **Step 2: Add OidcProviderNative**
- *
- * Add the `OidcProviderNative` construct:
- *
- * ```ts
- * // Add this:
- * const provider = new iam.OidcProviderNative(this, 'Provider', {
- *   url: 'https://your-oidc-endpoint',
- *   clientIds: ['your-client-id'],
- * });
- * ```
- *
- * Deploy this change. CloudFormation will create the native OIDC provider.
- *
- * ### Important Considerations
- *
- * - Any IAM roles or resources referencing the OIDC provider ARN will need to be updated
- *   between deployments if they reference the provider directly
- * - Plan for a brief period where the OIDC provider doesn't exist between the two deployments
- * - Test in a non-production environment first
- * - Ensure you have the same `url`, `clientIds`, and `thumbprints` values when migrating
- *
  * @see http://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
