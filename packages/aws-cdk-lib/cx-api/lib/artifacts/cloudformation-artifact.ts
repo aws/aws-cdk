@@ -26,7 +26,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    * this type-testing method instead.
    */
   public static isCloudFormationStackArtifact(art: any): art is CloudFormationStackArtifact {
-    return art && typeof art === 'object' && art[CLOUDFORMATION_STACK_ARTIFACT_SYM];
+    return art && typeof art === 'object' && CLOUDFORMATION_STACK_ARTIFACT_SYM in art;
   }
 
   /**

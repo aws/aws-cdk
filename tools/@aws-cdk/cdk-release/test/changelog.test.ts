@@ -187,6 +187,7 @@ function buildCommit(commit: PartialCommit): ConventionalCommit {
   return {
     notes: [],
     references: [],
+    // eslint-disable-next-line @cdklabs/no-evaluating-typeguard
     header: `${commit.type}${commit.scope ? '(' + commit.scope + ')' : ''}: ${commit.subject}`,
     ...commit,
   };

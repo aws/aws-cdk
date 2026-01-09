@@ -318,6 +318,7 @@ export interface EncodingOptions {
 }
 
 export function isResolvableObject(x: any): x is IResolvable {
+  // eslint-disable-next-line @cdklabs/no-evaluating-typeguard
   return typeof(x) === 'object' && x !== null && typeof x.resolve === 'function';
 }
 
