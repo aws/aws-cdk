@@ -3066,7 +3066,6 @@ describe('cluster', () => {
     });
   });
 
-
   describe('enhanced monitoring', () => {
     test('cluster with enabled monitoring (legacy)', () => {
       // GIVEN
