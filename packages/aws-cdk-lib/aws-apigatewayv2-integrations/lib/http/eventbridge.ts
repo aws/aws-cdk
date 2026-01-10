@@ -13,7 +13,7 @@ export interface HttpEventBridgeIntegrationProps {
    *
    * When not provided, a default mapping will be used that expects the
    * incoming request body to contain the fields `Detail`, `DetailType`, and
-   * `Source`. 
+   * `Source`.
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html
