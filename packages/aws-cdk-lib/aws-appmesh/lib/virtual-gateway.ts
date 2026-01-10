@@ -107,12 +107,11 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   /**
    * Collection of grant methods for a VirtualGateway
    */
-  public readonly grants: VirtualGatewayGrants = VirtualGatewayGrants._fromVirtualGateway(this);
+  public readonly grants: VirtualGatewayGrants = VirtualGatewayGrants.fromVirtualGateway(this);
 
   public get virtualGatewayRef(): VirtualGatewayReference {
     return {
       virtualGatewayArn: this.virtualGatewayArn,
-      virtualGatewayId: this.virtualGatewayName,
     };
   }
 

@@ -2,8 +2,8 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { IRecordingConfiguration, RecordingConfiguration, Resolution } from '../lib';
-import { Storage, ThumbnailConfiguration } from '../lib/thumbnail-configuration';
 import { RenditionConfiguration } from '../lib/rendition-configuration';
+import { Storage, ThumbnailConfiguration } from '../lib/thumbnail-configuration';
 
 describe('IVS Recording Configuration', () => {
   let app: App;

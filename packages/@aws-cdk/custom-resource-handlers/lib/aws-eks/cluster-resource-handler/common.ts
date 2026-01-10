@@ -4,8 +4,6 @@ import * as _eks from '@aws-sdk/client-eks';
 import * as sts from '@aws-sdk/client-sts';
 import { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-
 export interface EksUpdateId {
   /**
    * If this field is included in an event passed to "IsComplete", it means we
@@ -63,7 +61,6 @@ export abstract class ResourceHandler {
   }
 
   protected log(x: any) {
-    // eslint-disable-next-line no-console
     console.log(JSON.stringify(x, undefined, 2));
   }
 

@@ -3,12 +3,13 @@ import { CfnSchedulingPolicy } from './batch.generated';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ISchedulingPolicyRef, SchedulingPolicyReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch
  * Job Scheduler how to schedule incoming jobs.
  */
-export interface ISchedulingPolicy extends IResource {
+export interface ISchedulingPolicy extends IResource, ISchedulingPolicyRef {
   /**
    * The name of this scheduling policy
    *
@@ -42,6 +43,12 @@ interface SchedulingPolicyProps {
 export abstract class SchedulingPolicyBase extends Resource implements ISchedulingPolicy {
   public abstract readonly schedulingPolicyName: string;
   public abstract readonly schedulingPolicyArn: string;
+
+  public get schedulingPolicyRef(): SchedulingPolicyReference {
+    return {
+      schedulingPolicyArn: this.schedulingPolicyArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props?: SchedulingPolicyProps) {
     super(scope, id, {

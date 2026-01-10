@@ -25,7 +25,12 @@ const $this = $E(expr.this_());
  * repository.
  */
 export class GrantsModule extends Module {
-  public constructor(private readonly service: Service, private readonly db: SpecDatabase, private readonly schema: GrantsFileSchema) {
+  public constructor(
+    private readonly service: Service,
+    private readonly db: SpecDatabase,
+    private readonly schema: GrantsFileSchema,
+    private readonly iamModulePath: string,
+  ) {
     super(`${service.shortName}.grants`);
   }
 
@@ -158,12 +163,11 @@ export class GrantsModule extends Module {
       }
 
       const factoryMethod = classType.addMethod({
-        name: `_from${resource.name}`,
+        name: `from${resource.name}`,
         static: true,
         returnType: Type.fromName(this, `${classType.name}`),
         docs: {
           summary: `Creates grants for ${className}`,
-          remarks: '@internal',
         },
       });
 
@@ -262,7 +266,7 @@ export class GrantsModule extends Module {
     if (hasContent) {
       new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
         .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
-      new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
+      new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam', { fromLocation: this.iamModulePath });
     }
   }
 }

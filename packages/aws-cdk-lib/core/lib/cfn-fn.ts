@@ -8,8 +8,6 @@ import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
-/* eslint-disable max-len */
-
 /**
  * CloudFormation intrinsic functions.
  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
