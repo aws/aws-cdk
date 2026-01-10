@@ -5,11 +5,13 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import {
   AmazonManagedWorkflow,
+  BaseImage,
   ContainerRecipe,
   DistributionConfiguration,
   IContainerRecipe,
   IImageRecipe,
   Image,
+  ImagePipeline,
   ImageRecipe,
   InfrastructureConfiguration,
   IRecipeBase,
@@ -470,6 +472,46 @@ describe('Image', () => {
     });
   });
 
+  test('creates an image when starting a pipeline', () => {
+    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
+      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+    });
+
+    new Image(stack, 'Image', {
+      imagePipelineExecutionSettings: { imagePipeline },
+
+      tags: { key1: 'value1', key2: 'value2' },
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::IAM::Role', 1);
+
+    template.resourceCountIs('AWS::IAM::InstanceProfile', 1);
+
+    template.resourceCountIs('AWS::ImageBuilder::InfrastructureConfiguration', 1);
+
+    template.resourceCountIs('AWS::ImageBuilder::ImagePipeline', 1);
+
+    template.resourceCountIs('AWS::ImageBuilder::Image', 1);
+
+    expect(Object.keys(template.toJSON().Resources)).toHaveLength(5);
+
+    template.templateMatches({
+      Resources: {
+        Image9D742C96: Match.objectEquals({
+          Type: 'AWS::ImageBuilder::Image',
+          Properties: {
+            ImagePipelineExecutionSettings: {
+              DeploymentId: { 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'DeploymentId'] },
+            },
+            Tags: { key1: 'value1', key2: 'value2' },
+          },
+        }),
+      },
+    });
+  });
+
   test('generates an execution role when workflows are provided', () => {
     const image = new Image(stack, 'Image', {
       recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
@@ -774,5 +816,36 @@ describe('Image', () => {
     }
 
     expect(() => new Image(stack, 'Image', { recipe: new BadRecipe(stack, 'BadRecipe') })).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when both recipe and pipeline execution settings are provided', () => {
+    expect(
+      () =>
+        new Image(stack, 'Image', {
+          recipe: ImageRecipe.fromImageRecipeName(stack, 'FirstImageRecipe', 'imported-image-recipe'),
+          imagePipelineExecutionSettings: {
+            imagePipeline: new ImagePipeline(stack, 'ImagePipeline', {
+              recipe: new ImageRecipe(stack, 'SecondImageRecipe', {
+                baseImage: BaseImage.fromSsmParameterName(
+                  '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64',
+                ),
+              }),
+            }),
+          },
+        }),
+    ).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when neither recipe or pipeline execution settings are provided', () => {
+    expect(
+      () =>
+        new Image(stack, 'Image', {
+          infrastructureConfiguration: InfrastructureConfiguration.fromInfrastructureConfigurationName(
+            stack,
+            'InfrastructureConfiguration',
+            'test-infrastructure-configuration',
+          ),
+        }),
+    ).toThrow(cdk.ValidationError);
   });
 });

@@ -23,6 +23,27 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ImageLogGroupD34F5836",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ImagePipelineLogGroup7E475C9B",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
        "Action": "ec2:RegisterImage",
        "Condition": {
         "StringEquals": {
@@ -1047,6 +1068,24 @@
      ]
     },
     "State": "ENABLED"
+   }
+  },
+  "ImagePipelineAMIImage2B4B0347": {
+   "Type": "AWS::ImageBuilder::Image",
+   "Properties": {
+    "ImagePipelineExecutionSettings": {
+     "DeploymentId": {
+      "Fn::GetAtt": [
+       "ImagePipelineAMI7635ECE0",
+       "DeploymentId"
+      ]
+     },
+     "OnUpdate": true
+    },
+    "Tags": {
+     "key1": "value1",
+     "key2": "value2"
+    }
    }
   }
  },
