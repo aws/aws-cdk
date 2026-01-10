@@ -258,6 +258,8 @@ export class Runtime extends RuntimeBase {
 
   constructor(scope: Construct, id: string, props: RuntimeProps) {
     super(scope, id, {
+      // Maximum name length of 48 characters
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtime.html#cfn-bedrockagentcore-runtime-name
       physicalName: props.runtimeName ??
         Lazy.string({
           produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),

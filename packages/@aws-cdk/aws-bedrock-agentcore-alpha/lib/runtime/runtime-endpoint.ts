@@ -172,6 +172,8 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
 
   constructor(scope: Construct, id: string, props: RuntimeEndpointProps) {
     super(scope, id, {
+      // Maximum name length of 48 characters
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtimeendpoint.html#cfn-bedrockagentcore-runtimeendpoint-name
       physicalName: props.endpointName ??
         Lazy.string({
           produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),
