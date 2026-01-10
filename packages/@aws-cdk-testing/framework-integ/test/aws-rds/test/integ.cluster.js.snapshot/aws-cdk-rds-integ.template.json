@@ -505,7 +505,7 @@
     },
     "DeleteAutomatedBackups": false,
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.10.0",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "DbSecurity381C2C15",
@@ -583,26 +583,6 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "ReadIOPsAlarmFB02F871": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "DBClusterIdentifier",
-      "Value": {
-       "Ref": "DatabaseB269D8BB"
-      }
-     }
-    ],
-    "EvaluationPeriods": 3,
-    "MetricName": "ReadIOPS",
-    "Namespace": "AWS/RDS",
-    "Period": 600,
-    "Statistic": "Average",
-    "Threshold": 1000
-   }
   },
   "ClusterIamAccess93AC3DF3": {
    "Type": "AWS::IAM::Role",

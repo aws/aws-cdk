@@ -4,7 +4,7 @@ import { AuroraMysqlEngineVersion, ClusterInstance, Credentials, DatabaseCluster
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-volume-read-iops-metric', {
+const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-volume-iops-metric', {
   terminationProtection: false,
 });
 
@@ -36,7 +36,15 @@ cluster.metricVolumeReadIOPs({
   evaluationPeriods: 3,
 });
 
-new IntegTest(app, 'rds-cluster-volume-read-iops-metric-integ-test', {
+// Test that metricVolumeWriteIOPs can be used to create an alarm
+cluster.metricVolumeWriteIOPs({
+  period: cdk.Duration.minutes(10),
+}).createAlarm(stack, 'VolumeWriteIOPsAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
+});
+
+new IntegTest(app, 'rds-cluster-volume-iops-metric-integ-test', {
   testCases: [stack],
   cdkCommandOptions: {
     deploy: {

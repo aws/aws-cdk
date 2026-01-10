@@ -15,7 +15,7 @@ class TestStack extends cdk.Stack {
 
     const params = new ParameterGroup(this, 'Params', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_10_0,
+        version: AuroraMysqlEngineVersion.VER_3_07_1,
       }),
       description: 'A nice parameter group',
       parameters: {
@@ -51,7 +51,7 @@ class TestStack extends cdk.Stack {
 
     const cluster = new DatabaseCluster(this, 'Database', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_10_0,
+        version: AuroraMysqlEngineVersion.VER_3_07_1,
       }),
       credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
@@ -66,12 +66,6 @@ class TestStack extends cdk.Stack {
       deleteAutomatedBackups: false,
     });
 
-    cluster.metricVolumeReadIOPs({
-      period: cdk.Duration.minutes(10),
-    }).createAlarm(this, 'VolumeReadIOPsAlarm', {
-      threshold: 1000,
-      evaluationPeriods: 3,
-    });
     cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
     const role = new iam.Role(this, 'ClusterIamAccess', {
