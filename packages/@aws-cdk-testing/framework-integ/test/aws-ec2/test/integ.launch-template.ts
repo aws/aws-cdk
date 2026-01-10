@@ -28,7 +28,6 @@ const lt = new ec2.LaunchTemplate(stack, 'LT', {
     volume: ec2.BlockDeviceVolume.ebs(15, {
       volumeType: ec2.EbsDeviceVolumeType.GP3,
       throughput: 250,
-      volumeInitializationRate: 200,
     }),
   }],
 });
