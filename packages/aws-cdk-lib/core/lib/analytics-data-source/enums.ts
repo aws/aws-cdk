@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable @stylistic/comma-dangle */
 /* eslint-disable @cdklabs/no-literal-partition */
 /*
@@ -1436,6 +1436,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SUPERSEDED",
     "PARALLEL"
   ],
+  "Failover": [
+    "PRIMARY",
+    "SECONDARY"
+  ],
   "FailoverStatusCode": [
     403,
     404,
@@ -2141,6 +2145,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "m7a",
     "standard8-amd",
     "m8a",
+    "standard9-graviton",
+    "m9g",
     "high-compute-memory1",
     "z1d",
     "inference1",

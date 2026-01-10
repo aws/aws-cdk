@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.234.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.234.0-alpha.0...v2.234.1-alpha.0) (2026-01-08)
+
+## [2.234.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.233.0-alpha.0...v2.234.0-alpha.0) (2026-01-08)
+
+
+### Features
+
+* **msk-alpha:** support express broker for Kafka v3.9 ([#36450](https://github.com/aws/aws-cdk/issues/36450)) ([afcc953](https://github.com/aws/aws-cdk/commit/afcc95362cbf1dff56f2a3d96f37915dc877d01b))
+
+
+### Bug Fixes
+
+* **elasticache-alpha:** deployment fails when serverlessCacheName or userGroupId is not specified ([#36459](https://github.com/aws/aws-cdk/issues/36459)) ([b3f62f7](https://github.com/aws/aws-cdk/commit/b3f62f7acd935176d540d6c4e227a4c660fc7481)), closes [#36458](https://github.com/aws/aws-cdk/issues/36458)
+* **elasticache-alpha:** security group for `ServerlessCache` does not use default endpoint port ([#35738](https://github.com/aws/aws-cdk/issues/35738)) ([79d91ad](https://github.com/aws/aws-cdk/commit/79d91ad156452540525710b1c5049904bcbfc053))
+
+## [2.233.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.232.2-alpha.0...v2.233.0-alpha.0) (2025-12-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bedrock-agentcore-alpha:** Runtime constructs will no longer automatically include lifecycleConfiguration with default values when not explicitly specified by users.
+* **elasticache-alpha:** The `engine` property in `NoPasswordUserProps` has been removed.
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** runtime construct incorrectly forces default lifecycleConfiguration values ([#36379](https://github.com/aws/aws-cdk/issues/36379)) ([7954354](https://github.com/aws/aws-cdk/commit/795435459e06e90aa9818bc99967930b125754bf)), closes [#36376](https://github.com/aws/aws-cdk/issues/36376)
+* **elasticache-alpha:** the default engine for NoPasswordUser contradict in the docs ([#35920](https://github.com/aws/aws-cdk/issues/35920)) ([495fa37](https://github.com/aws/aws-cdk/commit/495fa3707a71f025f55bf37fdd13017554b89a32)), closes [#35847](https://github.com/aws/aws-cdk/issues/35847)
+* **mixins-preview:** improving delivery source and delivery destination creation ([#36314](https://github.com/aws/aws-cdk/issues/36314)) ([86092ab](https://github.com/aws/aws-cdk/commit/86092ab023681bcf81678ad881b990bccc457737))
+
+## [2.232.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.232.1-alpha.0...v2.232.2-alpha.0) (2025-12-12)
+
+## [2.232.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.232.0-alpha.0...v2.232.1-alpha.0) (2025-12-05)
+
+## [2.232.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.231.0-alpha.0...v2.232.0-alpha.0) (2025-12-04)
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** use static construct ID for asset-based runtime artifacts ([#36241](https://github.com/aws/aws-cdk/issues/36241)) ([e2bdddd](https://github.com/aws/aws-cdk/commit/e2bdddd82f3e04f1cb2aebb187c580563bae453f)), closes [#35968](https://github.com/aws/aws-cdk/issues/35968)
+* **mixins-preview:** service exports are different then in `aws-cdk-lib` ([#36201](https://github.com/aws/aws-cdk/issues/36201)) ([5858006](https://github.com/aws/aws-cdk/commit/585800660b65a3a87d2b358054c7b5e162faabcf)), closes [#36210](https://github.com/aws/aws-cdk/issues/36210)
+* **mixins-preview:** strongly-typed ConstructSelector interface ([#36266](https://github.com/aws/aws-cdk/issues/36266)) ([1d2f473](https://github.com/aws/aws-cdk/commit/1d2f4730cc4358d35198980957e4fc01a21e9daf))
+
 ## [2.231.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.230.0-alpha.0...v2.231.0-alpha.0) (2025-12-01)
 
 

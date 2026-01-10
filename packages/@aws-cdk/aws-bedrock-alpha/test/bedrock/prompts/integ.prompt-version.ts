@@ -4,8 +4,8 @@
 
 /// !cdk-integ aws-cdk-bedrock-prompt-version-1
 
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as bedrock from '../../../bedrock';
 
 const app = new cdk.App();

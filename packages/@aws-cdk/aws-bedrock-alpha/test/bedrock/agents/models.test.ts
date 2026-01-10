@@ -1,7 +1,7 @@
 import { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { FoundationModel, FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { BedrockFoundationModel, VectorType } from '../../../bedrock/models';
 
 describe('BedrockFoundationModel', () => {

@@ -1,5 +1,4 @@
-/* eslint-disable max-len */
-/* eslint-disable no-console */
+
 /* eslint-disable @typescript-eslint/no-require-imports */
 import mocks = require('./mocks');
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
@@ -377,6 +376,25 @@ describe('ResponseURL is passed to user function', () => {
       Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
     }));
   });
+});
+
+test('waiter state machine execution does not include name field (allows retries)', async () => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+
+  // WHEN
+  await simulateEvent({
+    RequestType: 'Create',
+  });
+
+  // THEN
+  expect(mocks.startStateMachineInput).toBeDefined();
+  expect(mocks.startStateMachineInput?.stateMachineArn).toEqual(mocks.MOCK_SFN_ARN);
+  expect(mocks.startStateMachineInput?.name).toBeUndefined();
+  expect(mocks.startStateMachineInput?.input).toBeDefined();
+
+  expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
 });
 
 // -----------------------------------------------------------------------------------------------------------------------

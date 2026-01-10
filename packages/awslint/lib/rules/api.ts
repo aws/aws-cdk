@@ -53,7 +53,6 @@ apiLinter.add({
     }
 
     function assertProperty(property: reflect.Property) {
-
       if (property.protected) {
         return;
       }
@@ -63,7 +62,6 @@ apiLinter.add({
     }
 
     function assertMethod(method: reflect.Callable) {
-
       if (method.protected) {
         return;
       }
@@ -105,6 +103,13 @@ apiLinter.add({
 
       if (type.unionOfTypes) {
         for (const t of type.unionOfTypes) {
+          assertType(t, docs, scope);
+        }
+        return;
+      }
+
+      if (type.intersectionOfTypes) {
+        for (const t of type.intersectionOfTypes) {
           assertType(t, docs, scope);
         }
         return;

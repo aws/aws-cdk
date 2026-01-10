@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import {
   $E,
@@ -32,6 +32,7 @@ import {
   $this,
 } from '@cdklabs/typewriter';
 import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
+import { ImportPaths } from './aws-cdk-lib';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
@@ -51,7 +52,6 @@ import {
 } from '../naming';
 import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
 import { RelationshipDecider } from './relationship-decider';
-import { SelectiveImport } from './service-submodule';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -63,7 +63,8 @@ export interface Referenceable {
 }
 
 export interface ResourceClassProps {
-  readonly interfacesModule?: {
+  readonly importPaths: ImportPaths;
+  readonly interfacesModule: {
     readonly module: Module;
     readonly importLocation: string;
   };
@@ -77,14 +78,13 @@ export class ResourceClass extends ClassType implements Referenceable {
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
-  public readonly imports = new Array<SelectiveImport>();
   public ref: ReferenceInterfaceTypes;
 
   constructor(
     scope: IScope,
     private readonly db: SpecDatabase,
     private readonly resource: Resource,
-    private readonly props: ResourceClassProps = {},
+    private readonly props: ResourceClassProps,
   ) {
     // A mutable array we pass to super()
     const implements_: Type[] = [CDK_CORE.IInspectable];
@@ -107,15 +107,17 @@ export class ResourceClass extends ClassType implements Referenceable {
 
     this.module = Module.of(this);
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db);
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, {
+      enableRelationships: true,
+      enableNestedRelationships: false,
+      refsImportLocation: this.props.importPaths.interfaces,
+    });
     this.converter = TypeConverter.forResource({
       db: db,
       resource: this.resource,
       resourceClass: this,
       relationshipDecider: this.relationshipDecider,
     });
-
-    this.imports = this.relationshipDecider.imports;
     this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
 
     this.propsType = new StructType(this.scope, {
@@ -465,20 +467,24 @@ export class ResourceClass extends ClassType implements Referenceable {
    * Generates a static method that returns the ARN of the provided resource.
    * If the resource's ref interface already has an ARN, that's what's returned:
    *
+   * ```
    *     public static arnForTable(resource: ITableRef): string {
    *       return resource.tableRef.tableArn;
    *     }
+   * ```
    *
    * Otherwise, we fall back to using the ARN template:
    *
+   * ```
    *    public static arnForRestApi(resource: IRestApiRef): string {
    *       return new cfn_parse.TemplateString("arn:${Partition}:apigateway:${Region}::/restapis/${RestApiId}").interpolate({
-   *         "Partition": cdk.Stack.of(resource).partition,
-   *         "Region": cdk.Stack.of(resource).region,
-   *         "Account": cdk.Stack.of(resource).account,
+   *         "Partition": cdk.Stack.of(resource).partition, // Always same partition as our current one, but might be beautified by Stack
+   *         "Region": resource.env.region,
+   *         "Account": resource.env.account,
    *         "RestApiId": resource.restApiRef.restApiId
    *       });
    *     }
+   * ```
    */
   private addArnForResourceMethod(): void {
     // The resource cannot provide us with its ARN
@@ -516,14 +522,13 @@ export class ResourceClass extends ClassType implements Referenceable {
     // Case 2: Interpolate from template
     } else {
       const method = doAddMethod();
-      const resourceIdentifier = expr.ident('resource');
-      const stackOfResource = $T(CDK_CORE.Stack).of(resourceIdentifier);
+      const resourceIdentifier = $E(expr.ident('resource'));
 
       const interpolationVars = {
-        Partition: stackOfResource.prop('partition'),
-        Region: stackOfResource.prop('region'),
-        Account: stackOfResource.prop('account'),
-        ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => $E(resourceIdentifier)[refAttributeName][propName]),
+        Partition: $T(CDK_CORE.Stack).of(resourceIdentifier).prop('partition'),
+        Region: resourceIdentifier.env.region,
+        Account: resourceIdentifier.env.account,
+        ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => resourceIdentifier[refAttributeName][propName]),
       };
 
       const interpolateArn = CDK_CORE.helpers.TemplateString

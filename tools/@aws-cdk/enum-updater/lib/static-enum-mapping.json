@@ -142,6 +142,12 @@
       "sdk_enum_name": "LocalStorageTypes",
       "match_percentage": 1
     },
+    "HttpTokens": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "HttpTokens",
+      "match_percentage": 1
+    },
     "KeyPairFormat": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/key-pair.ts",
       "sdk_service": "ec2",
@@ -473,6 +479,12 @@
     }
   },
   "apigateway": {
+    "ResponseTransferMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts",
+      "sdk_service": "apigateway",
+      "sdk_enum_name": "ResponseTransferMode",
+      "match_percentage": 1
+    },
     "ContentHandling": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts",
       "sdk_service": "apigateway",
@@ -1331,6 +1343,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts",
       "sdk_service": "lambda",
       "sdk_enum_name": "Attribute",
+      "match_percentage": 1
+    },
+    "TenancyConfig": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/tenancy-config.ts",
+      "sdk_service": "lambda",
+      "sdk_enum_name": "TenantIsolationMode",
       "match_percentage": 1
     }
   },
