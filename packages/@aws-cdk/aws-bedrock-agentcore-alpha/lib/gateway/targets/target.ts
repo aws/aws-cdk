@@ -435,7 +435,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gatewaytarget.html#cfn-bedrockagentcore-gatewaytarget-name
       physicalName: props.gatewayTargetName ??
         Lazy.string({
-          produce: () => Names.uniqueResourceName(this, { maxLength: 100 }).toLowerCase(),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 100 }),
         }),
     });
     // Enhanced CDK Analytics Telemetry

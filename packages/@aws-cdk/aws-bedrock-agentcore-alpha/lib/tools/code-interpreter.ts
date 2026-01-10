@@ -622,11 +622,10 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
 
   constructor(scope: Construct, id: string, props: CodeInterpreterCustomProps = {}) {
     super(scope, id, {
-      // Maximum name length of 48 characters
-      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-codeinterpretercustom.html#cfn-bedrockagentcore-codeinterpretercustom-name
+      // Maximum name length of 40 characters
       physicalName: props.codeInterpreterCustomName ??
         Lazy.string({
-          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 40 }),
         }),
     });
     // Enhanced CDK Analytics Telemetry

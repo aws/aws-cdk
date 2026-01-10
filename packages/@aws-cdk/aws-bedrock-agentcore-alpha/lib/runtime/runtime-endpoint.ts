@@ -176,7 +176,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtimeendpoint.html#cfn-bedrockagentcore-runtimeendpoint-name
       physicalName: props.endpointName ??
         Lazy.string({
-          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
         }),
     });
 

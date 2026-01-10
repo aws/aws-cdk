@@ -400,7 +400,7 @@ export class Gateway extends GatewayBase {
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gateway.html#cfn-bedrockagentcore-gateway-name
       physicalName: props.gatewayName ??
         Lazy.string({
-          produce: () => Names.uniqueResourceName(this, { maxLength: 100 }).toLowerCase(),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 100 }),
         }),
     });
     // Enhanced CDK Analytics Telemetry

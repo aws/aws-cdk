@@ -728,11 +728,10 @@ export class BrowserCustom extends BrowserCustomBase {
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: BrowserCustomProps = {}) {
     super(scope, id, {
-      // Maximum name length of 48 characters
-      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-browsercustom.html#cfn-bedrockagentcore-browsercustom-name
+      // Maximum name length of 40 characters
       physicalName: props?.browserCustomName ??
         Lazy.string({
-          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 40 }),
         }),
     });
     // Enhanced CDK Analytics Telemetry

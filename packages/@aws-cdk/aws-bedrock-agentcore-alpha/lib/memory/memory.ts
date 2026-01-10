@@ -656,7 +656,7 @@ export class Memory extends MemoryBase {
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-memory.html#cfn-bedrockagentcore-memory-name
       physicalName: props?.memoryName ??
         Lazy.string({
-          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
         }),
     });
     // Enhanced CDK Analytics Telemetry
