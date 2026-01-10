@@ -39,6 +39,11 @@ export interface IVirtualNode extends cdk.IResource, IVirtualNodeRef {
   readonly mesh: IMesh;
 
   /**
+   * Collection of grant methods for this VirtualNode
+   */
+  readonly grants: VirtualNodeGrants;
+
+  /**
    * Grants the given entity `appmesh:StreamAggregatedResources`.
    */
   grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;

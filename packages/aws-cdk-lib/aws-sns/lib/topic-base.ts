@@ -56,6 +56,11 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   readonly fifo: boolean;
 
   /**
+   * Collection of grant methods for this topic
+   */
+  readonly grants: TopicGrants;
+
+  /**
    * Subscribe some endpoint to this topic
    */
   addSubscription(subscription: ITopicSubscription): Subscription;
