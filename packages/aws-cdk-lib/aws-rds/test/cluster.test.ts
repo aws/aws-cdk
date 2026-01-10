@@ -3040,6 +3040,33 @@ describe('cluster', () => {
     });
   });
 
+  test('cluster supports VolumeWriteIOPs metric', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    expect(stack.resolve(cluster.metricVolumeWriteIOPs())).toEqual({
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'VolumeWriteIOPs',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
+  });
+
+
   describe('enhanced monitoring', () => {
     test('cluster with enabled monitoring (legacy)', () => {
       // GIVEN
