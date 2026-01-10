@@ -108,15 +108,26 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
       }),
     }).create()).toThrow('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
   });
-  test('Providing codePipeline parameter and artifactBucketRemovalPolicy parameter should throw error', () => {
-    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
-      artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
-    }).create()).toThrow('Cannot set \'artifactBucketRemovalPolicy\' if an existing CodePipeline is given using \'codePipeline\'');
-  });
-  test('Providing codePipeline parameter and artifactBucketAutoDeleteObjects parameter should throw error', () => {
-    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
-      artifactBucketAutoDeleteObjects: true,
-    }).create()).toThrow('Cannot set \'artifactBucketAutoDeleteObjects\' if an existing CodePipeline is given using \'codePipeline\'');
+  describe('artifact bucket lifecycle properties with codePipeline', () => {
+    test('Providing codePipeline parameter and artifactBucketRemovalPolicy parameter should throw error', () => {
+      expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+        artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+      }).create()).toThrow('Cannot set \'artifactBucketRemovalPolicy\' if an existing CodePipeline is given using \'codePipeline\'');
+    });
+    test('Providing codePipeline parameter and artifactBucketAutoDeleteObjects parameter should throw error', () => {
+      // When artifactBucketAutoDeleteObjects is provided alone with codePipeline,
+      // it fails the earlier validation requiring DESTROY removal policy
+      expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+        artifactBucketAutoDeleteObjects: true,
+      }).create()).toThrow('Setting \'artifactBucketAutoDeleteObjects\' to true requires \'artifactBucketRemovalPolicy\' to be set to \'RemovalPolicy.DESTROY\'');
+    });
+    test('Providing codePipeline parameter with both artifactBucketRemovalPolicy and artifactBucketAutoDeleteObjects should throw error for removal policy', () => {
+      // When both are provided, validation checks artifactBucketRemovalPolicy first
+      expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+        artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+        artifactBucketAutoDeleteObjects: true,
+      }).create()).toThrow('Cannot set \'artifactBucketRemovalPolicy\' if an existing CodePipeline is given using \'codePipeline\'');
+    });
   });
 });
 
@@ -775,103 +786,134 @@ test('artifactBucket can be overridden', () => {
   });
 });
 
-test('artifactBucketRemovalPolicy can be set to DESTROY', () => {
-  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
-  });
-  // THEN
-  const template = Template.fromStack(pipelineStack);
-  template.hasResourceProperties('AWS::S3::Bucket', {
-    DeletionPolicy: 'Delete',
-  });
-});
-
-test('artifactBucketAutoDeleteObjects can be set to true with DESTROY removal policy', () => {
-  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
-    artifactBucketAutoDeleteObjects: true,
-  });
-  // THEN
-  const template = Template.fromStack(pipelineStack);
-  template.hasResourceProperties('AWS::S3::Bucket', {
-    DeletionPolicy: 'Delete',
-  });
-  template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
-    ServiceToken: Match.anyValue(),
-  });
-});
-
-test('artifactBucketRemovalPolicy defaults to RETAIN when not specified', () => {
-  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {});
-  // THEN
-  const template = Template.fromStack(pipelineStack);
-  // The underlying Pipeline creates the bucket with RETAIN by default
-  // We verify that a bucket exists (created by underlying Pipeline)
-  template.resourceCountIs('AWS::S3::Bucket', 1);
-});
-
-test('artifactBucketRemovalPolicy can be set to RETAIN explicitly', () => {
-  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    artifactBucketRemovalPolicy: cdk.RemovalPolicy.RETAIN,
-  });
-  // THEN
-  const template = Template.fromStack(pipelineStack);
-  template.hasResourceProperties('AWS::S3::Bucket', {
-    DeletionPolicy: 'Retain',
-  });
-});
-
-test('artifactBucketAutoDeleteObjects can be set to false explicitly', () => {
-  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
-    artifactBucketAutoDeleteObjects: false,
-  });
-  // THEN
-  const template = Template.fromStack(pipelineStack);
-  template.hasResourceProperties('AWS::S3::Bucket', {
-    DeletionPolicy: 'Delete',
-  });
-  // Verify that the auto-delete custom resource is NOT created
-  template.resourceCountIs('Custom::S3AutoDeleteObjects', 0);
-});
-
-test('throws when artifactBucketAutoDeleteObjects is true without DESTROY removal policy', () => {
-  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  expect(() => {
-    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      artifactBucketRemovalPolicy: cdk.RemovalPolicy.RETAIN,
-      artifactBucketAutoDeleteObjects: true,
+describe('artifact bucket removal policy', () => {
+  describe('removal policy configuration', () => {
+    test('can set removal policy to DESTROY', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      // THEN
+      const template = Template.fromStack(pipelineStack);
+      template.hasResource('AWS::S3::Bucket', {
+        DeletionPolicy: 'Delete',
+      });
     });
-  }).toThrow('Setting \'artifactBucketAutoDeleteObjects\' to true requires \'artifactBucketRemovalPolicy\' to be set to \'RemovalPolicy.DESTROY\'');
-});
 
-test('throws when artifactBucketRemovalPolicy is set with artifactBucket', () => {
-  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  expect(() => {
-    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
-        bucketName: 'my-custom-artifact-bucket',
-      }),
-      artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    test('can set removal policy to RETAIN explicitly', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        artifactBucketRemovalPolicy: cdk.RemovalPolicy.RETAIN,
+      });
+      // THEN
+      const template = Template.fromStack(pipelineStack);
+      template.hasResource('AWS::S3::Bucket', {
+        DeletionPolicy: 'Retain',
+      });
     });
-  }).toThrow('Cannot set \'artifactBucketRemovalPolicy\' if an existing artifact bucket is given using \'artifactBucket\'');
-});
 
-test('throws when artifactBucketAutoDeleteObjects is set with artifactBucket', () => {
-  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  expect(() => {
-    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
-        bucketName: 'my-custom-artifact-bucket',
-      }),
-      artifactBucketAutoDeleteObjects: true,
+    test('defaults to RETAIN when not specified', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {});
+      // THEN
+      const template = Template.fromStack(pipelineStack);
+      // The underlying Pipeline creates the bucket with RETAIN by default
+      // We verify that a bucket exists (created by underlying Pipeline)
+      template.resourceCountIs('AWS::S3::Bucket', 1);
     });
-  }).toThrow('Cannot set \'artifactBucketAutoDeleteObjects\' if an existing artifact bucket is given using \'artifactBucket\'');
+  });
+
+  describe('auto-delete objects configuration', () => {
+    test('can enable auto-delete objects with DESTROY removal policy', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+        artifactBucketAutoDeleteObjects: true,
+      });
+      // THEN
+      const template = Template.fromStack(pipelineStack);
+      template.hasResource('AWS::S3::Bucket', {
+        DeletionPolicy: 'Delete',
+      });
+      template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
+        ServiceToken: Match.anyValue(),
+      });
+    });
+
+    test('can disable auto-delete objects explicitly', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+        artifactBucketAutoDeleteObjects: false,
+      });
+      // THEN
+      const template = Template.fromStack(pipelineStack);
+      template.hasResource('AWS::S3::Bucket', {
+        DeletionPolicy: 'Delete',
+      });
+      // Verify that the auto-delete custom resource is NOT created
+      template.resourceCountIs('Custom::S3AutoDeleteObjects', 0);
+    });
+
+    test('defaults to false when not specified', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      // THEN
+      const template = Template.fromStack(pipelineStack);
+      template.hasResource('AWS::S3::Bucket', {
+        DeletionPolicy: 'Delete',
+      });
+      // Verify that the auto-delete custom resource is NOT created
+      template.resourceCountIs('Custom::S3AutoDeleteObjects', 0);
+    });
+  });
+
+  describe('validation errors', () => {
+    test('throws when auto-delete objects is enabled without DESTROY removal policy', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      expect(() => {
+        new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          artifactBucketRemovalPolicy: cdk.RemovalPolicy.RETAIN,
+          artifactBucketAutoDeleteObjects: true,
+        });
+      }).toThrow('Setting \'artifactBucketAutoDeleteObjects\' to true requires \'artifactBucketRemovalPolicy\' to be set to \'RemovalPolicy.DESTROY\'');
+    });
+
+    test('throws when auto-delete objects is enabled with undefined removal policy', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      expect(() => {
+        new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          artifactBucketAutoDeleteObjects: true,
+        });
+      }).toThrow('Setting \'artifactBucketAutoDeleteObjects\' to true requires \'artifactBucketRemovalPolicy\' to be set to \'RemovalPolicy.DESTROY\'');
+    });
+
+    test('throws when removal policy is set with external artifact bucket', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      expect(() => {
+        new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
+            bucketName: 'my-custom-artifact-bucket',
+          }),
+          artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+        });
+      }).toThrow('Cannot set \'artifactBucketRemovalPolicy\' if an existing artifact bucket is given using \'artifactBucket\'');
+    });
+
+    test('throws when auto-delete objects is set with external artifact bucket', () => {
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+      expect(() => {
+        new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
+            bucketName: 'my-custom-artifact-bucket',
+          }),
+          artifactBucketAutoDeleteObjects: true,
+        });
+      }).toThrow('Cannot set \'artifactBucketAutoDeleteObjects\' if an existing artifact bucket is given using \'artifactBucket\'');
+    });
+  });
 });
 
 test('throws when deploy role session tags are used', () => {
@@ -1086,11 +1128,16 @@ class CodePipelinePropsCheckTest extends cdk.Stack {
       }).buildPipeline();
     }
     if (this.cProps.artifactBucketAutoDeleteObjects !== undefined) {
-      new cdkp.CodePipeline(this, 'CodePipeline7', {
+      const pipelineProps: any = {
         artifactBucketAutoDeleteObjects: this.cProps.artifactBucketAutoDeleteObjects,
         codePipeline: new Pipeline(this, 'Pipeline7'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
-      }).buildPipeline();
+      };
+      // Only include artifactBucketRemovalPolicy if explicitly provided
+      if (this.cProps.artifactBucketRemovalPolicy !== undefined) {
+        pipelineProps.artifactBucketRemovalPolicy = this.cProps.artifactBucketRemovalPolicy;
+      }
+      new cdkp.CodePipeline(this, 'CodePipeline7', pipelineProps).buildPipeline();
     }
   }
 }
