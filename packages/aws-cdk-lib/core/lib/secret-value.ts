@@ -44,7 +44,7 @@ export class SecretValue extends Intrinsic {
    * Test whether an object is a SecretValue
    */
   public static isSecretValue(x: any): x is SecretValue {
-    return typeof x === 'object' && x && x[SECRET_VALUE_SYM];
+    return typeof x === 'object' && x && SECRET_VALUE_SYM in x;
   }
 
   /**
