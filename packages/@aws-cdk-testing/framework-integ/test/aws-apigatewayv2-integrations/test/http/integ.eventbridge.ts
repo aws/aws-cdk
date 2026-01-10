@@ -14,7 +14,7 @@ httpApi.addRoutes({
   path: '/default',
   methods: [apigwv2.HttpMethod.POST],
   integration: new HttpEventBridgeIntegration('defaultIntegration', {
-    eventBus: bus,
+    eventBusRef: bus.eventBusRef,
   }),
 });
 
@@ -22,7 +22,7 @@ httpApi.addRoutes({
   path: '/put-events',
   methods: [apigwv2.HttpMethod.POST],
   integration: new HttpEventBridgeIntegration('putEventsIntegration', {
-    eventBus: bus,
+    eventBusRef: bus.eventBusRef,
     subtype: apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS,
   }),
 });

@@ -84,9 +84,6 @@
     "IntegrationType": "AWS_PROXY",
     "PayloadFormatVersion": "1.0",
     "RequestParameters": {
-     "EventBusName": {
-      "Ref": "BusEA82B648"
-     },
      "Detail": "$request.body.Detail",
      "DetailType": "$request.body.DetailType",
      "Source": "$request.body.Source"
@@ -175,9 +172,6 @@
     "IntegrationType": "AWS_PROXY",
     "PayloadFormatVersion": "1.0",
     "RequestParameters": {
-     "EventBusName": {
-      "Ref": "BusEA82B648"
-     },
      "Detail": "$request.body.Detail",
      "DetailType": "$request.body.DetailType",
      "Source": "$request.body.Source"

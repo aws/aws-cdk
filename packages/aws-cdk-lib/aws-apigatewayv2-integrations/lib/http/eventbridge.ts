@@ -5,12 +5,6 @@ import * as iam from '../../../aws-iam';
 import { ValidationError } from '../../../core';
 
 /**
- * The subtype of the EventBridge PutEvents integration.
- * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html#http-api-develop-integrations-aws-services-reference-eventbridge-putevents
- */
-export type HttpIntegrationSubtypeEventBridgePutEvents = apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS;
-
-/**
  * Properties to initialize `HttpEventBridgeIntegration`.
  */
 export interface HttpEventBridgeIntegrationProps {
@@ -36,19 +30,19 @@ export interface HttpEventBridgeIntegrationProps {
    *
    * @default HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS
    */
-  readonly subtype?: HttpIntegrationSubtypeEventBridgePutEvents;
+  readonly subtype?: apigwv2.HttpIntegrationSubtype;
 
   /**
    * EventBridge event bus that integrates with API Gateway
    */
-  readonly eventBus: events.IEventBus;
+  readonly eventBusRef: events.EventBusReference;
 }
 
 /**
  * The EventBridge PutEvents integration resource for HTTP API
  */
 export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
-  private readonly subtype: HttpIntegrationSubtypeEventBridgePutEvents;
+  private readonly subtype: apigwv2.HttpIntegrationSubtype;
   /**
    * @param id id of the underlying integration construct
    * @param props properties to configure the integration
@@ -75,7 +69,7 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
         effect: iam.Effect.ALLOW,
         sid: 'AllowEventBridgePutEvents',
         actions: ['events:PutEvents'],
-        resources: [this.props.eventBus.eventBusArn],
+        resources: [this.props.eventBusRef.eventBusArn],
       }),
     );
 
@@ -92,8 +86,10 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
   private createDefaultParameterMapping(scope: IConstruct): apigwv2.ParameterMapping {
     switch (this.subtype) {
       case apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS:
+        // Default mapping includes only the required PutEvents parameters: Detail, DetailType, and Source.
+        // Optional parameters (for example, EventBusName, Time, Resources) are intentionally omitted.
+        // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html#EventBridge-PutEvents
         return new apigwv2.ParameterMapping()
-          .custom('EventBusName', this.props.eventBus.eventBusName)
           .custom('Detail', '$request.body.Detail')
           .custom('DetailType', '$request.body.DetailType')
           .custom('Source', '$request.body.Source');

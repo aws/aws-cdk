@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "be253d3fa94277cf88a4264935d8dd8dae0409b553414adbdbdf571e5d6505c3": {
+    "9d422604544e4e54e51bbf961f6d7cd8a934a02e7188c048af47b3fb251e5c39": {
       "displayName": "eventbridge-integration Template",
       "source": {
         "path": "eventbridge-integration.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-2aca9d58": {
+        "current_account-current_region-dc8081d1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "be253d3fa94277cf88a4264935d8dd8dae0409b553414adbdbdf571e5d6505c3.json",
+          "objectKey": "9d422604544e4e54e51bbf961f6d7cd8a934a02e7188c048af47b3fb251e5c39.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

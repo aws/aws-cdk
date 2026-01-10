@@ -6,7 +6,7 @@ import { Match, Template } from '../../../assertions';
 import { HttpApi, HttpIntegrationSubtype, HttpRoute, HttpRouteKey, ParameterMapping } from '../../../aws-apigatewayv2';
 import * as events from '../../../aws-events';
 import { App, Stack } from '../../../core';
-import { HttpEventBridgeIntegration } from '../../lib';
+import { HttpEventBridgeIntegration } from '../../lib/http/eventbridge';
 
 describe('EventBridgeIntegration', () => {
   test('default', () => {
@@ -18,7 +18,7 @@ describe('EventBridgeIntegration', () => {
     new HttpRoute(stack, 'EventBridgeRoute', {
       httpApi: api,
       integration: new HttpEventBridgeIntegration('Integration', {
-        eventBus: bus,
+        eventBusRef: bus.eventBusRef,
       }),
       routeKey: HttpRouteKey.with('/events'),
     });
@@ -73,7 +73,7 @@ describe('EventBridgeIntegration', () => {
     new HttpRoute(stack, 'EventBridgeRoute', {
       httpApi: api,
       integration: new HttpEventBridgeIntegration('Integration', {
-        eventBus: bus,
+        eventBusRef: bus.eventBusRef,
         parameterMapping: new ParameterMapping().custom('test', 'testValue'),
       }),
       routeKey: HttpRouteKey.with('/events'),
@@ -100,7 +100,7 @@ describe('EventBridgeIntegration', () => {
     new HttpRoute(stack, 'EventBridgeRoute', {
       httpApi: api,
       integration: new HttpEventBridgeIntegration('Integration', {
-        eventBus: bus,
+        eventBusRef: bus.eventBusRef,
         subtype: HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS,
       }),
       routeKey: HttpRouteKey.with('/events'),
@@ -121,7 +121,7 @@ describe('EventBridgeIntegration', () => {
       new HttpRoute(stack, 'EventBridgeRoute', {
         httpApi: api,
         integration: new HttpEventBridgeIntegration('Integration', {
-          eventBus: bus,
+          eventBusRef: bus.eventBusRef,
           subtype: HttpIntegrationSubtype.SQS_SEND_MESSAGE,
         }),
         routeKey: HttpRouteKey.with('/events'),
