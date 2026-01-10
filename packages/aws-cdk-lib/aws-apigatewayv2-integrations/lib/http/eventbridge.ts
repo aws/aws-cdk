@@ -13,12 +13,12 @@ export interface HttpEventBridgeIntegrationProps {
    *
    * When not provided, a default mapping will be used that expects the
    * incoming request body to contain the fields `Detail`, `DetailType`, and
-   * `Source`. `EventBusName` will default to the provided event bus name.
+   * `Source`. 
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html
    *
-   * @default - specify `EventBusName`. Additionally, set `Detail` to `$request.body.Detail`,
+   * @default - set `Detail` to `$request.body.Detail`,
    * `DetailType` to `$request.body.DetailType`, and `Source` to `$request.body.Source`.
    */
   readonly parameterMapping?: apigwv2.ParameterMapping;

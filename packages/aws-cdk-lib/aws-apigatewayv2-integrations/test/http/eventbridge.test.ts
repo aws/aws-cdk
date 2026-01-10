@@ -56,7 +56,6 @@ describe('EventBridgeIntegration', () => {
       IntegrationSubtype: 'EventBridge-PutEvents',
       PayloadFormatVersion: '1.0',
       RequestParameters: {
-        EventBusName: stack.resolve(bus.eventBusName),
         Detail: '$request.body.Detail',
         DetailType: '$request.body.DetailType',
         Source: '$request.body.Source',
