@@ -732,6 +732,18 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - Resources will be deleted.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The control plane scaling tier for EKS Provisioned Control Plane.
+   *
+   * Provisioned Control Plane allows you to select a scaling tier to ensure
+   * high and predictable performance for demanding workloads such as
+   * AI training/inference, high-performance computing, or large-scale data processing.
+   *
+   * @default - Standard control plane (no provisioned tier)
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
+   */
+  readonly controlPlaneScalingTier?: ControlPlaneScalingTier;
 }
 
 /**
@@ -1135,6 +1147,34 @@ export enum AuthenticationMode {
    * Authenticates using the Kubernetes API server.
    */
   API = 'API',
+}
+
+/**
+ * Control plane scaling tier for EKS Provisioned Control Plane.
+ *
+ * Provisioned Control Plane allows cluster administrators to select from a set
+ * of scaling tiers to ensure high and predictable performance for demanding workloads
+ * such as AI training/inference, high-performance computing, or large-scale data processing.
+ *
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
+ */
+export enum ControlPlaneScalingTier {
+  /**
+   * Standard control plane (default, no additional cost).
+   */
+  STANDARD = 'standard',
+  /**
+   * Extra-large provisioned tier.
+   */
+  TIER_XL = 'tier-xl',
+  /**
+   * 2x extra-large provisioned tier.
+   */
+  TIER_2XL = 'tier-2xl',
+  /**
+   * 4x extra-large provisioned tier.
+   */
+  TIER_4XL = 'tier-4xl',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1798,6 +1838,11 @@ export class Cluster extends ClusterBase {
       tags: props.tags,
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
+      ...(props.controlPlaneScalingTier ? {
+        controlPlaneScalingConfig: {
+          tier: props.controlPlaneScalingTier,
+        },
+      } : {}),
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
