@@ -1149,6 +1149,24 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     return this.metric('ACUUtilization', { statistic: 'Average', ...props });
   }
 
+  /**
+   * The number of billed read I/O operations from a cluster volume, reported at 5-minute intervals.
+   *
+   * This metric represents the number of read I/O operations at the cluster level.
+   */
+  public metricVolumeReadIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeReadIOPs', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk write I/O operations per second.
+   *
+   * Average over 5 minutes
+   */
+  public metricVolumeWriteIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeWriteIOPs', { statistic: 'Average', ...props });
+  }
+
   private validateServerlessScalingConfig(config: ClusterEngineConfig): void {
     if (this.serverlessV2MaxCapacity > 256 || this.serverlessV2MaxCapacity < 1) {
       throw new ValidationError('serverlessV2MaxCapacity must be >= 1 & <= 256', this);
