@@ -18,6 +18,7 @@ import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Elasticsearch version
@@ -478,7 +479,7 @@ export interface CustomEndpointOptions {
    * @default - create a new one
    * @deprecated use opensearchservice module instead
    */
-  readonly certificate?: acm.ICertificate;
+  readonly certificate?: ICertificateRef;
 
   /**
    * The hosted zone in Route53 to create the CNAME record in
@@ -957,11 +958,11 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Collection of grant methods for a Domain
    */
-  public readonly grants = DomainGrants._fromDomain(this);
+  public readonly grants = DomainGrants.fromDomain(this);
 
   public get domainRef(): DomainReference {
     return {
-      domainId: this.domainName,
+      domainName: this.domainName,
       domainArn: this.domainArn,
     };
   }
@@ -1789,7 +1790,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       };
     }
 
-    let customEndpointCertificate: acm.ICertificate | undefined;
+    let customEndpointCertificate: ICertificateRef | undefined;
     if (props.customEndpoint) {
       if (props.customEndpoint.certificate) {
         customEndpointCertificate = props.customEndpoint.certificate;
@@ -1859,7 +1860,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         ...props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
-          customEndpointCertificateArn: customEndpointCertificate!.certificateArn,
+          customEndpointCertificateArn: customEndpointCertificate!.certificateRef.certificateId,
         },
       },
       advancedSecurityOptions: advancedSecurityEnabled

@@ -42,9 +42,9 @@ new imagebuilder.Component(stack, 'InlineComponent', {
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
             onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
             timeout: cdk.Duration.seconds(720),
-            inputs: {
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
               commands: ['echo "Hello build! {{ parameter }} {{ constant }}"'],
-            },
+            }),
           },
         ],
       },
@@ -54,9 +54,9 @@ new imagebuilder.Component(stack, 'InlineComponent', {
           {
             name: 'hello-world-validate',
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
-            inputs: {
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
               commands: ['echo "Hello validate!"'],
-            },
+            }),
           },
         ],
       },
@@ -66,9 +66,9 @@ new imagebuilder.Component(stack, 'InlineComponent', {
           {
             name: 'hello-world-test',
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
-            inputs: {
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
               commands: ['echo "Hello test!"'],
-            },
+            }),
           },
         ],
       },

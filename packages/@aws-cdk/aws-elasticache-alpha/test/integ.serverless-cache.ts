@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, RemovalPolicy, Size, Stack, StackProps } from 'aws-cdk-lib';
-import { AccessControl, CacheEngine, IamUser, ServerlessCache, UserGroup } from '../lib';
-import { Key } from 'aws-cdk-lib/aws-kms';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Key } from 'aws-cdk-lib/aws-kms';
+import { Construct } from 'constructs';
+import { AccessControl, CacheEngine, IamUser, ServerlessCache, UserGroup } from '../lib';
 
 const cacheName = 'serverlesscache';
 const userName = 'user';
@@ -44,6 +44,9 @@ class TestStack extends Stack {
       },
     });
     this.cache.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+    const clientSG = new SecurityGroup(this, 'ClientSG', { vpc });
+    clientSG.connections.allowToDefaultPort(this.cache);
   }
 }
 

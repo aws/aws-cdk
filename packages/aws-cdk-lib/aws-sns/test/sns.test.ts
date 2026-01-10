@@ -6,7 +6,7 @@ import * as cdk from '../../core';
 import * as sns from '../lib';
 import { TopicGrants } from '../lib/sns-grants.generated';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('Topic', () => {
   describe('topic tests', () => {
@@ -312,7 +312,7 @@ describe('Topic', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    TopicGrants._fromTopic(topic).publish(user);
+    TopicGrants.fromTopic(topic).publish(user);
 
     // THEN
     let template = Template.fromStack(stack);

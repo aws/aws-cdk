@@ -1,6 +1,6 @@
+import { Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Duration, Stack } from 'aws-cdk-lib';
 import { DnsBlockResponse, FirewallDomainList, FirewallRuleAction, FirewallRuleGroup, IFirewallDomainList } from '../lib';
 
 let stack: Stack;

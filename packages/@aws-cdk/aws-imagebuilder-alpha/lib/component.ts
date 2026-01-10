@@ -4,6 +4,7 @@ import { CfnComponent } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
@@ -149,41 +150,6 @@ export interface ComponentAttributes {
 }
 
 /**
- * Properties for an EC2 Image Builder AWS-managed component
- */
-export interface AwsManagedComponentAttributes {
-  /**
-   * The name of the AWS-managed component
-   *
-   * The name of the AWS-managed component. This is a required attribute when using the
-   * `this.fromAwsManagedComponentAttributes()` method. This parameter should not be provided when
-   * using the pre-defined managed component methods, such as `AwsManagedComponent.updateOS()` and
-   * `AwsManagedComponent.reboot()`.
-   *
-   *  @default - none if using  the pre-defined managed component methods, otherwise a platform is required when using
-   *             `this.fromAwsManagedComponentAttributes()`
-   */
-  readonly componentName?: string;
-
-  /**
-   * The version of the AWS-managed component
-   *
-   * @default - the latest version of the component, x.x.x
-   */
-  readonly componentVersion?: string;
-
-  /**
-   * The platform of the AWS-managed component. This is a required attribute when using the pre-defined managed
-   * component methods, such as `AwsManagedComponent.updateOS()` and `AwsManagedComponent.reboot()`. This parameter
-   * should not be provided when using the `this.fromAwsManagedComponentAttributes()` method.
-   *
-   * @default - none if using `this.fromAwsManagedComponentAttributes()`, otherwise a platform is
-   *            required when using the pre-defined managed component methods
-   */
-  readonly platform?: Platform;
-}
-
-/**
  * Properties for an EC2 Image Builder AWS Marketplace component
  */
 export interface AwsMarketplaceComponentAttributes {
@@ -281,15 +247,20 @@ export interface ComponentDocumentStep {
 
   /**
    * Contains parameters required by the action to run the step
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-action-modules.html
    */
-  readonly inputs: any;
+  readonly inputs: ComponentStepInputs;
 
   /**
    * The condition to apply to the step. If the condition is false, then the step is skipped
    *
    * @default - no condition is applied to the step and it gets executed
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-conditional-constructs.html
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-comparison-operators.html
    */
-  readonly if?: any;
+  readonly if?: ComponentStepIfCondition;
 
   /**
    * A looping construct defining a repeated sequence of instructions
@@ -638,6 +609,82 @@ export enum ComponentSchemaVersion {
 }
 
 /**
+ * Represents the inputs for a step in the component document
+ */
+export class ComponentStepInputs {
+  /**
+   * Creates the input value from an object, for the component step
+   *
+   * @param inputsObject The object containing the input values
+   */
+  public static fromObject(inputsObject: { [key: string]: any }): ComponentStepInputs {
+    return new ComponentStepInputs(inputsObject);
+  }
+
+  /**
+   * Creates the input value from a list of input objects, for the component step
+   *
+   * @param inputsObjectList The list of objects containing the input values
+   */
+  public static fromList(inputsObjectList: { [key: string]: any }[]): ComponentStepInputs {
+    return new ComponentStepInputs(inputsObjectList);
+  }
+
+  /**
+   * The rendered input value
+   */
+  public readonly inputs: any;
+
+  protected constructor(input: any) {
+    this.inputs = input;
+  }
+}
+
+/**
+ * Represents an `if` condition in the component document
+ */
+export class ComponentStepIfCondition {
+  /**
+   * Creates the `if` value from an object, for the component step
+   *
+   * @param ifObject The object containing the `if` condition
+   */
+  public static fromObject(ifObject: { [key: string]: any }): ComponentStepIfCondition {
+    return new ComponentStepIfCondition(ifObject);
+  }
+
+  /**
+   * The rendered input value
+   */
+  public readonly ifCondition: any;
+
+  protected constructor(ifCondition: any) {
+    this.ifCondition = ifCondition;
+  }
+}
+
+/**
+ * The rendered component data value, for use in CloudFormation.
+ * - For inline components, data is the component text
+ * - For S3-backed components, uri is the S3 URL
+ */
+export interface ComponentDataConfig {
+  /**
+   * The rendered component data, for use in CloudFormation
+   *
+   * @default - none if uri is set
+   */
+  readonly data?: string;
+
+  /**
+   * The rendered component data URI, for use in CloudFormation
+   *
+   * @default - none if data is set
+   */
+  readonly uri?: string;
+}
+
+/**
  * Helper class for referencing and uploading component data
  */
 export abstract class ComponentData {
@@ -705,9 +752,9 @@ export abstract class ComponentData {
           action: step.action,
           ...(step.onFailure !== undefined && { onFailure: step.onFailure }),
           ...(step.timeout !== undefined && { timeoutSeconds: step.timeout.toSeconds() }),
-          ...(step.if !== undefined && { if: step.if }),
+          ...(step.if !== undefined && { if: step.if.ifCondition }),
           ...(step.loop !== undefined && { loop: step.loop }),
-          inputs: step.inputs,
+          inputs: step.inputs.inputs,
         })),
       })),
     });
@@ -723,34 +770,32 @@ export abstract class ComponentData {
   }
 
   /**
-   * Indicates that the provided component data is an S3 reference
+   * The rendered component data value, for use in CloudFormation.
+   * - For inline components, data is the component text
+   * - For S3-backed components, uri is the S3 URL
    */
-  abstract readonly isS3Reference: boolean;
-
-  /**
-   * The resulting inline string or S3 URL which references the component data
-   */
-  public readonly value: string;
-
-  protected constructor(value: string) {
-    this.value = value;
-  }
+  abstract render(): ComponentDataConfig;
 }
 
 /**
  * Helper class for S3-based component data references, containing additional permission grant methods on the S3 object
  */
 export abstract class S3ComponentData extends ComponentData {
-  public readonly isS3Reference = true;
-
   protected readonly bucket: s3.IBucket;
   protected readonly key: string;
 
   protected constructor(bucket: s3.IBucket, key: string) {
-    super(bucket.s3UrlForObject(key));
+    super();
 
     this.bucket = bucket;
     this.key = key;
+  }
+
+  /**
+   * The rendered component data text, for use in CloudFormation
+   */
+  public render(): ComponentDataConfig {
+    return { uri: this.bucket.s3UrlForObject(this.key) };
   }
 
   /**
@@ -773,10 +818,19 @@ export abstract class S3ComponentData extends ComponentData {
 }
 
 class InlineComponentData extends ComponentData {
-  public readonly isS3Reference = false;
+  protected readonly data: string;
 
   public constructor(data: string) {
-    super(data);
+    super();
+
+    this.data = data;
+  }
+
+  /**
+   * The rendered component data text, for use in CloudFormation
+   */
+  public render(): ComponentDataConfig {
+    return { data: this.data };
   }
 }
 
@@ -789,254 +843,6 @@ class S3ComponentDataFromBucketKey extends S3ComponentData {
 class S3ComponentDataFromAsset extends S3ComponentData {
   public constructor(asset: s3assets.Asset) {
     super(asset.bucket, asset.s3ObjectKey);
-  }
-}
-
-/**
- * Helper class for working with AWS-managed components
- */
-export abstract class AwsManagedComponent {
-  /**
-   * Imports the AWS CLI v2 AWS-managed component
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The AWS-managed component attributes
-   */
-  public static awsCliV2(scope: Construct, id: string, attrs: AwsManagedComponentAttributes): IComponent {
-    this.validatePredefinedManagedComponentMethodAttributes({
-      scope,
-      attrs,
-      component: 'awsCliV2',
-      allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
-    });
-
-    if (attrs.platform === Platform.WINDOWS) {
-      return this.fromAwsManagedComponentAttributes(scope, id, {
-        componentName: 'aws-cli-version-2-windows',
-        componentVersion: attrs.componentVersion,
-      });
-    }
-
-    return this.fromAwsManagedComponentAttributes(scope, id, {
-      componentName: 'aws-cli-version-2-linux',
-      componentVersion: attrs.componentVersion,
-    });
-  }
-
-  /**
-   * Imports the hello world AWS-managed component
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The AWS-managed component attributes
-   */
-  public static helloWorld(scope: Construct, id: string, attrs: AwsManagedComponentAttributes): IComponent {
-    this.validatePredefinedManagedComponentMethodAttributes({
-      scope,
-      attrs,
-      component: 'helloWorld',
-      allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
-    });
-
-    if (attrs.platform === Platform.WINDOWS) {
-      return this.fromAwsManagedComponentAttributes(scope, id, {
-        componentName: 'hello-world-windows',
-        componentVersion: attrs.componentVersion,
-      });
-    }
-
-    return this.fromAwsManagedComponentAttributes(scope, id, {
-      componentName: 'hello-world-linux',
-      componentVersion: attrs.componentVersion,
-    });
-  }
-
-  /**
-   * Imports the Python 3 AWS-managed component
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The AWS-managed component attributes
-   */
-  public static python3(scope: Construct, id: string, attrs: AwsManagedComponentAttributes): IComponent {
-    this.validatePredefinedManagedComponentMethodAttributes({
-      scope,
-      attrs,
-      component: 'python3',
-      allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
-    });
-
-    if (attrs.platform === Platform.WINDOWS) {
-      return this.fromAwsManagedComponentAttributes(scope, id, {
-        componentName: 'python-3-windows',
-        componentVersion: attrs.componentVersion,
-      });
-    }
-
-    return this.fromAwsManagedComponentAttributes(scope, id, {
-      componentName: 'python-3-linux',
-      componentVersion: attrs.componentVersion,
-    });
-  }
-
-  /**
-   * Imports the reboot AWS-managed component
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The AWS-managed component attributes
-   */
-  public static reboot(scope: Construct, id: string, attrs: AwsManagedComponentAttributes): IComponent {
-    this.validatePredefinedManagedComponentMethodAttributes({
-      scope,
-      attrs,
-      component: 'reboot',
-      allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
-    });
-
-    if (attrs.platform === Platform.WINDOWS) {
-      return this.fromAwsManagedComponentAttributes(scope, id, {
-        componentName: 'reboot-windows',
-        componentVersion: attrs.componentVersion,
-      });
-    }
-
-    return this.fromAwsManagedComponentAttributes(scope, id, {
-      componentName: 'reboot-linux',
-      componentVersion: attrs.componentVersion,
-    });
-  }
-
-  /**
-   * Imports the STIG hardening AWS-managed component
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The AWS-managed component attributes
-   *
-   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ib-stig.html
-   */
-  public static stigBuild(scope: Construct, id: string, attrs: AwsManagedComponentAttributes): IComponent {
-    this.validatePredefinedManagedComponentMethodAttributes({
-      scope,
-      attrs,
-      component: 'stigBuild',
-      allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
-    });
-
-    if (attrs.platform === Platform.WINDOWS) {
-      return this.fromAwsManagedComponentAttributes(scope, id, {
-        componentName: 'stig-build-windows',
-        componentVersion: attrs.componentVersion,
-      });
-    }
-
-    return this.fromAwsManagedComponentAttributes(scope, id, {
-      componentName: 'stig-build-linux',
-      componentVersion: attrs.componentVersion,
-    });
-  }
-
-  /**
-   * Imports the OS update AWS-managed component
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The AWS-managed component attributes
-   */
-  public static updateOS(scope: Construct, id: string, attrs: AwsManagedComponentAttributes): IComponent {
-    this.validatePredefinedManagedComponentMethodAttributes({
-      scope,
-      attrs,
-      component: 'updateOS',
-      allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
-    });
-
-    if (attrs.platform === Platform.WINDOWS) {
-      return this.fromAwsManagedComponentAttributes(scope, id, {
-        componentName: 'update-windows',
-        componentVersion: attrs.componentVersion,
-      });
-    }
-
-    return this.fromAwsManagedComponentAttributes(scope, id, {
-      componentName: 'update-linux',
-      componentVersion: attrs.componentVersion,
-    });
-  }
-
-  /**
-   * Imports an AWS-managed component from its attributes
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The AWS-managed component attributes
-   */
-  public static fromAwsManagedComponentAttributes(
-    scope: Construct,
-    id: string,
-    attrs: AwsManagedComponentAttributes,
-  ): IComponent {
-    if (attrs.platform !== undefined) {
-      throw new cdk.ValidationError(
-        'platform can only be used with pre-defined AWS-managed component methods, such as updateOS',
-        scope,
-      );
-    }
-
-    if (attrs.componentName === undefined) {
-      throw new cdk.ValidationError('an AWS-managed component name is required', scope);
-    }
-
-    return Component.fromComponentArn(
-      scope,
-      id,
-      cdk.Stack.of(scope).formatArn({
-        service: 'imagebuilder',
-        account: 'aws',
-        resource: 'component',
-        resourceName: `${attrs.componentName}/${attrs.componentVersion ?? LATEST_VERSION}`,
-      }),
-    );
-  }
-  /**
-   * Imports an AWS-managed component from its name
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param awsManagedComponentName - The name of the AWS-managed component
-   */
-  public static fromAwsManagedComponentName(scope: Construct, id: string, awsManagedComponentName: string): IComponent {
-    return this.fromAwsManagedComponentAttributes(scope, id, { componentName: awsManagedComponentName });
-  }
-
-  private static validatePredefinedManagedComponentMethodAttributes({
-    scope,
-    attrs,
-    component,
-    allowedPlatforms,
-  }: {
-    scope: Construct;
-    component: string;
-    attrs: AwsManagedComponentAttributes;
-    allowedPlatforms: Platform[];
-  }) {
-    if (attrs.componentName !== undefined) {
-      throw new cdk.ValidationError(`a name is not allowed for ${component}`, scope);
-    }
-
-    if (attrs.platform === undefined) {
-      throw new cdk.ValidationError(`a platform is required for ${component}`, scope);
-    }
-
-    if (cdk.Token.isUnresolved(attrs.platform)) {
-      throw new cdk.ValidationError(`platform cannot be a token for ${component}`, scope);
-    }
-
-    if (!allowedPlatforms.includes(attrs.platform)) {
-      throw new cdk.ValidationError(`${attrs.platform} is not a supported platform for ${component}`, scope);
-    }
   }
 }
 
@@ -1233,6 +1039,8 @@ export class Component extends ComponentBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, COMPONENT_SYMBOL, { value: true });
 
@@ -1258,10 +1066,10 @@ export class Component extends ComponentBase {
       platform: props.platform,
       kmsKeyId: props.kmsKey?.keyArn,
       tags: props.tags,
-      ...(props.data.isS3Reference ? { uri: props.data.value } : { data: props.data.value }),
       ...(supportedOsVersions?.length && {
         supportedOsVersions: supportedOsVersions.map((osVersion) => osVersion.osVersion!),
       }),
+      ...props.data.render(),
     });
 
     this.componentName = this.getResourceNameAttribute(component.attrName);

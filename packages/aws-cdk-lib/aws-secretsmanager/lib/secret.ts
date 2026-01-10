@@ -8,13 +8,14 @@ import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalP
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { ISecretRef, SecretReference, ISecretTargetAttachmentRef, SecretTargetAttachmentReference } from '../../interfaces/generated/aws-secretsmanager-interfaces.generated';
 
 const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
 
 /**
  * A secret in AWS Secrets Manager.
  */
-export interface ISecret extends IResource {
+export interface ISecret extends IResource, ISecretRef {
   /**
    * The customer-managed encryption key that is used to encrypt this secret, if any. When not specified, the default
    * KMS key for the account and region is being used.
@@ -369,6 +370,12 @@ abstract class SecretBase extends Resource implements ISecret {
     });
 
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
+  public get secretRef(): SecretReference {
+    return {
+      secretId: this.secretArn,
+    };
   }
 
   /**
@@ -853,7 +860,7 @@ export interface SecretTargetAttachmentProps extends AttachedSecretOptions {
   readonly secret: ISecret;
 }
 
-export interface ISecretTargetAttachment extends ISecret {
+export interface ISecretTargetAttachment extends ISecret, ISecretTargetAttachmentRef {
   /**
    * Same as `secretArn`
    *
@@ -877,6 +884,12 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
       public secretTargetAttachmentSecretArn = secretTargetAttachmentSecretArn;
       public secretName = parseSecretName(scope, secretTargetAttachmentSecretArn);
       protected readonly autoCreatePolicy = false;
+
+      public get secretTargetAttachmentRef(): SecretTargetAttachmentReference {
+        return {
+          secretId: this.secretTargetAttachmentSecretArn,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -913,6 +926,12 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     // This allows to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
     this.secretTargetAttachmentSecretArn = attachment.ref;
+  }
+
+  public get secretTargetAttachmentRef(): SecretTargetAttachmentReference {
+    return {
+      secretId: this.secretTargetAttachmentSecretArn,
+    };
   }
 
   /**
