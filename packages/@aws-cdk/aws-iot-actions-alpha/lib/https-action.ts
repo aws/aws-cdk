@@ -1,4 +1,5 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
+import { Duration, Size, UnscopedValidationError } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
@@ -26,6 +27,40 @@ export interface HttpActionHeader {
 }
 
 /**
+ * Configuration for batching HTTP action messages.
+ *
+ * @see https://docs.aws.amazon.com/iot/latest/developerguide/http_batching.html
+ */
+export interface HttpActionBatchConfig {
+  /**
+   * The maximum amount of time an outgoing message waits for other messages to create the batch.
+   *
+   * Must be between 5 ms and 200 ms.
+   *
+   * @default Duration.millis(20)
+   */
+  readonly maxBatchOpenDuration?: Duration;
+
+  /**
+   * The maximum number of messages that are batched together in a single IoT rule action execution.
+   *
+   * Must be between 2 and 10.
+   *
+   * @default 10
+   */
+  readonly maxBatchSize?: number;
+
+  /**
+   * Maximum size of a message batch.
+   *
+   * Must be between 100 bytes and 128 KiB.
+   *
+   * @default Size.kibibytes(5)
+   */
+  readonly maxBatchSizeBytes?: Size;
+}
+
+/**
  * Configuration properties of an HTTPS action.
  *
  * @see https://docs.aws.amazon.com/iot/latest/developerguide/https-rule-action.html
@@ -45,6 +80,16 @@ export interface HttpsActionProps extends CommonActionProps {
    * Use Sigv4 authorization.
    */
   readonly auth?: HttpActionSigV4Auth;
+
+  /**
+   * Configuration for batching HTTP action messages.
+   *
+   * When provided, batching is automatically enabled.
+   *
+   * @see https://docs.aws.amazon.com/iot/latest/developerguide/http_batching.html
+   * @default - Batching is disabled
+   */
+  readonly batchConfig?: HttpActionBatchConfig;
 }
 
 /**
@@ -56,17 +101,47 @@ export class HttpsAction implements iot.IAction {
   private readonly confirmationUrl?: string;
   private readonly headers?: Array<HttpActionHeader>;
   private readonly auth?: HttpActionSigV4Auth;
+  private readonly batchConfig?: HttpActionBatchConfig;
 
   /**
    * @param url The url to which to send post request.
    * @param props Optional properties to not use default.
    */
-  constructor( url: string, props: HttpsActionProps={}) {
+  constructor(url: string, props: HttpsActionProps = {}) {
     this.url = url;
     this.confirmationUrl = props.confirmationUrl;
     this.headers = props.headers;
     this.role = props.role;
     this.auth = props.auth;
+    this.batchConfig = props.batchConfig;
+
+    this.validateBatchConfig();
+  }
+
+  private validateBatchConfig(): void {
+    if (!this.batchConfig) {
+      return;
+    }
+
+    if (this.batchConfig.maxBatchOpenDuration) {
+      const ms = this.batchConfig.maxBatchOpenDuration.toMilliseconds();
+      if (ms < Duration.millis(5).toMilliseconds() || ms > Duration.millis(200).toMilliseconds()) {
+        throw new UnscopedValidationError(`maxBatchOpenDuration must be between 5 ms and 200 ms, got ${ms} ms`);
+      }
+    }
+
+    if (this.batchConfig.maxBatchSize) {
+      if (this.batchConfig.maxBatchSize < 2 || this.batchConfig.maxBatchSize > 10) {
+        throw new UnscopedValidationError(`maxBatchSize must be between 2 and 10, got ${this.batchConfig.maxBatchSize}`);
+      }
+    }
+
+    if (this.batchConfig.maxBatchSizeBytes) {
+      const bytes = this.batchConfig.maxBatchSizeBytes.toBytes();
+      if (bytes < Size.bytes(100).toBytes() || bytes > Size.kibibytes(128).toBytes()) {
+        throw new UnscopedValidationError(`maxBatchSizeBytes must be between 100 bytes and 128 KiB, got ${bytes} bytes`);
+      }
+    }
   }
 
   /**
@@ -82,6 +157,12 @@ export class HttpsAction implements iot.IAction {
       },
     } : this.auth;
 
+    const batchConfig = this.batchConfig ? {
+      maxBatchOpenMs: this.batchConfig.maxBatchOpenDuration?.toMilliseconds(),
+      maxBatchSize: this.batchConfig.maxBatchSize,
+      maxBatchSizeBytes: this.batchConfig.maxBatchSizeBytes?.toBytes(),
+    } : undefined;
+
     return {
       configuration: {
         http: {
@@ -89,6 +170,8 @@ export class HttpsAction implements iot.IAction {
           confirmationUrl: this.confirmationUrl,
           headers: this.headers,
           auth: sigV4,
+          enableBatching: this.batchConfig ? true : false,
+          batchConfig,
         },
       },
     };
