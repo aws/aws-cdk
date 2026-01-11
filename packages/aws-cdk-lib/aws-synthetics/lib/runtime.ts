@@ -361,6 +361,35 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_3_0 = new Runtime('syn-nodejs-playwright-3.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-playwright-4.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.53.0
+   * - Chromium version 138.0.7204.168
+   *
+   * New Features:
+   * - **Node.js 22.x support**: Updated to use Node.js 22.x runtime
+   * - **Enhanced performance and stability**
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-4.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_4_0 = new Runtime('syn-nodejs-playwright-4.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-5.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.53.0
+   * - Chromium version 138.0.7204.168
+   *
+   * New Features:
+   * - **Node.js 22.x support**: Updated to use Node.js 22.x runtime
+   * - **Enhanced performance and stability**
+   * - **Bug fixes and security updates**
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-5.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_5_0 = new Runtime('syn-nodejs-playwright-5.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
