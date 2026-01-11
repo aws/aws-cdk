@@ -374,7 +374,7 @@ topicRule.addAction(
 You can enable batching to reduce costs and improve efficiency:
 
 ```ts
-import { Duration, Size } from 'aws-cdk-lib';
+import { Size } from 'aws-cdk-lib';
 
 topicRule.addAction(
   new actions.HttpsAction('https://example.com/endpoint', {
