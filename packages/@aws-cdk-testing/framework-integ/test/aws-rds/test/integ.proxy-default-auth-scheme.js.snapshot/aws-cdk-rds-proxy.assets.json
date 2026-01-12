@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "73a34547796ec05beb2db1181fbfb7928719dc7a9cde8ac7f901453d4e42d4e5": {
-      "displayName": "IoTHttpsActionTestStack Template",
+    "6c98aca8968523195a76841524ca31bcef2332a8325f654913e03b1034b3c957": {
+      "displayName": "aws-cdk-rds-proxy Template",
       "source": {
-        "path": "IoTHttpsActionTestStack.template.json",
+        "path": "aws-cdk-rds-proxy.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-3ca793f1": {
+        "current_account-current_region-ca85ba50": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "73a34547796ec05beb2db1181fbfb7928719dc7a9cde8ac7f901453d4e42d4e5.json",
+          "objectKey": "6c98aca8968523195a76841524ca31bcef2332a8325f654913e03b1034b3c957.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
