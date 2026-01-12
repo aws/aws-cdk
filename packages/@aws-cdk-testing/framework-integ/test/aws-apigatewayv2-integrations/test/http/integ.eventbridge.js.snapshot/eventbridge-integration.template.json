@@ -1,0 +1,250 @@
+{
+ "Resources": {
+  "BusEA82B648": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "Name": "eventbridgeintegrationBusCADD79B0"
+   }
+  },
+  "ApiF70053CD": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "Api",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "ApiDefaultStage189A7074": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "ApiPOSTdefaultInvokeRole9137E4F5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "BusEA82B648",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEventBridgePutEvents"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTdefaultInvokeRole9137E4F5"
+     }
+    ]
+   }
+  },
+  "ApiPOSTdefaultdefaultIntegration0355373B": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTdefaultInvokeRole9137E4F5",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "EventBridge-PutEvents",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "Detail": "$request.body.Detail",
+     "DetailType": "$request.body.DetailType",
+     "Source": "$request.body.Source"
+    }
+   }
+  },
+  "ApiPOSTdefault1EEA0D1D": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /default",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTdefaultdefaultIntegration0355373B"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "ApiPOSTputeventsInvokeRole8FCD4FCB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTputeventsInvokeRoleDefaultPolicy9BD97DC0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "BusEA82B648",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEventBridgePutEvents"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTputeventsInvokeRoleDefaultPolicy9BD97DC0",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTputeventsInvokeRole8FCD4FCB"
+     }
+    ]
+   }
+  },
+  "ApiPOSTputeventsputEventsIntegration2D9DDBF5": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTputeventsInvokeRole8FCD4FCB",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "EventBridge-PutEvents",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "Detail": "$request.body.Detail",
+     "DetailType": "$request.body.DetailType",
+     "Source": "$request.body.Source"
+    }
+   }
+  },
+  "ApiPOSTputevents205E0578": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /put-events",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTputeventsputEventsIntegration2D9DDBF5"
+       }
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ApiF70053CD",
+     "ApiEndpoint"
+    ]
+   },
+   "Export": {
+    "Name": "eventbridge-integration:ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -473,7 +473,7 @@ export class Cluster extends Resource implements ICluster {
     }
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
-      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupName,
+      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupRef.logGroupName,
       s3BucketName: logConfiguration?.s3Bucket?.bucketName,
       s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
       s3KeyPrefix: logConfiguration?.s3KeyPrefix,
@@ -1468,7 +1468,7 @@ export interface ExecuteCommandLogConfiguration {
    * The name of the CloudWatch log group to send logs to. The CloudWatch log group must already be created.
    * @default - none
    */
-  readonly cloudWatchLogGroup?: logs.ILogGroup;
+  readonly cloudWatchLogGroup?: logs.ILogGroupRef;
 
   /**
    * The name of the S3 bucket to send logs to. The S3 bucket must already be created.
