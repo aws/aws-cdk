@@ -61,7 +61,7 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: 'Google', // must be 'Google' when the type is 'Google'
       providerType: 'Google',
       providerDetails: {
@@ -73,5 +73,6 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 }
