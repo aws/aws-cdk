@@ -1,8 +1,6 @@
 import { Construct } from 'constructs';
 import * as dynamodb from '../../aws-dynamodb';
 import * as ec2 from '../../aws-ec2';
-import * as efs from '../../aws-efs';
-import * as rds from '../../aws-rds';
 import { Stack } from '../../core';
 import { aws_rds } from '../../interfaces';
 import { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
