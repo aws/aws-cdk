@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/1f43ebefc5905ff37644a70605b5e85a014ea8fcbcc705fe7a10972d3a6dae70.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/21273dbf16eaa5e7dc6b90f7bd3e5eac87cfae7534d9f2b8bf9b43385621ae13.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,20 @@
         "BedrockAgentCoreGatewayIntegTest.assets"
       ],
       "metadata": {
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -138,7 +152,6 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "userPoolName": "*",
               "signInCaseSensitive": false
             }
           }
@@ -149,12 +162,34 @@
             "data": "TestGatewayUserPool545AA49A"
           }
         ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/ResourceServer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "identifier": "*",
+              "scopes": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/ResourceServer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayUserPoolResourceServer7A34B6B2"
+          }
+        ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/DefaultClient": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "userPool": "*",
-              "userPoolClientName": "*"
+              "generateSecret": true,
+              "oAuth": {
+                "flows": {
+                  "clientCredentials": true
+                },
+                "scopes": "*"
+              }
             }
           }
         ],
@@ -164,16 +199,45 @@
             "data": "TestGatewayUserPoolDefaultClient3AC9C728"
           }
         ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayUserPoolDomainB64B616E"
+          }
+        ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestGateway7394A071"
           }
         ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/LambdaTarget": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/LambdaTarget/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestGatewayLambdaTargetBE2E7E0C"
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/SmithyTarget": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/SmithyTarget/Resource": [
@@ -196,18 +260,8 @@
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           }
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole/ImportServiceRole": [
@@ -292,7 +346,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/50921690cdeaa29b8f2bed8897de3725266133a7263f30b2869c2c858fe1c4f1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b73db98070c0a0dbbc02c1a3b34776ffb1816e1d94f9eb1f1cfdffdabaef153a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -373,6 +427,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -391,6 +446,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -861,5 +917,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

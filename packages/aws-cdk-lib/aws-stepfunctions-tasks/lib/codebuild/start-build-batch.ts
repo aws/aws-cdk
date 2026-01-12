@@ -9,7 +9,7 @@ interface CodeBuildStartBuildBatchOptions {
   /**
    * CodeBuild project to start
    */
-  readonly project: codebuild.IProject;
+  readonly project: codebuild.IProjectRef;
 
   /**
    * A set of environment variables to be used for this build only.
@@ -78,7 +78,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
       metricPrefixSingular: 'CodeBuildProject',
       metricPrefixPlural: 'CodeBuildProjects',
       metricDimensions: {
-        ProjectArn: this.props.project.projectArn,
+        ProjectArn: this.props.project.projectRef.projectArn,
       },
     };
 
@@ -97,7 +97,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
       case sfn.IntegrationPattern.RUN_JOB:
         policyStatements = [
           new iam.PolicyStatement({
-            resources: [this.props.project.projectArn],
+            resources: [this.props.project.projectRef.projectArn],
             actions: [
               'codebuild:StartBuildBatch',
               'codebuild:StopBuildBatch',
@@ -118,7 +118,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
       case sfn.IntegrationPattern.REQUEST_RESPONSE:
         policyStatements = [
           new iam.PolicyStatement({
-            resources: [this.props.project.projectArn],
+            resources: [this.props.project.projectRef.projectArn],
             actions: ['codebuild:StartBuildBatch'],
           }),
         ];
@@ -140,7 +140,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('codebuild', 'startBuildBatch', this.integrationPattern),
       ...this._renderParametersOrArguments({
-        ProjectName: this.props.project.projectName,
+        ProjectName: this.props.project.projectRef.projectName,
         EnvironmentVariablesOverride: this.props.environmentVariablesOverride
           ? this.serializeEnvVariables(this.props.environmentVariablesOverride)
           : undefined,

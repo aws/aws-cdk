@@ -1247,7 +1247,7 @@ interface IModifiableMetric {
 }
 
 function isModifiableMetric(m: any): m is IModifiableMetric {
-  return typeof m === 'object' && m !== null && !!m.with;
+  return typeof m === 'object' && m !== null && 'with' in m;
 }
 
 interface IMetricWithPeriod {
@@ -1255,7 +1255,7 @@ interface IMetricWithPeriod {
 }
 
 function isMetricWithPeriod(m: any): m is IMetricWithPeriod {
-  return typeof m === 'object' && m !== null && !!m.period;
+  return typeof m === 'object' && m !== null && 'period' in m;
 }
 
 // Polyfill for string.matchAll(regexp)
