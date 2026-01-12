@@ -13,6 +13,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { aws_rds } from '../../interfaces';
 
 /**
  * Client password authentication type used by a proxy to log in as a specific database user.
@@ -38,6 +39,22 @@ export enum ClientPasswordAuthType {
    * MySQL Caching SHA2 Password client authentication type.
    */
   MYSQL_CACHING_SHA2_PASSWORD = 'MYSQL_CACHING_SHA2_PASSWORD',
+}
+
+/**
+ * The default authentication scheme that the proxy uses for client connections to the proxy and connections from the proxy to the underlying database.
+ */
+export enum DefaultAuthScheme {
+
+  /**
+   * IAM authentication.
+   */
+  IAM_AUTH = 'IAM_AUTH',
+
+  /**
+   * No default authentication.
+   */
+  NONE = 'NONE',
 }
 
 /**
@@ -268,9 +285,11 @@ export interface DatabaseProxyOptions {
   /**
    * The secret that the proxy uses to authenticate to the RDS DB instance or Aurora DB cluster.
    * These secrets are stored within Amazon Secrets Manager.
-   * One or more secrets are required.
+   * One or more secrets are required when defaultAuthScheme is `DefaultAuthScheme.NONE`.
+   *
+   * @default None
    */
-  readonly secrets: secretsmanager.ISecret[];
+  readonly secrets?: secretsmanager.ISecret[];
 
   /**
    * One or more VPC security groups to associate with the new proxy.
@@ -297,6 +316,14 @@ export interface DatabaseProxyOptions {
    * @default - CloudFormation defaults will apply given the specified database engine.
    */
   readonly clientPasswordAuthType?: ClientPasswordAuthType;
+
+  /**
+   * The default authentication scheme that the proxy uses for client connections to the proxy and connections from the proxy to the underlying database.
+   * When set to `DefaultAuthScheme.IAM_AUTH`, the proxy uses end-to-end IAM authentication to connect to the database.
+   *
+   * @default DefaultAuthScheme.NONE
+   */
+  readonly defaultAuthScheme?: DefaultAuthScheme;
 }
 
 /**
@@ -337,7 +364,7 @@ export interface DatabaseProxyAttributes {
 /**
  * DB Proxy
  */
-export interface IDatabaseProxy extends cdk.IResource {
+export interface IDatabaseProxy extends cdk.IResource, aws_rds.IDBProxyRef {
   /**
    * DB Proxy Name
    *
@@ -379,6 +406,16 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
   public abstract readonly dbProxyName: string;
   public abstract readonly dbProxyArn: string;
   public abstract readonly endpoint: string;
+
+  /**
+   * A reference to this database proxy
+   */
+  public get dbProxyRef(): aws_rds.DBProxyReference {
+    return {
+      dbProxyName: this.dbProxyName,
+      dbProxyArn: this.dbProxyArn,
+    };
+  }
 
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
@@ -455,7 +492,7 @@ export class DatabaseProxy extends DatabaseProxyBase
    */
   public readonly connections: ec2.Connections;
 
-  private readonly secrets: secretsmanager.ISecret[];
+  private readonly secrets?: secretsmanager.ISecret[];
   private readonly resource: CfnDBProxy;
   private readonly vpc: ec2.IVpc;
 
@@ -473,10 +510,12 @@ export class DatabaseProxy extends DatabaseProxyBase
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
     });
 
-    for (const secret of props.secrets) {
-      secret.grantRead(role);
-      if (secret.encryptionKey) {
-        secret.encryptionKey.grantDecrypt(role);
+    if (props.secrets) {
+      for (const secret of props.secrets) {
+        secret.grantRead(role);
+        if (secret.encryptionKey) {
+          secret.encryptionKey.grantDecrypt(role);
+        }
       }
     }
 
@@ -490,15 +529,16 @@ export class DatabaseProxy extends DatabaseProxyBase
 
     const bindResult = props.proxyTarget.bind(this);
 
-    if (props.secrets.length < 1) {
-      throw new ValidationError('One or more secrets are required.', this);
+    const requiresSecrets = !props.defaultAuthScheme || props.defaultAuthScheme === DefaultAuthScheme.NONE;
+    if (requiresSecrets && !props.secrets?.length) {
+      throw new ValidationError('One or more secrets are required when defaultAuthScheme is not specified or is NONE.', this);
     }
     this.secrets = props.secrets;
 
     this.validateClientPasswordAuthType(bindResult.engineFamily, props.clientPasswordAuthType);
 
     this.resource = new CfnDBProxy(this, 'Resource', {
-      auth: props.secrets.map(_ => {
+      auth: props.secrets?.map(_ => {
         return {
           authScheme: 'SECRETS',
           clientPasswordAuthType: props.clientPasswordAuthType,
@@ -514,6 +554,7 @@ export class DatabaseProxy extends DatabaseProxyBase
       roleArn: role.roleArn,
       vpcSecurityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(_ => _.securityGroupId) }),
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
+      defaultAuthScheme: props.defaultAuthScheme,
     });
 
     this.dbProxyName = this.resource.ref;
@@ -596,6 +637,9 @@ export class DatabaseProxy extends DatabaseProxyBase
   @MethodMetadata()
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
+      if (!this.secrets?.length) {
+        throw new ValidationError('When using IAM authentication without secrets, you must specify a dbUser parameter in grantConnect().', this);
+      }
       if (this.secrets.length > 1) {
         throw new ValidationError('When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()', this);
       }

@@ -192,7 +192,6 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "userPoolName": "*",
               "signInCaseSensitive": false
             }
           }
@@ -203,12 +202,34 @@
             "data": "TestGatewayUserPool545AA49A"
           }
         ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/ResourceServer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "identifier": "*",
+              "scopes": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/ResourceServer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayUserPoolResourceServer7A34B6B2"
+          }
+        ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/DefaultClient": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "userPool": "*",
-              "userPoolClientName": "*"
+              "generateSecret": true,
+              "oAuth": {
+                "flows": {
+                  "clientCredentials": true
+                },
+                "scopes": "*"
+              }
             }
           }
         ],
@@ -216,6 +237,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestGatewayUserPoolDefaultClient3AC9C728"
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayUserPoolDomainB64B616E"
           }
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/Resource": [

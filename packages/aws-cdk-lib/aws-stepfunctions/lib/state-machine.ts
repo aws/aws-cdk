@@ -69,7 +69,7 @@ export interface LogOptions {
    *
    * @default No log group. Required if your log level is not set to OFF.
    */
-  readonly destination?: logs.ILogGroup;
+  readonly destination?: logs.ILogGroupRef;
 
   /**
    * Determines whether execution data is included in your log.
@@ -569,7 +569,7 @@ export class StateMachine extends StateMachineBase {
         resources: ['*'],
       }));
       destinations = [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupRef.logGroupArn },
       }];
     }
 

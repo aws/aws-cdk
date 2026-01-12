@@ -568,7 +568,9 @@ export class HttpApi extends HttpApiBase {
 
 export function toIHttpApi(x: IHttpApiRef): IHttpApi {
   const ret = x as IHttpApi;
-  if (!!ret.addVpcLink && !!ret.apiEndpoint && !!ret.apiId && !!ret.arnForExecuteApi && !!ret.metricClientError) {
+
+  // Check for property presence without evaluating it (no need to do that for methods)
+  if (!!ret.addVpcLink && 'apiEndpoint' in ret && 'apiId' in ret && !!ret.arnForExecuteApi && !!ret.metricClientError) {
     return ret;
   }
   throw new UnscopedValidationError(`Input HttpApi ${x.constructor.name} does not implement IHttpApi`);
