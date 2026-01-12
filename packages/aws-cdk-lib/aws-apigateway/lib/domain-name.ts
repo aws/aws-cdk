@@ -3,12 +3,12 @@ import { CfnDomainName, DomainNameReference, IDomainNameRef, IRestApiRef, IStage
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointAccessMode, EndpointType, IRestApi } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
-import * as acm from '../../aws-certificatemanager';
 import { IBucket } from '../../aws-s3';
 import { Arn, IResource, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Options for creating an api mapping
@@ -61,7 +61,7 @@ export interface DomainNameOptions {
    * endpoint for the domain name. For "EDGE" domain names, the certificate
    * needs to be in the US East (N. Virginia) region.
    */
-  readonly certificate: acm.ICertificate;
+  readonly certificate: ICertificateRef;
 
   /**
    * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
@@ -189,8 +189,8 @@ export class DomainName extends Resource implements IDomainName {
     const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
-      certificateArn: edge ? props.certificate.certificateArn : undefined,
-      regionalCertificateArn: edge ? undefined : props.certificate.certificateArn,
+      certificateArn: edge ? props.certificate.certificateRef.certificateId : undefined,
+      regionalCertificateArn: edge ? undefined : props.certificate.certificateRef.certificateId,
       endpointConfiguration: { types: [this.endpointType] },
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
