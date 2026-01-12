@@ -14,7 +14,7 @@ export interface S3OriginProps extends cloudfront.OriginProps {
    *
    * @default - An Origin Access Identity will be created.
    */
-  readonly originAccessIdentity?: cloudfront.IOriginAccessIdentity;
+  readonly originAccessIdentity?: cloudfront.ICloudFrontOriginAccessIdentityRef & iam.IGrantable;
 }
 
 /**
@@ -49,7 +49,7 @@ export class S3Origin implements cloudfront.IOrigin {
  * Contains additional logic around bucket permissions and origin access identities.
  */
 class S3BucketOrigin extends cloudfront.OriginBase {
-  private originAccessIdentity!: cloudfront.IOriginAccessIdentity;
+  private originAccessIdentity!: cloudfront.ICloudFrontOriginAccessIdentityRef & iam.IGrantable;
 
   constructor(private readonly bucket: s3.IBucket, { originAccessIdentity, ...props }: S3OriginProps) {
     super(bucket.bucketRegionalDomainName, props);
@@ -86,6 +86,6 @@ class S3BucketOrigin extends cloudfront.OriginBase {
   }
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
-    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
+    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.cloudFrontOriginAccessIdentityRef.cloudFrontOriginAccessIdentityId}` };
   }
 }
