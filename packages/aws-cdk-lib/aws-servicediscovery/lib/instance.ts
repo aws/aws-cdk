@@ -1,8 +1,7 @@
 import { IService } from './service';
 import { IResource, Names, Resource } from '../../core';
-import { IInstanceRef, InstanceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
-export interface IInstance extends IResource, IInstanceRef {
+export interface IInstance extends IResource {
   /**
    * The id of the instance resource
    * @attribute
@@ -45,12 +44,6 @@ export abstract class InstanceBase extends Resource implements IInstance {
    * The Cloudmap service to which the instance is registered.
    */
   public abstract readonly service: IService;
-
-  public get instanceRef(): InstanceReference {
-    return {
-      instanceId: this.instanceId,
-    };
-  }
 
   /**
    * Generate a unique instance Id that is safe to pass to CloudMap

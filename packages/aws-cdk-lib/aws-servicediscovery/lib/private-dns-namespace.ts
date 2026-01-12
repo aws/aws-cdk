@@ -6,7 +6,6 @@ import * as ec2 from '../../aws-ec2';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IPrivateDnsNamespaceRef, PrivateDnsNamespaceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
@@ -15,7 +14,7 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   readonly vpc: ec2.IVpc;
 }
 
-export interface IPrivateDnsNamespace extends INamespace, IPrivateDnsNamespaceRef { }
+export interface IPrivateDnsNamespace extends INamespace { }
 
 export interface PrivateDnsNamespaceAttributes {
   /**
@@ -48,12 +47,6 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
       public type = NamespaceType.DNS_PRIVATE;
-      public get privateDnsNamespaceRef(): PrivateDnsNamespaceReference {
-        return {
-          privateDnsNamespaceId: attrs.namespaceId,
-          privateDnsNamespaceArn: attrs.namespaceArn,
-        };
-      }
     }
     return new Import(scope, id);
   }
@@ -112,13 +105,6 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
 
   /** @attribute */
   public get privateDnsNamespaceId() { return this.namespaceId; }
-
-  public get privateDnsNamespaceRef(): PrivateDnsNamespaceReference {
-    return {
-      privateDnsNamespaceId: this.namespaceId,
-      privateDnsNamespaceArn: this.namespaceArn,
-    };
-  }
 
   /**
    * Creates a service within the namespace

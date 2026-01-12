@@ -4128,3 +4128,43 @@ removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
 
 # This type must needs be weakened
 changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
+
+# Revert of PR #36494 which introduced reference interfaces that caused type compatibility issues
+# https://github.com/aws/aws-cdk/issues/36658
+# This revert removes the reference interface pattern that made INamespace incompatible with IPrivateDnsNamespace
+
+# Removed reference interfaces
+removed:aws-cdk-lib.interfaces.IHttpNamespaceRef
+removed:aws-cdk-lib.interfaces.IPrivateDnsNamespaceRef
+removed:aws-cdk-lib.interfaces.IPublicDnsNamespaceRef
+removed:aws-cdk-lib.interfaces.IServiceRef
+removed:aws-cdk-lib.interfaces.IInstanceRef
+
+# Base type changes for interfaces (no longer extend reference interfaces)
+base-types:aws-cdk-lib.aws_servicediscovery.IHttpNamespace
+base-types:aws-cdk-lib.aws_servicediscovery.IPrivateDnsNamespace
+base-types:aws-cdk-lib.aws_servicediscovery.IPublicDnsNamespace
+base-types:aws-cdk-lib.aws_servicediscovery.IService
+base-types:aws-cdk-lib.aws_servicediscovery.IInstance
+
+# Removed reference properties from interfaces
+removed:aws-cdk-lib.aws_servicediscovery.IHttpNamespace.httpNamespaceRef
+removed:aws-cdk-lib.aws_servicediscovery.IPrivateDnsNamespace.privateDnsNamespaceRef
+removed:aws-cdk-lib.aws_servicediscovery.IPublicDnsNamespace.publicDnsNamespaceRef
+removed:aws-cdk-lib.aws_servicediscovery.IService.serviceRef
+removed:aws-cdk-lib.aws_servicediscovery.IInstance.instanceRef
+
+# Removed reference properties from classes
+base-types:aws-cdk-lib.aws_servicediscovery.HttpNamespace
+removed:aws-cdk-lib.aws_servicediscovery.HttpNamespace.httpNamespaceRef
+base-types:aws-cdk-lib.aws_servicediscovery.PrivateDnsNamespace
+removed:aws-cdk-lib.aws_servicediscovery.PrivateDnsNamespace.privateDnsNamespaceRef
+base-types:aws-cdk-lib.aws_servicediscovery.PublicDnsNamespace
+removed:aws-cdk-lib.aws_servicediscovery.PublicDnsNamespace.publicDnsNamespaceRef
+base-types:aws-cdk-lib.aws_servicediscovery.Service
+removed:aws-cdk-lib.aws_servicediscovery.Service.serviceRef
+base-types:aws-cdk-lib.aws_servicediscovery.InstanceBase
+removed:aws-cdk-lib.aws_servicediscovery.InstanceBase.instanceRef
+
+# Changes to apigatewayv2-integrations due to service discovery revert
+incompatible-argument:aws-cdk-lib.aws_apigatewayv2_integrations.HttpServiceDiscoveryIntegration
