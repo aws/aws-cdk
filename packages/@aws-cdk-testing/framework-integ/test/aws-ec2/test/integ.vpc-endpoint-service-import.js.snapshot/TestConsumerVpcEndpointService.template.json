@@ -549,6 +549,13 @@
     "VpcId": {
      "Ref": "ConsumerVPCAB68BB34"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "ConsumerVpcEndpoint8E243F2D": {

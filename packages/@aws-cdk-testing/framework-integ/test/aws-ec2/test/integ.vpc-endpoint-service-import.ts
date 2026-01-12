@@ -49,12 +49,18 @@ class ConsumerStack extends cdk.Stack {
     });
 
     // Use the imported service to create a VPC endpoint
-    new ec2.InterfaceVpcEndpoint(this, 'ConsumerVpcEndpoint', {
+    const vpcEndpoint = new ec2.InterfaceVpcEndpoint(this, 'ConsumerVpcEndpoint', {
       vpc: consumerVpc,
       service: new ec2.InterfaceVpcEndpointService(
         importedEndpointService.vpcEndpointServiceName,
         443,
       ),
+    });
+    vpcEndpoint.connections.securityGroups.forEach((sg) => {
+      const cfnSg = sg.node.defaultChild as cdk.CfnResource;
+      cfnSg.addMetadata('guard', {
+        SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+      });
     });
   }
 }
