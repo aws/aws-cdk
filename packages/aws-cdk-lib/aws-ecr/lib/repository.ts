@@ -1100,6 +1100,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
     rulePriority: rule.rulePriority,
     description: rule.description,
     selection: {
+      // eslint-disable-next-line @cdklabs/no-evaluating-typeguard
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       tagPatternList: rule.tagPatternList,
