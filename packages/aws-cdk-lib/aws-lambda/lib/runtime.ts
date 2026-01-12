@@ -104,6 +104,7 @@ export class Runtime {
 
   /**
    * The NodeJS 18.x runtime (nodejs18.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -166,6 +167,7 @@ export class Runtime {
 
   /**
    * The Python 3.9 runtime (python3.9)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_3_9 = new Runtime('python3.9', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
@@ -264,6 +266,7 @@ export class Runtime {
 
   /**
    * The .NET 6 runtime (dotnet6)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET runtime.
    */
   public static readonly DOTNET_6 = new Runtime('dotnet6', RuntimeFamily.DOTNET_CORE);
 
@@ -278,6 +281,13 @@ export class Runtime {
    * The .NET 9 runtime (dotnet9)
    */
   public static readonly DOTNET_9 = new Runtime('dotnet9', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The .NET 10 runtime (dotnet10)
+   */
+  public static readonly DOTNET_10 = new Runtime('dotnet10', RuntimeFamily.DOTNET_CORE, {
     supportsSnapStart: true,
   });
 

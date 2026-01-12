@@ -8,6 +8,7 @@ export * from './container-definition';
 export * from './container-image';
 export * from './amis';
 export * from './cluster';
+export * from './cluster-grants';
 export * from './environment-file';
 export * from './credential-spec';
 export * from './firelens-log-router';
@@ -54,4 +55,3 @@ export * from './alternate-target-configuration';
 // AWS::ECS CloudFormation Resources:
 //
 export * from './ecs.generated';
-export * from './ecs-grants.generated';

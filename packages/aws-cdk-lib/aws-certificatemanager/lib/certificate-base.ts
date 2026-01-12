@@ -2,6 +2,7 @@ import { ICertificate } from './certificate';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Stats } from '../../aws-cloudwatch';
 import { Duration, Resource } from '../../core';
+import { CertificateReference } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Shared implementation details of ICertificate implementations.
@@ -17,6 +18,12 @@ export abstract class CertificateBase extends Resource implements ICertificate {
    * so we can correctly create `Metric` instances.
    */
   protected readonly region?: string;
+
+  public get certificateRef(): CertificateReference {
+    return {
+      certificateId: this.certificateArn,
+    };
+  }
 
   public metricDaysToExpiry(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({

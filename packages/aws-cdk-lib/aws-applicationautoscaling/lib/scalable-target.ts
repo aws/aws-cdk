@@ -8,8 +8,9 @@ import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IScalableTargetRef, ScalableTargetReference } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
-export interface IScalableTarget extends IResource {
+export interface IScalableTarget extends IResource, IScalableTargetRef {
   /**
    * @attribute
    */
@@ -72,6 +73,26 @@ export interface ScalableTargetProps {
 }
 
 /**
+ * Attributes for importing a scalable target
+ */
+export interface ScalableTargetAttributes {
+  /**
+   * The scalable target ID
+   */
+  readonly scalableTargetId: string;
+
+  /**
+   * The scalable dimension that's associated with the scalable target.
+   */
+  readonly scalableDimension: string;
+
+  /**
+   * The namespace of the AWS service that provides the resource.
+   */
+  readonly serviceNamespace: string;
+}
+
+/**
  * Define a scalable target
  */
 @propertyInjectable
@@ -79,9 +100,34 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-applicationautoscaling.ScalableTarget';
 
+  /**
+   * Create a referenceable `IScalableTarget` object based on properties of a resource that already exists in your account
+   */
   public static fromScalableTargetId(scope: Construct, id: string, scalableTargetId: string): IScalableTarget {
     class Import extends Resource implements IScalableTarget {
       public readonly scalableTargetId = scalableTargetId;
+
+      public get scalableTargetRef(): ScalableTargetReference {
+        throw new ValidationError('Cannot access scalableTargetRef on a ScalableTarget imported by ID only. Use ScalableTarget.fromScalableTargetAttributes() instead.', this);
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Create a referenceable `IScalableTarget` object based on properties of a resource that already exists in your account
+   */
+  public static fromScalableTargetAttributes(scope: Construct, id: string, attrs: ScalableTargetAttributes): IScalableTarget {
+    class Import extends Resource implements IScalableTarget {
+      public readonly scalableTargetId = attrs.scalableTargetId;
+
+      public get scalableTargetRef(): ScalableTargetReference {
+        return {
+          resourceId: attrs.scalableTargetId,
+          scalableDimension: attrs.scalableDimension,
+          serviceNamespace: attrs.serviceNamespace,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -96,10 +142,23 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   public readonly scalableTargetId: string;
 
   /**
+   * A reference to a ScalableTarget resource.
+   */
+  public get scalableTargetRef(): ScalableTargetReference {
+    return {
+      resourceId: this.scalableTargetId,
+      scalableDimension: this._scalableDimension,
+      serviceNamespace: this._serviceNamespace,
+    };
+  }
+
+  /**
    * The role used to give AutoScaling permissions to your resource
    */
   public readonly role: iam.IRole;
 
+  private readonly _scalableDimension: string;
+  private readonly _serviceNamespace: string;
   private readonly actions = new Array<CfnScalableTarget.ScheduledActionProperty>();
 
   constructor(scope: Construct, id: string, props: ScalableTargetProps) {
@@ -128,6 +187,9 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
     });
+
+    this._scalableDimension = props.scalableDimension;
+    this._serviceNamespace = props.serviceNamespace;
 
     const resource = new CfnScalableTarget(this, 'Resource', {
       maxCapacity: props.maxCapacity,

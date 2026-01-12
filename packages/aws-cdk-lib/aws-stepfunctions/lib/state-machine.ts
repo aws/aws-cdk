@@ -3,14 +3,15 @@ import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-e
 import { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
+import { StateMachineGrants } from './state-machine-grants';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
-import { CfnStateMachine } from './stepfunctions.generated';
+import { CfnStateMachine, IStateMachineRef, StateMachineReference } from './stepfunctions.generated';
 import { IChainable, QueryLanguage } from './types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
-import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -68,7 +69,7 @@ export interface LogOptions {
    *
    * @default No log group. Required if your log level is not set to OFF.
    */
-  readonly destination?: logs.ILogGroup;
+  readonly destination?: logs.ILogGroupRef;
 
   /**
    * Determines whether execution data is included in your log.
@@ -216,15 +217,22 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * Collection of grant methods for a StateMachine
+   */
+  public grants = StateMachineGrants.fromStateMachine(this);
+
+  public get stateMachineRef(): StateMachineReference {
+    return {
+      stateMachineArn: this.stateMachineArn,
+    };
+  }
+
+  /**
    * Grant the given identity permissions to start an execution of this state
    * machine.
    */
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['states:StartExecution'],
-      resourceArns: [this.stateMachineArn],
-    });
+    return this.grants.startExecution(identity);
   }
 
   /**
@@ -232,11 +240,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * this state machine.
    */
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['states:StartSyncExecution'],
-      resourceArns: [this.stateMachineArn],
-    });
+    return this.grants.startSyncExecution(identity);
   }
 
   /**
@@ -244,58 +248,21 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * machine.
    */
   public grantRead(identity: iam.IGrantable): iam.Grant {
-    iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:ListExecutions',
-        'states:ListStateMachines',
-      ],
-      resourceArns: [this.stateMachineArn],
-    });
-    iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:DescribeExecution',
-        'states:DescribeStateMachineForExecution',
-        'states:GetExecutionHistory',
-      ],
-      resourceArns: [`${this.executionArn()}:*`],
-    });
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:ListActivities',
-        'states:DescribeStateMachine',
-        'states:DescribeActivity',
-      ],
-      resourceArns: ['*'],
-    });
+    return this.grants.read(identity);
   }
 
   /**
    * Grant the given identity task response permissions on a state machine
    */
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:SendTaskSuccess',
-        'states:SendTaskFailure',
-        'states:SendTaskHeartbeat',
-      ],
-      resourceArns: [this.stateMachineArn],
-    });
+    return this.grants.taskResponse(identity);
   }
 
   /**
    * Grant the given identity permissions on all executions of the state machine
    */
   public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions,
-      resourceArns: [`${this.executionArn()}:*`],
-    });
+    return this.grants.execution(identity, ...actions);
   }
 
   /**
@@ -309,11 +276,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * Grant the given identity custom permissions
    */
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions,
-      resourceArns: [this.stateMachineArn],
-    });
+    return this.grants.actions(identity, ...actions);
   }
 
   /**
@@ -393,18 +356,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.executionTimeAverage, props);
-  }
-
-  /**
-   * Returns the pattern for the execution ARN's of the state machine
-   */
-  private executionArn(): string {
-    return Stack.of(this).formatArn({
-      resource: 'execution',
-      service: 'states',
-      resourceName: Arn.split(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
   }
 
   private cannedMetric(
@@ -618,7 +569,7 @@ export class StateMachine extends StateMachineBase {
         resources: ['*'],
       }));
       destinations = [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupRef.logGroupArn },
       }];
     }
 
@@ -657,7 +608,7 @@ export class StateMachine extends StateMachineBase {
 /**
  * A State Machine
  */
-export interface IStateMachine extends IResource, iam.IGrantable {
+export interface IStateMachine extends IResource, iam.IGrantable, IStateMachineRef {
   /**
    * The ARN of the state machine
    * @attribute

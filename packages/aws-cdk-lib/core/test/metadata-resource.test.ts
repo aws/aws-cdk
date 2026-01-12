@@ -1,8 +1,8 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1, FeatureFlags, Duration } from '../lib';
-import { formatAnalytics } from '../lib/private/metadata-resource';
+import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1 } from '../lib';
+import { formatAnalytics, parseAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
 describe('MetadataResource', () => {
@@ -220,6 +220,43 @@ describe('formatAnalytics', () => {
   function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
     expect(plaintextConstructsFromAnalytics(formatAnalytics(constructs))).toEqual(expectedPlaintext);
   }
+});
+
+describe('parseAnalytics', () => {
+  test('parseAnalytics is the inverse of formatAnalytics for single construct', () => {
+    const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
+    const analytics = formatAnalytics(constructInfo);
+    expect(parseAnalytics(analytics)).toEqual(constructInfo);
+  });
+
+  test('parseAnalytics is the inverse of formatAnalytics for multiple constructs', () => {
+    const constructInfo = [
+      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3' },
+      { fqn: 'aws-cdk-lib.CfnResource', version: '1.2.3' },
+      { fqn: 'aws-cdk-lib.Stack', version: '1.2.3' },
+    ];
+    const analytics = formatAnalytics(constructInfo);
+    expect(parseAnalytics(analytics)).toEqual(constructInfo);
+  });
+
+  test('parseAnalytics is the inverse of formatAnalytics for nested modules', () => {
+    const constructInfo = [
+      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3' },
+      { fqn: 'aws-cdk-lib.aws_servicefoo.CoolResource', version: '1.2.3' },
+      { fqn: 'aws-cdk-lib.aws_servicefoo.OtherResource', version: '1.2.3' },
+    ];
+    const analytics = formatAnalytics(constructInfo);
+    expect(parseAnalytics(analytics)).toEqual(constructInfo);
+  });
+
+  test('parseAnalytics is the inverse of formatAnalytics for different versions', () => {
+    const constructInfo = [
+      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3' },
+      { fqn: 'aws-cdk-lib.CoolResource', version: '0.1.2' },
+    ];
+    const analytics = formatAnalytics(constructInfo);
+    expect(parseAnalytics(analytics)).toEqual(constructInfo);
+  });
 });
 
 function plaintextConstructsFromAnalytics(analytics: string) {
