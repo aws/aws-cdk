@@ -4,10 +4,17 @@ import {
   Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
   SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
 } from '../../aws-ec2';
-import { Duration, Lazy, Resource } from '../../core';
+import { Duration, Lazy, Resource, IResource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { aws_elasticloadbalancing } from '../../interfaces';
+
+/**
+ * Represents a load balancer
+ */
+export interface ILoadBalancer extends IResource, aws_elasticloadbalancing.ILoadBalancerRef {
+}
 
 /**
  * Construction properties for a LoadBalancer
@@ -238,7 +245,7 @@ export enum LoadBalancingProtocol {
  * Routes to a fleet of of instances in a VPC.
  */
 @propertyInjectable
-export class LoadBalancer extends Resource implements IConnectable {
+export class LoadBalancer extends Resource implements ILoadBalancer, IConnectable {
   /**
    * Uniquely identifies this class.
    */
@@ -381,6 +388,15 @@ export class LoadBalancer extends Resource implements IConnectable {
    */
   public get loadBalancerSourceSecurityGroupOwnerAlias() {
     return this.elb.attrSourceSecurityGroupOwnerAlias;
+  }
+
+  /**
+   * A reference to this LoadBalancer resource
+   */
+  public get loadBalancerRef(): aws_elasticloadbalancing.LoadBalancerReference {
+    return {
+      loadBalancerName: this.loadBalancerName,
+    };
   }
 
   /**
