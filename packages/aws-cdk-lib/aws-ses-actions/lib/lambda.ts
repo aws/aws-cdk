@@ -53,7 +53,7 @@ export class Lambda implements ses.IReceiptRuleAction {
   constructor(private readonly props: LambdaProps) {
   }
 
-  public bind(rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     // Allow SES to invoke Lambda function
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-lambda
     const permissionId = 'AllowSes';

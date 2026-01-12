@@ -467,20 +467,24 @@ export class ResourceClass extends ClassType implements Referenceable {
    * Generates a static method that returns the ARN of the provided resource.
    * If the resource's ref interface already has an ARN, that's what's returned:
    *
+   * ```
    *     public static arnForTable(resource: ITableRef): string {
    *       return resource.tableRef.tableArn;
    *     }
+   * ```
    *
    * Otherwise, we fall back to using the ARN template:
    *
+   * ```
    *    public static arnForRestApi(resource: IRestApiRef): string {
    *       return new cfn_parse.TemplateString("arn:${Partition}:apigateway:${Region}::/restapis/${RestApiId}").interpolate({
-   *         "Partition": cdk.Stack.of(resource).partition,
-   *         "Region": cdk.Stack.of(resource).region,
-   *         "Account": cdk.Stack.of(resource).account,
+   *         "Partition": cdk.Stack.of(resource).partition, // Always same partition as our current one, but might be beautified by Stack
+   *         "Region": resource.env.region,
+   *         "Account": resource.env.account,
    *         "RestApiId": resource.restApiRef.restApiId
    *       });
    *     }
+   * ```
    */
   private addArnForResourceMethod(): void {
     // The resource cannot provide us with its ARN
@@ -518,14 +522,13 @@ export class ResourceClass extends ClassType implements Referenceable {
     // Case 2: Interpolate from template
     } else {
       const method = doAddMethod();
-      const resourceIdentifier = expr.ident('resource');
-      const stackOfResource = $T(CDK_CORE.Stack).of(resourceIdentifier);
+      const resourceIdentifier = $E(expr.ident('resource'));
 
       const interpolationVars = {
-        Partition: stackOfResource.prop('partition'),
-        Region: stackOfResource.prop('region'),
-        Account: stackOfResource.prop('account'),
-        ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => $E(resourceIdentifier)[refAttributeName][propName]),
+        Partition: $T(CDK_CORE.Stack).of(resourceIdentifier).prop('partition'),
+        Region: resourceIdentifier.env.region,
+        Account: resourceIdentifier.env.account,
+        ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => resourceIdentifier[refAttributeName][propName]),
       };
 
       const interpolateArn = CDK_CORE.helpers.TemplateString
