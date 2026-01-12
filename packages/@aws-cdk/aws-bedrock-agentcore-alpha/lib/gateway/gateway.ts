@@ -1,4 +1,4 @@
-import {Names, Lazy, Stack, Token } from 'aws-cdk-lib';
+import { Names, Lazy, Stack, Token } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';

@@ -20,7 +20,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Gateway } from '../../../lib';
 import { GatewayExceptionLevel } from '../../../lib/gateway/gateway-base';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
-import { LambdaInterceptor, InterceptionPoint } from '../../../lib/gateway/interceptor';
+import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
 import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
 import { McpProtocolConfiguration, MCPProtocolVersion, McpGatewaySearchType } from '../../../lib/gateway/protocol';
@@ -2385,5 +2385,151 @@ describe('Gateway M2M Authentication Tests', () => {
 
     expect(gateway.tokenEndpointUrl).toBeUndefined();
     expect(gateway.oauthScopes).toBeUndefined();
+  });
+});
+
+describe('Gateway Interceptor Tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should add REQUEST and RESPONSE interceptors using convenience methods', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const requestInterceptorFn = new lambda.Function(stack, 'RequestInterceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
+    });
+
+    const responseInterceptorFn = new lambda.Function(stack, 'ResponseInterceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
+    });
+
+    gateway.addRequestInterceptor(requestInterceptorFn, { passRequestHeaders: true });
+    gateway.addResponseInterceptor(responseInterceptorFn);
+
+    const template = Template.fromStack(stack);
+
+    // Verify the gateway has interceptor configurations
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'test-gateway',
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: true,
+          },
+        }),
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        }),
+      ]),
+    });
+
+    // Verify Lambda invoke permissions are granted
+    const resources = template.findResources('AWS::IAM::Policy');
+    const policyStatements = Object.values(resources)[0].Properties.PolicyDocument.Statement;
+
+    // Find the Lambda invoke statement
+    const lambdaInvokeStatement = policyStatements.find(
+      (stmt: any) => stmt.Action === 'lambda:InvokeFunction',
+    );
+
+    expect(lambdaInvokeStatement).toBeDefined();
+    expect(lambdaInvokeStatement.Effect).toBe('Allow');
+    expect(Array.isArray(lambdaInvokeStatement.Resource)).toBe(true);
+    expect(lambdaInvokeStatement.Resource.length).toBe(2);
+  });
+
+  test('Should add interceptors via constructor configuration', () => {
+    const requestInterceptorFn = new lambda.Function(stack, 'RequestInterceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
+    });
+
+    const responseInterceptorFn = new lambda.Function(stack, 'ResponseInterceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestInterceptorFn, { passRequestHeaders: false }),
+        LambdaInterceptor.forResponse(responseInterceptorFn, { passRequestHeaders: true }),
+      ],
+    });
+
+    expect(gateway.name).toBe('test-gateway');
+
+    const template = Template.fromStack(stack);
+
+    // Verify the gateway has interceptor configurations
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'test-gateway',
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        }),
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: true,
+          },
+        }),
+      ]),
+    });
+
+    // Verify Lambda invoke permissions are granted to both interceptors
+    const resources = template.findResources('AWS::IAM::Policy');
+    const policyStatements = Object.values(resources)[0].Properties.PolicyDocument.Statement;
+
+    // Find the Lambda invoke statement
+    const lambdaInvokeStatement = policyStatements.find(
+      (stmt: any) => stmt.Action === 'lambda:InvokeFunction',
+    );
+
+    expect(lambdaInvokeStatement).toBeDefined();
+    expect(lambdaInvokeStatement.Effect).toBe('Allow');
+    expect(Array.isArray(lambdaInvokeStatement.Resource)).toBe(true);
+    expect(lambdaInvokeStatement.Resource.length).toBe(2);
   });
 });

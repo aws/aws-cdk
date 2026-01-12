@@ -16,7 +16,7 @@
      "FunctionName": "\"integ-test-gateway-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1767807527475"
+    "salt": "1768246464206"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -116,7 +116,7 @@
      "FunctionName": "\"integ-test-gateway-request-interceptor\""
     },
     "flattenResponse": "false",
-    "salt": "1767807527475"
+    "salt": "1768246464206"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -137,7 +137,7 @@
      "FunctionName": "\"integ-test-gateway-response-interceptor\""
     },
     "flattenResponse": "false",
-    "salt": "1767807527476"
+    "salt": "1768246464206"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
