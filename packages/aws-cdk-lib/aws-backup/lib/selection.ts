@@ -1,13 +1,13 @@
 import { Construct } from 'constructs';
 import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
-import { IBackupPlan } from './plan';
 import { BackupResource, TagOperation } from './resource';
 import * as iam from '../../aws-iam';
 import { Lazy, Resource, Aspects } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IBackupPlanRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * Options for a BackupSelection
@@ -63,7 +63,7 @@ export interface BackupSelectionProps extends BackupSelectionOptions {
   /**
    * The backup plan for this selection
    */
-  readonly backupPlan: IBackupPlan;
+  readonly backupPlan: IBackupPlanRef;
 }
 
 /**
@@ -113,7 +113,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     this.grantPrincipal = role;
 
     const selection = new CfnBackupSelection(this, 'Resource', {
-      backupPlanId: props.backupPlan.backupPlanId,
+      backupPlanId: props.backupPlan.backupPlanRef.backupPlanId,
       backupSelection: {
         iamRoleArn: role.roleArn,
         selectionName: props.backupSelectionName || this.node.id,

@@ -94,7 +94,7 @@ export class Bounce implements ses.IReceiptRuleAction {
   constructor(private readonly props: BounceProps) {
   }
 
-  public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(_rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     return {
       bounceAction: {
         sender: this.props.sender,
