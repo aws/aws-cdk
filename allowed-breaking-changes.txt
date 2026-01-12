@@ -4023,6 +4023,9 @@ removed:aws-cdk-lib.aws_ecs.AsgCapacityProviderProps.canContainersAccessInstance
 # Exposed struct with a ref interface
 weakened:aws-cdk-lib.aws_batch.OrderedComputeEnvironment
 
+# This should always have been an interface
+change-return-type:aws-cdk-lib.aws_events.ApiDestination.fromApiDestinationAttributes
+
 # Weakened guarantees of a data structure that's intended for internal construct usage
 weakened:aws-cdk-lib.aws_ec2.FlowLogDestinationConfig
 weakened:aws-cdk-lib.aws_ecs.ExecuteCommandLogConfiguration
@@ -4122,3 +4125,6 @@ removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketAuthorizer.authorizerRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketIntegration.integrationRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketRoute.routeRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
+
+# This type must needs be weakened
+changed-type:aws-cdk-lib.aws_ses.EventDestination.bus

@@ -1,7 +1,6 @@
 import { Node, Construct } from 'constructs';
-import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
-import { CfnEventBusPolicy, CfnRule } from './events.generated';
+import { CfnEventBusPolicy, CfnRule, IEventBusRef, RuleReference } from './events.generated';
 import { EventCommonOptions } from './on-event-options';
 import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
@@ -53,7 +52,7 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default - The default event bus.
    */
-  readonly eventBus?: IEventBus;
+  readonly eventBus?: IEventBusRef;
 
   /**
    * The role that is used for target invocation.
@@ -87,6 +86,12 @@ export class Rule extends Resource implements IRule {
     class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
       public ruleName = parts.resourceName || '';
+
+      public get ruleRef(): RuleReference {
+        return {
+          ruleArn: this.ruleArn,
+        };
+      }
     }
     return new Import(scope, id, {
       environmentFromArn: eventRuleArn,
@@ -95,6 +100,12 @@ export class Rule extends Resource implements IRule {
 
   public readonly ruleArn: string;
   public readonly ruleName: string;
+
+  public get ruleRef(): RuleReference {
+    return {
+      ruleArn: this.ruleArn,
+    };
+  }
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
   private readonly eventPattern: EventPattern = { };
@@ -128,7 +139,7 @@ export class Rule extends Resource implements IRule {
       scheduleExpression: this.scheduleExpression,
       eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
       targets: Lazy.any({ produce: () => this.renderTargets() }),
-      eventBusName: props.eventBus && props.eventBus.eventBusName,
+      eventBusName: props.eventBus && props.eventBus.eventBusRef.eventBusName,
       roleArn: props.role?.roleRef.roleArn,
     });
 

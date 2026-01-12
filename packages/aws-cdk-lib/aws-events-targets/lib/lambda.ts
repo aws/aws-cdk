@@ -28,7 +28,7 @@ export class LambdaFunction implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Lambda as a
    * result from an EventBridge event.
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     // Allow handler to be called from rule
     addLambdaPermission(rule, this.handler);
 
