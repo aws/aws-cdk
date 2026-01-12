@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "18ac49d012f26dec756f5afcd3c28378ccf4e5466ffeb36c0b8bf58664bb8860": {
+      "displayName": "RegionalStack Template",
+      "source": {
+        "path": "RegionalStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-west-2-c4f46a6f": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-west-2",
+          "objectKey": "18ac49d012f26dec756f5afcd3c28378ccf4e5466ffeb36c0b8bf58664bb8860.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
