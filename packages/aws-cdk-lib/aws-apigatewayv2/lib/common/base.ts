@@ -5,7 +5,7 @@ import { AccessLogFormat } from '../../../aws-apigateway/lib';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import { Resource, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
-import { CfnStage } from '../apigatewayv2.generated';
+import { CfnStage, IApiRef, StageReference } from '../apigatewayv2.generated';
 
 /**
  * Base class representing an API
@@ -22,6 +22,10 @@ export abstract class ApiBase extends Resource implements IApi {
       dimensionsMap: { ApiId: this.apiId },
       ...props,
     }).attachTo(this);
+  }
+
+  public get apiRef(): IApiRef['apiRef'] {
+    return { apiId: this.apiId };
   }
 }
 
@@ -104,5 +108,9 @@ export abstract class StageBase extends Resource implements IStage {
    */
   protected get _stageVariables(): { [key: string]: string } | undefined {
     return Object.keys(this.stageVariables).length > 0 ? { ...this.stageVariables } : undefined;
+  }
+
+  public get stageRef(): StageReference {
+    return { stageName: this.stageName };
   }
 }

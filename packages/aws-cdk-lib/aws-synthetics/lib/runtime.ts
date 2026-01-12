@@ -389,6 +389,17 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_5_0 = new Runtime('syn-nodejs-playwright-5.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-3.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   *
+   * New Features:
+   * - **Multi-checks blueprint**: Supports the multi-checks blueprint for creating complex synthetic monitoring scenarios.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html
+   */
+  public static readonly SYNTHETICS_NODEJS_3_0 = new Runtime('syn-nodejs-3.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
