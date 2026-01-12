@@ -383,7 +383,7 @@ export interface AwsCustomResourceProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * Whether to install the latest AWS SDK v3.

@@ -1,5 +1,5 @@
 import { IStage } from './stage';
-import { ILogGroup } from '../../../aws-logs';
+import { ILogGroupRef } from '../../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Access log destination for a HttpApi Stage.
@@ -25,7 +25,7 @@ export interface AccessLogDestinationConfig {
  * Use CloudWatch Logs as a custom access log destination for API Gateway.
  */
 export class LogGroupLogDestination implements IAccessLogDestination {
-  constructor(private readonly logGroup: ILogGroup) {
+  constructor(private readonly logGroup: ILogGroupRef) {
   }
 
   /**
@@ -33,7 +33,7 @@ export class LogGroupLogDestination implements IAccessLogDestination {
    */
   public bind(_stage: IStage): AccessLogDestinationConfig {
     return {
-      destinationArn: this.logGroup.logGroupArn,
+      destinationArn: this.logGroup.logGroupRef.logGroupArn,
     };
   }
 }

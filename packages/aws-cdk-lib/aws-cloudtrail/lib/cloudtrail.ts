@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
+import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Annotations, Resource, Stack, ValidationError } from '../../core';
@@ -79,7 +80,7 @@ export interface TrailProps {
    * Log Group to which CloudTrail to push logs to. Ignored if sendToCloudWatchLogs is set to false.
    * @default - a new log group is created and used.
    */
-  readonly cloudWatchLogGroup?: logs.ILogGroup;
+  readonly cloudWatchLogGroup?: logs.ILogGroupRef;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default - No encryption.
@@ -243,11 +244,15 @@ export class Trail extends Resource {
    */
   public readonly trailSnsTopicArn: string;
 
+  private readonly _logGroup?: logs.ILogGroupRef;
+
   /**
    * The CloudWatch log group to which CloudTrail events are sent.
    * `undefined` if `sendToCloudWatchLogs` property is false.
    */
-  public readonly logGroup?: logs.ILogGroup;
+  public get logGroup(): logs.ILogGroup | undefined {
+    return this._logGroup ? toILogGroup(this._logGroup) : undefined;
+  }
 
   private s3bucket: s3.IBucket;
   private managementEvents: ReadWriteType | undefined;
@@ -315,9 +320,9 @@ export class Trail extends Resource {
 
     if (props.sendToCloudWatchLogs) {
       if (props.cloudWatchLogGroup) {
-        this.logGroup = props.cloudWatchLogGroup;
+        this._logGroup = props.cloudWatchLogGroup;
       } else {
-        this.logGroup = new logs.LogGroup(this, 'LogGroup', {
+        this._logGroup = new logs.LogGroup(this, 'LogGroup', {
           retention: props.cloudWatchLogsRetention ?? logs.RetentionDays.ONE_YEAR,
         });
       }
@@ -326,7 +331,7 @@ export class Trail extends Resource {
 
       logsRole.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: [this.logGroup.logGroupArn],
+        resources: [this._logGroup.logGroupRef.logGroupArn],
       }));
     }
 
@@ -359,7 +364,7 @@ export class Trail extends Resource {
       kmsKeyId: props.encryptionKey?.keyArn ?? props.kmsKey?.keyRef.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
-      cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
+      cloudWatchLogsLogGroupArn: this._logGroup?.logGroupRef.logGroupArn,
       cloudWatchLogsRoleArn: logsRole?.roleArn,
       snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
