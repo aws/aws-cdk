@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScheduledAction } from './autoscaling.generated';
 import { Schedule } from './schedule';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Properties for a scheduled scaling action
@@ -85,7 +85,7 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
   /**
    * The AutoScalingGroup to apply the scheduled actions to
    */
-  readonly autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroupRef;
 }
 
 /**
@@ -115,7 +115,7 @@ export class ScheduledAction extends Resource {
     props.schedule._bind(this);
 
     const resource = new CfnScheduledAction(this, 'Resource', {
-      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
+      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupRef.autoScalingGroupName,
       startTime: formatISO(props.startTime),
       endTime: formatISO(props.endTime),
       minSize: props.minCapacity,
