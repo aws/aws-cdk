@@ -1150,9 +1150,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   }
 
   /**
-   * The number of billed read I/O operations from a cluster volume, reported at 5-minute intervals.
+   * The average number of disk read I/O operations per second.
    *
-   * This metric represents the number of read I/O operations at the cluster level.
+   * This metric is only available for Aurora database clusters. 
+   * For non-Aurora RDS clusters, this metric will not return any data 
+   * in CloudWatch.
+   *
+   * @default - average over 5 minutes
    */
   public metricVolumeReadIOPs(props?: cloudwatch.MetricOptions) {
     return this.metric('VolumeReadIOPs', { statistic: 'Average', ...props });
@@ -1161,7 +1165,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   /**
    * The average number of disk write I/O operations per second.
    *
-   * Average over 5 minutes
+   * This metric is only available for Aurora database clusters. 
+   * For non-Aurora RDS clusters, this metric will not return any data 
+   * in CloudWatch.
+   *
+   * @default - average over 5 minutes
    */
   public metricVolumeWriteIOPs(props?: cloudwatch.MetricOptions) {
     return this.metric('VolumeWriteIOPs', { statistic: 'Average', ...props });

@@ -318,19 +318,27 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   /**
    * The average number of disk read I/O operations per second.
    *
-   * Average over 5 minutes
+   * This metric is only available for Aurora database instances. 
+   * For non-Aurora RDS database instances, this metric will not 
+   * return any data in CloudWatch.
+   *
+   * @default - average over 5 minutes
    */
-  public metricReadIOPS(props?: cloudwatch.MetricOptions) {
-    return this.metric('ReadIOPS', { statistic: 'Average', ...props });
+  public metricReadIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('ReadIOPs', { statistic: 'Average', ...props });
   }
 
   /**
    * The average number of disk write I/O operations per second.
    *
-   * Average over 5 minutes
+   * This metric is only available for Aurora database instances. 
+   * For non-Aurora RDS database instances, this metric will not 
+   * return any data in CloudWatch.
+   *
+   * @default - average over 5 minutes
    */
-  public metricWriteIOPS(props?: cloudwatch.MetricOptions) {
-    return this.metric('WriteIOPS', { statistic: 'Average', ...props });
+  public metricWriteIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('WriteIOPs', { statistic: 'Average', ...props });
   }
 }
 

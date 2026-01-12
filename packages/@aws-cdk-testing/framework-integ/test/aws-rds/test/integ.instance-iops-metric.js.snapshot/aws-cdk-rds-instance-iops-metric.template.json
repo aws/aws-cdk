@@ -520,7 +520,7 @@
      }
     ],
     "EvaluationPeriods": 3,
-    "MetricName": "ReadIOPS",
+    "MetricName": "ReadIOPs",
     "Namespace": "AWS/RDS",
     "Period": 600,
     "Statistic": "Average",
@@ -540,7 +540,7 @@
      }
     ],
     "EvaluationPeriods": 3,
-    "MetricName": "WriteIOPS",
+    "MetricName": "WriteIOPs",
     "Namespace": "AWS/RDS",
     "Period": 600,
     "Statistic": "Average",

@@ -782,7 +782,7 @@ describe('instance', () => {
     });
   });
 
-  test('can use metricReadIOPS', () => {
+  test('can use metricReadIOPs', () => {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -790,16 +790,16 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack.resolve(instance.metricReadIOPS())).toEqual({
+    expect(stack.resolve(instance.metricReadIOPs())).toEqual({
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
-      metricName: 'ReadIOPS',
+      metricName: 'ReadIOPs',
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
   });
 
-  test('can use metricWriteIOPS', () => {
+  test('can use metricWriteIOPs', () => {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -807,10 +807,10 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack.resolve(instance.metricWriteIOPS())).toEqual({
+    expect(stack.resolve(instance.metricWriteIOPs())).toEqual({
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
-      metricName: 'WriteIOPS',
+      metricName: 'WriteIOPs',
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });

@@ -205,8 +205,8 @@ v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverle
   cluster.
 - `VolumeReadIOPs`: Cluster-level metric that represents the average number of disk read I/O operations per second.
 - `VolumeWriteIOPs`: Cluster-level metric that represents the average number of disk write I/O operations per second.
-- `ReadIOPS`: Instance-level metric that represents the average read I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
-- `WriteIOPS`: Instance-level metric that represents the average write I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
+- `ReadIOPs`: Instance-level metric that represents the average read I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
+- `WriteIOPs`: Instance-level metric that represents the average write I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -233,7 +233,7 @@ cluster.metricACUUtilization({
   threshold: 90,
 });
 
-cluster.metricVolumeReadIOPS({
+cluster.metricVolumeReadIOPs({
   period: Duration.minutes(10),
 }).createAlarm(this, 'VolumeReadIOPsAlarm', {
   threshold: 1000,
@@ -248,21 +248,20 @@ cluster.metricVolumeWriteIOPs({
 });
 
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16 }),
-  vpc,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_6 }),
+  vpc
 });
 
-instance.metricReadIOPS({
+instance.metricReadIOPs({
   period: Duration.minutes(10),
-}).createAlarm(this, 'ReadIOPSAlarm', {
+}).createAlarm(this, 'ReadIOPsAlarm', {
   threshold: 1000,
   evaluationPeriods: 3,
 });
 
-instance.metricWriteIOPS({
+instance.metricWriteIOPs({
   period: Duration.minutes(10),
-}).createAlarm(this, 'WriteIOPSAlarm', {
+}).createAlarm(this, 'WriteIOPsAlarm', {
   threshold: 1000,
   evaluationPeriods: 3,
 });
