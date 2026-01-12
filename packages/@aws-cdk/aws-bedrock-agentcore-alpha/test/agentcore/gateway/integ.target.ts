@@ -133,4 +133,3 @@ new integ.IntegTest(app, 'TargetIntegTest', {
   testCases: [stack],
 });
 
-app.synth();
