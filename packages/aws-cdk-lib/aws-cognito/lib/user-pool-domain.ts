@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolDomain } from './cognito.generated';
 import { UserPoolClient } from './user-pool-client';
-import { ICertificate } from '../../aws-certificatemanager';
 import { IResource, Resource, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 import { IUserPoolDomainRef, IUserPoolRef, UserPoolDomainReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
@@ -49,7 +49,7 @@ export interface CustomDomainOptions {
   /**
    * The certificate to associate with this domain.
    */
-  readonly certificate: ICertificate;
+  readonly certificate: ICertificateRef;
 }
 
 /**
@@ -169,7 +169,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     this.resource = new CfnUserPoolDomain(this, 'Resource', {
       userPoolId: props.userPool.userPoolRef.userPoolId,
       domain: domainName,
-      customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateArn } : undefined,
+      customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateRef.certificateId } : undefined,
       managedLoginVersion: props.managedLoginVersion,
     });
 
