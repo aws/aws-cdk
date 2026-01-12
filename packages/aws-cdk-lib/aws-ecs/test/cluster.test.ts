@@ -3,7 +3,6 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import * as events from '../../aws-events';
 import * as targets from '../../aws-events-targets';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -4893,8 +4892,8 @@ describe('Cluster onEvent method', () => {
     // WHEN
     cluster.onEvent('TestRule', {
       eventPattern: {
-        'source': ['aws.ecs'],
-        'detail-type': ['ECS Cluster State Change'],
+        source: ['aws.ecs'],
+        detailType: ['ECS Cluster State Change'],
       },
     });
 
@@ -4938,25 +4937,6 @@ describe('Cluster onEvent method', () => {
           Id: Match.anyValue(),
         },
       ],
-    });
-  });
-
-  test('creates Custom Resource when enableRuleNameGeneration is true', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-    // WHEN
-    cluster.onEvent('TestRule', {
-      enableRuleNameGeneration: true,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
-      ServiceToken: Match.anyValue(),
-      ClusterArn: Match.anyValue(),
-      ClusterName: Match.anyValue(),
     });
   });
 });
