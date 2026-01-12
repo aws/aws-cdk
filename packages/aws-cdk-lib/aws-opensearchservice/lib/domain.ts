@@ -20,6 +20,7 @@ import { ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Configures the capacity of the cluster such as the instance type and the
@@ -411,7 +412,7 @@ export interface CustomEndpointOptions {
    * The certificate to use
    * @default - create a new one
    */
-  readonly certificate?: acm.ICertificate;
+  readonly certificate?: ICertificateRef;
 
   /**
    * The hosted zone in Route53 to create the CNAME record in
@@ -1930,7 +1931,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       });
     }
 
-    let customEndpointCertificate: acm.ICertificate | undefined;
+    let customEndpointCertificate: ICertificateRef | undefined;
     if (props.customEndpoint) {
       if (props.customEndpoint.certificate) {
         customEndpointCertificate = props.customEndpoint.certificate;
@@ -2045,7 +2046,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         ...props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
-          customEndpointCertificateArn: customEndpointCertificate!.certificateArn,
+          customEndpointCertificateArn: customEndpointCertificate!.certificateRef.certificateId,
         },
       },
       advancedSecurityOptions: advancedSecurityEnabled

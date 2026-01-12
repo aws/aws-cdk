@@ -13,11 +13,12 @@ import { IGrantable } from '../../aws-iam';
 import { IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IChannelNamespaceRef, ChannelNamespaceReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * An AppSync channel namespace
  */
-export interface IChannelNamespace extends IResource {
+export interface IChannelNamespace extends IResource, IChannelNamespaceRef {
   /**
    * The ARN of the AppSync channel namespace
    *
@@ -187,6 +188,11 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   public static fromChannelNamespaceArn(scope: Construct, id: string, channelNamespaceArn: string): IChannelNamespace {
     class Import extends Resource implements IChannelNamespace {
       public readonly channelNamespaceArn = channelNamespaceArn;
+      public get channelNamespaceRef(): ChannelNamespaceReference {
+        return {
+          channelNamespaceArn: this.channelNamespaceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -358,5 +364,11 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     if (!props.subscribeHandlerConfig?.direct && props.subscribeHandlerConfig?.lambdaInvokeType) {
       throw new ValidationError('LambdaInvokeType is only supported for Direct handler behavior type', this);
     }
+  }
+
+  public get channelNamespaceRef(): ChannelNamespaceReference {
+    return {
+      channelNamespaceArn: this.channelNamespaceArn,
+    };
   }
 }
