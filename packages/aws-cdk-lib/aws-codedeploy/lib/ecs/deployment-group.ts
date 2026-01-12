@@ -10,15 +10,18 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import { IDeploymentGroupRef, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
+import { toIEcsApplication } from '../private/ref-utils';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
 
 /**
  * Interface for an ECS deployment group.
  */
-export interface IEcsDeploymentGroup extends cdk.IResource {
+export interface IEcsDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   /**
    * The reference to the CodeDeploy ECS Application that this Deployment Group belongs to.
    */
@@ -123,7 +126,7 @@ export interface EcsDeploymentGroupProps {
    *
    * @default One will be created for you.
    */
-  readonly application?: IEcsApplication;
+  readonly application?: IApplicationRef;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
@@ -137,7 +140,7 @@ export interface EcsDeploymentGroupProps {
    *
    * @default EcsDeploymentConfig.ALL_AT_ONCE
    */
-  readonly deploymentConfig?: IEcsDeploymentConfig;
+  readonly deploymentConfig?: IDeploymentConfigRef;
 
   /**
    * The CloudWatch alarms associated with this Deployment Group.
@@ -216,8 +219,8 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     return new ImportedEcsDeploymentGroup(scope, id, attrs);
   }
 
-  public readonly application: IEcsApplication;
-  public readonly deploymentConfig: IEcsDeploymentConfig;
+  private readonly _application: IApplicationRef;
+  private readonly _deploymentConfig: IBaseDeploymentConfig;
   /**
    * The service Role of this Deployment Group.
    */
@@ -235,11 +238,11 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     addConstructMetadata(this, props);
     this.role = this._role;
 
-    this.application = props.application || new EcsApplication(this, 'Application');
+    this._application = props.application || new EcsApplication(this, 'Application');
     this.alarms = props.alarms || [];
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
+    this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
 
     if (cdk.Resource.isOwnedResource(props.service)) {
       const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
@@ -290,6 +293,14 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     if (Construct.isConstruct(this.deploymentConfig)) {
       this.node.addDependency(this.deploymentConfig);
     }
+  }
+
+  public get application(): IEcsApplication {
+    return toIEcsApplication(this._application);
+  }
+
+  public get deploymentConfig(): IEcsDeploymentConfig {
+    return this._deploymentConfig as IEcsDeploymentConfig;
   }
 
   /**
@@ -354,7 +365,7 @@ export interface EcsDeploymentGroupAttributes {
    * The reference to the CodeDeploy ECS Application
    * that this Deployment Group belongs to.
    */
-  readonly application: IEcsApplication;
+  readonly application: IApplicationRef;
 
   /**
    * The physical, human-readable name of the CodeDeploy ECS Deployment Group
@@ -367,15 +378,15 @@ export interface EcsDeploymentGroupAttributes {
    *
    * @default EcsDeploymentConfig.ALL_AT_ONCE
    */
-  readonly deploymentConfig?: IEcsDeploymentConfig;
+  readonly deploymentConfig?: IDeploymentConfigRef;
 }
 
 @propertyInjectable
 class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements IEcsDeploymentGroup {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedEcsDeploymentGroup';
-  public readonly application: IEcsApplication;
-  public readonly deploymentConfig: IEcsDeploymentConfig;
+  private readonly _application: IApplicationRef;
+  private readonly _deploymentConfig: IBaseDeploymentConfig;
 
   constructor(scope: Construct, id: string, props: EcsDeploymentGroupAttributes) {
     super(scope, id, {
@@ -385,7 +396,15 @@ class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.application = props.application;
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
+    this._application = props.application;
+    this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
+  }
+
+  public get application(): IEcsApplication {
+    return toIEcsApplication(this._application);
+  }
+
+  public get deploymentConfig(): IEcsDeploymentConfig {
+    return this._deploymentConfig as IEcsDeploymentConfig;
   }
 }

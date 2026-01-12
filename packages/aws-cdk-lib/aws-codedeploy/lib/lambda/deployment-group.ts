@@ -8,6 +8,7 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import { IDeploymentGroupRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
@@ -16,7 +17,7 @@ import { AutoRollbackConfig } from '../rollback-config';
 /**
  * Interface for a Lambda deployment groups.
  */
-export interface ILambdaDeploymentGroup extends cdk.IResource {
+export interface ILambdaDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    */

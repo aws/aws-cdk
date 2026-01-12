@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource, ValidationError } from '../../../core';
+import { DetachedConstruct, DetachedResource } from '../../../core/lib/private/detached-construct';
 import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
@@ -80,14 +81,18 @@ export function renderAlarmConfiguration(props: renderAlarmConfigProps): CfnDepl
 }
 
 export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
-  return {
-    deploymentConfigName: name,
-    deploymentConfigArn: arnForDeploymentConfig(name),
-    bindEnvironment: (resource) => ({
-      deploymentConfigName: name,
-      deploymentConfigArn: arnForDeploymentConfig(name, resource),
-    }),
-  };
+  return new class extends DetachedResource implements IBaseDeploymentConfig, IPredefinedDeploymentConfig {
+    public readonly deploymentConfigName = name;
+    public readonly deploymentConfigArn = arnForDeploymentConfig(name);
+    public readonly deploymentConfigRef = { deploymentConfigName: name };
+    bindEnvironment(resource: IResource): IBaseDeploymentConfig {
+      return new class extends DetachedConstruct {
+        public readonly deploymentConfigName = name;
+        public readonly deploymentConfigArn = arnForDeploymentConfig(name, resource);
+        public readonly deploymentConfigRef = { deploymentConfigName: name };
+      }('deploymentConfig() -> bindEnvironment()', 'source');
+    }
+  }('deploymentConfig');
 }
 
 enum AutoRollbackEvent {

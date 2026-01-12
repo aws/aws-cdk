@@ -4,6 +4,7 @@ import { Duration, Names, Resource, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
+import { DeploymentConfigReference } from '../codedeploy.generated';
 import { arnForDeploymentConfig, validateName } from '../private/utils';
 
 /**
@@ -83,6 +84,12 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
    * @deprecated Use `LambdaDeploymentConfig`
    */
   public readonly deploymentConfigArn: string;
+
+  public get deploymentConfigRef(): DeploymentConfigReference {
+    return {
+      deploymentConfigName: this.deploymentConfigName,
+    };
+  }
 
   public constructor(scope: Construct, id: string, props: CustomLambdaDeploymentConfigProps) {
     super(scope, id);
