@@ -9,7 +9,7 @@ import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
-import { CfnService } from '../ecs.generated';
+import { CfnService, ServiceReference } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
 /**
@@ -151,6 +151,12 @@ export class Ec2Service extends BaseService implements IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }

@@ -6,6 +6,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IReportGroupRef, ReportGroupReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 /**
  * The interface representing the ReportGroup resource -
@@ -13,7 +14,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * `ReportGroup.fromReportGroupName` method,
  * or a new one, created with the `ReportGroup` class.
  */
-export interface IReportGroup extends cdk.IResource {
+export interface IReportGroup extends cdk.IResource, IReportGroupRef {
   /**
    * The ARN of the ReportGroup.
    *
@@ -41,6 +42,12 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
   public abstract readonly reportGroupName: string;
   protected abstract readonly exportBucket?: s3.IBucket;
   protected abstract readonly type?: ReportGroupType;
+
+  public get reportGroupRef(): ReportGroupReference {
+    return {
+      reportGroupArn: this.reportGroupArn,
+    };
+  }
 
   public grantWrite(identity: iam.IGrantable): iam.Grant {
     const typeAction = this.type === ReportGroupType.CODE_COVERAGE ? 'codebuild:BatchPutCodeCoverages' : 'codebuild:BatchPutTestCases';
