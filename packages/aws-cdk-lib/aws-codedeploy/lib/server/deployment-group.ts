@@ -12,7 +12,6 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 import { IDeploymentGroupRef, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
-import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { toIServerApplication, toIServerDeploymentConfig } from '../private/ref-utils';
@@ -66,7 +65,7 @@ class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implemen
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedServerDeploymentGroup';
   private readonly _application: IApplicationRef;
-  private readonly _deploymentConfig: IBaseDeploymentConfig;
+  private readonly _deploymentConfig: IDeploymentConfigRef;
   public readonly role?: iam.Role = undefined;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
@@ -281,7 +280,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   }
 
   private readonly _application: IApplicationRef;
-  private readonly _deploymentConfig: IBaseDeploymentConfig;
+  private readonly _deploymentConfig: IDeploymentConfigRef;
   /**
    * The service Role of this Deployment Group.
    */

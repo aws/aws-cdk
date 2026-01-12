@@ -1,5 +1,6 @@
 import { UnscopedValidationError } from '../../../core';
 import { IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { IEcsApplication } from '../ecs/application';
 import { IEcsDeploymentConfig } from '../ecs/deployment-config';
 import { ILambdaApplication } from '../lambda/application';
@@ -60,7 +61,7 @@ export function toIEcsDeploymentConfig(config: IDeploymentConfigRef): IEcsDeploy
 /**
  * Convert an IDeploymentConfigRef to ILambdaDeploymentConfig, validating it has the required properties
  */
-export function toILambdaDeploymentConfig(config: IDeploymentConfigRef): ILambdaDeploymentConfig {
+export function toIBaseDeploymentConfig(config: IDeploymentConfigRef): IBaseDeploymentConfig {
   if (!('deploymentConfigArn' in config) || !('deploymentConfigName' in config)) {
     throw new UnscopedValidationError(`'deploymentConfig' instance should implement ILambdaDeploymentConfig, but doesn't: ${config.constructor.name}`);
   }

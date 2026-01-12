@@ -11,10 +11,9 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 import { IDeploymentGroupRef, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
-import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
-import { toIEcsApplication } from '../private/ref-utils';
+import { toIBaseDeploymentConfig, toIEcsApplication } from '../private/ref-utils';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
 
@@ -220,7 +219,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
   }
 
   private readonly _application: IApplicationRef;
-  private readonly _deploymentConfig: IBaseDeploymentConfig;
+  private readonly _deploymentConfig: IDeploymentConfigRef;
   /**
    * The service Role of this Deployment Group.
    */
@@ -300,7 +299,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
   }
 
   public get deploymentConfig(): IEcsDeploymentConfig {
-    return this._deploymentConfig as IEcsDeploymentConfig;
+    return toIBaseDeploymentConfig(this._deploymentConfig);
   }
 
   /**
@@ -386,7 +385,7 @@ class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements 
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedEcsDeploymentGroup';
   private readonly _application: IApplicationRef;
-  private readonly _deploymentConfig: IBaseDeploymentConfig;
+  private readonly _deploymentConfig: IDeploymentConfigRef;
 
   constructor(scope: Construct, id: string, props: EcsDeploymentGroupAttributes) {
     super(scope, id, {
@@ -405,6 +404,6 @@ class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements 
   }
 
   public get deploymentConfig(): IEcsDeploymentConfig {
-    return this._deploymentConfig as IEcsDeploymentConfig;
+    return toIBaseDeploymentConfig(this._deploymentConfig);
   }
 }

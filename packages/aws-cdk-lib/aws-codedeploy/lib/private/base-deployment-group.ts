@@ -1,13 +1,12 @@
 import { Construct } from 'constructs';
-import { isPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { validateName } from './utils';
 import * as iam from '../../../aws-iam';
 import { Resource, ArnFormat, Arn, Aws } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { DeploymentGroupReference, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
-import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
+import { isIBindableDeploymentConfig } from './predefined-deployment-config';
 
 /**
  */
@@ -66,8 +65,8 @@ export class ImportedDeploymentGroupBase extends Resource {
    *
    * @internal
    */
-  protected _bindDeploymentConfig(config: IDeploymentConfigRef): IBaseDeploymentConfig {
-    return isPredefinedDeploymentConfig(config) ? config.bindEnvironment(this) : config as IBaseDeploymentConfig;
+  protected _bindDeploymentConfig(config: IDeploymentConfigRef): IDeploymentConfigRef {
+    return isIBindableDeploymentConfig(config) ? config.bindEnvironment(this) : config;
   }
 }
 
@@ -150,8 +149,8 @@ export class DeploymentGroupBase extends Resource {
    *
    * @internal
    */
-  protected _bindDeploymentConfig(config: IDeploymentConfigRef): IBaseDeploymentConfig {
-    return isPredefinedDeploymentConfig(config) ? config.bindEnvironment(this) : config as IBaseDeploymentConfig;
+  protected _bindDeploymentConfig(config: IDeploymentConfigRef): IDeploymentConfigRef {
+    return isIBindableDeploymentConfig(config) ? config.bindEnvironment(this) : config;
   }
 
   /**

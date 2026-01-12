@@ -4,7 +4,7 @@ import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-c
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
 import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../core';
-import { DeploymentConfigReference, IDeploymentConfigRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
@@ -239,3 +239,22 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
 }
 
 function ignore(_x: any) { return; }
+
+/**
+ * A DeploymentConfig that can specialize itself based on the target group it will be used for
+ *
+ * For example, this is used for AWS-managed deployment configs: these are already
+ * present in every region, but we need a region-specific ARN to reference them.
+ * Since we might use them in conjunction with cross-region DeploymentGroups, we
+ * need to specialize the account and region to the DeploymentGroup before
+ * using.
+ *
+ * A DeploymentGroup must call `bindEnvironment()` first if it detects this type,
+ * before reading the DeploymentConfig ARN.
+ */
+export interface IBindableDeploymentConfig extends IDeploymentConfigRef {
+  /**
+   * Bind the predefined deployment config to the environment of the given resource
+   */
+  bindEnvironment(deploymentGroup: IDeploymentGroupRef): IDeploymentConfigRef;
+}
