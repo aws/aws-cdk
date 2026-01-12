@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/4368ab7b1576aff1009cdfef7445bc16c88fe63a815749b7627da1abf39355c5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/631ef32ca9e30b72e1bea72f1e2c1b61abebd57ff52608c04a6404a84f33071f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "BedrockAgentCoreTargetIntegTest.assets"
       ],
       "metadata": {
+        "/BedrockAgentCoreTargetIntegTest/TestGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/BedrockAgentCoreTargetIntegTest/TestGateway/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -154,7 +160,6 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "userPoolName": "*",
               "signInCaseSensitive": false
             }
           }
@@ -165,12 +170,34 @@
             "data": "TestGatewayUserPool545AA49A"
           }
         ],
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/UserPool/ResourceServer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "identifier": "*",
+              "scopes": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/UserPool/ResourceServer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayUserPoolResourceServer7A34B6B2"
+          }
+        ],
         "/BedrockAgentCoreTargetIntegTest/TestGateway/UserPool/DefaultClient": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "userPool": "*",
-              "userPoolClientName": "*"
+              "generateSecret": true,
+              "oAuth": {
+                "flows": {
+                  "clientCredentials": true
+                },
+                "scopes": "*"
+              }
             }
           }
         ],
@@ -178,6 +205,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestGatewayUserPoolDefaultClient3AC9C728"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/UserPool/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/UserPool/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayUserPoolDomainB64B616E"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/TestGateway/Resource": [
@@ -199,18 +243,8 @@
         ],
         "/BedrockAgentCoreTargetIntegTest/Lambda1/ServiceRole": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/Lambda1/ServiceRole/ImportServiceRole": [
@@ -245,10 +279,22 @@
             "data": "Lambda1LogGroup0E97D0DB"
           }
         ],
+        "/BedrockAgentCoreTargetIntegTest/LambdaTarget": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/BedrockAgentCoreTargetIntegTest/LambdaTarget/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaTargetC84C308A"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/SmithyTarget": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/SmithyTarget/Resource": [
@@ -270,18 +316,8 @@
         ],
         "/BedrockAgentCoreTargetIntegTest/Lambda2/ServiceRole": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/Lambda2/ServiceRole/ImportServiceRole": [
@@ -314,6 +350,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Lambda2LogGroup4F31598F"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/ConstructorTarget": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/ConstructorTarget/Resource": [
@@ -421,6 +463,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -439,6 +482,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -909,5 +953,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }
