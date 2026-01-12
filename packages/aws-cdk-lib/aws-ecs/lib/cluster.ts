@@ -791,23 +791,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Defines an EventBridge rule that enables ECS EventCapture for this cluster.
-   *
-   * The rule filters events from this cluster including task state changes, service actions, service deployment changes, and container instance state changes.
-   *
-   * **Cluster Usage**:
-   * - New cluster: Use onEvent() directly on a cluster being created in this stack
-   * - Existing cluster: First import using Cluster.fromClusterArn(), then call onEvent()
-   *
-   * **Log Group Usage**:
-   * - New log group: Create in this stack with format /aws/events/ecs/containerinsights/${clusterName}/performance
-   * - Replace ${clusterName} with the name of the cluster you want to create with Event Capture enabled.
-   * - Existing log group: Import using LogGroup.fromLogGroupName() or LogGroup.fromLogGroupArn()
-   *
-   * **EventCapture Requirements**:
-   * - Rule name format: EventsToLogs-{clusterPrefix}-{hash} (auto-generated if not provided)
-   * - Log group format: /aws/events/ecs/containerinsights/${clusterName}/performance
-   * - Both must follow these exact formats to enable ECS Event Capture
+   * Defines an EventBridge rule that enables ECS EventCapture for this cluster
    *
    * @param id The construct id of the rule (must be unique within the construct scope)
    * @param options Options for adding the rule
