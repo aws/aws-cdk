@@ -4121,3 +4121,6 @@ removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketAuthorizer.authorizerRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketIntegration.integrationRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketRoute.routeRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
+
+# This type must needs be weakened
+changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
