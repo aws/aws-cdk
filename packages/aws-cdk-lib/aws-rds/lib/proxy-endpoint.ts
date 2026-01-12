@@ -1,15 +1,15 @@
 import { Construct } from 'constructs';
-import { IDatabaseProxy } from './proxy';
 import { CfnDBProxyEndpoint } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { aws_rds } from '../../interfaces';
 
 /**
  * A DB proxy endpoint.
  */
-export interface IDatabaseProxyEndpoint extends IResource {
+export interface IDatabaseProxyEndpoint extends IResource, aws_rds.IDBProxyEndpointRef {
   /**
    * DB Proxy Endpoint Name
    *
@@ -77,7 +77,7 @@ export interface DatabaseProxyEndpointProps extends DatabaseProxyEndpointOptions
   /**
    * The DB proxy associated with the DB proxy endpoint.
    */
-  readonly dbProxy: IDatabaseProxy;
+  readonly dbProxy: aws_rds.IDBProxyRef;
 }
 
 /**
@@ -122,6 +122,16 @@ abstract class DatabaseProxyEndpointBase extends Resource implements IDatabasePr
   public abstract readonly dbProxyEndpointName: string;
   public abstract readonly dbProxyEndpointArn: string;
   public abstract readonly endpoint: string;
+
+  /**
+   * A reference to this database proxy endpoint
+   */
+  public get dbProxyEndpointRef(): aws_rds.DBProxyEndpointReference {
+    return {
+      dbProxyEndpointName: this.dbProxyEndpointName,
+      dbProxyEndpointArn: this.dbProxyEndpointArn,
+    };
+  }
 }
 
 /**
@@ -191,7 +201,7 @@ export class DatabaseProxyEndpoint extends DatabaseProxyEndpointBase {
 
     const resource = new CfnDBProxyEndpoint(this, 'Resource', {
       dbProxyEndpointName: physicalName,
-      dbProxyName: props.dbProxy.dbProxyName,
+      dbProxyName: props.dbProxy.dbProxyRef.dbProxyName,
       vpcSubnetIds,
       vpcSecurityGroupIds: props.securityGroups?.map(e => e.securityGroupId),
       targetRole: props.targetRole,
