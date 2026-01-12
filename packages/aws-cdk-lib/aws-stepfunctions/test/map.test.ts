@@ -706,6 +706,88 @@ describe('Map State', () => {
       items: '{% $items %}',
     });
   });
+
+  test('State Machine With Map State and jsonataMaxConcurrency', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.Map(stack, 'Map State', {
+      stateName: 'My-Map-State',
+      jsonataMaxConcurrency: '{% $states.input.maxConcurrency %}',
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'My-Map-State',
+      States: {
+        'My-Map-State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: 'INLINE',
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          MaxConcurrency: '{% $states.input.maxConcurrency %}',
+        },
+      },
+    });
+  });
+
+  test('fails in synthesis if jsonataMaxConcurrency is not a valid JSONata expression', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        jsonataMaxConcurrency: 'Invalid expression',
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/The `jsonataMaxConcurrency` property must be a valid JSONata expression/);
+  });
+
+  test('fails in synthesis when maxConcurrency and jsonataMaxConcurrency are both defined', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        maxConcurrency: 10,
+        jsonataMaxConcurrency: '{% $states.input.maxConcurrency %}',
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `maxConcurrency` or `jsonataMaxConcurrency`, but not both/);
+  });
+
+  test('fails in synthesis when maxConcurrencyPath and jsonataMaxConcurrency are both defined', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        maxConcurrencyPath: stepfunctions.JsonPath.stringAt('$.maxConcurrencyPath'),
+        jsonataMaxConcurrency: '{% $states.input.maxConcurrency %}',
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `maxConcurrencyPath` or `jsonataMaxConcurrency`, but not both/);
+  });
 });
 
 function render(sm: stepfunctions.IChainable) {
