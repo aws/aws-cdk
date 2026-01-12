@@ -1,4 +1,3 @@
-import { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -7,11 +6,6 @@ import * as kms from '../../aws-kms';
  * Construction properties for StreamGrants
  */
 export interface StreamGrantsProps {
-  /**
-   * The table this stream is for
-   */
-  readonly table: ITableRef;
-
   /**
    * The ARN of the Stream
    */
@@ -31,12 +25,10 @@ export interface StreamGrantsProps {
  * A set of permissions to grant on a Table Stream
  */
 export class StreamGrants {
-  private readonly table: ITableRef;
   private readonly tableStreamArn: string;
   private readonly encryptionKey?: kms.IKey;
 
   constructor(props: StreamGrantsProps) {
-    this.table = props.table;
     this.tableStreamArn = props.tableStreamArn;
     this.encryptionKey = props?.encryptionKey;
   }
@@ -56,7 +48,6 @@ export class StreamGrants {
       grantee,
       actions,
       resourceArns: [this.tableStreamArn],
-      scope: this.table,
     });
   }
 
@@ -90,7 +81,6 @@ export class StreamGrants {
       grantee,
       actions: perms.READ_STREAM_DATA_ACTIONS,
       resourceArns: [this.tableStreamArn],
-      scope: this.table,
     });
   }
 }

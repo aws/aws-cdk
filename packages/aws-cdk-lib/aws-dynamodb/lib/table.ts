@@ -751,7 +751,6 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
       throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
     }
     return new StreamGrants({
-      table: this,
       tableStreamArn: this.tableStreamArn,
       encryptionKey: this.encryptionKey,
     });
