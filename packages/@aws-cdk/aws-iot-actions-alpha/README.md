@@ -376,6 +376,8 @@ You can enable batching to reduce costs and improve efficiency:
 ```ts
 import { Size } from 'aws-cdk-lib';
 
+declare const topicRule: iot.TopicRule;
+
 topicRule.addAction(
   new actions.HttpsAction('https://example.com/endpoint', {
     batchConfig: {
