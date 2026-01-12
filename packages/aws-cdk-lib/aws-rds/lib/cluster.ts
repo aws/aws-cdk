@@ -1168,8 +1168,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   /**
    * The average number of disk read I/O operations per second.
    *
-   * This metric is only available for Aurora database clusters. 
-   * For non-Aurora RDS clusters, this metric will not return any data 
+   * This metric is only available for Aurora database clusters.
+   * For non-Aurora RDS clusters, this metric will not return any data
    * in CloudWatch.
    *
    * @default - average over 5 minutes
@@ -1181,8 +1181,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   /**
    * The average number of disk write I/O operations per second.
    *
-   * This metric is only available for Aurora database clusters. 
-   * For non-Aurora RDS clusters, this metric will not return any data 
+   * This metric is only available for Aurora database clusters.
+   * For non-Aurora RDS clusters, this metric will not return any data
    * in CloudWatch.
    *
    * @default - average over 5 minutes
