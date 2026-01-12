@@ -78,6 +78,36 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   public static readonly DEFAULT_PREFIX = 'com.amazonaws.vpce';
 
   /**
+   * Import existing VpcEndpointService
+   */
+  public static fromVpcEndpointServiceId(scope: Construct, id: string, vpcEndpointServiceId: string): IVpcEndpointService {
+    class Import extends Resource implements IVpcEndpointService {
+      public readonly vpcEndpointServiceId = vpcEndpointServiceId;
+      public readonly vpcEndpointServiceName =
+        VpcEndpointService.getVpcEndpointServiceName(
+          Stack.of(scope).region,
+          vpcEndpointServiceId,
+        );
+
+      public get vpcEndpointServiceRef(): VPCEndpointServiceReference {
+        return {
+          serviceId: this.vpcEndpointServiceId,
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  private static getVpcEndpointServiceName(region: string, vpcEndpointServiceId: string): string {
+    const serviceNamePrefix = !Token.isUnresolved(region) ?
+      (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? VpcEndpointService.DEFAULT_PREFIX) :
+      VpcEndpointService.DEFAULT_PREFIX;
+
+    return Fn.join('.', [serviceNamePrefix, Aws.REGION, vpcEndpointServiceId]);
+  }
+
+  /**
    * One or more network load balancers to host the service.
    * @attribute
    */
@@ -165,11 +195,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.vpcEndpointServiceId = this.endpointService.ref;
 
     const { region } = Stack.of(this);
-    const serviceNamePrefix = !Token.isUnresolved(region) ?
-      (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? VpcEndpointService.DEFAULT_PREFIX) :
-      VpcEndpointService.DEFAULT_PREFIX;
-
-    this.vpcEndpointServiceName = Fn.join('.', [serviceNamePrefix, Aws.REGION, this.vpcEndpointServiceId]);
+    this.vpcEndpointServiceName = VpcEndpointService.getVpcEndpointServiceName(region, this.vpcEndpointServiceId);
     if (this.allowedPrincipals.length > 0) {
       new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,
