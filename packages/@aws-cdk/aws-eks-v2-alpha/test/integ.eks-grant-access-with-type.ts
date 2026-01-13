@@ -64,7 +64,20 @@ class EksGrantAccessWithType extends Stack {
       accessEntryType: eks.AccessEntryType.HYBRID_LINUX,
     });
 
-    // Test 3: grantAccess with STANDARD type and access policies
+    // Test 3: AccessEntry with HYPERPOD_LINUX type
+    // Note: HYPERPOD_LINUX type access entries cannot have access policies attached per AWS EKS API
+    const hyperpodRole = new iam.Role(this, 'HyperpodRole', {
+      assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+    });
+
+    new eks.AccessEntry(this, 'HyperpodAccess', {
+      cluster,
+      principal: hyperpodRole.roleArn,
+      accessPolicies: [], // Empty array - HYPERPOD_LINUX type cannot have policies
+      accessEntryType: eks.AccessEntryType.HYPERPOD_LINUX,
+    });
+
+    // Test 4: grantAccess with STANDARD type and access policies
     const standardRole = new iam.Role(this, 'StandardRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -80,7 +93,7 @@ class EksGrantAccessWithType extends Stack {
       eks.AccessEntryType.STANDARD,
     );
 
-    // Test 4: grantAccess without type (backward compatibility - defaults to STANDARD)
+    // Test 5: grantAccess without type (backward compatibility - defaults to STANDARD)
     const defaultRole = new iam.Role(this, 'DefaultRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
