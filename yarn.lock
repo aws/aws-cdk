@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.164"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.136":
-  version "0.1.139"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.139.tgz#9d4cc3e074c6a078e82375a27aa76a10d25e50a3"
-  integrity sha512-3iXzobwDOs0CCCA+d6VTjMxSjbN1PfQtNIwzVxL8s5TZ2JwuyU/bPb2sakzSfbTzQ2sHl8l1gROUOAdb6iniIg==
+"@aws-cdk/aws-service-spec@^0.1.140":
+  version "0.1.140"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.140.tgz#8dee96aa4ce7a44f45eb2c93ce9c882013356b84"
+  integrity sha512-ZC0cwreJ98f1Q31dwGOCwsXt/NCwfU+ZfckIFw8E76MSN1rq875Vzc+Zbluh1k+tsAE/zZcgG8G5ecKRX1MXQw==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.205"
+    "@aws-cdk/service-spec-types" "^0.0.206"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-schema@^48.20.0":
@@ -142,17 +142,17 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.202":
-  version "0.0.202"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.202.tgz#c96f1ff247fa96bb4776819f202c3510417074d0"
-  integrity sha512-5PYHPLF1fSbdqy+PLYMgRwzC9jK/51Nlq44aDp7Ge+X4RWGnf7Zj+7jMcz+hOhdzEGpTUdMgnvH9DVepq4Owpg==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.4"
-
 "@aws-cdk/service-spec-types@^0.0.205":
   version "0.0.205"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.205.tgz#160b93860888ec8a0468aca58ed766d530d4c676"
   integrity sha512-QxZxx0BqpcnxxY4KimQZsxX0x6/4zGCIxqs1Swkh2fg6XEHsFKQ3e2MxEIXh18ZWtlxa44MXpxWKHYrP1E/LZA==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.4"
+
+"@aws-cdk/service-spec-types@^0.0.206":
+  version "0.0.206"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.206.tgz#06f5d54c970cd8cd308e9f9b1974f9a1a4560c25"
+  integrity sha512-Ea2j4JCE/yPa+4THIPMa+EV7EmFfCd7qr9BzVLAzmEoUBnoUqJfLbZc9A2FJX4IcVn7oveEN4sNPvyn6wNrohg==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
