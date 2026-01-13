@@ -44,10 +44,16 @@ abstract class InputBase extends Resource implements IInput {
 
   public abstract readonly inputArn: string;
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(grantee: iam.IGrantable) {
     return this.grant(grantee, 'iotevents:BatchPutMessage');
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,

@@ -112,6 +112,7 @@ export class IamUser extends UserBase {
 
   /**
    * Grant connect permissions to the given IAM identity.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The IAM identity to grant permissions to.
    */
@@ -122,6 +123,7 @@ export class IamUser extends UserBase {
 
   /**
    * Grant the given identity custom permissions.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The IAM identity to grant permissions to.
    * @param actions The actions to grant.
