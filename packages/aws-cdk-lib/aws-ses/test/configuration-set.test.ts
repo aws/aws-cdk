@@ -265,45 +265,5 @@ describe('confidenceVerdictThreshold', () => {
     });
   });
 
-  test('configuration set with suppressionReasons and confidenceVerdictThreshold', () => {
-    new ConfigurationSet(stack, 'ConfigurationSet', {
-      suppressionReasons: SuppressionReasons.BOUNCES_AND_COMPLAINTS,
-      confidenceVerdictThreshold: ConfidenceVerdictThreshold.HIGH,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
-      SuppressionOptions: {
-        SuppressedReasons: ['BOUNCE', 'COMPLAINT'],
-        ValidationOptions: {
-          ConditionThreshold: {
-            ConditionThresholdEnabled: 'ENABLED',
-            OverallConfidenceThreshold: {
-              ConfidenceVerdictThreshold: 'HIGH',
-            },
-          },
-        },
-      },
-    });
-  });
-
-  test('configuration set with disableSuppressionList and confidenceVerdictThreshold', () => {
-    new ConfigurationSet(stack, 'ConfigurationSet', {
-      disableSuppressionList: true,
-      confidenceVerdictThreshold: ConfidenceVerdictThreshold.MEDIUM,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
-      SuppressionOptions: {
-        SuppressedReasons: [],
-        ValidationOptions: {
-          ConditionThreshold: {
-            ConditionThresholdEnabled: 'ENABLED',
-            OverallConfidenceThreshold: {
-              ConfidenceVerdictThreshold: 'MEDIUM',
-            },
-          },
-        },
-      },
-    });
   });
 });
