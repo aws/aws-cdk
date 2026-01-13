@@ -49,7 +49,19 @@
       ]
      }
     },
-    "Namespace": "schema_table_namespace",
+    "Namespace": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Split": [
+        "|",
+        {
+         "Ref": "SchemaNamespaceFDE8AD2E"
+        }
+       ]
+      }
+     ]
+    },
     "OpenTableFormat": "ICEBERG",
     "SnapshotManagement": {
      "MaxSnapshotAgeHours": 48,
@@ -64,14 +76,19 @@
     },
     "TableName": "schema_test_table"
    },
-   "DependsOn": [
-    "SchemaNamespaceFDE8AD2E"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
+  "ExportsOutputRefSchemaNamespaceFDE8AD2ECB9F9FAF": {
+   "Value": {
+    "Ref": "SchemaNamespaceFDE8AD2E"
+   },
+   "Export": {
+    "Name": "SchemaTableStack:ExportsOutputRefSchemaNamespaceFDE8AD2ECB9F9FAF"
+   }
+  },
   "ExportsOutputFnGetAttSchemaBucketC512BB1ATableBucketARN7B7B66CF": {
    "Value": {
     "Fn::GetAtt": [

@@ -160,11 +160,12 @@ export class Namespace extends Resource implements INamespace {
     Namespace.validateNamespaceName(props.namespaceName);
 
     this.tableBucket = props.tableBucket;
-    this.namespaceName = props.namespaceName;
     this._resource = new CfnNamespace(this, id, {
       namespace: props.namespaceName,
       tableBucketArn: this.tableBucket.tableBucketArn,
     });
+
+    this.namespaceName = this._resource.namespaceRef.namespace;
 
     if (props.removalPolicy) {
       this._resource.applyRemovalPolicy(props.removalPolicy);
