@@ -4,7 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-agentcore-gateway-auto-generated-name');
+const stack = new cdk.Stack(app, 'cdk-agentcore-gateway-auto-generated-name');
 
 // Create Gateway without specifying name (auto-generated)
 const gateway = new agentcore.Gateway(stack, 'Gateway', {

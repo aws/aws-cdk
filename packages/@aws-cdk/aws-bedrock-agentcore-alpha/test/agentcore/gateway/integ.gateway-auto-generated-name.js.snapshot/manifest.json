@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "aws-cdk-agentcore-gateway-auto-generated-name.assets": {
+    "cdk-agentcore-gateway-auto-generated-name.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-agentcore-gateway-auto-generated-name.assets.json",
+        "file": "cdk-agentcore-gateway-auto-generated-name.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-agentcore-gateway-auto-generated-name": {
+    "cdk-agentcore-gateway-auto-generated-name": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-agentcore-gateway-auto-generated-name.template.json",
+        "templateFile": "cdk-agentcore-gateway-auto-generated-name.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a0aa7898a44cf41b169ef6e50af0c3988170473672b2ab935326892720d5e08.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/078a2f124108080dd9d2c6735db51865a1138236d38077ceb26bb58db7725db6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-agentcore-gateway-auto-generated-name.assets"
+          "cdk-agentcore-gateway-auto-generated-name.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "aws-cdk-agentcore-gateway-auto-generated-name.assets"
+        "cdk-agentcore-gateway-auto-generated-name.assets"
       ],
       "metadata": {
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -44,7 +44,7 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -80,19 +80,19 @@
             }
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole/ImportServiceRole": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GatewayServiceRole162DEA77"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole/DefaultPolicy": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -122,61 +122,99 @@
             }
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole/DefaultPolicy/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GatewayServiceRoleDefaultPolicy5A851A93"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "userPoolName": "*",
               "signInCaseSensitive": false
             }
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GatewayUserPoolAC9C51BE"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/DefaultClient": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/ResourceServer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "userPool": "*",
-              "userPoolClientName": "*"
+              "identifier": "*",
+              "scopes": "*"
             }
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/DefaultClient/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/ResourceServer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayUserPoolResourceServerA9AA7EAD"
+          }
+        ],
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/DefaultClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "generateSecret": true,
+              "oAuth": {
+                "flows": {
+                  "clientCredentials": true
+                },
+                "scopes": "*"
+              }
+            }
+          }
+        ],
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/DefaultClient/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GatewayUserPoolDefaultClient48FC6ADE"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
+          }
+        ],
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/UserPool/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayUserPoolDomainCD8A1197"
+          }
+        ],
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Gateway43CB3636"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/Target": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/Target": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/Gateway/Target/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/Gateway/Target/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GatewayTarget05FE5E2C"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/TestFunction": [
+        "/cdk-agentcore-gateway-auto-generated-name/TestFunction": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -186,31 +224,31 @@
             }
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/TestFunction/ServiceRole": [
+        "/cdk-agentcore-gateway-auto-generated-name/TestFunction/ServiceRole": [
           {
             "type": "aws:cdk:warning",
             "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/TestFunction/ServiceRole/ImportServiceRole": [
+        "/cdk-agentcore-gateway-auto-generated-name/TestFunction/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/TestFunction/ServiceRole/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/TestFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestFunctionServiceRole6ABD93C7"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/TestFunction/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/TestFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestFunction22AD90FC"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/TestFunction/LogGroup": [
+        "/cdk-agentcore-gateway-auto-generated-name/TestFunction/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -218,26 +256,26 @@
             }
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/TestFunction/LogGroup/Resource": [
+        "/cdk-agentcore-gateway-auto-generated-name/TestFunction/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestFunctionLogGroupE7744A08"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/BootstrapVersion": [
+        "/cdk-agentcore-gateway-auto-generated-name/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-agentcore-gateway-auto-generated-name/CheckBootstrapVersion": [
+        "/cdk-agentcore-gateway-auto-generated-name/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-agentcore-gateway-auto-generated-name"
+      "displayName": "cdk-agentcore-gateway-auto-generated-name"
     },
     "GatewayAutoGeneratedNameDefaultTestDeployAssert6697D869.assets": {
       "type": "cdk:asset-manifest",
