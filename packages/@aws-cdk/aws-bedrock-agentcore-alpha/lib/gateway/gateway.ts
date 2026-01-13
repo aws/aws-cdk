@@ -398,6 +398,7 @@ export class Gateway extends GatewayBase {
     super(scope, id, {
       // Maximum name length of 48 characters
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gateway.html#cfn-bedrockagentcore-gateway-name
+      // TODO: CloudFormation docs say max 100 chars, but actual limit is 48 chars.
       physicalName: props.gatewayName ??
         Lazy.string({
           produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
@@ -621,8 +622,8 @@ export class Gateway extends GatewayBase {
 
   /**
    * Validates the gateway name format
-   * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
-   * Max length: 100 characters
+   * Pattern: ^([0-9a-zA-Z][-]?){1,48}$
+   * Max length: 48 characters
    * @param name The gateway name to validate
    * @throws Error if the name is invalid
    * @internal
@@ -635,7 +636,7 @@ export class Gateway extends GatewayBase {
     const lengthErrors = validateStringField({
       value: name,
       minLength: 1,
-      maxLength: 100,
+      maxLength: 48,
       fieldName: 'Gateway name',
     });
 
@@ -646,7 +647,7 @@ export class Gateway extends GatewayBase {
     const patternErrors = validateFieldPattern(
       name,
       'Gateway name',
-      /^([0-9a-zA-Z][-]?){1,100}$/,
+      /^([0-9a-zA-Z][-]?){1,48}$/,
       'Gateway name must contain only alphanumeric characters and hyphens, with hyphens only between characters',
     );
 

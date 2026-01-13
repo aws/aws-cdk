@@ -431,11 +431,11 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
   constructor(scope: Construct, id: string, props: GatewayTargetProps) {
     super(scope, id, {
-      // Maximum name length of 48 characters
+      // Maximum name length of 100 characters
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gatewaytarget.html#cfn-bedrockagentcore-gatewaytarget-name
       physicalName: props.gatewayTargetName ??
         Lazy.string({
-          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 100 }),
         }),
     });
     // Enhanced CDK Analytics Telemetry

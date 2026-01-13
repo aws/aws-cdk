@@ -728,10 +728,12 @@ export class BrowserCustom extends BrowserCustomBase {
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: BrowserCustomProps = {}) {
     super(scope, id, {
-      // Maximum name length of 40 characters
+      // Maximum name length of 48 characters
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-browsercustom.html#cfn-bedrockagentcore-browsercustom-name
+      // TODO: CloudFormation docs do not explicitly document the name pattern and max length. Confirmed via testing.
       physicalName: props?.browserCustomName ??
         Lazy.string({
-          produce: () => Names.uniqueResourceName(this, { maxLength: 40 }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
         }),
     });
     // Enhanced CDK Analytics Telemetry
