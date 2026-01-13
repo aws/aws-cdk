@@ -5,7 +5,7 @@ import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
 import { CfnAccount, CfnRestApi, IRestApiRef, RestApiReference } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
-import { DomainName, DomainNameOptions } from './domain-name';
+import { DomainName, DomainNameOptions, SecurityPolicy } from './domain-name';
 import { GatewayResponse, GatewayResponseOptions } from './gateway-response';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
@@ -197,8 +197,15 @@ export interface RestApiBaseProps {
 
   /**
    * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
+   * @default - will be set to undefined
    */
-  readonly endpointAccessMode?: EndpointAccessMode
+  readonly endpointAccessMode?: EndpointAccessMode;
+
+  /**
+   * The Transport Layer Security (TLS) version + cipher suite for this domain name.
+   * @default SecurityPolicy.TLS_1_0
+   */
+  readonly securityPolicy?: SecurityPolicy;
 
   /**
    * A list of the endpoint types of the API. Use this property when creating
@@ -966,6 +973,10 @@ export class RestApi extends RestApiBase {
       throw new ValidationError('both properties minCompressionSize and minimumCompressionSize cannot be set at once.', scope);
     }
 
+    if (props.securityPolicy?.startsWith('SecurityPolicy_') && !props.endpointAccessMode ) {
+      throw new ValidationError('When using a SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified.', this);
+    }
+
     this.resourcePolicy = props.policy;
 
     const resource = new CfnRestApi(this, 'Resource', {
@@ -980,6 +991,8 @@ export class RestApi extends RestApiBase {
       cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
       disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
+      endpointAccessMode: props.endpointAccessMode? props.endpointAccessMode : undefined,
+      securityPolicy: props.securityPolicy,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
@@ -1139,8 +1152,21 @@ export enum ApiKeySourceType {
   AUTHORIZER = 'AUTHORIZER',
 }
 
+/**
+ * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
+ */
 export enum EndpointAccessMode {
+
+  /**
+   * Recommended initial setting when introducing enhanced security policies.
+   */
   BASIC = 'BASIC',
+  /**
+   * Performed checks:
+   * 1. The request must originate from the same API Gateway endpoint type as your resource. This could be from a Regional, an edge-optimized, or a private endpoint.
+   * 2.If you use a Regional or private endpoint, API Gateway uses SNI host matching. If you use an edge-optimized endpoint, API Gateway conforms to CloudFront's domain fronting protection. For more information, see Domain fronting.
+   */
   STRICT = 'STRICT',
 }
 

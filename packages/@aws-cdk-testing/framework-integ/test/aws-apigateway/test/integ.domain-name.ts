@@ -180,7 +180,7 @@ thirdDomain.addBasePathMapping(api2.restApi, {
  */
 const fourthDomain = new apigw.DomainName(testCase, 'Integ4Domain', {
   domainName: `another-secure-${domainName}`,
-  securityPolicy: apigw.SecurityPolicy.SecurityPolicy_TLS13_1_3_2025_09,
+  securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
   endpointAccessMode: apigw.EndpointAccessMode.STRICT,
   certificate,
   mapping: api1.restApi,
@@ -194,7 +194,6 @@ new CfnRecordSet(testCase, 'Integ4DomainRecord', {
     dnsName: fourthDomain.domainNameAliasDomainName,
   },
 });
-
 
 /**
  * -------------------------------------------------------

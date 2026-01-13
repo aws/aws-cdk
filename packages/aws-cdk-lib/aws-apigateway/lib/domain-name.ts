@@ -30,6 +30,7 @@ export interface ApiMappingOptions {
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies-list.html
  */
 export enum SecurityPolicy {
   /** Cipher suite TLS 1.0 */
@@ -38,15 +39,20 @@ export enum SecurityPolicy {
   /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'TLS_1_2',
 
-  /** Cipher suite TLS 1.3 2025 for EDGE endpoint */
+  /** Cipher suite SecurityPolicy_TLS13_2025_EDGE for EDGE endpoint */
   TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+  /** Cipher suite SecurityPolicy_TLS12_PFS_2025_EDGE for EDGE endpoint */
   TLS12_PFS_2025_EDGE = 'SecurityPolicy_TLS12_PFS_2025_EDGE',
+  /** Cipher suite SecurityPolicy_TLS12_2018_EDGE for EDGE endpoint */
   TLS12_2018_EDGE = 'SecurityPolicy_TLS12_2018_EDGE',
 
-  /** Cipher suite TLS 1.3 2025 for REGIONAL endpoint */
+  /** Cipher suite SecurityPolicy_TLS13_1_3_2025_09 for REGIONAL endpoint */
   TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
+  /** Cipher suite SecurityPolicy_TLS13_1_3_FIPS_2025_09 for REGIONAL endpoint */
   TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
+  /** Cipher suite SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09 for REGIONAL endpoint */
   TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+  /** Cipher suite SecurityPolicy_TLS13_1_2_PQ_2025_09 for REGIONAL endpoint */
   TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
 }
 
@@ -65,8 +71,9 @@ export interface DomainNameOptions {
 
   /**
    * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
+   * @default - will be set to undefined
    */
-  readonly endpointAccessMode?: EndpointAccessMode
+  readonly endpointAccessMode?: EndpointAccessMode;
 
   /**
    * The type of endpoint for this DomainName.
