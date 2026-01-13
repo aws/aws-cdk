@@ -2308,6 +2308,85 @@ describe('MCP Server Target Configuration Tests', () => {
   });
 });
 
+describe('Gateway M2M Authentication Tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create default Cognito authorizer with M2M support', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: ['client_credentials'],
+      AllowedOAuthFlowsUserPoolClient: true,
+      GenerateSecret: true,
+    });
+
+    // Resource Server identifier is auto-generated using Names.uniqueResourceName()
+    template.hasResourceProperties('AWS::Cognito::UserPoolResourceServer', {
+      Scopes: [
+        { ScopeName: 'read', ScopeDescription: 'Read access to gateway tools' },
+        { ScopeName: 'write', ScopeDescription: 'Write access to gateway tools' },
+      ],
+    });
+
+    // Domain name is auto-generated using Names.uniqueResourceName()
+    template.resourceCountIs('AWS::Cognito::UserPoolDomain', 1);
+  });
+
+  test('Should set tokenEndpointUrl property with default Cognito authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeDefined();
+    expect(gateway.tokenEndpointUrl).toContain('.auth.us-east-1.amazoncognito.com/oauth2/token');
+  });
+
+  test('Should set oauthScopes property with default Cognito authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.oauthScopes).toBeDefined();
+    expect(gateway.oauthScopes).toHaveLength(2);
+    expect(gateway.oauthScopes![0]).toContain('/read');
+    expect(gateway.oauthScopes![1]).toContain('/write');
+  });
+
+  test('Should not set tokenEndpointUrl and oauthScopes when using custom authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeUndefined();
+    expect(gateway.oauthScopes).toBeUndefined();
+  });
+
+  test('Should not set tokenEndpointUrl and oauthScopes when using custom JWT authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+        allowedAudience: ['my-app'],
+      }),
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeUndefined();
+    expect(gateway.oauthScopes).toBeUndefined();
+  });
+});
+
 describe('Optional Physical Names', () => {
   let stack: cdk.Stack;
 

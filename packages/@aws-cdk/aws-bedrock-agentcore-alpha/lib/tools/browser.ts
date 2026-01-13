@@ -485,7 +485,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 export interface RecordingConfig {
   /**
    * Whether recording is enabled
-   * @default - false
+   * @default false
    */
   readonly enabled?: boolean;
 

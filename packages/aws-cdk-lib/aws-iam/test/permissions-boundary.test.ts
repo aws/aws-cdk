@@ -200,7 +200,7 @@ test.each([
   // WHEN
   iam.PermissionsBoundary.of(role).apply({
     managedPolicyArn: 'OVERRIDDEN',
-  });
+  } as any);
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {

@@ -289,11 +289,14 @@ export class Runtime extends RuntimeBase {
       this.validateRequestHeaderConfiguration(props.requestHeaderConfiguration);
     }
 
-    this.lifecycleConfiguration = {
-      idleRuntimeSessionTimeout: props.lifecycleConfiguration?.idleRuntimeSessionTimeout ?? LIFECYCLE_MIN_TIMEOUT,
-      maxLifetime: props.lifecycleConfiguration?.maxLifetime ?? LIFECYCLE_MAX_LIFETIME,
-    };
-    this.validateLifecycleConfiguration(this.lifecycleConfiguration);
+    this.lifecycleConfiguration = props.lifecycleConfiguration ? {
+      idleRuntimeSessionTimeout: props.lifecycleConfiguration?.idleRuntimeSessionTimeout,
+      maxLifetime: props.lifecycleConfiguration?.maxLifetime,
+    } : undefined;
+
+    if (this.lifecycleConfiguration) {
+      this.validateLifecycleConfiguration(this.lifecycleConfiguration);
+    }
 
     if (props.executionRole) {
       this.role = props.executionRole;

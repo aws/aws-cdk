@@ -3,11 +3,12 @@ import { CfnHealthCheck } from './route53.generated';
 import { Duration, IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { HealthCheckReference, IHealthCheckRef } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 /**
  * Imported or created health check
  */
-export interface IHealthCheck extends IResource {
+export interface IHealthCheck extends IResource, IHealthCheckRef {
   /**
    * The ID of the health check.
    *
@@ -251,12 +252,24 @@ export class HealthCheck extends Resource implements IHealthCheck {
   public static fromHealthCheckId(scope: Construct, id: string, healthCheckId: string): IHealthCheck {
     class Import extends Resource implements IHealthCheck {
       public readonly healthCheckId = healthCheckId;
+
+      get healthCheckRef() {
+        return {
+          healthCheckId: this.healthCheckId,
+        };
+      }
     }
 
     return new Import(scope, id);
   }
 
   public readonly healthCheckId: string;
+
+  public get healthCheckRef(): HealthCheckReference {
+    return {
+      healthCheckId: this.healthCheckId,
+    };
+  }
 
   /**
    * Creates a new health check.
