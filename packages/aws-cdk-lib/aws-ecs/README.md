@@ -397,6 +397,8 @@ EventBridge Rule Name:
 Here's a complete deployment example:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'demoClusterStack', {
   env: { region: 'YOUR_REGION', account: 'YOUR_ACCOUNT_ID' }
