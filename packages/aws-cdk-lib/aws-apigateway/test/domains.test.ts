@@ -147,6 +147,24 @@ describe('domains', () => {
     }).not.toThrow();
   });
 
+  test('allows multi-level base paths without security policy (defaults to TLS 1.2)', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('GET');
+
+    // WHEN - Should not throw error, default is TLS 1.2
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        mapping: api,
+        basePath: 'v1/users',
+      });
+    }).not.toThrow();
+  });
+
   test('"mapping" can be used to automatically map this domain to the deployment stage of an API', () => {
     // GIVEN
     const stack = new Stack();
@@ -224,7 +242,7 @@ describe('domains', () => {
       }).toThrow(/multi-level basePath is only supported when endpointType is EndpointType.REGIONAL/);
     });
 
-    test('throws if securityPolicy is not TLS_1_2', () => {
+    test('throws if securityPolicy is TLS_1_0', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'api');
@@ -239,7 +257,7 @@ describe('domains', () => {
           basePath: 'v1/api',
           securityPolicy: apigw.SecurityPolicy.TLS_1_0,
         });
-      }).toThrow(/securityPolicy must be set to TLS 1.2 or higher if multi-level basePath is provided/);
+      }).toThrow(/securityPolicy must be TLS 1.2 or higher for multi-level basePath/);
     });
 
     test('can use addApiMapping', () => {

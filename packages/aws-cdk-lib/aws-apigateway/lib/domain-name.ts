@@ -216,16 +216,15 @@ export class DomainName extends Resource implements IDomainName {
       if (this.endpointType === EndpointType.EDGE) {
         throw new ValidationError('multi-level basePath is only supported when endpointType is EndpointType.REGIONAL', this);
       }
-      // Multi-level base path mapping requires TLS 1.2 or higher
-      const tls12OrHigher = [
-        SecurityPolicy.TLS_1_2,
-        SecurityPolicy.TLS13_1_3_2025_09,
-        SecurityPolicy.TLS13_1_2_PQ_2025_09,
-        SecurityPolicy.TLS13_2025_EDGE,
-        SecurityPolicy.TLS13_1_3_FIPS_2025_09,
-      ];
-      if (this.securityPolicy && !tls12OrHigher.includes(this.securityPolicy)) {
-        throw new ValidationError('securityPolicy must be set to TLS 1.2 or higher if multi-level basePath is provided', this);
+      // Multi-level API mappings (using ApiGatewayV2::ApiMapping) require TLS 1.2 or higher security policy.
+      // TLS 1.0 does not support multi-level base path mappings.
+      // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html
+      if (this.securityPolicy && !Token.isUnresolved(this.securityPolicy) && this.securityPolicy === SecurityPolicy.TLS_1_0) {
+        throw new ValidationError(
+          'securityPolicy must be TLS 1.2 or higher for multi-level basePath. ' +
+          'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html',
+          this,
+        );
       }
       return true;
     }
@@ -270,9 +269,10 @@ export class DomainName extends Resource implements IDomainName {
    *
    * This uses the ApiMapping from ApiGatewayV2 which supports multi-level paths, but
    * also only supports:
-   * - SecurityPolicy.TLS_1_2
+   * - SecurityPolicy TLS 1.2 or higher (TLS 1.0 is not supported)
    * - EndpointType.REGIONAL
    *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html
    * @param targetStage the target API stage.
    * @param options Options for mapping to a stage
    */
