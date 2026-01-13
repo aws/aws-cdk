@@ -264,6 +264,4 @@ describe('confidenceVerdictThreshold', () => {
       },
     });
   });
-
-  });
 });
