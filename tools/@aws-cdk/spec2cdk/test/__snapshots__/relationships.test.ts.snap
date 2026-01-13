@@ -6,8 +6,7 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { IResourceRef, IRoleRef, ResourceReference, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -42,6 +41,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
   }
 
   public static arnForRole(resource: IRoleRef): string {
@@ -176,6 +182,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   public permissions?: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable;
@@ -342,9 +355,8 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IUserRef, UserReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IPolicyRef, PolicyReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { IPolicyRef, IRoleRef, IUserRef, PolicyReference, RoleReference, UserReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { aws_iam as iamRefs } from "aws-cdk-lib/interfaces";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -379,6 +391,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
   }
 
   public static arnForRole(resource: IRoleRef): string {
@@ -515,6 +534,13 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnUser
+   */
+  public static isCfnUser(x: any): x is CfnUser {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnUser.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForUser(resource: IUserRef): string {
     return resource.userRef.userArn;
   }
@@ -649,6 +675,13 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnPolicy
+   */
+  public static isCfnPolicy(x: any): x is CfnPolicy {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnPolicy.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public principalArn?: string;
 
   /**
@@ -664,7 +697,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
       properties: props
     });
 
-    this.principalArn = (props.principalArn as IRoleRef)?.roleRef?.roleArn ?? (props.principalArn as IUserRef)?.userRef?.userArn ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
+    this.principalArn = (props.principalArn as iamRefs.IRoleRef)?.roleRef?.roleArn ?? (props.principalArn as iamRefs.IUserRef)?.userRef?.userArn ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
   }
 
   public get policyRef(): PolicyReference {
@@ -703,7 +736,7 @@ export interface CfnPolicyProps {
   /**
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-policy.html#cfn-iam-policy-principalarn
    */
-  readonly principalArn?: IRoleRef | IUserRef | string;
+  readonly principalArn?: iamRefs.IRoleRef | iamRefs.IUserRef | string;
 }
 
 /**
@@ -758,8 +791,7 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { ITaskRef, TaskReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { IRoleRef, ITaskRef, RoleReference, TaskReference } from "../interfaces/generated/aws-iam-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -794,6 +826,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
   }
 
   public static arnForRole(resource: IRoleRef): string {
@@ -928,6 +967,13 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnTask
+   */
+  public static isCfnTask(x: any): x is CfnTask {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnTask.CFN_RESOURCE_TYPE_NAME));
   }
 
   public executionConfig?: CfnTask.ExecutionConfigProperty | cdk.IResolvable;
@@ -1094,8 +1140,7 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IJobRef, JobReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { IJobRef, IRoleRef, JobReference, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -1130,6 +1175,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
   }
 
   public static arnForRole(resource: IRoleRef): string {
@@ -1264,6 +1316,13 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnJob
+   */
+  public static isCfnJob(x: any): x is CfnJob {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnJob.CFN_RESOURCE_TYPE_NAME));
   }
 
   public config?: cdk.IResolvable | CfnJob.OldConfigProperty;
@@ -1492,8 +1551,8 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IFunctionRef, FunctionReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { FunctionReference, IFunctionRef, IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { aws_iam as iamRefs } from "aws-cdk-lib/interfaces";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -1528,6 +1587,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
   }
 
   public static arnForRole(resource: IRoleRef): string {
@@ -1664,6 +1730,13 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnFunction
+   */
+  public static isCfnFunction(x: any): x is CfnFunction {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnFunction.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public roleArn?: string;
 
   /**
@@ -1679,7 +1752,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
       properties: props
     });
 
-    this.roleArn = (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
+    this.roleArn = (props.roleArn as iamRefs.IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
   }
 
   public get functionRef(): FunctionReference {
@@ -1718,7 +1791,7 @@ export interface CfnFunctionProps {
   /**
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-function.html#cfn-iam-function-rolearn
    */
-  readonly roleArn?: IRoleRef | string;
+  readonly roleArn?: iamRefs.IRoleRef | string;
 }
 
 /**

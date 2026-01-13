@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable @stylistic/comma-dangle */
 /* eslint-disable @cdklabs/no-literal-partition */
 /*
@@ -135,6 +135,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SUPERVISOR",
     "DISABLED",
     "SUPERVISOR_ROUTER"
+  ],
+  "AgentCoreRuntime": [
+    "PYTHON_3_10",
+    "PYTHON_3_11",
+    "PYTHON_3_12",
+    "PYTHON_3_13"
   ],
   "AgentStepType": [
     "PRE_PROCESSING",
@@ -463,6 +469,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "BrokerType": [
     "STANDARD",
     "EXPRESS"
+  ],
+  "BrowserSigning": [
+    "ENABLED",
+    "DISABLED"
   ],
   "BrowserType": [
     "CHROME",
@@ -926,6 +936,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "ContainerProviderTypes": [
     "EKS"
+  ],
+  "ContainerType": [
+    "DOCKER"
   ],
   "ContentFilterStrength": [
     "NONE",
@@ -1423,6 +1436,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SUPERSEDED",
     "PARALLEL"
   ],
+  "Failover": [
+    "PRIMARY",
+    "SECONDARY"
+  ],
   "FailoverStatusCode": [
     403,
     404,
@@ -1586,7 +1603,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "2.0",
     "3.0",
     "4.0",
-    "5.0"
+    "5.0",
+    "5.1"
   ],
   "GraphWidgetView": [
     "timeSeries",
@@ -1769,11 +1787,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "git",
     "docker"
   ],
+  "ImageArchitecture": [
+    "arm64",
+    "x86_64"
+  ],
   "ImageId": [
     "amazonlinux-2-x86_64",
     "amazonlinux-2023-x86_64",
     "ubuntu-18.04-x86_64",
     "ubuntu-22.04-x86_64"
+  ],
+  "ImagePipelineStatus": [
+    "ENABLED",
+    "DISABLED"
   ],
   "ImagePullPolicy": [
     "Always",
@@ -1787,6 +1813,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ImageRepositoryType": [
     "ECR_PUBLIC",
     "ECR"
+  ],
+  "ImageType": [
+    "AMI",
+    "DOCKER"
   ],
   "IncludeDetail": [
     "FULL",
@@ -2115,6 +2145,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "m7a",
     "standard8-amd",
     "m8a",
+    "standard9-graviton",
+    "m9g",
     "high-compute-memory1",
     "z1d",
     "inference1",
@@ -2468,6 +2500,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AFTER_180_DAYS",
     "AFTER_270_DAYS",
     "AFTER_365_DAYS"
+  ],
+  "LifecyclePolicyActionType": [
+    "DELETE",
+    "DEPRECATE",
+    "DISABLE"
+  ],
+  "LifecyclePolicyResourceType": [
+    "AMI_IMAGE",
+    "CONTAINER_IMAGE"
+  ],
+  "LifecyclePolicyStatus": [
+    "ENABLED",
+    "DISABLED"
   ],
   "LifecycleTransition": [
     "autoscaling:EC2_INSTANCE_LAUNCHING",
@@ -3340,6 +3385,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ResourceToReplicateTags": [
     "lambda-function"
   ],
+  "ResponseTransferMode": [
+    "BUFFERED",
+    "STREAM"
+  ],
   "RestApiMode": [
     "overwrite",
     "merge"
@@ -3437,6 +3486,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SSE-S3",
     "SSE-KMS"
   ],
+  "S3LogsDeliveryPermissionsVersion": [
+    "V1",
+    "V2"
+  ],
   "S3OutputFormat": [
     "plain",
     "json",
@@ -3473,6 +3526,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ScheduledActions",
     "AddToLoadBalancer",
     "InstanceRefresh"
+  ],
+  "ScheduleStartCondition": [
+    "EXPRESSION_MATCH_ONLY",
+    "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE"
   ],
   "SchemaDefinitionType": [
     "string",
@@ -4657,6 +4714,43 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "G.4X",
     "G.8X",
     "Z.2X"
+  ],
+  "WorkflowAction": [
+    "ApplyImageConfigurations",
+    "BootstrapInstanceForContainer",
+    "CollectImageMetadata",
+    "CollectImageScanFindings",
+    "CreateImage",
+    "DistributeImage",
+    "ExecuteComponents",
+    "ExecuteStateMachine",
+    "LaunchInstance",
+    "ModifyImageAttributes",
+    "RunCommand",
+    "RegisterImage",
+    "RunSysPrep",
+    "SanitizeInstance",
+    "TerminateInstance",
+    "WaitForAction",
+    "WaitForSSMAgent"
+  ],
+  "WorkflowOnFailure": [
+    "Abort",
+    "Continue"
+  ],
+  "WorkflowParameterType": [
+    "boolean",
+    "integer",
+    "string",
+    "stringList"
+  ],
+  "WorkflowSchemaVersion": [
+    "1.0"
+  ],
+  "WorkflowType": [
+    "BUILD",
+    "TEST",
+    "DISTRIBUTION"
   ],
   "WriteParallel": [
     "on",

@@ -96,11 +96,11 @@
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
     "@aws-cdk/lambda-layer-kubectl-v34": "^2.0.0",
     "@types/jest": "^29.5.14",
-    "aws-sdk": "^2.1692.0",
+    "aws-sdk": "^2.1693.0",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "sinon": "^9.2.4",
-    "cdk8s": "2.70.11",
+    "cdk8s": "2.70.42",
     "cdk8s-plus-27": "2.9.5"
   },
   "dependencies": {

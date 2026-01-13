@@ -12,7 +12,6 @@ function iam(): sdk.IAM {
 }
 
 function defaultLogger(fmt: string, ...args: any[]) {
-  // eslint-disable-next-line no-console
   console.log(fmt, ...args);
 }
 
@@ -51,7 +50,6 @@ async function downloadThumbprint(issuerUrl: string, rejectUnauthorized: boolean
 
       // Warning user if certificate validity is expiring within 6 months
       if (certificateValidity < 180) {
-        /* eslint-disable-next-line no-console */
         console.warn(`The root certificate obtained would expire in ${certificateValidity} days!`);
       }
 

@@ -4,6 +4,8 @@ import { CfnWorkflow } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
 
@@ -155,21 +157,6 @@ export interface WorkflowAttributes {
    * @default x.x.x
    */
   readonly workflowVersion?: string;
-}
-
-/**
- * Properties for an EC2 Image Builder AWS-managed workflow
- */
-export interface AwsManagedWorkflowAttributes {
-  /**
-   * The name of the AWS-managed workflow
-   */
-  readonly workflowName: string;
-
-  /**
-   * The type of the AWS-managed workflow
-   */
-  readonly workflowType: WorkflowType;
 }
 
 /**
@@ -442,6 +429,7 @@ export abstract class S3WorkflowData extends WorkflowData {
 
   /**
    * Grant put permissions to the given grantee for the workflow data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -451,6 +439,7 @@ export abstract class S3WorkflowData extends WorkflowData {
 
   /**
    * Grant read permissions to the given grantee for the workflow data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -489,101 +478,84 @@ class S3WorkflowDataFromAsset extends S3WorkflowData {
 }
 
 /**
- * Helper class for working with AWS-managed workflows
+ * The parameter value for a workflow parameter
  */
-export class AwsManagedWorkflow {
+export class WorkflowParameterValue {
   /**
-   * Imports the build-container AWS-managed workflow
+   * The value of the parameter as a boolean
    *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
+   * @param value The boolean value of the parameter
    */
-  public static buildContainer(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'build-container',
-      workflowType: WorkflowType.BUILD,
-    });
+  public static fromBoolean(value: boolean): WorkflowParameterValue {
+    return new WorkflowParameterValue([value.toString()]);
   }
 
   /**
-   * Imports the build-image AWS-managed workflow
+   * The value of the parameter as an integer
    *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
+   * @param value The integer value of the parameter
    */
-  public static buildImage(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'build-image',
-      workflowType: WorkflowType.BUILD,
-    });
+  public static fromInteger(value: number): WorkflowParameterValue {
+    return new WorkflowParameterValue([value.toString()]);
   }
 
   /**
-   * Imports the distribute-container AWS-managed workflow
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
+   * The value of the parameter as a string
+   * @param value The string value of the parameter
    */
-  public static distributeContainer(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'distribute-container',
-      workflowType: WorkflowType.DISTRIBUTION,
-    });
+  public static fromString(value: string): WorkflowParameterValue {
+    return new WorkflowParameterValue([value]);
   }
 
   /**
-   * Imports the test-container AWS-managed workflow
+   * The value of the parameter as a string list
    *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
+   * @param values The string list value of the parameter
    */
-  public static testContainer(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'test-container',
-      workflowType: WorkflowType.TEST,
-    });
+  public static fromStringList(values: string[]): WorkflowParameterValue {
+    return new WorkflowParameterValue(values);
   }
 
   /**
-   * Imports the test-image AWS-managed workflow
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
+   * The rendered parameter value
    */
-  public static testImage(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'test-image',
-      workflowType: WorkflowType.TEST,
-    });
+  public readonly value: string[];
+
+  protected constructor(value: string[]) {
+    this.value = value;
   }
+}
+
+/**
+ * Configuration details for a workflow
+ */
+export interface WorkflowConfiguration {
+  /**
+   * The workflow to execute in the image build
+   */
+  readonly workflow: IWorkflow;
 
   /**
-   * Imports an AWS-managed workflow from its attributes
+   * The action to take if the workflow fails
    *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The attributes of the AWS-managed workflow
+   * @default WorkflowOnFailure.ABORT
    */
-  public static fromAwsManagedWorkflowAttributes(
-    scope: Construct,
-    id: string,
-    attrs: AwsManagedWorkflowAttributes,
-  ): IWorkflow {
-    if (cdk.Token.isUnresolved(attrs.workflowType)) {
-      throw new cdk.ValidationError('workflowType cannot be a token', scope);
-    }
+  readonly onFailure?: WorkflowOnFailure;
 
-    return Workflow.fromWorkflowArn(
-      scope,
-      id,
-      cdk.Stack.of(scope).formatArn({
-        service: 'imagebuilder',
-        account: 'aws',
-        resource: 'workflow',
-        resourceName: `${attrs.workflowType.toLowerCase()}/${attrs.workflowName}/${LATEST_VERSION}`,
-      }),
-    );
-  }
+  /**
+   * The named parallel group to include this workflow in. Workflows in the same parallel group run in parallel of each
+   * other.
+   *
+   * @default None
+   */
+  readonly parallelGroup?: string;
+
+  /**
+   * The parameters to pass to the workflow at execution time
+   *
+   * @default - none if the workflow has no parameters, otherwise the default parameter values are used
+   */
+  readonly parameters?: { [name: string]: WorkflowParameterValue };
 }
 
 /**
@@ -612,6 +584,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * Grant custom actions to the given grantee for the workflow
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -627,6 +600,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * Grant read permissions to the given grantee for the workflow
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -640,7 +614,11 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
  *
  * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/manage-image-workflows.html
  */
+@propertyInjectable
 export class Workflow extends WorkflowBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-imagebuilder-alpha.Workflow';
+
   /**
    * Import an existing workflow given its ARN.
    */
@@ -767,6 +745,8 @@ export class Workflow extends WorkflowBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, WORKFLOW_SYMBOL, { value: true });
 

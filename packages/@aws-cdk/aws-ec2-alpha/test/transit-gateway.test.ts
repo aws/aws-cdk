@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import * as subnet from '../lib/subnet-v2';
 import { TransitGateway } from '../lib/transit-gateway';
 import * as vpc from '../lib/vpc-v2';
-import * as subnet from '../lib/subnet-v2';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 describe('Transit Gateway with default settings', () => {
   let stack: cdk.Stack;

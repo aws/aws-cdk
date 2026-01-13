@@ -11,5 +11,5 @@
       "assertionStackName": "ApplicationSignalsIntegrationECSReplicaTestDefaultTestDeployAssert818A098D"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

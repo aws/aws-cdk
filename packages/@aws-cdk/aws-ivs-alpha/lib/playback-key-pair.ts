@@ -1,9 +1,9 @@
+import { CfnPlaybackKeyPair } from 'aws-cdk-lib/aws-ivs';
 import * as core from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { CfnPlaybackKeyPair } from 'aws-cdk-lib/aws-ivs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 
 /**
  * Represents an IVS Playback Key Pair
