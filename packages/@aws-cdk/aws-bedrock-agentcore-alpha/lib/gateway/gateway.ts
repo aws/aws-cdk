@@ -426,7 +426,7 @@ export class Gateway extends GatewayBase {
           produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
         }),
     });
-    
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     // ------------------------------------------------------
