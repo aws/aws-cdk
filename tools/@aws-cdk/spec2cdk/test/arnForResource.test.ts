@@ -142,8 +142,8 @@ describe('arnForResource is generated', () => {
 "public static arnForResource(resource: IResourceRef): string {
   return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${ResourceId}").interpolate({
     Partition: cdk.Stack.of(resource).partition,
-    Region: cdk.Stack.of(resource).region,
-    Account: cdk.Stack.of(resource).account,
+    Region: resource.env.region,
+    Account: resource.env.account,
     ResourceId: resource.resourceRef.resourceId
   });
 }"
@@ -170,8 +170,8 @@ describe('arnForResource is generated', () => {
 "public static arnForResource(resource: IResourceRef): string {
   return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${Team}").interpolate({
     Partition: cdk.Stack.of(resource).partition,
-    Region: cdk.Stack.of(resource).region,
-    Account: cdk.Stack.of(resource).account,
+    Region: resource.env.region,
+    Account: resource.env.account,
     Team: resource.resourceRef.team
   });
 }"
@@ -207,8 +207,8 @@ describe('arnForResource is generated', () => {
 "public static arnForResource(resource: IResourceRef): string {
   return new cfn_parse.TemplateString("arn:\${Partition}:sagemaker:\${Region}:\${Account}:workteam/\${WorkteamName}").interpolate({
     Partition: cdk.Stack.of(resource).partition,
-    Region: cdk.Stack.of(resource).region,
-    Account: cdk.Stack.of(resource).account,
+    Region: resource.env.region,
+    Account: resource.env.account,
     WorkteamName: resource.resourceRef.workteamName
   });
 }"

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.dev.servicecatalog"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Dev.ServiceCatalog"
+    },
+    "python": {
+      "module": "aws_cdk.dev_servicecatalog"
+    }
+  }
+}
