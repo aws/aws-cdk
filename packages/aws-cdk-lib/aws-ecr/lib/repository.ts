@@ -364,6 +364,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     const crossAccountPrincipal = this.unsafeCrossAccountResourcePolicyPrincipal(grantee);
@@ -407,6 +408,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to read the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
@@ -417,6 +419,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to use the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantPull(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...this.REPO_PULL_ACTIONS);
@@ -432,6 +435,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to use the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...this.REPO_PUSH_ACTIONS);
@@ -446,6 +450,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
+   * [disable-awslint:no-grants]
    */
   public grantPullPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee,
@@ -1100,6 +1105,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
     rulePriority: rule.rulePriority,
     description: rule.description,
     selection: {
+      // eslint-disable-next-line @cdklabs/no-evaluating-typeguard
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       tagPatternList: rule.tagPatternList,

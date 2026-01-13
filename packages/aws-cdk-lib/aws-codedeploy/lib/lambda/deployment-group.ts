@@ -266,6 +266,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   /**
    * Grant a principal permission to codedeploy:PutLifecycleEventHookExecutionStatus
    * on this deployment group resource.
+   * [disable-awslint:no-grants]
    * @param grantee to grant permission to
    */
   @MethodMetadata()

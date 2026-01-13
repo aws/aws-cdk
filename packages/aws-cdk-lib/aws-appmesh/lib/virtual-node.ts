@@ -128,6 +128,9 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
     return this.grants.streamAggregatedResources(identity);
   }
@@ -139,6 +142,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
  * Any inbound traffic that your virtual node expects should be specified as a
  * listener. Any outbound traffic that your virtual node expects to reach
  * should be specified as a backend.
+ * [disable-awslint:no-grants]
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
