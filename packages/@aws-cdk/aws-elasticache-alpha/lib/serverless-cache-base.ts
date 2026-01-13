@@ -180,6 +180,7 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
 
   /**
    * Grant connect permissions to the cache
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant permissions to
    */
@@ -188,6 +189,7 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
   }
   /**
    * Grant the given identity custom permissions
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant permissions to
    * @param actions The actions to grant
