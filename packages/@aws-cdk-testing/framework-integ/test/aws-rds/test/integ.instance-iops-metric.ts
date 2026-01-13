@@ -4,17 +4,14 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-iops-metric', {
-  terminationProtection: false,
-});
+const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-iops-metric');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16 }),
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_6 }),
   vpc,
   multiAz: false,
-  publiclyAccessible: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
@@ -35,12 +32,5 @@ instance.metricWriteIOPs({
 });
 
 new IntegTest(app, 'rds-instance-iops-metric-integ-test', {
-  testCases: [stack],
-  cdkCommandOptions: {
-    deploy: {
-      args: {
-        rollback: true,
-      },
-    },
-  },
+  testCases: [stack]
 });

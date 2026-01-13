@@ -4,9 +4,7 @@ import { AuroraMysqlEngineVersion, ClusterInstance, Credentials, DatabaseCluster
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-volume-iops-metric', {
-  terminationProtection: false,
-});
+const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-volume-iops-metric');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
@@ -45,12 +43,5 @@ cluster.metricVolumeWriteIOPs({
 });
 
 new IntegTest(app, 'rds-cluster-volume-iops-metric-integ-test', {
-  testCases: [stack],
-  cdkCommandOptions: {
-    deploy: {
-      args: {
-        rollback: true,
-      },
-    },
-  },
+  testCases: [stack]
 });
