@@ -550,12 +550,13 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render ItemProcessor in ASL JSON format
    */
-  protected renderItemProcessor(): any {
+  protected renderItemProcessor(topLevelQueryLanguage?: QueryLanguage): any {
     if (!this.processor) return undefined;
+    const queryLanguage = _getActualQueryLanguage(topLevelQueryLanguage, this.queryLanguage);
     return {
       ItemProcessor: {
-        ...this.renderProcessorConfig(),
-        ...this.processor.toGraphJson(),
+        ...this.renderProcessorConfig(queryLanguage),
+        ...this.processor.toGraphJson(queryLanguage),
       },
     };
   }
@@ -563,7 +564,7 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render ProcessorConfig in ASL JSON format
    */
-  private renderProcessorConfig() {
+  private renderProcessorConfig(processorQueryLanguage?: QueryLanguage) {
     const mode = this.processorConfig?.mode?.toString() ?? this.processorMode;
     if (mode === ProcessorMode.INLINE) {
       return {
@@ -573,10 +574,12 @@ export abstract class State extends Construct implements IChainable {
       };
     }
     const executionType = this.processorConfig?.executionType?.toString();
+    const queryLanguage = processorQueryLanguage === QueryLanguage.JSONATA ? 'JSONata' : undefined;
     return {
       ProcessorConfig: {
         Mode: mode,
         ExecutionType: executionType,
+        ...(queryLanguage && { QueryLanguage: queryLanguage }),
       },
     };
   }
