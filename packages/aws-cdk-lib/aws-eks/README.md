@@ -1338,6 +1338,17 @@ cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
 ]);
 ```
 
+You can optionally specify an access entry type when granting access:
+
+```ts
+// For EKS Auto Mode node roles
+cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], eks.AccessEntryType.EC2);
+```
+
+Supported types: `STANDARD` (default), `FARGATE_LINUX`, `EC2_LINUX`, `EC2_WINDOWS`, `EC2`, `HYBRID_LINUX`, `HYPERPOD_LINUX`.
+
+**Note**: `EC2`, `HYBRID_LINUX`, and `HYPERPOD_LINUX` types cannot have access policies attached.
+
 ### Migrating from ConfigMap to Access Entry
 
 If the cluster is created with the `authenticationMode` property left undefined,

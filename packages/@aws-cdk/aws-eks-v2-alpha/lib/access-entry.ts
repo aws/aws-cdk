@@ -238,37 +238,52 @@ export class AccessPolicy implements IAccessPolicy {
 export enum AccessEntryType {
   /**
    * Represents a standard access entry.
+   * Use this type for standard IAM principals that need cluster access with policies.
    */
   STANDARD = 'STANDARD',
 
   /**
    * Represents a Fargate Linux access entry.
+   * Use this type for AWS Fargate profiles running Linux containers.
    */
   FARGATE_LINUX = 'FARGATE_LINUX',
 
   /**
    * Represents an EC2 Linux access entry.
+   * Use this type for self-managed EC2 instances running Linux that join the cluster as worker nodes.
    */
   EC2_LINUX = 'EC2_LINUX',
 
   /**
    * Represents an EC2 Windows access entry.
+   * Use this type for self-managed EC2 instances running Windows that join the cluster as worker nodes.
    */
   EC2_WINDOWS = 'EC2_WINDOWS',
 
   /**
    * Represents an EC2 access entry for EKS Auto Mode.
-   * Use this type for node roles in EKS Auto Mode clusters.
+   * Use this type for node roles in EKS Auto Mode clusters where AWS automatically manages
+   * the compute infrastructure. This type cannot have access policies attached.
+   * 
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-auto-mode.html
    */
   EC2 = 'EC2',
 
   /**
    * Represents a Hybrid Linux access entry for EKS Hybrid Nodes.
+   * Use this type for on-premises or edge infrastructure running Linux that connects
+   * to your EKS cluster. This type cannot have access policies attached.
+   * 
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes.html
    */
   HYBRID_LINUX = 'HYBRID_LINUX',
 
   /**
    * Represents a HyperPod Linux access entry for Amazon SageMaker HyperPod.
+   * Use this type for SageMaker HyperPod clusters that need access to your EKS cluster
+   * for distributed machine learning workloads. This type cannot have access policies attached.
+   * 
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html
    */
   HYPERPOD_LINUX = 'HYPERPOD_LINUX',
 }
