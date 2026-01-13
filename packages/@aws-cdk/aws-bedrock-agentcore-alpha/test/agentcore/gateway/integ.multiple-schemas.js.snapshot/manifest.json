@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/024bbf3f4de8a5b9545985c3f2aa10fe911bff3a43f812738d7d6a1ed9852f8b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5acd123cc7c21d088f861358e8e6a02b846bfb4e9ac29266621592cc40cc0e2a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -208,7 +208,6 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "userPoolName": "*",
               "signInCaseSensitive": false
             }
           }
@@ -219,19 +218,61 @@
             "data": "TestGatewayUserPool545AA49A"
           }
         ],
+        "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/UserPool/ResourceServer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "identifier": "*",
+              "scopes": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/UserPool/ResourceServer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayUserPoolResourceServer7A34B6B2"
+          }
+        ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/UserPool/DefaultClient": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "userPool": "*",
-              "userPoolClientName": "*"
+              "generateSecret": true,
+              "oAuth": {
+                "flows": {
+                  "clientCredentials": true
+                },
+                "scopes": "*"
+              }
             }
           }
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/UserPool/DefaultClient/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestGatewayUserPoolDefaultClient3AC9C728"
+            "data": "TestGatewayUserPoolDefaultClient3AC9C728",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/UserPool/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
+          }
+        ],
+        "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/UserPool/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayUserPoolDomainB64B616E"
           }
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/Resource": [
