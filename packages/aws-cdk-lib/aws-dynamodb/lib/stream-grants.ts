@@ -1,3 +1,4 @@
+import { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -6,6 +7,14 @@ import * as kms from '../../aws-kms';
  * Construction properties for StreamGrants
  */
 export interface StreamGrantsProps {
+  /**
+   * The table this stream is for
+   *
+   * @deprecated This property is not used anymore
+   * @default - None, no longer required
+   */
+  readonly table?: ITableRef;
+
   /**
    * The ARN of the Stream
    */
