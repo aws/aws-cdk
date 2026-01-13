@@ -11,7 +11,7 @@
   "stability": "stable",
   "maturity": "stable",
   "scripts": {
-    "gen": "ts-node scripts/gen.ts",
+    "gen": "gen-cdk",
     "build": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-build",
     "lint": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-lint",
     "test": "jest",
@@ -131,7 +131,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/aws-service-spec": "^0.1.140",
+    "@aws-cdk/aws-service-spec": "^0.1.136",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -519,7 +519,6 @@
     "./custom-resources": "./custom-resources/index.js",
     "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",
-    "./dev-servicecatalog": "./dev-servicecatalog/index.js",
     "./interfaces": "./interfaces/index.js",
     "./lambda-layer-awscli": "./lambda-layer-awscli/index.js",
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",

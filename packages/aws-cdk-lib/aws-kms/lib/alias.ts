@@ -117,38 +117,65 @@ abstract class AliasBase extends Resource implements IAlias {
     return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return this.aliasTargetKey.grant(grantee, ...actions);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantDecrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncryptDecrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantSign(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantSign(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantVerify(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantVerify(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantSignVerify(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantGenerateMac(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantVerifyMac(grantee);
   }
