@@ -120,6 +120,7 @@ export class ExternalTable extends TableBase {
 
   /**
    * Grant read permissions to the table
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -131,6 +132,7 @@ export class ExternalTable extends TableBase {
 
   /**
    * Grant write permissions to the table
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -142,6 +144,7 @@ export class ExternalTable extends TableBase {
 
   /**
    * Grant read and write permissions to the table
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */

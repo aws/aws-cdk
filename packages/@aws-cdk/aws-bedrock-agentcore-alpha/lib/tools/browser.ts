@@ -237,6 +237,9 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 
   /**
    * Grants IAM actions to the IAM Principal
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant permissions to
    * @param actions - The actions to grant
    * @returns An IAM Grant object representing the granted permissions
@@ -252,6 +255,8 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
   /**
    * Grant read permissions on this browser to an IAM principal.
    * This includes both read permissions on the specific browser and list permissions on all browsers.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
@@ -276,6 +281,8 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 
   /**
    * Grant invoke permissions on this browser to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant invoke permissions to
    * @default - Default grant configuration:
