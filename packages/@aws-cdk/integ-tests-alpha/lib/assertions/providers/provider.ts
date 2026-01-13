@@ -300,6 +300,7 @@ export class AssertionsProvider extends Construct {
   /**
    * Grant a principal access to invoke the assertion provider
    * lambda function
+   * [disable-awslint:no-grants]
    *
    * @param principalArn the ARN of the principal that should be given
    *  permission to invoke the assertion provider

@@ -347,7 +347,7 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_2_0 = new Runtime('syn-nodejs-playwright-2.0', RuntimeFamily.NODEJS);
 
   /**
-   * `syn-nodejs-playwright-2.0` includes the following:
+   * `syn-nodejs-playwright-3.0` includes the following:
    * - Lambda runtime Node.js 20.x
    * - Playwright version 1.53.0
    * - Chromium version 138.0.7204.168
@@ -359,6 +359,45 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-3.0
    */
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_3_0 = new Runtime('syn-nodejs-playwright-3.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-4.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.55.0
+   * - Chromium version 140.0.7339.16
+   * - Firefox version 141.0
+   *
+   * New Features:
+   * - Applied security patches and updated Playwright and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-4.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_4_0 = new Runtime('syn-nodejs-playwright-4.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-5.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.57.0
+   * - Chromium version 143.0.7499.4
+   * - Firefox version 142.0.1
+   *
+   * New Features:
+   * - Applied security patches and updated Playwright and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-5.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_5_0 = new Runtime('syn-nodejs-playwright-5.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-3.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   *
+   * New Features:
+   * - **Multi-checks blueprint**: Supports the multi-checks blueprint for creating complex synthetic monitoring scenarios.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html
+   */
+  public static readonly SYNTHETICS_NODEJS_3_0 = new Runtime('syn-nodejs-3.0', RuntimeFamily.NODEJS);
 
   /**
    * `syn-python-selenium-1.0` includes the following:
