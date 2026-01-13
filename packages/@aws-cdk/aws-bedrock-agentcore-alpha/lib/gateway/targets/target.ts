@@ -497,6 +497,8 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    * This method grants the `SynchronizeGatewayTargets` permission, which is primarily
    * needed for MCP Server targets when you need to refresh the tool catalog after the
    * MCP server's tools have changed.
+   *
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grantSync(grantee: iam.IGrantable): iam.Grant {
