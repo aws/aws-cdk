@@ -6,6 +6,8 @@ import { Key } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Bucket } from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
+import { Topic } from '../../aws-sns';
+import { Queue } from '../../aws-sqs';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as sources from '../lib';
@@ -628,6 +630,42 @@ describe('KafkaEventSource', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         StartingPosition: 'AT_TIMESTAMP',
         StartingPositionTimestamp: 1640995200,
+      });
+    });
+
+    test('Setting error handling properties', () => {
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      new sources.S3OnFailureDestination(bucket);
+
+      testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        provisionedPollerConfig: {
+          minimumPollers: 1,
+          maximumPollers: 3,
+        },
+        bisectBatchOnError: true,
+        retryAttempts: 5,
+        reportBatchItemFailures: true,
+        maxRecordAge: cdk.Duration.hours(1),
+      }),
+      );
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        StartingPosition: 'TRIM_HORIZON',
+        BisectBatchOnFunctionError: true,
+        MaximumRetryAttempts: 5,
+        FunctionResponseTypes: ['ReportBatchItemFailures'],
+        MaximumRecordAgeInSeconds: 3600, // 1 hour in seconds
+        ProvisionedPollerConfig: {
+          MinimumPollers: 1,
+          MaximumPollers: 3,
+        },
       });
     });
   });
@@ -2110,6 +2148,1254 @@ describe('KafkaEventSource', () => {
           },
         },
       });
+    });
+
+    test('SelfManagedKafkaEventSource inherits error handling properties correctly', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers: bootstrapServers,
+        topic: kafkaTopic,
+        secret: secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        // Error handling properties that should be inherited from StreamEventSourceProps
+        bisectBatchOnError: true,
+        retryAttempts: 5,
+        reportBatchItemFailures: true,
+        maxRecordAge: cdk.Duration.hours(1),
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [kafkaTopic],
+        // Verify error handling properties are correctly mapped to CloudFormation
+        BisectBatchOnFunctionError: true,
+        MaximumRetryAttempts: 5,
+        FunctionResponseTypes: ['ReportBatchItemFailures'],
+        MaximumRecordAgeInSeconds: 3600, // 1 hour in seconds
+        SourceAccessConfigurations: [
+          {
+            Type: 'SASL_SCRAM_512_AUTH',
+            URI: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('PollerGroupName tests', () => {
+    test('ManagedKafkaEventSource with PollerGroupName', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          provisionedPollerConfig: {
+            minimumPollers: 2,
+            maximumPollers: 5,
+            pollerGroupName: 'managed-kafka-group',
+          },
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+        ProvisionedPollerConfig: {
+          MinimumPollers: 2,
+          MaximumPollers: 5,
+          PollerGroupName: 'managed-kafka-group',
+        },
+      });
+    });
+
+    test('SelfManagedKafkaEventSource with PollerGroupName', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          provisionedPollerConfig: {
+            minimumPollers: 1,
+            maximumPollers: 4,
+            pollerGroupName: 'self-managed-kafka-group',
+          },
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+        ProvisionedPollerConfig: {
+          MinimumPollers: 1,
+          MaximumPollers: 4,
+          PollerGroupName: 'self-managed-kafka-group',
+        },
+        SourceAccessConfigurations: [
+          {
+            Type: 'SASL_SCRAM_512_AUTH',
+            URI: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ],
+      });
+    });
+  });
+});
+
+describe('KafkaDlq integration', () => {
+  describe('ManagedKafkaEventSource with KafkaDlq', () => {
+    test('includes correct DestinationConfig in CloudFormation template', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [kafkaTopic],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+
+    test('works with kafka:// prefix in topic name', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const kafkaDlq = new sources.KafkaDlq('kafka://failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+
+    test('works with complex topic names', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const kafkaDlq = new sources.KafkaDlq('my.complex_failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://my.complex_failure-topic',
+          },
+        },
+      });
+    });
+  });
+
+  describe('SelfManagedKafkaEventSource with KafkaDlq', () => {
+    test('includes correct DestinationConfig in CloudFormation template', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        topic: kafkaTopic,
+        secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [kafkaTopic],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+        SourceAccessConfigurations: [
+          {
+            Type: 'SASL_SCRAM_512_AUTH',
+            URI: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ],
+      });
+    });
+
+    test('works with kafka:// prefix in topic name', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const kafkaDlq = new sources.KafkaDlq('kafka://failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        topic: kafkaTopic,
+        secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+
+    test('works with VPC configuration', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const bootstrapServers = ['kafka-broker:9092'];
+      const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
+      const vpc = new Vpc(stack, 'Vpc');
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        vpc,
+        vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        securityGroup: sg,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+        SourceAccessConfigurations: [
+          {
+            Type: 'VPC_SECURITY_GROUP',
+            URI: 'sg-0123456789',
+          },
+          {
+            Type: 'VPC_SUBNET',
+            URI: {
+              Ref: 'VpcPrivateSubnet1Subnet536B997A',
+            },
+          },
+          {
+            Type: 'VPC_SUBNET',
+            URI: {
+              Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+            },
+          },
+        ],
+      });
+    });
+  });
+});
+
+describe('backwards compatibility', () => {
+  describe('existing onFailure destinations continue to work', () => {
+    test('ManagedKafka with S3OnFailureDestination still works', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: s3OnFailureDestination,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
+          },
+        },
+      });
+    });
+
+    test('SelfManagedKafka with S3OnFailureDestination still works', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        topic: kafkaTopic,
+        secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: s3OnFailureDestination,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
+          },
+        },
+      });
+    });
+
+    test('multiple destination types can be used in same stack', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn1 = new TestFunction(stack, 'Fn1');
+      const fn2 = new TestFunction(stack, 'Fn2');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+      // WHEN
+      fn1.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: s3OnFailureDestination,
+      }));
+
+      fn2.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: 'another-topic',
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN
+      const template = Template.fromStack(stack);
+
+      // Should have 2 event source mappings
+      template.resourceCountIs('AWS::Lambda::EventSourceMapping', 2);
+
+      // Verify S3 destination exists
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        Topics: ['some-topic'],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
+          },
+        },
+      });
+
+      // Verify Kafka destination exists
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        Topics: ['another-topic'],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+
+    test('ManagedKafka with SnsDlq still works', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const topic = new Topic(stack, 'Topic');
+      const snsDlq = new sources.SnsDlq(topic);
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: snsDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        },
+      });
+    });
+
+    test('SelfManagedKafka with SnsDlq still works', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const topic = new Topic(stack, 'Topic');
+      const snsDlq = new sources.SnsDlq(topic);
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        topic: kafkaTopic,
+        secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: snsDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        },
+      });
+    });
+
+    test('ManagedKafka with SqsDlq still works', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const queue = new Queue(stack, 'Queue');
+      const sqsDlq = new sources.SqsDlq(queue);
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: sqsDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
+            },
+          },
+        },
+      });
+    });
+
+    test('SelfManagedKafka with SqsDlq still works', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const queue = new Queue(stack, 'Queue');
+      const sqsDlq = new sources.SqsDlq(queue);
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        topic: kafkaTopic,
+        secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: sqsDlq,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
+            },
+          },
+        },
+      });
+    });
+
+    test('CloudFormation template generation works correctly for all destination types', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+      const topic = new Topic(stack, 'Topic');
+      const snsDlq = new sources.SnsDlq(topic);
+      const queue = new Queue(stack, 'Queue');
+      const sqsDlq = new sources.SqsDlq(queue);
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+      // WHEN - Add multiple event sources with different destination types
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: 'topic-with-s3',
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: s3OnFailureDestination,
+      }));
+
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: 'topic-with-sns',
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: snsDlq,
+      }));
+
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: 'topic-with-sqs',
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: sqsDlq,
+      }));
+
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: 'topic-with-kafka',
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN - Verify all destinations are correctly rendered
+      const template = Template.fromStack(stack);
+
+      // Should have 4 event source mappings
+      template.resourceCountIs('AWS::Lambda::EventSourceMapping', 4);
+
+      // Verify S3 destination format
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        Topics: ['topic-with-s3'],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
+          },
+        },
+      });
+
+      // Verify SNS destination format
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        Topics: ['topic-with-sns'],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        },
+      });
+
+      // Verify SQS destination format
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        Topics: ['topic-with-sqs'],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
+            },
+          },
+        },
+      });
+
+      // Verify Kafka destination format
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        Topics: ['topic-with-kafka'],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+
+    test('no breaking changes to existing API surface', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // Test that all existing destination types are still accepted by the API
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+      const topic = new Topic(stack, 'Topic');
+      const snsDlq = new sources.SnsDlq(topic);
+      const queue = new Queue(stack, 'Queue');
+      const sqsDlq = new sources.SqsDlq(queue);
+
+      // WHEN - These should all compile and work without errors
+      expect(() => {
+        new sources.ManagedKafkaEventSource({
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+        });
+      }).not.toThrow();
+
+      expect(() => {
+        new sources.ManagedKafkaEventSource({
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: snsDlq,
+        });
+      }).not.toThrow();
+
+      expect(() => {
+        new sources.ManagedKafkaEventSource({
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: sqsDlq,
+        });
+      }).not.toThrow();
+
+      expect(() => {
+        new sources.SelfManagedKafkaEventSource({
+          bootstrapServers: ['kafka-broker:9092'],
+          topic: kafkaTopic,
+          secret: new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' }),
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+        });
+      }).not.toThrow();
+
+      expect(() => {
+        new sources.SelfManagedKafkaEventSource({
+          bootstrapServers: ['kafka-broker:9092'],
+          topic: kafkaTopic,
+          secret: new Secret(stack, 'Secret2', { secretName: 'AmazonMSK_KafkaSecret2' }),
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: snsDlq,
+        });
+      }).not.toThrow();
+
+      expect(() => {
+        new sources.SelfManagedKafkaEventSource({
+          bootstrapServers: ['kafka-broker:9092'],
+          topic: kafkaTopic,
+          secret: new Secret(stack, 'Secret3', { secretName: 'AmazonMSK_KafkaSecret3' }),
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: sqsDlq,
+        });
+      }).not.toThrow();
+
+      // THEN - No exceptions should be thrown, indicating API compatibility
+    });
+  });
+});
+describe('KafkaDlq CloudFormation Template Generation', () => {
+  describe('destination property mapping', () => {
+    test('KafkaDlq maps correctly to DestinationConfig.OnFailure.Destination for ManagedKafka', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+      const kafkaTopic = 'test-topic';
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.LATEST,
+        onFailure: kafkaDlq,
+      }));
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        Topics: [kafkaTopic],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+
+    test('KafkaDlq maps correctly to DestinationConfig.OnFailure.Destination for SelfManagedKafka', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'test-topic';
+      const bootstrapServers = ['kafka-broker:9092'];
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+      const vpc = new Vpc(stack, 'TestVpc');
+      const sg = SecurityGroup.fromSecurityGroupId(stack, 'TestSG', 'sg-12345');
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.LATEST,
+        onFailure: kafkaDlq,
+        vpc,
+        vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        securityGroup: sg,
+      }));
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        Topics: [kafkaTopic],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+
+    test('kafka:// prefix is preserved in generated CloudFormation templates', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+      const kafkaTopic = 'test-topic';
+
+      // Test with explicit kafka:// prefix
+      const kafkaDlqWithPrefix = new sources.KafkaDlq('kafka://explicit-failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.LATEST,
+        onFailure: kafkaDlqWithPrefix,
+      }));
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://explicit-failure-topic',
+          },
+        },
+      });
+    });
+
+    test('proper structure matches AWS Lambda EventSourceMapping schema', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+      const kafkaTopic = 'test-topic';
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.LATEST,
+        onFailure: kafkaDlq,
+        batchSize: 50,
+        maxBatchingWindow: cdk.Duration.seconds(5),
+      }));
+
+      // THEN - Verify complete EventSourceMapping structure
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 50,
+        MaximumBatchingWindowInSeconds: 5,
+        StartingPosition: 'LATEST',
+        Topics: [kafkaTopic],
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+
+    test('KafkaDlq works alongside other EventSourceMapping properties', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+      const kafkaTopic = 'test-topic';
+      const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+      // WHEN - Add event source with multiple properties
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        onFailure: kafkaDlq,
+        batchSize: 100,
+        maxBatchingWindow: cdk.Duration.seconds(10),
+        parallelizationFactor: 2,
+        filters: [
+          lambda.FilterCriteria.filter({
+            stringEquals: lambda.FilterRule.isEqual('test'),
+          }),
+        ],
+      } as any));
+
+      // THEN - Verify all properties coexist properly
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        MaximumBatchingWindowInSeconds: 10,
+        ParallelizationFactor: 2,
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [kafkaTopic],
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"stringEquals":["test"]}',
+            },
+          ],
+        },
+        DestinationConfig: {
+          OnFailure: {
+            Destination: 'kafka://failure-topic',
+          },
+        },
+      });
+    });
+  });
+});
+
+describe('template synthesis with various configurations', () => {
+  test('CDK synthesis with topic name without kafka:// prefix', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+    const kafkaTopic = 'test-topic';
+    const kafkaDlq = new sources.KafkaDlq('simple-topic-name');
+
+    // WHEN
+    fn.addEventSource(new sources.ManagedKafkaEventSource({
+      clusterArn,
+      topic: kafkaTopic,
+      startingPosition: lambda.StartingPosition.LATEST,
+      onFailure: kafkaDlq,
+    }));
+
+    // THEN - Should synthesize without errors and add kafka:// prefix
+    expect(() => Template.fromStack(stack)).not.toThrow();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      DestinationConfig: {
+        OnFailure: {
+          Destination: 'kafka://simple-topic-name',
+        },
+      },
+    });
+  });
+
+  test('CDK synthesis with topic name with kafka:// prefix', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+    const kafkaTopic = 'test-topic';
+    const kafkaDlq = new sources.KafkaDlq('kafka://prefixed-topic-name');
+
+    // WHEN
+    fn.addEventSource(new sources.ManagedKafkaEventSource({
+      clusterArn,
+      topic: kafkaTopic,
+      startingPosition: lambda.StartingPosition.LATEST,
+      onFailure: kafkaDlq,
+    }));
+
+    // THEN - Should synthesize without errors and not duplicate prefix
+    expect(() => Template.fromStack(stack)).not.toThrow();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      DestinationConfig: {
+        OnFailure: {
+          Destination: 'kafka://prefixed-topic-name',
+        },
+      },
+    });
+  });
+
+  test('CDK synthesis with complex topic names', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new TestFunction(stack, 'Fn');
+    const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+    const kafkaTopic = 'test-topic';
+
+    // Test various valid Kafka topic name formats
+    const topicNames = [
+      'app.errors.v1', // with dots
+      'app_errors_v1', // with underscores
+      'app-errors-v1', // with hyphens
+      'MyApp123', // alphanumeric
+      'kafka://pre.fixed_topic', // with prefix and mixed characters
+    ];
+
+    topicNames.forEach((topicName, index) => {
+      const kafkaDlq = new sources.KafkaDlq(topicName);
+      const fnName = `Fn${index}`;
+      const testFn = new TestFunction(stack, fnName);
+
+      // WHEN
+      testFn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.LATEST,
+        onFailure: kafkaDlq,
+      }));
+    });
+
+    // THEN - Should synthesize without errors
+    expect(() => Template.fromStack(stack)).not.toThrow();
+    const template = Template.fromStack(stack);
+
+    // Verify each destination is properly formatted
+    const expectedDestinations = [
+      'kafka://app.errors.v1',
+      'kafka://app_errors_v1',
+      'kafka://app-errors-v1',
+      'kafka://MyApp123',
+      'kafka://pre.fixed_topic', // prefix not duplicated
+    ];
+
+    expectedDestinations.forEach((expectedDestination) => {
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: expectedDestination,
+          },
+        },
+      });
+    });
+  });
+
+  test('no syntax errors in generated CloudFormation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+    const kafkaTopic = 'test-topic';
+    const kafkaDlq = new sources.KafkaDlq('failure-topic');
+
+    // WHEN
+    fn.addEventSource(new sources.ManagedKafkaEventSource({
+      clusterArn,
+      topic: kafkaTopic,
+      startingPosition: lambda.StartingPosition.LATEST,
+      onFailure: kafkaDlq,
+    }));
+
+    // THEN - Template should be valid JSON
+    const template = Template.fromStack(stack);
+    const templateJson = template.toJSON();
+
+    expect(templateJson).toBeDefined();
+    expect(typeof templateJson).toBe('object');
+    expect(templateJson.Resources).toBeDefined();
+
+    // Verify the EventSourceMapping resource exists and is properly structured
+    const eventSourceMappings = Object.values(templateJson.Resources).filter(
+      (resource: any) => resource.Type === 'AWS::Lambda::EventSourceMapping',
+    );
+    expect(eventSourceMappings).toHaveLength(1);
+
+    const mapping = eventSourceMappings[0] as any;
+    expect(mapping.Properties.DestinationConfig.OnFailure.Destination).toBe('kafka://failure-topic');
+  });
+
+  test('compatibility with other event source mapping properties', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
+    const kafkaTopic = 'test-topic';
+    const kafkaDlq = new sources.KafkaDlq('failure-topic');
+    const secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+
+    // WHEN - Configure with many properties
+    fn.addEventSource(new sources.ManagedKafkaEventSource({
+      clusterArn,
+      topic: kafkaTopic,
+      startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      onFailure: kafkaDlq,
+      batchSize: 200,
+      maxBatchingWindow: cdk.Duration.seconds(15),
+      parallelizationFactor: 5,
+      secret,
+      filters: [
+        lambda.FilterCriteria.filter({
+          stringEquals: lambda.FilterRule.isEqual('important'),
+          numericEquals: lambda.FilterRule.isEqual(42),
+        }),
+      ],
+    } as any));
+
+    // THEN - Should synthesize without errors and include all properties
+    expect(() => Template.fromStack(stack)).not.toThrow();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      EventSourceArn: clusterArn,
+      Topics: [kafkaTopic],
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+      BatchSize: 200,
+      MaximumBatchingWindowInSeconds: 15,
+      ParallelizationFactor: 5,
+      SourceAccessConfigurations: [
+        {
+          Type: 'SASL_SCRAM_512_AUTH',
+          URI: {
+            Ref: 'SecretA720EF05',
+          },
+        },
+      ],
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"stringEquals":["important"],"numericEquals":[{"numeric":["=",42]}]}',
+          },
+        ],
+      },
+      DestinationConfig: {
+        OnFailure: {
+          Destination: 'kafka://failure-topic',
+        },
+      },
+    });
+  });
+
+  test('SelfManagedKafka with various configurations', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const kafkaTopic = 'test-topic';
+    const bootstrapServers = ['broker1:9092', 'broker2:9092'];
+    const kafkaDlq = new sources.KafkaDlq('self-managed-failure-topic');
+    const secret = new Secret(stack, 'Secret', { secretName: 'SelfManagedKafkaSecret' });
+    const vpc = new Vpc(stack, 'TestVpc');
+    const sg = SecurityGroup.fromSecurityGroupId(stack, 'TestSG', 'sg-12345');
+
+    // WHEN
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: kafkaTopic,
+      startingPosition: lambda.StartingPosition.LATEST,
+      onFailure: kafkaDlq,
+      batchSize: 150,
+      maxBatchingWindow: cdk.Duration.seconds(20),
+      secret,
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup: sg,
+      filters: [
+        lambda.FilterCriteria.filter({
+          stringEquals: lambda.FilterRule.isEqual('processed'),
+        }),
+      ],
+    }));
+
+    // THEN - Should synthesize without errors
+    expect(() => Template.fromStack(stack)).not.toThrow();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      SelfManagedEventSource: {
+        Endpoints: {
+          KafkaBootstrapServers: bootstrapServers,
+        },
+      },
+      Topics: [kafkaTopic],
+      StartingPosition: 'LATEST',
+      BatchSize: 150,
+      MaximumBatchingWindowInSeconds: 20,
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"stringEquals":["processed"]}',
+          },
+        ],
+      },
+      DestinationConfig: {
+        OnFailure: {
+          Destination: 'kafka://self-managed-failure-topic',
+        },
+      },
     });
   });
 

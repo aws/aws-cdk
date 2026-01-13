@@ -1,1 +1,1 @@
-export * from './cloud9.generated';
+export * from './cfn-props-mixins.generated';

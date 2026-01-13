@@ -17,12 +17,13 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { aws_rds } from '../../interfaces';
 
 /**
  * Interface representing a serverless database cluster.
  *
  */
-export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, aws_rds.IDBClusterRef {
   /**
    * Identifier of the cluster
    */
@@ -153,7 +154,7 @@ interface ServerlessClusterNewProps {
    * @default - a new subnet group is created if `vpc` was provided.
    *   If the `vpc` property was not provided, no subnet group will be associated with the DB cluster
    */
-  readonly subnetGroup?: ISubnetGroup;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
 
   /**
    * Whether to copy tags to the snapshot when a snapshot is created.
@@ -341,7 +342,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   /**
    * The secret attached to this cluster
    */
-  public abstract readonly secret?: secretsmanager.ISecret
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   protected abstract enableDataApi?: boolean;
 
@@ -355,6 +356,16 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.clusterIdentifier,
     });
+  }
+
+  /**
+   * A reference to this serverless cluster
+   */
+  public get dbClusterRef(): aws_rds.DBClusterReference {
+    return {
+      dbClusterIdentifier: this.clusterIdentifier,
+      dbClusterArn: this.clusterArn,
+    };
   }
 
   /**
@@ -414,7 +425,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       }
     }
 
-    let subnetGroup: ISubnetGroup | undefined = props.subnetGroup;
+    let subnetGroup: ISubnetGroup | aws_rds.IDBSubnetGroupRef | undefined = props.subnetGroup;
     this.securityGroups = props.securityGroups ?? [];
     if (props.vpc !== undefined) {
       const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
@@ -462,7 +473,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       databaseName: props.defaultDatabaseName,
       dbClusterIdentifier: clusterIdentifier,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
-      dbSubnetGroupName: subnetGroup?.subnetGroupName,
+      dbSubnetGroupName: subnetGroup?.dbSubnetGroupRef.dbSubnetGroupName,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,

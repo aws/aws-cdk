@@ -26,7 +26,7 @@ export class RuleFilterSet {
       this._isEmpty = true;
     }
 
-    for (var filter of ruleFilterList) {
+    for (let filter of ruleFilterList) {
       if (filter.indexOf(':') === -1) {
         filter += ':*'; // add "*" scope filter if there isn't one
       }

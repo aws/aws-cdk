@@ -1,8 +1,7 @@
 // import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
 
-/* eslint-disable quote-props */
-/* eslint-disable quotes */
+/* eslint-disable @stylistic/quote-props */
 
 describe('Test BuildSpec merge', () => {
   test('merge two simple specs', () => {

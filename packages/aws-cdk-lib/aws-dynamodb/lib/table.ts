@@ -10,6 +10,8 @@ import {
   LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput, PointInTimeRecoverySpecification,
   ContributorInsightsSpecification,
   validateContributorInsights,
+  KeySchema,
+  parseKeySchema,
 } from './shared';
 import { StreamGrants } from './stream-grants';
 import { TableGrants } from './table-grants';
@@ -44,13 +46,23 @@ const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 export interface SchemaOptions {
   /**
    * Partition key attribute definition.
+   *
+   * If a single field forms the partition key, you can use this field.  Use the
+   * `partitionKeys` field if the partition key is a multi-attribute key (consists of
+   * multiple fields).
+   *
+   * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
    */
-  readonly partitionKey: Attribute;
+  readonly partitionKey?: Attribute;
 
   /**
    * Sort key attribute definition.
    *
-   * @default no sort key
+   * If a single field forms the sort key, you can use this field.  Use the
+   * `sortKeys` field if the sort key is a multi-attribute key (consists of multiple
+   * fields).
+   *
+   * @default - no sort key
    */
   readonly sortKey?: Attribute;
 }
@@ -502,6 +514,46 @@ export interface TableProps extends TableOptions {
  * Properties for a global secondary index
  */
 export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOptions {
+  /**
+   * Multi-attribute partition key
+   *
+   * If a single field forms the partition key, you can use either
+   * `partitionKey` or `partitionKeys` to specify the partition key. Exactly
+   * one of these must be specified.
+   *
+   * You must use `partitionKeys` field if the partition key is a multi-attribute key
+   * (consists of multiple fields).
+   *
+   * NOTE: although the name of this field makes it sound like it creates
+   * multiple keys, it does not. It defines a single key that consists of
+   * of multiple fields.
+   *
+   * The order of fields is not important.
+   *
+   * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
+   */
+  readonly partitionKeys?: Attribute[];
+
+  /**
+   * Multi-attribute sort key
+   *
+   * If a single field forms the sort key, you can use either
+   * `sortKey` or `sortKeys` to specify the sort key. At most one of these
+   * may be specified.
+   *
+   * You must use `sortKeys` field if the sort key is a multi-attribute key
+   * (consists of multiple fields).
+   *
+   * NOTE: although the name of this field makes it sound like it creates
+   * multiple keys, it does not. It defines a single key that consists of
+   * of multiple fields at the same time.
+   *
+   * NOTE: The order of fields is important!
+   *
+   * @default - no sort key
+   */
+  readonly sortKeys?: Attribute[];
+
   /**
    * The read capacity for the global secondary index.
    *
@@ -1186,10 +1238,13 @@ export class Table extends TableBase {
   private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
   private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
-  private readonly secondaryIndexSchemas = new Map<string, SchemaOptions>();
+  /**
+   * Schemas for the table and all of the indexes
+   */
+  private readonly schemas = new Map<string, KeySchema>();
   private readonly nonKeyAttributes = new Set<string>();
 
-  private readonly tablePartitionKey: Attribute;
+  private readonly tablePartitionKey?: Attribute;
   private readonly tableSortKey?: Attribute;
 
   private readonly billingMode: BillingMode;
@@ -1205,6 +1260,17 @@ export class Table extends TableBase {
     super(scope, id, {
       physicalName: props.tableName,
     });
+
+    if (!props?.partitionKey) {
+      throw new ValidationError('partitionKey is required for Table', this);
+    }
+
+    const normalizedSchema = parseKeySchema(props, this);
+    // We put the schema into 'secondaryIndexSchemas' under a well-known key, so
+    // that `schema()` and `schemaV2()` can retrieve it without additional case
+    // analysis. It's not really necessary otherwise.
+    this.schemas.set(SPECIAL_TABLE_SCHEMA_NAME, normalizedSchema);
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
@@ -1290,7 +1356,7 @@ export class Table extends TableBase {
 
     this.scalingRole = this.makeScalingRole();
 
-    this.addKey(props.partitionKey, HASH_KEY_TYPE);
+    this.addKey(props.partitionKey!, HASH_KEY_TYPE);
     this.tablePartitionKey = props.partitionKey;
 
     if (props.sortKey) {
@@ -1338,17 +1404,15 @@ export class Table extends TableBase {
     this.validateProvisioning(props);
     this.validateIndexName(props.indexName);
 
-    // build key schema and projection for index
-    const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
-    const gsiProjection = this.buildIndexProjection(props);
+    const normalizedSchema = parseKeySchema(props, this);
 
     const contributorInsightsSpecification = this.validateCCI(props);
 
     this.globalSecondaryIndexes.push({
       contributorInsightsSpecification: contributorInsightsSpecification,
       indexName: props.indexName,
-      keySchema: gsiKeySchema,
-      projection: gsiProjection,
+      keySchema: this.buildIndexKeySchema(normalizedSchema),
+      projection: this.buildIndexProjection(props),
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5,
@@ -1363,10 +1427,7 @@ export class Table extends TableBase {
       warmThroughput: props.warmThroughput ?? undefined,
     });
 
-    this.secondaryIndexSchemas.set(props.indexName, {
-      partitionKey: props.partitionKey,
-      sortKey: props.sortKey,
-    });
+    this.schemas.set(props.indexName, normalizedSchema);
 
     this.indexScaling.set(props.indexName, {});
   }
@@ -1383,22 +1444,22 @@ export class Table extends TableBase {
       throw new RangeError(`a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`);
     }
 
-    this.validateIndexName(props.indexName);
+    const normalizedSchema = parseKeySchema({
+      ...props,
+      // The primary key is always the table PK, so copy that
+      partitionKey: this.tablePartitionKey!,
+      partitionKeys: undefined,
+    }, this);
 
-    // build key schema and projection for index
-    const lsiKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, props.sortKey);
-    const lsiProjection = this.buildIndexProjection(props);
+    this.validateIndexName(props.indexName);
 
     this.localSecondaryIndexes.push({
       indexName: props.indexName,
-      keySchema: lsiKeySchema,
-      projection: lsiProjection,
+      keySchema: this.buildIndexKeySchema(normalizedSchema),
+      projection: this.buildIndexProjection(props),
     });
 
-    this.secondaryIndexSchemas.set(props.indexName, {
-      partitionKey: this.tablePartitionKey,
-      sortKey: props.sortKey,
-    });
+    this.schemas.set(props.indexName, normalizedSchema);
   }
 
   /**
@@ -1509,19 +1570,37 @@ export class Table extends TableBase {
    * Get schema attributes of table or index.
    *
    * @returns Schema of table or index.
+   * @deprecated - use `schemaV2()` instead
    */
   @MethodMetadata()
   public schema(indexName?: string): SchemaOptions {
-    if (!indexName) {
-      return {
-        partitionKey: this.tablePartitionKey,
-        sortKey: this.tableSortKey,
-      };
-    }
-    let schema = this.secondaryIndexSchemas.get(indexName);
+    let schema = this.schemas.get(indexName ?? SPECIAL_TABLE_SCHEMA_NAME);
     if (!schema) {
       throw new ValidationError(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`, this);
     }
+
+    if (schema.partitionKeys.length > 1 || schema.sortKeys.length > 1) {
+      throw new ValidationError(`Index ${indexName} uses multi-attribute keys and cannot be returned by schema(), use schemaV2() instead.`, this);
+    }
+
+    return {
+      partitionKey: schema.partitionKeys[0],
+      sortKey: schema.sortKeys[0], // Either the value or 'undefined'
+    };
+  }
+
+  /**
+   * Get schema attributes of table or index.
+   *
+   * @returns Schema of table or index.
+   */
+  @MethodMetadata()
+  public schemaV2(indexName?: string): KeySchema {
+    let schema = this.schemas.get(indexName ?? SPECIAL_TABLE_SCHEMA_NAME);
+    if (!schema) {
+      throw new ValidationError(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`, this);
+    }
+
     return schema;
   }
 
@@ -1573,7 +1652,7 @@ export class Table extends TableBase {
    * @param indexName a name of global or local secondary index
    */
   private validateIndexName(indexName: string) {
-    if (this.secondaryIndexSchemas.has(indexName)) {
+    if (this.schemas.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new ValidationError(`a duplicate index name, ${indexName}, is not allowed`, this);
     }
@@ -1619,18 +1698,17 @@ export class Table extends TableBase {
     return validateContributorInsights(props.contributorInsightsEnabled, props.contributorInsightsSpecification, 'contributorInsightsEnabled', this);
   }
 
-  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
-    this.registerAttribute(partitionKey);
-    const indexKeySchema: CfnTable.KeySchemaProperty[] = [
-      { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
-    ];
-
-    if (sortKey) {
-      this.registerAttribute(sortKey);
-      indexKeySchema.push({ attributeName: sortKey.name, keyType: RANGE_KEY_TYPE });
+  private buildIndexKeySchema(keySchema: KeySchema): CfnTable.KeySchemaProperty[] {
+    // Register as an attribute
+    for (const attr of [...keySchema.partitionKeys, ...keySchema.sortKeys]) {
+      this.registerAttribute(attr);
     }
 
-    return indexKeySchema;
+    // Return rendered properties
+    return [
+      ...keySchema.partitionKeys.map((pk) => ({ attributeName: pk.name, keyType: HASH_KEY_TYPE })),
+      ...keySchema.sortKeys.map((sk) => ({ attributeName: sk.name, keyType: RANGE_KEY_TYPE })),
+    ];
   }
 
   private buildIndexProjection(props: SecondaryIndexProps): CfnTable.ProjectionProperty {
@@ -2002,3 +2080,6 @@ class SourceTableAttachedPrincipal extends iam.PrincipalBase {
     return undefined;
   }
 }
+
+// A value that is not a valid index name
+const SPECIAL_TABLE_SCHEMA_NAME = '<table-schema>';
