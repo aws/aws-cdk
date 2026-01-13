@@ -251,7 +251,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     }
     const iamPath = path.replace(/\{.*?\}.*/, '*');
 
-    return `arn:${Aws.PARTITION}:execute-api:${this.env.region}:${this.env.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
+    return `arn:${Aws.PARTITION}:execute-api:${this.env.region}:${this.env.account}:${this._httpApi.apiRef.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
   }
 
   @MethodMetadata()

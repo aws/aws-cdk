@@ -83,12 +83,15 @@ export class ApiMapping extends Resource implements IApiMapping {
     class Import extends Resource implements IApiMapping {
       public readonly apiMappingId = attrs.apiMappingId;
       public get apiMappingRef(): ApiMappingReference {
-        if (!attrs.domainName) {
-          throw new ValidationError('domainName was not supplied when calling ApiMapping.fromApiMappingAttributes()', this);
-        }
+        const self = this;
         return {
           apiMappingId: this.apiMappingId,
-          domainName: attrs.domainName,
+          get domainName() {
+            if (!attrs.domainName) {
+              throw new ValidationError('Cannot use object in this API: \'domainName\' was not supplied when calling ApiMapping.fromApiMappingAttributes()', self);
+            }
+            return attrs.domainName;
+          },
         };
       }
     }
@@ -149,16 +152,19 @@ export class ApiMapping extends Resource implements IApiMapping {
    */
   public get domainName(): IDomainName {
     const ret = this._domainName as IDomainName;
-    if (!!ret.regionalDomainName && !!ret.regionalHostedZoneId) {
+    if ('regionalDomainName' in ret && 'regionalHostedZoneId' in ret) {
       return ret;
     }
     throw new ValidationError(`Supplied domainName (${this._domainName.constructor.name}) does not implement IDomainName`, this);
   }
 
   public get apiMappingRef(): ApiMappingReference {
+    const self = this;
     return {
       apiMappingId: this.apiMappingId,
-      domainName: this._domainName.domainNameRef.domainName,
+      get domainName(): string {
+        return self._domainName.domainNameRef.domainName;
+      },
     };
   }
 
