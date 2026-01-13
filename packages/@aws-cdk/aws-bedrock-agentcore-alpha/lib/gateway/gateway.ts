@@ -418,7 +418,7 @@ export class Gateway extends GatewayBase {
 
   constructor(scope: Construct, id: string, props: GatewayProps = {}) {
     super(scope, id, {
-      // Maximum name length of 48 characters is chosen instead of 100 characters that mentioned in documentation below, 
+      // Maximum name length of 48 characters is chosen instead of 100 characters that mentioned in documentation below,
       // due to failure in CF deployment when more than 48 characters used
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gateway.html#cfn-bedrockagentcore-gateway-name
       physicalName: props.gatewayName ??
