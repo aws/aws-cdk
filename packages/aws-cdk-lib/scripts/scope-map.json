@@ -276,6 +276,13 @@
       }
     ]
   },
+  "aws-cases": {
+    "scopes": [
+      {
+        "namespace": "AWS::Cases"
+      }
+    ]
+  },
   "aws-cassandra": {
     "scopes": [
       {
@@ -1939,6 +1946,13 @@
     "scopes": [
       {
         "namespace": "AWS::CloudFormation"
+      }
+    ]
+  },
+  "dev-servicecatalog": {
+    "scopes": [
+      {
+        "namespace": "Dev::ServiceCatalog"
       }
     ]
   },

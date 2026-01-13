@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { IHttpApi } from './api';
-import { CfnStage } from '.././index';
+import { IHttpApi, IHttpApiRef, toIHttpApi } from './api';
 import { AccessLogFormat } from '../../../aws-apigateway';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { Lazy, Stack } from '../../../core';
@@ -10,13 +9,27 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
+import { CfnStage, IStageRef } from '../index';
 
 const DEFAULT_STAGE_NAME = '$default';
 
 /**
+ * Represents a reference to an HTTP Stage
+ */
+export interface IHttpStageRef extends IStageRef {
+  /**
+   * Indicates that this is an HTTP Stage
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isHttpStage: boolean;
+}
+
+/**
  * Represents the HttpStage
  */
-export interface IHttpStage extends IStage {
+export interface IHttpStage extends IStage, IHttpStageRef {
   /**
    * The API this stage is associated to.
    */
@@ -91,7 +104,7 @@ export interface HttpStageProps extends HttpStageOptions {
   /**
    * The HTTP API to which this stage is associated.
    */
-  readonly httpApi: IHttpApi;
+  readonly httpApi: IHttpApiRef;
 }
 
 /**
@@ -105,6 +118,7 @@ export interface HttpStageAttributes extends StageAttributes {
 }
 
 abstract class HttpStageBase extends StageBase implements IHttpStage {
+  public readonly isHttpStage = true;
   public abstract readonly domainUrl: string;
   public abstract readonly api: IHttpApi;
 
@@ -147,6 +161,7 @@ export class HttpStage extends HttpStageBase {
    */
   public static fromHttpStageAttributes(scope: Construct, id: string, attrs: HttpStageAttributes): IHttpStage {
     class Import extends HttpStageBase {
+      public readonly isHttpStage = true;
       protected readonly baseApi = attrs.api;
       public readonly stageName = attrs.stageName;
       public readonly api = attrs.api;
@@ -171,9 +186,8 @@ export class HttpStage extends HttpStageBase {
     return new Import(scope, id);
   }
 
-  protected readonly baseApi: IApi;
   public readonly stageName: string;
-  public readonly api: IHttpApi;
+  private readonly _api: IHttpApiRef;
 
   constructor(scope: Construct, id: string, props: HttpStageProps) {
     super(scope, id, {
@@ -189,7 +203,7 @@ export class HttpStage extends HttpStageBase {
     }
 
     new CfnStage(this, 'Resource', {
-      apiId: props.httpApi.apiId,
+      apiId: props.httpApi.apiRef.apiId,
       stageName: this.physicalName,
       accessLogSettings: this._validateAccessLogSettings(props.accessLogSettings),
       autoDeploy: props.autoDeploy,
@@ -203,12 +217,19 @@ export class HttpStage extends HttpStageBase {
     });
 
     this.stageName = this.physicalName;
-    this.baseApi = props.httpApi;
-    this.api = props.httpApi;
+    this._api = props.httpApi;
 
     if (props.domainMapping) {
       this._addDomainMapping(props.domainMapping);
     }
+  }
+
+  public get api(): IHttpApi {
+    return toIHttpApi(this._api);
+  }
+
+  protected get baseApi(): IApi {
+    return this.api;
   }
 
   /**
@@ -224,8 +245,7 @@ export class HttpStage extends HttpStageBase {
     if (!this._apiMapping) {
       throw new ValidationError('domainUrl is not available when no API mapping is associated with the Stage', this);
     }
-
-    return `https://${this._apiMapping.domainName.name}/${this._apiMapping.mappingKey ?? ''}`;
+    return this._apiMapping.domainUrl;
   }
 
   /**

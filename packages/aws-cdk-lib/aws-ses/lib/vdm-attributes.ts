@@ -3,11 +3,12 @@ import { CfnVdmAttributes } from './ses.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IVdmAttributesRef, VdmAttributesReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * Virtual Deliverability Manager (VDM) attributes
  */
-export interface IVdmAttributes extends IResource {
+export interface IVdmAttributes extends IResource, IVdmAttributesRef {
   /**
    * The name of the resource behind the Virtual Deliverability Manager attributes.
    *
@@ -49,6 +50,12 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
   public static fromVdmAttributesName(scope: Construct, id: string, vdmAttributesName: string): IVdmAttributes {
     class Import extends Resource implements IVdmAttributes {
       public readonly vdmAttributesName = vdmAttributesName;
+
+      public get vdmAttributesRef(): VdmAttributesReference {
+        return {
+          vdmAttributesResourceId: this.vdmAttributesName,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -61,6 +68,12 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
    * @attribute
    */
   public readonly vdmAttributesResourceId: string;
+
+  public get vdmAttributesRef(): VdmAttributesReference {
+    return {
+      vdmAttributesResourceId: this.vdmAttributesResourceId,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: VdmAttributesProps = {}) {
     super(scope, id);
