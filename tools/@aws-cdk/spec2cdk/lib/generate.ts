@@ -4,7 +4,8 @@ import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { AwsCdkLibBuilder } from './cdk/aws-cdk-lib';
+import { AwsCdkLibBuilder, GrantsProps } from './cdk/aws-cdk-lib';
+import { GrantsModule } from './cdk/grants-module';
 import { LibraryBuilder } from './cdk/library-builder';
 import { queryDb, log, TsFileWriter } from './util';
 
@@ -85,6 +86,13 @@ export interface GenerateOptions<Builder extends LBC>{
    * @default - load the patched spec db
    */
   readonly db?: SpecDatabase;
+
+  /**
+   * Whether the modules being generated are considered stable
+   *
+   * @default true
+   */
+  readonly isStable?: boolean;
 }
 
 export interface GenerateModuleMap {
@@ -190,6 +198,8 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
   const servicesPerModule: Record<string, Service[]> = {};
   const resourcesPerModule: Record<string, Record<string, string>> = {};
 
+  const isStable = options.isStable ?? true;
+
   // Go through the module map
   log.info('Generating %i modules...', Object.keys(modules).length);
   for (const [moduleName, moduleOptions] of Object.entries(modules)) {
@@ -198,11 +208,14 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
     for (const [req, s] of services) {
       log.debug(moduleName, s.name, 'ast');
 
+      const grantsConfig = grantsConfigForModule(moduleName, outputPath, isStable);
+      const grantsProps: GrantsProps | undefined = grantsConfig ? { config: grantsConfig, isStable } : undefined;
+
       const submod = ast.addService(s, {
         destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
-        grantsConfig: readGrantsConfig(moduleName, options.outputPath),
+        grantsProps,
       });
 
       servicesPerModule[moduleName] ??= [];
@@ -217,8 +230,19 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
 
   const moduleOutputFiles = ast.filesBySubmodule();
 
-  const writer = new TsFileWriter(outputPath, renderer);
-  ast.writeAll(writer);
+  const writer = new TsFileWriter(renderer);
+
+  // Write all modules into their respective files
+  const writtenFileNames: string[] = [];
+  for (const [fileName, module] of ast.modules.entries()) {
+    if (!module.isEmpty()) {
+      const fullPath = path.join(outputPath, isStable ? fileName : toAlphaPackage(fileName));
+      if (isStable || module instanceof GrantsModule) {
+        writer.write(module, fullPath);
+        writtenFileNames.push(fileName);
+      }
+    }
+  }
 
   const allResources = Object.values(resourcesPerModule).flat().reduce(mergeObjects, {});
   log.info('Summary:');
@@ -227,17 +251,23 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
   log.info('  Resources:    %i', Object.keys(allResources).length);
   log.timeEnd(timeLabel);
 
-  return {
-    modules: Object.fromEntries(
-      Object.keys(moduleOutputFiles).map((moduleName) => ([
-        moduleName,
-        {
-          outputFiles: Array.from(moduleOutputFiles[moduleName]).sort(),
-          resources: resourcesPerModule[moduleName],
-        },
-      ]),
-      )),
+  const output: GenerateOutput = {
+    modules: {},
   };
+
+  for (let moduleName of Object.keys(moduleOutputFiles)) {
+    const outputFiles = Array.from(moduleOutputFiles[moduleName])
+      .filter(fileName => writtenFileNames.includes(fileName))
+      .sort();
+    if (outputFiles.length > 0) {
+      output.modules[moduleName] = {
+        outputFiles,
+        resources: resourcesPerModule[moduleName],
+      };
+    }
+  }
+
+  return output;
 }
 
 function mergeObjects<T>(all: T, res: T) {
@@ -247,14 +277,23 @@ function mergeObjects<T>(all: T, res: T) {
   };
 }
 
-function readGrantsConfig(moduleName: string, rootDir: string): string | undefined {
-  const filename = `${moduleName}/grants.json`;
+function grantsConfigForModule(moduleName: string, modulePath: string, isStable: boolean): string | undefined {
+  const grantsFileLocation = isStable ? path.join(modulePath, moduleName) : path.join(modulePath, '..', `${moduleName}-alpha`);
+  const config = readGrantsConfig(grantsFileLocation);
+  return config == null ? undefined : config;
+}
+
+function readGrantsConfig(dir: string): string | undefined {
   try {
-    return fs.readFileSync(path.join(rootDir, filename), 'utf-8');
+    return fs.readFileSync(path.join(dir, 'grants.json'), 'utf-8');
   } catch (e: any) {
     if (e.code === 'ENOENT') {
       return undefined;
     }
     throw e;
   }
+}
+
+function toAlphaPackage(s: string) {
+  return s.replace(/^(aws-[^/]+)/, '$1-alpha');
 }

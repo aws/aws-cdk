@@ -11,7 +11,7 @@
   "stability": "stable",
   "maturity": "stable",
   "scripts": {
-    "gen": "ts-node scripts/gen.ts",
+    "gen": "gen-cdk",
     "build": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-build",
     "lint": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-lint",
     "test": "jest",
