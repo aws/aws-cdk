@@ -603,6 +603,8 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * Grant the actions defined in actions to the given grantee
    * on this File System resource.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant right to
    * @param actions The actions to grant
    */
@@ -637,6 +639,9 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
 
   /**
    * Grant read permissions for this file system to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant read to
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
@@ -649,6 +654,9 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
 
   /**
    * Grant read and write permissions for this file system to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant read and write to
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
@@ -664,6 +672,9 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
 
   /**
    * As root user, grant read and write permissions for this file system to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant root access to
    */
   public grantRootAccess(grantee: iam.IGrantable): iam.Grant {

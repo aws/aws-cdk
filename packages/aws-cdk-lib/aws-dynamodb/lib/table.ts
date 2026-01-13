@@ -767,6 +767,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
@@ -780,6 +781,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
@@ -795,6 +798,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantReadData(grantee: iam.IGrantable): iam.Grant {
@@ -803,6 +808,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
 
   /**
    * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    */
@@ -818,6 +825,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
@@ -830,6 +839,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -845,6 +856,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
@@ -856,6 +869,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -1112,6 +1127,9 @@ export class Table extends TableBase {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @deprecated Use `#grantTableListStreams` for more granular permission
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal (no-op if undefined)
    */
   public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
