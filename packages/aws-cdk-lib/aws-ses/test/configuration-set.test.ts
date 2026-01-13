@@ -242,9 +242,13 @@ describe('confidenceVerdictThreshold', () => {
     });
   });
 
-  test('configuration set with confidenceVerdictThreshold MEDIUM', () => {
+  test.each([
+    ConfidenceVerdictThreshold.MEDIUM,
+    ConfidenceVerdictThreshold.HIGH,
+    ConfidenceVerdictThreshold.MANAGED,
+  ])('configuration set with confidenceVerdictThreshold %s', (threshold) => {
     new ConfigurationSet(stack, 'ConfigurationSet', {
-      confidenceVerdictThreshold: ConfidenceVerdictThreshold.MEDIUM,
+      confidenceVerdictThreshold: threshold,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
@@ -253,45 +257,7 @@ describe('confidenceVerdictThreshold', () => {
           ConditionThreshold: {
             ConditionThresholdEnabled: 'ENABLED',
             OverallConfidenceThreshold: {
-              ConfidenceVerdictThreshold: 'MEDIUM',
-            },
-          },
-        },
-      },
-    });
-  });
-
-  test('configuration set with confidenceVerdictThreshold HIGH', () => {
-    new ConfigurationSet(stack, 'ConfigurationSet', {
-      confidenceVerdictThreshold: ConfidenceVerdictThreshold.HIGH,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
-      SuppressionOptions: {
-        ValidationOptions: {
-          ConditionThreshold: {
-            ConditionThresholdEnabled: 'ENABLED',
-            OverallConfidenceThreshold: {
-              ConfidenceVerdictThreshold: 'HIGH',
-            },
-          },
-        },
-      },
-    });
-  });
-
-  test('configuration set with confidenceVerdictThreshold MANAGED', () => {
-    new ConfigurationSet(stack, 'ConfigurationSet', {
-      confidenceVerdictThreshold: ConfidenceVerdictThreshold.MANAGED,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
-      SuppressionOptions: {
-        ValidationOptions: {
-          ConditionThreshold: {
-            ConditionThresholdEnabled: 'ENABLED',
-            OverallConfidenceThreshold: {
-              ConfidenceVerdictThreshold: 'MANAGED',
+              ConfidenceVerdictThreshold: threshold,
             },
           },
         },
