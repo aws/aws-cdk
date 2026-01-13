@@ -81,6 +81,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow (i.e., 'dynamodb:PutItem', 'dynamodb:GetItem', etc.)
    */
@@ -100,6 +102,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow (i.e., 'dynamodb:DescribeStream', 'dynamodb:GetRecords', etc.)
@@ -124,6 +128,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantStreamRead(grantee: IGrantable): Grant {
@@ -137,6 +143,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
 
   /**
    * Permits an IAM principal to list streams attached to this table.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -160,6 +168,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantReadData(grantee: IGrantable): Grant {
@@ -179,6 +189,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantWriteData(grantee: IGrantable): Grant {
@@ -195,6 +207,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -213,6 +227,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */

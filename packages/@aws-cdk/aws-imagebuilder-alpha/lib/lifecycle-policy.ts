@@ -341,6 +341,9 @@ abstract class LifecyclePolicyBase extends cdk.Resource implements ILifecyclePol
   abstract readonly lifecyclePolicyArn: string;
   abstract readonly lifecyclePolicyName: string;
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -350,6 +353,9 @@ abstract class LifecyclePolicyBase extends cdk.Resource implements ILifecyclePol
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'imagebuilder:GetLifecyclePolicy');
   }

@@ -285,6 +285,9 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     return this.function.grantInvokeUrl(grantee);

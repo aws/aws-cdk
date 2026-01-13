@@ -784,9 +784,17 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       public get distributionArn(): string {
         return formatDistributionArn(this);
       }
+
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
+
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
         return DistributionGrants.fromDistribution(this).createInvalidation(identity);
       }
@@ -1035,6 +1043,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   /**
    * Adds an IAM policy statement associated with this distribution to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
@@ -1046,6 +1055,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
   /**
    * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */

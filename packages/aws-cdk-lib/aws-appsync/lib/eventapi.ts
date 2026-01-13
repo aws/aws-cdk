@@ -387,6 +387,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
    * Adds an IAM policy statement associated with this Event API to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/EventApiId/...)
@@ -408,6 +409,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
    * Adds an IAM policy statement for EventPublish access to this EventApi to an IAM
    * principal's policy. This grants publish permission for all channels within the API.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -418,6 +420,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
    * Adds an IAM policy statement for EventSubscribe access to this EventApi to an IAM
    * principal's policy. This grants subscribe permission for all channels within the API.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -428,6 +431,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
    * Adds an IAM policy statement to publish and subscribe to this API for an IAM principal's policy.
    * This grants publish & subscribe permission for all channels within the API.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -437,6 +441,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
 
   /**
    * Adds an IAM policy statement for EventConnect access to this EventApi to an IAM principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */

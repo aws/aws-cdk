@@ -429,6 +429,7 @@ export abstract class S3WorkflowData extends WorkflowData {
 
   /**
    * Grant put permissions to the given grantee for the workflow data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -438,6 +439,7 @@ export abstract class S3WorkflowData extends WorkflowData {
 
   /**
    * Grant read permissions to the given grantee for the workflow data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -582,6 +584,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * Grant custom actions to the given grantee for the workflow
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -597,6 +600,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * Grant read permissions to the given grantee for the workflow
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */

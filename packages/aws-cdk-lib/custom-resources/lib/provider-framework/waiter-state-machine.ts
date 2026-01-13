@@ -145,6 +145,8 @@ export class WaiterStateMachine extends Construct {
 
   /**
    * Grant the given identity permissions on StartExecution of the state machine.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantStartExecution(identity: IGrantable) {
     return Grant.addToPrincipal({

@@ -116,6 +116,8 @@ abstract class StreamConsumerBase extends Resource implements IStreamConsumer {
   /**
    * Grant read permissions for this stream consumer and its associated stream to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     this.stream.grantRead(grantee);
@@ -124,6 +126,8 @@ abstract class StreamConsumerBase extends Resource implements IStreamConsumer {
 
   /**
    * Grant the indicated permissions on this stream consumer to the given IAM principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipalOrResource({

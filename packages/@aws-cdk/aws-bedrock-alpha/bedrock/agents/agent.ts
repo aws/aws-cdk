@@ -107,6 +107,7 @@ export abstract class AgentBase extends Resource implements IAgent {
 
   /**
    * Grant invoke permissions on this agent to an IAM principal.
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant invoke permissions to
    * @default - Default grant configuration:

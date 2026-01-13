@@ -499,6 +499,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     const hash = createHash('sha256')
@@ -521,6 +523,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * Grant the given identity permissions to invoke the $LATEST version or
    * unqualified version of this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeLatestVersion(grantee: iam.IGrantable): iam.Grant {
     return this.grantInvokeVersion(grantee, this.latestVersion);
@@ -528,6 +532,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke the given version of this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeVersion(grantee: iam.IGrantable, version: IVersion): iam.Grant {
     const hash = createHash('sha256')
@@ -554,6 +560,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke this Lambda Function URL
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
@@ -606,6 +614,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
     return compositePrincipal.principals.map((principal) => this.grantInvoke(principal));

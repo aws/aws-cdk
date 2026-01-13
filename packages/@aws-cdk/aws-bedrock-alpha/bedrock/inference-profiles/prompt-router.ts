@@ -177,6 +177,7 @@ export class PromptRouter implements IBedrockInvokable, IPromptRouter {
    * - Get prompt router details (bedrock:GetPromptRouter)
    * - Invoke models through the router (bedrock:InvokeModel)
    * - Use all underlying models and cross-region profiles
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions

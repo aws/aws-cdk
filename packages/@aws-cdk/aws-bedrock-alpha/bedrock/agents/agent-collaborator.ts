@@ -132,6 +132,7 @@ export class AgentCollaborator {
 
   /**
    * Grants the given identity permissions to collaborate with the agent
+   * [disable-awslint:no-grants]
    * @param grantee The principal to grant permissions to
    * @returns The Grant object
    */

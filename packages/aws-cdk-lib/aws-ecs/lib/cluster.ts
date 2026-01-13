@@ -778,6 +778,7 @@ export class Cluster extends Resource implements ICluster {
    * Grants an ECS Task Protection API permission to the specified grantee.
    * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
    * permission, enabling the grantee to manage task protection in the ECS cluster.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
    */

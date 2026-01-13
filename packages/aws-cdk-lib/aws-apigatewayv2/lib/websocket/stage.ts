@@ -157,6 +157,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
   /**
    * Grant access to the API Gateway management API for this WebSocket API Stage to an IAM
    * principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */

@@ -1178,6 +1178,8 @@ export abstract class Secret {
 
   /**
    * Grants reading the secret to a principal
+   *
+   * [disable-awslint:no-grants]
    */
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }

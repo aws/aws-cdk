@@ -362,6 +362,8 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
   /**
    * Adds an IAM policy statement associated with this email identity to an IAM principal's policy.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow
    */
@@ -378,6 +380,8 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
    * Permits an IAM principal the send email action.
    *
    * Actions: SendEmail, SendRawEmail.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */

@@ -1055,6 +1055,9 @@ abstract class UserPoolBase extends Resource implements IUserPool {
     }
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,

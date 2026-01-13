@@ -252,6 +252,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
   /**
    * Grants IAM actions to the IAM Principal
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant permissions to
    * @param actions The actions to grant
    */
@@ -265,6 +267,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
 
   /**
    * Grants `Get` and `List` actions on the Gateway
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant read permissions to
    */
@@ -283,6 +287,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
   /**
    * Grants `Create`, `Update`, and `Delete` actions on the Gateway
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant manage permissions to
    */
   public grantManage(grantee: iam.IGrantable): iam.Grant {
@@ -291,6 +297,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
 
   /**
    * Grants permission to invoke this Gateway
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant invoke permissions to
    */

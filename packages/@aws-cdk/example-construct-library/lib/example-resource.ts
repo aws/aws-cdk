@@ -182,7 +182,11 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
     }
   }
 
-  /** Implement the `IExampleResource.grantRead` method. */
+  /** Implement the `IExampleResource.grantRead` method.
+   *
+   * [disable-awslint:no-grants]
+   *
+   */
   public grantRead(identity: iam.IGrantable): iam.Grant {
     // usually, we would grant some service-specific permissions here,
     // but since this is just an example, let's use S3

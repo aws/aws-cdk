@@ -271,6 +271,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
   /**
    * Grant custom actions to the given grantee for the image
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal
    * @param actions The list of actions
    */
@@ -284,6 +286,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */
@@ -302,6 +306,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
 
   /**
    * Grant read permissions to the given grantee for the image
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -467,6 +473,8 @@ export class Image extends ImageBase {
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */

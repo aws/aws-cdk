@@ -634,6 +634,9 @@ export class DatabaseProxy extends DatabaseProxyBase
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {

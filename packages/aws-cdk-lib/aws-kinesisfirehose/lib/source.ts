@@ -56,6 +56,9 @@ export class KinesisStreamSource implements ISource {
    */
   constructor(private readonly stream: kinesis.IStream) {}
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.stream.grantRead(grantee);
   }

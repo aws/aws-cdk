@@ -685,6 +685,9 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantConnect(grantee: iam.IGrantable, dbUser: string): iam.Grant {
     return iam.Grant.addToPrincipal({
       actions: ['rds-db:connect'],
@@ -700,6 +703,8 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   /**
    * Grant the given identity to access the Data API.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
     if (this.enableDataApi === false) {
