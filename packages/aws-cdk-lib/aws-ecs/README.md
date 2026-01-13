@@ -374,10 +374,6 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 Amazon ECS event capture stores ECS-generated events (such as cluster state changes, service actions, and task lifecycle events) to Amazon CloudWatch Logs through EventBridge. The `onEvent` method creates an EventBridge rule that captures cluster events and routes them to a specified target.
 
 ```ts
-cluster.onEvent(id: string, options: OnEventOptions)
-```
-
-```ts
 declare const cluster: ecs.Cluster;
 declare const logGroup: logs.LogGroup;
 
@@ -401,11 +397,6 @@ EventBridge Rule Name:
 Here's a complete deployment example:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import * as targets from 'aws-cdk-lib/aws-events-targets';
-
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'demoClusterStack', {
   env: { region: 'YOUR_REGION', account: 'YOUR_ACCOUNT_ID' }
