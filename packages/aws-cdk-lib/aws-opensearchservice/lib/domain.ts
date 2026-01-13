@@ -2204,14 +2204,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    *
    * For cross-account or cross-region KMS keys, OpenSearch requires the full ARN.
    * For same-account, same-region keys, keyId is sufficient.
-   *
-   * @param key The KMS key to use for encryption
-   * @returns The key identifier to use in CloudFormation
    */
   private selectKmsKeyIdentifier(key: kms.IKeyRef): string {
     const stack = cdk.Stack.of(this);
 
-    // Check if the key is from a different account or region
     const keyAccount = key.env.account;
     const keyRegion = key.env.region;
     const stackAccount = stack.account;
