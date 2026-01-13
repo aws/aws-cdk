@@ -1,5 +1,5 @@
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
-import { Resource, IResource, Aws, Lazy } from 'aws-cdk-lib/core';
+import { Resource, IResource, Aws, Lazy, ValidationError } from 'aws-cdk-lib/core';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -264,7 +264,7 @@ export enum AccessEntryType {
    * Represents an EC2 access entry for EKS Auto Mode.
    * Use this type for node roles in EKS Auto Mode clusters where AWS automatically manages
    * the compute infrastructure. This type cannot have access policies attached.
-   * 
+   *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-auto-mode.html
    */
   EC2 = 'EC2',
@@ -273,7 +273,7 @@ export enum AccessEntryType {
    * Represents a Hybrid Linux access entry for EKS Hybrid Nodes.
    * Use this type for on-premises or edge infrastructure running Linux that connects
    * to your EKS cluster. This type cannot have access policies attached.
-   * 
+   *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes.html
    */
   HYBRID_LINUX = 'HYBRID_LINUX',
@@ -282,7 +282,7 @@ export enum AccessEntryType {
    * Represents a HyperPod Linux access entry for Amazon SageMaker HyperPod.
    * Use this type for SageMaker HyperPod clusters that need access to your EKS cluster
    * for distributed machine learning workloads. This type cannot have access policies attached.
-   * 
+   *
    * @see https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html
    */
   HYPERPOD_LINUX = 'HYPERPOD_LINUX',
@@ -370,7 +370,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     // Validate that certain access entry types cannot have access policies
     const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
     if (props.accessEntryType && restrictedTypes.includes(props.accessEntryType) && props.accessPolicies.length > 0) {
-      throw new Error(`Access entry type '${props.accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`);
+      throw new ValidationError(`Access entry type '${props.accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
     }
 
     const resource = new CfnAccessEntry(this, 'Resource', {
