@@ -336,57 +336,6 @@ without affecting the API of the consumer.
 
 #### What type to use to accept other constructs (resources) as parameters
 
-Using object references instead of attribute references provides a richer API,
-but also introduces an inherent challenge: there are different types of classes
-that represent different flavors of a resource with different capabilities:
-
-- Is it an L1?
-- Is it an AWS-written L2?
-- Is it an Enterprise-customer written L2?
-- Is it perhaps not an **owned resource** but a **referenced resource** (i.e.,
-  is it a resource created and managed by CloudFormation, or does it already
-  exist in the account as something immutable we are only allowed to point to
-  but not change).
-
-To accept an as wide array as possible of type of input resource objects, your
-constructs should pose as little requirements on its parameters as possible. To
-that end, we prefer accepting **interfaces** over **classes**, and interfaces
-with **fewer members** over interfaces with **more members**. "Fewer members"
-means "fewer requirements", so easier to implement on a lot of classes!
-Unfortunately, it also means fewer guarantees, so pick your interface type
-according to what plan to do with the input construct.
-
-Here are your choices, from most preferred to least preferred.
-
-| Name | Example | When to use |
-|-----|----------|-----------|
-| Reference interface | `IBucketRef` | A resource of a certain type, that you can only reference. You can get its name or ARN. |
-| L2 interface | `IBucket` | A resource of a certain type with convenience functions and additional attributes. Usually read-only, sometimes mutable. May or may not be "owned" (part of a Stack we are deploying) |
-| L2 Resource construct | `Bucket` | A resource that is part of a Stack we are deploying. Has convenience functions and additional attributes, can be mutated. |
-
-Given the examples above, if you write a construct to accept a Bucket source you
-you should prefer to accept `IBucketRef > IBucket > Bucket`, in that order.
-
-There are 2 linter rules that enforce this:
-
-* Prefer an interface over a concrete class _[awslint:ref-via-interface]_.
-* Prefer a reference interface over an L2 interface _[awslint:prefer-ref-interface]_.
-
-If you want to layer on limited additional features onto a minimal interface,
-you can use [intersection types](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#intersection-types).
-For example, if you want an implement that both satisfies "is a Role" and "can
-be granted to", you can use the intersection `IRoleRef & IGrantable`:
-
-```ts
-export interface MyConstructProps {
-
-  /**
-   * Any object that is both a Role, as well as implements IGrantable
-   */
-  readonly role: IRoleRef & IGrantable;
-}
-```
-
 In order to model the concept of owned and unowned constructs, all constructs
 in the AWS Construct Library should always have a corresponding **construct
 interface**. This interface includes the API of the construct
@@ -400,6 +349,95 @@ Constructs that directly represent AWS resources (most of the constructs in the
 AWS Construct Library) should extend **IResource** (which, transitively, extends
 **IConstruct**) _[awslint:resource-interface-extends-resource]_.
 
+Using object references instead of attribute references provides a richer API,
+but also introduces an inherent challenge: there are different types of classes
+that represent different flavors of a resource with different capabilities:
+
+- Is it an L1?
+- Is it an AWS-written L2?
+- Is it an custom L2, for use inside an organization?
+- Is it perhaps not an **owned resource** but a **referenced resource** (i.e.,
+  is it a resource created and managed by your CDK app and the underlying
+  CloudFormation stack, or does it already exist in the account as something
+  immutable we are only allowed to point to but not change).
+
+To accept an as wide array as possible of type of input resource objects, your
+constructs should pose as little requirements on its parameters as possible. To
+that end, we prefer accepting **interfaces** over **classes**, and interfaces
+with **fewer members** over interfaces with **more members**. "Fewer members"
+means "fewer requirements", so easier to implement on a lot of classes!
+Unfortunately, it also means fewer guarantees, so pick your interface type
+according to what plan to do with the input construct.
+
+Here are your choices, from most preferred to least preferred.
+
+| Name | Example | When to use |
+|-----|----------|-----------|
+| Reference interface | `IBucketRef` | A resource of a certain type, that you can only reference. You can get its name or ARN. (**Should be your default choice**) |
+| L2 interface | `IBucket` | A resource of a certain type with convenience functions and additional attributes. Usually read-only, sometimes mutable. May or may not be "owned" (part of a Stack we are deploying) (**Most likely for legacy code**) |
+| L2 Resource construct | `Bucket` | A resource that is part of a Stack we are deploying. Has convenience functions and additional attributes, can be mutated. (**Only in exceptional cases**) |
+
+Given the examples above, if you write a construct to accept a Bucket source you
+you should prefer to accept `IBucketRef > IBucket > Bucket`, in that order.
+
+There are 2 linter rules that enforce this:
+
+* Prefer an interface over a concrete class _[awslint:ref-via-interface]_.
+* Prefer a reference interface over an L2 interface _[awslint:prefer-ref-interface]_.
+
+#### What if the entire L2 interface is too large, but the reference interface is too small?
+
+A reference interface (`IBucketRef`, for example) indicates that an object
+represents a Bucket resource, but the only thing it allows you to do is to name it.
+
+How should you write your code if you need additional features, one of the ones
+you would normally find on the traditional (and large) `IBucket` interface? That
+depends on the type of feature.
+
+**If the feature doesn't need the object's cooperation**: it might
+be that the feature is just a convenience method that uses information that's
+derivable from the reference interface already.
+
+For example, `bucket.arnForObjects('file.zip')` just takes the bucket's name and
+constructs a larger formatted string from it. You can write this as a standalone
+helper function, or as a collection of helper functions on a class.
+
+```ts
+var bucket: IBucket;
+var bucketRef: IBucketRef;
+
+// ❌ Requires a full implementation of IBucket for a small helper function
+bucket.arnForObjects('file.zip')
+
+// ✅ Free helper function, just accessible to you, the construct author
+arnForObjects(bucketRef, 'file.zip')
+// ✅ Even better, a collection of helper functions to you and library customers
+new BucketHelpers(bucketRef).arnForObjects('file.zip')
+```
+
+**If the feature needs the object's cooperation**: if you want to layer on
+*limited additional features onto a minimal interface,
+you can use [intersection
+types](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#intersection-types).
+This requires an interface type describing just the part of the construct
+surface area you need.
+
+This requires an interface that exclusively describes the feature we want, and
+nothing else. For example, `IGrantable` represents resources that can be granted
+to. Most of the time when a construct takes a Role, we just need the role name
+and we want to be able to grant to it.
+
+To represent that, we can use the intersection `IRoleRef & IGrantable`:
+
+```ts
+export interface MyConstructProps {
+  // ❌ Requires a full IRole while the only thing we actually need is `grantPrincipal`
+  readonly role: IRole;
+
+  // ✅ Just says "a Role resource that is also grantable"
+  readonly role: IRoleRef & IGrantable;
+}
+```
 
 #### Abstract Base
 
