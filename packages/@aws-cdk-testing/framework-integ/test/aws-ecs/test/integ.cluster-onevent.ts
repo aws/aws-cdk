@@ -1,3 +1,4 @@
+/// !cdk-integ integ-ecs-cluster-onevent
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -12,7 +13,12 @@ const app = new cdk.App({
   },
 });
 
-const stack = new cdk.Stack(app, 'integ-ecs-cluster-onevent');
+const stack = new cdk.Stack(app, 'integ-ecs-cluster-onevent', {
+  env: {
+    region: process.env.CDK_DEFAULT_REGION,
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+  },
+});
 
 // Create a new VPC instead of looking up existing one
 const vpc = new ec2.Vpc(stack, 'TestVpc', {
