@@ -77,6 +77,16 @@ export interface ConfigurationSetProps {
   readonly disableSuppressionList?: boolean;
 
   /**
+   * The confidence verdict threshold level for suppression list validation.
+   *
+   * - `DISABLED`: Explicitly disable condition threshold validation
+   * - `MEDIUM/HIGH/MANAGED`: Enable condition threshold with specified level
+   *
+   * @default - No validation options configured
+   */
+  readonly confidenceVerdictThreshold?: ConfidenceVerdictThreshold;
+
+  /**
    * The custom subdomain that is used to redirect email recipients to the
    * Amazon SES event tracking domain
    *
@@ -186,6 +196,34 @@ export enum SuppressionReasons {
 }
 
 /**
+ * Confidence verdict threshold for suppression validation.
+ *
+ * This determines the confidence level threshold for suppression list validation.
+ */
+export enum ConfidenceVerdictThreshold {
+  /**
+   * Disable condition threshold validation.
+   * This explicitly disables the feature.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Medium confidence threshold
+   */
+  MEDIUM = 'MEDIUM',
+
+  /**
+   * High confidence threshold
+   */
+  HIGH = 'HIGH',
+
+  /**
+   * Managed confidence threshold (AWS manages the threshold)
+   */
+  MANAGED = 'MANAGED',
+}
+
+/**
  * A configuration set
  */
 @propertyInjectable
@@ -256,6 +294,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       }),
       suppressionOptions: undefinedIfNoKeys({
         suppressedReasons: props.disableSuppressionList ? [] : renderSuppressedReasons(props.suppressionReasons),
+        validationOptions: renderValidationOptions(props.confidenceVerdictThreshold),
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
@@ -305,4 +344,27 @@ function booleanToEnabledDisabled(value: boolean): 'ENABLED' | 'DISABLED' {
   return value === true
     ? 'ENABLED'
     : 'DISABLED';
+}
+
+function renderValidationOptions(threshold?: ConfidenceVerdictThreshold): CfnConfigurationSet.ValidationOptionsProperty | undefined {
+  if (!threshold) {
+    return undefined;
+  }
+
+  if (threshold === ConfidenceVerdictThreshold.DISABLED) {
+    return {
+      conditionThreshold: {
+        conditionThresholdEnabled: 'DISABLED',
+      },
+    };
+  }
+
+  return {
+    conditionThreshold: {
+      conditionThresholdEnabled: 'ENABLED',
+      overallConfidenceThreshold: {
+        confidenceVerdictThreshold: threshold,
+      },
+    },
+  };
 }

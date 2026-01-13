@@ -255,6 +255,36 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 });
 ```
 
+#### Confidence verdict threshold
+
+You can configure a confidence verdict threshold for suppression list validation. This determines the confidence level threshold that Amazon SES uses when making suppression decisions.
+
+```ts
+// Enable condition threshold with HIGH confidence level
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.HIGH,
+});
+
+// Use MANAGED threshold (AWS manages the threshold)
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.MANAGED,
+});
+
+// Explicitly disable condition threshold validation
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.DISABLED,
+});
+```
+
+You can also combine it with suppression reasons:
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.HIGH,
+});
+```
+
 ### Email identity
 
 In Amazon SES, a verified identity is a domain or email address that you use to send or receive email. Before you
