@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
-import { ILogGroup, LogGroup } from '../../../aws-logs';
+import { ILogGroupRef, LogGroup } from '../../../aws-logs';
 import { CfnStateMachine, LogLevel } from '../../../aws-stepfunctions';
 import { Duration, Stack } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -15,7 +15,7 @@ export interface LogOptions {
    *
    * @default - a new log group will be created
    */
-  readonly destination?: ILogGroup;
+  readonly destination?: ILogGroupRef;
 
   /**
    * Determines whether execution data is included in your log.
@@ -200,7 +200,7 @@ export class WaiterStateMachine extends Construct {
     return {
       destinations: [{
         cloudWatchLogsLogGroup: {
-          logGroupArn: logGroup.logGroupArn,
+          logGroupArn: logGroup.logGroupRef.logGroupArn,
         },
       }],
       includeExecutionData: logOptions?.includeExecutionData ?? false,
