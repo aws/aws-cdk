@@ -255,32 +255,23 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 });
 ```
 
-#### Confidence verdict threshold
+#### Auto Validation threshold
 
-You can configure a confidence verdict threshold for suppression list validation. This determines the confidence level threshold that Amazon SES uses when making suppression decisions.
+[Auto Validation](https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html) automatically reviews all outbound email addresses before sending and only delivers messages to recipients meeting your selected validation threshold. This protects sender reputation by preventing sends to invalid or risky addresses.
 
-```ts
-// Enable condition threshold with HIGH confidence level
-new ses.ConfigurationSet(this, 'ConfigurationSet', {
-  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.HIGH,
-});
+You can override the account-level Auto Validation settings at the configuration set level using `confidenceVerdictThreshold`:
 
-// Use MANAGED threshold (AWS manages the threshold)
-new ses.ConfigurationSet(this, 'ConfigurationSet', {
-  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.MANAGED,
-});
+- `MANAGED` - Amazon SES automatically optimizes threshold based on sending patterns and reputation (recommended)
+- `HIGH` - Only addresses with high delivery likelihood (maximum reputation protection)
+- `MEDIUM` - Addresses with medium or high delivery likelihood (balances protection with reach)
+- `DISABLED` - Auto Validation turned off for this configuration set
 
-// Explicitly disable condition threshold validation
-new ses.ConfigurationSet(this, 'ConfigurationSet', {
-  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.DISABLED,
-});
-```
-
-You can also combine it with suppression reasons:
+For more details, see [Auto Validation](https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html).
 
 ```ts
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
   suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+  // Override account-level Auto Validation settings
   confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.HIGH,
 });
 ```
