@@ -192,6 +192,7 @@ export class S3Table extends TableBase {
 
   /**
    * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -205,6 +206,7 @@ export class S3Table extends TableBase {
 
   /**
    * Grant write permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -218,6 +220,7 @@ export class S3Table extends TableBase {
 
   /**
    * Grant read and write permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
