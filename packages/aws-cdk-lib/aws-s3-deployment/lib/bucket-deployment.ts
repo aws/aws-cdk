@@ -145,7 +145,7 @@ export interface BucketDeploymentProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
