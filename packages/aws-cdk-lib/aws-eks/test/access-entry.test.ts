@@ -66,10 +66,14 @@ describe('AccessEntry', () => {
   test.each(Object.values(AccessEntryType))(
     'creates a new AccessEntry for AccessEntryType %s',
     (accessEntryType) => {
+      // Determine if this type should have access policies
+      const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+      const accessPolicies = restrictedTypes.includes(accessEntryType) ? [] : mockAccessPolicies;
+
       // WHEN
       new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
         cluster,
-        accessPolicies: mockAccessPolicies,
+        accessPolicies,
         principal: 'mock-principal-arn',
         accessEntryType,
       });
@@ -135,5 +139,63 @@ describe('AccessEntry', () => {
     expect(importedAccessEntry.accessEntryArn).toEqual(importedAccessEntryArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
+  });
+
+  describe('validation', () => {
+    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+      'throws error when %s type has access policies',
+      (accessEntryType) => {
+        // WHEN & THEN
+        expect(() => {
+          new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
+            cluster,
+            accessPolicies: mockAccessPolicies,
+            principal: 'mock-principal-arn',
+            accessEntryType,
+          });
+        }).toThrow(`Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`);
+      },
+    );
+
+    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+      'allows %s type with empty access policies',
+      (accessEntryType) => {
+        // WHEN
+        new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
+          cluster,
+          accessPolicies: [],
+          principal: 'mock-principal-arn',
+          accessEntryType,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+          ClusterName: { Ref: 'Cluster9EE0221C' },
+          PrincipalArn: 'mock-principal-arn',
+          Type: accessEntryType,
+          AccessPolicies: [],
+        });
+      },
+    );
+
+    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+      'allows %s type with access policies',
+      (accessEntryType) => {
+        // WHEN
+        new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
+          cluster,
+          accessPolicies: mockAccessPolicies,
+          principal: 'mock-principal-arn',
+          accessEntryType,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+          ClusterName: { Ref: 'Cluster9EE0221C' },
+          PrincipalArn: 'mock-principal-arn',
+          Type: accessEntryType,
+        });
+      },
+    );
   });
 });

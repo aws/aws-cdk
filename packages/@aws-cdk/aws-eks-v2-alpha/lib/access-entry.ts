@@ -367,6 +367,12 @@ export class AccessEntry extends Resource implements IAccessEntry {
     this.principal = props.principal;
     this.accessPolicies = props.accessPolicies;
 
+    // Validate that certain access entry types cannot have access policies
+    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+    if (props.accessEntryType && restrictedTypes.includes(props.accessEntryType) && props.accessPolicies.length > 0) {
+      throw new Error(`Access entry type '${props.accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`);
+    }
+
     const resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,

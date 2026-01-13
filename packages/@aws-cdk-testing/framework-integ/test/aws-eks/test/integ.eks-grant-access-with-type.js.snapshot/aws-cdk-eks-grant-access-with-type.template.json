@@ -897,7 +897,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/79df885af63e2f129101385fd2327fa6568d5a0f507a75e7aac0112616e28b40.json"
+       "/9a3b486df373bc08f4c185bb208c17205fe5615abdccbc6729d4c69a087b2765.json"
       ]
      ]
     }
@@ -947,7 +947,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/4f2391778a52c6c4469e5cfc7f5c87923a653733389fe404581eaaef87a05994.json"
+       "/e96aec359da62e8dab192aaa908220db9cb99b74a1ddc092e2adfedd481b57ab.json"
       ]
      ]
     }
@@ -1027,6 +1027,39 @@
      ]
     },
     "Type": "HYBRID_LINUX"
+   }
+  },
+  "HyperpodRole9655BF42": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sagemaker.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "HyperpodAccess28E68EEF": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [],
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "HyperpodRole9655BF42",
+      "Arn"
+     ]
+    },
+    "Type": "HYPERPOD_LINUX"
    }
   },
   "StandardRoleB40A8A59": {
