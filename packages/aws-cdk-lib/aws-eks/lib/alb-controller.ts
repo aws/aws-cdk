@@ -518,10 +518,13 @@ export class AlbController extends Construct {
 
   private rewritePolicyResources(
     resources: string | string[] | undefined,
-    actions: string[],
+    actions: string | string[],
     securityMode: AlbControllerSecurityMode,
     cluster: Cluster,
   ): string | string[] | undefined {
+    // Normalize actions to always be an array
+    const actionsArray = Array.isArray(actions) ? actions : [actions];
+
     // This is safe to disable because we're actually replacing the literal partition with a reference to
     // the stack partition (which is hardcoded into the JSON files) to prevent issues such as
     // aws/aws-cdk#22520.
@@ -531,7 +534,7 @@ export class AlbController extends Construct {
 
       // Apply additional scoping for SCOPED mode
       if (securityMode === AlbControllerSecurityMode.SCOPED) {
-        rewritten = this.applyScopedResources(rewritten, actions, cluster);
+        rewritten = this.applyScopedResources(rewritten, actionsArray, cluster);
       }
 
       return rewritten;

@@ -102,26 +102,44 @@ test('SCOPED mode adds region and account conditions for read-only operations', 
 
   expect(albPolicyDocument).toBeDefined();
 
-  // Check that read-only statements with Resource: "*" have region and account conditions
-  const readOnlyStatements = albPolicyDocument.Statement.filter((stmt: any) =>
+  // In SCOPED mode, wildcard Resource: "*" should be replaced with scoped ARNs for read-only EC2 operations
+  // The Resource will be a Fn::Join intrinsic function containing the scoped ARN
+  const ec2ScopedStatements = albPolicyDocument.Statement.filter((stmt: any) => {
+    // Check if resource is a Fn::Join containing scoped ARN parts
+    if (stmt.Resource && typeof stmt.Resource === 'object' && stmt.Resource['Fn::Join']) {
+      const joinParts = stmt.Resource['Fn::Join'][1];
+      const joinedString = joinParts.filter((p: any) => typeof p === 'string').join('');
+      return joinedString.includes(':ec2:') &&
+             joinedString.includes('us-west-2') &&
+             joinedString.includes('123456789012') &&
+             Array.isArray(stmt.Action) &&
+             stmt.Action.some((action: string) => action.startsWith('ec2:Describe'));
+    }
+    return false;
+  });
+
+  // Should have scoped EC2 statements
+  expect(ec2ScopedStatements.length).toBeGreaterThan(0);
+
+  // Verify that these scoped statements don't use wildcard
+  ec2ScopedStatements.forEach((stmt: any) => {
+    expect(stmt.Resource).not.toBe('*');
+  });
+
+  // Verify that there are no more wildcard Resource: "*" statements for read-only operations
+  const wildcardReadOnlyStatements = albPolicyDocument.Statement.filter((stmt: any) =>
     stmt.Resource === '*' &&
     Array.isArray(stmt.Action) &&
     stmt.Action.some((action: string) =>
       action.startsWith('ec2:Describe') ||
       action.startsWith('elasticloadbalancing:Describe') ||
-      action.startsWith('acm:'),
+      action.startsWith('acm:List') ||
+      action.startsWith('acm:Describe'),
     ),
   );
 
-  expect(readOnlyStatements.length).toBeGreaterThan(0);
-
-  // Verify that these statements have both region and account conditions
-  readOnlyStatements.forEach((stmt: any) => {
-    expect(stmt.Condition).toBeDefined();
-    expect(stmt.Condition.StringEquals).toBeDefined();
-    expect(stmt.Condition.StringEquals['aws:RequestedRegion']).toEqual('us-west-2');
-    expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toEqual('123456789012');
-  });
+  // In SCOPED mode, read-only operations should NOT have wildcard resources anymore
+  expect(wildcardReadOnlyStatements.length).toBe(0);
 });
 
 test('COMPATIBLE mode does not add additional conditions', () => {
@@ -300,21 +318,28 @@ test('SCOPED mode prevents cross-account resource enumeration', () => {
 
   expect(albPolicyDocument).toBeDefined();
 
-  // Find EC2 read-only statements that could enumerate cross-account resources
-  const ec2ReadOnlyStatements = albPolicyDocument.Statement.filter((stmt: any) =>
-    stmt.Resource === '*' &&
-    Array.isArray(stmt.Action) &&
-    stmt.Action.some((action: string) => action.startsWith('ec2:Describe')),
-  );
+  // In SCOPED mode, EC2 read-only statements should have scoped ARNs (Fn::Join intrinsics) instead of "*"
+  const ec2ScopedStatements = albPolicyDocument.Statement.filter((stmt: any) => {
+    if (stmt.Resource && typeof stmt.Resource === 'object' && stmt.Resource['Fn::Join']) {
+      const joinParts = stmt.Resource['Fn::Join'][1];
+      const joinedString = joinParts.filter((p: any) => typeof p === 'string').join('');
+      return joinedString.includes(':ec2:') &&
+             joinedString.includes('eu-central-1') &&
+             joinedString.includes('123456789012') &&
+             Array.isArray(stmt.Action) &&
+             stmt.Action.some((action: string) => action.startsWith('ec2:Describe'));
+    }
+    return false;
+  });
 
-  expect(ec2ReadOnlyStatements.length).toBeGreaterThan(0);
+  expect(ec2ScopedStatements.length).toBeGreaterThan(0);
 
-  // Verify that EC2 read-only statements are scoped to the specific account
-  ec2ReadOnlyStatements.forEach((stmt: any) => {
-    expect(stmt.Condition).toBeDefined();
-    expect(stmt.Condition.StringEquals).toBeDefined();
-    expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toEqual('123456789012');
-    expect(stmt.Condition.StringEquals['aws:RequestedRegion']).toEqual('eu-central-1');
+  // Verify that the scoped statements contain proper region and account in the Fn::Join
+  ec2ScopedStatements.forEach((stmt: any) => {
+    const joinParts = stmt.Resource['Fn::Join'][1];
+    const joinedString = joinParts.filter((p: any) => typeof p === 'string').join('');
+    expect(joinedString).toContain('eu-central-1');
+    expect(joinedString).toContain('123456789012');
   });
 });
 
