@@ -3728,7 +3728,7 @@ describe('cluster', () => {
       const nodeRole = new iam.Role(stack, 'NodeRole', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
 
       // WHEN
-      cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], eks.AccessEntryType.EC2);
+      cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], { accessEntryType: eks.AccessEntryType.EC2 });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {

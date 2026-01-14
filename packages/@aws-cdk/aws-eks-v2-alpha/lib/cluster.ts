@@ -925,6 +925,25 @@ interface AddAccessEntryOptions {
 }
 
 /**
+ * Options for granting access to a cluster.
+ */
+export interface GrantAccessOptions {
+  /**
+   * The type of the access entry.
+   *
+   * Specify `AccessEntryType.EC2` for EKS Auto Mode node roles,
+   * `AccessEntryType.HYBRID_LINUX` for EKS Hybrid Nodes, or
+   * `AccessEntryType.HYPERPOD_LINUX` for SageMaker HyperPod.
+   *
+   * Note that EC2, HYBRID_LINUX, and HYPERPOD_LINUX types cannot
+   * have access policies attached per AWS EKS API constraints.
+   *
+   * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
+   */
+  readonly accessEntryType?: AccessEntryType;
+}
+
+/**
  * A Cluster represents a managed Kubernetes Service (EKS)
  *
  * This is a fully managed cluster of API Servers (control-plane)
@@ -1368,20 +1387,15 @@ export class Cluster extends ClusterBase {
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
    * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM principal.
-   * @param accessEntryType - The type of the access entry. Specify `AccessEntryType.EC2` for EKS Auto Mode node roles,
-   *                         `AccessEntryType.HYBRID_LINUX` for EKS Hybrid Nodes, or `AccessEntryType.HYPERPOD_LINUX`
-   *                         for SageMaker HyperPod. Note that EC2, HYBRID_LINUX, and HYPERPOD_LINUX types cannot
-   *                         have access policies attached per AWS EKS API constraints.
-   *
-   * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
+   * @param options - Additional options for granting access.
    */
   @MethodMetadata()
-  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType) {
+  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[], options?: GrantAccessOptions) {
     this.addToAccessEntry({
       id,
       principal,
       policies: accessPolicies,
-      accessEntryType,
+      accessEntryType: options?.accessEntryType,
     });
   }
 
