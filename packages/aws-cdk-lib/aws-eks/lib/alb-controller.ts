@@ -475,7 +475,7 @@ export class AlbController extends Construct {
 
       // In SCOPED mode, add additional conditions for enhanced security
       if (securityMode === AlbControllerSecurityMode.SCOPED) {
-        rewrittenStatement = this.addScopingConditions(rewrittenStatement, props.cluster);
+        rewrittenStatement = this.addScopingConditions(rewrittenStatement);
       }
 
       serviceAccount.addToPrincipalPolicy(iam.PolicyStatement.fromJson(rewrittenStatement));
@@ -546,7 +546,7 @@ export class AlbController extends Construct {
     return resources.map(rewriteResource);
   }
 
-  private applyScopedResources(resource: string, _actions: string[], cluster: Cluster): string {
+  private applyScopedResources(resource: string, actions: string[], cluster: Cluster): string {
     const stack = Stack.of(this);
     const region = stack.region;
     const account = stack.account;
@@ -569,15 +569,39 @@ export class AlbController extends Construct {
       return resource.replace(`arn:${Aws.PARTITION}:elasticloadbalancing:*:*:`, `arn:${Aws.PARTITION}:elasticloadbalancing:${region}:${account}:`);
     }
 
+    // For wildcard resources, replace with scoped resources based on action types
+    if (resource === '*') {
+      // For EC2 read-only operations, replace * with scoped EC2 resources
+      if (this.hasEC2ReadOnlyActions(actions)) {
+        // eslint-disable-next-line @cdklabs/no-literal-partition
+        return `arn:${Aws.PARTITION}:ec2:${region}:${account}:*`;
+      }
+
+      // For ELB read-only operations, replace * with scoped ELB resources
+      if (this.hasELBReadOnlyActions(actions)) {
+        // eslint-disable-next-line @cdklabs/no-literal-partition
+        return `arn:${Aws.PARTITION}:elasticloadbalancing:${region}:${account}:*`;
+      }
+
+      // For ACM operations, replace * with scoped ACM resources
+      if (this.hasACMActions(actions)) {
+        // eslint-disable-next-line @cdklabs/no-literal-partition
+        return `arn:${Aws.PARTITION}:acm:${region}:${account}:*`;
+      }
+
+      // For IAM operations and other actions that genuinely need wildcard,
+      // keep as-is but this will be scoped via conditions in addScopingConditions
+    }
+
     return resource;
   }
 
   /**
    * Add additional scoping conditions for enhanced security in SCOPED mode.
-   * This method adds region and account-based conditions for read-only operations with Resource: "*".
+   * This method adds region and account-based conditions for operations that may still have Resource: "*".
    */
-  private addScopingConditions(statement: any, cluster: Cluster): any {
-    const stack = Stack.of(cluster);
+  private addScopingConditions(statement: any): any {
+    const stack = Stack.of(this);
     const region = stack.region;
     const account = stack.account;
 
@@ -592,14 +616,7 @@ export class AlbController extends Construct {
     if (this.hasEC2ReadOnlyActions(actions)) {
       return {
         ...statement,
-        Condition: {
-          ...statement.Condition,
-          StringEquals: {
-            ...statement.Condition?.StringEquals,
-            'aws:RequestedRegion': region,
-            'aws:ResourceAccount': account,
-          },
-        },
+        Condition: this.mergeScopingConditions(statement.Condition, region, account),
       };
     }
 
@@ -607,14 +624,7 @@ export class AlbController extends Construct {
     if (this.hasELBReadOnlyActions(actions)) {
       return {
         ...statement,
-        Condition: {
-          ...statement.Condition,
-          StringEquals: {
-            ...statement.Condition?.StringEquals,
-            'aws:RequestedRegion': region,
-            'aws:ResourceAccount': account,
-          },
-        },
+        Condition: this.mergeScopingConditions(statement.Condition, region, account),
       };
     }
 
@@ -622,18 +632,45 @@ export class AlbController extends Construct {
     if (this.hasACMActions(actions)) {
       return {
         ...statement,
-        Condition: {
-          ...statement.Condition,
-          StringEquals: {
-            ...statement.Condition?.StringEquals,
-            'aws:RequestedRegion': region,
-            'aws:ResourceAccount': account,
-          },
-        },
+        Condition: this.mergeScopingConditions(statement.Condition, region, account),
       };
     }
 
     return statement;
+  }
+
+  /**
+   * Merge scoping conditions with existing conditions, avoiding overwrites of keys that already exist.
+   */
+  private mergeScopingConditions(existingCondition: any, region: string, account: string): any {
+    const scopingCondition = {
+      StringEquals: {
+        'aws:RequestedRegion': region,
+        'aws:ResourceAccount': account,
+      },
+    };
+
+    if (!existingCondition) {
+      return scopingCondition;
+    }
+
+    // Preserve existing StringEquals entries and only add scoping conditions if they don't already exist
+    const mergedStringEquals = {
+      ...existingCondition.StringEquals,
+    };
+
+    // Only set scoping conditions if they don't already exist
+    if (!mergedStringEquals['aws:RequestedRegion']) {
+      mergedStringEquals['aws:RequestedRegion'] = region;
+    }
+    if (!mergedStringEquals['aws:ResourceAccount']) {
+      mergedStringEquals['aws:ResourceAccount'] = account;
+    }
+
+    return {
+      ...existingCondition,
+      StringEquals: mergedStringEquals,
+    };
   }
 
   /**
