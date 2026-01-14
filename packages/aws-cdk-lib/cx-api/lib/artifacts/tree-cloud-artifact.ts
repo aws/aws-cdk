@@ -24,7 +24,7 @@ export class TreeCloudArtifact extends CloudArtifact {
    * this type-testing method instead.
    */
   public static isTreeCloudArtifact(art: any): art is TreeCloudArtifact {
-    return art && typeof art === 'object' && art[TREE_CLOUD_ARTIFACT_SYM];
+    return art && typeof art === 'object' && TREE_CLOUD_ARTIFACT_SYM in art;
   }
 
   public readonly file: string;

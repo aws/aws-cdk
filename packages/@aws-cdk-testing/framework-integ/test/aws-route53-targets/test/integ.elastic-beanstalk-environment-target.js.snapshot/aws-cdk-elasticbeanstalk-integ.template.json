@@ -95,7 +95,7 @@
       "Value": "t3.micro"
      }
     ],
-    "SolutionStackName": "64bit Amazon Linux 2023 v6.4.3 running Node.js 20",
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.1 running Node.js 20",
     "VersionLabel": {
      "Ref": "ApplicationVersion"
     }
@@ -185,7 +185,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a73ebb32184d4a847fd87c0def742ac63ae3716c77d7d75f37ffe720d056adc6.zip"
+     "S3Key": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip"
     },
     "Handler": "index.handler",
     "Role": {

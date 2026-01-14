@@ -39,9 +39,9 @@ export class SfnStateMachine implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sns-permissions
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     if (this.props.deadLetterQueue) {
-      addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
+      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
     return {
