@@ -90,7 +90,7 @@ class EksGrantAccessWithType extends Stack {
           accessScopeType: eks.AccessScopeType.CLUSTER,
         }),
       ],
-      eks.AccessEntryType.STANDARD,
+      { accessEntryType: eks.AccessEntryType.STANDARD },
     );
 
     // Test 5: grantAccess without type (backward compatibility - defaults to STANDARD)
