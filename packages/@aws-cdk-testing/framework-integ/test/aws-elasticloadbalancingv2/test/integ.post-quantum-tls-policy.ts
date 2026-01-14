@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
+import { CfnResource } from 'aws-cdk-lib';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -22,7 +23,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  */
 
 const app = new cdk.App({
-  postCliContext: {
+  context: {
     '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy': true,
   },
 });
@@ -52,6 +53,14 @@ const certificateArn = process.env.CDK_INTEG_CERTIFICATE_ARN ?? 'arn:aws:acm:us-
 const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
   vpc,
   internetFacing: true,
+});
+
+// Suppress security guardian rule - load balancer intentionally needs public access for testing
+alb.connections.securityGroups.forEach(sg => {
+  const cfnSg = sg.node.defaultChild as CfnResource;
+  cfnSg.addMetadata('guard', {
+    SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+  });
 });
 
 alb.addListener('HttpsListener', {
