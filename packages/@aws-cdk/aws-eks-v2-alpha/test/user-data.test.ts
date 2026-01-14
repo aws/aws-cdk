@@ -1,10 +1,8 @@
-import { testFixtureCluster } from './util';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { testFixtureCluster } from './util';
 import { Cluster } from '../lib/cluster';
 import { renderAmazonLinuxUserData } from '../lib/user-data';
-
-/* eslint-disable max-len */
 
 describe('user data', () => {
   test('default user data', () => {

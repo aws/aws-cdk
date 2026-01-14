@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Node
         uses: actions/setup-node@v6
@@ -31,7 +31,7 @@ jobs:
 
       # Upload the current db to be used later
       - name: Upload base database
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: db.base.json.gz
           path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
@@ -49,7 +49,7 @@ jobs:
 
       # Now that we have updated the database, upload the new candidate db
       - name: Upload head database
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: db.head.json.gz
           path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
@@ -58,9 +58,8 @@ jobs:
       # Build @aws-cdk/spec2cdk and run L1 gen script to generate base files for new modules
       - name: Build @aws-cdk/spec2cdk
         run: lerna run build --stream --no-progress --skip-nx-cache --scope @aws-cdk/spec2cdk
-      - name: Generate L1s
-        working-directory: packages/aws-cdk-lib
-        run: yarn gen
+      - name: Generate code
+        run: lerna run gen --stream --no-progress --skip-nx-cache --scope aws-cdk-lib --scope @aws-cdk/mixins-preview
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
       # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
@@ -69,7 +68,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/update-spec.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}/update-spec.patch
@@ -85,12 +84,12 @@ jobs:
       CI: "true"
     steps:
       - name: Download base database
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: db.base.json.gz
           path: base
       - name: Download head database
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: db.head.json.gz
           path: head
@@ -110,7 +109,7 @@ jobs:
           cat DIFF >> PR.md
           echo '```' >> PR.md
       - name: Upload PR body file
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: PR.md
           path: PR.md
@@ -125,10 +124,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download patch
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}
@@ -137,13 +136,13 @@ jobs:
         run: '[ -s ${{ runner.temp }}/update-spec.patch ] && git apply ${{ runner.temp }}/update-spec.patch || echo "Empty patch. Skipping."'
 
       - name: Download PR body file
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: PR.md
           path: ${{ runner.temp }}
 
       - name: Make Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           # Git commit details
           branch: automation/spec-update

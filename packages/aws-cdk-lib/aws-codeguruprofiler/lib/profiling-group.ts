@@ -75,7 +75,7 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
   /**
    * Collection of grant methods for a ProfilingGroup
    */
-  public readonly grants = ProfilingGroupGrants._fromProfilingGroup(this);
+  public readonly grants = ProfilingGroupGrants.fromProfilingGroup(this);
 
   public get profilingGroupRef(): ProfilingGroupReference {
     return {
@@ -92,6 +92,8 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
    *  - codeguru-profiler:ConfigureAgent
    *  - codeguru-profiler:PostAgentProfile
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant publish rights to
    */
   public grantPublish(grantee: IGrantable) {
@@ -105,6 +107,8 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
    *
    *  - codeguru-profiler:GetProfile
    *  - codeguru-profiler:DescribeProfilingGroup
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant read rights to
    */

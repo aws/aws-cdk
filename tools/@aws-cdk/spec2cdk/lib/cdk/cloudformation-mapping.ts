@@ -1,3 +1,4 @@
+
 import {
   expr,
   Expression,
@@ -26,6 +27,11 @@ export interface PropertyMapping {
   readonly optional?: boolean;
 }
 
+export interface CloudFormationTypeContext {
+  readonly resourceType: string;
+  readonly propTypeName?: string;
+}
+
 /**
  * Convert values between CloudFormation and TypeScript
  *
@@ -36,7 +42,11 @@ export class CloudFormationMapping {
   private readonly cfn2ts: Record<string, string> = {};
   private readonly cfn2Prop: Record<string, PropertyMapping> = {};
 
-  constructor(private readonly mapperFunctionsScope: IScope, private readonly converter: TypeConverter) {}
+  constructor(
+    private readonly mapperFunctionsScope: IScope,
+    private readonly converter: TypeConverter,
+    private readonly typeContext: CloudFormationTypeContext,
+  ) {}
 
   public add(mapping: PropertyMapping) {
     this.cfn2ts[mapping.cfnName] = mapping.propName;
@@ -58,7 +68,7 @@ export class CloudFormationMapping {
       throw new Error(`No type for ${cfnName}`);
     }
 
-    return this.typeHandlers(type).produce.call(value);
+    return this.typeHandlers(type, cfnName).produce.call(value);
   }
 
   public parseProperty(cfnName: string, propsObj: Expression): Expression {
@@ -68,7 +78,7 @@ export class CloudFormationMapping {
       throw new Error(`No type for ${cfnName}`);
     }
 
-    return expr.cond(new IsNotNullish(value)).then(this.typeHandlers(type).parse.call(value)).else(expr.UNDEFINED);
+    return expr.cond(new IsNotNullish(value)).then(this.typeHandlers(type, cfnName).parse.call(value)).else(expr.UNDEFINED);
   }
 
   public validateProperty(cfnName: string, propsObj: Expression, errorsObj: Expression): Expression[] {
@@ -91,7 +101,7 @@ export class CloudFormationMapping {
       errorsObj.callMethod(
         'collect',
         CDK_CORE.propertyValidator
-          .call(expr.lit(prop.propName), this.typeHandlers(prop.baseType).validate)
+          .call(expr.lit(prop.propName), this.typeHandlers(prop.baseType, cfnName).validate)
           .call(propsObj.prop(prop.propName)),
       ),
     );
@@ -99,7 +109,12 @@ export class CloudFormationMapping {
     return validations;
   }
 
-  private typeHandlers(type: Type): TypeHandlers {
+  private typeHandlers(type: Type, cfnName?: string): TypeHandlers {
+    const special = this.specialTypeHandlers(type, cfnName);
+    if (special) {
+      return special;
+    }
+
     if (type.equals(CDK_CORE.CfnTag)) {
       return {
         produce: CDK_CORE.cfnTagToCloudFormation,
@@ -201,6 +216,21 @@ export class CloudFormationMapping {
 
     const todo = expr.ident(`/* @todo typeHandlers(${type}) */`);
     return { produce: todo, parse: todo, validate: todo };
+  }
+
+  /**
+   * Return specific type handlers for some select parts of the L1 API surface
+   */
+  private specialTypeHandlers(_: Type, cfnPropName?: string): TypeHandlers | undefined {
+    if (['AWS::Events::Rule', 'AWS::Events::Archive'].includes(this.typeContext.resourceType) && cfnPropName === 'EventPattern') {
+      return {
+        produce: CDK_CORE.eventPatternToCloudFormation,
+        parse: CDK_CORE.helpers.FromCloudFormation.getAny,
+        validate: CDK_CORE.validateObject,
+      };
+    }
+
+    return undefined;
   }
 
   /**

@@ -1,11 +1,10 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import * as path from 'path';
-import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
+import { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { Module } from '@cdklabs/typewriter';
 import { IWriter, substituteFilePattern } from '../util';
-import { GrantsModule } from './grants-module';
-import { ResourceClass } from './resource-class';
-import { BaseServiceSubmodule, LocatedModule, relativeImportPath } from './service-submodule';
+import { GrantsProps } from './aws-cdk-lib';
+import { BaseServiceSubmodule, LocatedModule } from './service-submodule';
 
 export interface AddServiceProps {
   /**
@@ -29,11 +28,9 @@ export interface AddServiceProps {
   readonly destinationSubmodule?: string;
 
   /**
-   * The JSON string to configure the grants for the service
-   *
-   * @default No grants module is generated
+   * Properties used to create the grants module for the service
    */
-  readonly grantsConfig?: string;
+  readonly grantsProps?: GrantsProps;
 }
 
 export interface LibraryBuilderProps {
@@ -71,23 +68,14 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
    * Add all resources in a service
    */
   public addService(service: Service, props?: AddServiceProps) {
-    const resources = this.db.follow('hasResource', service);
-    const submod = this.obtainServiceSubmodule(service, props?.destinationSubmodule, props?.grantsConfig);
+    const resources = this.db.follow('hasResource', service).map(e => e.entity);
+    const submod = this.obtainServiceSubmodule(service, props?.destinationSubmodule, props?.grantsProps);
 
-    const resourceClasses: Record<string, ResourceClass> = {};
-    for (const { entity: resource } of resources) {
-      resourceClasses[resource.cloudFormationType] = this.addResourceToSubmodule(submod, resource, props);
+    for (const resource of resources) {
+      this.addResourceToSubmodule(submod, resource, props);
     }
 
-    const grantModule = submod.locatedModules
-      .map(lm => lm.module)
-      .find(m => m instanceof GrantsModule);
-
-    if (grantModule != null) {
-      grantModule.build(resourceClasses, props?.nameSuffix);
-    }
-
-    this.postprocessSubmodule(submod);
+    this.postprocessSubmodule(submod, props);
 
     return submod;
   }
@@ -130,7 +118,7 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
         continue;
       }
 
-      // Group by the first path component component
+      // Group by the first path component
       const parts = fileName.split(path.posix.sep);
       if (parts.length === 1) {
         continue;
@@ -148,24 +136,16 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
    *  - submodule.registerResource(resource.cloudFormationType, ...)
    *  - submodule.registerSelectiveImports(..)
    */
-  protected abstract addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps): ResourceClass;
+  protected abstract addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps): void;
 
   /**
    * Do whatever we need to do after a service has been rendered to a submodule
    */
-  protected postprocessSubmodule(submodule: ServiceSubmodule) {
-    // Selective imports from constructor
-    for (const selectiveImport of submodule.imports) {
-      const sourceModule = new Module(selectiveImport.moduleName);
-      for (const mod of submodule.locatedModules) {
-        sourceModule.importSelective(mod.module, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), {
-          fromLocation: relativeImportPath(mod.filePath, sourceModule.name),
-        });
-      }
-    }
+  protected postprocessSubmodule(_submodule: ServiceSubmodule, _props?: AddServiceProps): void {
+    // does nothing, this is a hook for implementations
   }
 
-  private obtainServiceSubmodule(service: Service, targetSubmodule?: string, grantsConfig?: string): ServiceSubmodule {
+  private obtainServiceSubmodule(service: Service, targetSubmodule?: string, grantsProps?: GrantsProps): ServiceSubmodule {
     const submoduleName = targetSubmodule ?? service.name;
     const key = `${submoduleName}/${service.name}`;
 
@@ -174,7 +154,7 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
       return existingSubmod;
     }
 
-    const createdSubmod = this.createServiceSubmodule(service, submoduleName, grantsConfig);
+    const createdSubmod = this.createServiceSubmodule(service, submoduleName, grantsProps);
     this.serviceSubmodules.set(key, createdSubmod);
     return createdSubmod;
   }
@@ -182,7 +162,7 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
   /**
    * Implement this to create an instance of a service module.
    */
-  protected abstract createServiceSubmodule(service: Service, submoduleName: string, grantsConfig?: string): ServiceSubmodule;
+  protected abstract createServiceSubmodule(service: Service, submoduleName: string, grantsProps?: GrantsProps): ServiceSubmodule;
 
   public module(key: string) {
     const ret = this.modules.get(key);
