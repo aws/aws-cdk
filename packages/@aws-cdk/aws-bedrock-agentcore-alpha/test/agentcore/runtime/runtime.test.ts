@@ -7,9 +7,12 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
+import { LoggingDestination, LogType } from '../../../lib/runtime/observability';
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/runtime-authorizer-configuration';
@@ -2673,3 +2676,301 @@ const expectedExecutionRolePolicy = {
     ],
   },
 };
+
+describe('Runtime observability tests', () => {
+  test('Should configure tracing delivery with runtime ARN as source', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TracingTestStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const runtime = new Runtime(stack, 'TracingRuntime', {
+      runtimeName: 'tracing_runtime',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+
+    // Verify delivery source uses runtime ARN as resource
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'TRACES',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify delivery destination is configured for X-Ray
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'XRAY',
+    });
+
+    // Verify X-Ray resource policy allows logs delivery service
+    template.hasResourceProperties('AWS::XRay::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":"xray:PutTraceSegments","Condition":{"ForAllValues:ArnLike":{"logs:LogGeneratingResourceArns":["',
+            { 'Fn::GetAtt': ['TracingRuntime80A99119', 'AgentRuntimeArn'] },
+            '"]},"StringEquals":{"aws:SourceAccount":"123456789012"},"ArnLike":{"aws:SourceArn":"arn:',
+            { Ref: 'AWS::Partition' },
+            ':logs:us-east-1:123456789012:delivery-source:*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"*","Sid":"CDKLogsDeliveryWrite"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('Should not create observability resources when not configured', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoObservabilityStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    new Runtime(stack, 'NoObservabilityRuntime', {
+      runtimeName: 'no_observability_runtime',
+      agentRuntimeArtifact,
+    });
+
+    const template = Template.fromStack(stack);
+
+    expect(() => {
+      template.hasResourceProperties('AWS::Logs::DeliverySource', {});
+    }).toThrow();
+  });
+
+  test('Should configure CloudWatch Logs destination with log group ARN', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'LoggingCWLStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const logGroup = new logs.LogGroup(stack, 'AppLogGroup');
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(logGroup),
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedLogGroupArn = stack.resolve(logGroup.logGroupArn);
+
+    // Verify delivery source uses runtime ARN and correct log type
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify delivery destination points to the log group ARN
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'CWL',
+      DestinationResourceArn: resolvedLogGroupArn,
+    });
+
+    // Verify CloudWatch Logs resource policy allows logs delivery service
+    template.hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Condition":{"StringEquals":{"aws:SourceAccount":"123456789012"},"ArnLike":{"aws:SourceArn":"arn:',
+            { Ref: 'AWS::Partition' },
+            ':logs:us-east-1:123456789012:*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"',
+            { 'Fn::GetAtt': ['AppLogGroup7D8CD952', 'Arn'] },
+            ':log-stream:*"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('Should configure S3 destination with bucket ARN and policy', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'LoggingS3Stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const bucket = new s3.Bucket(stack, 'LogBucket');
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_s3_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.USAGE_LOGS,
+          destination: LoggingDestination.s3(bucket),
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedBucketArn = stack.resolve(bucket.bucketArn);
+
+    // Verify delivery source uses runtime ARN and USAGE_LOGS type
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'USAGE_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify delivery destination points to the S3 bucket ARN
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'S3',
+      DestinationResourceArn: resolvedBucketArn,
+    });
+
+    // Verify S3 bucket policy allows logs delivery service
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Action: 's3:PutObject',
+            Condition: {
+              StringEquals: {
+                's3:x-amz-acl': 'bucket-owner-full-control',
+                'aws:SourceAccount': '123456789012',
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should create separate delivery sources for different log types', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MultiLogTypeStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const appLogGroup = new logs.LogGroup(stack, 'AppLogGroup');
+    const usageLogGroup = new logs.LogGroup(stack, 'UsageLogGroup');
+
+    const runtime = new Runtime(stack, 'MultiLogRuntime', {
+      runtimeName: 'multi_log_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(appLogGroup),
+        },
+        {
+          logType: LogType.USAGE_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(usageLogGroup),
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+
+    // Verify APPLICATION_LOGS delivery source
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify USAGE_LOGS delivery source
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'USAGE_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+  });
+
+  test('Should configure Firehose destination with stream ARN and tag', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'LoggingFirehoseStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    // Create an S3 bucket as the Firehose destination
+    const destinationBucket = new s3.Bucket(stack, 'DestinationBucket');
+
+    // Create a Firehose delivery stream
+    const deliveryStream = new firehose.DeliveryStream(stack, 'LogDeliveryStream', {
+      destination: new firehose.S3Bucket(destinationBucket),
+    });
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_firehose_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.firehose(deliveryStream),
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedStreamArn = stack.resolve(deliveryStream.deliveryStreamArn);
+
+    // Verify delivery source uses runtime ARN and APPLICATION_LOGS type
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify delivery destination points to the Firehose stream ARN
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'FH',
+      DestinationResourceArn: resolvedStreamArn,
+    });
+
+    // Verify the Firehose stream is tagged with LogDeliveryEnabled
+    template.hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+      Tags: [
+        {
+          Key: 'LogDeliveryEnabled',
+          Value: 'true',
+        },
+      ],
+    });
+  });
+});

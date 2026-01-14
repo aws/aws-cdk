@@ -18,6 +18,7 @@ export * from './runtime/runtime-authorizer-configuration';
 export * from './runtime/runtime-endpoint-base';
 export * from './runtime/runtime-endpoint';
 export * from './runtime/runtime';
+export * from './runtime/observability';
 // Tools
 // ===================================
 export * from './tools/code-interpreter';
