@@ -955,4 +955,25 @@ describe('domains', () => {
       },
     });
   });
+
+  test('throws if enhanced security policy is used with addApiMapping', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('GET');
+
+    const domain = new apigw.DomainName(stack, 'Domain', {
+      domainName: 'foo.com',
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      domain.addApiMapping(api.deploymentStage, {
+        basePath: 'v1/my-api',
+      });
+    }).toThrow(/HTTP APIs cannot be mapped to domain names with enhanced security policies/);
+  });
 });

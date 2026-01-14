@@ -347,6 +347,7 @@ export class DomainName extends Resource implements IDomainName {
    * also only supports:
    * - SecurityPolicy TLS 1.2 or higher (TLS 1.0 is not supported)
    * - EndpointType.REGIONAL
+   * - Not supported with enhanced security policies (SecurityPolicy_*) for HTTP APIs
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html
    * @param targetStage the target API stage.
@@ -358,6 +359,18 @@ export class DomainName extends Resource implements IDomainName {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
     this.validateBasePath(options.basePath);
+
+    // HTTP APIs cannot be mapped to domain names with enhanced security policies
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html#apigateway-custom-domain-tls-version-considerations
+    if (this.isEnhancedSecurityPolicy(this.securityPolicy)) {
+      throw new ValidationError(
+        'HTTP APIs cannot be mapped to domain names with enhanced security policies. ' +
+        'Enhanced security policies (TLS 1.3) are only supported for REST APIs using multi-level base paths. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
+        this,
+      );
+    }
+
     this.basePaths.add(options.basePath);
     const id = `Map:${options.basePath ?? 'none'}=>${Names.nodeUniqueId(targetStage.node)}`;
     new apigwv2.CfnApiMapping(this, id, {
