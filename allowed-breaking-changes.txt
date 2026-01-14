@@ -4128,3 +4128,7 @@ removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
 
 # This type must needs be weakened
 changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
+
+# CloudFormation has always required SecurityGroups for ManagedInstancesCapacityProvider.
+# Making it required in TypeScript catches the error at compile time instead of deploy time.
+strengthened:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps
