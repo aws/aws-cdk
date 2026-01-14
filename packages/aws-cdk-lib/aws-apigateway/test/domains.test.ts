@@ -971,7 +971,7 @@ describe('domains', () => {
 
     // WHEN/THEN
     expect(() => {
-      domain.addApiMapping(httpApi.defaultStage!, {
+      domain.addApiMapping(httpApi.defaultStage! as any, {
         basePath: 'v1/my-api',
       });
     }).toThrow(/HTTP APIs cannot be mapped to domain names with enhanced security policies/);
