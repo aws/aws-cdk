@@ -13,7 +13,7 @@ import {
   AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS,
 } from '../../cx-api';
 import {
-  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
+  AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
   IClusterEngine,
@@ -4457,12 +4457,12 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
-      cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
+      cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
-      EnableCloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
+      EnableCloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'],
     });
   });
 

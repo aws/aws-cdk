@@ -1,14 +1,15 @@
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
-import { ArnFormat, IResource, Resource, Stack, Tags, Token, ValidationError } from '../../core';
+import { ArnFormat, IResource, Resource, Stack, Tags, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { AccessPointReference, IAccessPointRef, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * Represents an EFS AccessPoint
  */
-export interface IAccessPoint extends IResource {
+export interface IAccessPoint extends IAccessPointRef, IResource {
   /**
    * The ID of the AccessPoint
    *
@@ -122,7 +123,7 @@ export interface AccessPointProps extends AccessPointOptions {
   /**
    * The efs filesystem
    */
-  readonly fileSystem: IFileSystem;
+  readonly fileSystem: IFileSystemRef;
 }
 
 /**
@@ -150,7 +151,7 @@ export interface AccessPointAttributes {
    *
    * @default - no EFS file system
    */
-  readonly fileSystem?: IFileSystem;
+  readonly fileSystem?: IFileSystemRef;
 }
 
 abstract class AccessPointBase extends Resource implements IAccessPoint {
@@ -170,6 +171,13 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
    * The file system of the access point
    */
   public abstract readonly fileSystem: IFileSystem;
+
+  public get accessPointRef(): AccessPointReference {
+    return {
+      accessPointId: this.accessPointId,
+      accessPointArn: this.accessPointArn,
+    };
+  }
 }
 
 /**
@@ -208,10 +216,14 @@ export class AccessPoint extends AccessPointBase {
    */
   public readonly accessPointId: string;
 
+  private readonly _fileSystem: IFileSystemRef;
+
   /**
    * The file system of the access point
    */
-  public readonly fileSystem: IFileSystem;
+  public get fileSystem(): IFileSystem {
+    return toIFileSystem(this._fileSystem);
+  }
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
@@ -224,7 +236,7 @@ export class AccessPoint extends AccessPointBase {
     }
 
     const resource = new CfnAccessPoint(this, 'Resource', {
-      fileSystemId: props.fileSystem.fileSystemId,
+      fileSystemId: props.fileSystem.fileSystemRef.fileSystemId,
       rootDirectory: {
         creationInfo: props.createAcl ? {
           ownerGid: props.createAcl.ownerGid,
@@ -249,7 +261,7 @@ export class AccessPoint extends AccessPointBase {
       resource: 'access-point',
       resourceName: this.accessPointId,
     });
-    this.fileSystem = props.fileSystem;
+    this._fileSystem = props.fileSystem;
   }
 }
 
@@ -259,7 +271,7 @@ class ImportedAccessPoint extends AccessPointBase {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.ImportedAccessPoint';
   public readonly accessPointId: string;
   public readonly accessPointArn: string;
-  private readonly _fileSystem?: IFileSystem;
+  private readonly _fileSystem?: IFileSystemRef;
 
   constructor(scope: Construct, id: string, attrs: AccessPointAttributes) {
     super(scope, id);
@@ -300,6 +312,13 @@ class ImportedAccessPoint extends AccessPointBase {
       throw new ValidationError("fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.", this);
     }
 
-    return this._fileSystem;
+    return toIFileSystem(this._fileSystem);
   }
+}
+
+function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
+  if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
+    throw new UnscopedValidationError(`'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
+  }
+  return fileSystem as IFileSystem;
 }

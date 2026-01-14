@@ -50,6 +50,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
+    "gen": "gen-cdk",
     "build": "cdk-build",
     "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "lint": "cdk-lint",
@@ -85,7 +86,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.190.2",
+    "@aws-cdk/integ-runner": "^2.192.2",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
