@@ -4314,7 +4314,7 @@ describe('cluster', () => {
           securityGroups: [securityGroup],
           scaleInAfter: cdk.Duration.seconds(-1),
         });
-      }).toThrow('scaleInAfter must be between 0 and 3600 seconds (1 hour), got: -1.');
+      }).toThrow('Duration amounts cannot be negative. Received: -1');
     });
 
     test('throws when scaleInAfter is greater than 3600', () => {
