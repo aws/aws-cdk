@@ -43,5 +43,5 @@ cluster.metricVolumeWriteIOPs({
 });
 
 new IntegTest(app, 'rds-cluster-volume-iops-metric-integ-test', {
-  testCases: [stack]
+  testCases: [stack],
 });

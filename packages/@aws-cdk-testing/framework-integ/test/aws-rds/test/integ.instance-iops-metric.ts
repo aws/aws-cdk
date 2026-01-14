@@ -32,5 +32,5 @@ instance.metricWriteIOPs({
 });
 
 new IntegTest(app, 'rds-instance-iops-metric-integ-test', {
-  testCases: [stack]
+  testCases: [stack],
 });
