@@ -1,6 +1,6 @@
 import { Match, Template } from '../../assertions';
-import * as acm from '../../aws-certificatemanager';
 import * as apigwv2 from '../../aws-apigatewayv2';
+import * as acm from '../../aws-certificatemanager';
 import { Bucket } from '../../aws-s3';
 import { Stack } from '../../core';
 import * as apigw from '../lib';
