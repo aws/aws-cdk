@@ -720,7 +720,7 @@ test('anonymous access is prohibited by default when using GrantRead', () => {
         {
           Effect: 'Allow',
           Principal: {
-            AWS: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root' ] ] },
+            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
           },
           Action: [
             'elasticfilesystem:ClientWrite',
@@ -777,7 +777,7 @@ test('anonymous access is prohibited by default when using GrantReadWrite', () =
         {
           Effect: 'Allow',
           Principal: {
-            AWS: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root' ] ] },
+            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
           },
           Action: [
             'elasticfilesystem:ClientWrite',
@@ -835,7 +835,7 @@ test('anonymous access is prohibited by default when using GrantRootAccess', () 
         {
           Effect: 'Allow',
           Principal: {
-            AWS: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root' ] ] },
+            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
           },
           Action: [
             'elasticfilesystem:ClientWrite',
@@ -866,7 +866,7 @@ test('anonymous access is prohibited by the allowAnonymousAccess props even when
         {
           Effect: 'Allow',
           Principal: {
-            AWS: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root' ] ] },
+            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
           },
           Action: [
             'elasticfilesystem:ClientWrite',
@@ -922,7 +922,7 @@ test('anonymous access is prohibited by the @aws-cdk/aws-efs:denyAnonymousAccess
         {
           Effect: 'Allow',
           Principal: {
-            AWS: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root' ] ] },
+            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
           },
           Action: [
             'elasticfilesystem:ClientWrite',
