@@ -168,7 +168,7 @@ test('correct helm chart version is set for selected alb controller version', ()
   });
 });
 
-test('SCOPED mode adds region and account conditions for read-only operations', () => {
+test('SCOPED mode scopes wildcard resources to region and account', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack', {
@@ -213,9 +213,21 @@ test('SCOPED mode adds region and account conditions for read-only operations', 
 
   expect(albPolicyDocument).toBeDefined();
 
-  // Check that read-only statements with Resource: "*" have region and account conditions
+  // Helper to check if a resource is a scoped ARN (Fn::Join format with region/account)
+  const isScopedResource = (resource: any): boolean => {
+    if (typeof resource === 'string') {
+      return resource.includes('us-west-2') && resource.includes('123456789012');
+    }
+    if (resource && resource['Fn::Join']) {
+      const joinParts = resource['Fn::Join'][1];
+      const joinStr = JSON.stringify(joinParts);
+      return joinStr.includes('us-west-2') && joinStr.includes('123456789012');
+    }
+    return false;
+  };
+
+  // Check that read-only statements have scoped resources (not wildcard "*")
   const readOnlyStatements = albPolicyDocument.Statement.filter((stmt: any) =>
-    stmt.Resource === '*' &&
     Array.isArray(stmt.Action) &&
     stmt.Action.some((action: string) =>
       action.startsWith('ec2:Describe') ||
@@ -226,12 +238,11 @@ test('SCOPED mode adds region and account conditions for read-only operations', 
 
   expect(readOnlyStatements.length).toBeGreaterThan(0);
 
-  // Verify that these statements have both region and account conditions
+  // Verify that these statements have scoped resources (not wildcard "*")
   readOnlyStatements.forEach((stmt: any) => {
-    expect(stmt.Condition).toBeDefined();
-    expect(stmt.Condition.StringEquals).toBeDefined();
-    expect(stmt.Condition.StringEquals['aws:RequestedRegion']).toEqual('us-west-2');
-    expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toEqual('123456789012');
+    // Resource should be scoped, not a simple "*"
+    expect(stmt.Resource).not.toEqual('*');
+    expect(isScopedResource(stmt.Resource)).toBe(true);
   });
 });
 
