@@ -170,18 +170,33 @@ export interface IFileSystem extends IFileSystemRef, ec2.IConnectable, iam.IReso
 
   /**
    * Grant read permissions for this file system to an IAM principal.
+   *
+   * This grants the `elasticfilesystem:ClientMount` action, which is required
+   * to mount the file system. When anonymous access is denied (the default),
+   * any principal that needs to mount the file system must be granted access.
+   *
    * @param grantee The principal to grant read to
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant read and write permissions for this file system to an IAM principal.
+   *
+   * This grants `elasticfilesystem:ClientMount` and `elasticfilesystem:ClientWrite` actions.
+   * When anonymous access is denied (the default), any principal that needs to mount
+   * and write to the file system must be granted access.
+   *
    * @param grantee The principal to grant read and write to
    */
   grantReadWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * As root user, grant read and write permissions for this file system to an IAM principal.
+   *
+   * This grants `elasticfilesystem:ClientMount`, `elasticfilesystem:ClientWrite`, and
+   * `elasticfilesystem:ClientRootAccess` actions. When anonymous access is denied (the default),
+   * any principal that needs to mount with root access must be granted access.
+   *
    * @param grantee The principal to grant root access to
    */
   grantRootAccess(grantee: iam.IGrantable): iam.Grant;
@@ -303,6 +318,15 @@ export interface FileSystemProps {
 
   /**
    * Allow access from anonymous client that doesn't use IAM authentication.
+   *
+   * When set to `false` (or when using `grantRead`, `grantReadWrite`, `grantRootAccess`,
+   * or the `@aws-cdk/aws-efs:denyAnonymousAccess` feature flag), a file system policy is
+   * created that restricts access to same-account IAM principals only. In this mode, any
+   * IAM principal that needs to mount the file system must be explicitly granted access
+   * using `grantRead()`, `grantReadWrite()`, or `grantRootAccess()`.
+   *
+   * When set to `true`, no restrictive policy is created and any client can mount the
+   * file system without IAM authentication (legacy behavior, less secure).
    *
    * @default false when using `grantRead`, `grantWrite`, `grantRootAccess`
    * or set `@aws-cdk/aws-efs:denyAnonymousAccess` feature flag, otherwise true
@@ -640,9 +664,14 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   /**
    * Grant read permissions for this file system to an IAM principal.
    *
+   * This grants the `elasticfilesystem:ClientMount` action, which is required
+   * to mount the file system. When anonymous access is denied (the default),
+   * any principal that needs to mount the file system must be granted access
+   * using this method, `grantReadWrite()`, or `grantRootAccess()`.
+   *
    * [disable-awslint:no-grants]
    *
-   * @param grantee The principal to grant read to
+   * @param grantee The principal to grant read to (e.g., EC2 instance role, Lambda execution role)
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this._grantClient(grantee, [ClientAction.MOUNT], {
@@ -655,9 +684,15 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   /**
    * Grant read and write permissions for this file system to an IAM principal.
    *
+   * This grants `elasticfilesystem:ClientMount` and `elasticfilesystem:ClientWrite` actions.
+   * The `ClientMount` action is required to mount the file system, and `ClientWrite` allows
+   * write operations. When anonymous access is denied (the default), any principal that needs
+   * to mount and write to the file system must be granted access using this method or
+   * `grantRootAccess()`.
+   *
    * [disable-awslint:no-grants]
    *
-   * @param grantee The principal to grant read and write to
+   * @param grantee The principal to grant read and write to (e.g., EC2 instance role, Lambda execution role)
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     return this._grantClient(grantee, [
@@ -673,9 +708,16 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   /**
    * As root user, grant read and write permissions for this file system to an IAM principal.
    *
+   * This grants `elasticfilesystem:ClientMount`, `elasticfilesystem:ClientWrite`, and
+   * `elasticfilesystem:ClientRootAccess` actions. The `ClientMount` action is required to
+   * mount the file system, `ClientWrite` allows write operations, and `ClientRootAccess`
+   * allows the client to access the file system as the root user. When anonymous access is
+   * denied (the default), any principal that needs to mount the file system with root access
+   * must be granted access using this method.
+   *
    * [disable-awslint:no-grants]
    *
-   * @param grantee The principal to grant root access to
+   * @param grantee The principal to grant root access to (e.g., EC2 instance role, Lambda execution role)
    */
   public grantRootAccess(grantee: iam.IGrantable): iam.Grant {
     return this._grantClient(grantee, [
