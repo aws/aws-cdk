@@ -271,6 +271,63 @@ describe('domains', () => {
     });
   });
 
+  test('throws if regional-only security policy is used with EDGE endpoint', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'example.com',
+        certificate: cert,
+        endpointType: apigw.EndpointType.EDGE,
+        securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      });
+    }).toThrow(/Security policy SecurityPolicy_TLS13_1_3_2025_09 is only supported for regional\/private endpoints/);
+  });
+
+  test('throws if edge-only security policy is used with REGIONAL endpoint', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'example.com',
+        certificate: cert,
+        endpointType: apigw.EndpointType.REGIONAL,
+        securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE,
+        endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      });
+    }).toThrow(/Security policy SecurityPolicy_TLS13_2025_EDGE is only supported for edge-optimized endpoints/);
+  });
+
+  test('allows TLS 1.3 edge policy with EDGE endpoint', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'domain', {
+      domainName: 'edge.example.com',
+      certificate: cert,
+      endpointType: apigw.EndpointType.EDGE,
+      securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'edge.example.com',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_2025_EDGE',
+      'EndpointAccessMode': 'STRICT',
+      'EndpointConfiguration': { 'Types': ['EDGE'] },
+    });
+  });
+
   test('"mapping" can be used to automatically map this domain to the deployment stage of an API', () => {
     // GIVEN
     const stack = new Stack();
