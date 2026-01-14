@@ -915,6 +915,16 @@ export interface ServiceLoadBalancerAddressOptions {
 export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
+ * Internal helper interface for adding access entries to a cluster.
+ */
+interface AddAccessEntryOptions {
+  readonly id: string;
+  readonly principal: string;
+  readonly policies: IAccessPolicy[];
+  readonly accessEntryType?: AccessEntryType;
+}
+
+/**
  * A Cluster represents a managed Kubernetes Service (EKS)
  *
  * This is a fully managed cluster of API Servers (control-plane)
@@ -1365,9 +1375,14 @@ export class Cluster extends ClusterBase {
    *
    * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
    */
-  @MethodMetadata()
+   @MethodMetadata()
   public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType) {
-    this.addToAccessEntry(id, principal, accessPolicies, accessEntryType);
+    this.addToAccessEntry({
+      id,
+      principal,
+      policies: accessPolicies,
+      accessEntryType,
+    });
   }
 
   /**
@@ -1644,25 +1659,24 @@ export class Cluster extends ClusterBase {
    * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
    * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
    *
-   * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
-   * @param policies - An array of access policies to be associated with the principal.
+   * @param props - Options for adding the access entry.
    *
    * @throws {Error} If the uniqueName generated for the new access entry is not unique.
    *
    * @returns {void}
    */
-  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[], accessEntryType?: AccessEntryType) {
-    const entry = this.accessEntries.get(principal);
+  private addToAccessEntry(props: AddAccessEntryOptions) {
+    const entry = this.accessEntries.get(props.principal);
     if (entry) {
-      (entry as AccessEntry).addAccessPolicies(policies);
+      (entry as AccessEntry).addAccessPolicies(props.policies);
     } else {
-      const newEntry = new AccessEntry(this, id, {
-        principal,
+      const newEntry = new AccessEntry(this, props.id, {
+        principal: props.principal,
         cluster: this,
-        accessPolicies: policies,
-        accessEntryType,
+        accessPolicies: props.policies,
+        accessEntryType: props.accessEntryType,
       });
-      this.accessEntries.set(principal, newEntry);
+      this.accessEntries.set(props.principal, newEntry);
     }
   }
 
