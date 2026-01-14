@@ -1341,6 +1341,9 @@ cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
 You can optionally specify an access entry type when granting access:
 
 ```ts
+declare const cluster: eks.Cluster;
+declare const nodeRole: iam.Role;
+
 // For EKS Auto Mode node roles
 cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], eks.AccessEntryType.EC2);
 ```
