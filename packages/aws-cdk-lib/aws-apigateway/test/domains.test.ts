@@ -286,7 +286,7 @@ describe('domains', () => {
         securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
         endpointAccessMode: apigw.EndpointAccessMode.STRICT,
       });
-    }).toThrow(/Security policy SecurityPolicy_TLS13_1_3_2025_09 is only supported for regional\/private endpoints/);
+    }).toThrow(/Security policy SecurityPolicy_TLS13_1_3_2025_09 is not supported for edge-optimized endpoints/);
   });
 
   test('throws if edge-only security policy is used with REGIONAL endpoint', () => {
