@@ -1345,7 +1345,7 @@ declare const cluster: eks.Cluster;
 declare const nodeRole: iam.Role;
 
 // For EKS Auto Mode node roles
-cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], eks.AccessEntryType.EC2);
+cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], { accessEntryType: eks.AccessEntryType.EC2 });
 ```
 
 Supported types: `STANDARD` (default), `FARGATE_LINUX`, `EC2_LINUX`, `EC2_WINDOWS`, `EC2`, `HYBRID_LINUX`, `HYPERPOD_LINUX`.

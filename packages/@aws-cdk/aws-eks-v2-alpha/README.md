@@ -763,7 +763,7 @@ cluster.grantAccess('nodeAccess', nodeRole.roleArn, [
   eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAutoNodePolicy', {
     accessScopeType: eks.AccessScopeType.CLUSTER,
   }),
-], eks.AccessEntryType.EC2);
+], { accessEntryType: eks.AccessEntryType.EC2 });
 ```
 
 The following access entry types are supported:
