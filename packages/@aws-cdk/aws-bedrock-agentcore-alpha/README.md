@@ -1172,6 +1172,39 @@ const lambdaRole = new iam.Role(this, "LambdaRole", {
 gateway.grantInvoke(lambdaRole);
 ```
 
+**Cognito with M2M (Machine-to-Machine) Authentication (Default)** – When no authorizer is specified, the construct automatically creates a Cognito User Pool configured for OAuth 2.0 client credentials flow. This enables machine-to-machine authentication suitable for AI agents and service-to-service communication.
+
+For more information, see [Setting up Amazon Cognito for Gateway inbound authorization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-cognito.html).
+
+```typescript fixture=default
+// Create a gateway with default Cognito M2M authorizer
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Access the Cognito resources for authentication setup
+const userPool = gateway.userPool;
+const userPoolClient = gateway.userPoolClient;
+
+// Get the token endpoint URL and OAuth scopes for client credentials flow
+const tokenEndpointUrl = gateway.tokenEndpointUrl;
+const oauthScopes = gateway.oauthScopes;
+// oauthScopes are in the format: ['{resourceServerId}/read', '{resourceServerId}/write']
+```
+
+To authenticate with the gateway, request an access token using the client credentials flow and use it to call Gateway endpoints. For more information about the token endpoint, see [The token issuer endpoint](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html).
+
+The following is an example of a token request using curl:
+
+```bash
+curl -X POST "${TOKEN_ENDPOINT_URL}" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=${USER_POOL_CLIENT_ID}" \
+  -d "client_secret=${CLIENT_SECRET}" \
+  -d "scope=${OAUTH_SCOPES}"
+```
+
 ### Gateway with KMS Encryption
 
 You can provide a KMS key, and configure the authorizer as well as the protocol configuration.

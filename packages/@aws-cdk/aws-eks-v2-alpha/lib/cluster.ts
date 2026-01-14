@@ -1353,6 +1353,7 @@ export class Cluster extends ClusterBase {
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the access permissions
    * defined by the provided `IAccessPolicy` array. This allows the IAM principal to perform the actions permitted
    * by the access policies within the EKS cluster.
+   * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
@@ -1369,6 +1370,7 @@ export class Cluster extends ClusterBase {
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
    * access permissions. This allows the IAM principal to perform the actions permitted
    * by the cluster admin acces.
+   * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
