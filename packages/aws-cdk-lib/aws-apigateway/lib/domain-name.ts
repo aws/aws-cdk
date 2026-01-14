@@ -32,41 +32,53 @@ export interface ApiMappingOptions {
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
  */
 export enum SecurityPolicy {
-  /** Cipher suite TLS 1.0 */
-  TLS_1_0 = 'TLS_1_0',
+   /** Cipher suite TLS 1.0 */
+   TLS_1_0 = 'TLS_1_0',
 
-  /** Cipher suite TLS 1.2 */
-  TLS_1_2 = 'TLS_1_2',
+   /** Cipher suite TLS 1.2 */
+   TLS_1_2 = 'TLS_1_2',
 
-  /**
-   * Cipher suite TLS 1.3 for regional/private endpoints
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
-   */
-  TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
+   /**
+    * Cipher suite TLS 1.3 for regional/private endpoints
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    */
+   TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
 
-  /**
-   * Cipher suite TLS 1.3 (FIPS compliant) for regional/private endpoints
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
-   */
-  TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
+   /**
+    * Cipher suite TLS 1.3 (FIPS compliant) for regional/private endpoints
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    */
+   TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
 
-  /**
-   * Cipher suite TLS 1.3 and TLS 1.2 with post-quantum cryptography for regional/private endpoints
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
-   */
-  TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
+   /**
+    * Cipher suite TLS 1.3 and TLS 1.2 with post-quantum cryptography for regional/private endpoints
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    */
+   TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
 
-  /**
-   * Cipher suite TLS 1.3 and TLS 1.2 with Perfect Forward Secrecy and post-quantum cryptography for regional/private endpoints
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
-   */
-  TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+   /**
+    * Cipher suite TLS 1.3 and TLS 1.2 with Perfect Forward Secrecy and post-quantum cryptography for regional/private endpoints
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    */
+   TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
 
-  /**
-   * Cipher suite TLS 1.3 for edge-optimized endpoints
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
-   */
-  TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+   /**
+    * Cipher suite TLS 1.3 for edge-optimized endpoints
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    */
+   TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+
+   /**
+    * Cipher suite TLS 1.2 with Perfect Forward Secrecy for edge-optimized endpoints
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    */
+   TLS12_PFS_2025_EDGE = 'SecurityPolicy_TLS12_PFS_2025_EDGE',
+
+   /**
+    * Cipher suite TLS 1.2 for edge-optimized endpoints (legacy)
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    */
+   TLS12_2018_EDGE = 'SecurityPolicy_TLS12_2018_EDGE',
 }
 
 /**
@@ -409,18 +421,20 @@ export class DomainName extends Resource implements IDomainName {
        return;
      }
 
-     // Policies that only support non-edge (regional/private) endpoints
-     const nonEdgeOnlyPolicies = [
-       SecurityPolicy.TLS13_1_3_2025_09,
-       SecurityPolicy.TLS13_1_3_FIPS_2025_09,
-       SecurityPolicy.TLS13_1_2_PQ_2025_09,
-       SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
-     ];
+      // Policies that only support non-edge (regional/private) endpoints
+      const nonEdgeOnlyPolicies = [
+        SecurityPolicy.TLS13_1_3_2025_09,
+        SecurityPolicy.TLS13_1_3_FIPS_2025_09,
+        SecurityPolicy.TLS13_1_2_PQ_2025_09,
+        SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+      ];
 
-     // Policies that only support edge endpoints
-     const edgeOnlyPolicies = [
-       SecurityPolicy.TLS13_2025_EDGE,
-     ];
+      // Policies that only support edge endpoints
+      const edgeOnlyPolicies = [
+        SecurityPolicy.TLS13_2025_EDGE,
+        SecurityPolicy.TLS12_PFS_2025_EDGE,
+        SecurityPolicy.TLS12_2018_EDGE,
+      ];
 
      if (endpointType === EndpointType.EDGE && nonEdgeOnlyPolicies.includes(policy)) {
        throw new ValidationError(
