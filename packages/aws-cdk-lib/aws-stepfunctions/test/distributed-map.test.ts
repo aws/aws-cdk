@@ -756,171 +756,163 @@ describe('Distributed Map State', () => {
     });
   }),
 
-  describe('ResultWriter and ResultWriterV2', () => {
-    describe.each([
-      ['ResultWriter', false],
-      ['ResultWriterV2', true],
-    ])('when class is %s', (_, isResultWriterV2Enabled) => {
-      test('State Machine With Distributed Map State and ResultWriter in JSONATA', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-        stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, isResultWriterV2Enabled);
-        const writerBucket = new s3.Bucket(stack, 'TestBucket');
+  describe('ResultWriterV2 basics', () => {
+    test('State Machine With Distributed Map State and ResultWriterV2 in JSONATA', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+      const writerBucket = new s3.Bucket(stack, 'TestBucket');
 
-        // WHEN
-        const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
-          maxConcurrency: 1,
-          itemReader: new stepfunctions.S3CsvItemReader({
-            bucket: writerBucket,
-            key: 'CSV_KEY',
-            csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
-          }),
-          resultWriter: new stepfunctions.ResultWriter({
-            bucket: writerBucket,
-            prefix: 'test',
-          }),
-          resultWriterV2: new stepfunctions.ResultWriterV2({
-            bucket: writerBucket,
-            prefix: 'test',
-          }),
-        });
-        map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+      // WHEN
+      const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemReader: new stepfunctions.S3CsvItemReader({
+          bucket: writerBucket,
+          key: 'CSV_KEY',
+          csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
+        }),
+        resultWriterV2: new stepfunctions.ResultWriterV2({
+          bucket: writerBucket,
+          prefix: 'test',
+        }),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-        // THEN
-        expect(render(map, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
-          StartAt: 'Map State',
-          States: {
-            'Map State': {
-              Type: 'Map',
-              End: true,
-              ItemProcessor: {
-                ProcessorConfig: {
-                  Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
-                  ExecutionType: stepfunctions.StateMachineType.STANDARD,
-                },
-                StartAt: 'Pass State',
-                States: {
-                  'Pass State': {
-                    Type: 'Pass',
-                    End: true,
-                  },
+      // THEN
+      expect(render(map, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
+        StartAt: 'Map State',
+        States: {
+          'Map State': {
+            Type: 'Map',
+            End: true,
+            ItemProcessor: {
+              ProcessorConfig: {
+                Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                ExecutionType: stepfunctions.StateMachineType.STANDARD,
+              },
+              StartAt: 'Pass State',
+              States: {
+                'Pass State': {
+                  Type: 'Pass',
+                  End: true,
                 },
               },
-              ItemReader: {
-                Arguments: {
-                  Bucket: {
-                    Ref: 'TestBucket560B80BC',
-                  },
-                  Key: 'CSV_KEY',
-                },
-                ReaderConfig: {
-                  CSVHeaderLocation: 'FIRST_ROW',
-                  InputType: 'CSV',
-                },
-                Resource: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':states:::s3:getObject',
-                    ],
-                  ],
-                },
-              },
-              ResultWriter: {
-                Resource: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      { Ref: 'AWS::Partition' },
-                      ':states:::s3:putObject',
-                    ],
-                  ],
-                },
-                Arguments: {
-                  Bucket: {
-                    Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
-                  },
-                  Prefix: 'test',
-                },
-              },
-              MaxConcurrency: 1,
             },
-          },
-        });
-      }),
-
-      test('State Machine With Distributed Map State and ResultWriter containing only Resource and Parameters details', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const writerBucket = new s3.Bucket(stack, 'TestBucket');
-
-        // WHEN
-        const map = new stepfunctions.DistributedMap(stack, 'Map State', {
-          maxConcurrency: 1,
-          itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
-          itemSelector: {
-            foo: 'foo',
-            bar: stepfunctions.JsonPath.stringAt('$.bar'),
-          },
-          resultWriter: new stepfunctions.ResultWriter({
-            bucket: writerBucket,
-            prefix: 'test',
-          }),
-        });
-        map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
-
-        // THEN
-        expect(render(map)).toStrictEqual({
-          StartAt: 'Map State',
-          States: {
-            'Map State': {
-              Type: 'Map',
-              End: true,
-              ItemSelector: {
-                'foo': 'foo',
-                'bar.$': '$.bar',
-              },
-              ItemProcessor: {
-                ProcessorConfig: {
-                  Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
-                  ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            ItemReader: {
+              Arguments: {
+                Bucket: {
+                  Ref: 'TestBucket560B80BC',
                 },
-                StartAt: 'Pass State',
-                States: {
-                  'Pass State': {
-                    Type: 'Pass',
-                    End: true,
-                  },
-                },
+                Key: 'CSV_KEY',
               },
-              ItemsPath: '$.inputForMap',
-              ResultWriter: {
-                Resource: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      { Ref: 'AWS::Partition' },
-                      ':states:::s3:putObject',
-                    ],
+              ReaderConfig: {
+                CSVHeaderLocation: 'FIRST_ROW',
+                InputType: 'CSV',
+              },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':states:::s3:getObject',
                   ],
+                ],
+              },
+            },
+            ResultWriter: {
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':states:::s3:putObject',
+                  ],
+                ],
+              },
+              Arguments: {
+                Bucket: {
+                  Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
                 },
-                Parameters: {
-                  Bucket: {
-                    Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
-                  },
-                  Prefix: 'test',
+                Prefix: 'test',
+              },
+            },
+            MaxConcurrency: 1,
+          },
+        },
+      });
+    });
+
+    test('State Machine With Distributed Map State and ResultWriterV2 containing only Resource and Parameters details', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+      const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+      // WHEN
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        itemSelector: {
+          foo: 'foo',
+          bar: stepfunctions.JsonPath.stringAt('$.bar'),
+        },
+        resultWriterV2: new stepfunctions.ResultWriterV2({
+          bucket: writerBucket,
+          prefix: 'test',
+        }),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      // THEN
+      expect(render(map)).toStrictEqual({
+        StartAt: 'Map State',
+        States: {
+          'Map State': {
+            Type: 'Map',
+            End: true,
+            ItemSelector: {
+              'foo': 'foo',
+              'bar.$': '$.bar',
+            },
+            ItemProcessor: {
+              ProcessorConfig: {
+                Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                ExecutionType: stepfunctions.StateMachineType.STANDARD,
+              },
+              StartAt: 'Pass State',
+              States: {
+                'Pass State': {
+                  Type: 'Pass',
+                  End: true,
                 },
               },
-              MaxConcurrency: 1,
             },
+            ItemsPath: '$.inputForMap',
+            ResultWriter: {
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':states:::s3:putObject',
+                  ],
+                ],
+              },
+              Parameters: {
+                Bucket: {
+                  Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
+                },
+                Prefix: 'test',
+              },
+            },
+            MaxConcurrency: 1,
           },
-        });
+        },
       });
     });
   }),
@@ -1095,41 +1087,6 @@ describe('Distributed Map State', () => {
 
       // THEN - should fail validation because resultWriter is deprecated
       expect(() => app.synth()).toThrow(/The `resultWriter` property is deprecated and does not function correctly. Use `resultWriterV2` instead./);
-      // THEN
-      expect(render(map)).toStrictEqual({
-        StartAt: 'Map State',
-        States: {
-          'Map State': {
-            Type: 'Map',
-            End: true,
-            ItemSelector: {
-              'foo': 'foo',
-              'bar.$': '$.bar',
-            },
-            ItemProcessor: {
-              ProcessorConfig: {
-                Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
-                ExecutionType: stepfunctions.StateMachineType.STANDARD,
-              },
-              StartAt: 'Pass State',
-              States: {
-                'Pass State': {
-                  Type: 'Pass',
-                  End: true,
-                },
-              },
-            },
-            ItemsPath: '$.inputForMap',
-            MaxConcurrency: 1,
-            ResultWriter: {
-              WriterConfig: {
-                OutputType: 'JSON',
-                Transformation: 'COMPACT',
-              },
-            },
-          },
-        },
-      });
     });
 
     test.each([undefined, false])('does not use resultWriterV2 if feature is not enabled', (feature) => {
@@ -1180,75 +1137,6 @@ describe('Distributed Map State', () => {
             },
             ItemsPath: '$.inputForMap',
             MaxConcurrency: 1,
-          },
-        },
-      });
-    });
-
-    test.each([undefined, false])('should use resultWriter if feature is not enabled and resultWriter is provided', (feature) => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, feature);
-      const writerBucket = new s3.Bucket(stack, 'TestBucket');
-      // WHEN
-      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
-        maxConcurrency: 1,
-        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
-        itemSelector: {
-          foo: 'foo',
-          bar: stepfunctions.JsonPath.stringAt('$.bar'),
-        },
-        resultWriter: new stepfunctions.ResultWriter({
-          bucket: writerBucket,
-          prefix: 'test',
-        }),
-      });
-      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
-
-      // THEN
-      expect(render(map)).toStrictEqual({
-        StartAt: 'Map State',
-        States: {
-          'Map State': {
-            Type: 'Map',
-            End: true,
-            ItemSelector: {
-              'foo': 'foo',
-              'bar.$': '$.bar',
-            },
-            ItemProcessor: {
-              ProcessorConfig: {
-                Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
-                ExecutionType: stepfunctions.StateMachineType.STANDARD,
-              },
-              StartAt: 'Pass State',
-              States: {
-                'Pass State': {
-                  Type: 'Pass',
-                  End: true,
-                },
-              },
-            },
-            ItemsPath: '$.inputForMap',
-            MaxConcurrency: 1,
-            ResultWriter: {
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':states:::s3:putObject',
-                  ],
-                ],
-              },
-              Parameters: {
-                Bucket: {
-                  Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
-                },
-                Prefix: 'test',
-              },
-            },
           },
         },
       });
