@@ -570,6 +570,35 @@ describe('Topic', () => {
     expect(imported.fifo).toEqual(true);
   });
 
+  test('imported topic has grants property', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    const imported: sns.ITopic = sns.Topic.fromTopicArn(stack, 'Imported', 'arn:aws:sns:us-east-1:123456789012:my-topic');
+
+    // THEN - grants property is accessible on ITopic
+    expect(imported.grants).toBeDefined();
+    expect(imported.grants).toBeInstanceOf(TopicGrants);
+
+    // Verify grants.publish works
+    imported.grants.publish(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Publish',
+            'Effect': 'Allow',
+            'Resource': 'arn:aws:sns:us-east-1:123456789012:my-topic',
+          },
+        ],
+      },
+    });
+  });
+
   test('fromTopicAttributes contentBasedDeduplication false', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -983,4 +983,36 @@ describe('virtual gateway', () => {
       },
     });
   });
+
+  test('imported virtual gateway has grants property', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'test');
+
+    // WHEN
+    const imported: appmesh.IVirtualGateway = appmesh.VirtualGateway.fromVirtualGatewayArn(
+      stack,
+      'importedGateway',
+      'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualGateway/test-gateway',
+    );
+
+    // THEN - grants property is accessible on IVirtualGateway
+    expect(imported.grants).toBeDefined();
+    expect(imported.grants).toBeInstanceOf(VirtualGatewayGrants);
+
+    // Verify grants.streamAggregatedResources works
+    imported.grants.streamAggregatedResources(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
+            Effect: 'Allow',
+            Resource: 'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualGateway/test-gateway',
+          },
+        ],
+      },
+    });
+  });
 });
