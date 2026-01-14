@@ -375,12 +375,17 @@ export class DomainName extends Resource implements IDomainName {
     // HTTP APIs cannot be mapped to domain names with enhanced security policies
     // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html#apigateway-custom-domain-tls-version-considerations
     if (this.isEnhancedSecurityPolicy(this.securityPolicy)) {
-      throw new ValidationError(
-        'HTTP APIs cannot be mapped to domain names with enhanced security policies. ' +
-        'Enhanced security policies (TLS 1.3) are only supported for REST APIs using multi-level base paths. ' +
-        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
-        this,
-      );
+      // Check if this is an HTTP API stage (has isHttpStage property set to true)
+      const isHttpStage = (targetStage as any).isHttpStage === true;
+      if (isHttpStage) {
+        throw new ValidationError(
+          'HTTP APIs cannot be mapped to domain names with enhanced security policies. ' +
+          'HTTP APIs only support legacy security policies (TLS_1_0, TLS_1_2). ' +
+          'Use a REST API for enhanced security policy support. ' +
+          'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html#apigateway-custom-domain-tls-version-considerations',
+          this,
+        );
+      }
     }
 
     this.basePaths.add(options.basePath);
