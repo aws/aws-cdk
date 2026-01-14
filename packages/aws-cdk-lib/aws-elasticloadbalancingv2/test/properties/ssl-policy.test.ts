@@ -32,13 +32,6 @@ const arbApplicationProtocol = fc.constantFrom(
   elbv2.ApplicationProtocol.HTTPS,
 );
 
-const arbNetworkProtocol = fc.constantFrom(
-  elbv2.Protocol.TCP,
-  elbv2.Protocol.TLS,
-  elbv2.Protocol.UDP,
-  elbv2.Protocol.TCP_UDP,
-);
-
 describe('SSL Policy Property Tests', () => {
   describe('ApplicationListener', () => {
     // Feature: pr-36297-code-review-refactoring, Property 1: Explicit SSL Policy Override
