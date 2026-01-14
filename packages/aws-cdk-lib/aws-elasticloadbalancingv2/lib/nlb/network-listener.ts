@@ -222,11 +222,12 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       throw new ValidationError('Protocol must be TLS when alpnPolicy have been specified', scope);
     }
 
-    // Calculate SSL policy before calling super()
-    // Only set explicit policy when feature flag is enabled to avoid BC
-    const sslPolicy = props.sslPolicy ?? (proto === Protocol.TLS &&
-      FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY) ?
-      SslPolicy.RECOMMENDED_TLS_PQ : undefined);
+    // Apply post-quantum TLS policy when feature flag is enabled and no explicit policy is set
+    let sslPolicy = props.sslPolicy;
+    if (!sslPolicy && proto === Protocol.TLS &&
+        FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY)) {
+      sslPolicy = SslPolicy.RECOMMENDED_TLS_PQ;
+    }
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
