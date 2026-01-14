@@ -2058,8 +2058,11 @@ describe('Episodic Memory Strategy unit tests', () => {
     const strategy = MemoryStrategy.usingBuiltInEpisodic();
 
     expect(strategy.name).toMatch('episodic_builtin_cdkGen0001');
-    expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}']);
+    expect(strategy.namespaces).toEqual(['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}']);
     expect(strategy.strategyType).toBe('EPISODIC');
+    // Verify reflection configuration is included
+    expect((strategy as any).reflectionConfiguration).toBeDefined();
+    expect((strategy as any).reflectionConfiguration.namespaces).toEqual(['/strategy/{memoryStrategyId}/actor/{actorId}']);
   });
 
   test('Should render built-in episodic strategy with correct structure', () => {
@@ -2069,8 +2072,11 @@ describe('Episodic Memory Strategy unit tests', () => {
     expect(rendered).toHaveProperty('episodicMemoryStrategy');
     expect((rendered as any).episodicMemoryStrategy).toMatchObject({
       name: expect.stringMatching('episodic_builtin_cdkGen0001'),
-      namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
+      namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
       type: 'EPISODIC',
+      reflectionConfiguration: {
+        namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
+      },
     });
   });
 
