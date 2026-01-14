@@ -582,6 +582,9 @@ export class Pipeline extends PipelineBase {
   private readonly variables = new Array<Variable>();
   private readonly triggers = new Array<Trigger>();
 
+  /**
+   * ARN of this pipeline
+   */
   @memoizedGetter
   public get pipelineArn(): string {
     return Stack.of(this).formatArn({
@@ -590,11 +593,19 @@ export class Pipeline extends PipelineBase {
     });
   }
 
+  /**
+   * The name of the pipeline
+   */
   @memoizedGetter
   public get pipelineName(): string {
     return this.getResourceNameAttribute(this.codePipeline.ref);
   }
 
+  /**
+   * The version of the pipeline
+   *
+   * @attribute
+   */
   @memoizedGetter
   public get pipelineVersion(): string {
     return this.codePipeline.attrVersion;

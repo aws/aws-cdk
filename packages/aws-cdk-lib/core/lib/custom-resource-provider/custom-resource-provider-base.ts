@@ -62,17 +62,7 @@ export abstract class CustomResourceProviderBase extends Construct {
     return Token.asString(this.handler!.getAtt('Arn'));
   }
 
-  /**
-   * The ARN of the provider's AWS Lambda function role.
-   */
   private _roleArn: string = '';
-
-  public get roleArn(): string {
-    if (this.role) {
-      return Token.asString(this.role.getAtt('Arn'));
-    }
-    return this._roleArn;
-  }
 
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderBaseProps) {
     super(scope, id);
@@ -157,6 +147,16 @@ export abstract class CustomResourceProviderBase extends Construct {
     if (metadata) {
       Object.entries(metadata).forEach(([k, v]) => this.handler!.addMetadata(k, v));
     }
+  }
+
+  /**
+   * The ARN of the provider's AWS Lambda function role.
+   */
+  public get roleArn(): string {
+    if (this.role) {
+      return Token.asString(this.role.getAtt('Arn'));
+    }
+    return this._roleArn;
   }
 
   /**
