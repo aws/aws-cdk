@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 process.env.AWS_REGION = 'us-east-1';
 
 import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';
@@ -30,7 +29,6 @@ beforeEach(() => {
   mockExecSync.mockReset();
 });
 
-/* eslint-disable no-console */
 console.log = jest.fn();
 
 const eventCommon = {
@@ -134,7 +132,7 @@ test('update event with physical resource id', async () => {
     ...eventCommon,
     RequestType: 'Update',
     PhysicalResourceId: 'physicalResourceId',
-    OldResourceProperties: {},
+    OldResourceProperties: { ServiceToken: 'x' },
     ResourceProperties: {
       ServiceToken: 'token',
       Update: JSON.stringify({

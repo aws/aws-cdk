@@ -20,6 +20,27 @@ export enum OriginSelectionCriteria {
 }
 
 /**
+ * The IP address type for the origin.
+ * Determines whether CloudFront uses IPv4, IPv6, or both when connecting to the origin.
+ */
+export enum OriginIpAddressType {
+  /**
+   * Use only IPv4 addresses
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * Use only IPv6 addresses
+   */
+  IPV6 = 'ipv6',
+
+  /**
+   * Use both IPv4 and IPv6 addresses
+   */
+  DUALSTACK = 'dualstack',
+}
+
+/**
  * The failover configuration used for Origin Groups,
  * returned in `OriginBindConfig.failoverConfig`.
  */

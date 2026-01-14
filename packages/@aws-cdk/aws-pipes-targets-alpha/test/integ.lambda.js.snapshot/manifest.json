@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8593dd958aadeb7007446caf4c188628313285533a9d3ca86a790311ba03f5fa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c79ac091839c3919106a494abb5b933b7240160ec94b45c69895a5720099b25.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -144,12 +144,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TargetLambdaFunctioninlinePolicyAddedToExecutionRole00E8E6F3A"
-          }
-        ],
-        "/aws-cdk-pipes-lambda-target/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-pipes-lambda-target/Pipe": [
@@ -307,7 +301,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61154e1c21eedb2e3ff638858df172a6a1bea3390371699ad83662a371ea1c95.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9b89176ce7bc35db815a99a264d576264666cf5e265add4c5fc9d470ba0218e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -324,16 +318,16 @@
         "integtestpipetargetlambdaDefaultTestDeployAssert48C58B78.assets"
       ],
       "metadata": {
-        "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessageca05995da42cfc2b64398d8c29a2cbc9/Default": [
+        "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage8ce07d5dc278b0bd7621f1463b881c32/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessageca05995da42cfc2b64398d8c29a2cbc9/Default/Default": [
+        "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage8ce07d5dc278b0bd7621f1463b881c32/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSsendMessageca05995da42cfc2b64398d8c29a2cbc9"
+            "data": "AwsApiCallSQSsendMessage8ce07d5dc278b0bd7621f1463b881c32"
           }
         ],
         "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -346,12 +340,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/AwsApiCallLambdalistTags264c8bde9825e22d43dbb7fcce06eef1/Default": [

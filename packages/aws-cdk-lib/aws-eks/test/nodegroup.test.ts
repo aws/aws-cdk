@@ -10,8 +10,6 @@ import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
 import { isGpuInstanceType } from '../lib/private/nodegroup';
 
-/* eslint-disable max-len */
-
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 describe('node group', () => {
@@ -665,7 +663,7 @@ describe('node group', () => {
         new ec2.InstanceType('p3.large'),
         new ec2.InstanceType('g3.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64_GPU, AL2023_X86_64_NEURON, AL2023_X86_64_NVIDIA, BOTTLEROCKET_X86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64_GPU, AL2023_X86_64_NEURON, AL2023_X86_64_NVIDIA, AL2023_ARM_64_NVIDIA, BOTTLEROCKET_X86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/);
   });
 
   /**
@@ -1841,6 +1839,12 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.G3S, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G5, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G5G, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN1, ec2.InstanceSize.XLARGE2),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN1N, ec2.InstanceSize.XLARGE32),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN2, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5E, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5EN, ec2.InstanceSize.XLARGE48),
     ];
     gpuInstanceTypes.forEach(instanceType => {
       expect(isGpuInstanceType(instanceType)).toBe(true);

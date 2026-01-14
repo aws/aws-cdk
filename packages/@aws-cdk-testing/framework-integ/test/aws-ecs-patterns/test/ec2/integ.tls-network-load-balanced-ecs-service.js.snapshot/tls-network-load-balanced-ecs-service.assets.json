@@ -15,16 +15,16 @@
         }
       }
     },
-    "0d1439147ddec8bbc6050bc5d9247d2b821a546a735f7770d149cffe8fc66cb2": {
+    "cde98ebc25c33d5adf756b666552321f2fb9459c8980bcc53c3191c5a5401769": {
       "displayName": "tls-network-load-balanced-ecs-service Template",
       "source": {
         "path": "tls-network-load-balanced-ecs-service.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-23afe3b1": {
+        "current_account-current_region-77fc2e82": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0d1439147ddec8bbc6050bc5d9247d2b821a546a735f7770d149cffe8fc66cb2.json",
+          "objectKey": "cde98ebc25c33d5adf756b666552321f2fb9459c8980bcc53c3191c5a5401769.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

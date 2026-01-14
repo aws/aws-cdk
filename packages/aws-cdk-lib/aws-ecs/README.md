@@ -1659,6 +1659,212 @@ new ecs.Ec2Service(this, 'EC2Service', {
 });
 ```
 
+### Managed Instances Capacity Providers
+
+Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements. You can  define detailed instance requirements to control which types of instances are used for your workloads.
+
+See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
+
+#### IAM Roles Setup
+Managed instances require an infrastructure and an EC2 instance profile. You can either provide your own infrastructure role and/or instance profile, or let the construct create them automatically. 
+
+Option 1: Let CDK create the role and instance profile automatically
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  subnets: vpc.privateSubnets,
+  instanceRequirements: {
+    vCpuCountMin: 1,
+    memoryMin: Size.gibibytes(2),
+  },
+});
+
+// Optionally configure security group rules using IConnectable interface
+miCapacityProvider.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(80));
+
+// Add the capacity provider to the cluster
+cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
+  memoryMiB: '512',
+  cpu: '256',
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+});
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryReservationMiB: 256,
+});
+
+new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+  minHealthyPercent: 100,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: miCapacityProvider.capacityProviderName,
+      weight: 1,
+    },
+  ],
+});
+```
+
+Option 2: If you don't want to use the `AmazonECSInfrastructureRolePolicyForManagedInstances` managed policy for the ECS infrastructure role, you can create a custom infrastructure role with the required permissions. See [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/infrastructure_IAM_role.html) for what permissions are needed for the ECS infrastructure role.
+
+You can also choose not to use the automatically created ec2InstanceProfile. See [ECS documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html) for what permissions are required for the profile's role.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+// Add your custom policies to the role.
+const customInstanceRole = new iam.Role(this, 'CustomInstanceRole', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+
+const customInstanceProfile = new iam.InstanceProfile(this, 'CustomInstanceProfile', {
+  role: customInstanceRole,
+});
+
+// Add your custom policies to the role.
+const customInfrastructureRole = new iam.Role(this, 'CustomInfrastructureRole', {
+  assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+});
+
+// Add PassRole permission to allow ECS to pass the instance role to EC2.
+customInfrastructureRole.addToPolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  actions: ['iam:PassRole'],
+  resources: [customInstanceRole.roleArn],
+  conditions: {
+    StringEquals: {
+      'iam:PassedToService': 'ec2.amazonaws.com',
+    },
+  },
+}));
+
+const miCapacityProviderCustom = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProviderCustomRoles', {
+  infrastructureRole: customInfrastructureRole,
+  ec2InstanceProfile: customInstanceProfile,
+  subnets: vpc.privateSubnets,
+});
+
+// Add the capacity provider to the cluster
+cluster.addManagedInstancesCapacityProvider(miCapacityProviderCustom);
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
+  memoryMiB: '512',
+  cpu: '256',
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+});
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryReservationMiB: 256,
+});
+
+
+new ecs.FargateService(this, 'FargateService', {
+
+  cluster,
+  taskDefinition,
+  minHealthyPercent: 100,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: miCapacityProviderCustom.capacityProviderName,
+      weight: 1,
+    },
+  ],
+});
+```
+
+You can specify detailed instance requirements to control which types of instances are used:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  subnets: vpc.privateSubnets,
+  instanceRequirements: {
+    // Required: CPU and memory constraints
+    vCpuCountMin: 2,
+    vCpuCountMax: 8,
+    memoryMin: Size.gibibytes(4),
+    memoryMax: Size.gibibytes(32),
+    
+    // CPU preferences
+    cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
+    instanceGenerations: [ec2.InstanceGeneration.CURRENT],
+    
+    // Instance type filtering
+    allowedInstanceTypes: ['m5.*', 'c5.*'],
+    
+    // Performance characteristics
+    burstablePerformance: ec2.BurstablePerformance.EXCLUDED,
+    bareMetal: ec2.BareMetal.EXCLUDED,
+    
+    // Accelerator requirements (for ML/AI workloads)
+    acceleratorTypes: [ec2.AcceleratorType.GPU],
+    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
+    acceleratorNames: [ec2.AcceleratorName.T4, ec2.AcceleratorName.V100],
+    acceleratorCountMin: 1,
+    
+    // Storage requirements
+    localStorage: ec2.LocalStorage.REQUIRED,
+    localStorageTypes: [ec2.LocalStorageType.SSD],
+    totalLocalStorageGBMin: 100,
+    
+    // Network requirements
+    networkInterfaceCountMin: 2,
+    networkBandwidthGbpsMin: 10,
+    
+    // Cost optimization
+    onDemandMaxPricePercentageOverLowestPrice: 10,
+  },
+});
+
+```
+#### Note: Service Replacement When Migrating from LaunchType to CapacityProviderStrategy
+
+**Understanding the Limitation**
+
+The ECS [CreateService API](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html#ECS-CreateService-request-launchType) does not allow specifying both `launchType` and `capacityProviderStrategies` simultaneously. When you specify `capacityProviderStrategies`, the CDK uses those capacity providers instead of a launch type. This is a limitation of the ECS API and CloudFormation, not a CDK bug.
+
+**Impact on Updates**
+
+Because `launchType` is immutable during updates, switching from `launchType` to `capacityProviderStrategies` requires CloudFormation to replace the service. This means your existing service will be deleted and recreated with the new configuration. This behavior is expected and reflects the underlying API constraints.
+
+**Workaround**
+
+While we work on a long-term solution, you can use the following [escape hatch](https://docs.aws.amazon.com/cdk/v2/guide/cfn-layer.html) to preserve your service during the migration:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const miCapacityProvider: ecs.ManagedInstancesCapacityProvider;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: miCapacityProvider.capacityProviderName,
+      weight: 1,
+    },
+  ],
+});
+
+// Escape hatch: Force launchType at the CloudFormation level to prevent service replacement
+const cfnService = service.node.defaultChild as ecs.CfnService;
+cfnService.launchType = 'FARGATE'; // or 'FARGATE_SPOT' depending on your capacity provider
+```
+
 ### Cluster Default Provider Strategy
 
 A capacity provider strategy determines whether ECS tasks are launched on EC2 instances or Fargate/Fargate Spot. It can be specified at the cluster, service, or task level, and consists of one or more capacity providers. You can specify an optional base and weight value for finer control of how tasks are launched. The `base` specifies a minimum number of tasks on one capacity provider, and the `weight`s of each capacity provider determine how tasks are distributed after `base` is satisfied.

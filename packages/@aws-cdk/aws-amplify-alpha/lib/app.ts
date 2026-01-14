@@ -1,14 +1,14 @@
+import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IResource, Lazy, Resource, SecretValue, ValidationError } from 'aws-cdk-lib/core';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct, IConstruct } from 'constructs';
-import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
 import { Domain, DomainOptions } from './domain';
 import { renderEnvironmentVariables, isServerSideRendered } from './utils';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * An Amplify Console application
@@ -184,6 +184,13 @@ export interface AppProps {
    * @default undefined - a new role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`, otherwise no compute role
    */
   readonly computeRole?: iam.IRole;
+
+  /**
+   * Specifies the size of the build instance.
+   *
+   * @default undefined - Amplify default setting is `BuildComputeType.STANDARD_8GB`.
+   */
+  readonly buildComputeType?: BuildComputeType;
 }
 
 /**
@@ -290,7 +297,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild ?? true,
-        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables) }, { omitEmptyArray: true }), // eslint-disable-line max-len
+        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables) }, { omitEmptyArray: true }),
         enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview ?? true,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,
@@ -309,8 +316,11 @@ export class App extends Resource implements IApp, iam.IGrantable {
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
-      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders, this) : undefined,
+      customHeaders: props.customResponseHeaders && props.customResponseHeaders.length > 0
+        ? renderCustomResponseHeaders(props.customResponseHeaders, this)
+        : undefined,
       platform: appPlatform,
+      jobConfig: props.buildComputeType ? { buildComputeType: props.buildComputeType } : undefined,
     });
 
     this.appId = app.attrAppId;
@@ -586,7 +596,21 @@ export interface CustomResponseHeader {
   readonly headers: { [key: string]: string };
 }
 
+/**
+ * Renders custom response headers to YAML format.
+ *
+ * @param customHeaders - Array of custom headers. Must not be empty.
+ * @param scope - Construct scope for error reporting
+ * @returns YAML string representation of custom headers
+ *
+ * @internal
+ */
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[], scope: IConstruct): string {
+  // Defensive assertion - should never happen due to call site validation
+  if (customHeaders.length === 0) {
+    throw new ValidationError('renderCustomResponseHeaders called with empty array', scope);
+  }
+
   const hasAppRoot = customHeaders[0].appRoot !== undefined;
   const yaml = [hasAppRoot ? 'applications:' : 'customHeaders:'];
 
@@ -647,4 +671,26 @@ export enum CacheConfigType {
    * except that it excludes all cookies from the cache key.
    */
   AMPLIFY_MANAGED_NO_COOKIES = 'AMPLIFY_MANAGED_NO_COOKIES',
+}
+
+/**
+ * Specifies the size of the build instance.
+ *
+ * @link https://docs.aws.amazon.com/amplify/latest/userguide/custom-build-instance.html
+ */
+export enum BuildComputeType {
+  /**
+   * vCPUs: 4, Memory: 8 GiB, Disk space: 128 GB
+   */
+  STANDARD_8GB = 'STANDARD_8GB',
+
+  /**
+   * vCPUs: 8, Memory: 16 GiB, Disk space: 128 GB
+   */
+  LARGE_16GB = 'LARGE_16GB',
+
+  /**
+   * vCPUs: 36, Memory: 72 GiB, Disk space: 256 GB
+   */
+  XLARGE_72GB = 'XLARGE_72GB',
 }

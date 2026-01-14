@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
+import { IWebSocketApi, IWebSocketApiRef } from './api';
 import { IWebSocketRoute } from './route';
-import { CfnIntegration } from '.././index';
+import { CfnIntegration, IntegrationReference } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -81,7 +81,7 @@ export interface WebSocketIntegrationProps {
   /**
    * The WebSocket API to which this integration should be bound.
    */
-  readonly webSocketApi: IWebSocketApi;
+  readonly webSocketApi: IWebSocketApiRef;
 
   /**
    * Integration type
@@ -172,7 +172,7 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketIntegration';
   public readonly integrationId: string;
-  public readonly webSocketApi: IWebSocketApi;
+  private readonly _webSocketApi: IWebSocketApiRef;
 
   constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
@@ -184,7 +184,7 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
-      apiId: props.webSocketApi.apiId,
+      apiId: props.webSocketApi.apiRef.apiId,
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
       integrationMethod: props.integrationMethod,
@@ -197,7 +197,22 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
       timeoutInMillis: props.timeout?.toMilliseconds(),
     });
     this.integrationId = integ.ref;
-    this.webSocketApi = props.webSocketApi;
+    this._webSocketApi = props.webSocketApi;
+  }
+
+  public get webSocketApi(): IWebSocketApi {
+    const ret = this._webSocketApi as IWebSocketApi;
+    if (!!ret.apiEndpoint && !!ret.apiRef) {
+      return ret;
+    }
+    throw new ValidationError(`Input API ${ret.constructor.name} does not implement IWebSocketApi`, this);
+  }
+
+  public get integrationRef(): IntegrationReference {
+    return {
+      apiId: this.webSocketApi.apiRef.apiId,
+      integrationId: this.integrationId,
+    };
   }
 }
 

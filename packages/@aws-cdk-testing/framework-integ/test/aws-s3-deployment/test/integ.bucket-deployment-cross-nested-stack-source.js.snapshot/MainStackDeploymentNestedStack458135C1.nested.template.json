@@ -5,7 +5,7 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "aws-cdk:cr-owned:a6109ee2",
+      "Key": "aws-cdk:cr-owned:f273f307",
       "Value": "true"
      }
     ]
@@ -13,7 +13,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DeploymentAwsCliLayerB82B26A3": {
+  "DeployWithCrossNestedStackSourceAwsCliLayer1F4C151B": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -25,7 +25,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "DeploymentCustomResource47E8B2E6": {
+  "DeployWithCrossNestedStackSourceCustomResource74A727EA": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -213,7 +213,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeploymentAwsCliLayerB82B26A3"
+      "Ref": "DeployWithCrossNestedStackSourceAwsCliLayer1F4C151B"
      }
     ],
     "Role": {

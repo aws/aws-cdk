@@ -11,6 +11,7 @@ import { fromServiceAttributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
 import { Compatibility, LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { ServiceReference } from '../ecs.generated';
 
 /**
  * The properties for defining a service using the External launch type.
@@ -91,6 +92,12 @@ export class ExternalService extends BaseService implements IExternalService {
     class Import extends Resource implements IExternalService {
       public readonly serviceArn = externalServiceArn;
       public readonly serviceName = Stack.of(scope).splitArn(externalServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -198,7 +205,7 @@ export class ExternalService extends BaseService implements IExternalService {
   /**
    * Overridden method to throw error as `configureAwsVpcNetworkingWithSecurityGroups` is not supported for external service
    */
-  // eslint-disable-next-line max-len, no-unused-vars
+  // eslint-disable-next-line max-len
   protected configureAwsVpcNetworkingWithSecurityGroups(_vpc: ec2.IVpc, _assignPublicIp?: boolean, _vpcSubnets?: ec2.SubnetSelection, _securityGroups?: ec2.ISecurityGroup[]) {
     throw new ValidationError('Only Bridge network mode is supported for external service', this);
   }

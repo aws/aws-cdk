@@ -143,22 +143,42 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public addToRolePolicy(statement: iam.PolicyStatement): void {
     return this.lambda.addToRolePolicy(statement);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvoke(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvoke(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeLatestVersion(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeLatestVersion(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeVersion(identity: iam.IGrantable, version: lambda.IVersion): iam.Grant {
     return this.lambda.grantInvokeVersion(identity, version);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeUrl(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
     return this.lambda.grantInvokeCompositePrincipal(compositePrincipal);
@@ -279,6 +299,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     }
 
     const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;
+    const parentStack = Stack.of(this);
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
@@ -286,6 +307,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
           region: EdgeFunction.EDGE_REGION,
           account: Stack.of(this).account,
         },
+        tags: parentStack.tags.tagValues(),
       });
     }
     this.stack.addDependency(edgeStack);

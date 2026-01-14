@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 import { ECSClient, UpdateServiceCommand, UpdateServiceCommandInput, ServiceNotFoundException } from '@aws-sdk/client-ecs';
 import { PutRecordsCommand, KinesisClient } from '@aws-sdk/client-kinesis';
 import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';

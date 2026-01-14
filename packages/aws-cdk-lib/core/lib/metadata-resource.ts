@@ -69,24 +69,20 @@ export function addMethodMetadata(scope: Construct, methodName: string, props: a
  * Method decorator for tracking analytics metadata.
  * This decorator is used to track method calls in the CDK.
  */
-export function MethodMetadata(): MethodDecorator {
-  return function (_: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+
+export function MethodMetadata<This extends Construct>() {
+  return function (originalMethod: any, context: ClassMethodDecoratorContext<This>) {
     // Ensure the Decorator is Only Applied to Methods
-    if (!descriptor || typeof descriptor.value !== 'function') {
-      return descriptor;
+    if (typeof originalMethod !== 'function') {
+      return originalMethod;
     }
-    const originalMethod = descriptor.value;
 
-    descriptor.value = function (...args: any[]) {
-      const scope = this as Construct;
-      if (scope instanceof Construct) {
-        addMethodMetadata(scope, propertyKey.toString(), args);
+    return function(this: This, ...args: any[]) {
+      if (this instanceof Construct) {
+        addMethodMetadata(this, context.name.toString(), args);
       }
-
       return originalMethod.apply(this, args);
     };
-
-    return descriptor;
   };
 }
 

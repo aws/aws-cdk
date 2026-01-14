@@ -19,7 +19,7 @@ class LambdaApiIntegrationOptionsStack extends Stack {
           headers: { 'Content-Type': '*/*' }
         };
       }`),
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
     });
 

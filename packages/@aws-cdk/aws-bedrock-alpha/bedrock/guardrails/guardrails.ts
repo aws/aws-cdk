@@ -193,18 +193,19 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
 
   /**
    * Grant the given principal identity permissions to perform actions on this guardrail.
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [this.guardrailArn],
-      scope: this,
     });
   }
 
   /**
    * Grant the given identity permissions to apply the guardrail.
+   * [disable-awslint:no-grants]
    */
   public grantApply(grantee: iam.IGrantable): iam.Grant {
     const baseGrant = this.grant(grantee, 'bedrock:ApplyGuardrail');

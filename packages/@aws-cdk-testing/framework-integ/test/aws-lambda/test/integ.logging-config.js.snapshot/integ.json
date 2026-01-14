@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "lambda-logging-config/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "lambda-logging-config/DefaultTest/DeployAssert",
       "assertionStackName": "lambdaloggingconfigDefaultTestDeployAssert24012B25"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }

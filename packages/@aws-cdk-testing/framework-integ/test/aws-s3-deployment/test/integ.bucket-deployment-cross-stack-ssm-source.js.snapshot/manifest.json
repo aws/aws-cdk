@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1a377671b74f3631d35149d70124792ebce0751faaf6866f943872cadc4c8a27.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13dafa16c10fa74d325888d71201ffa0d1805c0e2808d0c22250224ecf2b2815.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -103,12 +103,6 @@
             "data": "ReproBucketAutoDeleteObjectsCustomResource3655A94E"
           }
         ],
-        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
@@ -127,19 +121,19 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproDeployment/AwsCliLayer": [
+        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproDeployment/AwsCliLayer/Resource": [
+        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ReproDeploymentAwsCliLayer1B1331E5"
+            "data": "DeployWithSsmParameterAwsCliLayer695E077A"
           }
         ],
-        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproDeployment/CustomResourceHandler": [
+        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -155,6 +149,7 @@
               "ephemeralStorageSize": "*",
               "vpc": "*",
               "vpcSubnets": "*",
+              "securityGroups": "*",
               "filesystem": "*",
               "logGroup": "*",
               "code": "*",
@@ -181,16 +176,16 @@
             }
           }
         ],
-        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproDeployment/CustomResource": [
+        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/CustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproDeployment/CustomResource/Default": [
+        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ReproDeploymentCustomResourceF8D3CC22"
+            "data": "DeployWithSsmParameterCustomResource3AF3E6E3"
           }
         ],
         "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
@@ -207,6 +202,7 @@
               "ephemeralStorageSize": "*",
               "vpc": "*",
               "vpcSubnets": "*",
+              "securityGroups": "*",
               "filesystem": "*",
               "logGroup": "*",
               "code": "*",
@@ -981,6 +977,21 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }

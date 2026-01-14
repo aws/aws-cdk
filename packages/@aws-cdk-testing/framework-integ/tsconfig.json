@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
+        "target": "ES2022",
         "module": "commonjs",
-        "lib": ["es2019", "es2020", "dom"],
+        "lib": ["es2022", "dom"],
         "strict": true,
         "alwaysStrict": true,
         "declaration": true,
@@ -13,9 +13,9 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "experimentalDecorators": true,
         "resolveJsonModule": true,
         "composite": true,
+        "isolatedModules": true,
         "incremental": true
     },
     "include": [

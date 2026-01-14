@@ -1,4 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
+import { AssumptionError } from './errors';
 import { applyInjectors } from './prop-injectors-helpers';
 
 interface PropertyInjectableConstructConstructor {
@@ -26,8 +27,11 @@ export function propertyInjectable<T extends PropertyInjectableConstructConstruc
   // to cast it away, and the signature of the containing function seems to hold water.
   const WrappedClass = class extends (constructor as ArbitraryConstructor) {
     constructor(scope: Construct, id: string, props: object, ...args: any[]) {
-      // eslint-disable-next-line dot-notation
       const uniqueId = constructor.PROPERTY_INJECTION_ID;
+      if (uniqueId === undefined) {
+        throw new AssumptionError('Construct must have a static PROPERTY_INJECTION_ID property');
+      }
+
       props = applyInjectors(uniqueId, props, {
         scope,
         id,

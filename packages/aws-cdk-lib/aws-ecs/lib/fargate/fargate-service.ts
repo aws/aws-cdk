@@ -10,6 +10,7 @@ import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { ServiceReference } from '../ecs.generated';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -110,6 +111,9 @@ export interface FargateServiceAttributes {
 /**
  * This creates a service using the Fargate launch type on an ECS cluster.
  *
+ * Can also be used with Managed Instances compatible task definitions when using
+ * capacity provider strategies.
+ *
  * @resource AWS::ECS::Service
  */
 @propertyInjectable
@@ -126,6 +130,12 @@ export class FargateService extends BaseService implements IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -143,8 +153,8 @@ export class FargateService extends BaseService implements IFargateService {
    * Constructs a new instance of the FargateService class.
    */
   constructor(scope: Construct, id: string, props: FargateServiceProps) {
-    if (!props.taskDefinition.isFargateCompatible) {
-      throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with Fargate', scope);
+    if (!props.taskDefinition.isFargateCompatible && !props.taskDefinition.isManagedInstancesCompatible) {
+      throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with Fargate or Managed Instances', scope);
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
