@@ -11,26 +11,70 @@
       {
        "Sid": "audit-statement-cdk",
        "DataIdentifier": [
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-        "arn:aws:dataprotection::aws:data-identifier/CreditCardNumber"
-       ],
-       "DataDirection": "Inbound",
-       "Principal": [
-        "*"
-       ],
-       "Operation": {
-        "Audit": {
-         "SampleRate": 99,
-         "FindingsDestination": {}
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         }
+        ],
+        "DataDirection": "Inbound",
+        "Principal": [
+         "*"
+        ],
+        "Operation": {
+         "Audit": {
+          "SampleRate": 99,
+          "FindingsDestination": {}
+         }
         }
-       }
-      },
-      {
-       "Sid": "redact-statement-cdk",
-       "DataIdentifier": [
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-        "arn:aws:dataprotection::aws:data-identifier/CreditCardNumber"
-       ],
+       },
+       {
+        "Sid": "redact-statement-cdk",
+        "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         }
+        ],
        "DataDirection": "Inbound",
        "Principal": [
         "*"
@@ -61,26 +105,48 @@
       {
        "Sid": "audit-statement-cdk",
        "DataIdentifier": [
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-        "SSN"
-       ],
-       "DataDirection": "Inbound",
-       "Principal": [
-        "*"
-       ],
-       "Operation": {
-        "Audit": {
-         "SampleRate": 99,
-         "FindingsDestination": {}
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         "SSN"
+        ],
+        "DataDirection": "Inbound",
+        "Principal": [
+         "*"
+        ],
+        "Operation": {
+         "Audit": {
+          "SampleRate": 99,
+          "FindingsDestination": {}
+         }
         }
-       }
-      },
-      {
-       "Sid": "redact-statement-cdk",
-       "DataIdentifier": [
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-        "SSN"
-       ],
+       },
+       {
+        "Sid": "redact-statement-cdk",
+        "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         "SSN"
+        ],
        "DataDirection": "Inbound",
        "Principal": [
         "*"
@@ -175,36 +241,146 @@
       {
        "Sid": "audit-statement-cdk",
        "DataIdentifier": [
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-        "arn:aws:dataprotection::aws:data-identifier/CreditCardNumber",
-        "arn:aws:dataprotection::aws:data-identifier/Ssn-US",
-        "arn:aws:dataprotection::aws:data-identifier/PhoneNumber-US",
-        "arn:aws:dataprotection::aws:data-identifier/Address",
-        "EmployeeId",
-        "ProjectCode"
-       ],
-       "DataDirection": "Inbound",
-       "Principal": [
-        "*"
-       ],
-       "Operation": {
-        "Audit": {
-         "SampleRate": 99,
-         "FindingsDestination": {}
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/Ssn-US"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/PhoneNumber-US"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/Address"
+           ]
+          ]
+         },
+         "EmployeeId",
+         "ProjectCode"
+        ],
+        "DataDirection": "Inbound",
+        "Principal": [
+         "*"
+        ],
+        "Operation": {
+         "Audit": {
+          "SampleRate": 99,
+          "FindingsDestination": {}
+         }
         }
-       }
-      },
-      {
-       "Sid": "redact-statement-cdk",
-       "DataIdentifier": [
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-        "arn:aws:dataprotection::aws:data-identifier/CreditCardNumber",
-        "arn:aws:dataprotection::aws:data-identifier/Ssn-US",
-        "arn:aws:dataprotection::aws:data-identifier/PhoneNumber-US",
-        "arn:aws:dataprotection::aws:data-identifier/Address",
-        "EmployeeId",
-        "ProjectCode"
-       ],
+       },
+       {
+        "Sid": "redact-statement-cdk",
+        "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/Ssn-US"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/PhoneNumber-US"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/Address"
+           ]
+          ]
+         },
+         "EmployeeId",
+         "ProjectCode"
+        ],
        "DataDirection": "Inbound",
        "Principal": [
         "*"
@@ -258,37 +434,81 @@
       {
        "Sid": "audit-statement-cdk",
        "DataIdentifier": [
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-        "arn:aws:dataprotection::aws:data-identifier/CreditCardNumber"
-       ],
-       "DataDirection": "Inbound",
-       "Principal": [
-        "*"
-       ],
-       "Operation": {
-        "Audit": {
-         "SampleRate": 99,
-         "FindingsDestination": {
-          "CloudWatchLogs": {
-           "LogGroup": {
-            "Ref": "AuditLogGroup6D13791A"
-           }
-          },
-          "S3": {
-           "Bucket": {
-            "Ref": "AuditBucketB01E0AE8"
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         }
+        ],
+        "DataDirection": "Inbound",
+        "Principal": [
+         "*"
+        ],
+        "Operation": {
+         "Audit": {
+          "SampleRate": 99,
+          "FindingsDestination": {
+           "CloudWatchLogs": {
+            "LogGroup": {
+             "Ref": "AuditLogGroup6D13791A"
+            }
+           },
+           "S3": {
+            "Bucket": {
+             "Ref": "AuditBucketB01E0AE8"
+            }
            }
           }
          }
         }
-       }
-      },
-      {
-       "Sid": "redact-statement-cdk",
-       "DataIdentifier": [
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-        "arn:aws:dataprotection::aws:data-identifier/CreditCardNumber"
-       ],
+       },
+       {
+        "Sid": "redact-statement-cdk",
+        "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         }
+        ],
        "DataDirection": "Inbound",
        "Principal": [
         "*"
