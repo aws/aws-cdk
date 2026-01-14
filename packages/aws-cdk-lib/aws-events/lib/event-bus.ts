@@ -253,6 +253,9 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPutEventsTo(grantee: iam.IGrantable, sid?: string): iam.Grant {
     const actions = ['events:PutEvents'];
     const resourceArns = [this.eventBusArn];

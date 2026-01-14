@@ -1,4 +1,3 @@
-
 import { Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module, stmt } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
@@ -6,7 +5,7 @@ import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { AddServiceProps, LibraryBuilder, LibraryBuilderProps } from './library-builder';
 import { ResourceClass } from './resource-class';
-import { LocatedModule, relativeImportPath, BaseServiceSubmodule } from './service-submodule';
+import { BaseServiceSubmodule, LocatedModule, relativeImportPath } from './service-submodule';
 import { submoduleSymbolFromName } from '../naming';
 import { GrantsModule } from './grants-module';
 
@@ -46,6 +45,19 @@ class AwsCdkLibServiceSubmodule extends BaseServiceSubmodule {
       this.registerModule(this.grants);
     }
   }
+}
+
+export interface GrantsProps {
+  /**
+   * The JSON string to configure the grants for the service
+   */
+  config: string;
+
+  /**
+   * Whether the generated grants should be considered as stable or experimental.
+   * This has implications on where the generated file is placed.
+   */
+  isStable: boolean;
 }
 
 export interface AwsCdkLibFilePatterns {
@@ -133,14 +145,14 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     });
   }
 
-  protected createServiceSubmodule(service: Service, submoduleName: string, grantsConfig?: string): AwsCdkLibServiceSubmodule {
+  protected createServiceSubmodule(service: Service, submoduleName: string, grantsProps?: GrantsProps): AwsCdkLibServiceSubmodule {
     const resourcesMod = this.rememberModule(this.createResourceModule(submoduleName, service));
     const augmentations = this.rememberModule(this.createAugmentationsModule(submoduleName, service));
     const cannedMetrics = this.rememberModule(this.createCannedMetricsModule(submoduleName, service));
     const [interfaces, didCreateInterfaceModule] = this.obtainInterfaceModule(service);
 
-    const grants = grantsConfig != null
-      ? this.rememberModule(this.createGrantsModule(submoduleName, service, grantsConfig))
+    const grants = grantsProps != null
+      ? this.rememberModule(this.createGrantsModule(submoduleName, service, grantsProps))
       : undefined;
 
     const createdSubmod: AwsCdkLibServiceSubmodule = new AwsCdkLibServiceSubmodule({
@@ -157,16 +169,13 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     return createdSubmod;
   }
 
-  private createGrantsModule(moduleName: string, service: Service, grantsConfig: string): LocatedModule<GrantsModule> {
+  private createGrantsModule(moduleName: string, service: Service, grantsProps: GrantsProps): LocatedModule<GrantsModule> {
     const filePath = this.pathsFor(moduleName, service).grants;
     const imports = this.resolveImportPaths(filePath);
-
-    const module = {
-      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig), imports.iam),
+    return {
+      module: new GrantsModule(service, this.db, JSON.parse(grantsProps.config), imports.iam, grantsProps.isStable),
       filePath,
     };
-
-    return module;
   }
 
   protected addResourceToSubmodule(submodule: AwsCdkLibServiceSubmodule, resource: Resource, props?: AddServiceProps): void {

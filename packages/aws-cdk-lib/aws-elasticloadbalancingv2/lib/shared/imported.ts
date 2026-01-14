@@ -1,6 +1,7 @@
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
 import * as cdk from '../../../core';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 
 /**
  * Base internal class for existing target groups
@@ -10,6 +11,22 @@ export abstract class ImportedTargetGroupBase extends Construct implements ITarg
    * ARN of the target group
    */
   public readonly targetGroupArn: string;
+
+  /**
+   * A reference to this target group
+   */
+  public get targetGroupRef(): aws_elasticloadbalancingv2.TargetGroupReference {
+    return {
+      targetGroupArn: this.targetGroupArn,
+    };
+  }
+
+  /**
+   * The environment this resource belongs to
+   */
+  public get env(): cdk.ResourceEnvironment {
+    return cdk.Stack.of(this).env;
+  }
 
   /**
    * The name of the target group
