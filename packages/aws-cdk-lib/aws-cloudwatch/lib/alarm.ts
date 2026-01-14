@@ -13,6 +13,7 @@ import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -192,20 +193,6 @@ export class Alarm extends AlarmBase {
   }
 
   /**
-   * ARN of this alarm
-   *
-   * @attribute
-   */
-  public readonly alarmArn: string;
-
-  /**
-   * Name of this alarm.
-   *
-   * @attribute
-   */
-  public readonly alarmName: string;
-
-  /**
    * The metric object this alarm was based on
    */
   public readonly metric: IMetric;
@@ -214,6 +201,8 @@ export class Alarm extends AlarmBase {
    * This metric as an annotation
    */
   private readonly annotation: HorizontalAnnotation;
+
+  private readonly alarm: CfnAlarm;
 
   constructor(scope: Construct, id: string, props: AlarmProps) {
     super(scope, id, {
@@ -281,7 +270,7 @@ export class Alarm extends AlarmBase {
       thresholdMetricId = rendered.primaryId;
     }
 
-    const alarm = new CfnAlarm(this, 'Resource', {
+    this.alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
       alarmName: this.physicalName,
@@ -305,15 +294,6 @@ export class Alarm extends AlarmBase {
       ...metricProps,
     });
 
-    this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
-      service: 'cloudwatch',
-      resource: 'alarm',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-
-    this.alarmName = this.getResourceNameAttribute(alarm.ref);
-
     this.metric = props.metric;
 
     if (isAnomalyDetection) {
@@ -335,6 +315,31 @@ export class Alarm extends AlarmBase {
     for (const [i, message] of Object.entries(this.metric.warningsV2 ?? {})) {
       Annotations.of(this).addWarningV2(i, message);
     }
+  }
+
+  /**
+   * ARN of this alarm
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get alarmArn(): string {
+    return this.getResourceArnAttribute(this.alarm.attrArn, {
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  /**
+   * Name of this alarm.
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get alarmName(): string {
+    return this.getResourceNameAttribute(this.alarm.ref);
   }
 
   /**
