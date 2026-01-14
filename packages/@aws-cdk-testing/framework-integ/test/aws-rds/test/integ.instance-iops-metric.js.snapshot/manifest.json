@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b88c557473e32017f59f8ef975173d9d611c4c9ce14ed7642a3e7ae07d7ad80.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a33e594218fbdc6b2cf9b4cc8ec2a0818288fb0e8944fe30d57f71a50524c639.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -411,7 +411,7 @@
             "data": "InstanceC1063A87"
           }
         ],
-        "/aws-cdk-rds-instance-iops-metric/ReadIOPsAlarm": [
+        "/aws-cdk-rds-instance-iops-metric/ReadIOPSAlarm": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -431,13 +431,13 @@
             }
           }
         ],
-        "/aws-cdk-rds-instance-iops-metric/ReadIOPsAlarm/Resource": [
+        "/aws-cdk-rds-instance-iops-metric/ReadIOPSAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ReadIOPsAlarmFB02F871"
+            "data": "ReadIOPSAlarmD1D52864"
           }
         ],
-        "/aws-cdk-rds-instance-iops-metric/WriteIOPsAlarm": [
+        "/aws-cdk-rds-instance-iops-metric/WriteIOPSAlarm": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -457,10 +457,10 @@
             }
           }
         ],
-        "/aws-cdk-rds-instance-iops-metric/WriteIOPsAlarm/Resource": [
+        "/aws-cdk-rds-instance-iops-metric/WriteIOPSAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WriteIOPsAlarm0F2E1AEB"
+            "data": "WriteIOPSAlarmADBE1E65"
           }
         ],
         "/aws-cdk-rds-instance-iops-metric/BootstrapVersion": [

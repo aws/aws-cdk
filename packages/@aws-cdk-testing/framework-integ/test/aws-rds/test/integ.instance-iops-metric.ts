@@ -15,18 +15,18 @@ const instance = new rds.DatabaseInstance(stack, 'Instance', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-// Test that metricReadIOPs can be used to create an alarm
-instance.metricReadIOPs({
+// Test that metricReadIOPS can be used to create an alarm
+instance.metricReadIOPS({
   period: cdk.Duration.minutes(10),
-}).createAlarm(stack, 'ReadIOPsAlarm', {
+}).createAlarm(stack, 'ReadIOPSAlarm', {
   threshold: 1000,
   evaluationPeriods: 3,
 });
 
-// Test that metricWriteIOPs can be used to create an alarm
-instance.metricWriteIOPs({
+// Test that metricWriteIOPS can be used to create an alarm
+instance.metricWriteIOPS({
   period: cdk.Duration.minutes(10),
-}).createAlarm(stack, 'WriteIOPsAlarm', {
+}).createAlarm(stack, 'WriteIOPSAlarm', {
   threshold: 1000,
   evaluationPeriods: 3,
 });

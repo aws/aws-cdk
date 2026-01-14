@@ -506,7 +506,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ReadIOPsAlarmFB02F871": {
+  "ReadIOPSAlarmD1D52864": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
@@ -519,14 +519,14 @@
      }
     ],
     "EvaluationPeriods": 3,
-    "MetricName": "ReadIOPs",
+    "MetricName": "ReadIOPS",
     "Namespace": "AWS/RDS",
     "Period": 600,
     "Statistic": "Average",
     "Threshold": 1000
    }
   },
-  "WriteIOPsAlarm0F2E1AEB": {
+  "WriteIOPSAlarmADBE1E65": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
@@ -539,7 +539,7 @@
      }
     ],
     "EvaluationPeriods": 3,
-    "MetricName": "WriteIOPs",
+    "MetricName": "WriteIOPS",
     "Namespace": "AWS/RDS",
     "Period": 600,
     "Statistic": "Average",

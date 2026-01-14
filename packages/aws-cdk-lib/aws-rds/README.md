@@ -205,8 +205,8 @@ v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverle
   cluster.
 - `VolumeReadIOPs`: Cluster-level metric that represents the average number of disk read I/O operations per second.
 - `VolumeWriteIOPs`: Cluster-level metric that represents the average number of disk write I/O operations per second.
-- `ReadIOPs`: Instance-level metric that represents the average read I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
-- `WriteIOPs`: Instance-level metric that represents the average write I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
+- `ReadIOPS`: Instance-level metric that represents the average read I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
+- `WriteIOPS`: Instance-level metric that represents the average write I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -252,16 +252,16 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   vpc
 });
 
-instance.metricReadIOPs({
+instance.metricReadIOPS({
   period: Duration.minutes(10),
-}).createAlarm(this, 'ReadIOPsAlarm', {
+}).createAlarm(this, 'ReadIOPSAlarm', {
   threshold: 1000,
   evaluationPeriods: 3,
 });
 
-instance.metricWriteIOPs({
+instance.metricWriteIOPS({
   period: Duration.minutes(10),
-}).createAlarm(this, 'WriteIOPsAlarm', {
+}).createAlarm(this, 'WriteIOPSAlarm', {
   threshold: 1000,
   evaluationPeriods: 3,
 });
