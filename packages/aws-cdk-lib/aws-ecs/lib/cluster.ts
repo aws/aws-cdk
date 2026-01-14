@@ -1647,6 +1647,10 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       throw new ValidationError('Subnets are required and should be non-empty.', this);
     }
 
+    if (props.securityGroups.length === 0) {
+      throw new ValidationError('Security groups cannot be an empty array. Provide at least one security group.', this);
+    }
+
     // Create or use provided infrastructure role
     const roleId = `${id}Role`;
     this.infrastructureRole = props.infrastructureRole ?? new iam.Role(this, roleId, {
