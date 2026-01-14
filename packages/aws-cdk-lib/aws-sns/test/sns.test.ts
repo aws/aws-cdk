@@ -5,6 +5,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { ENABLE_PARTITION_LITERALS } from '../../cx-api';
 import * as sns from '../lib';
 import { TopicGrants } from '../lib/sns-grants.generated';
 
@@ -1174,7 +1175,9 @@ describe('Topic', () => {
         undefined,
       ],
     ])('DataProtectionPolicy with %s', (_, identifiers, expectedDataIdentifiers, expectedCustomConfig) => {
-      const stack = new cdk.Stack();
+      // Use a stack with a known region and enable partition literals feature flag
+      const app = new cdk.App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
+      const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1', account: '123456789012' } });
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
         identifiers,
       });
@@ -1587,7 +1590,9 @@ describe('Topic', () => {
     });
 
     test('DataProtectionPolicy comprehensive integration test', () => {
-      const stack = new cdk.Stack();
+      // Use a stack with a known region and enable partition literals feature flag
+      const app = new cdk.App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
+      const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1', account: '123456789012' } });
       const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
         logGroupName: '/aws/vendedlogs/sns-audit',
       });
@@ -1657,6 +1662,76 @@ describe('Topic', () => {
       expect(findingsDestination.CloudWatchLogs.LogGroup).toEqual({ Ref: 'AuditLogGroup6D13791A' });
       expect(findingsDestination.S3.Bucket).toEqual({ Ref: expect.stringMatching(/AuditBucket/) });
       expect(findingsDestination.Firehose.DeliveryStream).toBe('comprehensive-audit-stream');
+    });
+
+    test('DataProtectionPolicy supports GovCloud partition', () => {
+      // Use a stack in GovCloud region with partition literals enabled
+      const app = new cdk.App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
+      const stack = new cdk.Stack(app, 'GovCloudStack', { env: { region: 'us-gov-west-1', account: '123456789012' } });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+      });
+
+      new sns.Topic(stack, 'GovCloudTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify the ARN uses the GovCloud partition
+      expect(policy.Statement[0].DataIdentifier).toContain(
+        'arn:aws-us-gov:dataprotection::aws:data-identifier/EmailAddress',
+      );
+    });
+
+    test('DataProtectionPolicy supports China partition', () => {
+      // Use a stack in China region with partition literals enabled
+      const app = new cdk.App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
+      const stack = new cdk.Stack(app, 'ChinaStack', { env: { region: 'cn-north-1', account: '123456789012' } });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+      });
+
+      new sns.Topic(stack, 'ChinaTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify the ARN uses the China partition
+      expect(policy.Statement[0].DataIdentifier).toContain(
+        'arn:aws-cn:dataprotection::aws:data-identifier/EmailAddress',
+      );
+    });
+
+    test('CustomDataIdentifier rejects managed identifier names', () => {
+      // Test collision with static identifiers
+      expect(() => new sns.CustomDataIdentifier('EmailAddress', 'test')).toThrow(
+        "Custom data identifier name 'EmailAddress' conflicts with a managed data identifier",
+      );
+      expect(() => new sns.CustomDataIdentifier('CreditCardNumber', 'test')).toThrow(
+        "Custom data identifier name 'CreditCardNumber' conflicts with a managed data identifier",
+      );
+
+      // Test collision with regional identifier patterns
+      expect(() => new sns.CustomDataIdentifier('DriversLicense-US', 'test')).toThrow(
+        "Custom data identifier name 'DriversLicense-US' conflicts with a managed data identifier pattern",
+      );
+      expect(() => new sns.CustomDataIdentifier('Ssn-US', 'test')).toThrow(
+        "Custom data identifier name 'Ssn-US' conflicts with a managed data identifier pattern",
+      );
+
+      // Verify valid custom names are still allowed
+      expect(() => new sns.CustomDataIdentifier('MyCustomId', 'test')).not.toThrow();
+      expect(() => new sns.CustomDataIdentifier('EmployeeNumber', 'EMP-[0-9]+')).not.toThrow();
     });
   });
 });

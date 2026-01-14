@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { ILogGroup } from '../../aws-logs';
+import { CfnLogGroup, ILogGroup } from '../../aws-logs';
 import { IBucket } from '../../aws-s3';
-import { UnscopedValidationError, Token } from '../../core';
+import { Arn, Stack, UnscopedValidationError, Token } from '../../core';
 
 /**
  * Configuration returned by data protection policy binding
@@ -71,7 +71,7 @@ export class DataProtectionPolicy implements IDataProtectionPolicy {
   /**
    * @internal
    */
-  public _bind(_scope: Construct): DataProtectionPolicyConfig {
+  public _bind(scope: Construct): DataProtectionPolicyConfig {
     const name = this.dataProtectionPolicyProps.name || 'data-protection-policy-cdk';
     const description = this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
     const version = '2021-06-01';
@@ -81,15 +81,20 @@ export class DataProtectionPolicy implements IDataProtectionPolicy {
       const logGroup = this.dataProtectionPolicyProps.logGroupAuditDestination;
       const logGroupName = logGroup.logGroupName;
 
-      // Try to get the physical name if available (for validation)
-      let nameToValidate = logGroupName;
-      if ('physicalName' in logGroup && typeof logGroup.physicalName === 'string' && logGroup.physicalName && !Token.isUnresolved(logGroup.physicalName)) {
-        nameToValidate = logGroup.physicalName;
+      // Try to get the actual log group name for validation
+      // The logGroupName property on ILogGroup is often a token, but we can try to
+      // access the underlying CfnLogGroup's logGroupName property which may be literal
+      let nameToValidate: string | undefined;
+      const defaultChild = logGroup.node.defaultChild;
+      if (defaultChild && 'logGroupName' in defaultChild) {
+        const cfnLogGroupName = (defaultChild as CfnLogGroup).logGroupName;
+        if (cfnLogGroupName && !Token.isUnresolved(cfnLogGroupName)) {
+          nameToValidate = cfnLogGroupName;
+        }
       }
 
-      // Only validate if it's not a token (i.e., it's a concrete string value)
-      const isToken = Token.isUnresolved(nameToValidate);
-      if (!isToken && !nameToValidate.startsWith('/aws/vendedlogs/')) {
+      // Validate the log group name prefix if we have a concrete name
+      if (nameToValidate && !nameToValidate.startsWith('/aws/vendedlogs/')) {
         throw new UnscopedValidationError(`CloudWatch log group for SNS data protection policy audit destination must start with '/aws/vendedlogs/', got: ${nameToValidate}`);
       }
       findingsDestination.CloudWatchLogs = {
@@ -109,6 +114,9 @@ export class DataProtectionPolicy implements IDataProtectionPolicy {
       };
     }
 
+    // Get the partition from the scope to support GovCloud and China regions
+    const partition = Stack.of(scope).partition;
+
     const identifiers: string[] = [];
     const customDataIdentifiers = [];
     for (let identifier of this.dataProtectionPolicyProps.identifiers) {
@@ -119,10 +127,22 @@ export class DataProtectionPolicy implements IDataProtectionPolicy {
           Regex: identifier.regex,
         });
       } else {
-        // Use static ARN format - managed data identifiers are always in the standard AWS partition
-        // This avoids CloudFormation intrinsic functions that would convert the entire policy to a string
-        // eslint-disable-next-line @cdklabs/no-literal-partition
-        identifiers.push(`arn:aws:dataprotection::aws:data-identifier/${identifier.name}`);
+        // Build ARN using the correct partition for the deployment region
+        // This ensures the policy works in GovCloud (aws-us-gov) and China (aws-cn) regions
+        if (Token.isUnresolved(partition)) {
+          // When partition is a token (unknown at synth time), use Fn.join to construct the ARN
+          identifiers.push(Arn.format({
+            partition,
+            service: 'dataprotection',
+            region: '',
+            account: 'aws',
+            resource: 'data-identifier',
+            resourceName: identifier.name,
+          }, Stack.of(scope)));
+        } else {
+          // When partition is known (e.g., 'aws', 'aws-cn', 'aws-us-gov'), use literal string
+          identifiers.push(`arn:${partition}:dataprotection::aws:data-identifier/${identifier.name}`);
+        }
       }
     }
 
@@ -383,6 +403,41 @@ export class DataIdentifier {
  */
 export class CustomDataIdentifier extends DataIdentifier {
   /**
+   * List of managed data identifier names that cannot be used for custom identifiers.
+   * This includes both static identifiers and base names used by factory methods.
+   */
+  private static readonly MANAGED_IDENTIFIER_NAMES = new Set([
+    // Static identifiers
+    'Address',
+    'AwsSecretKey',
+    'CreditCardExpiration',
+    'CreditCardNumber',
+    'CreditCardSecurityCode',
+    'EmailAddress',
+    'IpAddress',
+    'LatLong',
+    'Name',
+    'OpenSshPrivateKey',
+    'PgpPrivateKey',
+    'PkcsPrivateKey',
+    'PuttyPrivateKey',
+    'VehicleIdentificationNumber',
+  ]);
+
+  /**
+   * Prefixes used by managed data identifiers with regional variants.
+   */
+  private static readonly MANAGED_IDENTIFIER_PREFIXES = [
+    'DriversLicense-',
+    'PassportNumber-',
+    'PhoneNumber-',
+    'BankAccountNumber-',
+    'Ssn-',
+    'TaxId-',
+    'NationalIdentificationNumber-',
+  ];
+
+  /**
    * Create a custom data identifier.
    * @param name - the name of the custom data identifier. This cannot share the same name as a managed data identifier.
    * @param regex - the regular expression to detect and mask log events for.
@@ -396,6 +451,18 @@ export class CustomDataIdentifier extends DataIdentifier {
 
     if (!regex || regex.trim().length === 0) {
       throw new UnscopedValidationError('Custom data identifier regex cannot be empty');
+    }
+
+    // Validate that the custom identifier name doesn't conflict with managed identifiers
+    if (CustomDataIdentifier.MANAGED_IDENTIFIER_NAMES.has(name)) {
+      throw new UnscopedValidationError(`Custom data identifier name '${name}' conflicts with a managed data identifier. Choose a different name.`);
+    }
+
+    // Check for conflicts with regional managed identifiers (e.g., DriversLicense-US)
+    for (const prefix of CustomDataIdentifier.MANAGED_IDENTIFIER_PREFIXES) {
+      if (name.startsWith(prefix)) {
+        throw new UnscopedValidationError(`Custom data identifier name '${name}' conflicts with a managed data identifier pattern '${prefix}*'. Choose a different name.`);
+      }
     }
   }
 
