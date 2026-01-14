@@ -4,6 +4,8 @@
     "props-physical-name:@aws-cdk/aws-redshift-alpha.ClusterSubnetGroupProps",
     "props-physical-name:@aws-cdk/aws-redshift-alpha.DatabaseSecretProps",
     "attribute-tag:@aws-cdk/aws-redshift-alpha.DatabaseSecret.secretName",
-    "attribute-tag:@aws-cdk/aws-redshift-alpha.DatabaseSecret.secretFullArn"
+    "attribute-tag:@aws-cdk/aws-redshift-alpha.DatabaseSecret.secretFullArn",
+    "props-no-arn-refs:@aws-cdk/aws-redshift-alpha.RedshiftQuerySchedulerProps.clusterArn",
+    "props-no-arn-refs:@aws-cdk/aws-redshift-alpha.RedshiftQuerySchedulerProps.workgroupArn"
   ]
 }
