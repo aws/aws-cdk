@@ -14,6 +14,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface ILogGroup extends iam.IResourceWithPolicy, ILogGroupRef {
@@ -643,15 +644,28 @@ export class LogGroup extends LogGroupBase {
     return new Import(scope, id);
   }
 
+  private readonly resource: CfnLogGroup;
+
   /**
    * The ARN of this log group
    */
-  public readonly logGroupArn: string;
+  @memoizedGetter
+  public get logGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * The name of this log group
    */
-  public readonly logGroupName: string;
+  @memoizedGetter
+  public get logGroupName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
     super(scope, id, {
@@ -678,7 +692,7 @@ export class LogGroup extends LogGroupBase {
       });
     }
 
-    const resource = new CfnLogGroup(this, 'Resource', {
+    this.resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyRef.keyArn,
       logGroupClass,
       logGroupName: this.physicalName,
@@ -693,15 +707,7 @@ export class LogGroup extends LogGroupBase {
       ...(props.fieldIndexPolicies && { fieldIndexPolicies: fieldIndexPolicies }),
     });
 
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.logGroupArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'logs',
-      resource: 'log-group',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-    this.logGroupName = this.getResourceNameAttribute(resource.ref);
+    this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 }
 

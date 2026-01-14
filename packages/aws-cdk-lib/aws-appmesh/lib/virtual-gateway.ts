@@ -9,6 +9,7 @@ import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -176,12 +177,22 @@ export class VirtualGateway extends VirtualGatewayBase {
   /**
    * The name of the VirtualGateway
    */
-  public readonly virtualGatewayName: string;
+  @memoizedGetter
+  public get virtualGatewayName(): string {
+    return this.getResourceNameAttribute(this.resource.attrVirtualGatewayName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) for the VirtualGateway
    */
-  public readonly virtualGatewayArn: string;
+  @memoizedGetter
+  public get virtualGatewayArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualGateway`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The Mesh that the VirtualGateway belongs to
@@ -189,6 +200,7 @@ export class VirtualGateway extends VirtualGatewayBase {
   public readonly mesh: IMesh;
 
   protected readonly listeners = new Array<VirtualGatewayListenerConfig>();
+  private readonly resource: CfnVirtualGateway;
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
@@ -208,7 +220,7 @@ export class VirtualGateway extends VirtualGatewayBase {
 
     const accessLogging = props.accessLog?.bind(this);
 
-    const node = new CfnVirtualGateway(this, 'Resource', {
+    this.resource = new CfnVirtualGateway(this, 'Resource', {
       virtualGatewayName: this.physicalName,
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
@@ -225,13 +237,6 @@ export class VirtualGateway extends VirtualGatewayBase {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
       },
-    });
-
-    this.virtualGatewayName = this.getResourceNameAttribute(node.attrVirtualGatewayName);
-    this.virtualGatewayArn = this.getResourceArnAttribute(node.ref, {
-      service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualGateway`,
-      resourceName: this.physicalName,
     });
   }
 }

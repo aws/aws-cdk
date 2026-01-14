@@ -6,6 +6,7 @@ import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -95,17 +96,29 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
    */
-  public readonly virtualServiceName: string;
+  @memoizedGetter
+  public get virtualServiceName(): string {
+    return this.getResourceNameAttribute(this.resource.attrVirtualServiceName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) for the virtual service
    */
-  public readonly virtualServiceArn: string;
+  @memoizedGetter
+  public get virtualServiceArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualService`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The Mesh which the VirtualService belongs to
    */
   public readonly mesh: IMesh;
+
+  private readonly resource: CfnVirtualService;
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
@@ -117,7 +130,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     const providerConfig = props.virtualServiceProvider.bind(this);
     this.mesh = providerConfig.mesh;
 
-    const svc = new CfnVirtualService(this, 'Resource', {
+    this.resource = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       virtualServiceName: this.physicalName,
@@ -129,13 +142,6 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
           }
           : undefined,
       },
-    });
-
-    this.virtualServiceName = this.getResourceNameAttribute(svc.attrVirtualServiceName);
-    this.virtualServiceArn = this.getResourceArnAttribute(svc.ref, {
-      service: 'appmesh',
-      resource: `mesh/${this.mesh.meshName}/virtualService`,
-      resourceName: this.physicalName,
     });
   }
 }

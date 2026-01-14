@@ -15,6 +15,7 @@ import {
   ValidationError,
 } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -207,7 +208,15 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    * The VPC origin ARN.
    * @attribute
    */
-  readonly vpcOriginArn: string;
+  @memoizedGetter
+  get vpcOriginArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'cloudfront',
+      region: '',
+      resource: 'vpcorigin',
+      resourceName: this.resource.attrId,
+    });
+  }
   /**
    * The VPC origin ID.
    * @attribute
@@ -221,6 +230,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
   readonly vpcOriginRef: VpcOriginReference;
 
   readonly cdkTagManager: TagManager;
+  private readonly resource: CfnVpcOrigin;
 
   constructor(scope: Construct, id: string, props: VpcOriginProps) {
     super(scope, id);
@@ -241,13 +251,8 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
       },
     });
 
+    this.resource = resource;
     this.vpcOriginRef = resource.vpcOriginRef;
-    this.vpcOriginArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'cloudfront',
-      region: '',
-      resource: 'vpcorigin',
-      resourceName: resource.attrId,
-    });
     this.vpcOriginId = resource.attrId;
     this.domainName = props.endpoint.domainName;
     this.cdkTagManager = resource.cdkTagManager;

@@ -6,6 +6,7 @@ import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -103,17 +104,30 @@ export class Route extends cdk.Resource implements IRoute {
   /**
    * The name of the Route
    */
-  public readonly routeName: string;
+  @memoizedGetter
+  public get routeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrRouteName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) for the route
    */
-  public readonly routeArn: string;
+  @memoizedGetter
+  public get routeArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualRouter/${this.virtualRouter.virtualRouterName}/route`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The VirtualRouter the Route belongs to
    */
   public readonly virtualRouter: IVirtualRouter;
+
+  private readonly resource: CfnRoute;
+  private readonly mesh: IMesh;
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id, {
@@ -123,10 +137,11 @@ export class Route extends cdk.Resource implements IRoute {
     addConstructMetadata(this, props);
 
     this.virtualRouter = props.virtualRouter;
+    this.mesh = props.mesh;
 
     const spec = props.routeSpec.bind(this);
 
-    const route = new CfnRoute(this, 'Resource', {
+    this.resource = new CfnRoute(this, 'Resource', {
       routeName: this.physicalName,
       meshName: this.virtualRouter.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.virtualRouter.mesh.env.account),
@@ -138,13 +153,6 @@ export class Route extends cdk.Resource implements IRoute {
         grpcRoute: spec.grpcRouteSpec,
         priority: spec.priority,
       },
-    });
-
-    this.routeName = this.getResourceNameAttribute(route.attrRouteName);
-    this.routeArn = this.getResourceArnAttribute(route.ref, {
-      service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualRouter/${props.virtualRouter.virtualRouterName}/route`,
-      resourceName: this.physicalName,
     });
   }
 }

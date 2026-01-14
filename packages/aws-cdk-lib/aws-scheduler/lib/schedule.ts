@@ -7,6 +7,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as kms from '../../aws-kms';
 import { Arn, ArnFormat, Duration, IResource, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -270,17 +271,29 @@ export class Schedule extends Resource implements ISchedule {
   /**
    * The arn of the schedule.
    */
-  public readonly scheduleArn: string;
+  @memoizedGetter
+  public get scheduleArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'scheduler',
+      resource: 'schedule',
+      resourceName: `${this.scheduleGroup?.scheduleGroupName ?? 'default'}/${this.physicalName}`,
+    });
+  }
 
   /**
    * The name of the schedule.
    */
-  public readonly scheduleName: string;
+  @memoizedGetter
+  public get scheduleName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
    */
   readonly key?: kms.IKey;
+
+  private readonly _resource: CfnSchedule;
 
   /**
    * A `RetryPolicy` object that includes information about the retry policy settings.
@@ -340,12 +353,7 @@ export class Schedule extends Resource implements ISchedule {
       description: props.description,
     });
 
-    this.scheduleName = this.getResourceNameAttribute(resource.ref);
-    this.scheduleArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'scheduler',
-      resource: 'schedule',
-      resourceName: `${this.scheduleGroup?.scheduleGroupName ?? 'default'}/${this.physicalName}`,
-    });
+    this._resource = resource;
   }
 
   private renderRetryPolicy(): CfnSchedule.RetryPolicyProperty | undefined {

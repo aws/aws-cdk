@@ -11,6 +11,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
@@ -318,11 +319,23 @@ export class DeliveryStream extends DeliveryStreamBase {
     return new Import(scope, id);
   }
 
-  readonly deliveryStreamName: string;
-
-  readonly deliveryStreamArn: string;
+  private readonly resource: CfnDeliveryStream;
 
   private _role?: iam.IRole;
+
+  @memoizedGetter
+  public get deliveryStreamArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'kinesis',
+      resource: 'deliverystream',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get deliveryStreamName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   public get grantPrincipal(): iam.IPrincipal {
     // backwards compatibility - create role only once
@@ -380,7 +393,7 @@ export class DeliveryStream extends DeliveryStreamBase {
     const destinationConfig = props.destination.bind(this, {});
     const sourceConfig = props.source?._bind(this, this._role?.roleArn);
 
-    const resource = new CfnDeliveryStream(this, 'Resource', {
+    this.resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
       deliveryStreamName: props.deliveryStreamName,
       deliveryStreamType: props.source ? 'KinesisStreamAsSource' : 'DirectPut',
@@ -388,18 +401,11 @@ export class DeliveryStream extends DeliveryStreamBase {
       ...destinationConfig,
     });
 
-    destinationConfig.dependables?.forEach(dependable => resource.node.addDependency(dependable));
+    destinationConfig.dependables?.forEach(dependable => this.resource.node.addDependency(dependable));
 
     if (readStreamGrant) {
-      resource.node.addDependency(readStreamGrant);
+      this.resource.node.addDependency(readStreamGrant);
     }
-
-    this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'kinesis',
-      resource: 'deliverystream',
-      resourceName: this.physicalName,
-    });
-    this.deliveryStreamName = this.getResourceNameAttribute(resource.ref);
   }
 }
 

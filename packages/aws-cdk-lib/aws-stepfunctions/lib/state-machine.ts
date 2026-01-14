@@ -13,6 +13,7 @@ import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -398,12 +399,23 @@ export class StateMachine extends StateMachineBase {
    * The name of the state machine
    * @attribute
    */
-  public readonly stateMachineName: string;
+  @memoizedGetter
+  public get stateMachineName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
 
   /**
    * The ARN of the state machine
    */
-  public readonly stateMachineArn: string;
+  @memoizedGetter
+  public get stateMachineArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'states',
+      resource: 'stateMachine',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * Type of the state machine
@@ -416,6 +428,8 @@ export class StateMachine extends StateMachineBase {
    * @attribute
    */
   public readonly stateMachineRevisionId: string;
+
+  private readonly resource: CfnStateMachine;
 
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
@@ -512,13 +526,7 @@ export class StateMachine extends StateMachineBase {
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
     resource.node.addDependency(this.role);
-    this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
-    this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'states',
-      resource: 'stateMachine',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.resource = resource;
 
     if (definitionBody instanceof ChainDefinitionBody) {
       graph!.bind(this);

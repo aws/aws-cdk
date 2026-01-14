@@ -3,6 +3,7 @@ import { ICluster } from './cluster';
 import { CfnAddon } from './eks.generated';
 import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -122,12 +123,22 @@ export class Addon extends Resource implements IAddon {
   /**
    * Name of the addon.
    */
-  public readonly addonName: string;
-  /**
-   * Arn of the addon.
-   */
-  public readonly addonArn: string;
   private readonly clusterName: string;
+  private readonly resource: CfnAddon;
+
+  @memoizedGetter
+  public get addonName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get addonArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'eks',
+      resource: 'addon',
+      resourceName: `${this.clusterName}/${this.addonName}/`,
+    });
+  }
 
   /**
    * Creates a new Amazon EKS Add-On.
@@ -143,21 +154,13 @@ export class Addon extends Resource implements IAddon {
     addConstructMetadata(this, props);
 
     this.clusterName = props.cluster.clusterName;
-    this.addonName = props.addonName;
 
-    const resource = new CfnAddon(this, 'Resource', {
+    this.resource = new CfnAddon(this, 'Resource', {
       addonName: props.addonName,
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
       configurationValues: this.stack.toJsonString(props.configurationValues),
-    });
-
-    this.addonName = this.getResourceNameAttribute(resource.ref);
-    this.addonArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'eks',
-      resource: 'addon',
-      resourceName: `${this.clusterName}/${this.addonName}/`,
     });
   }
 }

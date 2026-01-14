@@ -14,6 +14,7 @@ import {
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -699,10 +700,23 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     return this.fromSecureStringParameterAttributes(stack, id, { parameterName, version }).stringValue;
   }
 
-  public readonly parameterArn: string;
-  public readonly parameterName: string;
+  @memoizedGetter
+  public get parameterArn(): string {
+    return arnForParameterName(this, this.parameterName, {
+      physicalName: this.physicalName || AUTOGEN_MARKER,
+      simpleName: false,
+    });
+  }
+
+  @memoizedGetter
+  public get parameterName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly parameterType: string;
   public readonly stringValue: string;
+
+  private readonly _resource: ssm.CfnParameter;
 
   constructor(scope: Construct, id: string, props: StringParameterProps) {
     super(scope, id, {
@@ -735,12 +749,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       value: props.stringValue,
     });
 
-    this.parameterName = this.getResourceNameAttribute(resource.ref);
-    this.parameterArn = arnForParameterName(this, this.parameterName, {
-      physicalName: props.parameterName || AUTOGEN_MARKER,
-      simpleName: props.simpleName,
-    });
-
+    this._resource = resource;
     this.parameterType = resource.attrType;
     this.stringValue = resource.attrValue;
   }
@@ -812,10 +821,23 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     return this.fromListParameterAttributes(stack, id, { parameterName, elementType: type, version }).stringListValue;
   }
 
-  public readonly parameterArn: string;
-  public readonly parameterName: string;
+  @memoizedGetter
+  public get parameterArn(): string {
+    return arnForParameterName(this, this.parameterName, {
+      physicalName: this.physicalName || AUTOGEN_MARKER,
+      simpleName: false,
+    });
+  }
+
+  @memoizedGetter
+  public get parameterName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly parameterType: string;
   public readonly stringListValue: string[];
+
+  private readonly _resource: ssm.CfnParameter;
 
   constructor(scope: Construct, id: string, props: StringListParameterProps) {
     super(scope, id, {
@@ -846,11 +868,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       type: ParameterType.STRING_LIST,
       value: Fn.join(',', props.stringListValue),
     });
-    this.parameterName = this.getResourceNameAttribute(resource.ref);
-    this.parameterArn = arnForParameterName(this, this.parameterName, {
-      physicalName: props.parameterName || AUTOGEN_MARKER,
-      simpleName: props.simpleName,
-    });
+    this._resource = resource;
 
     this.parameterType = resource.attrType;
     this.stringListValue = Fn.split(',', resource.attrValue);

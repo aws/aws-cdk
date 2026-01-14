@@ -32,6 +32,7 @@ import {
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
   AutoDeleteObjectsProvider,
@@ -2237,8 +2238,20 @@ export class Bucket extends BucketBase {
     }
   }
 
-  public readonly bucketArn: string;
-  public readonly bucketName: string;
+  @memoizedGetter
+  public get bucketArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get bucketName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
   public readonly bucketWebsiteDomainName: string;
@@ -2313,14 +2326,6 @@ export class Bucket extends BucketBase {
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.eventBridgeEnabled = props.eventBridgeEnabled;
-
-    this.bucketName = this.getResourceNameAttribute(resource.ref);
-    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
-      region: '',
-      account: '',
-      service: 's3',
-      resource: this.physicalName,
-    });
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;

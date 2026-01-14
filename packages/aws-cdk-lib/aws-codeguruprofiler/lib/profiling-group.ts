@@ -4,6 +4,7 @@ import { CfnProfilingGroup, IProfilingGroupRef, ProfilingGroupReference } from '
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -180,19 +181,21 @@ export class ProfilingGroup extends ProfilingGroupBase {
     });
   }
 
-  /**
-   * The name of the Profiling Group.
-   *
-   * @attribute
-   */
-  public readonly profilingGroupName: string;
+  private readonly resource: CfnProfilingGroup;
 
-  /**
-   * The ARN of the Profiling Group.
-   *
-   * @attribute
-   */
-  public readonly profilingGroupArn: string;
+  @memoizedGetter
+  public get profilingGroupName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get profilingGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'codeguru-profiler',
+      resource: 'profilingGroup',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: ProfilingGroupProps = {}) {
     super(scope, id, {
@@ -201,17 +204,9 @@ export class ProfilingGroup extends ProfilingGroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
+    this.resource = new CfnProfilingGroup(this, 'ProfilingGroup', {
       profilingGroupName: this.physicalName,
       computePlatform: props.computePlatform,
-    });
-
-    this.profilingGroupName = this.getResourceNameAttribute(profilingGroup.ref);
-
-    this.profilingGroupArn = this.getResourceArnAttribute(profilingGroup.attrArn, {
-      service: 'codeguru-profiler',
-      resource: 'profilingGroup',
-      resourceName: this.physicalName,
     });
   }
 

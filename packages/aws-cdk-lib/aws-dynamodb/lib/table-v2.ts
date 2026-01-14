@@ -39,6 +39,7 @@ import {
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -621,26 +622,6 @@ export class TableV2 extends TableBaseV2 {
     return new Import(tableArn, tableName, attrs.tableId, attrs.tableStreamArn);
   }
 
-  /**
-   * @attribute
-   */
-  public readonly tableArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableName: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableStreamArn?: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableId?: string;
-
   public readonly encryptionKey?: IKey;
 
   /**
@@ -657,6 +638,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly hasSortKey: boolean;
   private readonly tableOptions: TableOptionsV2;
   private readonly encryption?: TableEncryptionV2;
+  private readonly resource: CfnGlobalTable;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
@@ -677,6 +659,30 @@ export class TableV2 extends TableBaseV2 {
   private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
+
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get tableStreamArn(): string | undefined {
+    return this.resource.attrStreamArn;
+  }
+
+  @memoizedGetter
+  public get tableId(): string | undefined {
+    return this.resource.attrTableId;
+  }
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
@@ -722,7 +728,7 @@ export class TableV2 extends TableBaseV2 {
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
     this.resourcePolicy = props.resourcePolicy;
 
-    const resource = new CfnGlobalTable(this, 'Resource', {
+    this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
@@ -745,16 +751,7 @@ export class TableV2 extends TableBaseV2 {
         : undefined,
       warmThroughput: props.warmThroughput ?? undefined,
     });
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
-    });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
-    this.tableId = resource.attrTableId;
-    this.tableStreamArn = resource.attrStreamArn;
+    this.resource.applyRemovalPolicy(props.removalPolicy);
 
     props.replicas?.forEach(replica => this.addReplica(replica));
 

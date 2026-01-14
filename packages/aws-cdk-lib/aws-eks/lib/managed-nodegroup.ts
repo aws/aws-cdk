@@ -7,6 +7,7 @@ import { IResource, Resource, Annotations, withResolved, FeatureFlags, Validatio
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -401,18 +402,6 @@ export class Nodegroup extends Resource implements INodegroup {
     return new Import(scope, id);
   }
   /**
-   * ARN of the nodegroup
-   *
-   * @attribute
-   */
-  public readonly nodegroupArn: string;
-  /**
-   * Nodegroup name
-   *
-   * @attribute
-   */
-  public readonly nodegroupName: string;
-  /**
    * the Amazon EKS cluster resource
    *
    * @attribute ClusterName
@@ -426,6 +415,16 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly desiredSize: number;
   private readonly maxSize: number;
   private readonly minSize: number;
+  private readonly resource: CfnNodegroup;
+
+  @memoizedGetter
+  public get nodegroupName(): string {
+    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
+      return this.getResourceNameAttribute(this.resource.attrNodegroupName);
+    } else {
+      return this.getResourceNameAttribute(this.resource.ref);
+    }
+  }
 
   constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
@@ -590,18 +589,21 @@ export class Nodegroup extends Resource implements INodegroup {
         Node.of(this.cluster.albController).addDependency(this);
       }
     }
+    this.resource = resource;
+  }
 
-    this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
+  /**
+   * ARN of the nodegroup
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get nodegroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'eks',
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
-      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
-    } else {
-      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
-    }
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {

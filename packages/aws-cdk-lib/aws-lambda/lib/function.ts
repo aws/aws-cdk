@@ -37,6 +37,7 @@ import {
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
 
@@ -889,15 +890,7 @@ export class Function extends FunctionBase {
     return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
   }
 
-  /**
-   * Name of this function
-   */
-  public readonly functionName: string;
-
-  /**
-   * ARN of this function
-   */
-  public readonly functionArn: string;
+  private readonly resource: CfnFunction;
 
   /**
    * Execution role associated with this function
@@ -945,6 +938,27 @@ export class Function extends FunctionBase {
   public _logRetention?: logs.LogRetention;
 
   private _logGroup?: logs.ILogGroup;
+
+  /**
+   * Name of this function
+   */
+  @memoizedGetter
+  public get functionName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  /**
+   * ARN of this function
+   */
+  @memoizedGetter
+  public get functionArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * Environment variables for this function
@@ -1092,7 +1106,7 @@ export class Function extends FunctionBase {
 
     const effectiveRuntime = props.runtime === Runtime.NODEJS_LATEST ? determineLatestNodeRuntime(this) : props.runtime;
 
-    const resource: CfnFunction = new CfnFunction(this, 'Resource', {
+    this.resource = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
       code: {
@@ -1137,20 +1151,12 @@ export class Function extends FunctionBase {
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
-      resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
+      this.resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
     }
 
     this._logGroup = props.logGroup ? toILogGroup(props.logGroup) : undefined;
 
-    resource.node.addDependency(this.role);
-
-    this.functionName = this.getResourceNameAttribute(resource.ref);
-    this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'lambda',
-      resource: 'function',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.resource.node.addDependency(this.role);
 
     this.runtime = effectiveRuntime;
     this.timeout = props.timeout;
@@ -1197,7 +1203,7 @@ export class Function extends FunctionBase {
       });
     }
 
-    props.code.bindToResource(resource);
+    props.code.bindToResource(this.resource);
 
     // Event Invoke Config
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
@@ -1225,14 +1231,14 @@ export class Function extends FunctionBase {
       this.connections.securityGroups.forEach(sg => {
         sg.node.findAll().forEach(child => {
           if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupEgress') {
-            resource.node.addDependency(child);
+            this.resource.node.addDependency(child);
           }
         });
       });
       config.connections?.securityGroups.forEach(sg => {
         sg.node.findAll().forEach(child => {
           if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupIngress') {
-            resource.node.addDependency(child);
+            this.resource.node.addDependency(child);
           }
         });
       });

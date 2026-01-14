@@ -9,6 +9,7 @@ import { mergeEventPattern, renderEventPattern } from './util';
 import { IRole, IRoleRef, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -98,8 +99,24 @@ export class Rule extends Resource implements IRule {
     });
   }
 
-  public readonly ruleArn: string;
-  public readonly ruleName: string;
+  /**
+   * The CfnRule resource
+   */
+  private readonly _resource: CfnRule;
+
+  @memoizedGetter
+  public get ruleArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'events',
+      resource: 'rule',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get ruleName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   public get ruleRef(): RuleReference {
     return {
@@ -132,7 +149,7 @@ export class Rule extends Resource implements IRule {
     // add a warning on synth when minute is not defined in a cron schedule
     props.schedule?._bind(this);
 
-    const resource = new CfnRule(this, 'Resource', {
+    this._resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
@@ -142,13 +159,6 @@ export class Rule extends Resource implements IRule {
       eventBusName: props.eventBus && props.eventBus.eventBusRef.eventBusName,
       roleArn: props.role?.roleRef.roleArn,
     });
-
-    this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'events',
-      resource: 'rule',
-      resourceName: this.physicalName,
-    });
-    this.ruleName = this.getResourceNameAttribute(resource.ref);
 
     this.addEventPattern(props.eventPattern);
 

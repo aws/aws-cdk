@@ -6,6 +6,7 @@ import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefi
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -149,8 +150,21 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   public readonly mainNode?: number;
   public readonly propagateTags?: boolean;
 
-  public readonly jobDefinitionArn: string;
-  public readonly jobDefinitionName: string;
+  private readonly resource: CfnJobDefinition;
+
+  @memoizedGetter
+  public get jobDefinitionArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get jobDefinitionName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   private readonly _instanceType?: ec2.InstanceType;
 
@@ -164,7 +178,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this._instanceType = props?.instanceType;
     this.propagateTags = props?.propagateTags;
 
-    const resource = new CfnJobDefinition(this, 'Resource', {
+    this.resource = new CfnJobDefinition(this, 'Resource', {
       ...baseJobDefinitionProperties(this),
       type: 'multinode',
       jobDefinitionName: props?.jobDefinitionName,
@@ -186,12 +200,6 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       },
       platformCapabilities: [Compatibility.EC2],
     });
-    this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'batch',
-      resource: 'job-definition',
-      resourceName: this.physicalName,
-    });
-    this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
 
     this.node.addValidation({ validate: () => validateContainers(this.containers) });
   }

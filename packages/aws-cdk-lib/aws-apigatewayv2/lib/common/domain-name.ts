@@ -5,6 +5,7 @@ import { IBucket } from '../../../aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../../core/lib/private/memoize';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 import { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
@@ -193,10 +194,8 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   public readonly name: string;
-  public readonly regionalDomainName: string;
-  public readonly regionalHostedZoneId: string;
-  private readonly domainNameArn: string;
   private readonly domainNameConfigurations: CfnDomainName.DomainNameConfigurationProperty[] = [];
+  private readonly resource: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
@@ -218,11 +217,8 @@ export class DomainName extends Resource implements IDomainName {
       domainNameConfigurations: Lazy.any({ produce: () => this.domainNameConfigurations }),
       mutualTlsAuthentication: mtlsConfig,
     };
-    const resource = new CfnDomainName(this, 'Resource', domainNameProps);
-    this.name = resource.ref;
-    this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
-    this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
-    this.domainNameArn = Token.asString(resource.getAtt('DomainNameArn'));
+    this.resource = new CfnDomainName(this, 'Resource', domainNameProps);
+    this.name = this.resource.ref;
 
     if (props.certificate) {
       this.addEndpoint(props);
@@ -263,6 +259,21 @@ export class DomainName extends Resource implements IDomainName {
         throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
       }
     }
+  }
+
+  @memoizedGetter
+  public get regionalDomainName(): string {
+    return Token.asString(this.resource.getAtt('RegionalDomainName'));
+  }
+
+  @memoizedGetter
+  public get regionalHostedZoneId(): string {
+    return Token.asString(this.resource.getAtt('RegionalHostedZoneId'));
+  }
+
+  @memoizedGetter
+  private get domainNameArn(): string {
+    return Token.asString(this.resource.getAtt('DomainNameArn'));
   }
 
   public get domainNameRef(): DomainNameReference {

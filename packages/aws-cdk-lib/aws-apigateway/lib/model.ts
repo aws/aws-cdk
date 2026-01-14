@@ -5,6 +5,7 @@ import { IRestApi, RestApi } from './restapi';
 import * as util from './util';
 import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IModel {
@@ -163,7 +164,12 @@ export class Model extends Resource implements IModel {
    *
    * @attribute
    */
-  public readonly modelId: string;
+  @memoizedGetter
+  public get modelId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  private readonly resource: CfnModel;
 
   constructor(scope: Construct, id: string, props: ModelProps) {
     super(scope, id, {
@@ -180,13 +186,11 @@ export class Model extends Resource implements IModel {
       schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema),
     };
 
-    const resource = new CfnModel(this, 'Resource', modelProps);
-
-    this.modelId = this.getResourceNameAttribute(resource.ref);
+    this.resource = new CfnModel(this, 'Resource', modelProps);
 
     const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
     if (deployment) {
-      deployment.node.addDependency(resource);
+      deployment.node.addDependency(this.resource);
       deployment.addToLogicalId({ model: modelProps });
     }
   }
