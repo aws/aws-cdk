@@ -532,67 +532,15 @@ The `Names` class provides utilities for generating unique resource names for co
 
 The `uniqueResourceName()` method generates CloudFormation-compatible unique identifiers for constructs based on their path. The name includes a human-readable portion rendered from path components and a hash suffix.
 
-#### Basic Usage
-
-```ts
-import { App, Stack, Names } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-
-const app = new App();
-const stack = new Stack(app, 'MyStack');
-const construct = new Construct(stack, 'MyConstruct');
-
-// Generate a unique resource name
-const name = Names.uniqueResourceName(construct);
-```
-
 #### Using Discriminators
 
 When you need to generate multiple unique names from the same construct (for example, when creating multiple child resources that require unique physical names before the child constructs are initialized), use the `discriminator` option:
-
-```ts
-const parentConstruct = new Construct(stack, 'ParentConstruct');
-
-// Generate different unique names using discriminators
-const name1 = Names.uniqueResourceName(parentConstruct, { discriminator: '1' });
-const name2 = Names.uniqueResourceName(parentConstruct, { discriminator: '2' });
-
-// Use the names for resources that need unique physical names
-new Queue(parentConstruct, 'Queue1', {
-  queueName: name1,
-});
-
-new Queue(parentConstruct, 'Queue2', {
-  queueName: name2,
-});
-```
 
 The discriminator is included in the hash calculation but not in the human-readable portion, ensuring:
 
 - Different discriminators produce different unique names
 - Output length remains consistent
 - The discriminator doesn't appear in the generated name
-
-#### Customizing Name Format
-
-You can customize the generated name using options:
-
-```ts
-// Set maximum length
-const shortName = Names.uniqueResourceName(construct, {
-  maxLength: 50,
-});
-
-// Add a separator between path components
-const nameWithSeparator = Names.uniqueResourceName(construct, {
-  separator: '-',
-});
-
-// Allow specific special characters
-const nameWithSpecialChars = Names.uniqueResourceName(construct, {
-  allowedSpecialCharacters: '-_',
-});
-```
 
 ## Dependencies
 
