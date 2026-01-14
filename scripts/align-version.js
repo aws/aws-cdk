@@ -1,13 +1,23 @@
 #!/usr/bin/env node
-//
-// align the version in a package.json file to the version of the repo
-//
+/**
+ * Aligns package.json versions to the repository version.
+ * 
+ * This script ensures all packages in the monorepo use consistent versions,
+ * respecting stability levels (stable vs alpha).
+ */
 const fs = require('fs');
+const path = require('path');
 
 const ver = require('./resolve-version');
 const marker = ver.marker;
 
-const files = process.argv.splice(2);
+const files = process.argv.slice(2);
+
+if (files.length === 0) {
+  console.error('Usage: align-version.js <package.json> [<package.json> ...]');
+  console.error('\nAligns package versions to repository version.');
+  process.exit(1);
+}
 const packageVersionMap = files.reduce((accum, file) => {
   const pkg = JSON.parse(fs.readFileSync(file).toString());
   const version = pkg.stability !== 'stable' ? ver.alphaVersion : ver.version;
@@ -19,30 +29,59 @@ const packageVersionMap = files.reduce((accum, file) => {
 }, {});
 
 for (const file of files) {
-  const pkg = JSON.parse(fs.readFileSync(file).toString());
-
-  if (pkg.version !== marker) {
-    throw new Error(`unexpected - all package.json files in this repo should have a version of ${marker}: ${file}`);
+  if (!fs.existsSync(file)) {
+    console.error(`Error: File not found: ${file}`);
+    process.exit(1);
   }
 
-  const version = packageVersionMap[pkg.name]
-  pkg.version = version;
+  try {
+    const content = fs.readFileSync(file, 'utf-8');
+    const pkg = JSON.parse(content);
 
-  processSection(pkg.dependencies || { }, file);
-  processSection(pkg.devDependencies || { }, file);
-  processSection(pkg.peerDependencies || { }, file);
-  processSection(pkg.jsiiRosetta?.exampleDependencies ?? { }, file);
+    if (!pkg.name) {
+      throw new Error(`Missing 'name' field in package.json`);
+    }
 
-  console.error(`${file} => ${version}`);
-  fs.writeFileSync(file, JSON.stringify(pkg, undefined, 2));
+    if (pkg.version !== marker) {
+      throw new Error(`Unexpected version marker. Expected '${marker}', got '${pkg.version}'`);
+    }
+
+    const version = packageVersionMap[pkg.name];
+    if (!version) {
+      throw new Error(`No version mapping found for package '${pkg.name}'`);
+    }
+
+    pkg.version = version;
+
+    processSection(pkg.dependencies || {}, file);
+    processSection(pkg.devDependencies || {}, file);
+    processSection(pkg.peerDependencies || {}, file);
+    processSection(pkg.jsiiRosetta?.exampleDependencies ?? {}, file);
+
+    console.error(`✓ ${path.basename(file)} => ${version}`);
+    fs.writeFileSync(file, JSON.stringify(pkg, undefined, 2) + '\n');
+  } catch (error) {
+    console.error(`Error processing ${file}: ${error.message}`);
+    process.exit(1);
+  }
 }
 
+/**
+ * Processes a dependency section (dependencies, devDependencies, etc.)
+ * and updates versions for internal packages.
+ * 
+ * @param {object} section - The dependency section to process
+ * @param {string} file - The package.json file being processed (for error messages)
+ */
 function processSection(section, file) {
-  for (const [ name, version ] of Object.entries(section)) {
+  for (const [name, version] of Object.entries(section)) {
     if (version === marker || version === '^' + marker) {
       const newVersion = packageVersionMap[name];
       if (!newVersion) {
-        throw new Error(`No package found ${name} within repository, which has version 0.0.0`);
+        throw new Error(
+          `Package '${name}' not found in repository. ` +
+          `It's referenced in ${path.basename(file)} but not in the version map.`
+        );
       }
 
       section[name] = version.replace(marker, newVersion);

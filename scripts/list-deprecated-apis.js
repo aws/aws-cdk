@@ -1,7 +1,16 @@
 #!/usr/bin/env node
+/**
+ * Lists all deprecated APIs in AWS CDK packages.
+ * 
+ * Usage:
+ *   node list-deprecated-apis.js          # Markdown table format
+ *   node list-deprecated-apis.js --plain  # Plain text format for jsii
+ */
 const path = require('path');
-
 const jsiiReflect = require('jsii-reflect');
+
+/** Zero-width space for line breaking in long identifiers */
+const ZERO_WIDTH_SPACE = '\u200B';
 
 class MarkdownPrinter {
   printHeader() {
@@ -11,21 +20,32 @@ class MarkdownPrinter {
     process.stdout.write(`|--------|-------------|---------|\n`);
   }
 
+  /**
+   * Prints deprecated API information in Markdown table format.
+   * @param {string} mod - Module name
+   * @param {string} name - API element name
+   * @param {object} el - JSII element with docs
+   */
   printIfDeprecated(mod, name, el) {
     try {
-      if (el.docs.deprecated) {
-        // Add zero-width spaces after . and _ to allow for line breaking long identifiers
-        // (WindowsVersion.WINDOWS_SERVER_2012_RTM_CHINESE_TRADITIONAL_HONG_KONG_SAR_64BIT_BASE is a fun one...)
-        // For consistency with the original format, replace the '#' separators with '.'
-        const apiName = name.replace('#', '.').replace(/(\.|_)/g, '$1\u200B');
-
-        // Some deprecation reasons start with '- ' for misguided reasons. Get rid of it, and also get rid of newlines.
-        const reason = el.docs.deprecationReason.replace(/^-/, '').replace(/\n/g, ' ').trim();
-
-        process.stdout.write(`| ${mod} | ${apiName} | ${reason} |\n`);
+      if (!el.docs || !el.docs.deprecated) {
+        return;
       }
-    } catch (e) {
-      console.error(`While processing ${mod}.${name}:`, e);
+
+      // Add zero-width spaces after . and _ to allow for line breaking long identifiers
+      // (WindowsVersion.WINDOWS_SERVER_2012_RTM_CHINESE_TRADITIONAL_HONG_KONG_SAR_64BIT_BASE is a fun one...)
+      // For consistency with the original format, replace the '#' separators with '.'
+      const apiName = name.replace('#', '.').replace(/(\.|_)/g, `$1${ZERO_WIDTH_SPACE}`);
+
+      // Some deprecation reasons start with '- ' for misguided reasons. Get rid of it, and also get rid of newlines.
+      const reason = (el.docs.deprecationReason || 'No reason provided')
+        .replace(/^-\s*/, '')
+        .replace(/\n/g, ' ')
+        .trim();
+
+      process.stdout.write(`| ${mod} | ${apiName} | ${reason} |\n`);
+    } catch (error) {
+      console.error(`Error processing ${mod}.${name}: ${error.message}`);
     }
   }
 }

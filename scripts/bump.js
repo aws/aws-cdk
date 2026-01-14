@@ -1,15 +1,30 @@
 #!/usr/bin/env node
-
+/**
+ * Bumps the version of the AWS CDK monorepo.
+ * 
+ * Usage:
+ *   bump.js [minor|patch]
+ * 
+ * Supports both standard-version (legacy) and cdk-release approaches.
+ * Set BUMP_CANDIDATE=true for testing without committing.
+ * Set LEGACY_BUMP=true to use standard-version instead of cdk-release.
+ */
 const fs = require('fs');
 const path = require('path');
 const semver = require('semver');
 const ver = require('./resolve-version');
 const { execSync } = require('child_process');
 
+const VALID_BUMP_TYPES = ['minor', 'patch'];
+
 async function main() {
   const releaseAs = process.argv[2] || 'minor';
-  if (releaseAs !== 'minor' && releaseAs !== 'patch') {
-    throw new Error(`invalid bump type "${releaseAs}". only "minor" (the default) and "patch" are allowed. major version bumps require *slightly* more intention`);
+  
+  if (!VALID_BUMP_TYPES.includes(releaseAs)) {
+    console.error(`Error: Invalid bump type "${releaseAs}".`);
+    console.error(`Valid options: ${VALID_BUMP_TYPES.join(', ')}`);
+    console.error('\nNote: Major version bumps require manual intervention.');
+    process.exit(1);
   }
 
   console.error(`Starting ${releaseAs} version bump`);
@@ -30,31 +45,33 @@ async function main() {
     }
   };
 
-  const forTesting = process.env.BUMP_CANDIDATE || false;
+  const forTesting = Boolean(process.env.BUMP_CANDIDATE);
   if (forTesting) {
     opts.skip.commit = true;
     opts.skip.changelog = true;
 
-    // if we are on a "stable" branch, add a pre-release tag ("rc") to the
-    // version number as a safety in case this version will accidentally be
-    // published.
+    // If we are on a "stable" branch, add a pre-release tag ("rc") to the
+    // version number as a safety in case this version will accidentally be published.
     opts.prerelease = ver.prerelease || 'rc';
-    console.error(`BUMP_CANDIDATE is set, so bumping version for testing (with the "${opts.prerelease}" prerelease tag)`);
+    console.error(`✓ BUMP_CANDIDATE is set, so bumping version for testing (with the "${opts.prerelease}" prerelease tag)`);
   } else {
-    // We're not running the bump in a regular pipeline, we're running it "for real" to do an actual release.
-    //
-    // In that case -- check if there have been changes since the last release. If not, there's no point in
-    // doing the release at all. Our customers won't appreciate a new version with 0 changes.
+    // Check if there have been changes since the last release.
+    // If not, skip the release - customers won't appreciate a version with 0 changes.
     const prevVersion = ver.version;
-    const topLevelFileChanges = execSync(`git diff-tree --name-only v${prevVersion} HEAD`, { encoding: 'utf-8' }).split('\n').filter(x => x);
+    const gitDiffCommand = `git diff-tree --name-only v${prevVersion} HEAD`;
+    const topLevelFileChanges = execSync(gitDiffCommand, { encoding: 'utf-8' })
+      .split('\n')
+      .filter(file => file.trim());
 
-    // We only release if there have been changes to files other than metadata files
-    // (for an empty release, the difference since the previous release is updates to json files and the changelog, through
-    // mergeback)
-    const anyInteresting = topLevelFileChanges.some(name => !name.includes('CHANGELOG') && !name.startsWith('version.'));
+    // Only release if there have been changes to files other than metadata files.
+    // For an empty release, the diff would only show updates to CHANGELOG and version files
+    // (through mergeback).
+    const hasInterestingChanges = topLevelFileChanges.some(fileName => 
+      !fileName.includes('CHANGELOG') && !fileName.startsWith('version.')
+    );
 
-    if (!anyInteresting) {
-      console.error(`No changes detected since last release -- we're done here.`);
+    if (!hasInterestingChanges) {
+      console.error('✓ No changes detected since last release -- we\'re done here.');
       return;
     }
   }
