@@ -400,46 +400,46 @@ export class DomainName extends Resource implements IDomainName {
     return policy.startsWith('SecurityPolicy_');
   }
 
-  /**
-   * Validates that the security policy is compatible with the endpoint type.
-   * Regional-only policies cannot be used with EDGE endpoints and vice versa.
-   */
-  private validateSecurityPolicyEndpointType(policy?: SecurityPolicy, endpointType?: EndpointType): void {
-    if (!policy || Token.isUnresolved(policy)) {
-      return;
-    }
+   /**
+    * Validates that the security policy is compatible with the endpoint type.
+    * Some policies are only supported for specific endpoint types.
+    */
+   private validateSecurityPolicyEndpointType(policy?: SecurityPolicy, endpointType?: EndpointType): void {
+     if (!policy || Token.isUnresolved(policy)) {
+       return;
+     }
 
-    // Regional-only enhanced security policies
-    const regionalOnlyPolicies = [
-      SecurityPolicy.TLS13_1_3_2025_09,
-      SecurityPolicy.TLS13_1_3_FIPS_2025_09,
-      SecurityPolicy.TLS13_1_2_PQ_2025_09,
-      SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
-    ];
+     // Policies that only support non-edge (regional/private) endpoints
+     const nonEdgeOnlyPolicies = [
+       SecurityPolicy.TLS13_1_3_2025_09,
+       SecurityPolicy.TLS13_1_3_FIPS_2025_09,
+       SecurityPolicy.TLS13_1_2_PQ_2025_09,
+       SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+     ];
 
-    // Edge-only enhanced security policies
-    const edgeOnlyPolicies = [
-      SecurityPolicy.TLS13_2025_EDGE,
-    ];
+     // Policies that only support edge endpoints
+     const edgeOnlyPolicies = [
+       SecurityPolicy.TLS13_2025_EDGE,
+     ];
 
-    if (endpointType === EndpointType.EDGE && regionalOnlyPolicies.includes(policy)) {
-      throw new ValidationError(
-        `Security policy ${policy} is only supported for regional/private endpoints. ` +
-        'Use a security policy that can be specified for edge-optimized APIs and edge-optimized custom domain names' +
-        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
-        this,
-      );
-    }
+     if (endpointType === EndpointType.EDGE && nonEdgeOnlyPolicies.includes(policy)) {
+       throw new ValidationError(
+         `Security policy ${policy} is not supported for edge-optimized endpoints. ` +
+         'Use a security policy that supports edge-optimized endpoints. ' +
+         'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
+         this,
+       );
+     }
 
-    if (endpointType !== EndpointType.EDGE && edgeOnlyPolicies.includes(policy)) {
-      throw new ValidationError(
-        `Security policy ${policy} is only supported for edge-optimized endpoints. ` +
-        'Use TLS13_1_3_2025_09 or other regional policies for regional/private endpoints. ' +
-        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
-        this,
-      );
-    }
-  }
+     if (endpointType !== EndpointType.EDGE && edgeOnlyPolicies.includes(policy)) {
+       throw new ValidationError(
+         `Security policy ${policy} is only supported for edge-optimized endpoints. ` +
+         'Use a policy that supports non-edge endpoints. ' +
+         'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
+         this,
+       );
+     }
+   }
 }
 
 export interface DomainNameAttributes {
