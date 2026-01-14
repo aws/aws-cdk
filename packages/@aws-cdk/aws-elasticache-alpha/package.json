@@ -115,5 +115,26 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
+  },
+  "awslint": {
+    "exclude": [
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.securityGroups",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.subnets",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.userGroup",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.IUserGroup.addUser.user",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.vpc",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.vpc",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.securityGroups",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.userGroup",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupBase.addUser._user",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupAttributes.users",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupProps.users"
+    ]
   }
 }
