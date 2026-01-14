@@ -401,6 +401,14 @@
      }
     ],
     "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "lbSecurityGroup47B6F855",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
@@ -410,6 +418,24 @@
      }
     ],
     "Type": "network"
+   }
+  },
+  "lbSecurityGroup47B6F855": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB integnlbintegrationlb5B28C600",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "lblistener657ADDEC": {
