@@ -1,6 +1,6 @@
 /**
  * EFS Permission Integration Test Architecture
- * 
+ *
  *  AWS-Managed Lambda VPC              Customer VPC
  *  ┌────────────────────┐      ┌─────────────────────────────┐
  *  │                    │      │                             │
@@ -30,7 +30,7 @@
  *  │  └──────────────┘  │      │                             │
  *  │                    │      │                             │
  *  └────────────────────┘      └─────────────────────────────┘
- * 
+ *
  * Test validates:
  * - WriteLambda: grantReadWrite → can write and read files
  * - ReadLambda: grantRead → can read files, write fails with permission denied
