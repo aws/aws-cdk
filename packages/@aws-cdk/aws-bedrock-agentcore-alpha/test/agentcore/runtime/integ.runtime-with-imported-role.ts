@@ -5,11 +5,11 @@
 /// !cdk-integ aws-cdk-bedrock-agentcore-runtime-with-imported-role
 
 import * as path from 'path';
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
+import * as cdk from 'aws-cdk-lib';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
 
