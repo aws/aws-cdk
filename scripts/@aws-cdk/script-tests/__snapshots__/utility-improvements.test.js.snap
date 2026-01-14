@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Utility Script Improvements Script Structure Snapshots align-version.js should match expected structure 1`] = `
+{
+  "hasArgumentValidation": false,
+  "hasSuccessIndicator": true,
+  "hasVersionFile": false,
+}
+`;
+
+exports[`Utility Script Improvements Script Structure Snapshots bump.js should match expected structure 1`] = `
+{
+  "bumpTypes": [
+    "'minor'",
+    "'patch'",
+    "'minor'",
+  ],
+  "hasInterestingChanges": true,
+  "hasValidBumpTypes": true,
+}
+`;
+
+exports[`Utility Script Improvements Script Structure Snapshots find-latest-release.js should match expected structure 1`] = `
+{
+  "hasErrorHandling": true,
+  "hasExamples": true,
+  "hasJSDoc": true,
+  "hasSemverValidation": true,
+  "hasShebang": true,
+}
+`;
+
+exports[`Utility Script Improvements Script Structure Snapshots jetbrains-remove-node-modules.js should match expected structure 1`] = `
+{
+  "doesNotShadowPath": true,
+  "usesDirPath": true,
+}
+`;
+
+exports[`Utility Script Improvements Script Structure Snapshots stability.js should match expected structure 1`] = `
+{
+  "exports": "",
+  "hasCfnOnlyFunction": true,
+  "hasFileExistenceCheck": true,
+  "hasJSDoc": true,
+}
+`;

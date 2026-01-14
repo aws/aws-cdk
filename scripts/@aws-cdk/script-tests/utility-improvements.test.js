@@ -12,6 +12,76 @@ const { execSync } = require('child_process');
 const SCRIPTS_DIR = path.join(__dirname, '../..');
 
 describe('Utility Script Improvements', () => {
+  describe('Script Structure Snapshots', () => {
+    test('stability.js should match expected structure', () => {
+      const scriptPath = path.join(SCRIPTS_DIR, 'stability.js');
+      const content = fs.readFileSync(scriptPath, 'utf-8');
+      
+      // Extract key structural elements for snapshot
+      const structure = {
+        hasJSDoc: content.includes('/**'),
+        hasFileExistenceCheck: content.includes('fs.existsSync'),
+        hasCfnOnlyFunction: content.includes('function cfnOnly'),
+        exports: content.match(/module\.exports\s*=\s*{([^}]+)}/)?.[1]?.trim() || '',
+      };
+      
+      expect(structure).toMatchSnapshot();
+    });
+
+    test('align-version.js should match expected structure', () => {
+      const scriptPath = path.join(SCRIPTS_DIR, 'align-version.js');
+      const content = fs.readFileSync(scriptPath, 'utf-8');
+      
+      const structure = {
+        hasArgumentValidation: content.includes('process.argv') && /length.*[<>]/.test(content),
+        hasSuccessIndicator: content.includes('✓'),
+        hasVersionFile: content.includes('version.v'),
+      };
+      
+      expect(structure).toMatchSnapshot();
+    });
+
+    test('bump.js should match expected structure', () => {
+      const scriptPath = path.join(SCRIPTS_DIR, 'bump.js');
+      const content = fs.readFileSync(scriptPath, 'utf-8');
+      
+      const structure = {
+        hasValidBumpTypes: content.includes('VALID_BUMP_TYPES'),
+        hasInterestingChanges: content.includes('hasInterestingChanges'),
+        bumpTypes: content.match(/['"](?:major|minor|patch)['"]/g) || [],
+      };
+      
+      expect(structure).toMatchSnapshot();
+    });
+
+    test('find-latest-release.js should match expected structure', () => {
+      const scriptPath = path.join(SCRIPTS_DIR, 'find-latest-release.js');
+      const content = fs.readFileSync(scriptPath, 'utf-8');
+      
+      const structure = {
+        hasShebang: content.startsWith('#!/usr/bin/env node'),
+        hasJSDoc: content.includes('/**'),
+        hasSemverValidation: content.includes('semver.validRange'),
+        hasErrorHandling: content.includes('console.error'),
+        hasExamples: content.includes('Examples:'),
+      };
+      
+      expect(structure).toMatchSnapshot();
+    });
+
+    test('jetbrains-remove-node-modules.js should match expected structure', () => {
+      const scriptPath = path.join(SCRIPTS_DIR, 'jetbrains-remove-node-modules.js');
+      const content = fs.readFileSync(scriptPath, 'utf-8');
+      
+      const structure = {
+        usesDirPath: content.includes('dirPath'),
+        doesNotShadowPath: !content.match(/function\s*\([^)]*\bpath\b[^)]*\)/),
+      };
+      
+      expect(structure).toMatchSnapshot();
+    });
+  });
+
   describe('log-memory.js', () => {
     test('should monitor memory usage', () => {
       const scriptPath = path.join(SCRIPTS_DIR, 'log-memory.js');
