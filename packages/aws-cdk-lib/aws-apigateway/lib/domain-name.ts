@@ -412,7 +412,7 @@ export class DomainName extends Resource implements IDomainName {
     if (endpointType === EndpointType.EDGE && regionalOnlyPolicies.includes(policy)) {
       throw new ValidationError(
         `Security policy ${policy} is only supported for regional/private endpoints. ` +
-        'Use TLS13_2025_EDGE for edge-optimized endpoints. ' +
+        'Use a security policy that can be specified for edge-optimized APIs and edge-optimized custom domain names' +
         'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
         this,
       );
