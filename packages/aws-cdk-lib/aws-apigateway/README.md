@@ -1190,26 +1190,32 @@ new apigateway.DomainName(this, 'custom-domain', {
 });
 ```
 
-AWS recommends using enhanced security policies for improved security. You can specify TLS 1.3 security policies:
+AWS recommends using enhanced security policies for improved security. You can specify TLS 1.3 security policies.
+
+When using enhanced security policies (those starting with `SecurityPolicy_`), you must set `endpointAccessMode` to `STRICT`:
 
 ```ts
 declare const acmCertificateForExampleCom: any;
 
-// For regional or private APIs
+// For regional or private APIs with TLS 1.3
 new apigateway.DomainName(this, 'custom-domain-tls13', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
-  securityPolicy: apigateway.SecurityPolicy.TLS13_1_3_2025_09 // TLS 1.3 (recommended)
+  securityPolicy: apigateway.SecurityPolicy.TLS13_1_3_2025_09, // TLS 1.3 (recommended)
+  endpointAccessMode: apigateway.EndpointAccessMode.STRICT, // Required for enhanced security policies
 });
 
-// For edge-optimized APIs
+// For edge-optimized APIs with TLS 1.3
 new apigateway.DomainName(this, 'custom-domain-edge-tls13', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
   endpointType: apigateway.EndpointType.EDGE,
-  securityPolicy: apigateway.SecurityPolicy.TLS13_2025_EDGE // TLS 1.3 for edge
+  securityPolicy: apigateway.SecurityPolicy.TLS13_2025_EDGE, // TLS 1.3 for edge
+  endpointAccessMode: apigateway.EndpointAccessMode.STRICT, // Required for enhanced security policies
 });
 ```
+
+> **Note:** Mutual TLS (mTLS) cannot be enabled on a domain name that uses an enhanced security policy.
 
 Once you have a domain, you can map base paths of the domain to APIs.
 The following example will map the URL <https://example.com/go-to-api1>

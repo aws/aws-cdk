@@ -165,6 +165,91 @@ describe('domains', () => {
     }).not.toThrow();
   });
 
+  test('accepts TLS 1.3 with post-quantum cryptography security policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'pq-domain', {
+      domainName: 'pq.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'pq.example.com',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+    });
+  });
+
+  test('accepts endpointAccessMode property', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'tls13-strict-domain', {
+      domainName: 'strict.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'strict.example.com',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_1_3_2025_09',
+      'EndpointAccessMode': 'STRICT',
+    });
+  });
+
+  test('throws if mTLS is used with enhanced security policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'mtls.example.com',
+        certificate: cert,
+        securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        mtls: {
+          bucket,
+          key: 'someca.pem',
+        },
+      });
+    }).toThrow(/Mutual TLS \(mTLS\) cannot be enabled on a domain name that uses an enhanced security policy/);
+  });
+
+  test('allows mTLS with legacy security policy TLS_1_2', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
+
+    // WHEN - Should not throw error
+    new apigw.DomainName(stack, 'domain', {
+      domainName: 'mtls.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS_1_2,
+      mtls: {
+        bucket,
+        key: 'someca.pem',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'mtls.example.com',
+      'SecurityPolicy': 'TLS_1_2',
+      'MutualTlsAuthentication': { 'TruststoreUri': 's3://example-bucket/someca.pem' },
+    });
+  });
+
   test('"mapping" can be used to automatically map this domain to the deployment stage of an API', () => {
     // GIVEN
     const stack = new Stack();

@@ -38,17 +38,56 @@ export enum SecurityPolicy {
   /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'TLS_1_2',
 
-  /** Cipher suite TLS 1.3 */
+  /**
+   * Cipher suite TLS 1.3 for regional/private endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
   TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
 
-  /** Cipher suite TLS 1.3 and TLS 1.2 with post-quantum cryptography */
+  /**
+   * Cipher suite TLS 1.3 (FIPS compliant) for regional/private endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
+
+  /**
+   * Cipher suite TLS 1.3 and TLS 1.2 with post-quantum cryptography for regional/private endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
   TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
 
-  /** Cipher suite TLS 1.3 for edge-optimized endpoints */
-  TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+  /**
+   * Cipher suite TLS 1.3 and TLS 1.2 with Perfect Forward Secrecy and post-quantum cryptography for regional/private endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
 
-  /** Cipher suite TLS 1.3 (FIPS compliant) */
-  TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
+  /**
+   * Cipher suite TLS 1.3 for edge-optimized endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+}
+
+/**
+ * The endpoint access mode for the domain name.
+ *
+ * When using enhanced security policies (those starting with `SecurityPolicy_`),
+ * you must set the endpoint access mode to `STRICT`.
+ *
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
+ */
+export enum EndpointAccessMode {
+  /**
+   * Strict mode - required for enhanced security policies.
+   * Only accepts connections from clients using the specified security policy.
+   */
+  STRICT = 'STRICT',
+
+  /**
+   * Standard mode - default for legacy security policies (TLS_1_0, TLS_1_2).
+   */
+  STANDARD = 'STANDARD',
 }
 
 export interface DomainNameOptions {
@@ -76,6 +115,17 @@ export interface DomainNameOptions {
    * @default SecurityPolicy.TLS_1_2
    */
   readonly securityPolicy?: SecurityPolicy;
+
+  /**
+   * The endpoint access mode for this domain name.
+   *
+   * When using enhanced security policies (those starting with `SecurityPolicy_`),
+   * you must set this to `STRICT`.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
+   * @default - No endpoint access mode is configured. For enhanced security policies, you must explicitly set this to STRICT.
+   */
+  readonly endpointAccessMode?: EndpointAccessMode;
 
   /**
    * The mutual TLS authentication configuration for a custom domain name.
@@ -178,6 +228,16 @@ export class DomainName extends Resource implements IDomainName {
       throw new ValidationError(`Domain name does not support uppercase letters. Got: ${props.domainName}`, scope);
     }
 
+    // Validate mTLS is not used with enhanced security policies
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    if (props.mtls && this.isEnhancedSecurityPolicy(props.securityPolicy)) {
+      throw new ValidationError(
+        'Mutual TLS (mTLS) cannot be enabled on a domain name that uses an enhanced security policy. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
+        this,
+      );
+    }
+
     const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
@@ -186,6 +246,7 @@ export class DomainName extends Resource implements IDomainName {
       endpointConfiguration: { types: [this.endpointType] },
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
+      endpointAccessMode: props.endpointAccessMode,
     });
 
     this.domainName = resource.ref;
@@ -298,6 +359,17 @@ export class DomainName extends Resource implements IDomainName {
       truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
       truststoreVersion: mtlsConfig.version,
     };
+  }
+
+  /**
+   * Checks if the given security policy is an enhanced security policy.
+   * Enhanced security policies start with 'SecurityPolicy_' prefix.
+   */
+  private isEnhancedSecurityPolicy(policy?: SecurityPolicy): boolean {
+    if (!policy || Token.isUnresolved(policy)) {
+      return false;
+    }
+    return policy.startsWith('SecurityPolicy_');
   }
 }
 
