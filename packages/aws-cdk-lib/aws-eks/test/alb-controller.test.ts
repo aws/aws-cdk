@@ -261,7 +261,7 @@ test('SCOPED mode prevents cross-account resource enumeration', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack', {
-    env: { region: 'eu-central-1', account: '987654321098' },
+    env: { region: 'eu-central-1', account: '123456789012' },
   });
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_23,
@@ -313,7 +313,7 @@ test('SCOPED mode prevents cross-account resource enumeration', () => {
   ec2ReadOnlyStatements.forEach((stmt: any) => {
     expect(stmt.Condition).toBeDefined();
     expect(stmt.Condition.StringEquals).toBeDefined();
-    expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toEqual('987654321098');
+    expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toEqual('123456789012');
     expect(stmt.Condition.StringEquals['aws:RequestedRegion']).toEqual('eu-central-1');
   });
 });
