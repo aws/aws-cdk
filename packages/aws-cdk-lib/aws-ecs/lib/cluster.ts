@@ -1546,11 +1546,8 @@ export interface ManagedInstancesCapacityProviderProps {
   /**
    * The security groups to associate with the launched EC2 instances.
    * These security groups control the network traffic allowed to and from the instances.
-   * If not specified, the default security group of the VPC containing the subnets will be used.
-   *
-   * @default - default security group of the VPC
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
    * The size of the task volume storage attached to each instance.
@@ -1648,6 +1645,10 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
 
     if (props.subnets.length === 0) {
       throw new ValidationError('Subnets are required and should be non-empty.', this);
+    }
+
+    if (props.securityGroups.length === 0) {
+      throw new ValidationError('Security groups cannot be an empty array. Provide at least one security group.', this);
     }
 
     // Create or use provided infrastructure role
