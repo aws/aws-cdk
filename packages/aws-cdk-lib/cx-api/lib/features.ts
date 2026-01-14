@@ -1758,8 +1758,8 @@ export const FLAGS: Record<string, FlagInfo> = {
       Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
       hybrid ML-KEM key exchange.
 
-      When disabled (default), no explicit SSL policy is set, preserving the existing behavior where
-      CloudFormation uses its service default.
+      When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
+      where \`RECOMMENDED_TLS\` (\`ELBSecurityPolicy-TLS13-1-2-2021-06\`) is used.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

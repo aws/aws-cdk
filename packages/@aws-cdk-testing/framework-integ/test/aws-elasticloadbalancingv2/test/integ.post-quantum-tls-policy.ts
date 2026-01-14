@@ -108,15 +108,15 @@ nlb.addListener('TcpListener', {
 });
 
 // Test with explicit SSL policy (should override feature flag)
-// Note: Using a compatible post-quantum policy since AWS doesn't allow mixing policy types on the same ALB
+// Using TLS12 policy to verify that explicit policy overrides the feature flag default
 alb.addListener('ExplicitSslListener', {
   port: 8443,
   protocol: elbv2.ApplicationProtocol.HTTPS,
   certificates: [elbv2.ListenerCertificate.fromArn(certificateArn)],
-  sslPolicy: elbv2.SslPolicy.RECOMMENDED_TLS_PQ, // Explicit post-quantum policy should override feature flag
+  sslPolicy: elbv2.SslPolicy.TLS12, // Explicit TLS12 policy should override feature flag's post-quantum default
   defaultAction: elbv2.ListenerAction.fixedResponse(200, {
     contentType: 'text/plain',
-    messageBody: 'ALB with Explicit Post-Quantum Policy',
+    messageBody: 'ALB with Explicit TLS12 Policy',
   }),
 });
 

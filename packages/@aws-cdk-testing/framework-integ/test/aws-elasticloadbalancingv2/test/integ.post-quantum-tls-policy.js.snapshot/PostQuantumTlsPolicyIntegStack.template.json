@@ -485,22 +485,22 @@
       "CertificateArn": "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
      }
     ],
-    "DefaultActions": [
-     {
-      "FixedResponseConfig": {
-       "ContentType": "text/plain",
-       "MessageBody": "ALB with Explicit Post-Quantum Policy",
-       "StatusCode": "200"
-      },
-      "Type": "fixed-response"
-     }
-    ],
-    "LoadBalancerArn": {
-     "Ref": "ALBAEE750D2"
-    },
-    "Port": 8443,
-    "Protocol": "HTTPS",
-    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
+     "DefaultActions": [
+      {
+       "FixedResponseConfig": {
+        "ContentType": "text/plain",
+        "MessageBody": "ALB with Explicit TLS12 Policy",
+        "StatusCode": "200"
+       },
+       "Type": "fixed-response"
+      }
+     ],
+     "LoadBalancerArn": {
+      "Ref": "ALBAEE750D2"
+     },
+     "Port": 8443,
+     "Protocol": "HTTPS",
+     "SslPolicy": "ELBSecurityPolicy-TLS-1-2-2017-01"
    }
   },
   "NLB55158F82": {
