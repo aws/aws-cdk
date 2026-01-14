@@ -238,6 +238,16 @@ export class DomainName extends Resource implements IDomainName {
       );
     }
 
+    // Validate endpointAccessMode is STRICT for enhanced security policies
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
+    if (this.isEnhancedSecurityPolicy(props.securityPolicy) && props.endpointAccessMode !== EndpointAccessMode.STRICT) {
+      throw new ValidationError(
+        'Enhanced security policies require endpointAccessMode to be set to STRICT. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
+        this,
+      );
+    }
+
     const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,

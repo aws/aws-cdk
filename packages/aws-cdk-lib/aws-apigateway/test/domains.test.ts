@@ -119,12 +119,14 @@ describe('domains', () => {
       domainName: 'tls13.example.com',
       certificate: cert,
       securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'tls13.example.com',
       'SecurityPolicy': 'SecurityPolicy_TLS13_1_3_2025_09',
+      'EndpointAccessMode': 'STRICT',
     });
   });
 
@@ -141,6 +143,7 @@ describe('domains', () => {
         domainName: 'api.example.com',
         certificate: cert,
         securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        endpointAccessMode: apigw.EndpointAccessMode.STRICT,
         mapping: api,
         basePath: 'v1/users',
       });
@@ -175,12 +178,14 @@ describe('domains', () => {
       domainName: 'pq.example.com',
       certificate: cert,
       securityPolicy: apigw.SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'pq.example.com',
       'SecurityPolicy': 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+      'EndpointAccessMode': 'STRICT',
     });
   });
 
@@ -203,6 +208,22 @@ describe('domains', () => {
       'SecurityPolicy': 'SecurityPolicy_TLS13_1_3_2025_09',
       'EndpointAccessMode': 'STRICT',
     });
+  });
+
+  test('throws if enhanced security policy is used without endpointAccessMode STRICT', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'example.com',
+        certificate: cert,
+        securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        // Missing endpointAccessMode: STRICT
+      });
+    }).toThrow(/Enhanced security policies require endpointAccessMode to be set to STRICT/);
   });
 
   test('throws if mTLS is used with enhanced security policy', () => {
