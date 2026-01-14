@@ -4232,11 +4232,17 @@ describe('cluster', () => {
         role: instanceRole,
       });
 
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
       // WHEN
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
         scaleInAfter: cdk.Duration.seconds(300),
       });
 
@@ -4294,12 +4300,18 @@ describe('cluster', () => {
         role: instanceRole,
       });
 
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
       // THEN
       expect(() => {
         new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
           infrastructureRole,
           ec2InstanceProfile: instanceProfile,
           subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
           scaleInAfter: cdk.Duration.seconds(-1),
         });
       }).toThrow('scaleInAfter must be between 0 and 3600 seconds (1 hour), got: -1.');
@@ -4329,12 +4341,18 @@ describe('cluster', () => {
         role: instanceRole,
       });
 
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
       // THEN
       expect(() => {
         new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
           infrastructureRole,
           ec2InstanceProfile: instanceProfile,
           subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
           scaleInAfter: cdk.Duration.seconds(3601),
         });
       }).toThrow('scaleInAfter must be between 0 and 3600 seconds (1 hour), got: 3601.');
