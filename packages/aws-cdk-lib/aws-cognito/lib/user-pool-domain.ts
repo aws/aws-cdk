@@ -1,13 +1,13 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolDomain } from './cognito.generated';
-import { IUserPool } from './user-pool';
 import { UserPoolClient } from './user-pool-client';
 import { IResource, Resource, Stack, Token } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import { IUserPoolDomainRef, IUserPoolRef, UserPoolDomainReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * The branding version of managed login for the domain.
@@ -26,7 +26,7 @@ export enum ManagedLoginVersion {
 /**
  * Represents a user pool domain.
  */
-export interface IUserPoolDomain extends IResource {
+export interface IUserPoolDomain extends IResource, IUserPoolDomainRef {
   /**
    * The domain that was specified to be created.
    * If `customDomain` was selected, this holds the full domain name that was specified.
@@ -101,7 +101,7 @@ export interface UserPoolDomainProps extends UserPoolDomainOptions {
   /**
    * The user pool to which this domain should be associated.
    */
-  readonly userPool: IUserPool;
+  readonly userPool: IUserPoolRef;
 }
 
 /**
@@ -118,6 +118,15 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   public static fromDomainName(scope: Construct, id: string, userPoolDomainName: string): IUserPoolDomain {
     class Import extends Resource implements IUserPoolDomain {
       public readonly domainName = userPoolDomainName;
+
+      public get userPoolDomainRef(): UserPoolDomainReference {
+        return {
+          domain: userPoolDomainName,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('userPoolDomainRef is not available on imported UserPoolDomain.');
+          },
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -125,14 +134,24 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
 
   public readonly domainName: string;
   private isCognitoDomain: boolean;
+  private readonly _userPool: IUserPoolRef;
 
   private cloudFrontCustomResource?: AwsCustomResource;
   private readonly resource: CfnUserPoolDomain;
+
+  public get userPoolDomainRef(): UserPoolDomainReference {
+    return {
+      userPoolId: this._userPool.userPoolRef.userPoolId,
+      domain: this.domainName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: UserPoolDomainProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this._userPool = props.userPool;
 
     if (!!props.customDomain === !!props.cognitoDomain) {
       throw new ValidationError('One of, and only one of, cognitoDomain or customDomain must be specified', this);
@@ -148,7 +167,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
 
     const domainName = props.cognitoDomain?.domainPrefix || props.customDomain?.domainName!;
     this.resource = new CfnUserPoolDomain(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       domain: domainName,
       customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateRef.certificateId } : undefined,
       managedLoginVersion: props.managedLoginVersion,
