@@ -204,7 +204,7 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
             namespaces: this.reflectionConfiguration.namespaces,
           },
         },
-      } as any;
+      };
     }
 
     // If overrides are provided, use custom strategy format

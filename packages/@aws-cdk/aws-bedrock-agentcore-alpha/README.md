@@ -1996,7 +1996,8 @@ Captures meaningful slices of user and system interactions, preserve them into c
 Extracted memory example: User first asked about pricing on Monday, then requested feature comparison on Tuesday, finally made purchase decision on Wednesday.
 
    - Captures event sequences and temporal relationships
-   - Namespace: `/strategies/{memoryStrategyId}/actors/{actorId}`
+   - Namespace: `/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}`
+   - Reflections: `/strategy/{memoryStrategyId}/actor/{actorId}` 
 
 ```typescript fixture=default
 // Create memory with built-in strategies
@@ -2018,7 +2019,7 @@ The name generated for each built in memory strategy is as follows:
 - For Summarization: `summary_builtin_cdk001`
 - For Semantic:`semantic_builtin_cdk001>`
 - For User Preferences: `preference_builtin_cdk001`
-- For Episodic : `episodic_builtin_cdk001`
+- For Episodic : `episodic_builtin_cdkGen0001`
 
 ### Memory with custom Strategies
 

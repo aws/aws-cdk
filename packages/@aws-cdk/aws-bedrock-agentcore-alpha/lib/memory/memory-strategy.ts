@@ -168,7 +168,10 @@ export class MemoryStrategy {
     return new ManagedMemoryStrategy(MemoryStrategyType.EPISODIC, {
       name: 'episodic_builtin_cdkGen0001',
       description: 'Captures meaningful slices of user and system interactions.',
-      namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
+      namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
+      reflectionConfiguration: {
+        namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
+      },
     });
   }
   /**
