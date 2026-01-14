@@ -40,7 +40,7 @@ export interface IChainable {
  * Enables attaching a `.addCatch()` clause to handle errors for a given state.
  * Useful for writing reusable Step Functions patterns that expect error-handling capabilities.
  */
-export interface ICatchable {
+export interface ICatchable extends IChainable, INextable {
   /**
    * Add a recovery handler for this state
    *
@@ -48,7 +48,7 @@ export interface ICatchable {
    * @param props Catch configuration
    * @returns The resulting chain
    */
-  addCatch(handler: IChainable, props?: CatchProps): this;
+  addCatch(handler: IChainable, props?: CatchProps): ICatchable;
 }
 
 /**

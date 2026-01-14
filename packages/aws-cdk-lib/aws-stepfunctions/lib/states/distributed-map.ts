@@ -293,7 +293,7 @@ export class DistributedMap extends MapBase implements INextable, ICatchable {
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): this {
+  public addCatch(handler: IChainable, props: CatchProps = {}): ICatchable {
     super._addCatch(handler.startState, props);
     return this;
   }

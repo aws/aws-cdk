@@ -52,7 +52,7 @@ export class CustomState extends State implements IChainable, INextable, ICatcha
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): this {
+  public addCatch(handler: IChainable, props: CatchProps = {}): ICatchable {
     super._addCatch(handler.startState, props);
     return this;
   }
