@@ -1499,6 +1499,40 @@ This simplifies the process of configuring IAM permissions for your Kubernetes a
 the installation of the Pod Identity Agent add-on, and the association between the role and the service account, making it easier to manage AWS credentials
 for your applications.
 
+#### ServiceAccount without IAM Role
+
+For workloads that do not require AWS IAM permissions, you can create a `ServiceAccount` without an associated IAM role by setting `identityType` to `IdentityType.NONE`. This is useful for:
+
+- Reducing the number of IAM roles in your account (AWS has a default limit of 1,000 IAM roles per account)
+- Implementing the principle of least privilege when workloads only need Kubernetes-level permissions
+- Minimizing security surface area for services that don't need AWS resource access
+
+When using `IdentityType.NONE`, no IAM role, OpenIdConnectProvider, or PodIdentityAssociation will be created:
+
+```ts
+declare const cluster: eks.Cluster;
+
+// ServiceAccount without AWS IAM permissions
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount', {
+  identityType: eks.IdentityType.NONE,
+});
+
+// Attempting to add IAM permissions will have no effect
+serviceAccount.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['*'],
+}));
+// Returns: { statementAdded: false }
+```
+
+The ServiceAccount is still created in Kubernetes and can be used normally by pods, but without AWS IAM credentials. If you need to add AWS permissions later, you'll need to change the `identityType` to either `IdentityType.IRSA` (default) or `IdentityType.POD_IDENTITY` and redeploy.
+
+When migrating an existing ServiceAccount from IRSA or POD_IDENTITY to NONE:
+- The IAM role will be deleted from CloudFormation
+- Existing pods will retain their AWS credentials until they are restarted
+- New pods will not have AWS credentials
+- For a complete cutover, restart your pods after the CDK deployment completes
+
 ## Applying Kubernetes Resources
 
 The library supports several popular resource deployment mechanisms, among which are:

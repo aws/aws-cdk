@@ -64,6 +64,19 @@ serviceAccount.role!.addToPrincipalPolicy(
   }),
 );
 
+// Test ServiceAccount with IdentityType.NONE
+const noAuthServiceAccount = cluster.addServiceAccount('no-auth-service-account', {
+  identityType: eks.IdentityType.NONE,
+});
+
+// Verify that attempting to add IAM permissions to a NONE-type ServiceAccount has no effect
+noAuthServiceAccount.addToPrincipalPolicy(
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: ['*'],
+  }),
+);
+
 // this custom resource will check that the bucket exists
 // the bucket will be deleted when the custom resource is deleted
 // if the bucket does not exist, then it will throw an error and fail the deployment.
