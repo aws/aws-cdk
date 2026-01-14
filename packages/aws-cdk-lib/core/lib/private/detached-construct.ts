@@ -28,6 +28,7 @@ export abstract class DetachedConstruct extends Construct implements IConstruct 
     // Use Object.defineProperty to override 'node' property instead of a getter
     // to avoid TS2611 error (property vs accessor conflict with base class)
     Object.defineProperty(this, 'node', {
+      enumerable: false,
       get() { throw new UnscopedValidationError(errorMessage); },
     });
 

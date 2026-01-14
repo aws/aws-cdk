@@ -242,6 +242,9 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (this.enableIamAuthentication === false) {
       throw new ValidationError('Cannot grant connect when IAM authentication is disabled', this);
@@ -1222,6 +1225,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
   /**
    * Grant the given identity connection access to the database.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the Principal to grant the permissions to
    * @param dbUser the name of the database user to allow connecting as to the db instance,
