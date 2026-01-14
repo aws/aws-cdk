@@ -1956,8 +1956,8 @@ export class Cluster extends ClusterBase {
    *                         have access policies attached per AWS EKS API constraints.
    *
    * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
-   */
-   @MethodMetadata()
+    */
+  @MethodMetadata()
   public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType) {
     this.addToAccessEntry({
       id,
