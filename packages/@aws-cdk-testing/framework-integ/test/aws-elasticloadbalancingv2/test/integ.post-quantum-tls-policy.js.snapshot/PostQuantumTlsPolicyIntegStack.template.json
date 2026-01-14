@@ -13,9 +13,6 @@
       "Value": "PostQuantumTlsPolicyIntegStack/VPC"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/Resource"
    }
   },
   "VPCPublicSubnet1SubnetB4246D30": {
@@ -48,9 +45,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet1/Subnet"
    }
   },
   "VPCPublicSubnet1RouteTableFEE4B781": {
@@ -65,9 +59,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet1/RouteTable"
    }
   },
   "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
@@ -79,9 +70,6 @@
     "SubnetId": {
      "Ref": "VPCPublicSubnet1SubnetB4246D30"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet1/RouteTableAssociation"
    }
   },
   "VPCPublicSubnet1DefaultRoute91CEF279": {
@@ -97,10 +85,7 @@
    },
    "DependsOn": [
     "VPCVPCGW99B986DC"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet1/DefaultRoute"
-   }
+   ]
   },
   "VPCPublicSubnet1EIP6AD938E8": {
    "Type": "AWS::EC2::EIP",
@@ -112,9 +97,6 @@
       "Value": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet1"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet1/EIP"
    }
   },
   "VPCPublicSubnet1NATGatewayE0556630": {
@@ -139,10 +121,7 @@
    "DependsOn": [
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet1/NATGateway"
-   }
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -174,9 +153,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet2/Subnet"
    }
   },
   "VPCPublicSubnet2RouteTable6F1A15F1": {
@@ -191,9 +167,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet2/RouteTable"
    }
   },
   "VPCPublicSubnet2RouteTableAssociation5A808732": {
@@ -205,9 +178,6 @@
     "SubnetId": {
      "Ref": "VPCPublicSubnet2Subnet74179F39"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet2/RouteTableAssociation"
    }
   },
   "VPCPublicSubnet2DefaultRouteB7481BBA": {
@@ -223,10 +193,7 @@
    },
    "DependsOn": [
     "VPCVPCGW99B986DC"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PublicSubnet2/DefaultRoute"
-   }
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -258,9 +225,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PrivateSubnet1/Subnet"
    }
   },
   "VPCPrivateSubnet1RouteTableBE8A6027": {
@@ -275,9 +239,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PrivateSubnet1/RouteTable"
    }
   },
   "VPCPrivateSubnet1RouteTableAssociation347902D1": {
@@ -289,9 +250,6 @@
     "SubnetId": {
      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PrivateSubnet1/RouteTableAssociation"
    }
   },
   "VPCPrivateSubnet1DefaultRouteAE1D6490": {
@@ -304,9 +262,6 @@
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PrivateSubnet1/DefaultRoute"
    }
   },
   "VPCPrivateSubnet2SubnetCFCDAA7A": {
@@ -339,9 +294,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PrivateSubnet2/Subnet"
    }
   },
   "VPCPrivateSubnet2RouteTable0A19E10E": {
@@ -356,9 +308,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PrivateSubnet2/RouteTable"
    }
   },
   "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
@@ -370,9 +319,6 @@
     "SubnetId": {
      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PrivateSubnet2/RouteTableAssociation"
    }
   },
   "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
@@ -385,9 +331,6 @@
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/PrivateSubnet2/DefaultRoute"
    }
   },
   "VPCIGWB7E252D3": {
@@ -399,9 +342,6 @@
       "Value": "PostQuantumTlsPolicyIntegStack/VPC"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/IGW"
    }
   },
   "VPCVPCGW99B986DC": {
@@ -413,9 +353,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/VPC/VPCGW"
    }
   },
   "ALBAEE750D2": {
@@ -451,10 +388,7 @@
     "VPCPublicSubnet1RouteTableAssociation0B0896DC",
     "VPCPublicSubnet2DefaultRouteB7481BBA",
     "VPCPublicSubnet2RouteTableAssociation5A808732"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/ALB/Resource"
-   }
+   ]
   },
   "ALBSecurityGroup8B8624F8": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -497,7 +431,6 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/ALB/SecurityGroup/Resource",
     "guard": {
      "SuppressedRules": [
       "EC2_NO_OPEN_SECURITY_GROUPS"
@@ -510,7 +443,7 @@
    "Properties": {
     "Certificates": [
      {
-      "CertificateArn": "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+      "CertificateArn": "arn:aws:acm:us-east-1:903779448426:certificate/33c1f6dd-59ca-4f76-a0a4-cfd630d5971c"
      }
     ],
     "DefaultActions": [
@@ -528,9 +461,6 @@
     },
     "Port": 443,
     "Protocol": "HTTPS"
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/ALB/HttpsListener/Resource"
    }
   },
   "ALBHttpListener04CE8CD0": {
@@ -551,9 +481,6 @@
     },
     "Port": 80,
     "Protocol": "HTTP"
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/ALB/HttpListener/Resource"
    }
   },
   "ALBExplicitSslListenerEF60111D": {
@@ -561,7 +488,7 @@
    "Properties": {
     "Certificates": [
      {
-      "CertificateArn": "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+      "CertificateArn": "arn:aws:acm:us-east-1:903779448426:certificate/33c1f6dd-59ca-4f76-a0a4-cfd630d5971c"
      }
     ],
     "DefaultActions": [
@@ -580,9 +507,6 @@
     "Port": 8443,
     "Protocol": "HTTPS",
     "SslPolicy": "ELBSecurityPolicy-TLS-1-2-2017-01"
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/ALB/ExplicitSslListener/Resource"
    }
   },
   "NLB55158F82": {
@@ -610,17 +534,14 @@
     "VPCPublicSubnet1RouteTableAssociation0B0896DC",
     "VPCPublicSubnet2DefaultRouteB7481BBA",
     "VPCPublicSubnet2RouteTableAssociation5A808732"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/NLB/Resource"
-   }
+   ]
   },
   "NLBTlsListenerBDDD1B7E": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
    "Properties": {
     "Certificates": [
      {
-      "CertificateArn": "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+      "CertificateArn": "arn:aws:acm:us-east-1:903779448426:certificate/33c1f6dd-59ca-4f76-a0a4-cfd630d5971c"
      }
     ],
     "DefaultActions": [
@@ -636,9 +557,6 @@
     },
     "Port": 443,
     "Protocol": "TLS"
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/NLB/TlsListener/Resource"
    }
   },
   "NLBTcpListener14676C94": {
@@ -657,9 +575,6 @@
     },
     "Port": 80,
     "Protocol": "TCP"
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/NLB/TcpListener/Resource"
    }
   },
   "NlbTargetGroupB5099BEB": {
@@ -670,9 +585,6 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/NlbTargetGroup/Resource"
    }
   },
   "NlbTcpTargetGroupD7D351B5": {
@@ -683,20 +595,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/NlbTcpTargetGroup/Resource"
    }
-  },
-  "CDKMetadata": {
-   "Type": "AWS::CDK::Metadata",
-   "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12RwW6DMBBEv6V34yL+gEZVFKlKEES5VovZphscG9lrUIT49wqSAOlpZ57Hq5Edy1jGb9D5SFV1pKmUfcGgagGd/+5RJbI/NUpsfswp24gslJpUEUqDPLJF5TYwHqHUuPCFpd5bRcBkzRwexecuG8ceeAuMHdxE5qgFxmXxzjA6g3Pg3uThUmZQv1c0LApUwRHfts6GZuqwBoNADZ5JaQtVCRqMInNuE9mnTaNJTdW+LFQf0xm6ccOLX+fIM5pH5qn3yJ119cudJ/uXOYI7I89FV3YYRI7eBqem5zkEbgIPwtgK5cW/t0kik/G/Lp4ocsEwXVHm9/kH1EaJK8oBAAA="
-   },
-   "Metadata": {
-    "aws:cdk:path": "PostQuantumTlsPolicyIntegStack/CDKMetadata/Default"
-   },
-   "Condition": "CDKMetadataAvailable"
   }
  },
  "Outputs": {
@@ -717,272 +616,6 @@
      "DNSName"
     ]
    }
-  }
- },
- "Conditions": {
-  "CDKMetadataAvailable": {
-   "Fn::Or": [
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "af-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-3"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-south-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-3"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-4"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ca-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ca-west-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "cn-north-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "cn-northwest-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-central-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-north-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-south-2"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-3"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "il-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "me-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "me-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "sa-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-east-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-west-1"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "us-west-2"
-     ]
-    }
-   ]
   }
  },
  "Parameters": {
