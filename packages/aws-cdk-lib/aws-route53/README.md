@@ -216,6 +216,36 @@ new route53.ARecord(this, 'ARecordLatency1', {
 });
 ```
 
+To enable [failover routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html), use the `failover` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+const healthCheck = new route53.HealthCheck(this, 'HealthCheck', {
+  type: route53.HealthCheckType.HTTP,
+  fqdn: 'example.com',
+  port: 80,
+  resourcePath: '/health',
+  failureThreshold: 3,
+  requestInterval: Duration.seconds(30),
+});
+
+new route53.ARecord(this, 'ARecordFailoverPrimary', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  failover: route53.Failover.PRIMARY,
+  healthCheck,
+  setIdentifier: 'failover-primary',
+});
+
+new route53.ARecord(this, 'ARecordFailoverSecondary', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
+  failover: route53.Failover.SECONDARY,
+  setIdentifier: 'failover-secondary',
+});
+```
+
 To enable [multivalue answer routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-multivalue.html), use the `multivalueAnswer` parameter:
 
 ```ts

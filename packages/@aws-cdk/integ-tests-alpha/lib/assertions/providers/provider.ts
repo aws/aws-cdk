@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import {
   Duration,
   CfnResource,
@@ -10,9 +11,8 @@ import {
   Reference,
   determineLatestNodeRuntimeName,
 } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-internal';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { Construct } from 'constructs';
 
 /**
  * Properties for a lambda function provider
@@ -300,6 +300,7 @@ export class AssertionsProvider extends Construct {
   /**
    * Grant a principal access to invoke the assertion provider
    * lambda function
+   * [disable-awslint:no-grants]
    *
    * @param principalArn the ARN of the principal that should be given
    *  permission to invoke the assertion provider

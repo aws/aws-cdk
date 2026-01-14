@@ -1,1 +1,1 @@
-export * from './datasync.generated';
+export * from './cfn-props-mixins.generated';

@@ -13,9 +13,9 @@
 
 import { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
 import { Arn, ArnFormat } from 'aws-cdk-lib';
-import { IConstruct } from 'constructs';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import { IConstruct } from 'constructs';
 import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
@@ -204,6 +204,9 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
 
   /**
    * Grants the necessary permissions to the role
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The grantee to grant permissions to
    * @returns The Grant object for chaining
    */

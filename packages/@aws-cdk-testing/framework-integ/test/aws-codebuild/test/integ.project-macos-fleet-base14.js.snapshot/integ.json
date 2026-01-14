@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "MacOsProjectIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-project-macos-base14"
+      ],
+      "assertionStack": "MacOsProjectIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -26,7 +26,7 @@ class Fixture extends Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE).toString(),
     });
 
-    const role = new iam.Role(this, 'Role', {
+    const lambdaRole = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
     });
 
@@ -50,6 +50,10 @@ class Fixture extends Stack {
       targetRepository: imagebuilder.Repository.fromEcr(
         ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
       )
+    });
+
+    const exampleImage = new imagebuilder.Image(this, 'Image', {
+      recipe: exampleImageRecipe
     });
 
     const examplePipeline = new imagebuilder.ImagePipeline(this, 'Pipeline', {

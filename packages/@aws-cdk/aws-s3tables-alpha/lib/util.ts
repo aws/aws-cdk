@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib/core';
 import { IConstruct } from 'constructs';
 import { TableBucketAttributes } from './table-bucket';
-import * as cdk from 'aws-cdk-lib/core';
 
 export const S3_TABLES_SERVICE = 's3tables';
 

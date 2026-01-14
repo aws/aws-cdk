@@ -1,1 +1,1 @@
-export * from './healthimaging.generated';
+export * from './cfn-props-mixins.generated';

@@ -500,7 +500,8 @@
       "2.0",
       "3.0",
       "4.0",
-      "5.0"
+      "5.0",
+      "5.1"
     ],
     "JobLanguage": [
       "scala",
@@ -687,6 +688,26 @@
       "ECR"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image-pipeline.ts": {
+    "ScheduleStartCondition": [
+      "EXPRESSION_MATCH_ONLY",
+      "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE"
+    ],
+    "ImagePipelineStatus": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image.ts": {
+    "ImageArchitecture": [
+      "arm64",
+      "x86_64"
+    ],
+    "ImageType": [
+      "AMI",
+      "DOCKER"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts": {
     "HttpTokens": [
       "optional",
@@ -696,6 +717,21 @@
       "default",
       "dedicated",
       "host"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/lifecycle-policy.ts": {
+    "LifecyclePolicyActionType": [
+      "DELETE",
+      "DEPRECATE",
+      "DISABLE"
+    ],
+    "LifecyclePolicyStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "LifecyclePolicyResourceType": [
+      "AMI_IMAGE",
+      "CONTAINER_IMAGE"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts": {
@@ -1209,6 +1245,12 @@
       "merge"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.ts": {
+    "S3LogsDeliveryPermissionsVersion": [
+      "V1",
+      "V2"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/assets/lib/fs/follow-mode.ts": {
     "FollowMode": [
       "never",
@@ -1224,6 +1266,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts": {
+    "ResponseTransferMode": [
+      "BUFFERED",
+      "STREAM"
+    ],
     "ContentHandling": [
       "CONVERT_TO_BINARY",
       "CONVERT_TO_TEXT"
@@ -3150,6 +3196,8 @@
       "m7a",
       "standard8-amd",
       "m8a",
+      "standard9-graviton",
+      "m9g",
       "high-compute-memory1",
       "z1d",
       "inference1",
@@ -3215,6 +3263,12 @@
       "metal-24xl",
       "metal-32xl",
       "metal-48xl"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/key-pair.ts": {
@@ -5248,6 +5302,10 @@
       "SVCB",
       "TLSA",
       "TXT"
+    ],
+    "Failover": [
+      "PRIMARY",
+      "SECONDARY"
     ],
     "CaaTag": [
       "issue",

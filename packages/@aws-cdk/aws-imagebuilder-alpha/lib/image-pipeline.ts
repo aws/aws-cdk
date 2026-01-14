@@ -4,6 +4,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IDistributionConfiguration } from './distribution-configuration';
@@ -359,6 +360,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
 
   /**
    * Grant custom actions to the given grantee for the image pipeline
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -374,6 +376,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */
@@ -392,6 +395,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
 
   /**
    * Grant read permissions to the given grantee for the image pipeline
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -401,6 +405,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
 
   /**
    * Grant permissions to the given grantee to start an execution of the image pipeline
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -613,7 +618,7 @@ export class ImagePipeline extends ImagePipelineBase {
   /**
    * The infrastructure configuration used for the image build
    */
-  readonly infrastructureConfiguration: IInfrastructureConfiguration;
+  public readonly infrastructureConfiguration: IInfrastructureConfiguration;
 
   /**
    * The execution role used for the image build. If there is no execution role, then the build will be executed with
@@ -636,12 +641,15 @@ export class ImagePipeline extends ImagePipelineBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, IMAGE_PIPELINE_SYMBOL, { value: true });
 
     this.validateImagePipelineName();
 
     this.props = props;
+
     this.infrastructureConfiguration =
       props.infrastructureConfiguration ?? new InfrastructureConfiguration(this, 'InfrastructureConfiguration');
     this.executionRole = getExecutionRole(
@@ -696,9 +704,11 @@ export class ImagePipeline extends ImagePipelineBase {
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */
+  @MethodMetadata()
   public grantDefaultExecutionRolePermissions(grantee: iam.IGrantable): iam.Grant[] {
     const policies = defaultExecutionRolePolicy(this, this.props);
     return policies.map((policy) =>

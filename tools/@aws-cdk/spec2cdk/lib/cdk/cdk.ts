@@ -14,10 +14,13 @@ export class CdkCore extends ExternalModule {
   public readonly TagManager = $T(Type.fromName(this, 'TagManager'));
   public readonly TagType = $T(Type.fromName(this, 'TagType'));
   public readonly Fn = $T(Type.fromName(this, 'Fn'));
+  public readonly Aws = $T(Type.fromName(this, 'Aws'));
   public readonly ITaggable = Type.fromName(this, 'ITaggable');
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');
   public readonly Stack = Type.fromName(this, 'Stack');
+  public readonly Names = $T(Type.fromName(this, 'Names'));
+  public readonly Arn = $T(Type.fromName(this, 'Arn'));
 
   public readonly objectToCloudFormation = makeCallableExpr(this, 'objectToCloudFormation');
   public readonly eventPatternToCloudFormation = makeCallableExpr(this, 'eventPatternToCloudFormation');
@@ -32,6 +35,7 @@ export class CdkCore extends ExternalModule {
   public readonly unionMapper = makeCallableExpr(this, 'unionMapper');
   public readonly requireProperty = makeCallableExpr(this, 'requireProperty');
   public readonly isResolvableObject = makeCallableExpr(this, 'isResolvableObject');
+  public readonly mapArrayInPlace = makeCallableExpr(this, 'mapArrayInPlace');
 
   public readonly ValidationResult = $T(Type.fromName(this, 'ValidationResult'));
   public readonly VALIDATION_SUCCESS = makeCallableExpr(this, 'VALIDATION_SUCCESS');
@@ -49,6 +53,9 @@ export class CdkCore extends ExternalModule {
   public readonly validateNumber = makeCallableExpr(this, 'validateNumber');
   public readonly validateString = makeCallableExpr(this, 'validateString');
 
+  public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
+  public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
+
   constructor(fqn: string) {
     super(fqn);
   }
@@ -64,10 +71,26 @@ export class CdkCore extends ExternalModule {
   public tokenAsList(arg: Expression) {
     return this.Token.asList(arg);
   }
+
+  public uniqueId(arg: Expression) {
+    return this.Names.uniqueId(arg);
+  }
+
+  public uniqueResourceName(...args: Expression[]) {
+    return this.Names.uniqueResourceName(...args);
+  }
+
+  public arnFormat(...args: Expression[]) {
+    return this.Arn.format(...args);
+  }
 }
 
 export class Interfaces extends ExternalModule {
   public readonly IEnvironmentAware = Type.fromName(this, 'IEnvironmentAware');
+
+  public readonly IBucketRef = Type.fromName(this, 'aws_s3.IBucketRef');
+  public readonly ILogGroupRef = Type.fromName(this, 'aws_logs.ILogGroupRef');
+  public readonly IDeliveryStreamRef = Type.fromName(this, 'aws_kinesisfirehose.IDeliveryStreamRef');
 }
 
 export class CdkInternalHelpers extends ExternalModule {
@@ -104,6 +127,7 @@ export class CdkCloudWatch extends ExternalModule {
   public readonly MetricOptions = Type.fromName(this, 'MetricOptions');
 }
 
+export const CDK_INTERFACES = new Interfaces('aws-cdk-lib/interfaces');
 export const CDK_INTERFACES_ENVIRONMENT_AWARE = new Interfaces('aws-cdk-lib/interfaces/environment-aware');
 export const CDK_CORE = new CdkCore('aws-cdk-lib/core');
 export const CDK_CLOUDWATCH = new CdkCloudWatch('aws-cdk-lib/aws-cloudwatch');

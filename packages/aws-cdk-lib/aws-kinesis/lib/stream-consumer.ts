@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IStreamConsumerRef, StreamConsumerReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamConsumer',
@@ -15,7 +16,7 @@ const READ_OPERATIONS = [
 /**
  * A Kinesis Stream Consumer
  */
-export interface IStreamConsumer extends IResource {
+export interface IStreamConsumer extends IResource, IStreamConsumerRef {
   /**
    * The ARN of the stream consumer.
    *
@@ -75,6 +76,15 @@ abstract class StreamConsumerBase extends Resource implements IStreamConsumer {
   public abstract readonly stream: IStream;
 
   /**
+   * A reference to this stream consumer.
+   */
+  public get streamConsumerRef(): StreamConsumerReference {
+    return {
+      consumerArn: this.streamConsumerArn,
+    };
+  }
+
+  /**
    * Indicates if a resource policy should automatically be created upon
    * the first call to `addToResourcePolicy`.
    *
@@ -106,6 +116,8 @@ abstract class StreamConsumerBase extends Resource implements IStreamConsumer {
   /**
    * Grant read permissions for this stream consumer and its associated stream to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     this.stream.grantRead(grantee);
@@ -114,6 +126,8 @@ abstract class StreamConsumerBase extends Resource implements IStreamConsumer {
 
   /**
    * Grant the indicated permissions on this stream consumer to the given IAM principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipalOrResource({

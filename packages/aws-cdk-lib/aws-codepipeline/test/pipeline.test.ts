@@ -9,7 +9,7 @@ import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as codepipeline from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('', () => {
   describe('Pipeline', () => {

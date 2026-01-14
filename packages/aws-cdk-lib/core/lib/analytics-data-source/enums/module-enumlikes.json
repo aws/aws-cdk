@@ -797,6 +797,7 @@
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
       "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -1073,7 +1074,8 @@
       "WIN_SERVER_CORE_2022_BASE_3_0"
     ],
     "MacBuildImage": [
-      "BASE_14"
+      "BASE_14",
+      "BASE_15"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/ecs/deployment-config.ts": {
@@ -1659,11 +1661,13 @@
       "BACKUP_GATEWAY",
       "BATCH",
       "BEDROCK",
+      "BEDROCK_FIPS",
       "BEDROCK_AGENT",
       "BEDROCK_AGENT_RUNTIME",
       "BEDROCK_AGENTCORE",
       "BEDROCK_AGENTCORE_GATEWAY",
       "BEDROCK_RUNTIME",
+      "BEDROCK_RUNTIME_FIPS",
       "BEDROCK_DATA_AUTOMATION",
       "BEDROCK_DATA_AUTOMATION_FIPS",
       "BEDROCK_DATA_AUTOMATION_RUNTIME",
@@ -1673,6 +1677,8 @@
       "BILLING_AND_COST_MANAGEMENT_TAX",
       "BILLING_CONDUCTOR",
       "BRAKET",
+      "CERTIFICATE_MANAGER",
+      "CERTIFICATE_MANAGER_FIPS",
       "CLEAN_ROOMS",
       "CLEAN_ROOMS_ML",
       "CLOUD_CONTROL_API",
@@ -1750,6 +1756,7 @@
       "EC2_MESSAGES",
       "ECR",
       "ECR_DOCKER",
+      "ECR_PUBLIC",
       "ECS",
       "ECS_AGENT",
       "ECS_TELEMETRY",
@@ -1766,6 +1773,8 @@
       "ELASTICACHE_FIPS",
       "ELEMENTAL_MEDIACONNECT",
       "EMAIL_SMTP",
+      "EMAIL",
+      "EMAIL_FIPS",
       "EMR",
       "EMR_EKS",
       "EMR_SERVERLESS",
@@ -1909,6 +1918,7 @@
       "POLLY",
       "PRIVATE_5G",
       "PRIVATE_CERTIFICATE_AUTHORITY",
+      "PRIVATE_CERTIFICATE_AUTHORITY_FIPS",
       "PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_AD",
       "PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_SCEP",
       "PROMETHEUS",
@@ -1945,6 +1955,7 @@
       "S3_OUTPOSTS",
       "S3_MULTI_REGION_ACCESS_POINTS",
       "S3_TABLES",
+      "S3_VECTORS",
       "SAVINGS_PLANS",
       "SAGEMAKER_API",
       "SAGEMAKER_API_FIPS",
@@ -2325,7 +2336,8 @@
       "VERSION_1_0_317_0",
       "VERSION_1_0_333_0",
       "VERSION_1_0_391_0",
-      "VERSION_1_0_404_0"
+      "VERSION_1_0_404_0",
+      "VERSION_1_0_498_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/runtime-management.ts": {
@@ -2369,6 +2381,7 @@
       "DOTNET_6",
       "DOTNET_8",
       "DOTNET_9",
+      "DOTNET_10",
       "DOTNET_CORE_1",
       "DOTNET_CORE_2",
       "DOTNET_CORE_2_1",
@@ -2552,7 +2565,8 @@
       "OPENSEARCH_2_15",
       "OPENSEARCH_2_17",
       "OPENSEARCH_2_19",
-      "OPENSEARCH_3_1"
+      "OPENSEARCH_3_1",
+      "OPENSEARCH_3_3"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2675,7 +2689,8 @@
       "VER_3_10_0",
       "VER_3_10_1",
       "VER_3_10_2",
-      "VER_3_11_0"
+      "VER_3_11_0",
+      "VER_3_11_1"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2753,6 +2768,7 @@
       "VER_13_18",
       "VER_13_20",
       "VER_13_21",
+      "VER_13_22",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2768,6 +2784,7 @@
       "VER_14_15",
       "VER_14_17",
       "VER_14_18",
+      "VER_14_19",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2779,6 +2796,7 @@
       "VER_15_10",
       "VER_15_12",
       "VER_15_13",
+      "VER_15_14",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2792,10 +2810,12 @@
       "VER_16_8_LIMITLESS",
       "VER_16_9",
       "VER_16_9_LIMITLESS",
+      "VER_16_10",
       "VER_17_1",
       "VER_17_2",
       "VER_17_4",
-      "VER_17_5"
+      "VER_17_5",
+      "VER_17_6"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2920,7 +2940,8 @@
       "VER_11_4_7",
       "VER_11_4_8",
       "VER_11_4_9",
-      "VER_11_8_3"
+      "VER_11_8_3",
+      "VER_11_8_5"
     ],
     "MysqlEngineVersion": [
       "VER_5_5",
@@ -3593,6 +3614,8 @@
       "SYNTHETICS_NODEJS_PUPPETEER_9_1",
       "SYNTHETICS_NODEJS_PUPPETEER_10_0",
       "SYNTHETICS_NODEJS_PUPPETEER_11_0",
+      "SYNTHETICS_NODEJS_PUPPETEER_12_0",
+      "SYNTHETICS_NODEJS_PUPPETEER_13_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_3_0",
