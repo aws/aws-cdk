@@ -3,6 +3,7 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImage } from 'aws-cdk-lib/aws-imagebuilder';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseContainerImage, BaseImage } from './base-image';
@@ -270,6 +271,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
   /**
    * Grant custom actions to the given grantee for the image
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal
    * @param actions The list of actions
    */
@@ -283,6 +286,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */
@@ -301,6 +306,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
 
   /**
    * Grant read permissions to the given grantee for the image
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -429,6 +436,8 @@ export class Image extends ImageBase {
 
   public constructor(scope: Construct, id: string, props: ImageProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, IMAGE_SYMBOL, { value: true });
 
@@ -465,8 +474,11 @@ export class Image extends ImageBase {
   /**
    * Grants the default permissions for building an image to the provided execution role.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The execution role used for the image build.
    */
+  @MethodMetadata()
   public grantDefaultExecutionRolePermissions(grantee: iam.IGrantable): iam.Grant[] {
     const policies = defaultExecutionRolePolicy(this, this.props);
     return policies.map((policy) =>

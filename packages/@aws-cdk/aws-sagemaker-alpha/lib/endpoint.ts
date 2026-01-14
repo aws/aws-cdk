@@ -3,16 +3,16 @@ import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib/core';
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
+import { CfnEndpoint } from 'aws-cdk-lib/aws-sagemaker';
+import * as cdk from 'aws-cdk-lib/core';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { EndpointConfig, IEndpointConfig, InstanceProductionVariant } from './endpoint-config';
 import { InstanceType } from './instance-type';
 import { sameEnv } from './private/util';
-import { CfnEndpoint } from 'aws-cdk-lib/aws-sagemaker';
 import { ScalableInstanceCount } from './scalable-instance-count';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /*
  * Amazon SageMaker automatic scaling doesn't support automatic scaling for burstable instances such
@@ -295,6 +295,7 @@ abstract class EndpointBase extends cdk.Resource implements IEndpoint {
 
   /**
    * Permits an IAM principal to invoke this endpoint
+   * [disable-awslint:no-grants]
    * @param grantee The principal to grant access to
    */
   public grantInvoke(grantee: iam.IGrantable) {
@@ -303,6 +304,12 @@ abstract class EndpointBase extends cdk.Resource implements IEndpoint {
       actions: ['sagemaker:InvokeEndpoint'],
       resourceArns: [this.endpointArn],
     });
+  }
+
+  public get endpointRef(): sagemaker.EndpointReference {
+    return {
+      endpointArn: this.endpointArn,
+    };
   }
 }
 

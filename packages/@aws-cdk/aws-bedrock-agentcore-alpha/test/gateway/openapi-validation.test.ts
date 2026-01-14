@@ -1,9 +1,9 @@
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as os from 'os';
 import { Gateway, ApiSchema, ApiKeyCredentialProviderConfiguration } from '../../lib';
 
 describe('OpenAPI Schema Validation', () => {

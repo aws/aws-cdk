@@ -500,7 +500,8 @@
       "2.0",
       "3.0",
       "4.0",
-      "5.0"
+      "5.0",
+      "5.1"
     ],
     "JobLanguage": [
       "scala",
@@ -695,6 +696,16 @@
     "ImagePipelineStatus": [
       "ENABLED",
       "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image.ts": {
+    "ImageArchitecture": [
+      "arm64",
+      "x86_64"
+    ],
+    "ImageType": [
+      "AMI",
+      "DOCKER"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts": {
@@ -3185,6 +3196,8 @@
       "m7a",
       "standard8-amd",
       "m8a",
+      "standard9-graviton",
+      "m9g",
       "high-compute-memory1",
       "z1d",
       "inference1",
@@ -3250,6 +3263,12 @@
       "metal-24xl",
       "metal-32xl",
       "metal-48xl"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/key-pair.ts": {
@@ -5283,6 +5302,10 @@
       "SVCB",
       "TLSA",
       "TXT"
+    ],
+    "Failover": [
+      "PRIMARY",
+      "SECONDARY"
     ],
     "CaaTag": [
       "issue",

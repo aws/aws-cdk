@@ -11,12 +11,12 @@
  *  and limitations under the License.
  */
 
-import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
-import { IConstruct } from 'constructs';
-import { Location } from 'aws-cdk-lib/aws-s3';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Location } from 'aws-cdk-lib/aws-s3';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import { IConstruct } from 'constructs';
 import { IMemoryStrategy, MemoryStrategyCommonProps, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
@@ -220,6 +220,9 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
 
   /**
    * Grants the necessary permissions to the role
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The grantee to grant permissions to
    * @returns The Grant object for chaining
    */

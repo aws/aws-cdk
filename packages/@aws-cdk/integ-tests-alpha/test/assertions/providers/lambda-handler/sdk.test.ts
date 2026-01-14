@@ -1,6 +1,6 @@
 // Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-import { S3Client, ListObjectsOutput, ListObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { DescribeInstancesCommand, EC2Client } from '@aws-sdk/client-ec2';
+import { S3Client, ListObjectsOutput, ListObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AwsApiCallRequest, AwsApiCallResult } from '../../../../lib/assertions';
 import { AwsApiCallHandler } from '../../../../lib/assertions/providers/lambda-handler/sdk';

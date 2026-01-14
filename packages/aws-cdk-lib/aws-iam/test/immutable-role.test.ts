@@ -3,7 +3,7 @@ import { Template, Match } from '../../assertions';
 import { Stack } from '../../core';
 import * as iam from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('ImmutableRole', () => {
   let stack: Stack;
@@ -102,9 +102,9 @@ describe('ImmutableRole', () => {
   });
 
   test('ignores calls to addManagedPolicy', () => {
-    mutableRole.addManagedPolicy({ managedPolicyArn: 'Arn1' });
+    mutableRole.addManagedPolicy({ managedPolicyArn: 'Arn1' } as any);
 
-    immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' });
+    immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' } as any);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       'ManagedPolicyArns': [

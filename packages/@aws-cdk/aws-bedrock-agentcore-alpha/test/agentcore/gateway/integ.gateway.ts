@@ -5,11 +5,11 @@
  * Uses convenience methods (addLambdaTarget, addOpenApiTarget, addSmithyTarget)
  */
 
+import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as agentcore from '../../../lib';
-import * as path from 'path';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'BedrockAgentCoreGatewayIntegTest', {
@@ -119,5 +119,3 @@ integTest.assertions
       },
     }),
   );
-
-app.synth();

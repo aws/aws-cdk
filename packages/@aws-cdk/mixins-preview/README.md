@@ -95,11 +95,11 @@ Mixins operate on construct trees and can be applied selectively:
 Mixins.of(scope).apply(new EncryptionAtRest());
 
 // Apply to specific resource types
-Mixins.of(scope, ConstructSelector.resourcesOfType(s3.CfnBucket))
+Mixins.of(scope, ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME))
   .apply(new EncryptionAtRest());
 
-// Apply to constructs matching a pattern
-Mixins.of(scope, ConstructSelector.byId(/.*-prod-.*/))
+// Apply to constructs matching a path pattern
+Mixins.of(scope, ConstructSelector.byPath("**/*-prod-*/**"))
   .apply(new ProductionSecurityMixin());
 ```
 
@@ -140,7 +140,7 @@ Configures vended logs delivery for supported resources to various destinations:
 
 ```typescript
 import '@aws-cdk/mixins-preview/with';
-import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws_cloudfront/mixins';
+import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
 // Create CloudFront distribution
 declare const bucket: s3.Bucket;
@@ -197,9 +197,9 @@ Mixins.of(bucket).apply(new CfnBucketPropsMixin(
 Property mixins are available for all AWS services:
 
 ```typescript
-import { CfnLogGroupPropsMixin } from '@aws-cdk/mixins-preview/aws_logs/mixins';
-import { CfnFunctionPropsMixin } from '@aws-cdk/mixins-preview/aws_lambda/mixins';
-import { CfnTablePropsMixin } from '@aws-cdk/mixins-preview/aws_dynamodb/mixins';
+import { CfnLogGroupPropsMixin } from '@aws-cdk/mixins-preview/aws-logs/mixins';
+import { CfnFunctionPropsMixin } from '@aws-cdk/mixins-preview/aws-lambda/mixins';
+import { CfnTablePropsMixin } from '@aws-cdk/mixins-preview/aws-dynamodb/mixins';
 ```
 
 ### Error Handling
@@ -225,7 +225,7 @@ CDK Mixins automatically generates typed EventBridge event patterns for AWS reso
 ### Event Patterns Basic Usage
 
 ```typescript
-import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
@@ -236,7 +236,7 @@ declare const fn: lambda.Function;
 
 new events.Rule(scope, 'Rule', {
   eventPattern: bucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [new targets.LambdaFunction(fn)]
 });
@@ -248,7 +248,7 @@ const cfnBucketEvents = BucketEvents.fromBucket(cfnBucket);
 new events.CfnRule(scope, 'CfnRule', {
   state: 'ENABLED',
   eventPattern: cfnBucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [{ arn: fn.functionArn, id: 'L1' }]
 });
@@ -259,7 +259,7 @@ new events.CfnRule(scope, 'CfnRule', {
 **Automatic Resource Injection**: Resource identifiers are automatically included in patterns
 
 ```typescript
-import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
 
 declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
@@ -272,14 +272,15 @@ const pattern = bucketEvents.objectCreatedPattern();
 **Event Metadata Support**: Control EventBridge pattern metadata
 
 ```typescript
-import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
 
 declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 const pattern = bucketEvents.objectCreatedPattern({
   eventMetadata: {
-    region: ['us-east-1', 'us-west-2'],
+    region: events.Match.prefix('us-'),
     version: ['0']
   }
 });
@@ -299,5 +300,5 @@ Event patterns are generated for EventBridge events available in the AWS Event S
 Import events from service-specific modules:
 
 ```typescript
-import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
 ```

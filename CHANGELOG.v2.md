@@ -2,6 +2,134 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.234.1](https://github.com/aws/aws-cdk/compare/v2.234.0...v2.234.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* `RuntimeError: apiEndpoint is not configured on the imported HttpApi` (revert of "chore(apigatewayv2): reference interfaces") ([#36623](https://github.com/aws/aws-cdk/issues/36623)) ([1c10d49](https://github.com/aws/aws-cdk/commit/1c10d495ffd81a90a91cc6779c75e59f27bbc1e0)), closes [aws/aws-cdk#36378](https://github.com/aws/aws-cdk/issues/36378)
+
+## [2.234.0](https://github.com/aws/aws-cdk/compare/v2.233.0...v2.234.0) (2026-01-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **batch:** unfortunately `JobQueue` exposes `public readonly computeEnvironments: OrderedComputeEnvironment[]`. The `computeEnvironment` member of that structure now fewer guarantees, and needs casting. This should not have been exposed, and we assume the use of the exposed property here is rare.
+* **backup:** unfortunately `BackupPlanRule` exposes `public readonly props: BackupPlanRuleProps`. The `backupVault` member of that structure now guarantees less, and needs casting. This should never have been exposed, and we assume the use of the exposed property here is rare.
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.JiraCloud.AuthStatus attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.JiraCloud.AuthUrl attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.JiraCloud.CloudId attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.JiraCloud.Domain attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.ServiceNow.AuthStatus attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: JiraCloud type removed, replaced by JiraCloudProviderConfiguration.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: ServiceNow type removed, replaced by ServiceNowProviderConfiguration.  
+aws-ssm: AWS::SSM::MaintenanceWindowTarget: Id attribute removed.
+
+### Features
+
+* **ecs:** automatically create ec2InstanceProfile for ManagedInstancesCapacityProvider ([#35796](https://github.com/aws/aws-cdk/issues/35796)) ([9218ea8](https://github.com/aws/aws-cdk/commit/9218ea8356f43dacab177e1ae74c7bb7c4aceedd))
+* **rds:** add name property to option group ([#36319](https://github.com/aws/aws-cdk/issues/36319)) ([708d0ac](https://github.com/aws/aws-cdk/commit/708d0acce8e5c9339a9c8b2574d8b6e2556eebd8)), closes [#35720](https://github.com/aws/aws-cdk/issues/35720)
+* **stepfunctions-tasks:** allow EcsRunTask on fargate and ec2 to set capacity provider strategy ([#35465](https://github.com/aws/aws-cdk/issues/35465)) ([63ca2ae](https://github.com/aws/aws-cdk/commit/63ca2ae07507c0726c28c990931cca748eb0dcda)), closes [#20013](https://github.com/aws/aws-cdk/issues/20013) [#30171](https://github.com/aws/aws-cdk/issues/30171) [#7967](https://github.com/aws/aws-cdk/issues/7967)
+* **synthetics:** add puppeteer 12.0/13.0 runtime ([#36562](https://github.com/aws/aws-cdk/issues/36562)) ([5b74dd4](https://github.com/aws/aws-cdk/commit/5b74dd45abb700cebc33c811114c95f0b098aa6a)), closes [#36501](https://github.com/aws/aws-cdk/issues/36501)
+
+
+### Bug Fixes
+
+* **cloudwatch:** skip MathExpression validation when prop is a token ([#36487](https://github.com/aws/aws-cdk/issues/36487)) ([2845d47](https://github.com/aws/aws-cdk/commit/2845d47e074e3bf7e8d36bf655822c70ae53f094))
+* **core:** `App.of()` returns incorrect values ([#36475](https://github.com/aws/aws-cdk/issues/36475)) ([78034d3](https://github.com/aws/aws-cdk/commit/78034d32d0b120a4eabaf58d7a87a1c6649d1a8e))
+* **core:** `arnForXxxx()` helpers ignore environments from referenced resources ([#36599](https://github.com/aws/aws-cdk/issues/36599)) ([4744c59](https://github.com/aws/aws-cdk/commit/4744c5919b85a9943d704379a0413ddf242f97c0))
+* **core:** account for `{ Ref }` incompatibility between schema and CFN ([#36493](https://github.com/aws/aws-cdk/issues/36493)) ([3b06942](https://github.com/aws/aws-cdk/commit/3b069427f1e912b9deb8c237706c24833fd6fc04))
+* **ec2:** add proper handling for VPC endpoint service name prefix eu.amazonaws for new region eusc-de-east-1 for ECR & API Gateway services ([#36471](https://github.com/aws/aws-cdk/issues/36471)) ([d5561e0](https://github.com/aws/aws-cdk/commit/d5561e0a3f42e4e0c7ea49e2497bc3c5ced8355f))
+* **lambda:** add token resolution validation to capacity providers ([#36275](https://github.com/aws/aws-cdk/issues/36275)) ([c5fbd97](https://github.com/aws/aws-cdk/commit/c5fbd97c1496d1e4c1c8585cdf720bac2937e95c))
+
+
+### Miscellaneous Chores
+
+* **backup:** reference interfaces ([#36415](https://github.com/aws/aws-cdk/issues/36415)) ([4418612](https://github.com/aws/aws-cdk/commit/4418612ab36184bce45b827e8e5955dc00396853))
+* **batch:** reference interfaces ([#36522](https://github.com/aws/aws-cdk/issues/36522)) ([fefc7be](https://github.com/aws/aws-cdk/commit/fefc7be8f415edf3ee24e0f75768a6acdb12d391))
+
+## [2.233.0](https://github.com/aws/aws-cdk/compare/v2.232.2...v2.233.0) (2025-12-18)
+
+### ⚠ BREAKING CHANGES
+
+**CHANGES TO L1 RESOURCES:** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-ec2: AWS::EC2::EC2Fleet: DefaultTargetCapacityType property is now immutable.  
+aws-ec2: AWS::EC2::EC2Fleet: TargetCapacityUnitType property is now immutable.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#36390](https://github.com/aws/aws-cdk/issues/36390)) ([a6077a2](https://github.com/aws/aws-cdk/commit/a6077a20bfa0658ea643ff2d74303d13247c861b))
+* **events-targets:** support messageGroupId for standard SQS queues ([#36068](https://github.com/aws/aws-cdk/issues/36068)) ([95d4ed5](https://github.com/aws/aws-cdk/commit/95d4ed53d054dad668453eb5e5fa6a79ddb158b5))
+* update L1 CloudFormation resource definitions ([#36367](https://github.com/aws/aws-cdk/issues/36367)) ([e551afe](https://github.com/aws/aws-cdk/commit/e551afe30a783d0102ff001e3729bafde5a644a7))
+* **codebuild:** add support for macOS 15 runners ([#35836](https://github.com/aws/aws-cdk/issues/35836)) ([1b8b4e3](https://github.com/aws/aws-cdk/commit/1b8b4e33f91a143b1654e20cdf7d5cbbd85811a7))
+* **route53-patterns:** `HttpsRedirect` use `Distribution` as the default CloudFront distribution (under feature flag) ([#34312](https://github.com/aws/aws-cdk/issues/34312)) ([e2987eb](https://github.com/aws/aws-cdk/commit/e2987eb322168e563d9ddf214cbffba7316dd821)), closes [#31546](https://github.com/aws/aws-cdk/issues/31546)
+* update L1 CloudFormation resource definitions ([#36326](https://github.com/aws/aws-cdk/issues/36326)) ([cb82627](https://github.com/aws/aws-cdk/commit/cb82627b311610b749a28537ff4ee133cfd9d2b9))
+* **ec2:** add Interface VPC Endpoints for ACM and ACM-PCA ([#35890](https://github.com/aws/aws-cdk/issues/35890)) ([06e6b25](https://github.com/aws/aws-cdk/commit/06e6b25c3a736be065a0a562ed0698c9a72ee66a))
+* **route53:** support failover routing policy for record sets ([#35909](https://github.com/aws/aws-cdk/issues/35909)) ([9395467](https://github.com/aws/aws-cdk/commit/9395467d3630da052ba5ffae3bbe51b9b13abaef)), closes [#35910](https://github.com/aws/aws-cdk/issues/35910)
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** make grants factory methods public ([#36317](https://github.com/aws/aws-cdk/issues/36317)) ([7dde625](https://github.com/aws/aws-cdk/commit/7dde6251abb58ba6e51df2725031089cefa37959))
+* **ci:** checkout the pr head instead of the default main head ([#36311](https://github.com/aws/aws-cdk/issues/36311)) ([a1cbcf9](https://github.com/aws/aws-cdk/commit/a1cbcf91e3105e731dc9c41c90a6592e539cde23)), closes [/github.com/aws/aws-cdk/blob/main/.github/workflows/integration-test-deployment.yml#L39C11-L39C57](https://github.com/aws//github.com/aws/aws-cdk/blob/main/.github/workflows/integration-test-deployment.yml/issues/L39C11-L39C57)
+* **cloudtrail:** do not attach s3 bucket permission when orgId is not set for organization trail ([#30778](https://github.com/aws/aws-cdk/issues/30778)) ([61ee074](https://github.com/aws/aws-cdk/commit/61ee074843c51a3acc36691808c5653f4470b1e9)), closes [#30490](https://github.com/aws/aws-cdk/issues/30490)
+* **custom-resources:** waiter state machine retry fails with ExecutionAlreadyExists ([#35988](https://github.com/aws/aws-cdk/issues/35988)) ([36ea606](https://github.com/aws/aws-cdk/commit/36ea606334f1a4590a61d19b0675300ee202f798)), closes [#35957](https://github.com/aws/aws-cdk/issues/35957)
+* **ecs:** removal of `canContainersAccessInstanceRole` instance role ([#36362](https://github.com/aws/aws-cdk/issues/36362)) ([7395b41](https://github.com/aws/aws-cdk/commit/7395b41687718366940bddb9117bc3a8e9f09863))
+* **pipelines:** propagate CodeBuild `fleet` and `certificate` ([#35673](https://github.com/aws/aws-cdk/issues/35673)) ([71cfd60](https://github.com/aws/aws-cdk/commit/71cfd607999cfd84cfb4c62757be5c8325477770)), closes [#35664](https://github.com/aws/aws-cdk/issues/35664)
+* **region-info:** standalone use of `@aws-cdk/region-info` throws an `Cannot find module 'aws-cdk-lib/core/lib/errors'` error ([#36414](https://github.com/aws/aws-cdk/issues/36414)) ([01c7d2e](https://github.com/aws/aws-cdk/commit/01c7d2eda4df63db4b3c5c3edd05b95ceaf24236)), closes [#36399](https://github.com/aws/aws-cdk/issues/36399)
+* ci fix for spec updater workflow ([#36364](https://github.com/aws/aws-cdk/issues/36364)) ([a0b42cc](https://github.com/aws/aws-cdk/commit/a0b42ccb4fa496dba34c6146bba553d83f7ce54d))
+* re-export of `ResourceEnvironment` is not an alias ([#36370](https://github.com/aws/aws-cdk/issues/36370)) ([ba8e194](https://github.com/aws/aws-cdk/commit/ba8e194891e96848d512e1e60f9143746fde0954))
+
+
+## [2.232.2](https://github.com/aws/aws-cdk/compare/v2.232.1...v2.232.2) (2025-12-12)
+
+
+### Bug Fixes
+
+* re-export of `ResourceEnvironment` is not an alias ([#36370](https://github.com/aws/aws-cdk/issues/36370)) ([6178d32](https://github.com/aws/aws-cdk/commit/6178d3222e17e77ea67eef060a3faec276595ae8))
+
+## [2.232.1](https://github.com/aws/aws-cdk/compare/v2.232.0...v2.232.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* **core:** TypeScript properties missing for types which extend internal interfaces ([#36313](https://github.com/aws/aws-cdk/issues/36313)) ([3e7e17c](https://github.com/aws/aws-cdk/commit/3e7e17c0def24567610a541e39195596f5d83387)), closes [#36310](https://github.com/aws/aws-cdk/issues/36310)
+
+## [2.232.0](https://github.com/aws/aws-cdk/compare/v2.231.0...v2.232.0) (2025-12-04)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#36299](https://github.com/aws/aws-cdk/issues/36299)) ([0945692](https://github.com/aws/aws-cdk/commit/0945692b91b01b6a8c69e844cffe7629cc52695a))
+* **bedrock-agentcore:** add fromImageUri method to AgentRuntimeArtifact ([#36263](https://github.com/aws/aws-cdk/issues/36263)) ([ad25aba](https://github.com/aws/aws-cdk/commit/ad25aba9785c6801085525da4d6adcc8c3204a70))
+* **lambda:** add support for durable functions ([#36282](https://github.com/aws/aws-cdk/issues/36282)) ([599a1d3](https://github.com/aws/aws-cdk/commit/599a1d3b26a1a9edf22f1cde41da323e560145fb))
+* update L1 CloudFormation resource definitions ([#36277](https://github.com/aws/aws-cdk/issues/36277)) ([c4fa99b](https://github.com/aws/aws-cdk/commit/c4fa99b9149b512494c9ae94b8d4aebba4436eb0))
+
+
+### Bug Fixes
+
+* **core:** temp cleanup does not work with jest ([#36238](https://github.com/aws/aws-cdk/issues/36238)) ([1f4a224](https://github.com/aws/aws-cdk/commit/1f4a2249b2651115cf02a26fd4bba09b151f426e)), closes [#36226](https://github.com/aws/aws-cdk/issues/36226)
+
+## [2.231.0](https://github.com/aws/aws-cdk/compare/v2.230.0...v2.231.0) (2025-12-01)
+
+
+### Features
+
+* **lambda:** support for capacity providers ([#36255](https://github.com/aws/aws-cdk/issues/36255)) ([2e4c1cf](https://github.com/aws/aws-cdk/commit/2e4c1cfd461de82e837238ab80eb0be22e9ec4b6))
+* update L1 CloudFormation resource definitions ([#36253](https://github.com/aws/aws-cdk/issues/36253)) ([8410b13](https://github.com/aws/aws-cdk/commit/8410b1392b9e634282dd56e47b4778304c1afa32))
+* **aws-cdk-lib:** add `arnFor<ResourceName>` for 47 more resources ([#36231](https://github.com/aws/aws-cdk/issues/36231)) ([5a8be4f](https://github.com/aws/aws-cdk/commit/5a8be4f22b24b0c0ae72a0cf4f5152c678a19029))
+* **aws-cdk-lib:** all L1s now have a `isCfn<ResourceName>` static helper to check if a value is this L1 resource ([#36243](https://github.com/aws/aws-cdk/issues/36243)) ([dc9db9b](https://github.com/aws/aws-cdk/commit/dc9db9b83d9ff629e4b047da90fbb15935a623ca))
+* **ec2:** expose EC2 instance MetadataOptions ([#35369](https://github.com/aws/aws-cdk/issues/35369)) ([4056e14](https://github.com/aws/aws-cdk/commit/4056e14105f88c27799b00f0eea1f1b671c5b8c8)), closes [#35357](https://github.com/aws/aws-cdk/issues/35357)
+
+
+### Bug Fixes
+
+* **dynamodb:** unsupported actions added to table resource policy ([#36228](https://github.com/aws/aws-cdk/issues/36228)) ([10de047](https://github.com/aws/aws-cdk/commit/10de0470215a6d211983b1457218914bb3c3c388)), closes [#32230](https://github.com/aws/aws-cdk/issues/32230)
+
+
 ## [2.230.0](https://github.com/aws/aws-cdk/compare/v2.229.1...v2.230.0) (2025-11-26)
 
 

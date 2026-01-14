@@ -10,7 +10,6 @@ import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
-import { Token } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
