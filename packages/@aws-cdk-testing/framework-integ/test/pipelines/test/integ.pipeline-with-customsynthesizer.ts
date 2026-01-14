@@ -8,9 +8,9 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**
  * Notes on how to run this integ test
- * Replace 123456789012 with your own account number
+ * Replace 012345678901 with your own account number
  * Your account should be bootstrapped for us-east-1 with a custom qualifier 'dev'
- * cdk bootstrap aws://123456789012/us-east-1 --qualifier dev --toolkit-stack-name CDKToolkitDev
+ * cdk bootstrap aws://012345678901/us-east-1 --qualifier dev --toolkit-stack-name CDKToolkitDev
  **/
 
 export class PipelineStack extends Stack {

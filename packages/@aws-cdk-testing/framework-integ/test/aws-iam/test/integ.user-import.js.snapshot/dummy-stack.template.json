@@ -2,7 +2,7 @@
  "Parameters": {
   "UserParameter": {
    "Type": "String",
-   "Default": "arn:aws:iam::123456789012:user/OthersExternalIamUser"
+   "Default": "arn:aws:iam::012345678901:user/OthersExternalIamUser"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
@@ -17,7 +17,7 @@
  },
  "Outputs": {
   "UserOutput": {
-   "Value": "123456789012"
+   "Value": "012345678901"
   },
   "User2Output": {
    "Value": {

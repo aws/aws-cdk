@@ -11,7 +11,7 @@ import { AccountPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import * as path from 'path';
 
-const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
+const account = process.env.CDK_INTEG_ACCOUNT || '012345678901';
 const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123';
 const region = process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION;
 

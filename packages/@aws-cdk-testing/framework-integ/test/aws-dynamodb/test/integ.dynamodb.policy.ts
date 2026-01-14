@@ -40,7 +40,7 @@ export class TestStack extends Stack {
 
     // IMPORTANT: Cross-account grants with auto-generated table names create circular dependencies
     //
-    // WHY NOT this.tableTwo.grantReadData(new iam.AccountPrincipal('123456789012'))?
+    // WHY NOT this.tableTwo.grantReadData(new iam.AccountPrincipal('012345678901'))?
     // - Cross-account principals cannot have policies attached to them
     // - Grant falls back to adding a resource policy to the table
     // - Resource policy tries to reference this.tableArn (the table's own ARN)

@@ -3,7 +3,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { Stream, StreamConsumer } from 'aws-cdk-lib/aws-kinesis';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
+const account = process.env.CDK_INTEG_ACCOUNT || '012345678901';
 const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123';
 const region = process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION;
 
