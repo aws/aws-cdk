@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
@@ -8,6 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-agentcore-runtime-auto-generated-name'
 
 const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, 'testArtifact'),
+  { platform: Platform.LINUX_ARM64 },
 );
 
 // Runtime without specifying name (auto-generated)
