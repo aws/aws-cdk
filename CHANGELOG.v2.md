@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.235.0](https://github.com/aws/aws-cdk/compare/v2.234.1...v2.235.0) (2026-01-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+- aws-ecs: AWS::ECS::CapacityProvider: ManagedInstancesNetworkConfiguration.SecurityGroups property is now required.
+* **ecs:** `securityGroups` is now required in `ManagedInstancesCapacityProviderProps`. CloudFormation has always required this field, so any code that omitted it would have failed at deployment time with a validation error. This change catches the error at compile time instead, improving the developer experience. If your code previously omitted `securityGroups`, you must now explicitly provide at least one security group.
+* **aws-cdk-lib:** `JobQueue.computeEnvironments` contains an `computeEnvironment: IComputeEnvironment → IComputeEnvironmentRef`. `BackupPlanRule.props` contains a `backupVault: IBackupVault → IBackupVaultRef`. `ApiDestination.fromApiDestinationAttributes()` return type `ApiDestination → IApiDestination`. This should never have returned a class but always an interface, as is the standard for referencing factories. `EventDestination.bus` changed  `IEventBus →IEventBusRef`; `FlowLogDestination.bind()` now returns and `ICluster.executeCommandConfiguration` contains a member changing type `ILogGroup → ILogGroupRef`.
+* **events:** `ApiDestination.fromApiDestinationAttributes()` now returns an `IApiDestination`. It used to return an `ApiDestination` but this was a mistake, referencing methods always return a type by interface, not by class.`EventDestination.bus` used to be an `IEventBus` but is now an `IEventBusRef`; it needs to be type tested to assert it is actually an `IEventBus` if that is necessary.
+* **logs:** the return types of `FlowLogDestination.bind()` and `ICluster.executeCommandConfiguration` now contain an `ILogGroupRef` instead of an `ILogGroup`, which guarantees less. These fields are for communication between constructs, and their values should not be used by application builders. If they do, they will need to add a cast or a type check.
+* **iot-actions:** `enableBatchConfig` property is explicitly disabled by default. Even with this modification, the behavior of HttpAction remains unchanged from before, but only the Cfn template will be modified.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#36694](https://github.com/aws/aws-cdk/issues/36694)) ([861f437](https://github.com/aws/aws-cdk/commit/861f437146d6bc284bfd3f6e09ccf22b542e281f))
+* **apigatewayv2-integrations:** add PutEvents support for EventBridge integration ([#35766](https://github.com/aws/aws-cdk/issues/35766)) ([d879e4d](https://github.com/aws/aws-cdk/commit/d879e4d4058932f5dafd468fee6eddef6dc793d2)), closes [#35714](https://github.com/aws/aws-cdk/issues/35714) [#35714](https://github.com/aws/aws-cdk/issues/35714)
+* **ecs:** add none log driver option for ECS containers ([#35819](https://github.com/aws/aws-cdk/issues/35819)) ([5636820](https://github.com/aws/aws-cdk/commit/563682026f0941922cf1123687484966847f3cb0)), closes [#35795](https://github.com/aws/aws-cdk/issues/35795) [#35795](https://github.com/aws/aws-cdk/issues/35795)
+* **iot-actions:** batching HTTP action messages ([#36642](https://github.com/aws/aws-cdk/issues/36642)) ([fbc50ea](https://github.com/aws/aws-cdk/commit/fbc50eaab2189552fd54c2c38998a85bde82581f))
+* **rds:** add Read/Write IOPS metrics to DatabaseInstance and VolumeRead/Write IOPs metrics to DatabaseCluster ([#35773](https://github.com/aws/aws-cdk/issues/35773)) ([d8e023d](https://github.com/aws/aws-cdk/commit/d8e023d823c316a91a771c533c12dc678b07d773)), closes [#35327](https://github.com/aws/aws-cdk/issues/35327) [#35327](https://github.com/aws/aws-cdk/issues/35327)
+* **rds:** support default auth scheme for RDS Proxy  ([#35635](https://github.com/aws/aws-cdk/issues/35635)) ([99f6c74](https://github.com/aws/aws-cdk/commit/99f6c74e214b8e015aaad3029208f2f6d974008b)), closes [#35558](https://github.com/aws/aws-cdk/issues/35558)
+* **spec2cdk:** support for auto-generated grants in alpha modules ([#36206](https://github.com/aws/aws-cdk/issues/36206)) ([776f837](https://github.com/aws/aws-cdk/commit/776f837f5b979a08c2c3113463a670ff00594710))
+* **synthetics:** add syn-nodejs-3.0 runtime ([#36652](https://github.com/aws/aws-cdk/issues/36652)) ([18f9fef](https://github.com/aws/aws-cdk/commit/18f9fef5a0a4288c3d001c25fe8420e2a002c8ce)), closes [#36648](https://github.com/aws/aws-cdk/issues/36648)
+* **synthetics:** playwright 4.0 and 5.0 runtimes ([#36590](https://github.com/aws/aws-cdk/issues/36590)) ([82cd9a6](https://github.com/aws/aws-cdk/commit/82cd9a685727241f37207f6f06797d316eb17ea2))
+* update L1 CloudFormation resource definitions ([#36660](https://github.com/aws/aws-cdk/issues/36660)) ([eb6a82a](https://github.com/aws/aws-cdk/commit/eb6a82abfd51f01b6f54f1064fe77016aa9db723))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** reference interfaces for remaining services ([#36359](https://github.com/aws/aws-cdk/issues/36359)) ([ed1f9de](https://github.com/aws/aws-cdk/commit/ed1f9de27b56310bfc2b1fe06679133242d746cc))
+* **core:** make DetachedConstruct.node non-enumerable ([#36672](https://github.com/aws/aws-cdk/issues/36672)) ([98d41ca](https://github.com/aws/aws-cdk/commit/98d41caf641fd086d940a3a8e769fac4eac6c361)), closes [#36078](https://github.com/aws/aws-cdk/issues/36078) [#36015](https://github.com/aws/aws-cdk/issues/36015)
+* **ecs:** make securityGroups required in ManagedInstancesCapacityProvider ([#36685](https://github.com/aws/aws-cdk/issues/36685)) ([6734426](https://github.com/aws/aws-cdk/commit/6734426a517bc8bf3e4b9ea5d4206f40ae286d1e))
+* **events:** event Matcher class to be compatible with mergeEventPattern function ([#36602](https://github.com/aws/aws-cdk/issues/36602)) ([e3f7dba](https://github.com/aws/aws-cdk/commit/e3f7dba10e6e11af596f5458a6969fafb5313208)), closes [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-s3/lib/bucket.ts#L657-L657](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-s3/lib/bucket.ts/issues/L657-L657)
+* **opensearchservice:** use KMS Key ARN for cross-account encryption ([#36020](https://github.com/aws/aws-cdk/issues/36020)) ([cccd94c](https://github.com/aws/aws-cdk/commit/cccd94cebb8aab3241afb2eda8571143eaa478c7)), closes [#36017](https://github.com/aws/aws-cdk/issues/36017)
+* **stepfunctions:** allow JSONata expressions for Map maxConcurrency ([#36462](https://github.com/aws/aws-cdk/issues/36462)) ([2230c87](https://github.com/aws/aws-cdk/commit/2230c878928d9724b15bd9f924ff7e47d324150c)), closes [#36274](https://github.com/aws/aws-cdk/issues/36274)
+* `RuntimeError: apiEndpoint is not configured on the imported HttpApi` (revert of "chore(apigatewayv2): reference interfaces") ([#36623](https://github.com/aws/aws-cdk/issues/36623)) ([fb17d39](https://github.com/aws/aws-cdk/commit/fb17d39054d9a41345a5b4c83c44b32a838e3c86)), closes [aws/aws-cdk#36378](https://github.com/aws/aws-cdk/issues/36378)
+
+
+### Reverts
+
+* remove invalid Dev::ServiceCatalog resource from L1 update ([#36678](https://github.com/aws/aws-cdk/issues/36678)) ([13b6480](https://github.com/aws/aws-cdk/commit/13b648081086bf933d5e8ca76405dff6893ad640)), closes [#36660](https://github.com/aws/aws-cdk/issues/36660)
+
+
+### Miscellaneous Chores
+
+* **events:** reference interfaces ([#36535](https://github.com/aws/aws-cdk/issues/36535)) ([0bea5c9](https://github.com/aws/aws-cdk/commit/0bea5c99c22ac71e0c7e860e2c42b85d8ba95fba))
+* **logs:** reference interfaces ([#36566](https://github.com/aws/aws-cdk/issues/36566)) ([5b426b8](https://github.com/aws/aws-cdk/commit/5b426b89114414b634e479f53b76b66337cd509a))
+
 ## [2.234.1](https://github.com/aws/aws-cdk/compare/v2.234.0...v2.234.1) (2026-01-08)
 
 
