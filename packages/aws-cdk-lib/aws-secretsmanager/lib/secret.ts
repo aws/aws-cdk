@@ -6,7 +6,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretsManagerSecretOptions, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 import { ISecretRef, SecretReference, ISecretTargetAttachmentRef, SecretTargetAttachmentReference } from '../../interfaces/generated/aws-secretsmanager-interfaces.generated';
@@ -653,24 +652,8 @@ export class Secret extends SecretBase {
   }
 
   public readonly encryptionKey?: kms.IKey;
-
-  @memoizedGetter
-  public get secretArn(): string {
-    return this.getResourceArnAttribute(this._resource.ref, {
-      service: 'secretsmanager',
-      resource: 'secret',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-  }
-
-  @memoizedGetter
-  public get secretName(): string {
-    const parseOwnedSecretName = FeatureFlags.of(this).isEnabled(cxapi.SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME);
-    return parseOwnedSecretName
-      ? parseSecretNameForOwnedSecret(this, this.secretArn, this.physicalName)
-      : parseSecretName(this, this.secretArn);
-  }
+  public readonly secretArn: string;
+  public readonly secretName: string;
 
   /**
    * The string of the characters that are excluded in this secret
@@ -678,7 +661,6 @@ export class Secret extends SecretBase {
    */
   public readonly excludeCharacters?: string;
 
-  private readonly _resource: secretsmanager.CfnSecret;
   private replicaRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
 
   protected readonly autoCreatePolicy = true;
@@ -721,8 +703,20 @@ export class Secret extends SecretBase {
       default: RemovalPolicy.DESTROY,
     });
 
-    this._resource = resource;
+    // Implementation too finicky to move to getter
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+    this.secretArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'secretsmanager',
+      resource: 'secret',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+
     this.encryptionKey = props.encryptionKey;
+    const parseOwnedSecretName = FeatureFlags.of(this).isEnabled(cxapi.SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME);
+    this.secretName = parseOwnedSecretName
+      ? parseSecretNameForOwnedSecret(this, this.secretArn, props.secretName)
+      : parseSecretName(this, this.secretArn);
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
     const principal =
