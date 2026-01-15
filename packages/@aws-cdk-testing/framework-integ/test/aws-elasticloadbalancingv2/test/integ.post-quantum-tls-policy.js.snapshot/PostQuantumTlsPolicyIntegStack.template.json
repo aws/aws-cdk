@@ -520,6 +520,14 @@
      }
     ],
     "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "NLBSecurityGroup69CBE94F",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VPCPublicSubnet1SubnetB4246D30"
@@ -536,6 +544,24 @@
     "VPCPublicSubnet2DefaultRouteB7481BBA",
     "VPCPublicSubnet2RouteTableAssociation5A808732"
    ]
+  },
+  "NLBSecurityGroup69CBE94F": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB PostQuantumTlsPolicyIntegStackNLBCA81A179",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
   },
   "NLBTlsListenerBDDD1B7E": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
