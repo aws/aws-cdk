@@ -2378,18 +2378,6 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 
-// Alternatively, configure after service creation
-const service2 = new ecs.FargateService(this, 'Service2', {
-  cluster,
-  taskDefinition,
-  deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
-});
-
-service2.configureLinearDeployment({
-  stepPercent: 10.0,
-  stepBakeTime: Duration.minutes(5),
-});
-
 const target = service.loadBalancerTarget({
   containerName: 'web',
   containerPort: 80,
@@ -2425,18 +2413,6 @@ const service = new ecs.FargateService(this, 'Service', {
     stepPercent: 5.0,
     stepBakeTime: Duration.minutes(10),
   },
-});
-
-// Alternatively, configure after service creation
-const service2 = new ecs.FargateService(this, 'Service2', {
-  cluster,
-  taskDefinition,
-  deploymentStrategy: ecs.DeploymentStrategy.CANARY,
-});
-
-service2.configureCanaryDeployment({
-  stepPercent: 5.0,
-  stepBakeTime: Duration.minutes(10),
 });
 
 const target = service.loadBalancerTarget({
