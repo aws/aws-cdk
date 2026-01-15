@@ -1870,10 +1870,36 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
 You can configure the scale-in delay to control when ECS optimizes idle or underutilized instances:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Security group for managed instances',
+});
+
+const infrastructureRole = new iam.Role(this, 'InfrastructureRole', {
+  assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInfrastructureRolePolicyForManagedInstances'),
+  ],
+});
+
+const instanceRole = new iam.Role(this, 'InstanceRole', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInstanceRolePolicyForManagedInstances'),
+  ],
+});
+
+const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+  role: instanceRole,
+});
+
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
   infrastructureRole,
   ec2InstanceProfile: instanceProfile,
   subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
   // Configure scale-in delay: wait 5 minutes before optimizing idle instances
   // A longer delay increases the likelihood of placing new tasks on idle instances,
   // reducing startup time. A shorter delay helps reduce infrastructure costs.
