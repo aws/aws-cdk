@@ -7,7 +7,6 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
@@ -40,7 +39,9 @@
         "moduleName": "github.com/aws/aws-cdk-go",
         "packageName": "appstagingsynthesizeralpha"
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -89,7 +90,7 @@
   },
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.190.2",
+    "@aws-cdk/integ-runner": "^2.193.4",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",

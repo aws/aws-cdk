@@ -1,10 +1,21 @@
 import { Construct } from 'constructs';
-import { CfnFlowLog } from './ec2.generated';
-import { ISubnet, IVpc } from './vpc';
+import { CfnFlowLog, FlowLogReference, IFlowLogRef, ISubnetRef } from './ec2.generated';
+import { IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
+import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource, ValidationError } from '../../core';
+import {
+  CfnResource,
+  FeatureFlags,
+  IResource,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Tags,
+  ValidationError,
+} from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
@@ -17,7 +28,7 @@ const NAME_TAG: string = 'Name';
 /**
  * A FlowLog
  */
-export interface IFlowLog extends IResource {
+export interface IFlowLog extends IResource, IFlowLogRef {
   /**
    * The Id of the VPC Flow Log
    *
@@ -73,10 +84,10 @@ export abstract class FlowLogResourceType {
   /**
    * The subnet to attach the Flow Log to
    */
-  public static fromSubnet(subnet: ISubnet): FlowLogResourceType {
+  public static fromSubnet(subnet: ISubnetRef): FlowLogResourceType {
     return {
       resourceType: 'Subnet',
-      resourceId: subnet.subnetId,
+      resourceId: subnet.subnetRef.subnetId,
     };
   }
 
@@ -190,7 +201,7 @@ export abstract class FlowLogDestination {
   /**
    * Use CloudWatch logs as the destination
    */
-  public static toCloudWatchLogs(logGroup?: logs.ILogGroup, iamRole?: iam.IRole): FlowLogDestination {
+  public static toCloudWatchLogs(logGroup?: logs.ILogGroupRef, iamRole?: iam.IRole): FlowLogDestination {
     return new CloudWatchLogsDestination({
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,
@@ -256,7 +267,7 @@ export interface FlowLogDestinationConfig {
    *
    * @default - default log group is created for you
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * S3 bucket to publish the flow logs to
@@ -387,7 +398,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 
   public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let iamRole: iam.IRole;
-    let logGroup: logs.ILogGroup;
+    let logGroup: logs.ILogGroupRef;
     if (this.props.iamRole === undefined) {
       iamRole = new iam.Role(scope, 'IAMRole', {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -411,15 +422,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
           'logs:DescribeLogStreams',
         ],
         effect: iam.Effect.ALLOW,
-        resources: [logGroup.logGroupArn],
-      }),
-    );
-
-    iamRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        effect: iam.Effect.ALLOW,
-        resources: [iamRole.roleArn],
+        resources: [logGroup.logGroupRef.logGroupArn],
       }),
     );
 
@@ -804,6 +807,12 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
    * @attribute
    */
   public abstract readonly flowLogId: string;
+
+  public get flowLogRef(): FlowLogReference {
+    return {
+      flowLogId: this.flowLogId,
+    };
+  }
 }
 
 /**
@@ -851,7 +860,14 @@ export class FlowLog extends FlowLogBase {
   /**
    * The CloudWatch Logs LogGroup to publish flow logs to
    */
-  public readonly logGroup?: logs.ILogGroup;
+  private readonly _logGroup?: logs.ILogGroupRef;
+
+  /**
+   * The CloudWatch Logs LogGroup to publish flow logs to
+   */
+  public get logGroup(): logs.ILogGroup | undefined {
+    return this._logGroup ? toILogGroup(this._logGroup) : undefined;
+  }
 
   /**
    * The ARN of the Amazon Data Firehose delivery stream to publish flow logs to
@@ -866,7 +882,7 @@ export class FlowLog extends FlowLogBase {
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
 
     const destinationConfig = destination.bind(this, this);
-    this.logGroup = destinationConfig.logGroup;
+    this._logGroup = destinationConfig.logGroup;
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
     this.keyPrefix = destinationConfig.keyPrefix;
@@ -903,7 +919,7 @@ export class FlowLog extends FlowLogBase {
       destinationOptions: destinationConfig.destinationOptions,
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
       logDestinationType: destinationConfig.logDestinationType,
-      logGroupName: this.logGroup ? this.logGroup.logGroupName : undefined,
+      logGroupName: this._logGroup?.logGroupRef.logGroupName,
       maxAggregationInterval: props.maxAggregationInterval,
       resourceId: props.resourceType.resourceId,
       resourceType: props.resourceType.resourceType,

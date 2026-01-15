@@ -387,6 +387,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
    * Adds an IAM policy statement associated with this Event API to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/EventApiId/...)
@@ -402,13 +403,13 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
       grantee,
       actions,
       resourceArns: resources.resourceArns(this),
-      scope: this,
     });
   }
 
   /**
    * Adds an IAM policy statement for EventPublish access to this EventApi to an IAM
    * principal's policy. This grants publish permission for all channels within the API.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -419,6 +420,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
    * Adds an IAM policy statement for EventSubscribe access to this EventApi to an IAM
    * principal's policy. This grants subscribe permission for all channels within the API.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -429,6 +431,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
    * Adds an IAM policy statement to publish and subscribe to this API for an IAM principal's policy.
    * This grants publish & subscribe permission for all channels within the API.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -438,6 +441,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
 
   /**
    * Adds an IAM policy statement for EventConnect access to this EventApi to an IAM principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -701,7 +705,7 @@ export class EventApi extends EventApiBase {
     if (props.domainName) {
       this.domainNameResource = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
-        certificateArn: props.domainName.certificate.certificateArn,
+        certificateArn: props.domainName.certificate.certificateRef.certificateId,
         description: `domain for ${props.apiName} Event API`,
       });
       const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
@@ -756,11 +760,11 @@ export class EventApi extends EventApiBase {
   private setupLogConfig(config?: AppSyncLogConfig) {
     if (!config) return;
     const logsRoleArn: string =
-      config.role?.roleArn ??
+      config.role?.roleRef.roleArn ??
       new Role(this, 'ApiLogsRole', {
         assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
         managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
-      }).roleArn;
+      }).roleRef.roleArn;
     const fieldLogLevel: AppSyncFieldLogLevel = config.fieldLogLevel ?? AppSyncFieldLogLevel.NONE;
     return {
       cloudWatchLogsRoleArn: logsRoleArn,

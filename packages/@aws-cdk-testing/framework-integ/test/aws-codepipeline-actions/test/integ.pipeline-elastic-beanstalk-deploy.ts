@@ -2,11 +2,14 @@ import * as path from 'path';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as deploy from 'aws-cdk-lib/aws-s3-deployment';
-import { App, Fn, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Fn, RemovalPolicy, ResourceEnvironment, Stack, UnscopedValidationError } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { Node } from 'constructs';
+import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 /**
  * To validate that the deployment actually succeeds, perform the following actions:
@@ -43,16 +46,29 @@ const artifact = new deploy.BucketDeployment(stack, 'DeployApp', {
   extract: false,
 });
 
+function makePolicy(arn: string): IManagedPolicy {
+  return {
+    managedPolicyArn: arn,
+    get managedPolicyRef(): ManagedPolicyReference {
+      return {
+        policyArn: this.managedPolicyArn,
+      };
+    },
+    get node(): Node {
+      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+    },
+    get env(): ResourceEnvironment {
+      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+    },
+  };
+}
+
 const serviceRole = new iam.Role(stack, 'service-role', {
   roleName: 'codepipeline-elasticbeanstalk-action-test-serivce-role',
   assumedBy: new iam.ServicePrincipal('elasticbeanstalk.amazonaws.com'),
   managedPolicies: [
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy',
-    },
+    makePolicy('arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth'),
+    makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy'),
   ],
 });
 
@@ -60,15 +76,9 @@ const instanceProfileRole = new iam.Role(stack, 'instance-profile-role', {
   roleName: 'codepipeline-elasticbeanstalk-action-test-instance-profile-role',
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier',
-    },
+    makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier'),
+    makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker'),
+    makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier'),
   ],
 });
 
@@ -84,8 +94,7 @@ const beanstalkApp = new elasticbeanstalk.CfnApplication(stack, 'beastalk-app', 
 const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', {
   applicationName: beanstalkApp.applicationName!,
   environmentName: 'codepipeline-test-env',
-  // see https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html#platforms-supported.nodejs
-  solutionStackName: '64bit Amazon Linux 2023 v6.6.2 running Node.js 20',
+  solutionStackName: SOLUTION_STACK_NAME.NODEJS_20,
   optionSettings: [
     {
       namespace: 'aws:autoscaling:launchconfiguration',

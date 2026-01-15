@@ -342,7 +342,6 @@ export abstract class State extends Construct implements IChainable {
     if (this.containingGraph === graph) { return; }
 
     if (this.containingGraph) {
-      // eslint-disable-next-line max-len
       throw new UnscopedValidationError(`Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
     }
 
@@ -819,14 +818,14 @@ interface Prefixable {
  * Whether an object is a Prefixable
  */
 function isPrefixable(x: any): x is Prefixable {
-  return typeof(x) === 'object' && x.addPrefix;
+  return typeof(x) === 'object' && 'addPrefix' in x;
 }
 
 /**
  * Whether an object is INextable
  */
 function isNextable(x: any): x is INextable {
-  return typeof(x) === 'object' && x.next;
+  return typeof(x) === 'object' && 'next' in x;
 }
 
 /**

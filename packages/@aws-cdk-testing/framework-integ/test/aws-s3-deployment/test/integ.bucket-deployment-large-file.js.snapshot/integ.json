@@ -3,11 +3,11 @@
   "testCases": {
     "integ-test-bucket-deployment-large-file/DefaultTest": {
       "stacks": [
-        "TestBucketDeploymentLargeFile"
+        "test-bucket-deployment-large-file"
       ],
       "assertionStack": "integ-test-bucket-deployment-large-file/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentlargefileDefaultTestDeployAssert903EA848"
     }
   },
-  "minimumCliVersion": "2.1024.0"
+  "minimumCliVersion": "2.1027.0"
 }

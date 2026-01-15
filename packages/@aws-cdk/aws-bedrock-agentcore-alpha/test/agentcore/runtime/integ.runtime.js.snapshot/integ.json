@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentCoreRuntimeTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-runtime"
+      ],
+      "assertionStack": "BedrockAgentCoreRuntimeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreRuntimeTestDefaultTestDeployAssertAE9D9D15"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

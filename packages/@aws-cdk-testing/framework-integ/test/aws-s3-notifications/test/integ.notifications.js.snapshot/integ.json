@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "48.0.0",
   "testCases": {
     "integ.notifications": {
       "stacks": [
@@ -10,5 +10,6 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1025.0"
 }

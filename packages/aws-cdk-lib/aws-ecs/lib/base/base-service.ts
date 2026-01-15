@@ -25,6 +25,7 @@ import {
   ValidationError,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
+import { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import {
@@ -42,7 +43,7 @@ import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 /**
  * The interface for a service.
  */
-export interface IService extends IResource {
+export interface IService extends IResource, IServiceRef {
   /**
    * The Amazon Resource Name (ARN) of the service.
    *
@@ -283,7 +284,7 @@ export interface ServiceConnectTlsConfiguration {
    *
    * @default - none
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * The IAM role that's associated with the Service Connect TLS.
@@ -603,6 +604,12 @@ export abstract class BaseService extends Resource
       public readonly serviceArn = serviceArn;
       public readonly serviceName = serviceName;
       public readonly cluster = cluster;
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -629,6 +636,15 @@ export abstract class BaseService extends Resource
    * @attribute
    */
   public readonly serviceName: string;
+
+  /**
+   * A reference to this service.
+   */
+  public get serviceRef(): ServiceReference {
+    return {
+      serviceArn: this.serviceArn,
+    };
+  }
 
   /**
    * The task definition to use for tasks in the service.
@@ -1023,7 +1039,7 @@ export abstract class BaseService extends Resource
         issuerCertificateAuthority: {
           awsPcaAuthorityArn: svc.tls.awsPcaAuthorityArn,
         },
-        kmsKey: svc.tls.kmsKey?.keyArn,
+        kmsKey: svc.tls.kmsKey?.keyRef.keyArn,
         roleArn: svc.tls.role?.roleArn,
       } : undefined;
 
@@ -1165,7 +1181,7 @@ export abstract class BaseService extends Resource
         resources: ['*'],
       }));
 
-      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupRef.logGroupName}:*` : '*';
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           'logs:CreateLogStream',
@@ -1176,7 +1192,7 @@ export abstract class BaseService extends Resource
       }));
     }
 
-    if (logConfiguration?.s3Bucket?.bucketName) {
+    if (logConfiguration?.s3Bucket?.bucketRef.bucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           's3:GetBucketLocation',
@@ -1187,14 +1203,14 @@ export abstract class BaseService extends Resource
         actions: [
           's3:PutObject',
         ],
-        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
+        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketRef.bucketName}/*`],
       }));
       if (logConfiguration.s3EncryptionEnabled) {
         this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
           actions: [
             's3:GetEncryptionConfiguration',
           ],
-          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}`],
+          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketRef.bucketName}`],
         }));
       }
     }
@@ -1483,7 +1499,7 @@ export abstract class BaseService extends Resource
    * This method is called to create a networkConfiguration.
    * @deprecated use configureAwsVpcNetworkingWithSecurityGroups instead.
    */
-  // eslint-disable-next-line max-len
+
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};

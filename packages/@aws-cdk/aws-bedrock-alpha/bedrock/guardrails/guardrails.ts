@@ -5,6 +5,8 @@ import { Metric, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IKey, Key } from 'aws-cdk-lib/aws-kms';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 // Internal Libs
 import * as filters from './guardrail-filters';
@@ -191,18 +193,19 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
 
   /**
    * Grant the given principal identity permissions to perform actions on this guardrail.
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [this.guardrailArn],
-      scope: this,
     });
   }
 
   /**
    * Grant the given identity permissions to apply the guardrail.
+   * [disable-awslint:no-grants]
    */
   public grantApply(grantee: iam.IGrantable): iam.Grant {
     const baseGrant = this.grant(grantee, 'bedrock:ApplyGuardrail');
@@ -408,7 +411,11 @@ export interface GuardrailAttributes {
  * Class to create a Guardrail with CDK.
  * @cloudformationResource AWS::Bedrock::Guardrail
  */
+@propertyInjectable
 export class Guardrail extends GuardrailBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-alpha.Guardrail';
+
   /**
    * Import a guardrail given its attributes
    */
@@ -541,6 +548,8 @@ export class Guardrail extends GuardrailBase {
     super(scope, id, {
       physicalName: props.guardrailName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Set properties or defaults
@@ -620,6 +629,7 @@ export class Guardrail extends GuardrailBase {
    * Adds a content filter to the guardrail.
    * @param filter The content filter to add.
    */
+  @MethodMetadata()
   public addContentFilter(filter: filters.ContentFilter): void {
     this.validateSingleContentFilter(filter);
     this.contentFilters.push(filter);
@@ -629,6 +639,7 @@ export class Guardrail extends GuardrailBase {
    * Adds a PII filter to the guardrail.
    * @param filter The PII filter to add.
    */
+  @MethodMetadata()
   public addPIIFilter(filter: filters.PIIFilter): void {
     this.validateSinglePiiFilter(filter);
     this.piiFilters.push(filter);
@@ -638,6 +649,7 @@ export class Guardrail extends GuardrailBase {
    * Adds a regex filter to the guardrail.
    * @param filter The regex filter to add.
    */
+  @MethodMetadata()
   public addRegexFilter(filter: filters.RegexFilter): void {
     this.validateSingleRegexFilter(filter);
     this.regexFilters.push(filter);
@@ -647,6 +659,7 @@ export class Guardrail extends GuardrailBase {
    * Adds a denied topic filter to the guardrail.
    * @param filter The denied topic filter to add.
    */
+  @MethodMetadata()
   public addDeniedTopicFilter(filter: filters.Topic): void {
     this.validateSingleDeniedTopic(filter);
     this.deniedTopics.push(filter);
@@ -656,6 +669,7 @@ export class Guardrail extends GuardrailBase {
    * Adds a contextual grounding filter to the guardrail.
    * @param filter The contextual grounding filter to add.
    */
+  @MethodMetadata()
   public addContextualGroundingFilter(filter: filters.ContextualGroundingFilter): void {
     this.validateSingleContextualGroundingFilter(filter);
     this.contextualGroundingFilters.push(filter);
@@ -665,6 +679,7 @@ export class Guardrail extends GuardrailBase {
    * Adds a word filter to the guardrail.
    * @param filter The word filter to add.
    */
+  @MethodMetadata()
   public addWordFilter(filter: filters.WordFilter): void {
     this.validateSingleWordFilter(filter);
     this.wordFilters.push(filter);
@@ -674,6 +689,7 @@ export class Guardrail extends GuardrailBase {
    * Adds a word filter to the guardrail.
    * @param filePath The location of the word filter file.
    */
+  @MethodMetadata()
   public addWordFilterFromFile(filePath: string,
     inputAction?: filters.GuardrailAction,
     outputAction?: filters.GuardrailAction,
@@ -688,6 +704,7 @@ export class Guardrail extends GuardrailBase {
    * Adds a managed word list filter to the guardrail.
    * @param filter The managed word list filter to add.
    */
+  @MethodMetadata()
   public addManagedWordListFilter(filter: filters.ManagedWordFilter): void {
     this.validateSingleManagedWordListFilter(filter);
     this.managedWordListFilters.push(filter);
@@ -698,6 +715,7 @@ export class Guardrail extends GuardrailBase {
    * @param description The description of the version.
    * @returns The guardrail version.
    */
+  @MethodMetadata()
   public createVersion(description?: string): string {
     const cfnVersion = new GuardrailVersion(this, `GuardrailVersion-${this.hash.slice(0, 16)}`, {
       description: description,

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159": {
+  "AwsApiCallS3listObjectsff1d4b1d734c97686b42fbd3effaa429": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjects",
    "Properties": {
     "ServiceToken": {
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "test-bucket-deployments:ExportsOutputRefDestination52A57FAA3531B2DE2"
+         "Fn::ImportValue": "test-bucket-deployments:ExportsOutputRefBucketWithAddSource40ADF545A70352A0"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1755621902204"
+    "salt": "1768414867757"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -100,7 +100,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip"
+     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -123,7 +123,7 @@
     },
     "service": "CloudFormation",
     "api": "describeStacks",
-    "expected": "{\"$StringLike\":\"Object Keys are ([0-9a-f])+.zip\"}",
+    "expected": "{\"$StringLike\":\"Object Keys are ([0-9a-f])+\\\\.zip(,([0-9a-f])+\\\\.zip)*\"}",
     "actualPath": "Stacks.0.Outputs.0.OutputValue",
     "parameters": {
      "StackName": "\"test-bucket-deployments\""
@@ -133,17 +133,17 @@
      "Stacks.0.Outputs.0.OutputKey",
      "Stacks.0.Outputs.0.OutputValue"
     ],
-    "salt": "1755621902205"
+    "salt": "1768414867757"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159": {
+  "AssertionResultsAwsApiCallS3listObjectsff1d4b1d734c97686b42fbd3effaa429": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159",
+     "AwsApiCallS3listObjectsff1d4b1d734c97686b42fbd3effaa429",
      "assertion"
     ]
    }

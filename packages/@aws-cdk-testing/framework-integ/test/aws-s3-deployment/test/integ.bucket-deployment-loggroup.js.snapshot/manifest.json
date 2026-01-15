@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66abca22e0dfd44cf0e8736a65a5c0bdb7e1b286af67b4e9094418346da4e9f5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/794005c6882db8aff5bf24268da6160babfcd2778d94e0589b7b32cbba06eaab.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -114,19 +114,19 @@
             "data": "LogGroupF5B46931"
           }
         ],
-        "/test-bucket-deployment-loggroup/DeployMe/AwsCliLayer": [
+        "/test-bucket-deployment-loggroup/DeployWithCustomLogGroup/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/test-bucket-deployment-loggroup/DeployMe/AwsCliLayer/Resource": [
+        "/test-bucket-deployment-loggroup/DeployWithCustomLogGroup/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeAwsCliLayer5F9219E9"
+            "data": "DeployWithCustomLogGroupAwsCliLayerF4FD8EC7"
           }
         ],
-        "/test-bucket-deployment-loggroup/DeployMe/CustomResourceHandler": [
+        "/test-bucket-deployment-loggroup/DeployWithCustomLogGroup/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -142,6 +142,7 @@
               "ephemeralStorageSize": "*",
               "vpc": "*",
               "vpcSubnets": "*",
+              "securityGroups": "*",
               "filesystem": "*",
               "logGroup": "*",
               "code": "*",
@@ -168,16 +169,16 @@
             }
           }
         ],
-        "/test-bucket-deployment-loggroup/DeployMe/CustomResource": [
+        "/test-bucket-deployment-loggroup/DeployWithCustomLogGroup/CustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/test-bucket-deployment-loggroup/DeployMe/CustomResource/Default": [
+        "/test-bucket-deployment-loggroup/DeployWithCustomLogGroup/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeCustomResource4455EE35"
+            "data": "DeployWithCustomLogGroupCustomResource4F75CE21"
           }
         ],
         "/test-bucket-deployment-loggroup/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
@@ -194,6 +195,7 @@
               "ephemeralStorageSize": "*",
               "vpc": "*",
               "vpcSubnets": "*",
+              "securityGroups": "*",
               "filesystem": "*",
               "logGroup": "*",
               "code": "*",
@@ -348,6 +350,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DeployMeAwsCliLayer5F9219E9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeAwsCliLayer5F9219E9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeployMeCustomResource4455EE35": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeCustomResource4455EE35",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "test-bucket-deployment-loggroup"
@@ -428,6 +448,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -876,10 +900,25 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1024.0"
+  "minimumCliVersion": "2.1027.0"
 }

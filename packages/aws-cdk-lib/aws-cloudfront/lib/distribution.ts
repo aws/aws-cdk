@@ -1,29 +1,47 @@
 import { Construct } from 'constructs';
-import { ICachePolicy } from './cache-policy';
-import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
+import { DistributionGrants } from './cloudfront-grants.generated';
+import {
+  CfnDistribution,
+  CfnMonitoringSubscription,
+  DistributionReference,
+  ICachePolicyRef,
+  IDistributionRef,
+  IKeyGroupRef,
+  IOriginRequestPolicyRef,
+  IRealtimeLogConfigRef,
+  IResponseHeadersPolicyRef,
+} from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
-import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
-import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
-import { IRealtimeLogConfig } from './realtime-log-config';
-import { IResponseHeadersPolicy } from './response-headers-policy';
-import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
+import {
+  Annotations,
+  ArnFormat,
+  Duration,
+  FeatureFlags,
+  IResource,
+  Lazy,
+  Names,
+  Resource,
+  Stack,
+  Token,
+  ValidationError,
+} from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Interface for CloudFront distributions
  */
-export interface IDistribution extends IResource {
+export interface IDistribution extends IResource, IDistributionRef {
   /**
    * The domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
    *
@@ -115,7 +133,7 @@ export interface DistributionProps {
    *
    * @default - the CloudFront wildcard certificate (*.cloudfront.net) will be used.
    */
-  readonly certificate?: acm.ICertificate;
+  readonly certificate?: ICertificateRef;
 
   /**
    * Any comments you want to include about the distribution.
@@ -297,6 +315,9 @@ export class Distribution extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionRef = {
+        distributionId: attrs.distributionId,
+      };
 
       constructor() {
         super(scope, id);
@@ -308,11 +329,19 @@ export class Distribution extends Resource implements IDistribution {
       public get distributionArn(): string {
         return formatDistributionArn(this);
       }
+
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return grant(this, grantee, ...actions);
       }
+
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, 'cloudfront:CreateInvalidation');
+        return DistributionGrants.fromDistribution(this).createInvalidation(grantee);
       }
     }();
   }
@@ -320,6 +349,12 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
+  public readonly distributionRef: DistributionReference;
+
+  /**
+   * Collection of grant methods for a Distribution
+   */
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
@@ -328,7 +363,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
-  private readonly certificate?: acm.ICertificate;
+  private readonly certificate?: ICertificateRef;
   private readonly publishAdditionalMetrics?: boolean;
   private webAclId?: string;
 
@@ -338,7 +373,7 @@ export class Distribution extends Resource implements IDistribution {
     addConstructMetadata(this, props);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new ValidationError(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }
@@ -396,6 +431,7 @@ export class Distribution extends Resource implements IDistribution {
       },
     });
 
+    this.distributionRef = distribution.distributionRef;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
@@ -634,6 +670,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Adds an IAM policy statement associated with this distribution to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
@@ -645,12 +682,13 @@ export class Distribution extends Resource implements IDistribution {
 
   /**
    * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
   @MethodMetadata()
   public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, 'cloudfront:CreateInvalidation');
+    return this.grants.createInvalidation(identity);
   }
 
   /**
@@ -823,7 +861,7 @@ export class Distribution extends Resource implements IDistribution {
     } : undefined;
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate,
+  private renderViewerCertificate(certificate: ICertificateRef,
     minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
     const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
       ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
@@ -831,7 +869,7 @@ export class Distribution extends Resource implements IDistribution {
     const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 
     return {
-      acmCertificateArn: certificate.certificateArn,
+      acmCertificateArn: certificate.certificateRef.certificateId,
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };
@@ -931,6 +969,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2_2018 = 'TLSv1.2_2018',
   TLS_V1_2_2019 = 'TLSv1.2_2019',
   TLS_V1_2_2021 = 'TLSv1.2_2021',
+  TLS_V1_2_2025 = 'TLSv1.2_2025',
+  TLS_V1_3_2025 = 'TLSv1.3_2025',
 }
 
 /**
@@ -1073,7 +1113,7 @@ export interface AddBehaviorOptions {
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
    * @default CachePolicy.CACHING_OPTIMIZED
    */
-  readonly cachePolicy?: ICachePolicy;
+  readonly cachePolicy?: ICachePolicyRef;
 
   /**
    * Whether you want CloudFront to automatically compress certain files for this cache behavior.
@@ -1090,21 +1130,21 @@ export interface AddBehaviorOptions {
    *
    * @default - none
    */
-  readonly originRequestPolicy?: IOriginRequestPolicy;
+  readonly originRequestPolicy?: IOriginRequestPolicyRef;
 
   /**
    * The real-time log configuration to be attached to this cache behavior.
    *
    * @default - none
    */
-  readonly realtimeLogConfig?: IRealtimeLogConfig;
+  readonly realtimeLogConfig?: IRealtimeLogConfigRef;
 
   /**
    * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
    *
    * @default - none
    */
-  readonly responseHeadersPolicy?: IResponseHeadersPolicy;
+  readonly responseHeadersPolicy?: IResponseHeadersPolicyRef;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
@@ -1141,7 +1181,7 @@ export interface AddBehaviorOptions {
    * @default - no KeyGroups are associated with cache behavior
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
-  readonly trustedKeyGroups?: IKeyGroup[];
+  readonly trustedKeyGroups?: IKeyGroupRef[];
 
   /**
    * Enables your CloudFront distribution to receive gRPC requests and to proxy them directly to your origins.

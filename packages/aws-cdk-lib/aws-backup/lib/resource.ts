@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import * as dynamodb from '../../aws-dynamodb';
 import * as ec2 from '../../aws-ec2';
-import * as efs from '../../aws-efs';
-import * as rds from '../../aws-rds';
 import { Stack } from '../../core';
+import { aws_rds } from '../../interfaces';
+import { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * An operation that is applied to a key-value pair
@@ -65,52 +65,52 @@ export class BackupResource {
   /**
    * A DynamoDB table
    */
-  public static fromDynamoDbTable(table: dynamodb.ITable) {
-    return BackupResource.fromArn(table.tableArn);
+  public static fromDynamoDbTable(table: dynamodb.ITableRef) {
+    return BackupResource.fromArn(table.tableRef.tableArn);
   }
 
   /**
    * An EC2 instance
    */
-  public static fromEc2Instance(instance: ec2.IInstance) {
+  public static fromEc2Instance(instance: ec2.IInstanceRef) {
     return BackupResource.fromArn(Stack.of(instance).formatArn({
       service: 'ec2',
       resource: 'instance',
-      resourceName: instance.instanceId,
+      resourceName: instance.instanceRef.instanceId,
     }));
   }
 
   /**
    * An EFS file system
    */
-  public static fromEfsFileSystem(fileSystem: efs.IFileSystem) {
+  public static fromEfsFileSystem(fileSystem: IFileSystemRef) {
     return BackupResource.fromArn(Stack.of(fileSystem).formatArn({
       service: 'elasticfilesystem',
       resource: 'file-system',
-      resourceName: fileSystem.fileSystemId,
+      resourceName: fileSystem.fileSystemRef.fileSystemId,
     }));
   }
 
   /**
    * A RDS database instance
    */
-  public static fromRdsDatabaseInstance(instance: rds.IDatabaseInstance) {
-    return BackupResource.fromArn(instance.instanceArn);
+  public static fromRdsDatabaseInstance(instance: aws_rds.IDBInstanceRef) {
+    return BackupResource.fromArn(instance.dbInstanceRef.dbInstanceArn);
   }
 
   /**
    * A RDS database cluter
    */
-  public static fromRdsDatabaseCluster(cluster: rds.IDatabaseCluster) {
+  public static fromRdsDatabaseCluster(cluster: aws_rds.IDBClusterRef) {
     const stack = Stack.of(cluster);
-    return BackupResource.fromArn(`arn:${stack.partition}:rds:${stack.region}:${stack.account}:cluster:${cluster.clusterIdentifier}`);
+    return BackupResource.fromArn(`arn:${stack.partition}:rds:${stack.region}:${stack.account}:cluster:${cluster.dbClusterRef.dbClusterIdentifier}`);
   }
 
   /**
    * An Aurora database instance
    */
-  public static fromRdsServerlessCluster(cluster: rds.IServerlessCluster) {
-    return BackupResource.fromArn(cluster.clusterArn);
+  public static fromRdsServerlessCluster(cluster: aws_rds.IDBClusterRef) {
+    return BackupResource.fromArn(cluster.dbClusterRef.dbClusterArn);
   }
 
   /**

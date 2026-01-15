@@ -1,0 +1,509 @@
+{
+ "Resources": {
+  "TestRuntimeExecutionRoleF819113E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Execution role for Bedrock Agent Core Runtime",
+    "MaxSessionDuration": 28800
+   }
+  },
+  "TestRuntimeExecutionRoleDefaultPolicyC7A978D3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:DescribeLogStreams"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:/aws/bedrock-agentcore/runtimes/*"
+         ]
+        ]
+       },
+       "Sid": "LogGroupAccess"
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       },
+       "Sid": "DescribeLogGroups"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*"
+         ]
+        ]
+       },
+       "Sid": "LogStreamAccess"
+      },
+      {
+       "Action": [
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "XRayAccess"
+      },
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Condition": {
+        "StringEquals": {
+         "cloudwatch:namespace": "bedrock-agentcore"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "CloudWatchMetrics"
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:GetWorkloadAccessToken",
+        "bedrock-agentcore:GetWorkloadAccessTokenForJWT",
+        "bedrock-agentcore:GetWorkloadAccessTokenForUserId"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity/*"
+          ]
+         ]
+        }
+       ],
+       "Sid": "GetAgentAccessToken"
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestRuntimeExecutionRoleDefaultPolicyC7A978D3",
+    "Roles": [
+     {
+      "Ref": "TestRuntimeExecutionRoleF819113E"
+     }
+    ]
+   }
+  },
+  "TestRuntime65042BB5": {
+   "Type": "AWS::BedrockAgentCore::Runtime",
+   "Properties": {
+    "AgentRuntimeArtifact": {
+     "ContainerConfiguration": {
+      "ContainerUri": {
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
+      }
+     }
+    },
+    "AgentRuntimeName": "integ_test_runtime",
+    "Description": "Integration test runtime for BedrockAgentCore",
+    "EnvironmentVariables": {
+     "TEST_ENV": "integration",
+     "LOG_LEVEL": "INFO"
+    },
+    "LifecycleConfiguration": {},
+    "NetworkConfiguration": {
+     "NetworkMode": "PUBLIC"
+    },
+    "ProtocolConfiguration": "HTTP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "TestRuntimeExecutionRoleF819113E",
+      "Arn"
+     ]
+    },
+    "Tags": {
+     "Environment": "Integration",
+     "TestType": "CDK"
+    }
+   },
+   "DependsOn": [
+    "TestRuntimeExecutionRoleDefaultPolicyC7A978D3",
+    "TestRuntimeExecutionRoleF819113E"
+   ]
+  },
+  "BasicEndpoint73A65319": {
+   "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
+   "Properties": {
+    "AgentRuntimeId": {
+     "Fn::GetAtt": [
+      "TestRuntime65042BB5",
+      "AgentRuntimeId"
+     ]
+    },
+    "AgentRuntimeVersion": "1",
+    "Description": "Basic endpoint for testing",
+    "Name": "basic_endpoint"
+   }
+  },
+  "TaggedEndpointB1B1CDE4": {
+   "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
+   "Properties": {
+    "AgentRuntimeId": {
+     "Fn::GetAtt": [
+      "TestRuntime65042BB5",
+      "AgentRuntimeId"
+     ]
+    },
+    "AgentRuntimeVersion": "1",
+    "Description": "Endpoint with tags",
+    "Name": "tagged_endpoint",
+    "Tags": {
+     "EndpointType": "Tagged",
+     "Version": "v1"
+    }
+   }
+  },
+  "V2EndpointFFAF1748": {
+   "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
+   "Properties": {
+    "AgentRuntimeId": {
+     "Fn::GetAtt": [
+      "TestRuntime65042BB5",
+      "AgentRuntimeId"
+     ]
+    },
+    "AgentRuntimeVersion": "2",
+    "Description": "Version 2 endpoint",
+    "Name": "v2_endpoint"
+   }
+  },
+  "TestInvokerFunctionServiceRole08233DAF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "TestInvokerFunctionServiceRoleDefaultPolicyC6DC62B6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock-agentcore:InvokeAgentRuntime",
+        "bedrock-agentcore:InvokeAgentRuntimeForUser"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestRuntime65042BB5",
+          "AgentRuntimeArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestRuntime65042BB5",
+             "AgentRuntimeArn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestInvokerFunctionServiceRoleDefaultPolicyC6DC62B6",
+    "Roles": [
+     {
+      "Ref": "TestInvokerFunctionServiceRole08233DAF"
+     }
+    ]
+   }
+  },
+  "TestInvokerFunction6708F5AE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "def handler(event, context): return {\"statusCode\": 200}"
+    },
+    "Description": "Test function to verify runtime grant permissions with sub-resources",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TestInvokerFunctionServiceRole08233DAF",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "TestInvokerFunctionServiceRoleDefaultPolicyC6DC62B6",
+    "TestInvokerFunctionServiceRole08233DAF"
+   ]
+  },
+  "TestInvokerFunctionLogGroup003396AB": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "TestInvokerFunction6708F5AE"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "RuntimeId": {
+   "Description": "Runtime ID",
+   "Value": {
+    "Fn::GetAtt": [
+     "TestRuntime65042BB5",
+     "AgentRuntimeId"
+    ]
+   }
+  },
+  "RuntimeArn": {
+   "Description": "Runtime ARN",
+   "Value": {
+    "Fn::GetAtt": [
+     "TestRuntime65042BB5",
+     "AgentRuntimeArn"
+    ]
+   }
+  },
+  "BasicEndpointId": {
+   "Description": "Basic endpoint ID",
+   "Value": {
+    "Fn::GetAtt": [
+     "BasicEndpoint73A65319",
+     "Id"
+    ]
+   }
+  },
+  "TaggedEndpointId": {
+   "Description": "Tagged endpoint ID",
+   "Value": {
+    "Fn::GetAtt": [
+     "TaggedEndpointB1B1CDE4",
+     "Id"
+    ]
+   }
+  },
+  "V2EndpointId": {
+   "Description": "Version 2 endpoint ID",
+   "Value": {
+    "Fn::GetAtt": [
+     "V2EndpointFFAF1748",
+     "Id"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -17,7 +17,7 @@
       {
        "Action": [
         "s3tables:Get*",
-        "s3tables:ListNamespace",
+        "s3tables:ListNamespaces",
         "s3tables:ListTables"
        ],
        "Effect": "Allow",

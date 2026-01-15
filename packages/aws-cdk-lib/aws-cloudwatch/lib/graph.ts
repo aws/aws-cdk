@@ -1,8 +1,8 @@
-import { IAlarm } from './alarm-base';
 import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
 import { ConcreteWidget } from './widget';
 import * as cdk from '../../core';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Basic properties for widgets that display metrics
@@ -92,7 +92,7 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
   /**
    * The alarm to show
    */
-  readonly alarm: IAlarm;
+  readonly alarm: IAlarmRef;
 
   /**
    * Left Y axis
@@ -125,7 +125,7 @@ export class AlarmWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         annotations: {
-          alarms: [this.props.alarm.alarmArn],
+          alarms: [this.props.alarm.alarmRef.alarmArn],
         },
         yAxis: {
           left: this.props.leftYAxis ?? undefined,
@@ -380,6 +380,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly liveData?: boolean;
 
   /**
+   * Whether the graph should show labels on the chart. Currently only applicable for Pie charts.
+   *
+   * @default false
+   */
+  readonly displayLabelsOnChart?: boolean;
+
+  /**
    * Display this metric
    *
    * @default TimeSeries
@@ -466,6 +473,10 @@ export class GraphWidget extends ConcreteWidget {
     if (props.end !== undefined && props.start === undefined) {
       throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
     }
+
+    if (props.displayLabelsOnChart && props.view !== GraphWidgetView.PIE) {
+      throw new cdk.UnscopedValidationError('displayLabelsOnChart can currently only be set to true if view is GraphWidgetView.PIE');
+    }
   }
 
   /**
@@ -513,6 +524,7 @@ export class GraphWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
+        labels: this.props.displayLabelsOnChart ? { visible: true } : undefined,
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations,
         yAxis: {

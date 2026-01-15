@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import * as cdk from 'aws-cdk-lib/core';
 import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
 import { Construct, IConstruct } from 'constructs';
@@ -306,27 +306,27 @@ export class Table extends TableBase {
     try {
       getDistKeyColumn(columns);
     } catch {
-      throw new Error('Only one column can be configured as distKey.');
+      throw new cdk.ValidationError('Only one column can be configured as distKey.', this);
     }
   }
 
   private validateDistStyle(distStyle: TableDistStyle, columns: Column[]): void {
     const distKeyColumn = getDistKeyColumn(columns);
     if (distKeyColumn && distStyle !== TableDistStyle.KEY) {
-      throw new Error(`Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${distStyle}`);
+      throw new cdk.ValidationError(`Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${distStyle}`, this);
     }
     if (!distKeyColumn && distStyle === TableDistStyle.KEY) {
-      throw new Error('distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.');
+      throw new cdk.ValidationError('distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.', this);
     }
   }
 
   private validateSortStyle(sortStyle: TableSortStyle, columns: Column[]): void {
     const sortKeyColumns = getSortKeyColumns(columns);
     if (sortKeyColumns.length === 0 && sortStyle !== TableSortStyle.AUTO) {
-      throw new Error(`sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`);
+      throw new cdk.ValidationError(`sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`, this);
     }
     if (sortKeyColumns.length > 0 && sortStyle === TableSortStyle.AUTO) {
-      throw new Error(`sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
+      throw new cdk.ValidationError(`sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`, this);
     }
   }
 
@@ -342,12 +342,12 @@ export class Table extends TableBase {
       const column = newColumns[i];
       if (column.id) {
         if (columnIds.has(column.id)) {
-          throw new Error(`Column id '${column.id}' is not unique.`);
+          throw new cdk.ValidationError(`Column id '${column.id}' is not unique.`, this);
         }
         columnIds.add(column.id);
       } else {
         if (columnIds.has(column.name)) {
-          throw new Error(`Column name '${column.name}' is not unique amongst the column ids.`);
+          throw new cdk.ValidationError(`Column name '${column.name}' is not unique amongst the column ids.`, this);
         }
         newColumns[i] = { ...column, id: column.name };
         columnIds.add(column.name);

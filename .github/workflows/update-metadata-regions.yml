@@ -19,8 +19,8 @@ jobs:
           
           status=$(curl -s -o /dev/null -w "%{http_code}" $URL)
           echo "STATUS=${status}" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v5
-      - uses: actions/github-script@v7
+      - uses: actions/checkout@v6
+      - uses: actions/github-script@v8
         if: ${{ steps.download.outputs.STATUS == 200 }}
         env:
           REGIONS: ${{ steps.download.outputs.REGIONS }}
@@ -33,7 +33,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/update-spec.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}/update-spec.patch
@@ -47,10 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download patch
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}
@@ -59,7 +59,7 @@ jobs:
         run: '[ -s ${{ runner.temp }}/update-spec.patch ] && git apply ${{ runner.temp }}/update-spec.patch || echo "Empty patch. Skipping."'
 
       - name: Make Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           # Git commit details
           branch: automation/region-update

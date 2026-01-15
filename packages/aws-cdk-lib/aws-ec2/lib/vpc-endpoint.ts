@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint } from './ec2.generated';
+import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A VPC endpoint.
  */
-export interface IVpcEndpoint extends IResource {
+export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
   /**
    * The VPC endpoint identifier.
    * @attribute
@@ -27,6 +27,12 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
   public abstract readonly vpcEndpointId: string;
 
   protected policyDocument?: iam.PolicyDocument;
+
+  public get vpcEndpointRef(): VPCEndpointReference {
+    return {
+      vpcEndpointId: this.vpcEndpointId,
+    };
+  }
 
   /**
    * Adds a statement to the policy document of the VPC endpoint. The statement
@@ -397,9 +403,13 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BACKUP_GATEWAY = new InterfaceVpcEndpointAwsService('backup-gateway');
   public static readonly BATCH = new InterfaceVpcEndpointAwsService('batch');
   public static readonly BEDROCK = new InterfaceVpcEndpointAwsService('bedrock');
+  public static readonly BEDROCK_FIPS = new InterfaceVpcEndpointAwsService('bedrock-fips');
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
+  public static readonly BEDROCK_AGENTCORE = new InterfaceVpcEndpointAwsService('bedrock-agentcore');
+  public static readonly BEDROCK_AGENTCORE_GATEWAY = new InterfaceVpcEndpointAwsService('bedrock-agentcore.gateway');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
+  public static readonly BEDROCK_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('bedrock-runtime-fips');
   public static readonly BEDROCK_DATA_AUTOMATION = new InterfaceVpcEndpointAwsService('bedrock-data-automation');
   public static readonly BEDROCK_DATA_AUTOMATION_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-fips');
   public static readonly BEDROCK_DATA_AUTOMATION_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-data-automation-runtime');
@@ -409,6 +419,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BILLING_AND_COST_MANAGEMENT_TAX = new InterfaceVpcEndpointAwsService('tax');
   public static readonly BILLING_CONDUCTOR = new InterfaceVpcEndpointAwsService('billingconductor');
   public static readonly BRAKET = new InterfaceVpcEndpointAwsService('braket');
+  public static readonly CERTIFICATE_MANAGER = new InterfaceVpcEndpointAwsService('acm');
+  public static readonly CERTIFICATE_MANAGER_FIPS = new InterfaceVpcEndpointAwsService('acm-fips');
   public static readonly CLEAN_ROOMS = new InterfaceVpcEndpointAwsService('cleanrooms');
   public static readonly CLEAN_ROOMS_ML = new InterfaceVpcEndpointAwsService('cleanrooms-ml');
   public static readonly CLOUD_CONTROL_API = new InterfaceVpcEndpointAwsService('cloudcontrolapi');
@@ -454,6 +466,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
   public static readonly CODESTAR_CONNECTIONS = new InterfaceVpcEndpointAwsService('codestar-connections.api');
   public static readonly CODE_CONNECTIONS = new InterfaceVpcEndpointAwsService('codeconnections.api');
+  public static readonly COGNITO_IDP = new InterfaceVpcEndpointAwsService('cognito-idp');
+  public static readonly COGNITO_IDP_FIPS = new InterfaceVpcEndpointAwsService('cognito-idp-fips');
   public static readonly COMPREHEND = new InterfaceVpcEndpointAwsService('comprehend');
   public static readonly COMPREHEND_MEDICAL = new InterfaceVpcEndpointAwsService('comprehendmedical');
   public static readonly COMPUTE_OPTIMIZER = new InterfaceVpcEndpointAwsService('compute-optimizer');
@@ -492,6 +506,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
   public static readonly ECR = new InterfaceVpcEndpointAwsService('ecr.api');
   public static readonly ECR_DOCKER = new InterfaceVpcEndpointAwsService('ecr.dkr');
+  public static readonly ECR_PUBLIC = new InterfaceVpcEndpointAwsService('ecr-public.api');
   public static readonly ECS = new InterfaceVpcEndpointAwsService('ecs');
   public static readonly ECS_AGENT = new InterfaceVpcEndpointAwsService('ecs-agent');
   public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
@@ -508,6 +523,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ELASTICACHE_FIPS = new InterfaceVpcEndpointAwsService('elasticache-fips');
   public static readonly ELEMENTAL_MEDIACONNECT = new InterfaceVpcEndpointAwsService('mediaconnect');
   public static readonly EMAIL_SMTP = new InterfaceVpcEndpointAwsService('email-smtp');
+  public static readonly EMAIL = new InterfaceVpcEndpointAwsService('email');
+  public static readonly EMAIL_FIPS = new InterfaceVpcEndpointAwsService('email-fips');
   public static readonly EMR = new InterfaceVpcEndpointAwsService('elasticmapreduce');
   public static readonly EMR_EKS = new InterfaceVpcEndpointAwsService('emr-containers');
   public static readonly EMR_SERVERLESS = new InterfaceVpcEndpointAwsService('emr-serverless');
@@ -653,6 +670,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly POLLY = new InterfaceVpcEndpointAwsService('polly');
   public static readonly PRIVATE_5G = new InterfaceVpcEndpointAwsService('private-networks');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY = new InterfaceVpcEndpointAwsService('acm-pca');
+  public static readonly PRIVATE_CERTIFICATE_AUTHORITY_FIPS = new InterfaceVpcEndpointAwsService('acm-pca-fips');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_AD = new InterfaceVpcEndpointAwsService('pca-connector-ad');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_SCEP = new InterfaceVpcEndpointAwsService('pca-connector-scep');
   public static readonly PROMETHEUS = new InterfaceVpcEndpointAwsService('aps');
@@ -689,6 +707,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
   public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, { global: true });
   public static readonly S3_TABLES = new InterfaceVpcEndpointAwsService('s3tables');
+  public static readonly S3_VECTORS = new InterfaceVpcEndpointAwsService('s3vectors');
   public static readonly SAVINGS_PLANS = new InterfaceVpcEndpointAwsService('savingsplans', 'com.amazonaws', undefined, { global: true });
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
   public static readonly SAGEMAKER_API_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.api-fips');
@@ -829,12 +848,18 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub',
         'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
         'workspaces', 'xray'],
+      'eusc-de-east-1': ['ecr.dkr', 'ecr.api', 'execute-api', 'securityhub'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
-      return 'cn.com.amazonaws';
-    } else {
-      return 'com.amazonaws';
+      switch (region) {
+        case 'eusc-de-east-1':
+          return 'eu.amazonaws';
+        case 'cn-north-1':
+        case 'cn-northwest-1':
+          return 'cn.com.amazonaws';
+      }
     }
+    return 'com.amazonaws';
   }
 
   /**
@@ -981,6 +1006,11 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
         defaultPort: Port.tcp(attrs.port),
         securityGroups,
       });
+      public get vpcEndpointRef(): VPCEndpointReference {
+        return {
+          vpcEndpointId: this.vpcEndpointId,
+        };
+      }
     }
 
     return new Import(scope, id);

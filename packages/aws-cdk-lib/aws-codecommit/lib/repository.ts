@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Code } from './code';
-import { CfnRepository } from './codecommit.generated';
+import { RepositoryGrants } from './codecommit-grants.generated';
+import { CfnRepository, IRepositoryRef, RepositoryReference } from './codecommit.generated';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -21,7 +22,7 @@ export interface RepositoryNotifyOnOptions extends notifications.NotificationRul
   readonly events: RepositoryNotificationEvents[];
 }
 
-export interface IRepository extends IResource, notifications.INotificationRuleSource {
+export interface IRepository extends IResource, notifications.INotificationRuleSource, IRepositoryRef {
   /**
    * The ARN of this Repository.
    * @attribute
@@ -254,6 +255,18 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public abstract readonly repositoryCloneUrlGrc: string;
 
   /**
+   * Collection of grant methods for a Repository
+   */
+  public readonly grants = RepositoryGrants.fromRepository(this);
+
+  public get repositoryRef(): RepositoryReference {
+    return {
+      repositoryId: this.repositoryName,
+      repositoryArn: this.repositoryArn,
+    };
+  }
+
+  /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
@@ -347,6 +360,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
     return rule;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -355,22 +371,25 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPull(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'codecommit:GitPull');
+    return this.grants.pull(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPullPush(grantee: iam.IGrantable) {
-    this.grantPull(grantee);
-    return this.grant(grantee, 'codecommit:GitPush');
+    return this.grants.pullPush(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable) {
-    this.grantPull(grantee);
-    return this.grant(grantee,
-      'codecommit:EvaluatePullRequestApprovalRules',
-      'codecommit:Get*',
-      'codecommit:Describe*',
-    );
+    return this.grants.read(grantee);
   }
 
   public notifyOn(
@@ -505,7 +524,7 @@ export interface RepositoryProps {
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -576,7 +595,7 @@ export class Repository extends RepositoryBase {
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
       code: (props.code?.bind(this))?.code,
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);

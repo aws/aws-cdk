@@ -78,6 +78,58 @@
       "SESSION_SUMMARY"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts": {
+    "Topic": [
+      "FINANCIAL_ADVICE",
+      "INAPPROPRIATE_CONTENT",
+      "LEGAL_ADVICE",
+      "MEDICAL_ADVICE",
+      "POLITICAL_ADVICE"
+    ],
+    "GeneralPIIType": [
+      "ADDRESS",
+      "AGE",
+      "DRIVER_ID",
+      "EMAIL",
+      "LICENSE_PLATE",
+      "NAME",
+      "PASSWORD",
+      "PHONE",
+      "USERNAME",
+      "VEHICLE_IDENTIFICATION_NUMBER"
+    ],
+    "FinancePIIType": [
+      "CREDIT_DEBIT_CARD_CVV",
+      "CREDIT_DEBIT_CARD_EXPIRY",
+      "CREDIT_DEBIT_CARD_NUMBER",
+      "PIN",
+      "SWIFT_CODE",
+      "INTERNATIONAL_BANK_ACCOUNT_NUMBER"
+    ],
+    "InformationTechnologyPIIType": [
+      "URL",
+      "IP_ADDRESS",
+      "MAC_ADDRESS",
+      "AWS_ACCESS_KEY",
+      "AWS_SECRET_KEY"
+    ],
+    "USASpecificPIIType": [
+      "US_BANK_ACCOUNT_NUMBER",
+      "US_BANK_ROUTING_NUMBER",
+      "US_INDIVIDUAL_TAX_IDENTIFICATION_NUMBER",
+      "US_PASSPORT_NUMBER",
+      "US_SOCIAL_SECURITY_NUMBER"
+    ],
+    "CanadaSpecificPIIType": [
+      "CA_HEALTH_NUMBER",
+      "CA_SOCIAL_INSURANCE_NUMBER"
+    ],
+    "UKSpecificPIIType": [
+      "UK_NATIONAL_HEALTH_SERVICE_NUMBER",
+      "UK_NATIONAL_INSURANCE_NUMBER",
+      "UK_UNIQUE_TAXPAYER_REFERENCE_NUMBER"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts": {
     "DefaultPromptRouterIdentifier": [
       "ANTHROPIC_CLAUDE_V1",
@@ -99,6 +151,11 @@
       "TITAN_EMBED_TEXT_V2_1024",
       "TITAN_EMBED_TEXT_V2_512",
       "TITAN_EMBED_TEXT_V2_256",
+      "ANTHROPIC_CLAUDE_HAIKU_4_5_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_5_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_V1_0",
       "ANTHROPIC_CLAUDE_3_7_SONNET_V1_0",
       "ANTHROPIC_CLAUDE_3_5_SONNET_V2_0",
       "ANTHROPIC_CLAUDE_3_5_SONNET_V1_0",
@@ -195,7 +252,9 @@
       "V1_29",
       "V1_30",
       "V1_31",
-      "V1_32"
+      "V1_32",
+      "V1_33",
+      "V1_34"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/connection.ts": {
@@ -276,6 +335,32 @@
       "TSV"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts": {
+    "OSVersion": [
+      "LINUX",
+      "MAC_OS",
+      "WINDOWS",
+      "AMAZON_LINUX",
+      "AMAZON_LINUX_2",
+      "AMAZON_LINUX_2023",
+      "MAC_OS_14",
+      "MAC_OS_15",
+      "REDHAT_ENTERPRISE_LINUX",
+      "REDHAT_ENTERPRISE_LINUX_8",
+      "REDHAT_ENTERPRISE_LINUX_9",
+      "REDHAT_ENTERPRISE_LINUX_10",
+      "SLES",
+      "SLES_15",
+      "UBUNTU",
+      "UBUNTU_22_04",
+      "UBUNTU_24_04",
+      "WINDOWS_SERVER",
+      "WINDOWS_SERVER_2016",
+      "WINDOWS_SERVER_2019",
+      "WINDOWS_SERVER_2022",
+      "WINDOWS_SERVER_2025"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/scheduled-audit.ts": {
     "DayOfMonth": [
       "LAST_DAY"
@@ -329,7 +414,8 @@
       "V3_8_X_KRAFT",
       "V3_9_X",
       "V3_9_X_KRAFT",
-      "V4_0_X_KRAFT"
+      "V4_0_X_KRAFT",
+      "V4_1_X_KRAFT"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/cluster.ts": {
@@ -362,7 +448,10 @@
       "V1_4_2_0",
       "V1_4_3_0",
       "V1_4_4_0",
-      "V1_4_5_0"
+      "V1_4_5_0",
+      "V1_4_5_1",
+      "V1_4_6_0",
+      "V1_4_6_1"
     ],
     "LogType": [
       "AUDIT"
@@ -665,6 +754,7 @@
       "AMAZON_NOVA_REEL_V1_1",
       "AMAZON_NOVA_SONIC_V1_0",
       "AMAZON_NOVA_PREMIER_V1_0",
+      "AMAZON_NOVA_2_MULTIMODAL_EMBEDDINGS_V1_0",
       "AI21_J2_MID",
       "AI21_LABS_JURASSIC_2_MID_V1",
       "AI21_J2_ULTRA",
@@ -695,16 +785,19 @@
       "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K",
       "ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0",
       "ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_5_20250929_V1_0",
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0",
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K",
       "ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0",
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K",
+      "ANTHROPIC_CLAUDE_HAIKU_4_5_20251001_V1_0",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_12K",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_28K",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
       "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -718,7 +811,9 @@
       "COHERE_EMBED_ENGLISH_V3_0_512",
       "COHERE_EMBED_MULTILINGUAL_V3",
       "COHERE_EMBED_MULTILINGUAL_V3_0_512",
+      "COHERE_EMBED_V4",
       "DEEP_SEEK_R1_V1_0",
+      "DEEP_SEEK_V3_V1_0",
       "OPENAI_GPT_OSS_120B_1",
       "OPENAI_GPT_OSS_20B_1",
       "LUMA_RAY_V2_0",
@@ -750,6 +845,10 @@
       "MISTRAL_SMALL_V0_1",
       "MISTRAL_LARGE_2_V0_1",
       "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
+      "QWEN_QWEN3_32B_V1_0",
+      "QWEN_QWEN3_235B_A22B_2507_V1_0",
+      "QWEN_QWEN3_CODER_30B_A3B_V1_0",
+      "QWEN_QWEN3_CODER_480B_A35B_V1_0",
       "STABILITY_STABLE_DIFFUSION_XL",
       "STABILITY_STABLE_DIFFUSION_XL_V0",
       "STABILITY_STABLE_DIFFUSION_XL_V1",
@@ -763,7 +862,8 @@
       "WRITER_PALMYRA_X4_V1_0",
       "WRITER_PALMYRA_X5_V1_0",
       "TWELVELABS_MARENGO_EMBED_2_7_V1_0",
-      "TWELVELABS_PEGASUS_1_2_V1_0"
+      "TWELVELABS_PEGASUS_1_2_V1_0",
+      "TWELVELABS_MARENGO_EMBED_3_0_V1_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -974,7 +1074,8 @@
       "WIN_SERVER_CORE_2022_BASE_3_0"
     ],
     "MacBuildImage": [
-      "BASE_14"
+      "BASE_14",
+      "BASE_15"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/ecs/deployment-config.ts": {
@@ -1560,9 +1661,13 @@
       "BACKUP_GATEWAY",
       "BATCH",
       "BEDROCK",
+      "BEDROCK_FIPS",
       "BEDROCK_AGENT",
       "BEDROCK_AGENT_RUNTIME",
+      "BEDROCK_AGENTCORE",
+      "BEDROCK_AGENTCORE_GATEWAY",
       "BEDROCK_RUNTIME",
+      "BEDROCK_RUNTIME_FIPS",
       "BEDROCK_DATA_AUTOMATION",
       "BEDROCK_DATA_AUTOMATION_FIPS",
       "BEDROCK_DATA_AUTOMATION_RUNTIME",
@@ -1572,6 +1677,8 @@
       "BILLING_AND_COST_MANAGEMENT_TAX",
       "BILLING_CONDUCTOR",
       "BRAKET",
+      "CERTIFICATE_MANAGER",
+      "CERTIFICATE_MANAGER_FIPS",
       "CLEAN_ROOMS",
       "CLEAN_ROOMS_ML",
       "CLOUD_CONTROL_API",
@@ -1614,6 +1721,8 @@
       "CODEPIPELINE",
       "CODESTAR_CONNECTIONS",
       "CODE_CONNECTIONS",
+      "COGNITO_IDP",
+      "COGNITO_IDP_FIPS",
       "COMPREHEND",
       "COMPREHEND_MEDICAL",
       "COMPUTE_OPTIMIZER",
@@ -1647,6 +1756,7 @@
       "EC2_MESSAGES",
       "ECR",
       "ECR_DOCKER",
+      "ECR_PUBLIC",
       "ECS",
       "ECS_AGENT",
       "ECS_TELEMETRY",
@@ -1663,6 +1773,8 @@
       "ELASTICACHE_FIPS",
       "ELEMENTAL_MEDIACONNECT",
       "EMAIL_SMTP",
+      "EMAIL",
+      "EMAIL_FIPS",
       "EMR",
       "EMR_EKS",
       "EMR_SERVERLESS",
@@ -1806,6 +1918,7 @@
       "POLLY",
       "PRIVATE_5G",
       "PRIVATE_CERTIFICATE_AUTHORITY",
+      "PRIVATE_CERTIFICATE_AUTHORITY_FIPS",
       "PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_AD",
       "PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_SCEP",
       "PROMETHEUS",
@@ -1842,6 +1955,7 @@
       "S3_OUTPOSTS",
       "S3_MULTI_REGION_ACCESS_POINTS",
       "S3_TABLES",
+      "S3_VECTORS",
       "SAVINGS_PLANS",
       "SAGEMAKER_API",
       "SAGEMAKER_API_FIPS",
@@ -2070,7 +2184,8 @@
       "V1_30",
       "V1_31",
       "V1_32",
-      "V1_33"
+      "V1_33",
+      "V1_34"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts": {
@@ -2103,6 +2218,31 @@
       "SNAPPY",
       "ZIP",
       "UNCOMPRESSED"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/input.ts": {
+    "TimestampParser": [
+      "EPOCH_MILLIS"
+    ],
+    "InputFormat": [
+      "OPENX_JSON",
+      "HIVE_JSON"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {
+    "ParquetCompression": [
+      "GZIP",
+      "SNAPPY",
+      "UNCOMPRESSED"
+    ],
+    "OrcCompression": [
+      "ZLIB",
+      "SNAPPY",
+      "NONE"
+    ],
+    "OutputFormat": [
+      "PARQUET",
+      "ORC"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/adot-layers.ts": {
@@ -2196,7 +2336,8 @@
       "VERSION_1_0_317_0",
       "VERSION_1_0_333_0",
       "VERSION_1_0_391_0",
-      "VERSION_1_0_404_0"
+      "VERSION_1_0_404_0",
+      "VERSION_1_0_498_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/runtime-management.ts": {
@@ -2220,6 +2361,7 @@
       "NODEJS_20_X",
       "NODEJS_LATEST",
       "NODEJS_22_X",
+      "NODEJS_24_X",
       "PYTHON_2_7",
       "PYTHON_3_6",
       "PYTHON_3_7",
@@ -2229,14 +2371,17 @@
       "PYTHON_3_11",
       "PYTHON_3_12",
       "PYTHON_3_13",
+      "PYTHON_3_14",
       "JAVA_8",
       "JAVA_8_CORRETTO",
       "JAVA_11",
       "JAVA_17",
       "JAVA_21",
+      "JAVA_25",
       "DOTNET_6",
       "DOTNET_8",
       "DOTNET_9",
+      "DOTNET_10",
       "DOTNET_CORE_1",
       "DOTNET_CORE_2",
       "DOTNET_CORE_2_1",
@@ -2261,7 +2406,12 @@
     "KafkaSchemaRegistryAccessConfigType": [
       "BASIC_AUTH",
       "CLIENT_CERTIFICATE_TLS_AUTH",
-      "SERVER_ROOT_CA_CERTIFICATE"
+      "SERVER_ROOT_CA_CERTIFICATE",
+      "VIRTUAL_HOST",
+      "SASL_SCRAM_256_AUTH",
+      "SASL_SCRAM_512_AUTH",
+      "VPC_SECURITY_GROUP",
+      "VPC_SUBNET"
     ],
     "KafkaSchemaValidationAttribute": [
       "KEY",
@@ -2271,6 +2421,11 @@
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/snapstart-config.ts": {
     "SnapStartConf": [
       "ON_PUBLISHED_VERSIONS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/tenancy-config.ts": {
+    "TenancyConfig": [
+      "PER_TENANT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/data-protection-policy.ts": {
@@ -2409,7 +2564,9 @@
       "OPENSEARCH_2_13",
       "OPENSEARCH_2_15",
       "OPENSEARCH_2_17",
-      "OPENSEARCH_2_19"
+      "OPENSEARCH_2_19",
+      "OPENSEARCH_3_1",
+      "OPENSEARCH_3_3"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2529,7 +2686,11 @@
       "VER_3_08_1",
       "VER_3_08_2",
       "VER_3_09_0",
-      "VER_3_10_0"
+      "VER_3_10_0",
+      "VER_3_10_1",
+      "VER_3_10_2",
+      "VER_3_11_0",
+      "VER_3_11_1"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2606,6 +2767,8 @@
       "VER_13_17",
       "VER_13_18",
       "VER_13_20",
+      "VER_13_21",
+      "VER_13_22",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2620,6 +2783,8 @@
       "VER_14_14",
       "VER_14_15",
       "VER_14_17",
+      "VER_14_18",
+      "VER_14_19",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2630,6 +2795,8 @@
       "VER_15_9",
       "VER_15_10",
       "VER_15_12",
+      "VER_15_13",
+      "VER_15_14",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2641,10 +2808,14 @@
       "VER_16_6_LIMITLESS",
       "VER_16_8",
       "VER_16_8_LIMITLESS",
+      "VER_16_9",
+      "VER_16_9_LIMITLESS",
+      "VER_16_10",
       "VER_17_1",
       "VER_17_2",
       "VER_17_4",
-      "VER_17_5"
+      "VER_17_5",
+      "VER_17_6"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2749,6 +2920,8 @@
       "VER_10_6_20",
       "VER_10_6_21",
       "VER_10_6_22",
+      "VER_10_6_23",
+      "VER_10_6_24",
       "VER_10_11",
       "VER_10_11_4",
       "VER_10_11_5",
@@ -2759,10 +2932,16 @@
       "VER_10_11_10",
       "VER_10_11_11",
       "VER_10_11_13",
+      "VER_10_11_14",
+      "VER_10_11_15",
       "VER_11_4_3",
       "VER_11_4_4",
       "VER_11_4_5",
-      "VER_11_4_7"
+      "VER_11_4_7",
+      "VER_11_4_8",
+      "VER_11_4_9",
+      "VER_11_8_3",
+      "VER_11_8_5"
     ],
     "MysqlEngineVersion": [
       "VER_5_5",
@@ -2816,6 +2995,7 @@
       "VER_5_7_44_RDS_20250103",
       "VER_5_7_44_RDS_20250213",
       "VER_5_7_44_RDS_20250508",
+      "VER_5_7_44_RDS_20250818",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",
@@ -2843,9 +3023,13 @@
       "VER_8_0_40",
       "VER_8_0_41",
       "VER_8_0_42",
+      "VER_8_0_43",
+      "VER_8_0_44",
       "VER_8_4_3",
       "VER_8_4_4",
-      "VER_8_4_5"
+      "VER_8_4_5",
+      "VER_8_4_6",
+      "VER_8_4_7"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",
@@ -2939,6 +3123,7 @@
       "VER_11_22_RDS_20240808",
       "VER_11_22_RDS_20241121",
       "VER_11_22_RDS_20250508",
+      "VER_11_22_RDS_20250814",
       "VER_12",
       "VER_12_2",
       "VER_12_3",
@@ -2961,7 +3146,9 @@
       "VER_12_20",
       "VER_12_21",
       "VER_12_22",
+      "VER_12_22_RDS_20250220",
       "VER_12_22_RDS_20250508",
+      "VER_12_22_RDS_20250814",
       "VER_13",
       "VER_13_1",
       "VER_13_2",
@@ -2984,6 +3171,8 @@
       "VER_13_19",
       "VER_13_20",
       "VER_13_21",
+      "VER_13_22",
+      "VER_13_23",
       "VER_14",
       "VER_14_1",
       "VER_14_2",
@@ -3003,6 +3192,8 @@
       "VER_14_16",
       "VER_14_17",
       "VER_14_18",
+      "VER_14_19",
+      "VER_14_20",
       "VER_15",
       "VER_15_2",
       "VER_15_3",
@@ -3016,6 +3207,8 @@
       "VER_15_11",
       "VER_15_12",
       "VER_15_13",
+      "VER_15_14",
+      "VER_15_15",
       "VER_16",
       "VER_16_1",
       "VER_16_2",
@@ -3026,12 +3219,18 @@
       "VER_16_7",
       "VER_16_8",
       "VER_16_9",
+      "VER_16_10",
+      "VER_16_11",
       "VER_17",
       "VER_17_1",
       "VER_17_2",
       "VER_17_3",
       "VER_17_4",
-      "VER_17_5"
+      "VER_17_5",
+      "VER_17_6",
+      "VER_17_7",
+      "VER_18",
+      "VER_18_1"
     ],
     "OracleLegacyEngineVersion": [
       "VER_11_2",
@@ -3142,6 +3341,7 @@
       "VER_19_0_0_0_2024_07_R1",
       "VER_19_0_0_0_2024_10_R1",
       "VER_19_0_0_0_2025_01_R1",
+      "VER_19_0_0_0_2025_07_R1",
       "VER_21",
       "VER_21_0_0_0_2022_01_R1",
       "VER_21_0_0_0_2022_04_R1",
@@ -3156,7 +3356,8 @@
       "VER_21_0_0_0_2024_04_R1",
       "VER_21_0_0_0_2024_07_R1",
       "VER_21_0_0_0_2024_10_R1",
-      "VER_21_0_0_0_2025_01_R1"
+      "VER_21_0_0_0_2025_01_R1",
+      "VER_21_0_0_0_2025_07_R1"
     ],
     "SqlServerEngineVersion": [
       "VER_11",
@@ -3198,6 +3399,9 @@
       "VER_13_00_6445_1_V1",
       "VER_13_00_6450_1_V1",
       "VER_13_00_6455_2_V1",
+      "VER_13_00_6460_7_V1",
+      "VER_13_00_6465_1_V1",
+      "VER_13_00_6470_1_V1",
       "VER_14",
       "VER_14_00_1000_169_V1",
       "VER_14_00_3015_40_V1",
@@ -3218,6 +3422,9 @@
       "VER_14_00_3475_1_V1",
       "VER_14_00_3480_1_V1",
       "VER_14_00_3485_1_V1",
+      "VER_14_00_3495_9_V1",
+      "VER_14_00_3500_1_V1",
+      "VER_14_00_3505_1_V1",
       "VER_15",
       "VER_15_00_4043_16_V1",
       "VER_15_00_4355_3_V1",
@@ -3241,6 +3448,9 @@
       "VER_15_00_4415_2_V1",
       "VER_15_00_4420_2_V1",
       "VER_15_00_4430_1_V1",
+      "VER_15_00_4435_7_V1",
+      "VER_15_00_4440_1_V1",
+      "VER_15_00_4445_1_V1",
       "VER_16",
       "VER_16_00_4085_2_V1",
       "VER_16_00_4095_4_V1",
@@ -3254,7 +3464,11 @@
       "VER_16_00_4150_1_V1",
       "VER_16_00_4165_4_V1",
       "VER_16_00_4175_1_V1",
-      "VER_16_00_4185_3_V1"
+      "VER_16_00_4185_3_V1",
+      "VER_16_00_4195_2_V1",
+      "VER_16_00_4205_1_V1",
+      "VER_16_00_4210_1_V1",
+      "VER_16_00_4215_2_V1"
     ],
     "DatabaseInstanceEngine": [
       "MARIADB",
@@ -3275,6 +3489,13 @@
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
     "SessionPinningFilter": [
       "EXCLUDE_VARIABLE_SETS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.ts": {
+    "Alpn": [
+      "HTTP1_1",
+      "H2",
+      "H3"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts": {
@@ -3391,8 +3612,16 @@
       "SYNTHETICS_NODEJS_PUPPETEER_8_0",
       "SYNTHETICS_NODEJS_PUPPETEER_9_0",
       "SYNTHETICS_NODEJS_PUPPETEER_9_1",
+      "SYNTHETICS_NODEJS_PUPPETEER_10_0",
+      "SYNTHETICS_NODEJS_PUPPETEER_11_0",
+      "SYNTHETICS_NODEJS_PUPPETEER_12_0",
+      "SYNTHETICS_NODEJS_PUPPETEER_13_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
+      "SYNTHETICS_NODEJS_PLAYWRIGHT_3_0",
+      "SYNTHETICS_NODEJS_PLAYWRIGHT_4_0",
+      "SYNTHETICS_NODEJS_PLAYWRIGHT_5_0",
+      "SYNTHETICS_NODEJS_3_0",
       "SYNTHETICS_PYTHON_SELENIUM_1_0",
       "SYNTHETICS_PYTHON_SELENIUM_1_1",
       "SYNTHETICS_PYTHON_SELENIUM_1_2",
@@ -3404,7 +3633,8 @@
       "SYNTHETICS_PYTHON_SELENIUM_4_1",
       "SYNTHETICS_PYTHON_SELENIUM_5_0",
       "SYNTHETICS_PYTHON_SELENIUM_5_1",
-      "SYNTHETICS_PYTHON_SELENIUM_6_0"
+      "SYNTHETICS_PYTHON_SELENIUM_6_0",
+      "SYNTHETICS_PYTHON_SELENIUM_7_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {

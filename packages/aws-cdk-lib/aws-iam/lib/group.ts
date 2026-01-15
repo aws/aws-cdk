@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnGroup } from './iam.generated';
+import { CfnGroup, GroupReference, IGroupRef } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -16,7 +16,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
  */
-export interface IGroup extends IIdentity {
+export interface IGroup extends IIdentity, IGroupRef {
   /**
    * Returns the IAM Group Name
    *
@@ -83,6 +83,13 @@ abstract class GroupBase extends Resource implements IGroup {
 
   public get policyFragment(): PrincipalPolicyFragment {
     return new ArnPrincipal(this.groupArn).policyFragment;
+  }
+
+  public get groupRef(): GroupReference {
+    return {
+      groupName: this.groupName,
+      groupArn: this.groupArn,
+    };
   }
 
   /**

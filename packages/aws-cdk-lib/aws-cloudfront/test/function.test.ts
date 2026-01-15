@@ -292,5 +292,24 @@ describe('CloudFront Function', () => {
         },
       });
     });
+
+    test('CloudFront FunctionRef uses GetAtt, not Ref', () => {
+      // Both GetAtt and Ref are valid ways to satisfy the contract, but only
+      // GetAtt is backwards compatible.
+      const stack = new Stack();
+
+      const fn = new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        runtime: FunctionRuntime.JS_2_0,
+        keyValueStore: undefined,
+      });
+
+      expect(stack.resolve(fn.functionRef.functionArn)).toEqual({
+        'Fn::GetAtt': [
+          'TestFn04335C60',
+          'FunctionARN',
+        ],
+      });
+    });
   });
 });

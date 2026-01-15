@@ -1,11 +1,11 @@
 import { Template } from '../../assertions';
 import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
-import { RemovalPolicy, Stack, App } from '../../core';
+import { RemovalPolicy, Stack } from '../../core';
 import * as s3 from '../lib';
 import { CfnBucketPolicy } from '../lib';
 
 // to make it easy to copy & paste from output:
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('bucket policy', () => {
   test('default properties', () => {
@@ -129,27 +129,29 @@ describe('bucket policy', () => {
   });
 
   test('fails if bucket policy has no actions', () => {
-    const app = new App();
-    const stack = new Stack(app, 'my-stack');
+    const stack = new Stack();
     const myBucket = new s3.Bucket(stack, 'MyBucket');
     myBucket.addToResourcePolicy(new PolicyStatement({
       resources: [myBucket.bucketArn],
       principals: [new AnyPrincipal()],
     }));
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    expect(() => {
+      Template.fromStack(stack).toJSON();
+    }).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
   });
 
   test('fails if bucket policy has no IAM principals', () => {
-    const app = new App();
-    const stack = new Stack(app, 'my-stack');
+    const stack = new Stack();
     const myBucket = new s3.Bucket(stack, 'MyBucket');
     myBucket.addToResourcePolicy(new PolicyStatement({
       resources: [myBucket.bucketArn],
       actions: ['s3:GetObject*'],
     }));
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    expect(() => {
+      Template.fromStack(stack).toJSON();
+    }).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
 
   describe('fromCfnBucketPolicy()', () => {
@@ -174,6 +176,39 @@ describe('bucket policy', () => {
 
       expect(bucketPolicy.bucket).not.toBeUndefined();
       expect(bucketPolicy.bucket.bucketName).toBe('hardcoded-name');
+    });
+
+    test('should synthesize without errors and create duplicate cfn resource', () => {
+      const testStack = new Stack();
+      const cfnBucketPolicy = new s3.CfnBucketPolicy(testStack, 'TestBucketPolicy', {
+        policyDocument: {
+          'Statement': [
+            {
+              'Action': 's3:*',
+              'Effect': 'Deny',
+              'Principal': {
+                'AWS': '*',
+              },
+              'Resource': '*',
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        bucket: 'test-bucket',
+      });
+
+      s3.BucketPolicy.fromCfnBucketPolicy(cfnBucketPolicy);
+
+      // Verify that two CfnBucketPolicy resources are created
+      const template = Template.fromStack(testStack);
+      const bucketPolicies = template.findResources('AWS::S3::BucketPolicy');
+      expect(Object.keys(bucketPolicies)).toHaveLength(2);
+
+      // Both should have valid policy documents
+      Object.values(bucketPolicies).forEach((policy: any) => {
+        expect(policy.Properties.PolicyDocument).toBeDefined();
+        expect(policy.Properties.PolicyDocument.Statement).toBeDefined();
+      });
     });
 
     function bucketPolicyForBucketNamed(name: string): CfnBucketPolicy {

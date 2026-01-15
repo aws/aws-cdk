@@ -43,7 +43,7 @@ export enum ArnFormat {
 
   /**
    * This represents a format where the 'resource' and 'resourceName'
-   * parts are seperated with a slash,
+   * parts are separated with a slash,
    * but there is also an additional slash after the colon separating 'account' from 'resource'.
    * Like in: 'arn:aws:service:region:account:/resource/resourceName'.
    * Note that the leading slash is _not_ included in the parsed 'resource' part.

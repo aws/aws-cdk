@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Annotations, Template, Match } from '../../assertions';
+import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
@@ -983,6 +983,33 @@ describe('subscription filter', () => {
       LogGroupName: { Ref: 'LogGroupF5B46931' },
       FilterName: 'CustomSubscriptionFilterName',
     });
+  });
+});
+
+test('encrypting log group with referenced alias', () => {
+  const stack = new Stack();
+
+  const alias = kms.Alias.fromAliasName(stack, 'KmsAlias', 'alias/some-alias');
+
+  new LogGroup(stack, 'LogGroup', {
+    encryptionKey: alias,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    KmsKeyId: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':kms:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':alias/some-alias',
+        ],
+      ],
+    },
   });
 });
 

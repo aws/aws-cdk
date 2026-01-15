@@ -3,9 +3,6 @@ import { ExportWriter } from '../../lib/custom-resource-provider/cross-region-ex
 import { toCloudFormation } from '../util';
 
 describe('export writer provider', () => {
-  // Since all regions now have the same latest Node.js runtime (nodejs22.x),
-  // the CDK optimizes by using the literal value instead of creating a mapping
-
   test('basic configuration', () => {
     // GIVEN
     const app = new App();

@@ -4,6 +4,7 @@ import { Attributes, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -87,6 +88,51 @@ export interface BaseTargetGroupProps {
    * @default undefined - ELB defaults to IPv4
    */
   readonly ipAddressType?: TargetGroupIpAddressType;
+
+  /**
+   * Configuring target group health.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
+   * @default - use default configuration
+   */
+  readonly targetGroupHealth?: TargetGroupHealth;
+}
+
+/**
+ * Properties for configuring a target group health
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
+ */
+export interface TargetGroupHealth {
+  /**
+   * The minimum number of targets that must be healthy for DNS failover.
+   * If below this value, mark the zone as unhealthy in DNS.
+   * Use 0 for "off".
+   * @default 1
+   */
+  readonly dnsMinimumHealthyTargetCount?: number;
+
+  /**
+   * The minimum percentage of targets that must be healthy for DNS failover.
+   * If below this value, mark the zone as unhealthy in DNS.
+   * Use 0 for "off".
+   * @default 0
+   */
+  readonly dnsMinimumHealthyTargetPercentage?: number;
+
+  /**
+   * The minimum number of targets that must be healthy for unhealthy state routing.
+   * If below this value, send traffic to all targets including unhealthy ones.
+   * @default 1
+   */
+  readonly routingMinimumHealthyTargetCount?: number;
+
+  /**
+   * The minimum percentage of targets that must be healthy for unhealthy state routing.
+   * If below this value, send traffic to all targets including unhealthy ones.
+   * Use 0 for "off".
+   * @default 0
+   */
+  readonly routingMinimumHealthyTargetPercentage?: number;
 }
 
 /**
@@ -192,6 +238,22 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   public readonly targetGroupArn: string;
 
   /**
+   * A reference to this target group
+   */
+  public get targetGroupRef(): aws_elasticloadbalancingv2.TargetGroupReference {
+    return {
+      targetGroupArn: this.targetGroupArn,
+    };
+  }
+
+  /**
+   * The environment this resource belongs to
+   */
+  public get env(): cdk.ResourceEnvironment {
+    return cdk.Stack.of(this).env;
+  }
+
+  /**
    * The full name of the target group
    */
   public readonly targetGroupFullName: string;
@@ -274,6 +336,40 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
+    if (baseProps.targetGroupHealth?.dnsMinimumHealthyTargetCount !== undefined) {
+      this.setAttribute(
+        'target_group_health.dns_failover.minimum_healthy_targets.count',
+        baseProps.targetGroupHealth.dnsMinimumHealthyTargetCount == 0
+          ? 'off'
+          : baseProps.targetGroupHealth.dnsMinimumHealthyTargetCount.toString(),
+      );
+    }
+
+    if (baseProps.targetGroupHealth?.dnsMinimumHealthyTargetPercentage !== undefined) {
+      this.setAttribute(
+        'target_group_health.dns_failover.minimum_healthy_targets.percentage',
+        baseProps.targetGroupHealth.dnsMinimumHealthyTargetPercentage == 0
+          ? 'off'
+          : baseProps.targetGroupHealth.dnsMinimumHealthyTargetPercentage.toString(),
+      );
+    }
+
+    if (baseProps.targetGroupHealth?.routingMinimumHealthyTargetCount !== undefined) {
+      this.setAttribute(
+        'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count',
+        baseProps.targetGroupHealth.routingMinimumHealthyTargetCount.toString(),
+      );
+    }
+
+    if (baseProps.targetGroupHealth?.routingMinimumHealthyTargetPercentage !== undefined) {
+      this.setAttribute(
+        'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage',
+        baseProps.targetGroupHealth.routingMinimumHealthyTargetPercentage == 0
+          ? 'off'
+          : baseProps.targetGroupHealth.routingMinimumHealthyTargetPercentage.toString(),
+      );
+    }
+
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;
     this.targetType = baseProps.targetType;
@@ -340,6 +436,29 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
    */
   public setAttribute(key: string, value: string | undefined) {
+    if (value !== undefined) {
+      switch (key) {
+        case 'target_group_health.dns_failover.minimum_healthy_targets.count':
+          if ((!Number.isInteger(+value) || +value < 1) && value !== 'off') {
+            throw new ValidationError(`${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
+          }
+          break;
+        case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count':
+          if (!Number.isInteger(+value) || +value < 1) {
+            throw new ValidationError(`${key} must be an integer greater than 0. Received: ${value}`, this);
+          }
+          break;
+        case 'target_group_health.dns_failover.minimum_healthy_targets.percentage':
+        case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage':
+          if ((!Number.isInteger(+value) || +value < 1 || +value > 100) && value !== 'off') {
+            throw new ValidationError(`${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
     this.attributes[key] = value;
   }
 
@@ -439,7 +558,7 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
 /**
  * A target group
  */
-export interface ITargetGroup extends IConstruct {
+export interface ITargetGroup extends IConstruct, aws_elasticloadbalancingv2.ITargetGroupRef {
   /**
    * The name of the target group
    */

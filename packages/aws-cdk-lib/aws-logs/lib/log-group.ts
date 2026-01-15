@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { DataProtectionPolicy } from './data-protection-policy';
 import { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
-import { CfnLogGroup } from './logs.generated';
+import { LogGroupGrants } from './logs-grants.generated';
+import { CfnLogGroup, ILogGroupRef, LogGroupReference } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
@@ -15,7 +16,7 @@ import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError 
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface ILogGroup extends iam.IResourceWithPolicy {
+export interface ILogGroup extends iam.IResourceWithPolicy, ILogGroupRef {
   /**
    * The ARN of this log group, with ':*' appended
    *
@@ -138,6 +139,11 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public abstract readonly logGroupName: string;
 
+  /**
+   * Collection of grant methods for a LogGroup
+   */
+  public readonly grants = LogGroupGrants.fromLogGroup(this);
+
   private policy?: ResourcePolicy;
 
   /**
@@ -151,6 +157,13 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       logGroup: this,
       ...props,
     });
+  }
+
+  public get logGroupRef(): LogGroupReference {
+    return {
+      logGroupArn: this.logGroupArn,
+      logGroupName: this.logGroupName,
+    };
   }
 
   /**
@@ -220,26 +233,26 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   /**
    * Give permissions to create and write to streams in this log group
+   *
+   * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
+    return this.grants.write(grantee);
   }
 
   /**
    * Give permissions to read and filter events from this log group
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
-    return this.grant(grantee,
-      'logs:FilterLogEvents',
-      'logs:GetLogEvents',
-      'logs:GetLogGroupFields',
-      'logs:DescribeLogGroups',
-      'logs:DescribeLogStreams',
-    );
+    return this.grants.read(grantee);
   }
 
   /**
    * Give the indicated permissions on this log group and all streams
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipalOrResource({
@@ -514,7 +527,7 @@ export interface LogGroupProps {
    *
    * @default Server-side encryption managed by the CloudWatch Logs service
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * Name of the log group.
@@ -666,7 +679,7 @@ export class LogGroup extends LogGroupBase {
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
-      kmsKeyId: props.encryptionKey?.keyArn,
+      kmsKeyId: props.encryptionKey?.keyRef.keyArn,
       logGroupClass,
       logGroupName: this.physicalName,
       retentionInDays,
@@ -803,6 +816,14 @@ export interface MetricFilterOptions {
    * @default - Cloudformation generated name.
    */
   readonly filterName?: string;
+
+  /**
+   * Whether the metric filter is applied on the tranformed logs. This parameter is valid only for log groups that have an active log transformer.
+   * If this value is true, the metric filter is applied on the transformed version of the log events instead of the original ingested log events.
+   *
+   * @default - false
+   */
+  readonly applyOnTransformedLogs?: boolean;
 }
 
 /**

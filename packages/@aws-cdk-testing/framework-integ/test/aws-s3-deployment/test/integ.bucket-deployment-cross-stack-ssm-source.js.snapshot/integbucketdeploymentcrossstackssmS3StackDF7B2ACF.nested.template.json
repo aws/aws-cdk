@@ -9,7 +9,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:938421c6",
+      "Key": "aws-cdk:cr-owned:3c4123a6",
       "Value": "true"
      }
     ]
@@ -146,7 +146,7 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "ReproDeploymentAwsCliLayer1B1331E5": {
+  "DeployWithSsmParameterAwsCliLayer695E077A": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -158,7 +158,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "ReproDeploymentCustomResourceF8D3CC22": {
+  "DeployWithSsmParameterCustomResource3AF3E6E3": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -173,7 +173,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "a03379cb1c18c3195a119b640be370e0cfc34cfb5449546154c645b6ea415d18.zip"
+     "21409ce0b2930d62f0f9cbee71545f6a93874b6bd01a8558df7de06918b71b78.zip"
     ],
     "SourceMarkers": [
      {
@@ -340,7 +340,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "ReproDeploymentAwsCliLayer1B1331E5"
+      "Ref": "DeployWithSsmParameterAwsCliLayer695E077A"
      }
     ],
     "Role": {
@@ -349,7 +349,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900
    },
    "DependsOn": [
