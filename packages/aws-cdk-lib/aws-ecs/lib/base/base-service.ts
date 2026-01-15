@@ -751,16 +751,6 @@ export abstract class BaseService extends Resource
   private readonly lifecycleHooks: IDeploymentLifecycleHookTarget[] = [];
 
   /**
-   * Linear deployment configuration
-   */
-  private linearConfig?: CfnService.LinearConfigurationProperty;
-
-  /**
-   * Canary deployment configuration
-   */
-  private canaryConfig?: CfnService.CanaryConfigurationProperty;
-
-  /**
    * The deployment strategy for the service
    */
   private readonly deploymentStrategy?: DeploymentStrategy;
@@ -795,6 +785,14 @@ export abstract class BaseService extends Resource
     // Determine if this service is using the ECS deployment controller
     this.isEcsDeploymentController = !deploymentController || deploymentController.type === DeploymentControllerType.ECS;
     this.deploymentStrategy = props.deploymentStrategy;
+
+    if (props.linearConfiguration) {
+      this.validateLinearConfiguration(props.linearConfiguration);
+    }
+    if (props.canaryConfiguration) {
+      this.validateCanaryConfiguration(props.canaryConfiguration);
+    }
+
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -809,8 +807,14 @@ export abstract class BaseService extends Resource
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
-        linearConfiguration: Lazy.any({ produce: () => this.linearConfig }),
-        canaryConfiguration: Lazy.any({ produce: () => this.canaryConfig }),
+        linearConfiguration: props.linearConfiguration ? {
+          stepPercent: props.linearConfiguration.stepPercent,
+          stepBakeTimeInMinutes: props.linearConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
+        canaryConfiguration: props.canaryConfiguration ? {
+          canaryPercent: props.canaryConfiguration.stepPercent,
+          canaryBakeTimeInMinutes: props.canaryConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
         lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
@@ -931,53 +935,7 @@ export abstract class BaseService extends Resource
       }
     }
 
-    if (props.linearConfiguration) {
-      this.configureLinearDeployment(props.linearConfiguration);
-    }
-
-    if (props.canaryConfiguration) {
-      this.configureCanaryDeployment(props.canaryConfiguration);
-    }
-
     this.node.defaultChild = this.resource;
-  }
-
-  /**
-   * Configure linear deployment strategy with progressive traffic shifting.
-   * Only valid when deploymentStrategy is set to LINEAR.
-   *
-   * @param config The traffic shift configuration for linear deployment
-   */
-  public configureLinearDeployment(config: TrafficShiftConfig): void {
-    if (!this.isEcsDeploymentController) {
-      throw new ValidationError('Linear deployment configuration requires the ECS deployment controller.', this);
-    }
-
-    this.validateLinearConfiguration(config);
-
-    this.linearConfig = {
-      stepPercent: config.stepPercent,
-      stepBakeTimeInMinutes: config.stepBakeTime?.toMinutes(),
-    };
-  }
-
-  /**
-   * Configure canary deployment strategy with initial traffic testing.
-   * Only valid when deploymentStrategy is set to CANARY.
-   *
-   * @param config The traffic shift configuration for canary deployment
-   */
-  public configureCanaryDeployment(config: TrafficShiftConfig): void {
-    if (!this.isEcsDeploymentController) {
-      throw new ValidationError('Canary deployment configuration requires the ECS deployment controller.', this);
-    }
-
-    this.validateCanaryConfiguration(config);
-
-    this.canaryConfig = {
-      canaryPercent: config.stepPercent,
-      canaryBakeTimeInMinutes: config.stepBakeTime?.toMinutes(),
-    };
   }
 
   /**
@@ -1249,7 +1207,7 @@ export abstract class BaseService extends Resource
       }
     }
 
-    if (config.stepBakeTime !== undefined && !Token.isUnresolved(config.stepBakeTime)) {
+    if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
       const minutes = config.stepBakeTime.toMinutes({ integral: false });
       if (!Number.isInteger(minutes)) {
         throw new ValidationError(`Canary deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
@@ -1277,7 +1235,7 @@ export abstract class BaseService extends Resource
       }
     }
 
-    if (config.stepBakeTime !== undefined && !Token.isUnresolved(config.stepBakeTime)) {
+    if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
       const minutes = config.stepBakeTime.toMinutes({ integral: false });
       if (!Number.isInteger(minutes)) {
         throw new ValidationError(`Linear deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
