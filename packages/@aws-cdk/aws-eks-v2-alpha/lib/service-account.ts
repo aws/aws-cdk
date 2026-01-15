@@ -4,7 +4,7 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { CfnJson, FeatureFlags, Names } from 'aws-cdk-lib/core';
-import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
+import { EKSV2_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 // import { FargateCluster } from './index';
@@ -167,11 +167,11 @@ export class ServiceAccount extends Construct implements IPrincipal {
 
     let principal: IPrincipal;
     if (props.identityType !== IdentityType.POD_IDENTITY) {
-      const openIdConnectProvider = FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)
+      const openIdConnectProvider = FeatureFlags.of(this).isEnabled(EKSV2_USE_NATIVE_OIDC_PROVIDER)
         ? cluster.oidcProviderNative
         : cluster.openIdConnectProvider;
 
-      const openIdConnectProviderIssuer = FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)
+      const openIdConnectProviderIssuer = FeatureFlags.of(this).isEnabled(EKSV2_USE_NATIVE_OIDC_PROVIDER)
         ? getOidcProviderIssuer(cluster.oidcProviderNative)
         : cluster.openIdConnectProvider.openIdConnectProviderIssuer;
 

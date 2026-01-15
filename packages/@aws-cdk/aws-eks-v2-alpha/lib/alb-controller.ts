@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
+import { EKSV2_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
@@ -358,7 +358,7 @@ export class AlbController extends Construct {
 
     // the controller relies on permissions deployed using these resources.
     chart.node.addDependency(serviceAccount);
-    const openIdConnectProvider = FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)
+    const openIdConnectProvider = FeatureFlags.of(this).isEnabled(EKSV2_USE_NATIVE_OIDC_PROVIDER)
       ? props.cluster.oidcProviderNative
       : props.cluster.openIdConnectProvider;
     chart.node.addDependency(openIdConnectProvider);

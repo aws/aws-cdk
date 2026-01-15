@@ -1563,7 +1563,7 @@ export class Cluster extends ClusterBase {
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
    */
-  public get oidcProviderNative(): iam.IOidcProvider {
+  public get oidcProviderNative(): iam.IOIDCProviderRef {
     if (this._openIdConnectProvider) {
       throw new ValidationError('Cannot use both openIdConnectProvider and oidcProviderNative.', this);
     }

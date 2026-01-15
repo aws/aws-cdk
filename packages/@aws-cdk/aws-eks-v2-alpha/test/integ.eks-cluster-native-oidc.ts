@@ -2,7 +2,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
+import { EKSV2_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as eks from '../lib';
 
 class EksClusterNativeOidcStack extends Stack {
@@ -36,7 +36,7 @@ class EksClusterNativeOidcStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
+    [EKSV2_USE_NATIVE_OIDC_PROVIDER]: true,
   },
 });
 

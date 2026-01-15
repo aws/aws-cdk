@@ -862,7 +862,7 @@ If your `eks.OpenIdConnectProvider` is created automatically via the `ServiceAcc
 3. Add the following to the `context` field of your `cdk.json` to enable the feature flag that creates the native oidc provider.
 
    ```json
-   "@aws-cdk/aws-eks:useNativeOidcProvider": true,
+   "@aws-cdk/aws-eks-v2:useNativeOidcProvider": true,
    ```
 
 4. Run `cdk diff` and ensure the changes are expected. Example of an expected diff:
