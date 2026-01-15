@@ -289,6 +289,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   /**
    * Adds an IAM policy statement for EventSubscribe access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -300,6 +301,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   /**
    * Adds an IAM policy statement for EventPublish access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -311,6 +313,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   /**
    * Adds an IAM policy statement for EventPublish and EventSubscribe access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */

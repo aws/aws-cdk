@@ -1,10 +1,11 @@
 import * as cloudwatch from '../../../aws-cloudwatch';
 import { IResource } from '../../../core';
+import { IApiRef } from '../apigatewayv2.generated';
 
 /**
  * Represents a API Gateway HTTP/WebSocket API
  */
-export interface IApi extends IResource {
+export interface IApi extends IResource, IApiRef {
   /**
    * The identifier of this API Gateway API.
    * @attribute

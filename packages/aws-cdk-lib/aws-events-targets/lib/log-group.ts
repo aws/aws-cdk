@@ -107,12 +107,12 @@ export interface LogGroupProps extends TargetBaseProps {
  */
 export class CloudWatchLogGroup implements events.IRuleTarget {
   private target?: RuleTargetInputProperties;
-  constructor(private readonly logGroup: logs.ILogGroup, private readonly props: LogGroupProps = {}) {}
+  constructor(private readonly logGroup: logs.ILogGroupRef, private readonly props: LogGroupProps = {}) {}
 
   /**
    * Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
     const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(rule.node)}`;
 
@@ -135,7 +135,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
         policyStatements: [new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-          resources: [this.logGroup.logGroupArn],
+          resources: [this.logGroup.logGroupRef.logGroupArn],
           principals: [new iam.ServicePrincipal('events.amazonaws.com')],
         })],
       });
@@ -147,7 +147,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
         service: 'logs',
         resource: 'log-group',
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        resourceName: this.logGroup.logGroupName,
+        resourceName: this.logGroup.logGroupRef.logGroupName,
       }),
       input: this.props.event ?? this.props.logEvent,
       targetResource: this.logGroup,

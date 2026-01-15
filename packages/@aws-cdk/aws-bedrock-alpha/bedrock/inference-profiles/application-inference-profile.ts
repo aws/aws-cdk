@@ -101,6 +101,7 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
 
   /**
    * Import an Application Inference Profile given its attributes.
+   * [disable-awslint:no-grants]
    *
    * @param scope - The construct scope
    * @param id - Identifier of the construct
@@ -118,6 +119,9 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
         .resourceName!;
       public readonly type = InferenceProfileType.APPLICATION;
 
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grantProfileUsage(grantee: IGrantable): Grant {
         return Grant.addToPrincipal({
           grantee: grantee,
@@ -132,6 +136,7 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
 
   /**
    * Import a low-level L1 Cfn Application Inference Profile.
+   * [disable-awslint:no-grants]
    *
    * @param cfnApplicationInferenceProfile - The L1 CfnApplicationInferenceProfile to import
    * @returns An IInferenceProfile reference to the imported application inference profile
@@ -151,6 +156,9 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
       public readonly inferenceProfileId = cfnApplicationInferenceProfile.attrInferenceProfileId;
       public readonly type = InferenceProfileType.APPLICATION;
 
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grantProfileUsage(grantee: IGrantable): Grant {
         return Grant.addToPrincipal({
           grantee: grantee,
@@ -323,6 +331,7 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
    * Gives the appropriate policies to invoke and use the application inference profile.
    * This method ensures the appropriate permissions are given to use either the inference profile
    * or the underlying foundation model/cross-region profile.
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
@@ -345,6 +354,7 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
    *
    * Note: This does not grant permissions to use the underlying model/cross-region profile in the AIP.
    * For comprehensive permissions, use grantInvoke() instead.
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions

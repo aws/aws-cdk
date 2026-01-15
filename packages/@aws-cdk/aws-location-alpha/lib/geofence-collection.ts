@@ -152,6 +152,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
 
   /**
    * Grant the given principal identity permissions to perform the actions on this geofence collection.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -164,6 +165,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
 
   /**
    * Grant the given identity permissions to read this geofence collection
+   * [disable-awslint:no-grants]
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-geofences
    */

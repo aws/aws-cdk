@@ -1,6 +1,7 @@
 {
   "exclude": [
     "no-unused-type:@aws-cdk/aws-iotevents-alpha.ActionBindOptions",
-    "no-unused-type:@aws-cdk/aws-iotevents-alpha.ActionConfig"
+    "no-unused-type:@aws-cdk/aws-iotevents-alpha.ActionConfig",
+    "prefer-ref-interface:@aws-cdk/aws-iotevents-alpha.DetectorModelProps.role"
   ]
 }

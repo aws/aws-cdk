@@ -212,6 +212,8 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
    * Grant the actions defined in actions to the given grantee
    * on this Backup Vault resource.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant right to
    * @param actions The actions to grant
    */

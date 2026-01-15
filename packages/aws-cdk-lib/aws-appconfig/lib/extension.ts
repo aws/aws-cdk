@@ -139,8 +139,8 @@ export class EventBridgeDestination implements IEventDestination {
   public readonly extensionUri: string;
   public readonly type: SourceType;
 
-  constructor(bus: events.IEventBus) {
-    this.extensionUri = bus.eventBusArn;
+  constructor(bus: events.IEventBusRef) {
+    this.extensionUri = bus.eventBusRef.eventBusArn;
     this.type = SourceType.EVENTS;
   }
 }

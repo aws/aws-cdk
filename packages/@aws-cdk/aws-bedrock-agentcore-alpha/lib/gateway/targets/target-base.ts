@@ -154,6 +154,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
   /**
    * Grants IAM actions to the IAM Principal
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant permissions to
    * @param actions The IAM actions to grant
    */
@@ -167,6 +169,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants `Get` and `List` actions on the Gateway Target
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant read permissions to
    */
@@ -184,6 +188,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants `Create`, `Update`, and `Delete` actions on the Gateway Target
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant manage permissions to
    */

@@ -1,14 +1,14 @@
 import { Construct } from 'constructs';
-import { CfnVpcLink } from '.././index';
 import * as ec2 from '../../../aws-ec2';
 import { IResource, Lazy, Names, Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnVpcLink, IVpcLinkRef, VpcLinkReference } from '../index';
 
 /**
  * Represents an API Gateway VpcLink
  */
-export interface IVpcLink extends IResource {
+export interface IVpcLink extends IResource, IVpcLinkRef {
   /**
    * Physical ID of the VpcLink resource
    * @attribute
@@ -79,6 +79,7 @@ export class VpcLink extends Resource implements IVpcLink {
    */
   public static fromVpcLinkAttributes(scope: Construct, id: string, attrs: VpcLinkAttributes): IVpcLink {
     class Import extends Resource implements IVpcLink {
+      public readonly vpcLinkRef = { vpcLinkId: attrs.vpcLinkId };
       public vpcLinkId = attrs.vpcLinkId;
       public vpc = attrs.vpc;
     }
@@ -128,6 +129,10 @@ export class VpcLink extends Resource implements IVpcLink {
   @MethodMetadata()
   public addSecurityGroups(...groups: ec2.ISecurityGroupRef[]) {
     this.securityGroups.push(...groups);
+  }
+
+  public get vpcLinkRef(): VpcLinkReference {
+    return { vpcLinkId: this.vpcLinkId };
   }
 
   private renderSubnets() {

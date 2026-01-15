@@ -69,7 +69,7 @@ export interface LogOptions {
    *
    * @default No log group. Required if your log level is not set to OFF.
    */
-  readonly destination?: logs.ILogGroup;
+  readonly destination?: logs.ILogGroupRef;
 
   /**
    * Determines whether execution data is included in your log.
@@ -230,6 +230,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to start an execution of this state
    * machine.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
     return this.grants.startExecution(identity);
@@ -238,6 +240,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to start a synchronous execution of
    * this state machine.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
     return this.grants.startSyncExecution(identity);
@@ -246,6 +250,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to read results from state
    * machine.
+   * [disable-awslint:no-grants]
    */
   public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grants.read(identity);
@@ -253,6 +258,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity task response permissions on a state machine
+   * [disable-awslint:no-grants]
    */
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
     return this.grants.taskResponse(identity);
@@ -260,6 +266,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permissions on all executions of the state machine
+   * [disable-awslint:no-grants]
    */
   public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
     return this.grants.execution(identity, ...actions);
@@ -267,6 +274,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permission to redrive the execution of the state machine
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRedriveExecution(identity: iam.IGrantable): iam.Grant {
     return this.grantExecution(identity, 'states:RedriveExecution');
@@ -274,6 +283,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity custom permissions
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
     return this.grants.actions(identity, ...actions);
@@ -569,7 +580,7 @@ export class StateMachine extends StateMachineBase {
         resources: ['*'],
       }));
       destinations = [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupRef.logGroupArn },
       }];
     }
 

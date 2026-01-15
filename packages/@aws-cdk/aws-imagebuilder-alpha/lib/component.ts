@@ -800,6 +800,7 @@ export abstract class S3ComponentData extends ComponentData {
 
   /**
    * Grant put permissions to the given grantee for the component data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -809,6 +810,7 @@ export abstract class S3ComponentData extends ComponentData {
 
   /**
    * Grant read permissions to the given grantee for the component data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -894,6 +896,7 @@ abstract class ComponentBase extends cdk.Resource implements IComponent {
 
   /**
    * Grant custom actions to the given grantee for the component
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -909,6 +912,8 @@ abstract class ComponentBase extends cdk.Resource implements IComponent {
 
   /**
    * Grant read permissions to the given grantee for the component
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */

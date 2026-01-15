@@ -220,6 +220,9 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
 
   /**
    * Grants the necessary permissions to the role
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The grantee to grant permissions to
    * @returns The Grant object for chaining
    */

@@ -89,7 +89,7 @@ export function readModuleMap(filepath: string, opts: ModuleMapLoadingOptions = 
   }, {});
 }
 
-const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
+export const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
 
 /**
  * Loads the global module map from the `aws-cdk-lib` package.

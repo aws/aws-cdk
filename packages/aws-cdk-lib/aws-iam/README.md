@@ -703,7 +703,7 @@ The following examples defines an OpenID Connect provider. Two client IDs
 (audiences) are will be able to send authentication requests to
 <https://openid/connect>.
 
-It is recommended to use the new `OidcProviderNative` which native CloudFormation resource `AWS::IAM::OIDCProvider` over the old `OpenIdConnectProvider` which uses a custom resource.
+The older `OpenIdConnectProvider` is still supported, but for new stacks, it is recommended to use the new `OidcProviderNative` which uses the native CloudFormation resource `AWS::IAM::OIDCProvider` over the old `OpenIdConnectProvider` which uses a custom resource. While `OidcProviderNative` does not provide new features compared to `OpenIdConnectProvider`, it offers a simpler implementation using native CloudFormation resources instead of custom resources.
 
 ```ts
 const nativeProvider = new iam.OidcProviderNative(this, 'MyProvider', {

@@ -268,7 +268,7 @@ export class EcsTask implements events.IRuleTarget {
   /**
    * Allows using tasks as target of EventBridge events
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const arn = this.cluster.clusterArn;
     const role = this.role;
     const taskCount = this.taskCount;
@@ -323,7 +323,7 @@ export class EcsTask implements events.IRuleTarget {
     };
   }
 
-  private createInput(rule: events.IRule): Record<string, any> {
+  private createInput(rule: events.IRuleRef): Record<string, any> {
     const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
       .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
 

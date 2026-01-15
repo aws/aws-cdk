@@ -5,6 +5,7 @@ import { GelfLogDriver, GelfLogDriverProps } from './gelf-log-driver';
 import { JournaldLogDriver, JournaldLogDriverProps } from './journald-log-driver';
 import { JsonFileLogDriver, JsonFileLogDriverProps } from './json-file-log-driver';
 import { LogDriver } from './log-driver';
+import { NoneLogDriver } from './none-log-driver';
 import { SplunkLogDriver, SplunkLogDriverProps } from './splunk-log-driver';
 import { SyslogLogDriver, SyslogLogDriverProps } from './syslog-log-driver';
 
@@ -59,6 +60,13 @@ export class LogDrivers {
    */
   public static syslog(props?: SyslogLogDriverProps): LogDriver {
     return new SyslogLogDriver(props);
+  }
+
+  /**
+   * Creates a log driver configuration that disables logging (Docker `none` driver).
+   */
+  public static none(): LogDriver {
+    return new NoneLogDriver();
   }
 
   /**

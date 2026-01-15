@@ -6,13 +6,27 @@ import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { ApiReference, IApiRef } from '../apigatewayv2.generated';
 import { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
 
 /**
+ * Represents a reference to an HTTP API
+ */
+export interface IWebSocketApiRef extends IApiRef {
+  /**
+   * Indicates that this is a WebSocket API
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isWebsocketApi: boolean;
+}
+
+/**
  * Represents a WebSocket API
  */
-export interface IWebSocketApi extends IApi {
+export interface IWebSocketApi extends IApi, IWebSocketApiRef {
 }
 
 /**
@@ -133,6 +147,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    */
   public static fromWebSocketApiAttributes(scope: Construct, id: string, attrs: WebSocketApiAttributes): IWebSocketApi {
     class Import extends ApiBase {
+      public readonly isWebsocketApi = true;
       public readonly apiId = attrs.webSocketId;
       public readonly websocketApiId = attrs.webSocketId;
       private readonly _apiEndpoint = attrs.apiEndpoint;
@@ -147,6 +162,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     return new Import(scope, id);
   }
 
+  public readonly isWebsocketApi = true;
   public readonly apiId: string;
   public readonly apiEndpoint: string;
 
@@ -200,6 +216,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   /**
    * Grant access to the API Gateway management API for this WebSocket API to an IAM
    * principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
@@ -256,5 +273,9 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${stage ?? '*'}/${route ?? '*'}`,
     });
+  }
+
+  public get apiRef(): ApiReference {
+    return { apiId: this.apiId };
   }
 }

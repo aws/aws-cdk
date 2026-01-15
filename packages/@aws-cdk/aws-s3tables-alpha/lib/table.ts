@@ -134,6 +134,9 @@ abstract class TableBase extends Resource implements ITable {
     return { statementAdded: false };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(identity: iam.IGrantable) {
     return this.grant(
       identity,
@@ -142,6 +145,9 @@ abstract class TableBase extends Resource implements ITable {
     );
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(identity: iam.IGrantable) {
     return this.grant(
       identity,
@@ -150,6 +156,9 @@ abstract class TableBase extends Resource implements ITable {
     );
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantReadWrite(identity: iam.IGrantable) {
     return this.grant(
       identity,

@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "5e1cb71a2ebbd6ad655a1f43c8a197eb6843007ae7194b8c2fdc559d4699d13a": {
+    "700ad69d5854b102d15117e80d10667c738cd7bbe00c5988e269ce3d3a5faa69": {
+      "displayName": "aws-cdk-nlb-dualstack-internal Template",
       "source": {
         "path": "aws-cdk-nlb-dualstack-internal.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-f8cd82e5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5e1cb71a2ebbd6ad655a1f43c8a197eb6843007ae7194b8c2fdc559d4699d13a.json",
+          "objectKey": "700ad69d5854b102d15117e80d10667c738cd7bbe00c5988e269ce3d3a5faa69.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

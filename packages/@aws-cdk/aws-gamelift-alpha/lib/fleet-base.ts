@@ -486,6 +486,9 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.fleetArn],

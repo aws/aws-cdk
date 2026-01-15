@@ -42,7 +42,7 @@ export class KinesisStream implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Kinesis Stream as a
    * result from a CloudWatch event.
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.stream);
     this.stream.grantWrite(role);
 

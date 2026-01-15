@@ -16,18 +16,12 @@ export function toIGraphqlApi(api: IGraphQLApiRef): IGraphqlApi {
 
 function isGraphQlApi(apiRef: IGraphQLApiRef): apiRef is IGraphqlApi {
   const api = apiRef as any;
-  if (typeof api.apiId !== 'string' || typeof api.arn !== 'string' || typeof api.addNoneDataSource !== 'function') {
-    return false;
-  }
-  return true;
+  return ('apiId' in api && 'arn' in api && 'addNoneDataSource' in api);
 }
 
 function isIApi(apiRef: IApiRef): apiRef is IApi {
   const api = apiRef as any;
-  if (typeof api.apiId !== 'string' || typeof api.apiArn !== 'string' || typeof api.addDynamoDbDataSource !== 'function') {
-    return false;
-  }
-  return true;
+  return ('apiId' in api && 'apiArn' in api && 'addDynamoDbDataSource' in api);
 }
 
 /**

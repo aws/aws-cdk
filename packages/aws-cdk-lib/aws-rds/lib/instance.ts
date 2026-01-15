@@ -10,8 +10,9 @@ import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescripti
 import { Credentials, EngineLifecycleSupport, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
-import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { SubnetGroup } from './subnet-group';
 import { validateDatabaseInstanceProps } from './validate-database-insights';
+import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -25,11 +26,12 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { aws_rds } from '../../interfaces';
 
 /**
  * A database instance
  */
-export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, aws_rds.IDBInstanceRef {
   /**
    * The instance identifier.
    */
@@ -241,6 +243,9 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (this.enableIamAuthentication === false) {
       throw new ValidationError('Cannot grant connect when IAM authentication is disabled', this);
@@ -305,6 +310,16 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   }
 
   /**
+   * A reference to this database instance
+   */
+  public get dbInstanceRef(): aws_rds.DBInstanceReference {
+    return {
+      dbInstanceIdentifier: this.instanceIdentifier,
+      dbInstanceArn: this.instanceArn,
+    };
+  }
+
+  /**
    * Renders the secret attachment target specifications.
    */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -312,6 +327,24 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       targetId: this.instanceIdentifier,
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE,
     };
+  }
+
+  /**
+   * The average number of disk read I/O operations per second.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricReadIOPS(props?: cloudwatch.MetricOptions) {
+    return this.metric('ReadIOPS', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk write I/O operations per second.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricWriteIOPS(props?: cloudwatch.MetricOptions) {
+    return this.metric('WriteIOPS', { statistic: 'Average', ...props });
   }
 }
 
@@ -717,7 +750,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - a new subnet group will be created.
    */
-  readonly subnetGroup?: ISubnetGroup;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
 
   /**
    * Role that will be associated with this DB instance to enable S3 import.
@@ -969,7 +1002,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         // as it might be used in a cross-environment fashion
         ? this.physicalName
         : maybeLowercasedInstanceId,
-      dbSubnetGroupName: subnetGroup.subnetGroupName,
+      dbSubnetGroupName: subnetGroup.dbSubnetGroupRef.dbSubnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
@@ -1211,6 +1244,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
   /**
    * Grant the given identity connection access to the database.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the Principal to grant the permissions to
    * @param dbUser the name of the database user to allow connecting as to the db instance,

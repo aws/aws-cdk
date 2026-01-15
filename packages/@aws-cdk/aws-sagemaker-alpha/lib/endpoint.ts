@@ -295,6 +295,7 @@ abstract class EndpointBase extends cdk.Resource implements IEndpoint {
 
   /**
    * Permits an IAM principal to invoke this endpoint
+   * [disable-awslint:no-grants]
    * @param grantee The principal to grant access to
    */
   public grantInvoke(grantee: iam.IGrantable) {
@@ -303,6 +304,12 @@ abstract class EndpointBase extends cdk.Resource implements IEndpoint {
       actions: ['sagemaker:InvokeEndpoint'],
       resourceArns: [this.endpointArn],
     });
+  }
+
+  public get endpointRef(): sagemaker.EndpointReference {
+    return {
+      endpointArn: this.endpointArn,
+    };
   }
 }
 
