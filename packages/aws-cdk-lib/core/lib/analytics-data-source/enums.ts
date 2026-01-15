@@ -1118,6 +1118,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "messageGroup",
     "queue"
   ],
+  "DefaultAuthScheme": [
+    "IAM_AUTH",
+    "NONE"
+  ],
   "DefaultCapacityType": [
     0,
     1
