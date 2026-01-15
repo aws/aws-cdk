@@ -220,45 +220,7 @@ export class Alias extends AliasBase {
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
     // Validate and normalize aliasName when feature flag is enabled
     if (FeatureFlags.of(scope).isEnabled(KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION)) {
-      if (!Token.isUnresolved(aliasName)) {
-        if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
-          aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
-        }
-
-        if (aliasName === REQUIRED_ALIAS_PREFIX) {
-          throw new ValidationError(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
-        }
-
-        if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-          throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
-        }
-
-        if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-          throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
-        }
-      } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
-        // Handle partial token strings - validate concrete portions
-        const valueInToken = Tokenization.reverseString(aliasName).firstValue;
-
-        if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
-          aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
-        }
-
-        if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-          throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
-        }
-
-        if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-          throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
-        }
-      } else {
-        // Fully unresolved token - add synthesis-time warning
-        Annotations.of(scope).addWarningV2(
-          '@aws-cdk/aws-kms:aliasNameTokenValidation',
-          `Alias name is a token and cannot be validated at synthesis time. ` +
-          `Ensure the resolved value includes the "${REQUIRED_ALIAS_PREFIX}" prefix and does not start with "${DISALLOWED_PREFIX}".`,
-        );
-      }
+      aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope);
     }
 
     class Import extends Resource implements IAlias {
@@ -340,13 +302,17 @@ export class Alias extends AliasBase {
     return new Import(scope, id);
   }
 
-  public readonly aliasName: string;
-  public readonly aliasTargetKey: IKey;
-
-  constructor(scope: Construct, id: string, props: AliasProps) {
-    let aliasName = props.aliasName;
-
+  /**
+   * Validates and normalizes a KMS alias name according to AWS requirements.
+   * Handles both concrete strings and CDK tokens (fully or partially unresolved).
+   *
+   * @param aliasName The alias name to validate and normalize
+   * @param scope The construct scope for error reporting and warnings
+   * @returns The normalized alias name
+   */
+  private static validateAndNormalizeAliasName(aliasName: string, scope: Construct): string {
     if (!Token.isUnresolved(aliasName)) {
+      // Fully concrete string - validate everything
       if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
         aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
       }
@@ -362,21 +328,45 @@ export class Alias extends AliasBase {
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
         throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
-    } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
-      const valueInToken = Tokenization.reverseString(aliasName).firstValue;
+    } else {
+      // Contains tokens - check if we have a concrete prefix to validate
+      const reversed = Tokenization.reverseString(aliasName);
+      if (reversed.firstValue && !reversed.firstToken && reversed.length > 1) {
+        // Partial token string (starts with literal, has tokens after) - validate the concrete portion
+        const valueInToken = reversed.firstValue;
 
-      if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
-        aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
-      }
+        if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
+          aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
+        }
 
-      if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
-      }
+        if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
+          throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
+        }
 
-      if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+          throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        }
+      } else {
+        // Fully unresolved token - add synthesis-time warning
+        Annotations.of(scope).addWarningV2(
+          '@aws-cdk/aws-kms:aliasNameTokenValidation',
+          'Alias name is a token and cannot be validated at synthesis time. ' +
+          `Ensure the resolved value includes the "${REQUIRED_ALIAS_PREFIX}" prefix and does not start with "${DISALLOWED_PREFIX}".`,
+        );
       }
     }
+
+    return aliasName;
+  }
+
+  public readonly aliasName: string;
+  public readonly aliasTargetKey: IKey;
+
+  constructor(scope: Construct, id: string, props: AliasProps) {
+    let aliasName = props.aliasName;
+
+    // Use the shared validation logic
+    aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope);
 
     super(scope, id, {
       physicalName: aliasName,
