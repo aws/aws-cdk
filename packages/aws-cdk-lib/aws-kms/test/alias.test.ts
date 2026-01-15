@@ -1037,6 +1037,99 @@ describe('fromAliasName with KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION feature flag',
       },
     });
   });
+
+  test('handles partial token strings with concrete prefix when feature flag is enabled', () => {
+    const app = new App({
+      context: {
+        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
+      },
+    });
+    const stack = new Stack(app, 'Test');
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', `myAlias${Aws.ACCOUNT_ID}`);
+
+    new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
+
+    Template.fromStack(stack).hasOutput('OutId', {
+      Value: {
+        'Fn::Join': ['', [
+          'alias/myAlias',
+          { Ref: 'AWS::AccountId' },
+        ]],
+      },
+    });
+  });
+
+  test('handles partial token strings with alias/ prefix already present when feature flag is enabled', () => {
+    const app = new App({
+      context: {
+        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
+      },
+    });
+    const stack = new Stack(app, 'Test');
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', `alias/myAlias${Aws.ACCOUNT_ID}`);
+
+    new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
+
+    Template.fromStack(stack).hasOutput('OutId', {
+      Value: {
+        'Fn::Join': ['', [
+          'alias/myAlias',
+          { Ref: 'AWS::AccountId' },
+        ]],
+      },
+    });
+  });
+
+  test('throws error for partial token strings with invalid characters in concrete portion when feature flag is enabled', () => {
+    const app = new App({
+      context: {
+        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
+      },
+    });
+    const stack = new Stack(app, 'Test');
+
+    expect(() => Alias.fromAliasName(stack, 'MyAlias', `my*Alias${Aws.ACCOUNT_ID}`)).toThrow(/Alias name must be between 1 and 256 characters in a-zA-Z0-9:\/_-/);
+  });
+
+  test('throws error for partial token strings with alias/aws/ prefix in concrete portion when feature flag is enabled', () => {
+    const app = new App({
+      context: {
+        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
+      },
+    });
+    const stack = new Stack(app, 'Test');
+
+    expect(() => Alias.fromAliasName(stack, 'MyAlias', `alias/aws/myAlias${Aws.ACCOUNT_ID}`)).toThrow(/Alias cannot start with alias\/aws\//);
+  });
+
+  test('adds synthesis-time warning for fully unresolved tokens when feature flag is enabled', () => {
+    const app = new App({
+      context: {
+        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
+      },
+    });
+    const stack = new Stack(app, 'Test');
+
+    // Fully unresolved token (starts with token)
+    Alias.fromAliasName(stack, 'MyAlias', `${Aws.ACCOUNT_ID}myAlias`);
+
+    const assembly = app.synth();
+    const messages = assembly.getStackArtifact(stack.artifactId).messages;
+    
+    expect(messages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          level: 'warning',
+          entry: expect.objectContaining({
+            type: 'aws:cdk:warning',
+            data: expect.stringContaining('Alias name is a token and cannot be validated at synthesis time'),
+          }),
+        }),
+      ]),
+    );
+  });
 });
 
 class AliasOutputsConstruct extends Construct {

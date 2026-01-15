@@ -3,7 +3,7 @@ import { IKey } from './key';
 import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
-import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import { Annotations, FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION } from '../../cx-api';
@@ -229,13 +229,35 @@ export class Alias extends AliasBase {
           throw new ValidationError(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
         }
 
-        if (aliasName.toLowerCase().startsWith(DISALLOWED_PREFIX)) {
+        if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
           throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
         }
 
         if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
           throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
         }
+      } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
+        // Handle partial token strings - validate concrete portions
+        const valueInToken = Tokenization.reverseString(aliasName).firstValue;
+
+        if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
+          aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
+        }
+
+        if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
+          throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
+        }
+
+        if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+          throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        }
+      } else {
+        // Fully unresolved token - add synthesis-time warning
+        Annotations.of(scope).addWarningV2(
+          '@aws-cdk/aws-kms:aliasNameTokenValidation',
+          `Alias name is a token and cannot be validated at synthesis time. ` +
+          `Ensure the resolved value includes the "${REQUIRED_ALIAS_PREFIX}" prefix and does not start with "${DISALLOWED_PREFIX}".`,
+        );
       }
     }
 
