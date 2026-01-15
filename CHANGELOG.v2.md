@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
 
-- aws-ecs: AWS::ECS::CapacityProvider: ManagedInstancesNetworkConfiguration.SecurityGroups property is now required.
+ - aws-ecs: AWS::ECS::CapacityProvider: ManagedInstancesNetworkConfiguration.SecurityGroups property is now required.
 * **ecs:** `securityGroups` is now required in `ManagedInstancesCapacityProviderProps`. CloudFormation has always required this field, so any code that omitted it would have failed at deployment time with a validation error. This change catches the error at compile time instead, improving the developer experience. If your code previously omitted `securityGroups`, you must now explicitly provide at least one security group.
 * **aws-cdk-lib:** `JobQueue.computeEnvironments` contains an `computeEnvironment: IComputeEnvironment → IComputeEnvironmentRef`. `BackupPlanRule.props` contains a `backupVault: IBackupVault → IBackupVaultRef`. `ApiDestination.fromApiDestinationAttributes()` return type `ApiDestination → IApiDestination`. This should never have returned a class but always an interface, as is the standard for referencing factories. `EventDestination.bus` changed  `IEventBus →IEventBusRef`; `FlowLogDestination.bind()` now returns and `ICluster.executeCommandConfiguration` contains a member changing type `ILogGroup → ILogGroupRef`.
 * **events:** `ApiDestination.fromApiDestinationAttributes()` now returns an `IApiDestination`. It used to return an `ApiDestination` but this was a mistake, referencing methods always return a type by interface, not by class.`EventDestination.bus` used to be an `IEventBus` but is now an `IEventBusRef`; it needs to be type tested to assert it is actually an `IEventBus` if that is necessary.
@@ -27,7 +27,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **spec2cdk:** support for auto-generated grants in alpha modules ([#36206](https://github.com/aws/aws-cdk/issues/36206)) ([776f837](https://github.com/aws/aws-cdk/commit/776f837f5b979a08c2c3113463a670ff00594710))
 * **synthetics:** add syn-nodejs-3.0 runtime ([#36652](https://github.com/aws/aws-cdk/issues/36652)) ([18f9fef](https://github.com/aws/aws-cdk/commit/18f9fef5a0a4288c3d001c25fe8420e2a002c8ce)), closes [#36648](https://github.com/aws/aws-cdk/issues/36648)
 * **synthetics:** playwright 4.0 and 5.0 runtimes ([#36590](https://github.com/aws/aws-cdk/issues/36590)) ([82cd9a6](https://github.com/aws/aws-cdk/commit/82cd9a685727241f37207f6f06797d316eb17ea2))
-* update L1 CloudFormation resource definitions ([#36660](https://github.com/aws/aws-cdk/issues/36660)) ([eb6a82a](https://github.com/aws/aws-cdk/commit/eb6a82abfd51f01b6f54f1064fe77016aa9db723))
 
 
 ### Bug Fixes
@@ -39,11 +38,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **opensearchservice:** use KMS Key ARN for cross-account encryption ([#36020](https://github.com/aws/aws-cdk/issues/36020)) ([cccd94c](https://github.com/aws/aws-cdk/commit/cccd94cebb8aab3241afb2eda8571143eaa478c7)), closes [#36017](https://github.com/aws/aws-cdk/issues/36017)
 * **stepfunctions:** allow JSONata expressions for Map maxConcurrency ([#36462](https://github.com/aws/aws-cdk/issues/36462)) ([2230c87](https://github.com/aws/aws-cdk/commit/2230c878928d9724b15bd9f924ff7e47d324150c)), closes [#36274](https://github.com/aws/aws-cdk/issues/36274)
 * `RuntimeError: apiEndpoint is not configured on the imported HttpApi` (revert of "chore(apigatewayv2): reference interfaces") ([#36623](https://github.com/aws/aws-cdk/issues/36623)) ([fb17d39](https://github.com/aws/aws-cdk/commit/fb17d39054d9a41345a5b4c83c44b32a838e3c86)), closes [aws/aws-cdk#36378](https://github.com/aws/aws-cdk/issues/36378)
-
-
-### Reverts
-
-* remove invalid Dev::ServiceCatalog resource from L1 update ([#36678](https://github.com/aws/aws-cdk/issues/36678)) ([13b6480](https://github.com/aws/aws-cdk/commit/13b648081086bf933d5e8ca76405dff6893ad640)), closes [#36660](https://github.com/aws/aws-cdk/issues/36660)
 
 
 ### Miscellaneous Chores
