@@ -220,6 +220,14 @@ export class Alias extends AliasBase {
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
     // Validate and normalize aliasName when feature flag is enabled
     if (FeatureFlags.of(scope).isEnabled(KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION)) {
+      // Detect potential double-prefix from legacy workarounds
+      if (!Token.isUnresolved(aliasName) && aliasName.startsWith('alias/alias/')) {
+        Annotations.of(scope).addWarningV2(
+          '@aws-cdk/aws-kms:aliasDoublePrefix',
+          `Alias name "${aliasName}" has a double "alias/" prefix. ` +
+          'If you previously added the prefix manually as a workaround, please remove it.',
+        );
+      }
       aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope);
     }
 
@@ -308,9 +316,14 @@ export class Alias extends AliasBase {
    *
    * @param aliasName The alias name to validate and normalize
    * @param scope The construct scope for error reporting and warnings
+   * @param emitTokenWarnings Whether to emit warnings for unresolved tokens (default: true).
+   *   Set to false in the constructor to maintain backward compatibility - existing users
+   *   of `new Alias()` with token-based names should not see new warnings that could break
+   *   CI/CD pipelines with strict warning configurations. Warnings are only emitted in
+   *   `fromAliasName()` when the feature flag is enabled, providing opt-in behavior.
    * @returns The normalized alias name
    */
-  private static validateAndNormalizeAliasName(aliasName: string, scope: Construct): string {
+  private static validateAndNormalizeAliasName(aliasName: string, scope: Construct, emitTokenWarnings: boolean = true): string {
     if (!Token.isUnresolved(aliasName)) {
       // Fully concrete string - validate everything
       if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
@@ -331,6 +344,9 @@ export class Alias extends AliasBase {
     } else {
       // Contains tokens - check if we have a concrete prefix to validate
       const reversed = Tokenization.reverseString(aliasName);
+      // length > 1 ensures we have a concrete prefix AND additional token components
+      // A single-element result (length === 1) with firstValue and no firstToken indicates
+      // a fully concrete value that should have been caught by Token.isUnresolved() above
       if (reversed.firstValue && !reversed.firstToken && reversed.length > 1) {
         // Partial token string (starts with literal, has tokens after) - validate the concrete portion
         const valueInToken = reversed.firstValue;
@@ -346,8 +362,8 @@ export class Alias extends AliasBase {
         if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
           throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
         }
-      } else {
-        // Fully unresolved token - add synthesis-time warning
+      } else if (emitTokenWarnings) {
+        // Fully unresolved token - add synthesis-time warning only if enabled
         Annotations.of(scope).addWarningV2(
           '@aws-cdk/aws-kms:aliasNameTokenValidation',
           'Alias name is a token and cannot be validated at synthesis time. ' +
@@ -365,8 +381,9 @@ export class Alias extends AliasBase {
   constructor(scope: Construct, id: string, props: AliasProps) {
     let aliasName = props.aliasName;
 
-    // Use the shared validation logic
-    aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope);
+    // Use the shared validation logic, but suppress token warnings in constructor
+    // to maintain backward compatibility (warnings only emitted in fromAliasName with feature flag)
+    aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope, false);
 
     super(scope, id, {
       physicalName: aliasName,
