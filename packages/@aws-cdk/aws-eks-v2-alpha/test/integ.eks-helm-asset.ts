@@ -92,7 +92,7 @@ class EksClusterStack extends Stack {
     // adding the dependency ensures that the namespace is created before the service account
     sa.node.addDependency(rdsChart);
 
-    sa.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess'));
+    sa.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess'));
 
     this.cluster.addHelmChart('test-atomic-installation', {
       chart: 'ec2-chart',
@@ -100,21 +100,21 @@ class EksClusterStack extends Stack {
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/ec2-chart',
       version: '1.2.13',
       namespace: 'ack-system',
-      createNamespace: true,
-      skipCrds: true,
-      atomic: true,
-      values: {
-        aws: { region: this.region },
-        serviceAccount: {
-          name: sa.serviceAccountName,
-          create: false,
-          annotations: {
-            // implicit dependency on the service account
-            'eks.amazonaws.com/role-arn': sa.role.roleArn,
-          },
-        },
-      },
-    });
+       createNamespace: true,
+       skipCrds: true,
+       atomic: true,
+       values: {
+         aws: { region: this.region },
+         serviceAccount: {
+           name: sa.serviceAccountName,
+           create: false,
+           annotations: {
+             // implicit dependency on the service account
+             'eks.amazonaws.com/role-arn': sa.role?.roleArn,
+           },
+         },
+       },
+     });
 
     // https://github.com/orgs/grafana-operator/packages/container/package/helm-charts%2Fgrafana-operator
     this.cluster.addHelmChart('test-non-ecr-oci-chart', {

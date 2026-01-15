@@ -234,20 +234,20 @@ export class ServiceAccount extends Construct implements IPrincipal {
     });
   }
 
-   /**
-    * @deprecated use `addToPrincipalPolicy()`
-    */
-   public addToPolicy(statement: PolicyStatement): boolean {
-     return this.addToPrincipalPolicy(statement).statementAdded;
-   }
+  /**
+   * @deprecated use `addToPrincipalPolicy()`
+   */
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
 
-   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-     if (!this.role) {
-       // If there's no role (NONE identity type), return success without adding the policy
-       return { statementAdded: false };
-     }
-     return this.role.addToPrincipalPolicy(statement);
-   }
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    if (!this.role) {
+      // If there's no role (NONE identity type), return success without adding the policy
+      return { statementAdded: false };
+    }
+    return this.role.addToPrincipalPolicy(statement);
+  }
 
   /**
    * If the value is a DNS subdomain name as defined in RFC 1123, from K8s docs.
