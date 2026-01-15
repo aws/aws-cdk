@@ -29,6 +29,7 @@ const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docke
 });
 
 // just need one nat gateway to simplify the test
+// restrictDefaultSecurityGroup: false allows the pod to communicate with the S3 endpoint
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -39,6 +40,7 @@ const cluster = new eks.Cluster(stack, 'Cluster', {
 const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
 
 const serviceAccount = cluster.addServiceAccount('my-service-account');
+// Create a cdk8s reference to the CDK-managed service account for use in Kubernetes manifests
 const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(stack, 'kplus-sa', serviceAccount.serviceAccountName);
 new kplus.Deployment(chart, 'Deployment', {
   containers: [{
@@ -47,6 +49,7 @@ new kplus.Deployment(chart, 'Deployment', {
       BUCKET_NAME: kplus.EnvValue.fromValue(bucketName),
       REGION: kplus.EnvValue.fromValue(stack.region),
     },
+    // Run as non-root user for security best practices in the test pod
     securityContext: {
       user: 1000,
     },
