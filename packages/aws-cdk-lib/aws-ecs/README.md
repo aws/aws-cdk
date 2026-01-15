@@ -1689,8 +1689,14 @@ declare const vpc: ec2.Vpc;
 
 const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Security group for managed instances',
+});
+
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
   subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
   instanceRequirements: {
     vCpuCountMin: 1,
     memoryMin: Size.gibibytes(2),
@@ -1763,10 +1769,16 @@ customInfrastructureRole.addToPolicy(new iam.PolicyStatement({
   },
 }));
 
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Security group for managed instances',
+});
+
 const miCapacityProviderCustom = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProviderCustomRoles', {
   infrastructureRole: customInfrastructureRole,
   ec2InstanceProfile: customInstanceProfile,
   subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
 });
 
 // Add the capacity provider to the cluster
@@ -1804,8 +1816,14 @@ You can specify detailed instance requirements to control which types of instanc
 ```ts
 declare const vpc: ec2.Vpc;
 
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Security group for managed instances',
+});
+
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
   subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
   instanceRequirements: {
     // Required: CPU and memory constraints
     vCpuCountMin: 2,

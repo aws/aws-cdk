@@ -1170,6 +1170,32 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     return this.metric('ACUUtilization', { statistic: 'Average', ...props });
   }
 
+  /**
+   * The average number of disk read I/O operations per second.
+   *
+   * This metric is only available for Aurora database clusters.
+   * For non-Aurora RDS clusters, this metric will not return any data
+   * in CloudWatch.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricVolumeReadIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeReadIOPs', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk write I/O operations per second.
+   *
+   * This metric is only available for Aurora database clusters.
+   * For non-Aurora RDS clusters, this metric will not return any data
+   * in CloudWatch.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricVolumeWriteIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeWriteIOPs', { statistic: 'Average', ...props });
+  }
+
   private validateServerlessScalingConfig(config: ClusterEngineConfig): void {
     if (this.serverlessV2MaxCapacity > 256 || this.serverlessV2MaxCapacity < 1) {
       throw new ValidationError('serverlessV2MaxCapacity must be >= 1 & <= 256', this);
