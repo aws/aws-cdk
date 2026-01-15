@@ -3,9 +3,10 @@ import { CfnVpcOrigin, IVpcOriginRef, VpcOriginReference } from './cloudfront.ge
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
-import { ArnFormat, IResource, ITaggableV2, Names, Resource, Stack, TagManager, Token, ValidationError, FeatureFlags } from '../../core';
 import {
+  Annotations,
   ArnFormat,
+  FeatureFlags,
   IResource,
   ITaggableV2,
   Names,
@@ -232,44 +233,12 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
     this.validatePortNumber(props.httpPort, 'httpPort');
     this.validatePortNumber(props.httpsPort, 'httpsPort');
 
-    // Generate VPC Origin name with optional region suffix for global uniqueness
-    const generateVpcOriginName = (): string => {
-      if (props.vpcOriginName) {
-        return props.vpcOriginName;
-      }
-
-      const useRegionAwareName = FeatureFlags.of(this).isEnabled(VPC_ORIGIN_REGION_AWARE_NAME);
-      const region = Stack.of(this).region;
-
-      if (useRegionAwareName && !Token.isUnresolved(region)) {
-        // Calculate max base name length to ensure total length <= 64
-        // Account for region suffix (typically 9-14 chars) plus hyphen
-        const regionSuffixLength = region.length + 1; // +1 for hyphen
-        const maxBaseLength = Math.max(20, 64 - regionSuffixLength); // Ensure at least 20 chars for base
-
-        const baseName = Names.uniqueResourceName(this, { maxLength: maxBaseLength });
-        const fullName = `${baseName}-${region}`;
-
-        // Ensure we don't exceed 64 characters
-        if (fullName.length > 64) {
-          const truncatedBaseLength = 64 - regionSuffixLength;
-          const truncatedBaseName = Names.uniqueResourceName(this, { maxLength: truncatedBaseLength });
-          return `${truncatedBaseName}-${region}`;
-        }
-
-        return fullName;
-      }
-
-      // Default behavior for backward compatibility
-      return Names.uniqueResourceName(this, { maxLength: 64 });
-    };
-
     const resource = new CfnVpcOrigin(this, 'Resource', {
       vpcOriginEndpointConfig: {
         arn: props.endpoint.endpointArn,
         httpPort: props.httpPort,
         httpsPort: props.httpsPort,
-        name: generateVpcOriginName(),
+        name: this.generateVpcOriginName(props.vpcOriginName),
         originProtocolPolicy: props.protocolPolicy,
         originSslProtocols: props.originSslProtocols ?? [OriginSslPolicy.TLS_V1_2],
       },
@@ -285,6 +254,84 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
     this.vpcOriginId = resource.attrId;
     this.domainName = props.endpoint.domainName;
     this.cdkTagManager = resource.cdkTagManager;
+  }
+
+  /**
+   * Generates a VPC Origin name, optionally with region suffix for multi-region deployments.
+   */
+  private generateVpcOriginName(proposedName?: string): string {
+    if (proposedName) {
+      return proposedName;
+    }
+
+    return this.shouldUseRegionAwareName()
+      ? this.createRegionAwareName()
+      : this.createDefaultName();
+  }
+
+  /**
+   * Determines if region-aware naming should be used based on feature flag and region resolution.
+   */
+  private shouldUseRegionAwareName(): boolean {
+    const useRegionAwareName = FeatureFlags.of(this).isEnabled(VPC_ORIGIN_REGION_AWARE_NAME);
+    const region = Stack.of(this).region;
+    return !!useRegionAwareName && !Token.isUnresolved(region);
+  }
+
+  /**
+   * Creates a region-aware name that includes the region suffix to prevent collisions.
+   */
+  private createRegionAwareName(): string {
+    const region = Stack.of(this).region;
+    // Calculate max base name length to ensure total length <= 64
+    // Account for region suffix (typically 9-14 chars) plus hyphen
+    const regionSuffixLength = region.length + 1; // +1 for hyphen
+    const maxBaseLength = Math.max(20, 64 - regionSuffixLength); // Ensure at least 20 chars for base
+
+    const baseName = Names.uniqueResourceName(this, { maxLength: maxBaseLength });
+    let fullName = `${baseName}-${region}`;
+
+    // Ensure we don't exceed 64 characters
+    if (fullName.length > 64) {
+      const truncatedBaseLength = 64 - regionSuffixLength;
+      const truncatedBaseName = Names.uniqueResourceName(this, { maxLength: truncatedBaseLength });
+      fullName = `${truncatedBaseName}-${region}`;
+    }
+
+    // Validate the generated name meets AWS requirements
+    if (!this.isValidVpcOriginName(fullName)) {
+      Annotations.of(this).addWarning(
+        'Generated VPC Origin name may contain invalid characters. Using fallback naming strategy.',
+      );
+      return this.createDefaultName();
+    }
+
+    return fullName;
+  }
+
+  /**
+   * Creates the default name without region suffix for backward compatibility.
+   */
+  private createDefaultName(): string {
+    return Names.uniqueResourceName(this, { maxLength: 64 });
+  }
+
+  /**
+   * Validates that a VPC Origin name meets AWS requirements.
+   * Names must start with alphanumeric characters and contain only alphanumeric, hyphens, and underscores.
+   *
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_VpcOrigin.html
+   */
+  private isValidVpcOriginName(name: string): boolean {
+    // Must start with alphanumeric character
+    if (!/^[a-zA-Z0-9]/.test(name)) {
+      return false;
+    }
+    // Must contain only alphanumeric, hyphens, and underscores
+    if (!/^[a-zA-Z0-9\-_]+$/.test(name)) {
+      return false;
+    }
+    return true;
   }
 
   private validatePortNumber(port: number | undefined, attrName: string) {
