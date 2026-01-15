@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "InstanceLifecyclePolicyTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-instance-lifecycle-policy"
+      ],
+      "assertionStack": "InstanceLifecyclePolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceLifecyclePolicyTestDefaultTestDeployAssert4462AE17"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
