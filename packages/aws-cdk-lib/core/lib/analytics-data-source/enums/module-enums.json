@@ -5228,6 +5228,10 @@
       "POSTGRES_MD5",
       "SQL_SERVER_AUTHENTICATION",
       "MYSQL_CACHING_SHA2_PASSWORD"
+    ],
+    "DefaultAuthScheme": [
+      "IAM_AUTH",
+      "NONE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts": {
