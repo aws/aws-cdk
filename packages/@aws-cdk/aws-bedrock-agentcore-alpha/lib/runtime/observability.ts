@@ -271,10 +271,10 @@ export function configureTracingDelivery(
       'ForAllValues:ArnLike': {
         'logs:LogGeneratingResourceArns': [sourceArn],
       },
-      StringEquals: {
+      'StringEquals': {
         'aws:SourceAccount': stack.account,
       },
-      ArnLike: {
+      'ArnLike': {
         'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
       },
     },
