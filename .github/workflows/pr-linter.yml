@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: 'Download workflow_run artifact'
         if: github.event_name == 'workflow_run'
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@v12
         continue-on-error: true
         with:
           run_id: ${{ github.event.workflow_run.id }}
@@ -68,7 +68,7 @@ jobs:
     needs: download-if-workflow-run
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install & Build prlint
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test

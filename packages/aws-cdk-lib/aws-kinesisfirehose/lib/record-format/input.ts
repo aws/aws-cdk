@@ -90,7 +90,7 @@ export class TimestampParser {
    * Creates a TimestampParser from the given format string.
    *
    * The format string should be a valid Joda Time pattern string.
-   * See [Class DateTimeFormat](https://docs.aws.amazon.com/https://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html) for more details
+   * See [Class DateTimeFormat](https://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html) for more details
    *
    * @param format the Joda Time format string
    */

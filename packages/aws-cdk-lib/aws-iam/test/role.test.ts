@@ -537,10 +537,10 @@ describe('IAM role', () => {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicies: [{ managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' }],
+      managedPolicies: [{ managedPolicyArn: 'managed1' } as any, { managedPolicyArn: 'managed2' } as any],
     });
 
-    role.addManagedPolicy({ managedPolicyArn: 'managed3' });
+    role.addManagedPolicy({ managedPolicyArn: 'managed3' } as any);
     Template.fromStack(stack).templateMatches({
       Resources:
       {
