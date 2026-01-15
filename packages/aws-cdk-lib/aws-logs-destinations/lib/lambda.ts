@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
+import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Options that may be provided to LambdaDestination
@@ -21,8 +22,8 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
   constructor(private readonly fn: lambda.IFunction, private readonly options: LambdaDestinationOptions = {}) {
   }
 
-  public bind(scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
-    const arn = logGroup.logGroupArn;
+  public bind(scope: Construct, logGroup: ILogGroupRef): logs.LogSubscriptionDestinationConfig {
+    const arn = logGroup.logGroupRef.logGroupArn;
     if (this.options.addPermissions !== false) {
       const permissionId = 'CanInvokeLambda';
       this.fn.addPermission(permissionId, {

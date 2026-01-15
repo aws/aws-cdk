@@ -3,6 +3,7 @@ import { CfnDedicatedIpPool } from './ses.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IDedicatedIpPoolRef, DedicatedIpPoolReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * Scaling mode to use for this IP pool.
@@ -24,7 +25,7 @@ export enum ScalingMode {
 /**
  * A dedicated IP pool
  */
-export interface IDedicatedIpPool extends IResource {
+export interface IDedicatedIpPool extends IResource, IDedicatedIpPoolRef {
   /**
    * The name of the dedicated IP pool
    *
@@ -73,11 +74,23 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
   public static fromDedicatedIpPoolName(scope: Construct, id: string, dedicatedIpPoolName: string): IDedicatedIpPool {
     class Import extends Resource implements IDedicatedIpPool {
       public readonly dedicatedIpPoolName = dedicatedIpPoolName;
+
+      public get dedicatedIpPoolRef(): DedicatedIpPoolReference {
+        return {
+          poolName: this.dedicatedIpPoolName,
+        };
+      }
     }
     return new Import(scope, id);
   }
 
   public readonly dedicatedIpPoolName: string;
+
+  public get dedicatedIpPoolRef(): DedicatedIpPoolReference {
+    return {
+      poolName: this.dedicatedIpPoolName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: DedicatedIpPoolProps = {}) {
     super(scope, id, {
