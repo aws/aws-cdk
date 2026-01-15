@@ -358,6 +358,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
   private cluster: ICluster;
   private principal: string;
   private accessPolicies: IAccessPolicy[];
+  private readonly accessEntryType?: AccessEntryType;
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
@@ -367,6 +368,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     this.cluster = props.cluster;
     this.principal = props.principal;
     this.accessPolicies = props.accessPolicies;
+    this.accessEntryType = props.accessEntryType;
 
     // Validate that certain access entry types cannot have access policies
     const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
@@ -402,6 +404,11 @@ export class AccessEntry extends Resource implements IAccessEntry {
    */
   @MethodMetadata()
   public addAccessPolicies(newAccessPolicies: IAccessPolicy[]): void {
+    // Validate that restricted access entry types cannot have access policies
+    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+    if (this.accessEntryType && restrictedTypes.includes(this.accessEntryType) && newAccessPolicies.length > 0) {
+      throw new ValidationError(`Access entry type '${this.accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
+    }
     // add newAccessPolicies to this.accessPolicies
     this.accessPolicies.push(...newAccessPolicies);
   }

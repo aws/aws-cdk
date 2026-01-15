@@ -194,5 +194,73 @@ describe('AccessEntry', () => {
         });
       },
     );
+
+    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+      'throws error when adding policies to %s type via addAccessPolicies()',
+      (accessEntryType) => {
+        // GIVEN
+        const accessEntry = new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
+          cluster,
+          accessPolicies: [],
+          principal: 'mock-principal-arn',
+          accessEntryType,
+        });
+
+        const newAccessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: AccessScopeType.CLUSTER,
+        });
+
+        // WHEN & THEN
+        expect(() => {
+          accessEntry.addAccessPolicies([newAccessPolicy]);
+        }).toThrow(`Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`);
+      },
+    );
+
+    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+      'allows adding policies to %s type via addAccessPolicies()',
+      (accessEntryType) => {
+        // GIVEN
+        const accessEntry = new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
+          cluster,
+          accessPolicies: [],
+          principal: 'mock-principal-arn',
+          accessEntryType,
+        });
+
+        const newAccessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: AccessScopeType.CLUSTER,
+        });
+
+        // WHEN
+        accessEntry.addAccessPolicies([newAccessPolicy]);
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+          ClusterName: { Ref: 'ClusterEB0386A7' },
+          PrincipalArn: 'mock-principal-arn',
+          Type: accessEntryType,
+          AccessPolicies: [
+            {
+              AccessScope: {
+                Type: 'cluster',
+              },
+              PolicyArn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy',
+                  ],
+                ],
+              },
+            },
+          ],
+        });
+      },
+    );
   });
 });
