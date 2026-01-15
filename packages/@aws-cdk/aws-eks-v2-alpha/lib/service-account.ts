@@ -1,9 +1,10 @@
 import { CfnPodIdentityAssociation } from 'aws-cdk-lib/aws-eks';
 import {
-  AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
+  AddToPrincipalPolicyResult, getOidcProviderIssuer, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import { CfnJson, Names } from 'aws-cdk-lib/core';
+import { CfnJson, FeatureFlags, Names } from 'aws-cdk-lib/core';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 // import { FargateCluster } from './index';
@@ -166,16 +167,24 @@ export class ServiceAccount extends Construct implements IPrincipal {
 
     let principal: IPrincipal;
     if (props.identityType !== IdentityType.POD_IDENTITY) {
+      const openIdConnectProvider = FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)
+        ? cluster.oidcProviderNative
+        : cluster.openIdConnectProvider;
+
+      const openIdConnectProviderIssuer = FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)
+        ? getOidcProviderIssuer(cluster.oidcProviderNative)
+        : cluster.openIdConnectProvider.openIdConnectProviderIssuer;
+
       /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
       * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
       */
       const conditions = new CfnJson(this, 'ConditionJson', {
         value: {
-          [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:aud`]: 'sts.amazonaws.com',
-          [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
+          [`${openIdConnectProviderIssuer}:aud`]: 'sts.amazonaws.com',
+          [`${openIdConnectProviderIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
         },
       });
-      principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
+      principal = new OpenIdConnectPrincipal(openIdConnectProvider).withConditions({
         StringEquals: conditions,
       });
     } else {

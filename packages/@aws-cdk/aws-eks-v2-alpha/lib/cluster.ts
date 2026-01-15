@@ -6,7 +6,7 @@ import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack, ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct, Node } from 'constructs';
@@ -22,7 +22,7 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { OpenIdConnectProvider } from './oidc-provider';
+import { OpenIdConnectProvider, OidcProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -85,8 +85,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * The Open ID Connect Provider of the cluster used to configure Service Accounts.
+   * @deprecated use `oidcProviderNative` instead
    */
   readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
+
+  /**
+   * Reference of the Open ID Connect Provider of the cluster used to configure Service Accounts.
+   */
+  readonly oidcProviderNative: iam.IOIDCProviderRef;
 
   /**
    * The EKS Pod Identity Agent addon for the EKS cluster.
@@ -249,8 +255,17 @@ export interface ClusterAttributes {
    * You can either import an existing provider using `iam.OpenIdConnectProvider.fromProviderArn`,
    * or create a new provider using `new eks.OpenIdConnectProvider`
    * @default - if not specified `cluster.openIdConnectProvider` and `cluster.addServiceAccount` will throw an error.
+   * @deprecated Use `oidcProviderNative` instead.
    */
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
+
+  /**
+   * An Open ID Connect provider for this cluster that can be used to configure service accounts.
+   * You can either import an existing provider using `iam.OidcProviderNative.fromProviderArn`,
+   * or create a new provider using `new eks.OidcProviderNative`
+   * @default - if not specified `cluster.oidcProviderNative` and `cluster.addServiceAccount` will throw an error.
+   */
+  readonly oidcProviderNative?: iam.IOIDCProviderRef;
 
   /**
    * KubectlProvider for issuing kubectl commands.
@@ -490,7 +505,7 @@ export class EndpointAccess {
      */
     public readonly _config: EndpointAccessConfig) {
     if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
-      throw new Error('CIDR blocks can only be configured when public access is enabled');
+      throw new UnscopedValidationError('CIDR blocks can only be configured when public access is enabled');
     }
   }
 
@@ -504,7 +519,7 @@ export class EndpointAccess {
     if (!this._config.privateAccess) {
       // when private access is disabled, we can't restric public
       // access since it will render the kubectl provider unusable.
-      throw new Error('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+      throw new UnscopedValidationError('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
     }
     return new EndpointAccess({
       ...this._config,
@@ -759,7 +774,11 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly ipFamily?: IpFamily;
   public abstract readonly prune: boolean;
+  /**
+   * @deprecated Use `oidcProviderNative` instead.
+   */
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
+  public abstract readonly oidcProviderNative: iam.IOIDCProviderRef;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -797,7 +816,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
     if (typeof cdk8sChart.toJson !== 'function') {
-      throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
+      throw new UnscopedValidationError(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
     }
 
     const manifest = new KubernetesManifest(this, id, {
@@ -851,7 +870,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
-      throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
+      throw new UnscopedValidationError('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
 
     if (bootstrapEnabled) {
@@ -1032,6 +1051,11 @@ export class Cluster extends ClusterBase {
   private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
+   * an Open ID Connect Provider instance
+   */
+  private _oidcProviderNative?: iam.IOidcProvider;
+
+  /**
    * an EKS Pod Identity Agent instance
    */
   private _eksPodIdentityAgent?: IAddon;
@@ -1146,7 +1170,7 @@ export class Cluster extends ClusterBase {
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
-      throw new Error('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
+      throw new UnscopedValidationError('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
     }
 
     // Get subnetIds for all selected subnets
@@ -1171,16 +1195,16 @@ export class Cluster extends ClusterBase {
 
     if (privateSubnets.length === 0 && publicAccessDisabled) {
       // no private subnets and no public access at all, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+      throw new UnscopedValidationError('Vpc must contain private subnets when public endpoint access is disabled');
     }
 
     if (privateSubnets.length === 0 && publicAccessRestricted) {
       // no private subnets and public access is restricted, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+      throw new UnscopedValidationError('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
-      throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
+      throw new UnscopedValidationError('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
     const resource = this._clusterResource = new CfnCluster(this, 'Resource', {
@@ -1240,7 +1264,7 @@ export class Cluster extends ClusterBase {
 
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
       if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
-        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+        throw new UnscopedValidationError('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
       }
 
       kubectlSubnets = privateSubnets;
@@ -1445,7 +1469,7 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
-      throw new Error('bootstrapOptions is not supported for Bottlerocket');
+      throw new UnscopedValidationError('bootstrapOptions is not supported for Bottlerocket');
     }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
@@ -1512,12 +1536,18 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
+   * An `OpenIdConnectProvider` created via a custom resource associated with this cluster, and which can be used
    * to link this cluster to AWS IAM.
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
+   *
+   * @deprecated use `oidcProviderNative` instead
    */
-  public get openIdConnectProvider() {
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    if (this._oidcProviderNative) {
+      throw new ValidationError('Cannot use both openIdConnectProvider and oidcProviderNative.', this);
+    }
+
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
         url: this.clusterOpenIdConnectIssuerUrl,
@@ -1525,6 +1555,26 @@ export class Cluster extends ClusterBase {
     }
 
     return this._openIdConnectProvider;
+  }
+
+  /**
+   * An `OIDCProvider` L1 resource associated with this cluster, and which can be used
+   * to link this cluster to AWS IAM.
+   *
+   * A provider will only be defined if this property is accessed (lazy initialization).
+   */
+  public get oidcProviderNative(): iam.IOidcProvider {
+    if (this._openIdConnectProvider) {
+      throw new ValidationError('Cannot use both openIdConnectProvider and oidcProviderNative.', this);
+    }
+
+    if (!this._oidcProviderNative) {
+      this._oidcProviderNative = new OidcProviderNative(this, 'OidcProviderNative', {
+        url: this.clusterOpenIdConnectIssuerUrl,
+      });
+    }
+
+    return this._oidcProviderNative;
   }
 
   public get kubectlProvider() {
@@ -1599,19 +1649,19 @@ export class Cluster extends ClusterBase {
         const validNodePools = ['general-purpose', 'system'];
         const invalidPools = props.compute.nodePools.filter(pool => !validNodePools.includes(pool));
         if (invalidPools.length > 0) {
-          throw new Error(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
+          throw new UnscopedValidationError(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
         }
       }
 
       // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
       if (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined) {
-        throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
+        throw new UnscopedValidationError('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
       }
     } else {
       // if NOT using AUTOMODE
       if (props.compute) {
         // When not using AUTOMODE, compute must be undefined
-        throw new Error('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
+        throw new UnscopedValidationError('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
       }
     }
 
@@ -1952,51 +2002,58 @@ class ImportedCluster extends ClusterBase {
 
   public get vpc() {
     if (!this.props.vpc) {
-      throw new Error('"vpc" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"vpc" is not defined for this imported cluster');
     }
     return this.props.vpc;
   }
 
   public get clusterSecurityGroup(): ec2.ISecurityGroup {
     if (!this._clusterSecurityGroup) {
-      throw new Error('"clusterSecurityGroup" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterSecurityGroup" is not defined for this imported cluster');
     }
     return this._clusterSecurityGroup;
   }
 
   public get clusterSecurityGroupId(): string {
     if (!this.props.clusterSecurityGroupId) {
-      throw new Error('"clusterSecurityGroupId" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterSecurityGroupId" is not defined for this imported cluster');
     }
     return this.props.clusterSecurityGroupId;
   }
 
   public get clusterEndpoint(): string {
     if (!this.props.clusterEndpoint) {
-      throw new Error('"clusterEndpoint" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterEndpoint" is not defined for this imported cluster');
     }
     return this.props.clusterEndpoint;
   }
 
   public get clusterCertificateAuthorityData(): string {
     if (!this.props.clusterCertificateAuthorityData) {
-      throw new Error('"clusterCertificateAuthorityData" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterCertificateAuthorityData" is not defined for this imported cluster');
     }
     return this.props.clusterCertificateAuthorityData;
   }
 
   public get clusterEncryptionConfigKeyArn(): string {
     if (!this.props.clusterEncryptionConfigKeyArn) {
-      throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
     }
     return this.props.clusterEncryptionConfigKeyArn;
   }
 
   public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this.props.openIdConnectProvider) {
-      throw new Error('"openIdConnectProvider" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"openIdConnectProvider" is not defined for this imported cluster');
     }
     return this.props.openIdConnectProvider;
+  }
+
+  public get oidcProviderNative(): iam.IOIDCProviderRef {
+    if (!this.props.oidcProviderNative) {
+      throw new UnscopedValidationError('"oidcProviderNative" is not defined for this imported cluster');
+    }
+    return this.props.oidcProviderNative;
   }
 }
 

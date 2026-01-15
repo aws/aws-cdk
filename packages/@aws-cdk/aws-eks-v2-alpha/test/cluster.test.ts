@@ -1380,6 +1380,66 @@ describe('cluster', () => {
         },
       });
     });
+
+    test('if oidcProviderNative a new OIDCProvider resource is created and exposed', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        prune: false,
+      });
+
+      // WHEN
+      const provider = cluster.oidcProviderNative;
+
+      // THEN
+      expect(provider).toEqual(cluster.oidcProviderNative);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::OIDCProvider', {
+        ClientIdList: [
+          'sts.amazonaws.com',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'ClusterEB0386A7',
+            'OpenIdConnectIssuerUrl',
+          ],
+        },
+      });
+    });
+
+    test('throws when accessing oidcProviderNative after openIdConnectProvider', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        prune: false,
+      });
+
+      // WHEN - access openIdConnectProvider first
+      cluster.openIdConnectProvider;
+
+      // THEN - accessing oidcProviderNative should throw
+      expect(() => {
+        cluster.oidcProviderNative;
+      }).toThrow('Cannot use both openIdConnectProvider and oidcProviderNative.');
+    });
+
+    test('throws when accessing openIdConnectProvider after oidcProviderNative', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        prune: false,
+      });
+
+      // WHEN - access oidcProviderNative first
+      cluster.oidcProviderNative;
+
+      // THEN - accessing openIdConnectProvider should throw
+      expect(() => {
+        cluster.openIdConnectProvider;
+      }).toThrow('Cannot use both openIdConnectProvider and oidcProviderNative.');
+    });
     test('inf1 instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
