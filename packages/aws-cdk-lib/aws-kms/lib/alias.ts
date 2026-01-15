@@ -6,7 +6,7 @@ import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
+import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
@@ -210,11 +210,35 @@ export class Alias extends AliasBase {
    * They will only modify the principal policy, not the key resource policy.
    * Without the feature flag `grant*` methods will be a no-op.
    *
+   * If the `@aws-cdk/aws-kms:aliasFromAliasNameValidation` feature flag is set to `true`,
+   * the alias name will be validated and automatically prefixed with "alias/" if not already present.
+   *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param aliasName The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias').
    */
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
+    // Validate and normalize aliasName when feature flag is enabled
+    if (FeatureFlags.of(scope).isEnabled(KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION)) {
+      if (!Token.isUnresolved(aliasName)) {
+        if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
+          aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
+        }
+
+        if (aliasName === REQUIRED_ALIAS_PREFIX) {
+          throw new ValidationError(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
+        }
+
+        if (aliasName.toLowerCase().startsWith(DISALLOWED_PREFIX)) {
+          throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
+        }
+
+        if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+          throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        }
+      }
+    }
+
     class Import extends Resource implements IAlias {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
