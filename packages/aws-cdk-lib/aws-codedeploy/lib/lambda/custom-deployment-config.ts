@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ILambdaDeploymentConfig } from './deployment-config';
 import { Duration, Names, Resource, ValidationError } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
 import { IBindableDeploymentConfig } from '../base-deployment-config';
@@ -172,6 +172,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
     this.node.addValidation({ validate: () => validateName('Deployment config', this.deploymentConfigName) });
   }
 
+  @MethodMetadata()
   public bindEnvironment(deploymentGroup: IDeploymentGroupRef): IDeploymentConfigRef {
     // This construct creates a deployment config by side effect, so we should add a dependency
     // to make sure this construct gets executed first.
