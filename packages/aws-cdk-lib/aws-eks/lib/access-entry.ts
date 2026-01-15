@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAccessEntry } from './eks.generated';
 import {
-  Resource, IResource, Aws, Lazy, ValidationError,
+  Resource, IResource, Aws, Lazy, ValidationError, Token,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -372,7 +372,8 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
     // Validate that certain access entry types cannot have access policies
     const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
-    if (props.accessEntryType && restrictedTypes.includes(props.accessEntryType) && props.accessPolicies.length > 0) {
+    if (props.accessEntryType && restrictedTypes.includes(props.accessEntryType) &&
+        !Token.isUnresolved(props.accessPolicies) && props.accessPolicies.length > 0) {
       throw new ValidationError(`Access entry type '${props.accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
     }
 
@@ -406,7 +407,8 @@ export class AccessEntry extends Resource implements IAccessEntry {
   public addAccessPolicies(newAccessPolicies: IAccessPolicy[]): void {
     // Validate that restricted access entry types cannot have access policies
     const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
-    if (this.accessEntryType && restrictedTypes.includes(this.accessEntryType) && newAccessPolicies.length > 0) {
+    if (this.accessEntryType && restrictedTypes.includes(this.accessEntryType) &&
+        !Token.isUnresolved(newAccessPolicies) && newAccessPolicies.length > 0) {
       throw new ValidationError(`Access entry type '${this.accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
     }
     // add newAccessPolicies to this.accessPolicies
