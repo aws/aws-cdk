@@ -718,6 +718,19 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly remotePodNetworks?: RemotePodNetwork[];
 
   /**
+   * An IAM OpenID Connect provider for the cluster that can be used to configure
+   * service accounts. You can either supply a pre-created `OpenIdConnectProvider`,
+   * or import an existing provider using `iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn`.
+   *
+   * If you supply a provider, it must be configured with the cluster's OIDC issuer URL.
+   * If no provider is specified, one will be automatically created when you call
+   * `cluster.openIdConnectProvider` or add a service account.
+   *
+   * @default - A provider is automatically created when first accessed.
+   */
+  readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
+
+  /**
    * The removal policy applied to all CloudFormation resources created by this construct
    * when they are no longer managed by CloudFormation.
    *
@@ -1704,6 +1717,9 @@ export class Cluster extends ClusterBase {
     this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
     this.onEventLayer = props.onEventLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
+
+    // Store user-provided OIDC provider if specified
+    this._openIdConnectProvider = props.openIdConnectProvider;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
