@@ -72,13 +72,21 @@ const noAuthServiceAccount = cluster.addServiceAccount('no-auth-service-account'
   identityType: eks.IdentityType.NONE,
 });
 
-// Verify that attempting to add IAM permissions to a NONE-type ServiceAccount has no effect
-noAuthServiceAccount.addToPrincipalPolicy(
+// Verify that IdentityType.NONE does not create an IAM role
+if (noAuthServiceAccount.role !== undefined) {
+  throw new Error('Expected noAuthServiceAccount.role to be undefined for IdentityType.NONE');
+}
+
+// Verify that addToPrincipalPolicy has no effect for IdentityType.NONE
+const result = noAuthServiceAccount.addToPrincipalPolicy(
   new iam.PolicyStatement({
     actions: ['s3:GetObject'],
     resources: ['*'],
   }),
 );
+if (result.statementAdded !== false) {
+  throw new Error('Expected addToPrincipalPolicy to return statementAdded: false for IdentityType.NONE');
+}
 
 // this custom resource will check that the bucket exists
 // the bucket will be deleted when the custom resource is deleted
