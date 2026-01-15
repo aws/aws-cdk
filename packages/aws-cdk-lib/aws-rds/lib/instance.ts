@@ -12,6 +12,7 @@ import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { SubnetGroup } from './subnet-group';
 import { validateDatabaseInstanceProps } from './validate-database-insights';
+import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -326,6 +327,24 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       targetId: this.instanceIdentifier,
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE,
     };
+  }
+
+  /**
+   * The average number of disk read I/O operations per second.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricReadIOPS(props?: cloudwatch.MetricOptions) {
+    return this.metric('ReadIOPS', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk write I/O operations per second.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricWriteIOPS(props?: cloudwatch.MetricOptions) {
+    return this.metric('WriteIOPS', { statistic: 'Average', ...props });
   }
 }
 
