@@ -4126,6 +4126,16 @@ removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketIntegration.integrationRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketRoute.routeRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
 
+# Had to revert these
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.Ec2Action.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.LambdaAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SnsAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmIncidentAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch.IAlarmAction.bind
+
 # This type must needs be weakened
 changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
 
