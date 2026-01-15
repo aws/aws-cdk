@@ -14,7 +14,6 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 // for files that are part of this package or part of core, we do import individual classes or functions
 import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { exampleResourceArnComponents } from './private/example-resource-common';
@@ -498,8 +497,8 @@ export class ExampleResource extends ExampleResourceBase {
     });
   }
 
-  // implement all fields that are abstract in ExampleResourceBase
-  @memoizedGetter
+  // implement all fields that are abstract in ExampleResourceBase -- these should be memoized in aws-cdk-lib
+  // @memoizedGetter
   public get exampleResourceArn(): string {
     return this.getResourceArnAttribute(
       // A lot of the L1 classes have an 'attrArn' property -
@@ -513,7 +512,8 @@ export class ExampleResource extends ExampleResourceBase {
       exampleResourceArnComponents(this.physicalName));
   }
 
-  @memoizedGetter
+  // implement all fields that are abstract in ExampleResourceBase -- these should be memoized in aws-cdk-lib
+  // @memoizedGetter
   public get exampleResourceName(): string {
     // The resource's physical name and ARN are set using
     // some protected methods from the Resource superclass
