@@ -1,6 +1,7 @@
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as constructs from 'constructs';
 import {
@@ -406,8 +407,10 @@ export class Workflow extends WorkflowBase {
     return new Import(scope, id);
   }
 
-  public readonly workflowName: string;
-  public readonly workflowArn: string;
+  private resource: CfnWorkflow;
+
+  public workflowName: string;
+  public workflowArn: string;
 
   constructor(scope: constructs.Construct, id: string, props?: WorkflowProps) {
     super(scope, id, {
@@ -416,14 +419,21 @@ export class Workflow extends WorkflowBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const resource = new CfnWorkflow(this, 'Resource', {
+    this.resource = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,
       description: props?.description,
       defaultRunProperties: props?.defaultRunProperties,
       maxConcurrentRuns: props?.maxConcurrentRuns,
     });
+  }
 
-    this.workflowName = this.getResourceNameAttribute(resource.ref);
-    this.workflowArn = this.buildWorkflowArn(this, this.workflowName);
+  @memoizedGetter
+  public get workflowName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get workflowArn(): string {
+    return this.buildWorkflowArn(this, this.workflowName);
   }
 }

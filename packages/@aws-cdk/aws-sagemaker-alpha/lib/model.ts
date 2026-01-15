@@ -3,6 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { ContainerImage } from './container-image';
@@ -292,12 +293,12 @@ export class Model extends ModelBase {
    * Returns the ARN of this model.
    * @attribute
    */
-  public readonly modelArn: string;
+  public modelArn: string;
   /**
    * Returns the name of the model.
    * @attribute
    */
-  public readonly modelName: string;
+  public modelName: string;
   /**
    * Execution role for SageMaker Model
    */
@@ -308,6 +309,7 @@ export class Model extends ModelBase {
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly subnets: ec2.SelectedSubnets | undefined;
   private readonly containers: CfnModel.ContainerDefinitionProperty[] = [];
+  private readonly resource: CfnModel;
 
   constructor(scope: Construct, id: string, props: ModelProps = {}) {
     super(scope, id, {
@@ -325,19 +327,13 @@ export class Model extends ModelBase {
 
     (props.containers || []).map(c => this.addContainer(c));
 
-    const model = new CfnModel(this, 'Model', {
+    this.resource = new CfnModel(this, 'Model', {
       executionRoleArn: this.role.roleArn,
       modelName: this.physicalName,
       primaryContainer: cdk.Lazy.any({ produce: () => this.renderPrimaryContainer() }),
       vpcConfig: cdk.Lazy.any({ produce: () => this.renderVpcConfig() }),
       containers: cdk.Lazy.any({ produce: () => this.renderContainers() }),
       enableNetworkIsolation: props.networkIsolation,
-    });
-    this.modelName = this.getResourceNameAttribute(model.attrModelName);
-    this.modelArn = this.getResourceArnAttribute(model.ref, {
-      service: 'sagemaker',
-      resource: 'model',
-      resourceName: this.physicalName,
     });
 
     /*
@@ -346,7 +342,21 @@ export class Model extends ModelBase {
      * to attach inline policies to IAM roles, the following line ensures that the role and its
      * AWS::IAM::Policy resource are deployed prior to model creation.
      */
-    model.node.addDependency(this.role);
+    this.resource.node.addDependency(this.role);
+  }
+
+  @memoizedGetter
+  public get modelName(): string {
+    return this.getResourceNameAttribute(this.resource.attrModelName);
+  }
+
+  @memoizedGetter
+  public get modelArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'sagemaker',
+      resource: 'model',
+      resourceName: this.physicalName,
+    });
   }
 
   /**

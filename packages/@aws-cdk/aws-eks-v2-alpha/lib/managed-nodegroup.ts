@@ -3,6 +3,7 @@ import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { Construct, Node } from 'constructs';
@@ -406,13 +407,13 @@ export class Nodegroup extends Resource implements INodegroup {
    *
    * @attribute
    */
-  public readonly nodegroupArn: string;
+  public nodegroupArn: string;
   /**
    * Nodegroup name
    *
    * @attribute
    */
-  public readonly nodegroupName: string;
+  public nodegroupName: string;
   /**
    * the Amazon EKS cluster resource
    *
@@ -423,6 +424,8 @@ export class Nodegroup extends Resource implements INodegroup {
    * IAM role of the instance profile for the nodegroup
    */
   public readonly role: IRole;
+
+  private readonly resource: CfnNodegroup;
 
   private readonly desiredSize: number;
   private readonly maxSize: number;
@@ -523,7 +526,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
     this.validateUpdateConfig(props.maxUnavailable, props.maxUnavailablePercentage);
 
-    const resource = new CfnNodegroup(this, 'Resource', {
+    this.resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
@@ -577,17 +580,23 @@ export class Nodegroup extends Resource implements INodegroup {
         Node.of(this.cluster.albController).addDependency(this);
       }
     }
+  }
 
-    this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
+  @memoizedGetter
+  public get nodegroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'eks',
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
+  }
 
+  @memoizedGetter
+  public get nodegroupName(): string {
     if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
-      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
+      return this.getResourceNameAttribute(this.resource.attrNodegroupName);
     } else {
-      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+      return this.getResourceNameAttribute(this.resource.ref);
     }
   }
 

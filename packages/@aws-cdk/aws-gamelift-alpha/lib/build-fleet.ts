@@ -2,6 +2,7 @@ import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IBuild } from './build';
@@ -67,12 +68,12 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
   /**
    * The Identifier of the fleet.
    */
-  public readonly fleetId: string;
+  public fleetId: string;
 
   /**
    * The ARN of the fleet.
    */
-  public readonly fleetArn: string;
+  public fleetArn: string;
 
   /**
    * The build content of the fleet
@@ -90,6 +91,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
   public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly ingressRules: IngressRule[] = [];
+  private resource: CfnFleet;
 
   constructor(scope: Construct, id: string, props: BuildFleetProps) {
     super(scope, id, {
@@ -142,7 +144,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
     });
     this.grantPrincipal = this.role;
 
-    const resource = new CfnFleet(this, 'Resource', {
+    this.resource = new CfnFleet(this, 'Resource', {
       buildId: this.content.buildId,
       certificateConfiguration: {
         certificateType: props.useCertificate ? 'GENERATED': 'DISABLED',
@@ -163,9 +165,16 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       resourceCreationLimitPolicy: this.parseResourceCreationLimitPolicy(props),
       runtimeConfiguration: this.parseRuntimeConfiguration(props),
     });
+  }
 
-    this.fleetId = this.getResourceNameAttribute(resource.ref);
-    this.fleetArn = cdk.Stack.of(scope).formatArn({
+  @memoizedGetter
+  public get fleetId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get fleetArn(): string {
+    return cdk.Stack.of(this).formatArn({
       service: 'gamelift',
       resource: 'fleet',
       resourceName: this.fleetId,

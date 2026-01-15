@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IDistributionConfiguration } from './distribution-configuration';
@@ -608,12 +609,12 @@ export class ImagePipeline extends ImagePipelineBase {
   /**
    * The ARN of the image pipeline
    */
-  public readonly imagePipelineArn: string;
+  public imagePipelineArn: string;
 
   /**
    * The name of the image pipeline
    */
-  public readonly imagePipelineName: string;
+  public imagePipelineName: string;
 
   /**
    * The infrastructure configuration used for the image build
@@ -627,6 +628,7 @@ export class ImagePipeline extends ImagePipelineBase {
   public readonly executionRole?: iam.IRole;
 
   private readonly props: ImagePipelineProps;
+  private readonly resource: CfnImagePipeline;
 
   public constructor(scope: Construct, id: string, props: ImagePipelineProps) {
     super(scope, id, {
@@ -694,8 +696,17 @@ export class ImagePipeline extends ImagePipelineBase {
       tags: props.tags,
     });
 
-    this.imagePipelineName = this.getResourceNameAttribute(imagePipeline.attrName);
-    this.imagePipelineArn = this.getResourceArnAttribute(imagePipeline.attrArn, {
+    this.resource = imagePipeline;
+  }
+
+  @memoizedGetter
+  public get imagePipelineName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get imagePipelineArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'image-pipeline',
       resourceName: this.physicalName,

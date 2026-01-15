@@ -1,4 +1,5 @@
 import { Token } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 
 /**
  * Connection endpoint of a neptune cluster or instance
@@ -19,13 +20,18 @@ export class Endpoint {
   /**
    * The combination of "HOSTNAME:PORT" for this endpoint
    */
-  public readonly socketAddress: string;
+  public get socketAddress(): string {
+    return this.getSocketAddress();
+  }
 
   constructor(address: string, port: number) {
     this.hostname = address;
     this.port = port;
+  }
 
-    const portDesc = Token.isUnresolved(port) ? Token.asString(port) : port;
-    this.socketAddress = `${address}:${portDesc}`;
+  @memoizedGetter
+  private getSocketAddress(): string {
+    const portDesc = Token.isUnresolved(this.port) ? Token.asString(this.port) : this.port;
+    return `${this.hostname}:${portDesc}`;
   }
 }

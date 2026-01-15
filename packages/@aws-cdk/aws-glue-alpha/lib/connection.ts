@@ -2,6 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as constructs from 'constructs';
 
@@ -294,14 +295,15 @@ export class Connection extends cdk.Resource implements IConnection {
   /**
    * The ARN of the connection
    */
-  public readonly connectionArn: string;
+  public connectionArn: string;
 
   /**
    * The name of the connection
    */
-  public readonly connectionName: string;
+  public connectionName: string;
 
   private readonly properties: { [key: string]: string };
+  private readonly resource: CfnConnection;
 
   constructor(scope: constructs.Construct, id: string, props: ConnectionProps) {
     super(scope, id, {
@@ -318,7 +320,7 @@ export class Connection extends cdk.Resource implements IConnection {
       securityGroupIdList: props.securityGroups ? props.securityGroups.map(sg => sg.securityGroupId) : undefined,
     } : undefined;
 
-    const connectionResource = new CfnConnection(this, 'Resource', {
+    this.resource = new CfnConnection(this, 'Resource', {
       catalogId: cdk.Stack.of(this).account,
       connectionInput: {
         connectionProperties: cdk.Lazy.any({ produce: () => Object.keys(this.properties).length > 0 ? this.properties : undefined }),
@@ -329,10 +331,16 @@ export class Connection extends cdk.Resource implements IConnection {
         physicalConnectionRequirements,
       },
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(connectionResource.ref);
-    this.connectionArn = Connection.buildConnectionArn(this, resourceName);
-    this.connectionName = resourceName;
+  @memoizedGetter
+  public get connectionName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get connectionArn(): string {
+    return Connection.buildConnectionArn(this, this.connectionName);
   }
 
   /**

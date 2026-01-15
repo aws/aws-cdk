@@ -5,6 +5,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
@@ -715,22 +716,24 @@ export class Workflow extends WorkflowBase {
   /**
    * The ARN of the workflow
    */
-  public readonly workflowArn: string;
+  public workflowArn: string;
 
   /**
    * The name of the workflow
    */
-  public readonly workflowName: string;
+  public workflowName: string;
 
   /**
    * The type of the workflow
    */
-  public readonly workflowType: string;
+  public workflowType: string;
 
   /**
    * The version of the workflow
    */
-  public readonly workflowVersion: string;
+  public workflowVersion: string;
+
+  private resource: CfnWorkflow;
 
   public constructor(scope: Construct, id: string, props: WorkflowProps) {
     super(scope, id, {
@@ -753,7 +756,7 @@ export class Workflow extends WorkflowBase {
     this.validateWorkflowName();
 
     const workflowVersion = props.workflowVersion ?? '1.0.0';
-    const workflow = new CfnWorkflow(this, 'Resource', {
+    this.resource = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,
       version: workflowVersion,
       type: props.workflowType,
@@ -764,10 +767,18 @@ export class Workflow extends WorkflowBase {
       ...props.data.render(),
     });
 
-    this.workflowName = this.getResourceNameAttribute(workflow.getAtt('Name').toString());
-    this.workflowArn = workflow.attrArn;
     this.workflowVersion = workflowVersion;
     this.workflowType = props.workflowType;
+  }
+
+  @memoizedGetter
+  public get workflowName(): string {
+    return this.getResourceNameAttribute(this.resource.getAtt('Name').toString());
+  }
+
+  @memoizedGetter
+  public get workflowArn(): string {
+    return this.resource.attrArn;
   }
 
   private validateWorkflowName() {

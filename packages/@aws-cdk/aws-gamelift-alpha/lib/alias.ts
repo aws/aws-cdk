@@ -1,6 +1,7 @@
 import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IFleet } from './fleet-base';
@@ -189,17 +190,19 @@ export class Alias extends AliasBase {
   /**
    * The Identifier of the alias.
    */
-  public readonly aliasId: string;
+  public aliasId: string;
 
   /**
    * The ARN of the alias.
    */
-  public readonly aliasArn: string;
+  public aliasArn: string;
 
   /**
    * A fleet that the alias points to.
    */
   public readonly fleet?: IFleet;
+
+  private resource: CfnAlias;
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id, {
@@ -228,14 +231,21 @@ export class Alias extends AliasBase {
       throw new Error('Either a terminal message or a fleet must be binded to this Alias, not both.');
     }
 
-    const resource = new CfnAlias(this, 'Resource', {
+    this.resource = new CfnAlias(this, 'Resource', {
       name: props.aliasName,
       description: props.description,
       routingStrategy: this.parseRoutingStrategy(props),
     });
+  }
 
-    this.aliasId = this.getResourceNameAttribute(resource.ref);
-    this.aliasArn = cdk.Stack.of(scope).formatArn({
+  @memoizedGetter
+  public get aliasId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get aliasArn(): string {
+    return cdk.Stack.of(this).formatArn({
       service: 'gamelift',
       resource: 'alias',
       resourceName: this.aliasId,

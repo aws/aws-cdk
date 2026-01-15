@@ -6,6 +6,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseContainerImage, ContainerInstanceImage } from './base-image';
@@ -478,19 +479,20 @@ export class ContainerRecipe extends ContainerRecipeBase {
   /**
    * The ARN of the container recipe
    */
-  public readonly containerRecipeArn: string;
+  public containerRecipeArn: string;
 
   /**
    * The name of the container recipe
    */
-  public readonly containerRecipeName: string;
+  public containerRecipeName: string;
 
   /**
    * The version of the container recipe
    */
-  public readonly containerRecipeVersion: string;
+  public containerRecipeVersion: string;
 
   private readonly instanceBlockDevices: ec2.BlockDevice[] = [];
+  private resource: CfnContainerRecipe;
 
   public constructor(scope: Construct, id: string, props: ContainerRecipeProps) {
     super(scope, id, {
@@ -535,7 +537,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
       );
 
     const containerRecipeVersion = props.containerRecipeVersion ?? DEFAULT_RECIPE_VERSION;
-    const containerRecipe = new CfnContainerRecipe(this, 'Resource', {
+    this.resource = new CfnContainerRecipe(this, 'Resource', {
       name: this.physicalName,
       version: containerRecipeVersion,
       description: props.description,
@@ -554,14 +556,25 @@ export class ContainerRecipe extends ContainerRecipeBase {
       ...dockerfile.render(),
       ...(components?.length && { components }),
     });
+  }
 
-    this.containerRecipeName = this.getResourceNameAttribute(containerRecipe.attrName);
-    this.containerRecipeArn = this.getResourceArnAttribute(containerRecipe.attrArn, {
+  @memoizedGetter
+  public get containerRecipeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get containerRecipeArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'container-recipe',
-      resourceName: `${this.physicalName}/${containerRecipeVersion}`,
+      resourceName: `${this.physicalName}/${this.resource.version}`,
     });
-    this.containerRecipeVersion = containerRecipe.getAtt('Version').toString();
+  }
+
+  @memoizedGetter
+  public get containerRecipeVersion(): string {
+    return this.resource.getAtt('Version').toString();
   }
 
   /**

@@ -3,6 +3,7 @@ import { CfnGameSessionQueue } from 'aws-cdk-lib/aws-gamelift';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 
@@ -353,15 +354,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
     return new Import(scope, id);
   }
 
-  /**
-   * The Identifier of the gameSessionQueue.
-   */
-  public readonly gameSessionQueueName: string;
-
-  /**
-   * The ARN of the gameSessionQueue.
-   */
-  public readonly gameSessionQueueArn: string;
+  private resource: CfnGameSessionQueue;
 
   private readonly destinations: IGameSessionQueueDestination[] = [];
 
@@ -393,7 +386,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
     // Add all destinations
     (props.destinations || []).forEach(this.addDestination.bind(this));
 
-    const resource = new CfnGameSessionQueue(this, 'Resource', {
+    this.resource = new CfnGameSessionQueue(this, 'Resource', {
       name: this.physicalName,
       customEventData: props.customEventData,
       destinations: cdk.Lazy.any({ produce: () => this.parseDestinations() }),
@@ -403,9 +396,16 @@ export class GameSessionQueue extends GameSessionQueueBase {
       priorityConfiguration: this.parsePriorityConfiguration(props),
       timeoutInSeconds: props.timeout && props.timeout.toSeconds(),
     });
+  }
 
-    this.gameSessionQueueName = this.getResourceNameAttribute(resource.ref);
-    this.gameSessionQueueArn = cdk.Stack.of(scope).formatArn({
+  @memoizedGetter
+  public get gameSessionQueueName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get gameSessionQueueArn(): string {
+    return cdk.Stack.of(this).formatArn({
       service: 'gamelift',
       resource: 'gamesessionqueue',
       resourceName: this.gameSessionQueueName,

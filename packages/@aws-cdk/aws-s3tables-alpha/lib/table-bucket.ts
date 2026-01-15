@@ -4,6 +4,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import { Resource, IResource, UnscopedValidationError, RemovalPolicy, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as perms from './permissions';
@@ -565,7 +566,7 @@ export class TableBucket extends TableBucketBase {
    * The underlying CfnTableBucket L1 resource
    * @internal
    */
-  private readonly _resource: s3tables.CfnTableBucket;
+  private readonly resource: s3tables.CfnTableBucket;
 
   /**
    * The resource policy for this tableBucket.
@@ -575,12 +576,12 @@ export class TableBucket extends TableBucketBase {
   /**
    * The unique Amazon Resource Name (arn) of this table bucket
    */
-  public readonly tableBucketArn: string;
+  public tableBucketArn: string;
 
   /**
    * The name of this table bucket
    */
-  public readonly tableBucketName: string;
+  public tableBucketName: string;
 
   public readonly encryptionKey?: kms.IKey | undefined;
 
@@ -599,7 +600,7 @@ export class TableBucket extends TableBucketBase {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
 
-    this._resource = new s3tables.CfnTableBucket(this, id, {
+    this.resource = new s3tables.CfnTableBucket(this, id, {
       tableBucketName: props.tableBucketName,
       unreferencedFileRemoval: {
         ...props.unreferencedFileRemoval,
@@ -609,9 +610,17 @@ export class TableBucket extends TableBucketBase {
       encryptionConfiguration: bucketEncryption,
     });
 
-    this.tableBucketName = this.getResourceNameAttribute(this._resource.ref);
-    this.tableBucketArn = this._resource.attrTableBucketArn;
-    this._resource.applyRemovalPolicy(props.removalPolicy);
+    this.resource.applyRemovalPolicy(props.removalPolicy);
+  }
+
+  @memoizedGetter
+  public get tableBucketName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get tableBucketArn(): string {
+    return this.resource.attrTableBucketArn;
   }
 
   /**

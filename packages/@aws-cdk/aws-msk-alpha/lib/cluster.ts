@@ -9,6 +9,7 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as core from 'aws-cdk-lib/core';
 import { FeatureFlags } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from 'aws-cdk-lib/cx-api';
@@ -482,10 +483,11 @@ export class Cluster extends ClusterBase {
     return new Import(scope, id);
   }
 
-  public readonly clusterArn: string;
-  public readonly clusterName: string;
+  public clusterArn: string;
+  public clusterName: string;
   /** Key used to encrypt SASL/SCRAM users */
   public readonly saslScramAuthenticationKey?: kms.IKey;
+  private resource: CfnCluster;
   private _clusterDescription?: cr.AwsCustomResource;
   private _clusterBootstrapBrokers?: cr.AwsCustomResource;
 
@@ -749,14 +751,23 @@ export class Cluster extends ClusterBase {
       clientAuthentication,
     });
 
-    this.clusterName = this.getResourceNameAttribute(
-      core.Fn.select(1, core.Fn.split('/', resource.ref)),
-    );
-    this.clusterArn = resource.ref;
+    this.resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: core.RemovalPolicy.RETAIN,
     });
+  }
+
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(
+      core.Fn.select(1, core.Fn.split('/', this.resource.ref)),
+    );
+  }
+
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.resource.ref;
   }
 
   private mskInstanceType(instanceType: ec2.InstanceType, express?:boolean): string {

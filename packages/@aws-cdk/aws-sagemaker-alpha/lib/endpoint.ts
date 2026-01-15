@@ -7,6 +7,7 @@ import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import { CfnEndpoint } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { EndpointConfig, IEndpointConfig, InstanceProductionVariant } from './endpoint-config';
@@ -408,14 +409,15 @@ export class Endpoint extends EndpointBase {
    *
    * @attribute
    */
-  public readonly endpointArn: string;
+  public endpointArn: string;
   /**
    * The name of the endpoint.
    *
    * @attribute
    */
-  public readonly endpointName: string;
+  public endpointName: string;
   private readonly endpointConfig: IEndpointConfig;
+  private resource: CfnEndpoint;
 
   constructor(scope: Construct, id: string, props: EndpointProps) {
     super(scope, id, {
@@ -428,12 +430,20 @@ export class Endpoint extends EndpointBase {
     this.endpointConfig = props.endpointConfig;
 
     // create the endpoint resource
-    const endpoint = new CfnEndpoint(this, 'Endpoint', {
+    this.resource = new CfnEndpoint(this, 'Endpoint', {
       endpointConfigName: props.endpointConfig.endpointConfigName,
       endpointName: this.physicalName,
     });
-    this.endpointName = this.getResourceNameAttribute(endpoint.attrEndpointName);
-    this.endpointArn = this.getResourceArnAttribute(endpoint.ref, {
+  }
+
+  @memoizedGetter
+  public get endpointName(): string {
+    return this.getResourceNameAttribute(this.resource.attrEndpointName);
+  }
+
+  @memoizedGetter
+  public get endpointArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
       service: 'sagemaker',
       resource: 'endpoint',
       resourceName: this.physicalName,

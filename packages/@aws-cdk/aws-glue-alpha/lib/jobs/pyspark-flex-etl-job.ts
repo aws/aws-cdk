@@ -1,6 +1,7 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Code } from '../code';
@@ -68,8 +69,9 @@ export interface PySparkFlexEtlJobProps extends SparkJobProps {
 export class PySparkFlexEtlJob extends SparkJob {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PySparkFlexEtlJob';
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  public jobArn: string;
+  public jobName: string;
+  private resource: CfnJob;
 
   /**
    * PySparkFlexEtlJob constructor
@@ -85,7 +87,7 @@ export class PySparkFlexEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -109,10 +111,17 @@ export class PySparkFlexEtlJob extends SparkJob {
       defaultArguments,
 
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    const resourceName = this.getResourceNameAttribute(this.resource.ref);
+    return this.buildJobArn(this, resourceName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

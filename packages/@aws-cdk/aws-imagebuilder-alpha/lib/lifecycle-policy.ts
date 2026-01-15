@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnLifecyclePolicy } from 'aws-cdk-lib/aws-imagebuilder';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IRecipeBase } from './recipe-base';
@@ -414,17 +415,19 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   /**
    * The ARN of the lifecycle policy
    */
-  public readonly lifecyclePolicyArn: string;
+  public lifecyclePolicyArn: string;
 
   /**
    * The name of the lifecycle policy
    */
-  public readonly lifecyclePolicyName: string;
+  public lifecyclePolicyName: string;
 
   /**
    * The execution role used for lifecycle policy executions
    */
   public readonly executionRole: iam.IRole;
+
+  private resource: CfnLifecyclePolicy;
 
   public constructor(scope: Construct, id: string, props: LifecyclePolicyProps) {
     super(scope, id, {
@@ -472,8 +475,17 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       tags: props.tags,
     });
 
-    this.lifecyclePolicyName = this.getResourceNameAttribute(lifecyclePolicy.ref);
-    this.lifecyclePolicyArn = this.getResourceArnAttribute(lifecyclePolicy.attrArn, {
+    this.resource = lifecyclePolicy;
+  }
+
+  @memoizedGetter
+  public get lifecyclePolicyName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get lifecyclePolicyArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'lifecycle-policy',
       resourceName: this.physicalName,
