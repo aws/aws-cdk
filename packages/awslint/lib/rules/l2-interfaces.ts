@@ -6,7 +6,7 @@ const INTERFACE_EXTENDS_REF = 'interface-extends-ref';
 export const l2InterfaceLinter = new Linter(asm => {
   const iResource = asm.findType('aws-cdk-lib.IResource');
 
-  return asm.allInterfaces.filter(i => i.extends(iResource));
+  return asm.allInterfaces.filter(i => i !== iResource && i.extends(iResource));
 });
 
 l2InterfaceLinter.add({
