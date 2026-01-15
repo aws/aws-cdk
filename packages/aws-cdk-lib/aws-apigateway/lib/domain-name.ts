@@ -252,7 +252,9 @@ export class DomainName extends Resource implements IDomainName {
 
     // Validate endpointAccessMode is STRICT for enhanced security policies
     // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
-    if (this.isEnhancedSecurityPolicy(props.securityPolicy) && props.endpointAccessMode !== EndpointAccessMode.STRICT) {
+    if (this.isEnhancedSecurityPolicy(props.securityPolicy) &&
+        !Token.isUnresolved(props.endpointAccessMode) &&
+        props.endpointAccessMode !== EndpointAccessMode.STRICT) {
       throw new ValidationError(
         'Enhanced security policies require endpointAccessMode to be set to STRICT. ' +
         'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
@@ -361,6 +363,11 @@ export class DomainName extends Resource implements IDomainName {
    * - EndpointType.REGIONAL
    * - Not supported with enhanced security policies (SecurityPolicy_*) for HTTP APIs
    *
+   * Note: HTTP API detection relies on the isHttpStage property from IHttpStageRef.
+   * For custom stage implementations or imported stages that don't expose this property,
+   * validation is skipped and invalid configurations will be caught at CloudFormation
+   * deployment time.
+   *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html
    * @param targetStage the target API stage.
    * @param options Options for mapping to a stage
@@ -375,7 +382,9 @@ export class DomainName extends Resource implements IDomainName {
     // HTTP APIs cannot be mapped to domain names with enhanced security policies
     // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html#apigateway-custom-domain-tls-version-considerations
     if (this.isEnhancedSecurityPolicy(this.securityPolicy)) {
-      // Check if this is an HTTP API stage (has isHttpStage property set to true)
+      // HTTP API stages expose isHttpStage=true to indicate their type.
+      // If this property is absent (e.g., custom stage implementations or imported stages),
+      // validation is skipped and invalid configurations will fail at CloudFormation deployment time.
       const isHttpStage = (targetStage as any).isHttpStage === true;
       if (isHttpStage) {
         throw new ValidationError(
@@ -409,6 +418,9 @@ export class DomainName extends Resource implements IDomainName {
   /**
    * Checks if the given security policy is an enhanced security policy.
    * Enhanced security policies start with 'SecurityPolicy_' prefix.
+   *
+   * Note: When the security policy is a CDK token (e.g., CfnParameter, cross-stack reference),
+   * this method returns false to defer validation to CloudFormation deployment time.
    */
   private isEnhancedSecurityPolicy(policy?: SecurityPolicy): boolean {
     if (!policy || Token.isUnresolved(policy)) {
@@ -420,9 +432,12 @@ export class DomainName extends Resource implements IDomainName {
   /**
    * Validates that the security policy is compatible with the endpoint type.
    * Some policies are only supported for specific endpoint types.
+   *
+   * Note: When either the security policy or endpoint type is a CDK token,
+   * validation is deferred to CloudFormation deployment time.
    */
   private validateSecurityPolicyEndpointType(policy?: SecurityPolicy, endpointType?: EndpointType): void {
-    if (!policy || Token.isUnresolved(policy)) {
+    if (!policy || Token.isUnresolved(policy) || !endpointType || Token.isUnresolved(endpointType)) {
       return;
     }
 

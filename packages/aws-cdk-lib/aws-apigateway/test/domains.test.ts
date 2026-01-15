@@ -2,7 +2,7 @@ import { Match, Template } from '../../assertions';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import * as acm from '../../aws-certificatemanager';
 import { Bucket } from '../../aws-s3';
-import { Stack } from '../../core';
+import { Fn, Stack } from '../../core';
 import * as apigw from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -1000,6 +1000,119 @@ describe('domains', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
       'ApiMappingKey': 'v1/my-api',
+    });
+  });
+
+  describe('token handling', () => {
+    test('allows token-based endpointAccessMode with enhanced security policy', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN - using a token for endpointAccessMode (e.g., from CfnParameter)
+      const tokenValue = Fn.ref('AccessModeParameter');
+
+      // THEN - should not throw during synthesis
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'token.example.com',
+          certificate: cert,
+          securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+          endpointAccessMode: tokenValue as any,
+        });
+      }).not.toThrow();
+    });
+
+    test('allows token-based securityPolicy with endpointAccessMode', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN - using a token for securityPolicy (e.g., from CfnParameter)
+      const tokenValue = Fn.ref('SecurityPolicyParameter');
+
+      // THEN - should not throw during synthesis
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'token.example.com',
+          certificate: cert,
+          securityPolicy: tokenValue as any,
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+      }).not.toThrow();
+    });
+
+    test('allows token-based endpointType with security policy validation', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN - using a token for endpointType (e.g., from cross-stack reference)
+      const tokenValue = Fn.importValue('EndpointTypeExport');
+
+      // THEN - should not throw during synthesis
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'token.example.com',
+          certificate: cert,
+          endpointType: tokenValue as any,
+          securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+      }).not.toThrow();
+    });
+
+    test('allows token-based endpointType with edge-only security policy', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN - using a token for endpointType with edge-only policy
+      const tokenValue = Fn.ref('EndpointTypeParameter');
+
+      // THEN - should not throw during synthesis (validation deferred to CloudFormation)
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'token.example.com',
+          certificate: cert,
+          endpointType: tokenValue as any,
+          securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE,
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+      }).not.toThrow();
+    });
+
+    test('still validates non-token endpointAccessMode with enhanced security policy', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN/THEN - non-token values should still be validated
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'example.com',
+          certificate: cert,
+          securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+          endpointAccessMode: apigw.EndpointAccessMode.STANDARD, // Wrong value
+        });
+      }).toThrow(/Enhanced security policies require endpointAccessMode to be set to STRICT/);
+    });
+
+    test('still validates non-token endpointType with incompatible security policy', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN/THEN - non-token values should still be validated
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'example.com',
+          certificate: cert,
+          endpointType: apigw.EndpointType.EDGE,
+          securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09, // Regional-only policy
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+      }).toThrow(/Security policy SecurityPolicy_TLS13_1_3_2025_09 is not supported for edge-optimized endpoints/);
     });
   });
 });
