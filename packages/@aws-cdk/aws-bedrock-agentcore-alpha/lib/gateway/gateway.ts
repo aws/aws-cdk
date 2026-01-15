@@ -829,7 +829,7 @@ export class Gateway extends GatewayBase {
    * Convenience method for adding a Lambda function that executes before the gateway calls the target.
    * A gateway can have at most one REQUEST interceptor.
    *
-   * @param lambdaFunction The Lambda function to invoke
+   * @param lambdaFunction The Lambda function to invoke [disable-awslint:prefer-ref-interface]
    * @param options Optional configuration for the interceptor
    * @throws Error if a REQUEST interceptor already exists
    */
@@ -854,7 +854,7 @@ export class Gateway extends GatewayBase {
    * Convenience method for adding a Lambda function that executes after the target responds.
    * A gateway can have at most one RESPONSE interceptor.
    *
-   * @param lambdaFunction The Lambda function to invoke
+   * @param lambdaFunction The Lambda function to invoke [disable-awslint:prefer-ref-interface]
    * @param options Optional configuration for the interceptor
    * @throws Error if a RESPONSE interceptor already exists
    */
