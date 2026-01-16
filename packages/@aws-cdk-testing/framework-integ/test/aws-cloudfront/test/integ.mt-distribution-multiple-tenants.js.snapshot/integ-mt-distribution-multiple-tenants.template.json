@@ -1,0 +1,183 @@
+{
+ "Resources": {
+  "ConnectionGroupFDDC4710": {
+   "Type": "AWS::CloudFront::ConnectionGroup",
+   "Properties": {
+    "Enabled": true,
+    "Ipv6Enabled": true,
+    "Name": "connection-group"
+   }
+  },
+  "Cert5C9FAEC1": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "*.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-mt-distribution-multiple-tenants/Cert"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   }
+  },
+  "Record193CB657F": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "integ1.example.com.",
+    "ResourceRecords": [
+     {
+      "Fn::GetAtt": [
+       "ConnectionGroupFDDC4710",
+       "RoutingEndpoint"
+      ]
+     }
+    ],
+    "TTL": "1800",
+    "Type": "CNAME"
+   },
+   "DependsOn": [
+    "Cert5C9FAEC1"
+   ]
+  },
+  "Record201C150C6": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "integ2.example.com.",
+    "ResourceRecords": [
+     {
+      "Fn::GetAtt": [
+       "ConnectionGroupFDDC4710",
+       "RoutingEndpoint"
+      ]
+     }
+    ],
+    "TTL": "1800",
+    "Type": "CNAME"
+   },
+   "DependsOn": [
+    "Cert5C9FAEC1"
+   ]
+  },
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "ConnectionMode": "tenant-only",
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integmtdistributionmultipletenantsDistOrigin11988115E",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integmtdistributionmultipletenantsDistOrigin11988115E"
+      }
+     ],
+     "ViewerCertificate": {
+      "AcmCertificateArn": {
+       "Ref": "Cert5C9FAEC1"
+      },
+      "MinimumProtocolVersion": "TLSv1.2_2021",
+      "SslSupportMethod": "sni-only"
+     }
+    }
+   },
+   "DependsOn": [
+    "Record193CB657F",
+    "Record201C150C6"
+   ]
+  },
+  "Tenant139AFF015": {
+   "Type": "AWS::CloudFront::DistributionTenant",
+   "Properties": {
+    "ConnectionGroupId": {
+     "Ref": "ConnectionGroupFDDC4710"
+    },
+    "DistributionId": {
+     "Ref": "DistB3B78991"
+    },
+    "Domains": [
+     {
+      "Ref": "Record193CB657F"
+     }
+    ],
+    "Enabled": true,
+    "Name": "tenant-1"
+   },
+   "DependsOn": [
+    "DistB3B78991"
+   ]
+  },
+  "Tenant2CC8972C5": {
+   "Type": "AWS::CloudFront::DistributionTenant",
+   "Properties": {
+    "ConnectionGroupId": {
+     "Ref": "ConnectionGroupFDDC4710"
+    },
+    "DistributionId": {
+     "Ref": "DistB3B78991"
+    },
+    "Domains": [
+     {
+      "Ref": "Record201C150C6"
+     }
+    ],
+    "Enabled": true,
+    "Name": "tenant-2"
+   },
+   "DependsOn": [
+    "DistB3B78991"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
