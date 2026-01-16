@@ -1046,6 +1046,20 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   ```
 * CSV file stored in S3
 * S3 inventory manifest stored in S3
+* When your Step Functions state machine needs to read S3 objects from a bucket in a different AWS account, specify the bucket owner's [account ID](https://docs.aws.amazon.com/accounts/latest/reference/manage-acct-identifiers.html#FindAccountId) using the `expectedBucketOwner` parameter:
+
+  ```ts
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3JsonItemReader({
+      bucket: s3.Bucket.fromBucketName(this, 'CrossAccountBucket', 'bucket-in-account-a'),
+      key: 'input.json',
+      expectedBucketOwner: '123456789012', , // Account ID that owns the bucket
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
 
 Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriterV2` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
 
