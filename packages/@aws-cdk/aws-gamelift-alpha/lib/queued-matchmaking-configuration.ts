@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IGameSessionQueue } from './game-session-queue';

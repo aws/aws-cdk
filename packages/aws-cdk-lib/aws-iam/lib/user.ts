@@ -9,7 +9,7 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFr
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
 import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

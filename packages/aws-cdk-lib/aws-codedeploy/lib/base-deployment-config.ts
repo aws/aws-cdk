@@ -4,7 +4,7 @@ import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-c
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
 import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
 
 /**

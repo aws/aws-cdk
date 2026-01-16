@@ -5,7 +5,7 @@ import { IBucket } from '../../../aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../../core/lib/private/memoize';
+import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 import { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';

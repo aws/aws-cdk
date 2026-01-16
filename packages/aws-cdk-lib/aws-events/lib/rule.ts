@@ -9,7 +9,7 @@ import { mergeEventPattern, renderEventPattern } from './util';
 import { IRole, IRoleRef, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

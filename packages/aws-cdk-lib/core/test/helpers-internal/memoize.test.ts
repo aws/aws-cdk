@@ -1,4 +1,4 @@
-import { memoizedGetter } from '../../lib/private/memoize';
+import { memoizedGetter } from '../../lib/helpers-internal/memoize';
 
 class SomeClass {
   public counter = 0;

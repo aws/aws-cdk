@@ -6,7 +6,7 @@ import { CfnDistributionConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 

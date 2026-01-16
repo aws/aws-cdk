@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnPlacementGroup, IPlacementGroupRef, PlacementGroupReference } from './ec2.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

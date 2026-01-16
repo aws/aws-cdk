@@ -2,7 +2,7 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { RuleSetContent } from './matchmaking-ruleset-body';

@@ -7,7 +7,7 @@ import { IResource, Resource, Annotations, withResolved, FeatureFlags, Validatio
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

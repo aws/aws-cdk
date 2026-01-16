@@ -11,7 +11,7 @@ import {
   Reference,
   determineLatestNodeRuntimeName,
 } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-internal';
 import { Construct } from 'constructs';
 

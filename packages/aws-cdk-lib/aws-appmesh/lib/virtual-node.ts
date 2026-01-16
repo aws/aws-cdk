@@ -9,7 +9,7 @@ import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-l
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

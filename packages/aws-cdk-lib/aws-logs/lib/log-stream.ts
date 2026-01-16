@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnLogStream } from './logs.generated';
 import { IResource, RemovalPolicy, Resource, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { ILogGroupRef, ILogStreamRef, LogStreamReference } from '../../interfaces/generated/aws-logs-interfaces.generated';
 

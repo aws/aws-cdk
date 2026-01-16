@@ -1,5 +1,5 @@
 import { Token } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Connection endpoint of a redshift cluster

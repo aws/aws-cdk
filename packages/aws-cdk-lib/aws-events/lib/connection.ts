@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
 import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { ConnectionReference, IConnectionRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 

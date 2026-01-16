@@ -24,7 +24,7 @@ import {
   Fn,
   ValidationError,
 } from '../../../core';
-import { memoizedGetter } from '../../../core/lib/private/memoize';
+import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import * as cxapi from '../../../cx-api';
 import { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';

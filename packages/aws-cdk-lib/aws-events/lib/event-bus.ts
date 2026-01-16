@@ -7,7 +7,7 @@ import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, FeatureFlags, IResource, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { memoizedGetter } from '../../core/lib/private/memoize';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 

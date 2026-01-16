@@ -1,7 +1,7 @@
 import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 import { ArnFormat, Resource, Stack, IResource, Lazy } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/private/memoize';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IAction } from './action';
