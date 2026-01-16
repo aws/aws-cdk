@@ -547,7 +547,7 @@ export interface LogGroupProps {
    * Indicates whether deletion protection is enabled for this log group. When enabled,
    * deletion protection blocks all deletion operations until it is explicitly disabled.
    *
-   * @default - no deletion protection
+   * @default false
    */
   readonly deletionProtectionEnabled?: boolean;
 
