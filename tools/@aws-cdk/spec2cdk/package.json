@@ -9,7 +9,8 @@
     "directory": "tools/@aws-cdk/spec2cdk"
   },
   "bin": {
-    "spec2cdk": "bin/spec2cdk"
+    "spec2cdk": "bin/spec2cdk",
+    "gen-cdk": "bin/gen-cdk"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -31,9 +32,9 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.140",
+    "@aws-cdk/aws-service-spec": "^0.1.141",
     "@aws-cdk/service-spec-importers": "^0.0.105",
-    "@aws-cdk/service-spec-types": "^0.0.206",
+    "@aws-cdk/service-spec-types": "^0.0.207",
     "@cdklabs/tskb": "^0.0.4",
     "@cdklabs/typewriter": "^0.0.14",
     "camelcase": "^6",

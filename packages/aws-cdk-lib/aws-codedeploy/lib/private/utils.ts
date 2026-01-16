@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
-import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
-import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource, ValidationError } from '../../../core';
+import { Token, Stack, ArnFormat, Arn, Fn, Aws, ValidationError, IEnvironmentAware } from '../../../core';
+import { DetachedConstruct } from '../../../core/lib/private/detached-construct';
 import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
-import { IBaseDeploymentConfig } from '../base-deployment-config';
-import { CfnDeploymentGroup } from '../codedeploy.generated';
+import { IBaseDeploymentConfig, IBindableDeploymentConfig } from '../base-deployment-config';
+import { CfnDeploymentGroup, IDeploymentConfigRef, IDeploymentGroupRef } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 
 export function arnForApplication(stack: Stack, applicationName: string): string {
@@ -20,7 +20,7 @@ export function nameFromDeploymentGroupArn(deploymentGroupArn: string): string {
   return Fn.select(1, Fn.split('/', components.resourceName ?? ''));
 }
 
-export function arnForDeploymentConfig(name: string, resource?: IResource): string {
+export function arnForDeploymentConfig(name: string, resource?: IEnvironmentAware): string {
   return Arn.format({
     partition: Aws.PARTITION,
     account: resource?.env.account ?? Aws.ACCOUNT_ID,
@@ -79,15 +79,19 @@ export function renderAlarmConfiguration(props: renderAlarmConfigProps): CfnDepl
     };
 }
 
-export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
-  return {
-    deploymentConfigName: name,
-    deploymentConfigArn: arnForDeploymentConfig(name),
-    bindEnvironment: (resource) => ({
-      deploymentConfigName: name,
-      deploymentConfigArn: arnForDeploymentConfig(name, resource),
-    }),
-  };
+export function deploymentConfig(name: string): IBaseDeploymentConfig & IBindableDeploymentConfig {
+  return new class extends DetachedConstruct implements IBindableDeploymentConfig, IBaseDeploymentConfig {
+    public readonly deploymentConfigName = name;
+    public readonly deploymentConfigArn = arnForDeploymentConfig(name);
+    public readonly deploymentConfigRef = { deploymentConfigName: name };
+    bindEnvironment(resource: IDeploymentGroupRef): IDeploymentConfigRef {
+      return new class extends DetachedConstruct {
+        public readonly deploymentConfigName = name;
+        public readonly deploymentConfigArn = arnForDeploymentConfig(name, resource);
+        public readonly deploymentConfigRef = { deploymentConfigName: name };
+      }('Objects returned by \'deploymentConfig()\' cannot be used in this API: they are not real constructs and do not have a construct tree');
+    }
+  }('Objects returned by \'deploymentConfig()\' cannot be used in this API: they are not real constructs and do not have a construct tree');
 }
 
 enum AutoRollbackEvent {

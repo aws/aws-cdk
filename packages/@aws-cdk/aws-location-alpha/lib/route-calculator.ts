@@ -149,6 +149,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this route calculator.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -161,6 +162,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
 
   /**
    * Grant the given identity permissions to access to a route calculator resource to calculate a route.
+   * [disable-awslint:no-grants]
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-calculate-route
    */

@@ -216,6 +216,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   /**
    * Grant access to the API Gateway management API for this WebSocket API to an IAM
    * principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
