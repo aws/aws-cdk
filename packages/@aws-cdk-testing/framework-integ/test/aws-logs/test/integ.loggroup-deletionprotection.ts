@@ -12,4 +12,3 @@ new LogGroup(stack, 'LogGroup', {
 new IntegTest(app, 'loggroup-grantreads', {
   testCases: [stack],
 });
-app.synth();
