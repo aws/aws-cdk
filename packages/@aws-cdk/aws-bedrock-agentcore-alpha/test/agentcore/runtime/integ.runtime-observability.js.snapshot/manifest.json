@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "49.0.0",
   "artifacts": {
     "aws-cdk-bedrock-agentcore-runtime-observability.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f49fe195827e57bcabd2d8292fb3b2a802f803af41d34eb8a03ff2aeacfb8dcc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2115e5932a2780ef542653a13c7150179f4e7a85d0c27517302cefa26b69515.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -480,7 +480,10 @@
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/TracesDelivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeTracesDelivery4BD8F49C"
+            "data": "ObservabilityRuntimeTracesDelivery4BD8F49C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogsDeliverySource": [
@@ -498,7 +501,10 @@
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs0Delivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs0Delivery993A67FD"
+            "data": "ObservabilityRuntimeApplicationLogs0Delivery993A67FD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs1Dest": [
@@ -510,7 +516,10 @@
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs1Delivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs1DeliveryB3CA9BA8"
+            "data": "ObservabilityRuntimeApplicationLogs1DeliveryB3CA9BA8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs2Dest": [
@@ -522,7 +531,10 @@
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs2Delivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs2Delivery82601469"
+            "data": "ObservabilityRuntimeApplicationLogs2Delivery82601469",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogsDeliverySource": [
@@ -540,7 +552,10 @@
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs0Delivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs0Delivery6313AFDA"
+            "data": "ObservabilityRuntimeUsageLogs0Delivery6313AFDA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs1Dest": [
@@ -552,7 +567,10 @@
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs1Delivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs1Delivery8D98228C"
+            "data": "ObservabilityRuntimeUsageLogs1Delivery8D98228C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs2Dest": [
@@ -564,7 +582,10 @@
         "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs2Delivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs2Delivery9EAB12D0"
+            "data": "ObservabilityRuntimeUsageLogs2Delivery9EAB12D0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-observability/CdkXRayLogsDeliveryPolicy/ResourcePolicy": [
@@ -1152,6 +1173,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1163,6 +1185,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -1174,5 +1197,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1100.3"
 }

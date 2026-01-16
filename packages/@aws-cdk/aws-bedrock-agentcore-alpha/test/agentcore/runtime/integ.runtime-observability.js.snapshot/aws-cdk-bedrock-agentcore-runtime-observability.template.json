@@ -646,7 +646,9 @@
       "Arn"
      ]
     },
-    "DeliverySourceName": "awscdkbedrockagentcoreruntuntimeTracesDeliverySource496C159C"
+    "DeliverySourceName": {
+     "Ref": "ObservabilityRuntimeTracesDeliverySource768F5924"
+    }
    },
    "DependsOn": [
     "ObservabilityRuntimeTracesDeliveryDestD33DDAED",
@@ -691,7 +693,9 @@
       "Arn"
      ]
     },
-    "DeliverySourceName": "awscdkbedrockagentcoreruntlicationLogsDeliverySourceA24F53B3"
+    "DeliverySourceName": {
+     "Ref": "ObservabilityRuntimeApplicationLogsDeliverySource0B1E3022"
+    }
    },
    "DependsOn": [
     "ObservabilityRuntimeApplicationLogs0Dest4CA00B4A",
@@ -720,7 +724,9 @@
       "Arn"
      ]
     },
-    "DeliverySourceName": "awscdkbedrockagentcoreruntlicationLogsDeliverySourceA24F53B3"
+    "DeliverySourceName": {
+     "Ref": "ObservabilityRuntimeApplicationLogsDeliverySource0B1E3022"
+    }
    },
    "DependsOn": [
     "ObservabilityRuntimeApplicationLogs0Delivery993A67FD",
@@ -750,7 +756,9 @@
       "Arn"
      ]
     },
-    "DeliverySourceName": "awscdkbedrockagentcoreruntlicationLogsDeliverySourceA24F53B3"
+    "DeliverySourceName": {
+     "Ref": "ObservabilityRuntimeApplicationLogsDeliverySource0B1E3022"
+    }
    },
    "DependsOn": [
     "ObservabilityRuntimeApplicationLogs1DeliveryB3CA9BA8",
@@ -796,7 +804,9 @@
       "Arn"
      ]
     },
-    "DeliverySourceName": "awscdkbedrockagentcoreruntimeUsageLogsDeliverySource08AC4C97"
+    "DeliverySourceName": {
+     "Ref": "ObservabilityRuntimeUsageLogsDeliverySourceC73C8B47"
+    }
    },
    "DependsOn": [
     "ObservabilityRuntimeApplicationLogs2Delivery82601469",
@@ -826,7 +836,9 @@
       "Arn"
      ]
     },
-    "DeliverySourceName": "awscdkbedrockagentcoreruntimeUsageLogsDeliverySource08AC4C97"
+    "DeliverySourceName": {
+     "Ref": "ObservabilityRuntimeUsageLogsDeliverySourceC73C8B47"
+    }
    },
    "DependsOn": [
     "ObservabilityRuntimeUsageLogs0Delivery6313AFDA",
@@ -856,7 +868,9 @@
       "Arn"
      ]
     },
-    "DeliverySourceName": "awscdkbedrockagentcoreruntimeUsageLogsDeliverySource08AC4C97"
+    "DeliverySourceName": {
+     "Ref": "ObservabilityRuntimeUsageLogsDeliverySourceC73C8B47"
+    }
    },
    "DependsOn": [
     "ObservabilityRuntimeUsageLogs1Delivery8D98228C",

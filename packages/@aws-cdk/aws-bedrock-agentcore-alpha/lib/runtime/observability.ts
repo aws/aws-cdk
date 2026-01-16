@@ -45,7 +45,7 @@ export interface LoggingConfig {
  * Configuration returned by LoggingDestination.bind()
  * @internal
  */
-export interface LoggingDestinationBindConfig {
+interface LoggingDestinationBindConfig {
   /**
    * The delivery destination construct
    */
@@ -290,7 +290,7 @@ export function configureTracingDelivery(
 
   // Create delivery to connect source and destination
   const delivery = new logs.CfnDelivery(scope, 'TracesDelivery', {
-    deliverySourceName: deliverySource.name!,
+    deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
     deliveryDestinationArn: deliveryDestination.attrArn,
   });
 
@@ -341,7 +341,7 @@ export function configureLoggingDelivery(
       const bindConfig = config.destination._bind(scope, id);
 
       const delivery = new logs.CfnDelivery(scope, `${id}Delivery`, {
-        deliverySourceName: deliverySource.name!,
+        deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
         deliveryDestinationArn: bindConfig.deliveryDestination.attrArn,
       });
 
