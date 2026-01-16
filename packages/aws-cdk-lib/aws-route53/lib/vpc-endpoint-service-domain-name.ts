@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { IVPCEndpointServiceRef } from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import { Fn, Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
@@ -109,25 +110,28 @@ export class VpcEndpointServiceDomainName extends Construct {
         RemovePrivateDnsName: true,
       },
     };
+    const serviceArn = Fn.join(':', [
+      'arn',
+      Stack.of(this).partition,
+      'ec2',
+      Stack.of(this).region,
+      Stack.of(this).account,
+      Fn.join('/', ['vpc-endpoint-service', serviceId]),
+    ]);
+
     const enable = new AwsCustomResource(this, 'EnableDns', {
       onCreate: enablePrivateDnsAction,
       onUpdate: enablePrivateDnsAction,
       onDelete: removePrivateDnsAction,
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: [
-          Fn.join(':', [
-            'arn',
-            Stack.of(this).partition,
-            'ec2',
-            Stack.of(this).region,
-            Stack.of(this).account,
-            Fn.join('/', [
-              'vpc-endpoint-service',
-              serviceId,
-            ]),
-          ]),
-        ],
-      }),
+      policy: AwsCustomResourcePolicy.fromStatements([
+        new iam.PolicyStatement({
+          actions: [
+            'ec2:ModifyVpcEndpointServiceConfiguration',
+            'vpce:AllowMultiRegion',
+          ],
+          resources: [serviceArn],
+        }),
+      ]),
       // APIs are available in 2.1055.0
       installLatestAwsSdk: false,
     });
