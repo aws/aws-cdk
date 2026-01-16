@@ -6,7 +6,7 @@ import * as cxapi from '../../cx-api';
 import {
   Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
 } from '../lib';
-import { memoizedGetter } from '../lib/private/memoize';
+import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {

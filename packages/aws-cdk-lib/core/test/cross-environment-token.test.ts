@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
-import { memoizedGetter } from '../lib/private/memoize';
+import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
 /* eslint-disable @stylistic/quote-props */
 
