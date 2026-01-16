@@ -280,12 +280,19 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       advertiseTrustStoreCaNames = props.mutualAuthentication.advertiseTrustStoreCaNames ? 'on' : 'off';
     }
 
+    // Apply post-quantum TLS policy when feature flag is enabled and no explicit policy is set
+    let sslPolicy = props.sslPolicy;
+    if (!sslPolicy && protocol === ApplicationProtocol.HTTPS &&
+        FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY)) {
+      sslPolicy = SslPolicy.RECOMMENDED_TLS_PQ;
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
-      sslPolicy: props.sslPolicy,
+      sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
         advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
