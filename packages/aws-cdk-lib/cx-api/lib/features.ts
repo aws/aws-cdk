@@ -148,6 +148,7 @@ export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccess
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const EKS_NODEGROUP_USE_PULL_ONLY_ECR_POLICY = '@aws-cdk/aws-eks:nodegroupUsePullOnlyEcrPolicy';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1742,6 +1743,31 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.233.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_NODEGROUP_USE_PULL_ONLY_ECR_POLICY]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, EKS node groups use the AmazonEC2ContainerRegistryPullOnly managed policy instead of AmazonEC2ContainerRegistryReadOnly',
+    detailsMd: `
+      When this feature flag is enabled, the default node group role for EKS clusters will use the
+      \`AmazonEC2ContainerRegistryPullOnly\` managed policy instead of \`AmazonEC2ContainerRegistryReadOnly\`.
+
+      The \`AmazonEC2ContainerRegistryPullOnly\` policy provides:
+      - Minimal permissions required to pull container images from ECR
+      - Support for ECR pull-through cache via \`ecr:BatchImportUpstreamImage\` action
+      - Better alignment with least-privilege security principles
+
+      The \`AmazonEC2ContainerRegistryReadOnly\` policy includes broader ECR read permissions
+      (e.g., \`ecr:DescribeRepositories\`, \`ecr:ListImages\`) that are not typically needed for
+      node groups to pull container images.
+
+      When this feature flag is disabled, the legacy \`AmazonEC2ContainerRegistryReadOnly\` policy
+      will continue to be used for backward compatibility.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag or provide a custom node role with the desired ECR permissions.',
   },
 };
 

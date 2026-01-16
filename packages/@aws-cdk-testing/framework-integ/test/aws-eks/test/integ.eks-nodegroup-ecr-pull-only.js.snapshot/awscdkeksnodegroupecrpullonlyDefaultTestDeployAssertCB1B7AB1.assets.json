@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "91181f68848e277780adfaae31e162b09a453f9f55bd19f2134fd54d02422cc6": {
+      "displayName": "awscdkeksnodegroupecrpullonlyDefaultTestDeployAssertCB1B7AB1 Template",
+      "source": {
+        "path": "awscdkeksnodegroupecrpullonlyDefaultTestDeployAssertCB1B7AB1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a4797742": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "91181f68848e277780adfaae31e162b09a453f9f55bd19f2134fd54d02422cc6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
