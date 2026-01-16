@@ -3,8 +3,8 @@ import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

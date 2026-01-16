@@ -2,8 +2,8 @@ import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig, IRealtimeLogConfigRef, RealtimeLogConfigReference } from './cloudfront.generated';
 import { Endpoint } from '../';
 import { IResource, Lazy, Names, Resource, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

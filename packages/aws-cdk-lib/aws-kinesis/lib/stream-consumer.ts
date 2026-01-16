@@ -4,8 +4,8 @@ import { ResourcePolicy } from './resource-policy';
 import { IStream, Stream } from './stream';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IStreamConsumerRef, StreamConsumerReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 

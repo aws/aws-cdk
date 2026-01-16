@@ -4,8 +4,8 @@ import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-contai
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IJobQueueRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
 

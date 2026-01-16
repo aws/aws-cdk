@@ -12,8 +12,8 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

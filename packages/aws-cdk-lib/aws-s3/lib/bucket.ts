@@ -30,9 +30,9 @@ import {
   Tokenization,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
   AutoDeleteObjectsProvider,

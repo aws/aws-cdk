@@ -4,8 +4,8 @@ import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from '.
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

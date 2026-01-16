@@ -5,8 +5,8 @@ import { renderMeshOwner } from './private/utils';
 import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

@@ -4,8 +4,8 @@ import { GatewayRouteSpec } from './gateway-route-spec';
 import { renderMeshOwner } from './private/utils';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

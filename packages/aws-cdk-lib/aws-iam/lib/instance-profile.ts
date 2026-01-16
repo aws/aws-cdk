@@ -3,8 +3,8 @@ import { CfnInstanceProfile, IInstanceProfileRef, InstanceProfileReference } fro
 import { ServicePrincipal } from './principals';
 import { IRole, Role } from './role';
 import { Arn, IResource, PhysicalName, Resource, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

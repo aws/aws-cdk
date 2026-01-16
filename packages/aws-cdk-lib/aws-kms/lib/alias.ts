@@ -4,8 +4,8 @@ import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generat
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 

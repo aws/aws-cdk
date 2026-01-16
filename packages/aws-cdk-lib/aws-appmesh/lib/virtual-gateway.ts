@@ -8,8 +8,8 @@ import { AccessLog, BackendDefaults } from './shared-interfaces';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

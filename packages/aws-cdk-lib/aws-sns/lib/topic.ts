@@ -5,8 +5,8 @@ import { IRoleRef } from '../../aws-iam';
 import { IKey, Key } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

@@ -8,8 +8,8 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFr
 import { AttachedPolicies } from './private/util';
 import { IUser } from './user';
 import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

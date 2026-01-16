@@ -4,8 +4,8 @@ import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
 import * as util from './util';
 import { Resource } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IModel {

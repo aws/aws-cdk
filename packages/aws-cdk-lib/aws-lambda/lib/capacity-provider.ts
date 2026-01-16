@@ -6,8 +6,8 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, IResource, Resource, Stack, Token, ValidationError } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CapacityProviderReference, ICapacityProviderRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 

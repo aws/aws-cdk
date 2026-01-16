@@ -36,8 +36,8 @@ import {
   Names, RemovalPolicy, Size, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
 

@@ -3,8 +3,8 @@ import { CfnJobDefinition } from './batch.generated';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

@@ -12,8 +12,8 @@ import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

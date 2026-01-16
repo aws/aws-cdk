@@ -7,8 +7,8 @@ import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IExtensionRef, ExtensionReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 

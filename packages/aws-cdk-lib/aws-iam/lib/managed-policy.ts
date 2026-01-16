@@ -14,10 +14,9 @@ import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
 import { Arn, ArnFormat, Aws, Resource, Stack, ValidationError, Lazy } from '../../core';
-import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
+import { getCustomizeRolesConfig, memoizedGetter, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { DetachedConstruct } from '../../core/lib/private/detached-construct';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

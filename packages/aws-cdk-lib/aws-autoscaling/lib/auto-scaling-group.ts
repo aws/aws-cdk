@@ -23,9 +23,9 @@ import {
   Token,
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 import { AutoScalingGroupReference, IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';

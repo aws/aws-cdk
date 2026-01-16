@@ -8,8 +8,8 @@ import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
 import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack, ValidationError } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

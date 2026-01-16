@@ -9,8 +9,8 @@ import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Annotations, Resource, Stack, ValidationError } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**

@@ -6,8 +6,8 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
