@@ -1,8 +1,8 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ValidationError } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Job, JobProps } from './job';
@@ -62,8 +62,6 @@ export interface RayJobProps extends JobProps {
 export class RayJob extends Job {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.RayJob';
-  public jobArn: string;
-  public jobName: string;
   public readonly role: iam.IRole;
   public readonly grantPrincipal: iam.IPrincipal;
   private resource: CfnJob;

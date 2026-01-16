@@ -3,8 +3,8 @@ import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Column } from './schema';
@@ -90,16 +90,6 @@ export class S3Table extends TableBase {
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.S3Table';
 
   private resource: CfnTable;
-
-  /**
-   * Name of this table.
-   */
-  public tableName: string;
-
-  /**
-   * ARN of this table.
-   */
-  public tableArn: string;
 
   /**
    * S3 bucket in which the table's data resides.
@@ -189,11 +179,17 @@ export class S3Table extends TableBase {
     }
   }
 
+  /**
+   * Name of this table.
+   */
   @memoizedGetter
   public get tableName(): string {
     return this.getResourceNameAttribute(this.resource.ref);
   }
 
+  /**
+   * ARN of this table.
+   */
   @memoizedGetter
   public get tableArn(): string {
     return this.stack.formatArn({

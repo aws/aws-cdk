@@ -1,9 +1,10 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { EOL } from 'os';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { AcceleratorType } from './accelerator-type';
@@ -255,15 +256,6 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     });
   }
 
-  /**
-   * The ARN of the endpoint configuration.
-   */
-  public endpointConfigArn: string;
-  /**
-   * The name of the endpoint configuration.
-   */
-  public endpointConfigName: string;
-
   private readonly resource: CfnEndpointConfig;
 
   private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } = {};
@@ -295,11 +287,17 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     });
   }
 
+  /**
+   * The name of the endpoint configuration.
+   */
   @memoizedGetter
   public get endpointConfigName(): string {
     return this.getResourceNameAttribute(this.resource.attrEndpointConfigName);
   }
 
+  /**
+   * The ARN of the endpoint configuration.
+   */
   @memoizedGetter
   public get endpointConfigArn(): string {
     return this.getResourceArnAttribute(this.resource.ref, {

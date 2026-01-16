@@ -1,7 +1,7 @@
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as constructs from 'constructs';
 import {
@@ -408,9 +408,6 @@ export class Workflow extends WorkflowBase {
   }
 
   private resource: CfnWorkflow;
-
-  public workflowName: string;
-  public workflowArn: string;
 
   constructor(scope: constructs.Construct, id: string, props?: WorkflowProps) {
     super(scope, id, {

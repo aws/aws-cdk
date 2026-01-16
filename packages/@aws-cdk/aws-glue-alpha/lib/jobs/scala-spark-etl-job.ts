@@ -1,7 +1,7 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { ValidationError } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Code } from '../code';
@@ -73,8 +73,6 @@ export interface ScalaSparkEtlJobProps extends SparkJobProps {
 export class ScalaSparkEtlJob extends SparkJob {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ScalaSparkEtlJob';
-  public jobArn: string;
-  public jobName: string;
   private resource: CfnJob;
 
   /**

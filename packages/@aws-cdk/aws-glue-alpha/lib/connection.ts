@@ -1,8 +1,8 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as constructs from 'constructs';
 
@@ -292,16 +292,6 @@ export class Connection extends cdk.Resource implements IConnection {
     });
   }
 
-  /**
-   * The ARN of the connection
-   */
-  public connectionArn: string;
-
-  /**
-   * The name of the connection
-   */
-  public connectionName: string;
-
   private readonly properties: { [key: string]: string };
   private readonly resource: CfnConnection;
 
@@ -333,11 +323,17 @@ export class Connection extends cdk.Resource implements IConnection {
     });
   }
 
+  /**
+   * The name of the connection
+   */
   @memoizedGetter
   public get connectionName(): string {
     return this.getResourceNameAttribute(this.resource.ref);
   }
 
+  /**
+   * The ARN of the connection
+   */
   @memoizedGetter
   public get connectionArn(): string {
     return Connection.buildConnectionArn(this, this.connectionName);

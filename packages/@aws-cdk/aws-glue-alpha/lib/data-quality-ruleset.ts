@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnDataQualityRuleset } from 'aws-cdk-lib/aws-glue';
 import { IResource, Resource } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as constructs from 'constructs';
 
@@ -117,16 +117,6 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
 
   private resource: CfnDataQualityRuleset;
 
-  /**
-   * Name of this ruleset.
-   */
-  public rulesetName: string;
-
-  /**
-   * ARN of this ruleset.
-   */
-  public rulesetArn: string;
-
   constructor(scope: constructs.Construct, id: string, props: DataQualityRulesetProps) {
     super(scope, id, {
       physicalName: props.rulesetName,
@@ -144,11 +134,17 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     });
   }
 
+  /**
+   * Name of this ruleset.
+   */
   @memoizedGetter
   public get rulesetName(): string {
     return this.getResourceNameAttribute(this.resource.ref);
   }
 
+  /**
+   * ARN of this ruleset.
+   */
   @memoizedGetter
   public get rulesetArn(): string {
     return DataQualityRuleset.buildRulesetArn(this, this.rulesetName);

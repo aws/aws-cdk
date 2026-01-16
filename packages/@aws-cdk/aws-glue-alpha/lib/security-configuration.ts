@@ -2,8 +2,8 @@ import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as constructs from 'constructs';
 
@@ -170,12 +170,6 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
     }
     return new Import(scope, id);
   }
-
-  /**
-   * The name of the security configuration.
-   * @attribute
-   */
-  public securityConfigurationName: string;
 
   /**
    * The KMS key used in CloudWatch encryption if it requires a kms key.
