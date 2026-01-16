@@ -515,3 +515,181 @@ describe('Blue/Green Deployment', () => {
     expect(service.isUsingECSDeploymentController()).toBe(false);
   });
 });
+
+describe('forceNewDeployment', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+  });
+
+  test('should enable force new deployment when called with true', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment(true);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: Match.stringLikeRegexp('^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$'),
+      },
+    });
+  });
+
+  test('should disable force new deployment when called with false', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment(false);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: false,
+        ForceNewDeploymentNonce: '',
+      },
+    });
+  });
+
+  test('should work with EC2 service', () => {
+    // GIVEN
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t3.micro'),
+      minCapacity: 1,
+    });
+    const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+    ec2TaskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+    const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+      cluster,
+      taskDefinition: ec2TaskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment(true);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: Match.stringLikeRegexp('^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$'),
+      },
+    });
+  });
+
+  test('should work with different deployment controllers', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.ECS,
+      },
+    });
+
+    // WHEN
+    service.forceNewDeployment(true);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: Match.stringLikeRegexp('^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$'),
+      },
+    });
+  });
+
+  test('should allow multiple calls to forceNewDeployment', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment(true);
+    service.forceNewDeployment(false);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: false,
+        ForceNewDeploymentNonce: '',
+      },
+    });
+  });
+
+  test('should not set ForceNewDeployment property when not called', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN - not calling forceNewDeployment
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: Match.absent(),
+    });
+  });
+
+  test('should throw error when forceNewDeployment is called with non-ECS deployment controller', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+
+    // WHEN & THEN
+    expect(() => {
+      service.forceNewDeployment(true);
+    }).toThrow('forceNewDeployment requires the ECS deployment controller.');
+  });
+
+  test('should throw error when forceNewDeployment is called with EXTERNAL deployment controller', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.EXTERNAL,
+      },
+    });
+
+    // WHEN & THEN
+    expect(() => {
+      service.forceNewDeployment(true);
+    }).toThrow('forceNewDeployment requires the ECS deployment controller.');
+  });
+});

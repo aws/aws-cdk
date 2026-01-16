@@ -878,6 +878,25 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * Forces a new deployment of the service.
+   *
+   * This can be used to trigger a deployment without changing the task definition or desired count.
+   * When enabled, ECS will start a new deployment even if there are no changes to the service configuration.
+   *
+   * @param enable - Whether to enable force new deployment
+   */
+  public forceNewDeployment(enable: boolean) {
+    if (!this.isEcsDeploymentController) {
+      throw new ValidationError('forceNewDeployment requires the ECS deployment controller.', this);
+    }
+
+    this.resource.forceNewDeployment = {
+      enableForceNewDeployment: enable,
+      forceNewDeploymentNonce: enable? new Date().toISOString() : '',
+    };
+  }
+
+  /**
    * Add a deployment lifecycle hook target
    * @param target The lifecycle hook target to add
    */
