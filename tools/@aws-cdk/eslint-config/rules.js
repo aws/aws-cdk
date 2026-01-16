@@ -10,6 +10,7 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     '@cdklabs/no-invalid-path': ['error'],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
     '@cdklabs/no-evaluating-typeguard': [ 'error' ],
+    '@cdklabs/no-unconditional-token-allocation': [ 'error' ],
 
     // Error handling
     'no-throw-literal': [ 'error' ],

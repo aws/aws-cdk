@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 import { Octokit } from '@octokit/rest';
 import { CheckRun, GitHubComment, GitHubPr, Review } from './github';
 

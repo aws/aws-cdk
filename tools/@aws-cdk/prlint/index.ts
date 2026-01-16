@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
 import { StatusEvent, PullRequestEvent, CheckSuiteEvent } from '@octokit/webhooks-definitions/schema';
