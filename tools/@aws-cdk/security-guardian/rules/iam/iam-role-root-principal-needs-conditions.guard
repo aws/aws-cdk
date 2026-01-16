@@ -29,8 +29,17 @@
 #     "ArnEquals": { "aws:PrincipalArn": "arn:aws:iam::123456789012:role/SpecificRole" }
 #   }
 #
-# AWS Documentation Reference:
-# https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html
+# AWS Documentation References:
+# - Condition Operators: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html
+# - IAM Role Resource: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+#
+# Why only AssumeRolePolicyDocument?
+# IAM Roles have two policy-related properties:
+# - AssumeRolePolicyDocument (trust policy): Defines WHO can assume the role. Contains Principal element.
+# - Policies (identity-based policies): Defines WHAT the role can do. Does NOT contain Principal element.
+#
+# The Principal element only exists in trust policies (AssumeRolePolicyDocument), not in identity-based
+# policies attached via the Policies property. Therefore, we only check AssumeRolePolicyDocument.
 #
 # Condition Operator Comparison:
 # +----------------+----------------------------------------------------------+
