@@ -708,7 +708,7 @@ import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V2_13_3,
   },
   kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
 });
@@ -722,7 +722,7 @@ import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V2_13_3,
     additionalHelmChartValues: {
       enableWafv2: false
     }
@@ -730,6 +730,28 @@ new eks.Cluster(this, 'HelloEKS', {
   kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
 });
 ```
+
+#### IAM Policy Security Mode
+
+The upstream AWS Load Balancer Controller IAM policies use `Resource: "*"` for many read-only operations. While this is required for the controller to discover resources, you can optionally enable `SCOPED` mode to add additional IAM conditions that limit cross-region and cross-account resource enumeration:
+
+```ts
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_34,
+  albController: {
+    version: eks.AlbControllerVersion.V2_13_3,
+    securityMode: eks.AlbControllerSecurityMode.SCOPED,
+  },
+  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+});
+```
+
+The available security modes are:
+
+- `COMPATIBLE` (default): Uses the upstream IAM policy patterns as-is, maintaining backward compatibility.
+- `SCOPED`: Adds `aws:RequestedRegion` and `aws:ResourceAccount` conditions to read-only operations with `Resource: "*"`, limiting resource enumeration to the deployed region and account.
 
 The `albController` requires `defaultCapacity` or at least one nodegroup. If there's no `defaultCapacity` or available
 nodegroup for the cluster, the `albController` deployment would fail.

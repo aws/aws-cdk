@@ -3,8 +3,9 @@ import * as path from 'path';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { App, Stack } from 'aws-cdk-lib/core';
 import { testFixture } from './util';
-import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
+import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, AlbControllerSecurityMode, HelmChart } from '../lib';
 
 const versions = Object.values(AlbControllerVersion);
 
@@ -164,5 +165,149 @@ test('correct helm chart version is set for selected alb controller version', ()
         ],
       ],
     },
+  });
+});
+
+test('SCOPED mode scopes wildcard resources to region and account', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { region: 'us-west-2', account: '123456789012' },
+  });
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    },
+  });
+
+  // WHEN
+  new AlbController(stack, 'AlbController', {
+    cluster,
+    version: AlbControllerVersion.V2_13_3,
+    securityMode: AlbControllerSecurityMode.SCOPED,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+
+  // Find the ALB controller service account policy statements
+  const policies = template.findResources('AWS::IAM::Policy');
+  const policyKeys = Object.keys(policies);
+  expect(policyKeys.length).toBeGreaterThan(0);
+
+  // Find the policy that contains ALB controller permissions (look for elasticloadbalancing actions)
+  let albPolicyDocument: any = null;
+  for (const policyKey of policyKeys) {
+    const policy = policies[policyKey];
+    const statements = policy.Properties.PolicyDocument.Statement;
+    const hasELBActions = statements.some((stmt: any) =>
+      Array.isArray(stmt.Action) &&
+      stmt.Action.some((action: string) => action.startsWith('elasticloadbalancing:')),
+    );
+    if (hasELBActions) {
+      albPolicyDocument = policy.Properties.PolicyDocument;
+      break;
+    }
+  }
+
+  expect(albPolicyDocument).toBeDefined();
+
+  // Helper to check if a resource is a scoped ARN (Fn::Join format with region/account)
+  const isScopedResource = (resource: any): boolean => {
+    if (typeof resource === 'string') {
+      return resource.includes('us-west-2') && resource.includes('123456789012');
+    }
+    if (resource && resource['Fn::Join']) {
+      const joinParts = resource['Fn::Join'][1];
+      const joinStr = JSON.stringify(joinParts);
+      return joinStr.includes('us-west-2') && joinStr.includes('123456789012');
+    }
+    return false;
+  };
+
+  // Check that read-only statements have scoped resources (not wildcard "*")
+  const readOnlyStatements = albPolicyDocument.Statement.filter((stmt: any) =>
+    Array.isArray(stmt.Action) &&
+    stmt.Action.some((action: string) =>
+      action.startsWith('ec2:Describe') ||
+      action.startsWith('elasticloadbalancing:Describe') ||
+      action.startsWith('acm:'),
+    ),
+  );
+
+  expect(readOnlyStatements.length).toBeGreaterThan(0);
+
+  // Verify that these statements have scoped resources (not wildcard "*")
+  readOnlyStatements.forEach((stmt: any) => {
+    // Resource should be scoped, not a simple "*"
+    expect(stmt.Resource).not.toEqual('*');
+    expect(isScopedResource(stmt.Resource)).toBe(true);
+  });
+});
+
+test('COMPATIBLE mode does not add additional conditions', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { region: 'us-west-2', account: '123456789012' },
+  });
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    },
+  });
+
+  // WHEN
+  new AlbController(stack, 'AlbController', {
+    cluster,
+    version: AlbControllerVersion.V2_13_3,
+    securityMode: AlbControllerSecurityMode.COMPATIBLE,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+
+  // Find the ALB controller service account policy statements
+  const policies = template.findResources('AWS::IAM::Policy');
+  const policyKeys = Object.keys(policies);
+  expect(policyKeys.length).toBeGreaterThan(0);
+
+  // Find the policy that contains ALB controller permissions
+  let albPolicyDocument: any = null;
+  for (const policyKey of policyKeys) {
+    const policy = policies[policyKey];
+    const statements = policy.Properties.PolicyDocument.Statement;
+    const hasELBActions = statements.some((stmt: any) =>
+      Array.isArray(stmt.Action) &&
+      stmt.Action.some((action: string) => action.startsWith('elasticloadbalancing:')),
+    );
+    if (hasELBActions) {
+      albPolicyDocument = policy.Properties.PolicyDocument;
+      break;
+    }
+  }
+
+  expect(albPolicyDocument).toBeDefined();
+
+  // Check that read-only statements with Resource: "*" do NOT have additional region conditions
+  const readOnlyStatements = albPolicyDocument.Statement.filter((stmt: any) =>
+    stmt.Resource === '*' &&
+    Array.isArray(stmt.Action) &&
+    stmt.Action.some((action: string) =>
+      action.startsWith('ec2:Describe') ||
+      action.startsWith('elasticloadbalancing:Describe'),
+    ),
+  );
+
+  expect(readOnlyStatements.length).toBeGreaterThan(0);
+
+  // Verify that these statements do NOT have additional region or account conditions
+  readOnlyStatements.forEach((stmt: any) => {
+    if (stmt.Condition?.StringEquals) {
+      expect(stmt.Condition.StringEquals['aws:RequestedRegion']).toBeUndefined();
+      expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toBeUndefined();
+    }
   });
 });
