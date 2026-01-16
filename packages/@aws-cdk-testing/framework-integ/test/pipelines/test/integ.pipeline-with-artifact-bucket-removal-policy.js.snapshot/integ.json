@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "PipelineArtifactBucketRemovalPolicyTest/DefaultTest": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "PipelineArtifactBucketRemovalPolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineArtifactBucketRemovalPolicyTestDefaultTestDeployAssert9B7F00FF"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
