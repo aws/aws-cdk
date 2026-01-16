@@ -8,9 +8,14 @@ export function memoizedGetter<This extends object, Return>(
   target: (this: This) => Return,
   _context: ClassGetterDecoratorContext<This, Return>,
 ) {
-  const m = new WeakMap<This, Return>();
+  // Only gets initialized if we ever need it; perhaps this method never gets
+  // called and then allocating the map would be wasteful.
+  let m: WeakMap<This, Return> | undefined;
 
   function replacementMethod(this: This): Return {
+    if (!m) {
+      m = new WeakMap<This, Return>();
+    }
     if (m.has(this)) {
       return m.get(this)!;
     }
