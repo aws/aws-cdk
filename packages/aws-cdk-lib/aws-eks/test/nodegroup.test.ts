@@ -1108,6 +1108,126 @@ describe('node group', () => {
     });
   });
 
+  test('aws-auth will be updated with nodeRoleGroups when provided', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      mastersRole: new iam.Role(stack, 'MastersRole', {
+        assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
+      }),
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster, nodeRoleGroups: ['system:fake-role'] });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'MastersRole0257C11B',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'MastersRole0257C11B',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'NodegroupNodeGroupRole038A128B',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:fake-role\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ClusterCreationRole360249B6',
+          'Arn',
+        ],
+      },
+      PruneLabel: 'aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76',
+    });
+  });
+
+  test('aws-auth will be updated with eks:kube-proxy-windows when AMI OS is Windows', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      mastersRole: new iam.Role(stack, 'MastersRole', {
+        assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
+      }),
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster, amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64 });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'MastersRole0257C11B',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'MastersRole0257C11B',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'NodegroupNodeGroupRole038A128B',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\",\\"eks:kube-proxy-windows\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ClusterCreationRole360249B6',
+          'Arn',
+        ],
+      },
+      PruneLabel: 'aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76',
+    });
+  });
+
   test('create nodegroup correctly with security groups provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
