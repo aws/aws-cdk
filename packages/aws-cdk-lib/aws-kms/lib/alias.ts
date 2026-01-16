@@ -3,10 +3,10 @@ import { IKey } from './key';
 import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
-import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import { Annotations, FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
+import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
@@ -237,11 +237,27 @@ export class Alias extends AliasBase {
    * They will only modify the principal policy, not the key resource policy.
    * Without the feature flag `grant*` methods will be a no-op.
    *
+   * If the `@aws-cdk/aws-kms:aliasFromAliasNameValidation` feature flag is set to `true`,
+   * the alias name will be validated and automatically prefixed with "alias/" if not already present.
+   *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param aliasName The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias').
    */
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
+    // Validate and normalize aliasName when feature flag is enabled
+    if (FeatureFlags.of(scope).isEnabled(KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION)) {
+      // Detect potential double-prefix from legacy workarounds
+      if (!Token.isUnresolved(aliasName) && aliasName.startsWith('alias/alias/')) {
+        Annotations.of(scope).addWarningV2(
+          '@aws-cdk/aws-kms:aliasDoublePrefix',
+          `Alias name "${aliasName}" has a double "alias/" prefix. ` +
+          'If you previously added the prefix manually as a workaround, please remove it.',
+        );
+      }
+      aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope);
+    }
+
     class Import extends Resource implements IAlias {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
@@ -321,13 +337,22 @@ export class Alias extends AliasBase {
     return new Import(scope, id);
   }
 
-  public readonly aliasName: string;
-  public readonly aliasTargetKey: IKey;
-
-  constructor(scope: Construct, id: string, props: AliasProps) {
-    let aliasName = props.aliasName;
-
+  /**
+   * Validates and normalizes a KMS alias name according to AWS requirements.
+   * Handles both concrete strings and CDK tokens (fully or partially unresolved).
+   *
+   * @param aliasName The alias name to validate and normalize
+   * @param scope The construct scope for error reporting and warnings
+   * @param emitTokenWarnings Whether to emit warnings for unresolved tokens (default: true).
+   *   Set to false in the constructor to maintain backward compatibility - existing users
+   *   of `new Alias()` with token-based names should not see new warnings that could break
+   *   CI/CD pipelines with strict warning configurations. Warnings are only emitted in
+   *   `fromAliasName()` when the feature flag is enabled, providing opt-in behavior.
+   * @returns The normalized alias name
+   */
+  private static validateAndNormalizeAliasName(aliasName: string, scope: Construct, emitTokenWarnings: boolean = true): string {
     if (!Token.isUnresolved(aliasName)) {
+      // Fully concrete string - validate everything
       if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
         aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
       }
@@ -343,21 +368,49 @@ export class Alias extends AliasBase {
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
         throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
-    } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
-      const valueInToken = Tokenization.reverseString(aliasName).firstValue;
+    } else {
+      // Contains tokens - check if we have a concrete prefix to validate
+      const reversed = Tokenization.reverseString(aliasName);
+      // length > 1 ensures we have a concrete prefix AND additional token components
+      // A single-element result (length === 1) with firstValue and no firstToken indicates
+      // a fully concrete value that should have been caught by Token.isUnresolved() above
+      if (reversed.firstValue && !reversed.firstToken && reversed.length > 1) {
+        // Partial token string (starts with literal, has tokens after) - validate the concrete portion
+        const valueInToken = reversed.firstValue;
 
-      if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
-        aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
-      }
+        if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
+          aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
+        }
 
-      if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
-      }
+        if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
+          throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
+        }
 
-      if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+          throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        }
+      } else if (emitTokenWarnings) {
+        // Fully unresolved token - add synthesis-time warning only if enabled
+        Annotations.of(scope).addWarningV2(
+          '@aws-cdk/aws-kms:aliasNameTokenValidation',
+          'Alias name is a token and cannot be validated at synthesis time. ' +
+          `Ensure the resolved value includes the "${REQUIRED_ALIAS_PREFIX}" prefix and does not start with "${DISALLOWED_PREFIX}".`,
+        );
       }
     }
+
+    return aliasName;
+  }
+
+  public readonly aliasName: string;
+  public readonly aliasTargetKey: IKey;
+
+  constructor(scope: Construct, id: string, props: AliasProps) {
+    let aliasName = props.aliasName;
+
+    // Use the shared validation logic, but suppress token warnings in constructor
+    // to maintain backward compatibility (warnings only emitted in fromAliasName with feature flag)
+    aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope, false);
 
     super(scope, id, {
       physicalName: aliasName,
