@@ -46,22 +46,22 @@ describe('Guard Rules Validation', () => {
     });
   });
 
-  describe('Guard Hooks Rules (NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS)', () => {
-    test('should allow root principals in KMS keys but block in other resources', async () => {
-      // Process existing templates that contain KMS keys with root principals
+  describe('Resource Policy Rules (RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS)', () => {
+    test('should detect root principals without conditions in resource policies', async () => {
+      // Process existing templates that contain resource policies with root principals
       preprocessTemplates(templatesDir, outputDir);
       
-      // Run validation with guard-hooks rule
+      // Run validation with resource-policies rule
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'guard-hooks/guardhooks-no-root-principals-except-kms-secrets.guard'),
-        path.join(outputDir, 'guard-hooks-test.xml'),
-        'Guard Hooks',
+        path.join(rulesDir, 'resource-policies/resource-policy-root-principal-needs-conditions.guard'),
+        path.join(outputDir, 'resource-policy-test.xml'),
+        'Resource Policy',
         new Map(),
         true
       );
       
-      // Should detect violations in non-KMS resources (validation should fail)
+      // Should detect root principals without conditions (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
     });
