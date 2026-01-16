@@ -281,4 +281,59 @@ describe('DeploymentLifecycleHookTarget', () => {
       service.addLifecycleHook(hookTarget);
     }).toThrow(/Deployment lifecycle hooks requires the ECS deployment controller/);
   });
+
+  describe('hookDetails validation', () => {
+    test('validates valid JSON object hookDetails', () => {
+      // GIVEN
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // WHEN
+      const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+        lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+        hookDetails: { environment: 'production', timeout: 300 },
+      });
+      service.addLifecycleHook(hookTarget);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          LifecycleHooks: [
+            {
+              LifecycleStages: ['PRE_SCALE_UP'],
+              HookTargetArn: {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('TestFunction'),
+                  'Arn',
+                ],
+              },
+              HookDetails: '{\"environment\":\"production\",\"timeout\":300}',
+            },
+          ],
+        },
+      });
+    });
+
+    test('throws error for JSON array hookDetails', () => {
+      // GIVEN
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // WHEN
+      const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+        lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+        hookDetails: ['param1', 'param2', 1, true],
+      });
+      service.addLifecycleHook(hookTarget);
+
+      // GIVEN & WHEN & THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/hookDetails must be a JSON object, got: array/);
+    });
+  });
 });
