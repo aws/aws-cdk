@@ -152,7 +152,11 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
 
     const vpc = props.privateSubnets ? props.cluster.vpc : undefined;
     let securityGroups;
-    if (props.privateSubnets && props.cluster.clusterSecurityGroup) {
+    if (props.privateSubnets && props.securityGroup) {
+      // if the user has provided a security group, use it
+      securityGroups = [props.securityGroup];
+    } else if (props.privateSubnets && props.cluster.clusterSecurityGroup) {
+      // if the user has not provided a security group, use the cluster security group
       securityGroups = [props.cluster.clusterSecurityGroup];
     }
     const privateSubnets = props.privateSubnets ? { subnets: props.privateSubnets } : undefined;

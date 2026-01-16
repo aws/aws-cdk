@@ -1689,6 +1689,54 @@ describe('cluster', () => {
     });
   });
 
+  test('kubectl provider uses custom security group when provided in kubectlProviderOptions', () => {
+    const { stack, vpc } = testFixture();
+
+    const customSecurityGroup = new ec2.SecurityGroup(stack, 'CustomKubectlSG', {
+      vpc,
+      description: 'Custom security group for kubectl provider',
+    });
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      vpc,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        securityGroup: customSecurityGroup,
+        privateSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }).subnets,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['CustomKubectlSG', 'GroupId'] }],
+      },
+    });
+  });
+
+  test('kubectl provider falls back to cluster security group when custom security group is not provided', () => {
+    const { stack, vpc } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      vpc,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        privateSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }).subnets,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['Cluster192CD0375', 'ClusterSecurityGroupId'] }],
+      },
+    });
+  });
+
   test('kubectl provider passes environment to lambda', () => {
     const { stack } = testFixture();
 
