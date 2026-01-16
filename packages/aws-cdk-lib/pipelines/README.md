@@ -90,7 +90,7 @@ class MyPipelineStack extends Stack {
           'main',
           {
             connectionArn:
-              'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+              'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console 
           }
         ),
         commands: ['npm ci', 'npm run build', 'npx cdk synth'],
@@ -838,6 +838,50 @@ new pipelines.CodePipeline(this, 'Pipeline', {
   },
 });
 ```
+
+### Conditional Asset Builds
+
+By default, CDK Pipelines will build and publish all assets every time the pipeline runs,
+even if the asset with the same hash already exists in S3 (for file assets) or ECR (for
+Docker image assets). This can be inefficient and costly, especially for large Docker images
+or when assets rarely change.
+
+You can enable conditional asset builds to skip building and publishing assets that already
+exist by setting `conditionallyBuildAssets: true` when creating your pipeline:
+
+```ts
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn:
+        'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41',
+    }),
+    commands: ['npm ci', 'npm run build', 'npx cdk synth'],
+  }),
+
+  // Enable conditional asset builds to skip publishing assets that already exist
+  conditionallyBuildAssets: true,
+});
+```
+
+When enabled, the pipeline will:
+
+1. **For file assets**: Use the S3 `HeadObject` API to check if the asset already exists
+   in the S3 bucket before uploading
+2. **For Docker images**: Use the ECR `DescribeImages` API to check if the image with
+   the same tag already exists in the repository before building and pushing
+
+If an asset already exists, the build and publish steps are skipped, significantly reducing
+build times and costs. If the check fails or the asset doesn't exist, it will be built and
+published as normal.
+
+**Note**: This feature requires the asset publishing CodeBuild role to have additional IAM
+permissions:
+- `s3:HeadObject` and `s3:GetObject` for checking file assets in S3
+- `ecr:DescribeImages`, `ecr:BatchGetImage`, and `ecr:GetDownloadUrlForLayer` for checking
+  Docker images in ECR
+
+These permissions are automatically added to the asset role when `conditionallyBuildAssets` is enabled.
 
 ### Arbitrary CodePipeline actions
 
