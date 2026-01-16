@@ -402,3 +402,192 @@ test('VPC origin with options configured', () => {
     },
   });
 });
+
+describe('VPC Origin region-aware naming', () => {
+  test('VPC origin with feature flag disabled uses default naming', () => {
+    // GIVEN
+    const testApp = new App();
+    const testStack = new Stack(testApp, 'Stack', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
+    const vpc = new ec2.Vpc(testStack, 'Vpc');
+    const alb = new elbv2.ApplicationLoadBalancer(testStack, 'ALB', { vpc });
+
+    // WHEN
+    new cloudfront.Distribution(testStack, 'Distribution', {
+      defaultBehavior: {
+        origin: VpcOrigin.withApplicationLoadBalancer(alb),
+      },
+    });
+
+    // THEN - should use default naming without region suffix
+    Template.fromStack(testStack).hasResourceProperties('AWS::CloudFront::VpcOrigin', {
+      VpcOriginEndpointConfig: {
+        Name: 'StackDistributionOrigin1VpcOriginB6F753F8',
+      },
+    });
+  });
+
+  test('VPC origin with feature flag enabled includes region in name', () => {
+    // GIVEN
+    const testApp = new App({
+      context: {
+        '@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName': true,
+      },
+    });
+    const testStack = new Stack(testApp, 'Stack', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
+    const vpc = new ec2.Vpc(testStack, 'Vpc');
+    const alb = new elbv2.ApplicationLoadBalancer(testStack, 'ALB', { vpc });
+
+    // WHEN
+    new cloudfront.Distribution(testStack, 'Distribution', {
+      defaultBehavior: {
+        origin: VpcOrigin.withApplicationLoadBalancer(alb),
+      },
+    });
+
+    // THEN - should include region suffix
+    Template.fromStack(testStack).hasResourceProperties('AWS::CloudFront::VpcOrigin', {
+      VpcOriginEndpointConfig: {
+        Name: 'StackDistributionOrigin1VpcOriginB6F753F8-us-east-1',
+      },
+    });
+  });
+
+  test('VPC origin with feature flag enabled but unresolved region uses default naming', () => {
+    // GIVEN
+    const testApp = new App({
+      context: {
+        '@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName': true,
+      },
+    });
+    const testStack = new Stack(testApp, 'Stack'); // No explicit region
+    const vpc = new ec2.Vpc(testStack, 'Vpc');
+    const alb = new elbv2.ApplicationLoadBalancer(testStack, 'ALB', { vpc });
+
+    // WHEN
+    new cloudfront.Distribution(testStack, 'Distribution', {
+      defaultBehavior: {
+        origin: VpcOrigin.withApplicationLoadBalancer(alb),
+      },
+    });
+
+    // THEN - should use default naming without region suffix when region is unresolved
+    Template.fromStack(testStack).hasResourceProperties('AWS::CloudFront::VpcOrigin', {
+      VpcOriginEndpointConfig: {
+        Name: 'StackDistributionOrigin1VpcOriginB6F753F8',
+      },
+    });
+  });
+
+  test('VPC origin with custom name ignores feature flag', () => {
+    // GIVEN
+    const testApp = new App({
+      context: {
+        '@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName': true,
+      },
+    });
+    const testStack = new Stack(testApp, 'Stack', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
+    const vpc = new ec2.Vpc(testStack, 'Vpc');
+    const alb = new elbv2.ApplicationLoadBalancer(testStack, 'ALB', { vpc });
+
+    // WHEN
+    new cloudfront.Distribution(testStack, 'Distribution', {
+      defaultBehavior: {
+        origin: VpcOrigin.withApplicationLoadBalancer(alb, {
+          vpcOriginName: 'CustomOriginName',
+        }),
+      },
+    });
+
+    // THEN - should use custom name exactly as provided
+    Template.fromStack(testStack).hasResourceProperties('AWS::CloudFront::VpcOrigin', {
+      VpcOriginEndpointConfig: {
+        Name: 'CustomOriginName',
+      },
+    });
+  });
+
+  test('VPC origin with feature flag enabled works with different regions', () => {
+    // GIVEN
+    const testApp = new App({
+      context: {
+        '@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName': true,
+      },
+    });
+    const testStack1 = new Stack(testApp, 'Stack1', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
+    const testStack2 = new Stack(testApp, 'Stack2', {
+      env: { account: '1234', region: 'eu-west-1' },
+    });
+
+    // Create identical constructs in both stacks
+    const createVpcOrigin = (targetStack: Stack) => {
+      const vpc = new ec2.Vpc(targetStack, 'Vpc');
+      const alb = new elbv2.ApplicationLoadBalancer(targetStack, 'ALB', { vpc });
+      return new cloudfront.Distribution(targetStack, 'Distribution', {
+        defaultBehavior: {
+          origin: VpcOrigin.withApplicationLoadBalancer(alb),
+        },
+      });
+    };
+
+    // WHEN
+    createVpcOrigin(testStack1);
+    createVpcOrigin(testStack2);
+
+    // THEN - should have different names with region suffixes
+    const template1 = Template.fromStack(testStack1);
+    const template2 = Template.fromStack(testStack2);
+
+    // Get the actual generated names to verify they're different and include regions
+    const vpcOrigins1 = template1.findResources('AWS::CloudFront::VpcOrigin');
+    const vpcOrigins2 = template2.findResources('AWS::CloudFront::VpcOrigin');
+
+    const name1 = Object.values(vpcOrigins1)[0].Properties.VpcOriginEndpointConfig.Name;
+    const name2 = Object.values(vpcOrigins2)[0].Properties.VpcOriginEndpointConfig.Name;
+
+    expect(name1).toMatch(/-us-east-1$/);
+    expect(name2).toMatch(/-eu-west-1$/);
+    expect(name1).not.toEqual(name2); // Names should be different
+  });
+
+  test('VPC origin name length stays within 64 character limit', () => {
+    // GIVEN
+    const testApp = new App({
+      context: {
+        '@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName': true,
+      },
+    });
+    const testStack = new Stack(testApp, 'VeryLongStackNameThatCouldPotentiallyCauseIssuesWithNaming', {
+      env: { account: '1234', region: 'ap-southeast-2' }, // Longer region name
+    });
+    const vpc = new ec2.Vpc(testStack, 'Vpc');
+    const alb = new elbv2.ApplicationLoadBalancer(testStack, 'ALB', { vpc });
+
+    // WHEN
+    new cloudfront.Distribution(testStack, 'Distribution', {
+      defaultBehavior: {
+        origin: VpcOrigin.withApplicationLoadBalancer(alb),
+      },
+    });
+
+    // THEN - verify the generated name is within limits
+    const template = Template.fromStack(testStack);
+    const vpcOrigins = template.findResources('AWS::CloudFront::VpcOrigin');
+    const vpcOriginKeys = Object.keys(vpcOrigins);
+    expect(vpcOriginKeys).toHaveLength(1);
+
+    const vpcOriginConfig = vpcOrigins[vpcOriginKeys[0]].Properties.VpcOriginEndpointConfig;
+    const generatedName = vpcOriginConfig.Name;
+
+    expect(typeof generatedName).toBe('string');
+    expect(generatedName.length).toBeLessThanOrEqual(64);
+    expect(generatedName).toMatch(/-ap-southeast-2$/); // Should end with region
+  });
+});
