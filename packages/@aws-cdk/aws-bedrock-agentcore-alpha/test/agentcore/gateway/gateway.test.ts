@@ -2398,7 +2398,7 @@ describe('Gateway Interceptor Tests', () => {
     });
   });
 
-  test('Should add REQUEST and RESPONSE interceptors using convenience methods', () => {
+  test('Should add REQUEST and RESPONSE interceptors using addInterceptor method', () => {
     const gateway = new Gateway(stack, 'TestGateway', {
       gatewayName: 'test-gateway',
     });
@@ -2415,8 +2415,8 @@ describe('Gateway Interceptor Tests', () => {
       code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
     });
 
-    gateway.addRequestInterceptor(requestInterceptorFn, { passRequestHeaders: true });
-    gateway.addResponseInterceptor(responseInterceptorFn);
+    gateway.addInterceptor(LambdaInterceptor.forRequest(requestInterceptorFn, { passRequestHeaders: true }));
+    gateway.addInterceptor(LambdaInterceptor.forResponse(responseInterceptorFn));
 
     const template = Template.fromStack(stack);
 

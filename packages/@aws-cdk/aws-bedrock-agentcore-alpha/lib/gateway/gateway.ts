@@ -10,7 +10,7 @@ import { Construct } from 'constructs';
 // Internal imports
 import { GatewayBase, GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayAuthorizer, IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
-import { IInterceptorConfig, InterceptionPoint, InterceptorOptions, LambdaInterceptor } from './interceptor';
+import { IInterceptor, InterceptorBindConfig, InterceptionPoint } from './interceptor';
 import { ICredentialProviderConfig } from './outbound-auth/credential-provider';
 import { GATEWAY_ASSUME_ROLE, GATEWAY_KMS_KEY_PERMS } from './perms';
 import { IGatewayProtocolConfig, McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
@@ -218,7 +218,7 @@ export interface GatewayProps {
   /**
    * Interceptor configurations for the gateway
    *
-   * Interceptors allow you to run custom Lambda code during each gateway invocation:
+   * Interceptors allow you to run custom code during each gateway invocation:
    * - REQUEST interceptors execute before the gateway calls the target
    * - RESPONSE interceptors execute after the target responds
    *
@@ -227,7 +227,7 @@ export interface GatewayProps {
    * @default - No interceptors
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html
    */
-  readonly interceptorConfigurations?: IInterceptorConfig[];
+  readonly interceptorConfigurations?: IInterceptor[];
 }
 
 /**
@@ -405,16 +405,17 @@ export class Gateway extends GatewayBase {
   public userPoolClient?: cognito.IUserPoolClient;
 
   /**
-   * The REQUEST interceptor for this gateway
+   * The REQUEST interceptor configuration
    * @internal
    */
-  private requestInterceptor?: IInterceptorConfig;
+  private requestInterceptorConfig?: InterceptorBindConfig;
 
   /**
-   * The RESPONSE interceptor for this gateway
+   * The RESPONSE interceptor configuration
    * @internal
    */
-  private responseInterceptor?: IInterceptorConfig;
+  private responseInterceptorConfig?: InterceptorBindConfig;
+
   /**
    * The Cognito User Pool Domain created for the gateway (if using default Cognito authorizer)
    */
@@ -824,62 +825,42 @@ export class Gateway extends GatewayBase {
   }
 
   /**
-   * Add a REQUEST interceptor to this gateway
+   * Add an interceptor to this gateway
    *
-   * Convenience method for adding a Lambda function that executes before the gateway calls the target.
-   * A gateway can have at most one REQUEST interceptor.
+   * Interceptors allow you to run custom code at specific points in the gateway request/response flow:
+   * - REQUEST interceptors execute before the gateway calls the target
+   * - RESPONSE interceptors execute after the target responds
    *
-   * @param lambdaFunction The Lambda function to invoke [disable-awslint:prefer-ref-interface]
-   * @param options Optional configuration for the interceptor
-   * @throws Error if a REQUEST interceptor already exists
+   * A gateway can have at most one REQUEST interceptor and one RESPONSE interceptor.
+   * @param interceptor The interceptor to add (use LambdaInterceptor factory methods)
+   * * @throws Error if an interceptor of the same type already exists
    */
   @MethodMetadata()
-  public addRequestInterceptor(
-    lambdaFunction: IFunction,
-    options?: InterceptorOptions,
-  ): void {
-    if (this.requestInterceptor) {
-      throw new ValidationError(
-        'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
-      );
+  public addInterceptor(interceptor: IInterceptor): void {
+    const interceptionPoint = interceptor.interceptionPoint;
+
+    if (interceptionPoint === InterceptionPoint.REQUEST) {
+      if (this.requestInterceptorConfig) {
+        throw new ValidationError(
+          'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
+        );
+      }
+      this.requestInterceptorConfig = interceptor.bind(this, this);
+    } else if (interceptionPoint === InterceptionPoint.RESPONSE) {
+      if (this.responseInterceptorConfig) {
+        throw new ValidationError(
+          'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
+        );
+      }
+      this.responseInterceptorConfig = interceptor.bind(this, this);
     }
-
-    this.requestInterceptor = LambdaInterceptor.forRequest(lambdaFunction, options);
-    this.grantInterceptorPermissions(this.requestInterceptor);
-  }
-
-  /**
-   * Add a RESPONSE interceptor to this gateway
-   *
-   * Convenience method for adding a Lambda function that executes after the target responds.
-   * A gateway can have at most one RESPONSE interceptor.
-   *
-   * @param lambdaFunction The Lambda function to invoke [disable-awslint:prefer-ref-interface]
-   * @param options Optional configuration for the interceptor
-   * @throws Error if a RESPONSE interceptor already exists
-   */
-  @MethodMetadata()
-  public addResponseInterceptor(
-    lambdaFunction: IFunction,
-    options?: InterceptorOptions,
-  ): void {
-    if (this.responseInterceptor) {
-      throw new ValidationError(
-        'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
-      );
-    }
-
-    this.responseInterceptor = LambdaInterceptor.forResponse(lambdaFunction, options);
-    this.grantInterceptorPermissions(this.responseInterceptor);
   }
 
   /**
    * Validates and initializes interceptors from the provided configurations
-   * Ensures that there is at most one REQUEST and one RESPONSE interceptor
-   * Also grants Lambda invoke permissions for constructor-provided interceptors
    * @internal
    */
-  private validateAndInitializeInterceptors(interceptors: IInterceptorConfig[]): void {
+  private validateAndInitializeInterceptors(interceptors: IInterceptor[]): void {
     if (interceptors.length > 2) {
       throw new ValidationError(
         'Gateway can have at most 2 interceptors: one REQUEST interceptor and one RESPONSE interceptor.',
@@ -887,38 +868,8 @@ export class Gateway extends GatewayBase {
     }
 
     for (const interceptor of interceptors) {
-      if (interceptor.interceptionPoint === InterceptionPoint.REQUEST) {
-        if (this.requestInterceptor) {
-          throw new ValidationError(
-            'Gateway can have at most one REQUEST interceptor. Multiple REQUEST interceptors were provided.',
-          );
-        }
-        this.requestInterceptor = interceptor;
-      } else if (interceptor.interceptionPoint === InterceptionPoint.RESPONSE) {
-        if (this.responseInterceptor) {
-          throw new ValidationError(
-            'Gateway can have at most one RESPONSE interceptor. Multiple RESPONSE interceptors were provided.',
-          );
-        }
-        this.responseInterceptor = interceptor;
-      }
+      this.addInterceptor(interceptor);
     }
-
-    // Grant Lambda invoke permissions for constructor-provided interceptors
-    if (this.requestInterceptor) {
-      this.grantInterceptorPermissions(this.requestInterceptor);
-    }
-    if (this.responseInterceptor) {
-      this.grantInterceptorPermissions(this.responseInterceptor);
-    }
-  }
-
-  /**
-   * Grants Lambda invoke permissions to the gateway role for the interceptor
-   * @internal
-   */
-  private grantInterceptorPermissions(interceptor: IInterceptorConfig): void {
-    interceptor.lambdaFunction.grantInvoke(this.role);
   }
 
   /**
@@ -929,12 +880,12 @@ export class Gateway extends GatewayBase {
   private renderInterceptorConfigurations(): any[] | undefined {
     const configs: any[] = [];
 
-    if (this.requestInterceptor) {
-      configs.push(this.requestInterceptor._render());
+    if (this.requestInterceptorConfig) {
+      configs.push(this.requestInterceptorConfig.configuration);
     }
 
-    if (this.responseInterceptor) {
-      configs.push(this.responseInterceptor._render());
+    if (this.responseInterceptorConfig) {
+      configs.push(this.responseInterceptorConfig.configuration);
     }
 
     return configs.length > 0 ? configs : undefined;

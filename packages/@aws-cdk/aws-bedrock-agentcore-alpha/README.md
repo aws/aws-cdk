@@ -1844,7 +1844,7 @@ This approach gives you full control over the configuration but is typically not
 
 ### Gateway Interceptors
 
-Gateway interceptors allow you to run custom Lambda code during each gateway invocation to implement fine-grained access control, transform requests and responses, or implement custom authorization logic. A gateway can have at most one REQUEST interceptor and one RESPONSE interceptor.
+Gateway interceptors allow you to run custom code during each gateway invocation to implement fine-grained access control, transform requests and responses, or implement custom authorization logic. A gateway can have at most one REQUEST interceptor and one RESPONSE interceptor.
 
 **Interceptor Types:**
 
@@ -1906,7 +1906,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 });
 ```
 
-#### Adding Interceptors Using Convenience Methods
+#### Adding Interceptors Dynamically
 
 ```typescript fixture=default
 // Create a gateway first
@@ -1945,12 +1945,15 @@ def handler(event, context):
   `),
 });
 
-// Add interceptors using convenience methods
-gateway.addRequestInterceptor(requestInterceptorFn, {
-  passRequestHeaders: false  // Default, headers not passed for security
-});
+gateway.addInterceptor(
+  agentcore.LambdaInterceptor.forRequest(requestInterceptorFn, {
+    passRequestHeaders: false  // Default, headers not passed for security
+  })
+);
 
-gateway.addResponseInterceptor(responseInterceptorFn);
+gateway.addInterceptor(
+  agentcore.LambdaInterceptor.forResponse(responseInterceptorFn)
+);
 ```
 
 ### Gateway Target IAM Permissions

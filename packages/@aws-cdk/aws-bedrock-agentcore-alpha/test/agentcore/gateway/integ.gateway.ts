@@ -3,8 +3,8 @@
  *
  * Tests Gateway with:
  * - All target types: Lambda and Smithy
- * - REQUEST and RESPONSE interceptors
- * - Convenience methods (addLambdaTarget, addSmithyTarget, addRequestInterceptor, addResponseInterceptor)
+ * - REQUEST and RESPONSE interceptors using the bind pattern
+ * - Convenience methods (addLambdaTarget, addSmithyTarget, addInterceptor)
  */
 
 import * as path from 'path';
@@ -76,12 +76,16 @@ def handler(event, context):
   description: 'RESPONSE interceptor for Gateway integration test',
 });
 
-// Add interceptors to gateway using convenience methods
-gateway.addRequestInterceptor(requestInterceptorFn, {
-  passRequestHeaders: false,
-});
+// Add interceptors to gateway using addInterceptor method
+gateway.addInterceptor(
+  agentcore.LambdaInterceptor.forRequest(requestInterceptorFn, {
+    passRequestHeaders: false,
+  }),
+);
 
-gateway.addResponseInterceptor(responseInterceptorFn);
+gateway.addInterceptor(
+  agentcore.LambdaInterceptor.forResponse(responseInterceptorFn),
+);
 
 // ===== Lambda Target =====
 const lambdaFunction = new lambda.Function(stack, 'TestFunction', {

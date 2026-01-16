@@ -1,4 +1,6 @@
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
+import { IGateway } from './gateway-base';
 
 /******************************************************************************
  *                                Enums
@@ -43,29 +45,39 @@ export interface InterceptorOptions {
 }
 
 /**
- * Configuration for a Gateway interceptor
+ * Represents an interceptor that can be bound to a Gateway
+ *
+ * Interceptors allow custom code execution at specific points in the gateway request/response flow.
  */
-export interface IInterceptorConfig {
+export interface IInterceptor {
   /**
-   * The interception point (REQUEST or RESPONSE)
+   * The interception point where this interceptor will be invoked
    */
   readonly interceptionPoint: InterceptionPoint;
 
   /**
-   * The Lambda function to invoke for this interceptor
+   * Binds this interceptor to a Gateway
+   *
+   * This method is called when the interceptor is added to a gateway. It should:
+   * 1. Grant any necessary permissions (e.g., Lambda invoke permissions)
+   * 2. Perform any required setup
+   * 3. Return the CloudFormation configuration
+   *
+   * @param scope The construct scope for creating any required resources
+   * @param gateway The gateway this interceptor is being bound to [disable-awslint:prefer-ref-interface]
+   * @returns Configuration that will be rendered to CloudFormation
    */
-  readonly lambdaFunction: IFunction;
+  bind(scope: Construct, gateway: IGateway): InterceptorBindConfig;
+}
 
+/**
+ * Configuration returned from binding an interceptor to a Gateway
+ */
+export interface InterceptorBindConfig {
   /**
-   * Whether to pass request headers to the interceptor
+   * The CloudFormation configuration for this interceptor
    */
-  readonly passRequestHeaders: boolean;
-
-  /**
-   * Renders the interceptor configuration for CloudFormation
-   * @internal
-   */
-  _render(): any;
+  readonly configuration: any;
 }
 
 /******************************************************************************
@@ -80,7 +92,7 @@ export interface IInterceptorConfig {
  * - RESPONSE interceptors execute after the target responds
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html
  */
-export class LambdaInterceptor implements IInterceptorConfig {
+export class LambdaInterceptor implements IInterceptor {
   /**
    * Create a REQUEST interceptor that executes before the gateway calls the target
    * @param lambdaFunction The Lambda function to invoke
@@ -103,7 +115,6 @@ export class LambdaInterceptor implements IInterceptorConfig {
    * @param lambdaFunction The Lambda function to invoke
    * @param options Optional configuration for the interceptor
    * @returns A configured LambdaInterceptor for response interception
-   *
    */
   public static forResponse(
     lambdaFunction: IFunction,
@@ -124,14 +135,14 @@ export class LambdaInterceptor implements IInterceptorConfig {
   /**
    * The Lambda function to invoke for this interceptor
    */
-  public readonly lambdaFunction: IFunction;
+  private readonly lambdaFunction: IFunction;
 
   /**
    * Whether to pass request headers to the interceptor
    *
    * @default false - Headers are not passed for security
    */
-  public readonly passRequestHeaders: boolean;
+  private readonly passRequestHeaders: boolean;
 
   private constructor(
     interceptionPoint: InterceptionPoint,
@@ -144,19 +155,32 @@ export class LambdaInterceptor implements IInterceptorConfig {
   }
 
   /**
-   * Renders the interceptor configuration as CloudFormation properties
-   * @internal
+   * Binds this Lambda interceptor to a Gateway
+   *
+   * This method:
+   * 1. Grants the Gateway's IAM role permission to invoke the Lambda function
+   * 2. Returns the CloudFormation configuration for this interceptor
+   *
+   * @param _scope The construct scope (currently unused, reserved for future extensions)
+   * @param gateway The gateway this interceptor is being bound to
+   * @returns Configuration for CloudFormation rendering
    */
-  public _render(): any {
+  public bind(_scope: Construct, gateway: IGateway): InterceptorBindConfig {
+    // Grant Lambda invoke permission to the Gateway's role
+    this.lambdaFunction.grantInvoke(gateway.role);
+
+    // Return CloudFormation configuration
     return {
-      interceptionPoints: [this.interceptionPoint],
-      interceptor: {
-        lambda: {
-          arn: this.lambdaFunction.functionArn,
+      configuration: {
+        interceptionPoints: [this.interceptionPoint],
+        interceptor: {
+          lambda: {
+            arn: this.lambdaFunction.functionArn,
+          },
         },
-      },
-      inputConfiguration: {
-        passRequestHeaders: this.passRequestHeaders,
+        inputConfiguration: {
+          passRequestHeaders: this.passRequestHeaders,
+        },
       },
     };
   }
