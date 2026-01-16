@@ -134,7 +134,9 @@
       "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.userGroup",
       "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupBase.addUser._user",
       "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupAttributes.users",
-      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupProps.users"
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupProps.users",
+      "interface-extends-ref:@aws-cdk/aws-elasticache-alpha.IUser",
+      "interface-extends-ref:@aws-cdk/aws-elasticache-alpha.IUserGroup"
     ]
   }
 }

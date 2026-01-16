@@ -101,6 +101,13 @@
     "prefer-ref-interface:@aws-cdk/aws-glue-alpha.ScalaSparkStreamingJobProps.securityConfiguration",
     "prefer-ref-interface:@aws-cdk/aws-glue-alpha.Action.job",
     "prefer-ref-interface:@aws-cdk/aws-glue-alpha.Action.securityConfiguration",
-    "prefer-ref-interface:@aws-cdk/aws-glue-alpha.Condition.job"
+    "prefer-ref-interface:@aws-cdk/aws-glue-alpha.Condition.job",
+    "interface-extends-ref:@aws-cdk/aws-glue-alpha.IConnection",
+    "interface-extends-ref:@aws-cdk/aws-glue-alpha.IDataQualityRuleset",
+    "interface-extends-ref:@aws-cdk/aws-glue-alpha.IDatabase",
+    "interface-extends-ref:@aws-cdk/aws-glue-alpha.IJob",
+    "interface-extends-ref:@aws-cdk/aws-glue-alpha.ISecurityConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-glue-alpha.ITable",
+    "interface-extends-ref:@aws-cdk/aws-glue-alpha.IWorkflow"
   ]
 }

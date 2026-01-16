@@ -1887,6 +1887,11 @@
     "prefer-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.profilingGroup",
     "prefer-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.role",
     "prefer-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.securityGroups",
-    "prefer-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.vpc"
+    "prefer-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.vpc",
+    "interface-extends-ref:aws-cdk-lib.aws_events_targets.IDeliveryStream",
+    "interface-extends-ref:aws-cdk-lib.aws_iam.IEncryptedResource",
+    "interface-extends-ref:aws-cdk-lib.aws_iam.IIdentity",
+    "interface-extends-ref:aws-cdk-lib.aws_iam.IResourceWithPolicy",
+    "interface-extends-ref:aws-cdk-lib.aws_servicediscovery.INamespace"
   ]
 }
