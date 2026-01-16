@@ -35,6 +35,23 @@ export interface IChainable {
 }
 
 /**
+ * Interface for states that can have a 'catch' configuration.
+ *
+ * Enables attaching a `.addCatch()` clause to handle errors for a given state.
+ * Useful for writing reusable Step Functions patterns that expect error-handling capabilities.
+ */
+export interface ICatchable extends IChainable, INextable {
+  /**
+   * Add a recovery handler for this state
+   *
+   * @param handler Next state to transition to after error is caught
+   * @param props Catch configuration
+   * @returns The resulting chain
+   */
+  addCatch(handler: IChainable, props?: CatchProps): ICatchable;
+}
+
+/**
  * Values allowed in the retrier JitterStrategy field
  */
 export enum JitterType {
