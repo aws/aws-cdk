@@ -256,6 +256,7 @@ export abstract class S3DockerfileData extends DockerfileData {
 
   /**
    * Grant put permissions to the given grantee for the dockerfile data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -265,6 +266,7 @@ export abstract class S3DockerfileData extends DockerfileData {
 
   /**
    * Grant read permissions to the given grantee for the dockerfile data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -350,6 +352,7 @@ export abstract class ContainerRecipeBase extends cdk.Resource implements IConta
 
   /**
    * Grant custom actions to the given grantee for the container recipe
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -365,6 +368,7 @@ export abstract class ContainerRecipeBase extends cdk.Resource implements IConta
 
   /**
    * Grant read permissions to the given grantee for the container recipe
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */

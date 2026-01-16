@@ -9,6 +9,7 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     '@cdklabs/no-literal-partition': ['error'],
     '@cdklabs/no-invalid-path': ['error'],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
+    '@cdklabs/no-evaluating-typeguard': [ 'error' ],
 
     // Error handling
     'no-throw-literal': [ 'error' ],
