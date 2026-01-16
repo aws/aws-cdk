@@ -4,7 +4,7 @@ const INTERFACE_EXTENDS_REF = 'interface-extends-ref';
 
 // lint all interfaces that are L2 interfaces
 export const l2InterfaceLinter = new Linter(asm => {
-  const iResource = asm.findType('aws-cdk-lib.IResource');
+  const iResource = asm.system.findInterface('aws-cdk-lib.IResource');
 
   return asm.allInterfaces.filter(i => i !== iResource && i.extends(iResource));
 });
