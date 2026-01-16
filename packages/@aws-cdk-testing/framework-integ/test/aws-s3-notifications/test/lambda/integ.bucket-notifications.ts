@@ -17,6 +17,7 @@ const stack = new cdk.Stack(app, 'cdk-integ-lambda-bucket-s3-notifications');
 
 const bucketA = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 const fn = new lambda.Function(stack, 'MyFunction', {
@@ -27,6 +28,7 @@ const fn = new lambda.Function(stack, 'MyFunction', {
 
 const bucketB = new s3.Bucket(stack, 'YourBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 bucketB.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.LambdaDestination(fn));
