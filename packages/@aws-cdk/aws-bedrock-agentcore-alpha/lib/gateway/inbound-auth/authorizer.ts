@@ -13,6 +13,8 @@ export enum GatewayAuthorizerType {
   CUSTOM_JWT = 'CUSTOM_JWT',
   /** AWS IAM authorizer type */
   AWS_IAM = 'AWS_IAM',
+  /** No authorization type */
+  NONE = 'NONE',
 }
 
 /**
@@ -111,6 +113,24 @@ export class IamAuthorizer implements IGatewayAuthorizerConfig {
 }
 
 /******************************************************************************
+ *                               No Authorization
+ *****************************************************************************/
+
+/**
+ * No authorization configuration implementation
+ */
+export class NoAuthAuthorizer implements IGatewayAuthorizerConfig {
+  public readonly authorizerType = GatewayAuthorizerType.NONE;
+
+  /**
+   * @internal
+   */
+  _render(): any {
+    return undefined;
+  }
+}
+
+/******************************************************************************
  *                               Factory
  *****************************************************************************/
 
@@ -167,5 +187,13 @@ export abstract class GatewayAuthorizer {
       allowedClients: props.allowedClients?.flatMap((client) => client.userPoolClientId),
       allowedAudience: props.allowedAudiences,
     });
+  }
+
+  /**
+   * No authorization
+   * @returns IGatewayAuthorizerConfig configured for no authorization
+   */
+  public static withNoAuth(): IGatewayAuthorizerConfig {
+    return new NoAuthAuthorizer();
   }
 }
