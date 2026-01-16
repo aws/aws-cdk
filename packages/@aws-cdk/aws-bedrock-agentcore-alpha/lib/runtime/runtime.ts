@@ -6,6 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
+import { LoggingConfig, configureTracingDelivery, configureLoggingDelivery } from './observability';
 import {
   RUNTIME_LOGS_GROUP_ACTIONS,
   RUNTIME_LOGS_DESCRIBE_ACTIONS,
@@ -120,6 +121,24 @@ export interface RuntimeProps {
    * @default - No lifecycle configuration
    */
   readonly lifecycleConfiguration?: LifecycleConfiguration;
+
+  /**
+   * Whether to enable X-Ray tracing for this runtime.
+   * When enabled, traces will be delivered to AWS X-Ray.
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html
+   * @default false
+   */
+  readonly tracingEnabled?: boolean;
+
+  /**
+   * Logging configuration for the runtime.
+   * Allows sending APPLICATION_LOGS and USAGE_LOGS to CloudWatch Logs, S3, or Kinesis Data Firehose.
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html
+   * @default - No logging configured
+   */
+  readonly loggingConfigs?: LoggingConfig[];
 }
 
 /**
@@ -356,6 +375,15 @@ export class Runtime extends RuntimeBase {
     this.agentRuntimeVersion = this.runtimeResource.attrAgentRuntimeVersion;
     this.createdAt = this.runtimeResource.attrCreatedAt;
     this.lastUpdatedAt = this.runtimeResource.attrLastUpdatedAt;
+
+    // Configure observability (tracing and logging)
+    if (props.tracingEnabled) {
+      configureTracingDelivery(this, this.agentRuntimeArn);
+    }
+
+    if (props.loggingConfigs && props.loggingConfigs.length > 0) {
+      configureLoggingDelivery(this, this.agentRuntimeArn, props.loggingConfigs);
+    }
   }
 
   /**
