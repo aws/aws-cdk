@@ -11,7 +11,7 @@ const key = new kms.Key(stack, 'Component-EncryptionKey', {
   pendingWindow: cdk.Duration.days(7),
 });
 
-new imagebuilder.Component(stack, 'InlineComponent', {
+const component = new imagebuilder.Component(stack, 'InlineComponent', {
   componentName: 'aws-cdk-imagebuilder-component-all-parameters-inline',
   componentVersion: '1.0.0',
   description: 'This is a test component',
@@ -76,6 +76,8 @@ new imagebuilder.Component(stack, 'InlineComponent', {
   }),
 });
 
-new integ.IntegTest(app, 'ComponentTest', {
+new cdk.CfnOutput(stack, 'ComponentVersion', { value: component.componentVersion });
+
+new integ.IntegTest(app, 'ComponentTest-AllParameters', {
   testCases: [stack],
 });

@@ -7,17 +7,11 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseImage } from './base-image';
 import { IContainerRecipe } from './container-recipe';
+import { LATEST_VERSION } from './private/constants';
+import { getLatestResourceVersions } from './private/version-helper';
 import { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
 const IMAGE_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ImageRecipe');
-
-/**
- * Represents the latest version of an image recipe. When using the recipe in a pipeline, the pipeline will use the
- * latest recipe at the time of execution.
- *
- * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ibhow-semantic-versioning.html
- */
-const LATEST_VERSION = 'x.x.x';
 
 /**
  * The default version to use in the image recipe. When the recipe is updated, the `x` will be incremented off from
@@ -51,6 +45,34 @@ export interface IImageRecipe extends IRecipeBase {
    * @attribute
    */
   readonly imageRecipeVersion: string;
+
+  /**
+   * The latest version of the image recipe
+   *
+   * @attribute
+   */
+  readonly imageRecipeLatestVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major version
+   *
+   * @attribute
+   */
+  readonly imageRecipeLatestMajorVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major and minor version
+   *
+   * @attribute
+   */
+  readonly imageRecipeLatestMinorVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major, minor, and patch version
+   *
+   * @attribute
+   */
+  readonly imageRecipeLatestPatchVersion: IImageRecipe;
 }
 
 /**
@@ -183,6 +205,26 @@ abstract class ImageRecipeBase extends cdk.Resource implements IImageRecipe {
   abstract readonly imageRecipeVersion: string;
 
   /**
+   * The latest version of the image recipe
+   */
+  abstract readonly imageRecipeLatestVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major version
+   */
+  abstract readonly imageRecipeLatestMajorVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major and minor version
+   */
+  abstract readonly imageRecipeLatestMinorVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major, minor, and patch version
+   */
+  abstract readonly imageRecipeLatestPatchVersion: IImageRecipe;
+
+  /**
    * Grant custom actions to the given grantee for the image recipe
    * [disable-awslint:no-grants]
    *
@@ -287,10 +329,61 @@ export class ImageRecipe extends ImageRecipeBase {
       return [cdk.Fn.select(0, imageRecipeNameVersionSplit), cdk.Fn.select(1, imageRecipeNameVersionSplit)];
     })();
 
+    const { latest, major, minor, patch } = getLatestResourceVersions(imageRecipeArn);
+
+    class LatestVersionImport extends ImageRecipeBase {
+      public readonly imageRecipeArn = latest.arn;
+      public readonly imageRecipeName = latest.name;
+      public readonly imageRecipeVersion = latest.version;
+      public readonly imageRecipeLatestVersion = this;
+      public readonly imageRecipeLatestMajorVersion = this;
+      public readonly imageRecipeLatestMinorVersion = this;
+      public readonly imageRecipeLatestPatchVersion = this;
+    }
+    const latestVersionImport = new LatestVersionImport(scope, `${id}-Latest`);
+
+    class LatestMajorVersionImport extends ImageRecipeBase {
+      public readonly imageRecipeArn = major.arn;
+      public readonly imageRecipeName = major.name;
+      public readonly imageRecipeVersion = major.version;
+      public readonly imageRecipeLatestVersion = latestVersionImport;
+      public readonly imageRecipeLatestMajorVersion = this;
+      public readonly imageRecipeLatestMinorVersion = this;
+      public readonly imageRecipeLatestPatchVersion = this;
+    }
+    const latestMajorVersionImport = new LatestMajorVersionImport(scope, `${id}-LatestMajor`);
+
+    class LatestMinorVersionImport extends ImageRecipeBase {
+      public readonly imageRecipeArn = minor.arn;
+      public readonly imageRecipeName = minor.name;
+      public readonly imageRecipeVersion = minor.version;
+      public readonly imageRecipeLatestVersion = latestVersionImport;
+      public readonly imageRecipeLatestMajorVersion = latestMajorVersionImport;
+      public readonly imageRecipeLatestMinorVersion = this;
+      public readonly imageRecipeLatestPatchVersion = this;
+    }
+
+    const latestMinorVersionImport = new LatestMinorVersionImport(scope, `${id}-LatestMinor`);
+
+    class LatestPatchVersionImport extends ImageRecipeBase {
+      public readonly imageRecipeArn = patch.arn;
+      public readonly imageRecipeName = patch.name;
+      public readonly imageRecipeVersion = patch.version;
+      public readonly imageRecipeLatestVersion = latestVersionImport;
+      public readonly imageRecipeLatestMajorVersion = latestMajorVersionImport;
+      public readonly imageRecipeLatestMinorVersion = latestMinorVersionImport;
+      public readonly imageRecipeLatestPatchVersion = this;
+    }
+    const latestPatchVersionImport = new LatestPatchVersionImport(scope, `${id}-LatestPatch`);
+
     class Import extends ImageRecipeBase {
       public readonly imageRecipeArn = imageRecipeArn;
       public readonly imageRecipeName = imageRecipeName;
       public readonly imageRecipeVersion = imageRecipeVersion;
+      public readonly imageRecipeLatestVersion = latestVersionImport;
+      public readonly imageRecipeLatestMajorVersion = latestMajorVersionImport;
+      public readonly imageRecipeLatestMinorVersion = latestMinorVersionImport;
+      public readonly imageRecipeLatestPatchVersion = latestPatchVersionImport;
     }
 
     return new Import(scope, id);
@@ -317,6 +410,26 @@ export class ImageRecipe extends ImageRecipeBase {
    * The version of the image recipe
    */
   public readonly imageRecipeVersion: string;
+
+  /**
+   * The latest version of the image recipe
+   */
+  public readonly imageRecipeLatestVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major version
+   */
+  public readonly imageRecipeLatestMajorVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major and minor version
+   */
+  public readonly imageRecipeLatestMinorVersion: IImageRecipe;
+
+  /**
+   * The latest version of the image recipe with the same major, minor, and patch version
+   */
+  public readonly imageRecipeLatestPatchVersion: IImageRecipe;
 
   private readonly blockDevices: ec2.BlockDevice[] = [];
 
@@ -377,6 +490,22 @@ export class ImageRecipe extends ImageRecipeBase {
       resourceName: `${this.physicalName}/${imageRecipeVersion}`,
     });
     this.imageRecipeVersion = imageRecipe.getAtt('Version').toString();
+    this.imageRecipeLatestVersion = ImageRecipe.fromImageRecipeArn(this, `${id}-Latest`, imageRecipe.attrLatestVersionArn);
+    this.imageRecipeLatestMajorVersion = ImageRecipe.fromImageRecipeArn(
+      this,
+      `${id}-LatestMajor`,
+      imageRecipe.attrLatestVersionMajor,
+    );
+    this.imageRecipeLatestMinorVersion = ImageRecipe.fromImageRecipeArn(
+      this,
+      `${id}-LatestMinor`,
+      imageRecipe.attrLatestVersionMinor,
+    );
+    this.imageRecipeLatestPatchVersion = ImageRecipe.fromImageRecipeArn(
+      this,
+      `${id}-LatestPatch`,
+      imageRecipe.attrLatestVersionPatch,
+    );
   }
 
   /**

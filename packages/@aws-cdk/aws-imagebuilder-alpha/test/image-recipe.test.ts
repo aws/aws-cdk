@@ -37,6 +37,7 @@ describe('Image Recipe', () => {
     });
     expect(imageRecipe.imageRecipeName).toEqual('imported-image-recipe-by-name');
     expect(imageRecipe.imageRecipeVersion).toEqual('x.x.x');
+    expect((imageRecipe as IRecipeBase)._isContainerRecipe()).toBeFalsy();
     expect((imageRecipe as IRecipeBase)._isImageRecipe()).toBeTruthy();
   });
 
@@ -73,6 +74,35 @@ describe('Image Recipe', () => {
     );
     expect(imageRecipe.imageRecipeName).toEqual('imported-image-recipe-by-arn');
     expect(imageRecipe.imageRecipeVersion).toEqual('1.2.3');
+
+    expect(stack.resolve(imageRecipe.imageRecipeLatestVersion.imageRecipeArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:image-recipe/imported-image-recipe-by-arn/x.x.x',
+    );
+    expect(stack.resolve(imageRecipe.imageRecipeLatestVersion.imageRecipeName)).toEqual(
+      'imported-image-recipe-by-arn',
+    );
+    expect(stack.resolve(imageRecipe.imageRecipeLatestVersion.imageRecipeVersion)).toEqual('x.x.x');
+    expect(stack.resolve(imageRecipe.imageRecipeLatestMajorVersion.imageRecipeArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:image-recipe/imported-image-recipe-by-arn/1.x.x',
+    );
+    expect(stack.resolve(imageRecipe.imageRecipeLatestMajorVersion.imageRecipeName)).toEqual(
+      'imported-image-recipe-by-arn',
+    );
+    expect(stack.resolve(imageRecipe.imageRecipeLatestMajorVersion.imageRecipeVersion)).toEqual('1.x.x');
+    expect(stack.resolve(imageRecipe.imageRecipeLatestMinorVersion.imageRecipeArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:image-recipe/imported-image-recipe-by-arn/1.2.x',
+    );
+    expect(stack.resolve(imageRecipe.imageRecipeLatestMinorVersion.imageRecipeName)).toEqual(
+      'imported-image-recipe-by-arn',
+    );
+    expect(stack.resolve(imageRecipe.imageRecipeLatestMinorVersion.imageRecipeVersion)).toEqual('1.2.x');
+    expect(stack.resolve(imageRecipe.imageRecipeLatestPatchVersion.imageRecipeArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:image-recipe/imported-image-recipe-by-arn/1.2.3',
+    );
+    expect(stack.resolve(imageRecipe.imageRecipeLatestPatchVersion.imageRecipeName)).toEqual(
+      'imported-image-recipe-by-arn',
+    );
+    expect(stack.resolve(imageRecipe.imageRecipeLatestPatchVersion.imageRecipeVersion)).toEqual('1.2.3');
   });
 
   test('imported by arn as an unresolved token', () => {
@@ -207,6 +237,7 @@ describe('Image Recipe', () => {
 
     expect(ImageRecipe.isImageRecipe(imageRecipe as unknown)).toBeTruthy();
     expect(ImageRecipe.isImageRecipe('ImageRecipe')).toBeFalsy();
+    expect((imageRecipe as IRecipeBase)._isContainerRecipe()).toBeFalsy();
     expect((imageRecipe as IRecipeBase)._isImageRecipe()).toBeTruthy();
 
     Template.fromStack(stack).templateMatches({

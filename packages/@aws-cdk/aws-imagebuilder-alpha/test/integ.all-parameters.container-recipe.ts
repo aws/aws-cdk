@@ -61,7 +61,7 @@ CMD ["echo", "Hello, world!"]
       }),
     },
     {
-      component: parameterizedComponent,
+      component: parameterizedComponent.componentLatestVersion,
       parameters: {
         parameter1: imagebuilder.ComponentParameterValue.fromString('parameter-value-1'),
         parameter2: imagebuilder.ComponentParameterValue.fromString('parameter-value-2'),

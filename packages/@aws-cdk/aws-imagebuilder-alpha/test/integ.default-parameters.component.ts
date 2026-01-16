@@ -5,7 +5,7 @@ import * as imagebuilder from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-component-default-parameters');
 
-new imagebuilder.Component(stack, 'Component', {
+const component = new imagebuilder.Component(stack, 'Component', {
   platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromJsonObject({
     name: 'test-component',
@@ -26,6 +26,8 @@ new imagebuilder.Component(stack, 'Component', {
     ],
   }),
 });
+
+new cdk.CfnOutput(stack, 'ComponentVersion', { value: component.componentVersion });
 
 new integ.IntegTest(app, 'ComponentTest-DefaultParameters', {
   testCases: [stack],

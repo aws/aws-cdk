@@ -54,7 +54,7 @@ containerDistributionConfiguration.addContainerDistributions({
 
 const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipeline-Container', {
   imagePipelineName: 'test-container-image-pipeline',
-  recipe: containerRecipe,
+  recipe: containerRecipe.containerRecipeLatestMinorVersion,
   infrastructureConfiguration,
   distributionConfiguration: containerDistributionConfiguration,
   status: imagebuilder.ImagePipelineStatus.DISABLED,

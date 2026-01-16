@@ -12,17 +12,11 @@ import { BaseContainerImage, ContainerInstanceImage } from './base-image';
 import { Repository } from './distribution-configuration';
 import { IImageRecipe } from './image-recipe';
 import { OSVersion } from './os-version';
+import { LATEST_VERSION } from './private/constants';
+import { getLatestResourceVersions } from './private/version-helper';
 import { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
 const CONTAINER_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ContainerRecipe');
-
-/**
- * Represents the latest version of a container recipe. When using the recipe in a pipeline, the pipeline will use the
- * latest recipe at the time of execution.
- *
- * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ibhow-semantic-versioning.html
- */
-const LATEST_VERSION = 'x.x.x';
 
 /**
  * The default version to use in the container recipe. When the recipe is updated, the `x` will be incremented off from
@@ -56,6 +50,34 @@ export interface IContainerRecipe extends IRecipeBase {
    * @attribute
    */
   readonly containerRecipeVersion: string;
+
+  /**
+   * The latest version of the container recipe
+   *
+   * @attribute
+   */
+  readonly containerRecipeLatestVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major version
+   *
+   * @attribute
+   */
+  readonly containerRecipeLatestMajorVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major and minor version
+   *
+   * @attribute
+   */
+  readonly containerRecipeLatestMinorVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major, minor, and patch version
+   *
+   * @attribute
+   */
+  readonly containerRecipeLatestPatchVersion: IContainerRecipe;
 }
 
 /**
@@ -334,7 +356,7 @@ export interface ContainerRecipeAttributes {
 /**
  * A new or imported Container Recipe
  */
-export abstract class ContainerRecipeBase extends cdk.Resource implements IContainerRecipe {
+abstract class ContainerRecipeBase extends cdk.Resource implements IContainerRecipe {
   /**
    * The ARN of the container recipe
    */
@@ -349,6 +371,26 @@ export abstract class ContainerRecipeBase extends cdk.Resource implements IConta
    * The version of the container recipe
    */
   abstract readonly containerRecipeVersion: string;
+
+  /**
+   * The latest version of the container recipe
+   */
+  abstract readonly containerRecipeLatestVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major version
+   */
+  abstract readonly containerRecipeLatestMajorVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major and minor version
+   */
+  abstract readonly containerRecipeLatestMinorVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major, minor, and patch version
+   */
+  abstract readonly containerRecipeLatestPatchVersion: IContainerRecipe;
 
   /**
    * Grant custom actions to the given grantee for the container recipe
@@ -459,10 +501,61 @@ export class ContainerRecipe extends ContainerRecipeBase {
       return [cdk.Fn.select(0, containerRecipeNameVersionSplit), cdk.Fn.select(1, containerRecipeNameVersionSplit)];
     })();
 
+    const { latest, major, minor, patch } = getLatestResourceVersions(containerRecipeArn);
+
+    class LatestVersionImport extends ContainerRecipeBase {
+      public readonly containerRecipeArn = latest.arn;
+      public readonly containerRecipeName = latest.name;
+      public readonly containerRecipeVersion = latest.version;
+      public readonly containerRecipeLatestVersion = this;
+      public readonly containerRecipeLatestMajorVersion = this;
+      public readonly containerRecipeLatestMinorVersion = this;
+      public readonly containerRecipeLatestPatchVersion = this;
+    }
+    const latestVersionImport = new LatestVersionImport(scope, `${id}-Latest`);
+
+    class LatestMajorVersionImport extends ContainerRecipeBase {
+      public readonly containerRecipeArn = major.arn;
+      public readonly containerRecipeName = major.name;
+      public readonly containerRecipeVersion = major.version;
+      public readonly containerRecipeLatestVersion = latestVersionImport;
+      public readonly containerRecipeLatestMajorVersion = this;
+      public readonly containerRecipeLatestMinorVersion = this;
+      public readonly containerRecipeLatestPatchVersion = this;
+    }
+    const latestMajorVersionImport = new LatestMajorVersionImport(scope, `${id}-LatestMajor`);
+
+    class LatestMinorVersionImport extends ContainerRecipeBase {
+      public readonly containerRecipeArn = minor.arn;
+      public readonly containerRecipeName = minor.name;
+      public readonly containerRecipeVersion = minor.version;
+      public readonly containerRecipeLatestVersion = latestVersionImport;
+      public readonly containerRecipeLatestMajorVersion = latestMajorVersionImport;
+      public readonly containerRecipeLatestMinorVersion = this;
+      public readonly containerRecipeLatestPatchVersion = this;
+    }
+
+    const latestMinorVersionImport = new LatestMinorVersionImport(scope, `${id}-LatestMinor`);
+
+    class LatestPatchVersionImport extends ContainerRecipeBase {
+      public readonly containerRecipeArn = patch.arn;
+      public readonly containerRecipeName = patch.name;
+      public readonly containerRecipeVersion = patch.version;
+      public readonly containerRecipeLatestVersion = latestVersionImport;
+      public readonly containerRecipeLatestMajorVersion = latestMajorVersionImport;
+      public readonly containerRecipeLatestMinorVersion = latestMinorVersionImport;
+      public readonly containerRecipeLatestPatchVersion = this;
+    }
+    const latestPatchVersionImport = new LatestPatchVersionImport(scope, `${id}-LatestPatch`);
+
     class Import extends ContainerRecipeBase {
       public readonly containerRecipeArn = containerRecipeArn;
       public readonly containerRecipeName = containerRecipeName;
       public readonly containerRecipeVersion = containerRecipeVersion;
+      public readonly containerRecipeLatestVersion = latestVersionImport;
+      public readonly containerRecipeLatestMajorVersion = latestMajorVersionImport;
+      public readonly containerRecipeLatestMinorVersion = latestMinorVersionImport;
+      public readonly containerRecipeLatestPatchVersion = latestPatchVersionImport;
     }
 
     return new Import(scope, id);
@@ -489,6 +582,26 @@ export class ContainerRecipe extends ContainerRecipeBase {
    * The version of the container recipe
    */
   public readonly containerRecipeVersion: string;
+
+  /**
+   * The latest version of the container recipe
+   */
+  public readonly containerRecipeLatestVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major version
+   */
+  public readonly containerRecipeLatestMajorVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major and minor version
+   */
+  public readonly containerRecipeLatestMinorVersion: IContainerRecipe;
+
+  /**
+   * The latest version of the container recipe with the same major, minor, and patch version
+   */
+  public readonly containerRecipeLatestPatchVersion: IContainerRecipe;
 
   private readonly instanceBlockDevices: ec2.BlockDevice[] = [];
 
@@ -562,6 +675,26 @@ export class ContainerRecipe extends ContainerRecipeBase {
       resourceName: `${this.physicalName}/${containerRecipeVersion}`,
     });
     this.containerRecipeVersion = containerRecipe.getAtt('Version').toString();
+    this.containerRecipeLatestVersion = ContainerRecipe.fromContainerRecipeArn(
+      this,
+      `${id}-Latest`,
+      containerRecipe.attrLatestVersionArn,
+    );
+    this.containerRecipeLatestMajorVersion = ContainerRecipe.fromContainerRecipeArn(
+      this,
+      `${id}-LatestMajor`,
+      containerRecipe.attrLatestVersionMajor,
+    );
+    this.containerRecipeLatestMinorVersion = ContainerRecipe.fromContainerRecipeArn(
+      this,
+      `${id}-LatestMinor`,
+      containerRecipe.attrLatestVersionMinor,
+    );
+    this.containerRecipeLatestPatchVersion = ContainerRecipe.fromContainerRecipeArn(
+      this,
+      `${id}-LatestPatch`,
+      containerRecipe.attrLatestVersionPatch,
+    );
   }
 
   /**

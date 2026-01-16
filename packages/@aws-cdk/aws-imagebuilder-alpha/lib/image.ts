@@ -16,6 +16,7 @@ import {
   buildWorkflows,
 } from './private/image-and-pipeline-props-helper';
 import { defaultExecutionRolePolicy, getExecutionRole } from './private/policy-helper';
+import { getLatestResourceVersions } from './private/version-helper';
 import { IRecipeBase } from './recipe-base';
 import { WorkflowConfiguration } from './workflow';
 
@@ -45,6 +46,34 @@ export interface IImage extends cdk.IResource {
    * @attribute
    */
   readonly imageVersion: string;
+
+  /**
+   * The latest version of the image
+   *
+   * @attribute
+   */
+  readonly imageLatestVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major version
+   *
+   * @attribute
+   */
+  readonly imageLatestMajorVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major and minor version
+   *
+   * @attribute
+   */
+  readonly imageLatestMinorVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major, minor, and patch version
+   *
+   * @attribute
+   */
+  readonly imageLatestPatchVersion: IImage;
 
   /**
    * Grant custom actions to the given grantee for the image
@@ -269,6 +298,26 @@ abstract class ImageBase extends cdk.Resource implements IImage {
   abstract readonly imageVersion: string;
 
   /**
+   * The latest version of the image
+   */
+  abstract readonly imageLatestVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major version
+   */
+  abstract readonly imageLatestMajorVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major and minor version
+   */
+  abstract readonly imageLatestMinorVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major, minor, and patch version
+   */
+  abstract readonly imageLatestPatchVersion: IImage;
+
+  /**
    * Grant custom actions to the given grantee for the image
    *
    * [disable-awslint:no-grants]
@@ -384,10 +433,61 @@ export class Image extends ImageBase {
       return [cdk.Fn.select(0, imageNameVersionSplit), cdk.Fn.select(1, imageNameVersionSplit)];
     })();
 
+    const { latest, major, minor, patch } = getLatestResourceVersions(imageArn);
+
+    class LatestVersionImport extends ImageBase {
+      public readonly imageArn = latest.arn;
+      public readonly imageName = latest.name;
+      public readonly imageVersion = latest.version;
+      public readonly imageLatestVersion = this;
+      public readonly imageLatestMajorVersion = this;
+      public readonly imageLatestMinorVersion = this;
+      public readonly imageLatestPatchVersion = this;
+    }
+    const latestVersionImport = new LatestVersionImport(scope, `${id}-Latest`);
+
+    class LatestMajorVersionImport extends ImageBase {
+      public readonly imageArn = major.arn;
+      public readonly imageName = major.name;
+      public readonly imageVersion = major.version;
+      public readonly imageLatestVersion = latestVersionImport;
+      public readonly imageLatestMajorVersion = this;
+      public readonly imageLatestMinorVersion = this;
+      public readonly imageLatestPatchVersion = this;
+    }
+    const latestMajorVersionImport = new LatestMajorVersionImport(scope, `${id}-LatestMajor`);
+
+    class LatestMinorVersionImport extends ImageBase {
+      public readonly imageArn = minor.arn;
+      public readonly imageName = minor.name;
+      public readonly imageVersion = minor.version;
+      public readonly imageLatestVersion = latestVersionImport;
+      public readonly imageLatestMajorVersion = latestMajorVersionImport;
+      public readonly imageLatestMinorVersion = this;
+      public readonly imageLatestPatchVersion = this;
+    }
+
+    const latestMinorVersionImport = new LatestMinorVersionImport(scope, `${id}-LatestMinor`);
+
+    class LatestPatchVersionImport extends ImageBase {
+      public readonly imageArn = patch.arn;
+      public readonly imageName = patch.name;
+      public readonly imageVersion = patch.version;
+      public readonly imageLatestVersion = latestVersionImport;
+      public readonly imageLatestMajorVersion = latestMajorVersionImport;
+      public readonly imageLatestMinorVersion = latestMinorVersionImport;
+      public readonly imageLatestPatchVersion = this;
+    }
+    const latestPatchVersionImport = new LatestPatchVersionImport(scope, `${id}-LatestPatch`);
+
     class Import extends ImageBase {
       public readonly imageArn = imageArn;
       public readonly imageName = imageName;
       public readonly imageVersion = imageVersion;
+      public readonly imageLatestVersion = latestVersionImport;
+      public readonly imageLatestMajorVersion = latestMajorVersionImport;
+      public readonly imageLatestMinorVersion = latestMinorVersionImport;
+      public readonly imageLatestPatchVersion = latestPatchVersionImport;
     }
 
     return new Import(scope, id);
@@ -414,6 +514,25 @@ export class Image extends ImageBase {
    * The version of the image
    */
   public readonly imageVersion: string;
+  /**
+   * The latest version of the image
+   */
+  public readonly imageLatestVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major version
+   */
+  public readonly imageLatestMajorVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major and minor version
+   */
+  public readonly imageLatestMinorVersion: IImage;
+
+  /**
+   * The latest version of the image with the same major, minor, and patch version
+   */
+  public readonly imageLatestPatchVersion: IImage;
 
   /**
    * The AMI ID of the EC2 AMI, or URI for the container
@@ -459,6 +578,10 @@ export class Image extends ImageBase {
 
     this.imageName = this.getResourceNameAttribute(image.attrName);
     this.imageArn = image.attrArn;
+    this.imageLatestVersion = Image.fromImageArn(this, `${id}-Latest`, image.attrLatestVersionArn);
+    this.imageLatestMajorVersion = Image.fromImageArn(this, `${id}-LatestMajor`, image.attrLatestVersionMajor);
+    this.imageLatestMinorVersion = Image.fromImageArn(this, `${id}-LatestMinor`, image.attrLatestVersionMinor);
+    this.imageLatestPatchVersion = Image.fromImageArn(this, `${id}-LatestPatch`, image.attrLatestVersionPatch);
 
     if (recipe._isImageRecipe()) {
       this.imageId = image.attrImageId;

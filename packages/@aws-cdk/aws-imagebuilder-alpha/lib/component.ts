@@ -9,10 +9,10 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
 import { OSVersion, Platform } from './os-version';
+import { LATEST_VERSION } from './private/constants';
+import { getLatestResourceVersions } from './private/version-helper';
 
 const COMPONENT_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Component');
-
-const LATEST_VERSION = 'x.x.x';
 
 /**
  * An EC2 Image Builder Component.
@@ -38,6 +38,34 @@ export interface IComponent extends cdk.IResource {
    * @attribute
    */
   readonly componentVersion: string;
+
+  /**
+   * The latest version of the component
+   *
+   * @attribute
+   */
+  readonly componentLatestVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major version
+   *
+   * @attribute
+   */
+  readonly componentLatestMajorVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major and minor version
+   *
+   * @attribute
+   */
+  readonly componentLatestMinorVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major, minor, and patch version
+   *
+   * @attribute
+   */
+  readonly componentLatestPatchVersion: IComponent;
 
   /**
    * Grant custom actions to the given grantee for the component
@@ -895,6 +923,26 @@ abstract class ComponentBase extends cdk.Resource implements IComponent {
   abstract readonly componentVersion: string;
 
   /**
+   * The latest version of the component
+   */
+  abstract readonly componentLatestVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major version
+   */
+  abstract readonly componentLatestMajorVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major and minor version
+   */
+  abstract readonly componentLatestMinorVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major, minor, and patch version
+   */
+  abstract readonly componentLatestPatchVersion: IComponent;
+
+  /**
    * Grant custom actions to the given grantee for the component
    * [disable-awslint:no-grants]
    *
@@ -986,10 +1034,61 @@ export class Component extends ComponentBase {
       return [cdk.Fn.select(0, componentNameVersionSplit), cdk.Fn.select(1, componentNameVersionSplit)];
     })();
 
+    const { latest, major, minor, patch } = getLatestResourceVersions(componentArn);
+
+    class LatestVersionImport extends ComponentBase {
+      public readonly componentArn = latest.arn;
+      public readonly componentName = latest.name;
+      public readonly componentVersion = latest.version;
+      public readonly componentLatestVersion = this;
+      public readonly componentLatestMajorVersion = this;
+      public readonly componentLatestMinorVersion = this;
+      public readonly componentLatestPatchVersion = this;
+    }
+    const latestVersionImport = new LatestVersionImport(scope, `${id}-Latest`);
+
+    class LatestMajorVersionImport extends ComponentBase {
+      public readonly componentArn = major.arn;
+      public readonly componentName = major.name;
+      public readonly componentVersion = major.version;
+      public readonly componentLatestVersion = latestVersionImport;
+      public readonly componentLatestMajorVersion = this;
+      public readonly componentLatestMinorVersion = this;
+      public readonly componentLatestPatchVersion = this;
+    }
+    const latestMajorVersionImport = new LatestMajorVersionImport(scope, `${id}-LatestMajor`);
+
+    class LatestMinorVersionImport extends ComponentBase {
+      public readonly componentArn = minor.arn;
+      public readonly componentName = minor.name;
+      public readonly componentVersion = minor.version;
+      public readonly componentLatestVersion = latestVersionImport;
+      public readonly componentLatestMajorVersion = latestMajorVersionImport;
+      public readonly componentLatestMinorVersion = this;
+      public readonly componentLatestPatchVersion = this;
+    }
+
+    const latestMinorVersionImport = new LatestMinorVersionImport(scope, `${id}-LatestMinor`);
+
+    class LatestPatchVersionImport extends ComponentBase {
+      public readonly componentArn = patch.arn;
+      public readonly componentName = patch.name;
+      public readonly componentVersion = patch.version;
+      public readonly componentLatestVersion = latestVersionImport;
+      public readonly componentLatestMajorVersion = latestMajorVersionImport;
+      public readonly componentLatestMinorVersion = latestMinorVersionImport;
+      public readonly componentLatestPatchVersion = this;
+    }
+    const latestPatchVersionImport = new LatestPatchVersionImport(scope, `${id}-LatestPatch`);
+
     class Import extends ComponentBase {
       public readonly componentArn = componentArn;
       public readonly componentName = componentName;
       public readonly componentVersion = componentVersion;
+      public readonly componentLatestVersion = latestVersionImport;
+      public readonly componentLatestMajorVersion = latestMajorVersionImport;
+      public readonly componentLatestMinorVersion = latestMinorVersionImport;
+      public readonly componentLatestPatchVersion = latestPatchVersionImport;
     }
 
     return new Import(scope, id);
@@ -1021,6 +1120,26 @@ export class Component extends ComponentBase {
    * Whether the component is encrypted
    */
   public readonly encrypted: boolean;
+
+  /**
+   * The latest version of the component
+   */
+  public readonly componentLatestVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major version
+   */
+  public readonly componentLatestMajorVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major and minor version
+   */
+  public readonly componentLatestMinorVersion: IComponent;
+
+  /**
+   * The latest version of the component with the same major, minor, and patch version
+   */
+  public readonly componentLatestPatchVersion: IComponent;
 
   /**
    * The type of the component
@@ -1083,10 +1202,26 @@ export class Component extends ComponentBase {
       resource: 'component',
       resourceName: `${this.physicalName}/${componentVersion}`,
     });
-    this.componentVersion = componentVersion;
+    this.componentVersion = component.getAtt('Version').toString();
     this.encrypted = true; // Components are always encrypted
     this.componentType = component.attrType;
     this.kmsKey = props.kmsKey;
+    this.componentLatestVersion = Component.fromComponentArn(this, `${id}-Latest`, component.attrLatestVersionArn);
+    this.componentLatestMajorVersion = Component.fromComponentArn(
+      this,
+      `${id}-LatestMajor`,
+      component.attrLatestVersionMajor,
+    );
+    this.componentLatestMinorVersion = Component.fromComponentArn(
+      this,
+      `${id}-LatestMinor`,
+      component.attrLatestVersionMinor,
+    );
+    this.componentLatestPatchVersion = Component.fromComponentArn(
+      this,
+      `${id}-LatestPatch`,
+      component.attrLatestVersionPatch,
+    );
   }
 
   private validateComponentName() {
