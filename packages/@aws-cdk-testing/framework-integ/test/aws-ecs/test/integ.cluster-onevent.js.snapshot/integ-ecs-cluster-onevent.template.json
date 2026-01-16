@@ -1,0 +1,832 @@
+{
+ "Resources": {
+  "TestVpcE77CE678": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet1SubnetA7DB1EDF": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1RouteTable4CBFF871": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1DefaultRoute6C0F0315": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871"
+    }
+   },
+   "DependsOn": [
+    "TestVpcVPCGWF1827B84"
+   ]
+  },
+  "TestVpcPublicSubnet1EIP4884338C": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet1NATGatewayA323E3EC": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "TestVpcPublicSubnet1EIP4884338C",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestVpcPublicSubnet1DefaultRoute6C0F0315",
+    "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9"
+   ]
+  },
+  "TestVpcPublicSubnet2Subnet80A14523": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2RouteTable75B88314": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2RouteTableAssociationB386A819": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet2RouteTable75B88314"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet2Subnet80A14523"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2DefaultRoute054DAE0A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet2RouteTable75B88314"
+    }
+   },
+   "DependsOn": [
+    "TestVpcVPCGWF1827B84"
+   ]
+  },
+  "TestVpcPublicSubnet2EIP83F7944C": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet2NATGatewayA9858C31": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "TestVpcPublicSubnet2EIP83F7944C",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet2Subnet80A14523"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestVpcPublicSubnet2DefaultRoute054DAE0A",
+    "TestVpcPublicSubnet2RouteTableAssociationB386A819"
+   ]
+  },
+  "TestVpcPrivateSubnet1SubnetCC65D771": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1RouteTable469B0105": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet1RouteTable469B0105"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPrivateSubnet1SubnetCC65D771"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1DefaultRoute32E7B814": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "TestVpcPublicSubnet1NATGatewayA323E3EC"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet1RouteTable469B0105"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2SubnetDE0C64A2": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2RouteTableCEF29F7C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2RouteTableAssociation18250AB4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2DefaultRouteA7EB6930": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "TestVpcPublicSubnet2NATGatewayA9858C31"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C"
+    }
+   }
+  },
+  "TestVpcIGW9DD53F70": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-cluster-onevent/TestVpc"
+     }
+    ]
+   }
+  },
+  "TestVpcVPCGWF1827B84": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestClusterE0095054": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "ClusterName": "integ-test-cluster-onevent"
+   }
+  },
+  "TestClusterClusterStateChangeRuleRuleNameGeneratorServiceRole6F44832F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "TestClusterClusterStateChangeRuleRuleNameGeneratorA7D74FAE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n          const crypto = require('crypto');\n          \n          exports.handler = async (event) => {\n            console.log('Event:', JSON.stringify(event, null, 2));\n            \n            if (event.RequestType === 'Delete') {\n              return { PhysicalResourceId: event.PhysicalResourceId };\n            }\n            \n            const clusterArn = event.ResourceProperties.ClusterArn;\n            const clusterName = event.ResourceProperties.ClusterName;\n            \n            // Calculate hash from actual resolved ARN\n            const quotedArn = '\"' + clusterArn + '\"';\n            const hash = crypto.createHash('sha256').update(quotedArn, 'utf8').digest();\n            const base58Hash = base58Encode(hash);\n            \n            const clusterPrefix = clusterName.substring(0, 6);\n            const ruleName = 'EventsToLogs-' + clusterPrefix + '-' + base58Hash;\n            \n            console.log('Generated rule name:', ruleName);\n            \n            return {\n              PhysicalResourceId: ruleName,\n              Data: { RuleName: ruleName }\n            };\n          };\n          \n          // Converts a buffer to Base58 encoding using Bitcoin's alphabet (excludes confusing characters: 0, O, I, l)\n          function base58Encode(buffer) {\n            const alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';\n            let num = BigInt('0x' + buffer.toString('hex'));\n            let encoded = '';\n            while (num > BigInt(0)) {\n              encoded = alphabet[Number(num % BigInt(58))] + encoded;\n              num = num / BigInt(58);\n            }\n            for (let i = 0; i < buffer.length && buffer[i] === 0; i++) {\n              encoded = '1' + encoded;\n            }\n            return encoded || '1';\n          }\n        "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TestClusterClusterStateChangeRuleRuleNameGeneratorServiceRole6F44832F",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "TestClusterClusterStateChangeRuleRuleNameGeneratorServiceRole6F44832F"
+   ]
+  },
+  "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEventServiceRole2C6693F4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEventServiceRoleDefaultPolicy7488D481": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestClusterClusterStateChangeRuleRuleNameGeneratorA7D74FAE",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestClusterClusterStateChangeRuleRuleNameGeneratorA7D74FAE",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TestClusterClusterStateChangeRuleRuleNameGeneratorA7D74FAE",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEventServiceRoleDefaultPolicy7488D481",
+    "Roles": [
+     {
+      "Ref": "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEventServiceRole2C6693F4"
+     }
+    ]
+   }
+  },
+  "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEvent29C104D9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (integ-ecs-cluster-onevent/TestCluster/ClusterStateChangeRuleRuleNameProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "TestClusterClusterStateChangeRuleRuleNameGeneratorA7D74FAE",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEventServiceRole2C6693F4",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEventServiceRoleDefaultPolicy7488D481",
+    "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEventServiceRole2C6693F4"
+   ]
+  },
+  "TestClusterClusterStateChangeRuleRuleNameResource52D5D43A": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "TestClusterClusterStateChangeRuleRuleNameProviderframeworkonEvent29C104D9",
+      "Arn"
+     ]
+    },
+    "ClusterArn": {
+     "Fn::GetAtt": [
+      "TestClusterE0095054",
+      "Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "TestClusterE0095054"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TestClusterClusterStateChangeRule7C716B88": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "aws.ecs"
+     ],
+     "detail-type": [
+      "ECS Cluster State Change"
+     ],
+     "detail": {
+      "clusterArn": [
+       {
+        "Fn::GetAtt": [
+         "TestClusterE0095054",
+         "Arn"
+        ]
+       }
+      ]
+     }
+    },
+    "Name": {
+     "Fn::GetAtt": [
+      "TestClusterClusterStateChangeRuleRuleNameResource52D5D43A",
+      "RuleName"
+     ]
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":logs:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":log-group:",
+         {
+          "Ref": "EventCaptureLogGroupE79E4CE9"
+         }
+        ]
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   }
+  },
+  "EventCaptureLogGroupE79E4CE9": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/events/ecs-cluster/",
+       {
+        "Ref": "TestClusterE0095054"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39D1792DE5D": {
+   "Type": "Custom::CloudwatchLogResourcePolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"integecsclusteroneventEventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39D9E97BB84\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "EventCaptureLogGroupE79E4CE9",
+         "Arn"
+        ]
+       },
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39D\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"integecsclusteroneventEventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39D9E97BB84\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "EventCaptureLogGroupE79E4CE9",
+         "Arn"
+        ]
+       },
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39D\"}}"
+      ]
+     ]
+    },
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"integecsclusteroneventEventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39D9E97BB84\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "EventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39DCustomResourcePolicyCB22AB48"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39DCustomResourcePolicyCB22AB48": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:DeleteResourcePolicy",
+        "logs:PutResourcePolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EventsLogGroupPolicyintegecsclusteroneventTestClusterClusterStateChangeRuleA8F6B39DCustomResourcePolicyCB22AB48",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
