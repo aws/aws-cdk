@@ -768,6 +768,88 @@ declare const cluster: eks.Cluster;
 const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
 ```
 
+## Service Accounts
+
+Kubernetes service accounts can be used to provide Kubernetes Pods with AWS resource access through IAM roles.
+
+The v2-alpha module supports three identity types for service accounts:
+
+### IRSA (IAM Roles for Service Accounts)
+
+IRSA is the default identity type and creates an IAM role that is linked to a Kubernetes service account using OpenID Connect (OIDC).
+
+```ts
+declare const cluster: eks.Cluster;
+
+const serviceAccount = new eks.ServiceAccount(this, 'MyServiceAccount', {
+  cluster,
+  name: 'my-service-account',
+  namespace: 'default',
+  identityType: eks.IdentityType.IRSA, // This is the default
+});
+
+// Grant IAM permissions to the service account
+import * as iam from 'aws-cdk-lib/aws-iam';
+serviceAccount.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['arn:aws:s3:::my-bucket/*'],
+}));
+```
+
+### Pod Identities
+
+EKS Pod Identities is a modern alternative to IRSA that simplifies credential management for applications running on EKS.
+
+```ts
+declare const cluster: eks.Cluster;
+
+const serviceAccount = new eks.ServiceAccount(this, 'MyServiceAccount', {
+  cluster,
+  name: 'my-service-account',
+  namespace: 'default',
+  identityType: eks.IdentityType.POD_IDENTITY,
+});
+
+// Grant IAM permissions
+import * as iam from 'aws-cdk-lib/aws-iam';
+serviceAccount.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['arn:aws:s3:::my-bucket/*'],
+}));
+```
+
+### ServiceAccount without IAM Role
+
+For workloads that do not require AWS IAM permissions, you can create a `ServiceAccount` without an associated IAM role by setting `identityType` to `IdentityType.NONE`. This is useful for:
+
+- Reducing the number of IAM roles in your account (AWS has a default limit of 1,000 IAM roles per account)
+- Implementing the principle of least privilege when workloads only need Kubernetes-level permissions
+- Minimizing security surface area for services that don't need AWS resource access
+
+When using `IdentityType.NONE`, no IAM role, OpenIdConnectProvider, or PodIdentityAssociation will be created:
+
+```ts
+declare const cluster: eks.Cluster;
+
+// ServiceAccount without AWS IAM permissions
+const serviceAccount = new eks.ServiceAccount(this, 'MyServiceAccount', {
+  cluster,
+  name: 'my-service-account',
+  namespace: 'default',
+  identityType: eks.IdentityType.NONE,
+});
+
+// Attempting to add IAM permissions will have no effect
+import * as iam from 'aws-cdk-lib/aws-iam';
+serviceAccount.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['*'],
+}));
+// Returns: { statementAdded: false }
+```
+
+The ServiceAccount is still created in Kubernetes and can be used normally by pods, but without AWS IAM credentials. If you need to add AWS permissions later, you'll need to change the `identityType` to either `IdentityType.IRSA` or `IdentityType.POD_IDENTITY` and redeploy.
+
 ## Applying Kubernetes Resources
 
 To apply kubernetes resource, kubectl provider needs to be created for the cluster. You can use `kubectlProviderOptions` to create the kubectl Provider.
