@@ -4023,6 +4023,13 @@ removed:aws-cdk-lib.aws_ecs.AsgCapacityProviderProps.canContainersAccessInstance
 # Exposed struct with a ref interface
 weakened:aws-cdk-lib.aws_batch.OrderedComputeEnvironment
 
+# This should always have been an interface
+change-return-type:aws-cdk-lib.aws_events.ApiDestination.fromApiDestinationAttributes
+
+# Weakened guarantees of a data structure that's intended for internal construct usage
+weakened:aws-cdk-lib.aws_ec2.FlowLogDestinationConfig
+weakened:aws-cdk-lib.aws_ecs.ExecuteCommandLogConfiguration
+
 # Revert of PR #36378 which introduced reference interfaces that caused runtime errors
 # https://github.com/aws/aws-cdk/issues/36621
 removed:aws-cdk-lib.aws_apigatewayv2.HttpApiHelper
@@ -4118,3 +4125,20 @@ removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketAuthorizer.authorizerRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketIntegration.integrationRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketRoute.routeRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
+
+# Had to revert these
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.Ec2Action.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.LambdaAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SnsAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmIncidentAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch.IAlarmAction.bind
+
+# This type must needs be weakened
+changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
+
+# CloudFormation has always required SecurityGroups for ManagedInstancesCapacityProvider.
+# Making it required in TypeScript catches the error at compile time instead of deploy time.
+strengthened:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps

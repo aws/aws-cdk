@@ -247,6 +247,8 @@ export class Asset extends Construct implements cdk.IAsset {
 
   /**
    * Grants read permissions to the principal on the assets bucket.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
     // we give permissions on all files in the bucket since we don't want to

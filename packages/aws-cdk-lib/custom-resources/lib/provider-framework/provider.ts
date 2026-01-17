@@ -86,7 +86,7 @@ export interface ProviderProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * The vpc to provision the lambda functions in.
@@ -217,7 +217,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
 
   private readonly entrypoint: lambda.Function;
   private readonly logRetention?: logs.RetentionDays;
-  private readonly logGroup?: logs.ILogGroup;
+  private readonly logGroup?: logs.ILogGroupRef;
   private readonly vpc?: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
   private readonly securityGroups?: ec2.ISecurityGroup[];
