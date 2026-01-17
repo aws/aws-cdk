@@ -236,7 +236,7 @@ declare const fn: lambda.Function;
 
 new events.Rule(scope, 'Rule', {
   eventPattern: bucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [new targets.LambdaFunction(fn)]
 });
@@ -248,7 +248,7 @@ const cfnBucketEvents = BucketEvents.fromBucket(cfnBucket);
 new events.CfnRule(scope, 'CfnRule', {
   state: 'ENABLED',
   eventPattern: cfnBucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [{ arn: fn.functionArn, id: 'L1' }]
 });
@@ -273,13 +273,14 @@ const pattern = bucketEvents.objectCreatedPattern();
 
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
 
 declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 const pattern = bucketEvents.objectCreatedPattern({
   eventMetadata: {
-    region: ['us-east-1', 'us-west-2'],
+    region: events.Match.prefix('us-'),
     version: ['0']
   }
 });

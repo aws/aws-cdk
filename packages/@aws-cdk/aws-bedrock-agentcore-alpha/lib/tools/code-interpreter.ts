@@ -200,6 +200,9 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
 
   /**
    * Grants IAM actions to the IAM Principal
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant permissions to
    * @param actions - The actions to grant
    * @returns An IAM Grant object representing the granted permissions
@@ -215,6 +218,8 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   /**
    * Grant read permissions on this code interpreter to an IAM principal.
    * This includes both read permissions on the specific code interpreter and list permissions on all code interpreters.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
@@ -240,6 +245,8 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   /**
    * Grant invoke permissions on this code interpreter to an IAM principal.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant invoke permissions to
    * @default - Default grant configuration:
    * - actions: ['bedrock-agentcore:StartCodeInterpreterSession', 'bedrock-agentcore:InvokeCodeInterpreter', 'bedrock-agentcore:StopCodeInterpreterSession']
@@ -255,6 +262,8 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
 
   /**
    * Grant invoke permissions on this code interpreter to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant invoke permissions to
    * @returns An IAM Grant object representing the granted permissions
