@@ -1071,7 +1071,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     addConstructMetadata(this, props);
 
     if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
-      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`.', this);
     }
 
     this.kubernetesNamespace = props.kubernetesNamespace;

@@ -67,59 +67,63 @@ For stateful or otherwise non-interruption-tolerant workflows, omit `spot` or se
 
 There are several ways to configure instance types for your compute environment:
 
-##### Using Default Instance Classes
+##### Using Default Instance Classes (Recommended)
 
-AWS Batch provides default instance classes that automatically select up-to-date instances based on your region.
+AWS Batch provides default instance classes that automatically select cost-effective, up-to-date instances based on your region.
 This is the recommended approach for new projects:
 
 ```ts
 const vpc = new ec2.Vpc(this, 'VPC');
 
-// Use ARM64 instances (from m6g, c6g, r6g, c7g families)
+// Use ARM64 instances (e.g., m6g, c6g, r6g, c7g families)
 new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   vpc,
   defaultInstanceClasses: [batch.DefaultInstanceClass.ARM64],
 });
 
-// Use x86_64 instances (from m6i, c6i, r6i, c7i families)
+// Use x86_64 instances (e.g., m6i, c6i, r6i, c7i families)
 new batch.ManagedEc2EcsComputeEnvironment(this, 'anotherEc2ComputeEnv', {
   vpc,
   defaultInstanceClasses: [batch.DefaultInstanceClass.X86_64],
 });
 ```
 
+The `default_x86_64` and `default_arm64` categories are dynamically updated by AWS as new instance families become available in your region.
+
 ##### Using Specific Instance Types Only
 
 To use only specific instance types without any automatic defaults, set `useOptimalInstanceClasses: false`:
 
 ```ts
-const vpc = new ec2.Vpc(this, 'VPC');
+const vpc = new ec2.Vpc(this, 'Vpc');
 
 // Use only R4 instance class (Batch chooses the size)
-new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'Ec2ComputeEnv1', {
   vpc,
   useOptimalInstanceClasses: false,
   instanceClasses: [ec2.InstanceClass.R4],
 });
 
 // Use only a specific instance type
-new batch.ManagedEc2EcsComputeEnvironment(this, 'anotherEc2ComputeEnv', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'Ec2ComputeEnv2', {
   vpc,
   useOptimalInstanceClasses: false,
   instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
 });
 ```
 
-##### Using Optimal Instance Classes (Default Behavior)
+##### Using Optimal Instance Classes
 
 By default, `useOptimalInstanceClasses` is `true`, which adds the `optimal` instance type.
-The `optimal` type tells Batch to pick instances from the C4, M4, and R4 families.
+
+**Note**: Since November 2025, `optimal` behaves the same as `default_x86_64` and is dynamically updated as AWS introduces new instance families. Both options automatically select cost-effective x86_64 instance types (from the m6i, c6i, r6i, and c7i families) based on your region.
+
 You can combine this with additional instance types:
 
 ```ts
 declare const vpc: ec2.IVpc;
 
-const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'Ec2ComputeEnv', {
   vpc,
   instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
   // useOptimalInstanceClasses: true (default)
@@ -131,15 +135,15 @@ const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2Compute
 
 | Goal | Configuration |
 |------|---------------|
-| Let Batch choose automatically | No configuration needed (`optimal` is used by default) |
+| Use latest x86_64 instances | `defaultInstanceClasses: [DefaultInstanceClass.X86_64]` or no configuration (default) |
 | Use latest ARM64 instances | `defaultInstanceClasses: [DefaultInstanceClass.ARM64]` |
-| Use latest x86_64 instances | `defaultInstanceClasses: [DefaultInstanceClass.X86_64]` |
 | Use only specific instance classes | `useOptimalInstanceClasses: false` + `instanceClasses: [...]` |
 | Use only specific instance types | `useOptimalInstanceClasses: false` + `instanceTypes: [...]` |
 | Use optimal + additional instances | `instanceClasses: [...]` or `instanceTypes: [...]` |
 
 **Note**: Batch does not allow specifying instance types or classes with different architectures.
 For example, `InstanceClass.A1` (ARM) cannot be specified alongside `optimal` (x86_64).
+When using ARM-based instances (e.g., Graviton), use `defaultInstanceClasses: [DefaultInstanceClass.ARM64]`, or set `useOptimalInstanceClasses: false` and explicitly specify ARM instance classes/types.
 
 **Note**: `useOptimalInstanceClasses` and `defaultInstanceClasses` cannot be used together.
 
