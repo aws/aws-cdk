@@ -36,8 +36,8 @@ export interface KubectlProviderOptions {
   /**
    * A security group to use for `kubectl` execution.
    *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
-   * publicly.
+   * @default - The cluster security group is used if `privateSubnets` are specified.
+   * Otherwise, no security group is assigned.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
@@ -152,7 +152,9 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
 
     const vpc = props.privateSubnets ? props.cluster.vpc : undefined;
     let securityGroups;
-    if (props.privateSubnets && props.cluster.clusterSecurityGroup) {
+    if (props.privateSubnets && props.securityGroup) {
+      securityGroups = [props.securityGroup];
+    } else if (props.privateSubnets && props.cluster.clusterSecurityGroup) {
       securityGroups = [props.cluster.clusterSecurityGroup];
     }
     const privateSubnets = props.privateSubnets ? { subnets: props.privateSubnets } : undefined;

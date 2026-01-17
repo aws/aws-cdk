@@ -1667,8 +1667,8 @@ describe('cluster', () => {
     });
   });
 
-  test('kubectl provider passes security group to provider', () => {
-    const { stack } = testFixture();
+  test('kubectl provider passes cluster security group to lambda when private subnets are specified', () => {
+    const { stack, vpc } = testFixture();
 
     new eks.Cluster(stack, 'Cluster1', {
       version: CLUSTER_VERSION,
@@ -1676,6 +1676,7 @@ describe('cluster', () => {
       endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        privateSubnets: vpc.privateSubnets,
         environment: {
           Foo: 'Bar',
         },
@@ -1685,6 +1686,32 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [{ 'Fn::GetAtt': ['Cluster192CD0375', 'ClusterSecurityGroupId'] }],
+      },
+    });
+  });
+
+  test('kubectl provider passes security group to handler lambda', ()=> {
+    const { stack, vpc } = testFixture();
+
+    const kubectlSecurityGroup = new ec2.SecurityGroup(stack, 'KubectlSecurityGroup', {
+      vpc: vpc,
+      description: 'for kubectl handler',
+    });
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        securityGroup: kubectlSecurityGroup,
+        privateSubnets: vpc.privateSubnets,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['KubectlSecurityGroupF060FCAE', 'GroupId'] }],
       },
     });
   });

@@ -1291,6 +1291,7 @@ export class Cluster extends ClusterBase {
         environment: this._kubectlProviderOptions?.environment,
         memory: this._kubectlProviderOptions?.memory,
         privateSubnets: kubectlSubnets,
+        securityGroup: this._kubectlProviderOptions?.securityGroup,
       });
 
       // give the handler role admin access to the cluster
