@@ -1056,7 +1056,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      },
@@ -1531,7 +1531,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -1813,7 +1813,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -2235,7 +2235,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -2657,7 +2657,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -3079,7 +3079,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -3363,7 +3363,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -3453,7 +3453,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -3543,7 +3543,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -3633,7 +3633,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }
@@ -3759,7 +3759,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
      }

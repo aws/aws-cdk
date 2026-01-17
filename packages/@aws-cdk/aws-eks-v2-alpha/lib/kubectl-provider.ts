@@ -195,7 +195,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
 
     // For OCI helm chart authorization.
     handlerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPullOnly'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
     );
 
     /**
