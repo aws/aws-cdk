@@ -1626,13 +1626,19 @@ export class Cluster extends ClusterBase {
   }
 
   private addNodePoolRole(id: string): iam.Role {
+    // Use AmazonEC2ContainerRegistryPullOnly when feature flag is enabled (recommended),
+    // otherwise use AmazonEC2ContainerRegistryReadOnly for backward compatibility
+    const ecrPolicy = FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_USE_PULL_ONLY_ECR_POLICY)
+      ? 'AmazonEC2ContainerRegistryPullOnly'
+      : 'AmazonEC2ContainerRegistryReadOnly';
+
     const role = new iam.Role(this, id, {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       // to be able to access the AWSLoadBalancerController
       managedPolicies: [
         // see https://docs.aws.amazon.com/eks/latest/userguide/automode-get-started-cli.html#auto-mode-create-roles
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPullOnly'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(ecrPolicy),
       ],
     });
 
