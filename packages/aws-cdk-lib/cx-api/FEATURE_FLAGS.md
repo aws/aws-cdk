@@ -2295,6 +2295,24 @@ When this feature flag is enabled, Network Load Balancer will be created with a 
 **Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
 
 
+### @aws-cdk/aws-route53-patterns:useDistribution
+
+*Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
+
+Flag type: New default behavior
+
+Enable this feature flag to use the new `Distribution` resource instead
+of the deprecated `CloudFrontWebDistribution` construct.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.233.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
+
+
 ### @aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0
 
 *Use cloudfront-js-2.0 as the default runtime for CloudFront Functions*
@@ -2313,24 +2331,5 @@ If `keyValueStore` is specified, the runtime will always be cloudfront-js-2.0 re
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.
-
-
-### @aws-cdk/aws-route53-patterns:useDistribution
-
-*Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
-
-Flag type: New default behavior
-
-Enable this feature flag to use the new `Distribution` resource instead
-of the deprecated `CloudFrontWebDistribution` construct.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.233.0 | `false` | `true` |
-
-**Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
-
 
 <!-- END details -->
