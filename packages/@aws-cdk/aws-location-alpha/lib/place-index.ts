@@ -176,6 +176,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this place index.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -188,6 +189,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
 
   /**
    * Grant the given identity permissions to search using this index
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grantSearch(grantee: iam.IGrantable): iam.Grant {

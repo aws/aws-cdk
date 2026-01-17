@@ -132,6 +132,9 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     this.extensible.addExtension(extension);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -140,6 +143,9 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantReadConfig(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
@@ -197,6 +203,7 @@ export interface EnvironmentProps extends EnvironmentOptions {
 
 /**
  * An AWS AppConfig environment.
+ * [disable-awslint:no-grants]
  *
  * @resource AWS::AppConfig::Environment
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-environment.html

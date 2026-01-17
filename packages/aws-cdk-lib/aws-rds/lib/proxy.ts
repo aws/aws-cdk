@@ -13,6 +13,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { aws_rds } from '../../interfaces';
 
 /**
  * Client password authentication type used by a proxy to log in as a specific database user.
@@ -363,7 +364,7 @@ export interface DatabaseProxyAttributes {
 /**
  * DB Proxy
  */
-export interface IDatabaseProxy extends cdk.IResource {
+export interface IDatabaseProxy extends cdk.IResource, aws_rds.IDBProxyRef {
   /**
    * DB Proxy Name
    *
@@ -405,6 +406,16 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
   public abstract readonly dbProxyName: string;
   public abstract readonly dbProxyArn: string;
   public abstract readonly endpoint: string;
+
+  /**
+   * A reference to this database proxy
+   */
+  public get dbProxyRef(): aws_rds.DBProxyReference {
+    return {
+      dbProxyName: this.dbProxyName,
+      dbProxyArn: this.dbProxyArn,
+    };
+  }
 
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
@@ -623,6 +634,9 @@ export class DatabaseProxy extends DatabaseProxyBase
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
