@@ -890,8 +890,8 @@ new cloudfront.Function(this, 'Function', {
 #### Runtime Version
 
 CloudFront Functions support two runtime versions: `cloudfront-js-1.0` and `cloudfront-js-2.0`.
-By default, new projects use `cloudfront-js-2.0`, which provides enhanced functionality and is
-fully backward compatible with `cloudfront-js-1.0`.
+By default, new projects use `cloudfront-js-2.0`, which is the recommended runtime version with
+enhanced functionality.
 
 You can explicitly specify the runtime version:
 
