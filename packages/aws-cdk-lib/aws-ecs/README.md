@@ -107,6 +107,24 @@ const clusterArn = 'arn:aws:ecs:us-east-1:012345678910:cluster/clusterName';
 const cluster = ecs.Cluster.fromClusterArn(this, 'Cluster', clusterArn);
 ```
 
+You can also import a cluster with additional attributes, including the managed storage configuration:
+
+```ts
+declare const vpc: ec2.IVpc;
+declare const key: kms.IKey;
+
+const cluster = ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
+  clusterName: 'my-cluster',
+  vpc,
+  managedStorageConfiguration: {
+    kmsKey: key,
+  },
+});
+
+// Access the managed storage configuration
+const storageConfig = cluster.managedStorageConfiguration;
+```
+
 To use tasks with Amazon EC2 launch-type, you have to add capacity to
 the cluster in order for tasks to be scheduled on your instances.  Typically,
 you add an AutoScalingGroup with instances running the latest
