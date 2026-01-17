@@ -1,6 +1,8 @@
+import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as eks from '../lib';
 import { testFixtureNoVpc } from './util';
 

@@ -1877,3 +1877,115 @@ describe('isGpuInstanceType', () => {
     });
   });
 });
+
+describe('ECR policy feature flag', () => {
+  test('uses AmazonEC2ContainerRegistryReadOnly when feature flag is disabled', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+          },
+        ],
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/AmazonEKSWorkerNodePolicy',
+          ]],
+        },
+        {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/AmazonEKS_CNI_Policy',
+          ]],
+        },
+        {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+          ]],
+        },
+      ],
+    });
+  });
+
+  test('uses AmazonEC2ContainerRegistryPullOnly when feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      postCliContext: {
+        [cxapi.EKS_NODEGROUP_USE_PULL_ONLY_ECR_POLICY]: true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+          },
+        ],
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/AmazonEKSWorkerNodePolicy',
+          ]],
+        },
+        {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/AmazonEKS_CNI_Policy',
+          ]],
+        },
+        {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
+          ]],
+        },
+      ],
+    });
+  });
+});
