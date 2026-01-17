@@ -149,7 +149,39 @@ const domain = new Domain(this, 'Domain', {
 
 This sets up the domain with node to node encryption and encryption at
 rest. You can also choose to supply your own KMS key to use for encryption at
-rest.
+rest:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const encryptionKey = new kms.Key(this, 'EncryptionKey');
+
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  encryptionAtRest: {
+    kmsKey: encryptionKey,
+  },
+});
+```
+
+The construct also supports using cross-account KMS keys for encryption at rest:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const crossAccountKey = kms.Key.fromKeyArn(
+  this,
+  'CrossAccountKey',
+  'arn:aws:kms:us-east-1:111111111111:key/12345678-1234-1234-1234-123456789012',
+);
+
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  encryptionAtRest: {
+    kmsKey: crossAccountKey,
+  },
+});
+```
 
 ## VPC Support
 
