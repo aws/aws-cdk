@@ -1,0 +1,274 @@
+{
+ "Resources": {
+  "VectorBucket7AA37AC5": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "VectorBucketName": "vector-bucket-with-grants"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Index4A79713B": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1536,
+    "DistanceMetric": "cosine",
+    "IndexName": "test-index",
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "VectorBucket7AA37AC5",
+      "VectorBucketArn"
+     ]
+    }
+   }
+  },
+  "ReadRoleF724156F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role with read permissions to vector bucket"
+   }
+  },
+  "ReadRoleDefaultPolicy8F6E34EE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3vectors:GetIndex",
+        "s3vectors:GetVectors",
+        "s3vectors:ListIndexes",
+        "s3vectors:ListVectors"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "VectorBucket7AA37AC5",
+          "VectorBucketArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "VectorBucket7AA37AC5",
+             "VectorBucketArn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "VectorBucket7AA37AC5",
+             "VectorBucketArn"
+            ]
+           },
+           "/index/test-index"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ReadRoleDefaultPolicy8F6E34EE",
+    "Roles": [
+     {
+      "Ref": "ReadRoleF724156F"
+     }
+    ]
+   }
+  },
+  "WriteRoleDF5CC624": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role with write permissions to vector bucket"
+   }
+  },
+  "WriteRoleDefaultPolicy7F8B4A73": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3vectors:CreateIndex",
+        "s3vectors:DeleteIndex",
+        "s3vectors:DeleteVectors",
+        "s3vectors:PutVectors"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "VectorBucket7AA37AC5",
+          "VectorBucketArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "VectorBucket7AA37AC5",
+             "VectorBucketArn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "WriteRoleDefaultPolicy7F8B4A73",
+    "Roles": [
+     {
+      "Ref": "WriteRoleDF5CC624"
+     }
+    ]
+   }
+  },
+  "ReadWriteRole39A63897": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role with read/write permissions to vector bucket"
+   }
+  },
+  "ReadWriteRoleDefaultPolicy82ECA137": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3vectors:CreateIndex",
+        "s3vectors:DeleteIndex",
+        "s3vectors:DeleteVectors",
+        "s3vectors:GetIndex",
+        "s3vectors:GetVectors",
+        "s3vectors:ListIndexes",
+        "s3vectors:ListVectors",
+        "s3vectors:PutVectors"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "VectorBucket7AA37AC5",
+          "VectorBucketArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "VectorBucket7AA37AC5",
+             "VectorBucketArn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ReadWriteRoleDefaultPolicy82ECA137",
+    "Roles": [
+     {
+      "Ref": "ReadWriteRole39A63897"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
