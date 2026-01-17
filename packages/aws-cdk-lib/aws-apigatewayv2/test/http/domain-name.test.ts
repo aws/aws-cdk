@@ -70,6 +70,54 @@ describe('DomainName', () => {
     expect(imported.regionalHostedZoneId).toEqual(dn.regionalHostedZoneId);
   });
 
+  test('imported domain name has correct domainNameRef with custom domain name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN - import with explicit values to verify domainNameRef uses 'name' not 'regionalDomainName'
+    const imported = DomainName.fromDomainNameAttributes(stack, 'dn', {
+      name: 'api.example.com',
+      regionalDomainName: 'd-xxxxxxxx.execute-api.us-east-1.amazonaws.com',
+      regionalHostedZoneId: 'Z1234567890',
+    });
+
+    // THEN - domainNameRef.domainName should be the custom domain name, not the regional domain name
+    // This is critical for ApiMapping to work correctly with CloudFormation
+    expect(imported.domainNameRef.domainName).toEqual('api.example.com');
+    expect(imported.domainNameRef.domainNameArn).toContain('api.example.com');
+    expect(imported.domainNameRef.domainNameArn).not.toContain('d-xxxxxxxx.execute-api.us-east-1.amazonaws.com');
+  });
+
+  test('api with defaultDomainMapping using imported domain name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // Import a domain name with explicit values
+    const imported = DomainName.fromDomainNameAttributes(stack, 'ImportedDN', {
+      name: 'api.example.com',
+      regionalDomainName: 'd-xxxxxxxx.execute-api.us-east-1.amazonaws.com',
+      regionalHostedZoneId: 'Z1234567890',
+    });
+
+    // WHEN
+    new HttpApi(stack, 'Api', {
+      createDefaultStage: true,
+      defaultDomainMapping: {
+        domainName: imported,
+      },
+    });
+
+    // THEN - ApiMapping should use the custom domain name, not the regional domain name
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+      ApiId: {
+        Ref: 'ApiF70053CD',
+      },
+      // This must be the custom domain name 'api.example.com', NOT the regional domain name
+      DomainName: 'api.example.com',
+      Stage: '$default',
+    });
+  });
+
   test('addStage with domainNameMapping', () => {
     // GIVEN
     const stack = new Stack();
