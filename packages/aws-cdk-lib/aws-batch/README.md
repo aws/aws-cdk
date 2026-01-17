@@ -73,16 +73,16 @@ AWS Batch provides default instance classes that automatically select cost-effec
 This is the recommended approach for new projects:
 
 ```ts
-const vpc = new ec2.Vpc(this, 'VPC');
+const vpc = new ec2.Vpc(this, 'Vpc');
 
 // Use ARM64 instances (e.g., m6g, c6g, r6g, c7g families)
-new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'Arm64Ec2ComputeEnv', {
   vpc,
   defaultInstanceClasses: [batch.DefaultInstanceClass.ARM64],
 });
 
 // Use x86_64 instances (e.g., m6i, c6i, r6i, c7i families)
-new batch.ManagedEc2EcsComputeEnvironment(this, 'anotherEc2ComputeEnv', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'X86_64Ec2ComputeEnv', {
   vpc,
   defaultInstanceClasses: [batch.DefaultInstanceClass.X86_64],
 });
@@ -98,14 +98,14 @@ To use only specific instance types without any automatic defaults, set `useOpti
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 // Use only R4 instance class (Batch chooses the size)
-new batch.ManagedEc2EcsComputeEnvironment(this, 'Ec2ComputeEnv1', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'R4Ec2ComputeEnv', {
   vpc,
   useOptimalInstanceClasses: false,
   instanceClasses: [ec2.InstanceClass.R4],
 });
 
 // Use only a specific instance type
-new batch.ManagedEc2EcsComputeEnvironment(this, 'Ec2ComputeEnv2', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'M5AdLargeEc2ComputeEnv', {
   vpc,
   useOptimalInstanceClasses: false,
   instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
