@@ -68,7 +68,7 @@ export class ApiDestination implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger API destinations
    * from an EventBridge event.
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const httpParameters: events.CfnRule.HttpParametersProperty | undefined =
       this.props.headerParameters ??
       this.props.pathParameterValues ??
@@ -80,7 +80,7 @@ export class ApiDestination implements events.IRuleTarget {
         } : undefined;
 
     if (this.props?.deadLetterQueue) {
-      addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
+      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
     const role = this.props?.eventRole ?? singletonEventRole(this.apiDestination);
