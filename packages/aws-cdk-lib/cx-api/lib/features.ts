@@ -1767,6 +1767,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag or provide a custom node role with the desired ECR permissions.',
   },
 };
