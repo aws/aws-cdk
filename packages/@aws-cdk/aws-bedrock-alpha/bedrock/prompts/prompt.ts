@@ -66,6 +66,7 @@ export abstract class PromptBase extends Resource implements IPrompt {
 
   /**
    * Grant the given identity permissions to get the prompt.
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @default - Default grant configuration:

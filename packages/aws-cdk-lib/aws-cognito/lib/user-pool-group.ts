@@ -1,16 +1,16 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolGroup } from './cognito.generated';
-import { IUserPool } from './user-pool';
 import { IRoleRef } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a user pool group.
  */
-export interface IUserPoolGroup extends IResource {
+export interface IUserPoolGroup extends IResource, IUserPoolGroupRef {
   /**
    * The user group name
    * @attribute
@@ -68,7 +68,7 @@ export interface UserPoolGroupProps extends UserPoolGroupOptions {
   /**
    * The user pool to which this group is associated.
    */
-  readonly userPool: IUserPool;
+  readonly userPool: IUserPoolRef;
 }
 
 /**
@@ -85,16 +85,35 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
   public static fromGroupName(scope: Construct, id: string, groupName: string): IUserPoolGroup {
     class Import extends Resource implements IUserPoolGroup {
       public readonly groupName = groupName;
+
+      public get userPoolGroupRef(): UserPoolGroupReference {
+        return {
+          groupName,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('userPoolId is not available on imported UserPoolGroup.');
+          },
+        };
+      }
     }
     return new Import(scope, id);
   }
 
   public readonly groupName: string;
+  private readonly _userPool: IUserPoolRef;
+
+  public get userPoolGroupRef(): UserPoolGroupReference {
+    return {
+      userPoolId: this._userPool.userPoolRef.userPoolId,
+      groupName: this.groupName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: UserPoolGroupProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this._userPool = props.userPool;
 
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&
@@ -117,7 +136,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
     }
 
     const resource = new CfnUserPoolGroup(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: this._userPool.userPoolRef.userPoolId,
       description: props.description,
       groupName: props.groupName,
       precedence: props.precedence,

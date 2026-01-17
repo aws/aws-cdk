@@ -358,6 +358,7 @@ abstract class DistributionConfigurationBase extends cdk.Resource implements IDi
 
   /**
    * Grant custom actions to the given grantee for the distribution configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -373,6 +374,7 @@ abstract class DistributionConfigurationBase extends cdk.Resource implements IDi
 
   /**
    * Grant read permissions to the given grantee for the distribution configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */

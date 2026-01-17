@@ -41,6 +41,7 @@ export interface IVirtualGateway extends cdk.IResource, IVirtualGatewayRef {
 
   /**
    * Grants the given entity `appmesh:StreamAggregatedResources`.
+   * [disable-awslint:no-grants]
    */
   grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }

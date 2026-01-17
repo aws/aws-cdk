@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "49.0.0",
   "artifacts": {
     "aws-cdk-codepipeline-commands.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8608b092764234aac7f8678c8ec53c71503564a942793923c07de26b4186d2a0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ed9d8491dbee5be1892ead753f4275237a592dfe8b2a797b416a2b6d733dde1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -233,8 +233,18 @@
         ],
         "/aws-cdk-codepipeline-commands/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -1133,7 +1143,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e59047d54d25b918c3142a2304dfc5cd03ba0b38965cdcc643ee393acd4079f5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8ec8c51022dded48ea4912bbc7342497677944433984144a7469aeb4856e69d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1750,6 +1760,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1761,6 +1772,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -1772,5 +1784,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1100.3"
 }

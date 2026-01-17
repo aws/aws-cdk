@@ -184,6 +184,7 @@ abstract class ImageRecipeBase extends cdk.Resource implements IImageRecipe {
 
   /**
    * Grant custom actions to the given grantee for the image recipe
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -199,6 +200,7 @@ abstract class ImageRecipeBase extends cdk.Resource implements IImageRecipe {
 
   /**
    * Grant read permissions to the given grantee for the image recipe
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */

@@ -118,6 +118,9 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.deliveryStreamArn],
@@ -126,6 +129,9 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPutRecords(grantee: iam.IGrantable): iam.Grant {
     return this.grants.putRecords(grantee);
   }

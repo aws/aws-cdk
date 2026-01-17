@@ -271,6 +271,9 @@ export class HostedZone extends Resource implements IHostedZone {
     this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
     return this.grants.delegation(grantee, options);

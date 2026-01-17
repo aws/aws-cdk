@@ -135,6 +135,8 @@ export class Activity extends Resource implements IActivity {
   /**
    * Grant the given identity permissions on this Activity
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @param actions The list of desired actions
    */

@@ -49,6 +49,9 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(identity: iam.IGrantable): iam.Grant {
     const typeAction = this.type === ReportGroupType.CODE_COVERAGE ? 'codebuild:BatchPutCodeCoverages' : 'codebuild:BatchPutTestCases';
     const ret = iam.Grant.addToPrincipal({
