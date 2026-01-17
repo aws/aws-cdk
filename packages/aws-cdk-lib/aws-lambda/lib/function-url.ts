@@ -8,6 +8,7 @@ import { Duration, IResource, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IUrlRef, UrlReference } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * The auth types for a function url
@@ -131,7 +132,7 @@ export interface FunctionUrlCorsOptions {
 /**
  * A Lambda function Url
  */
-export interface IFunctionUrl extends IResource {
+export interface IFunctionUrl extends IResource, IUrlRef {
   /**
    * The url of the Lambda function.
    *
@@ -278,6 +279,15 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     }
   }
 
+  public get urlRef(): UrlReference {
+    return {
+      functionArn: this.functionArn,
+    };
+  }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     return this.function.grantInvokeUrl(grantee);

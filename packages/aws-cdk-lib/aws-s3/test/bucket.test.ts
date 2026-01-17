@@ -6,11 +6,9 @@ import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
-import { ReplicationTimeValue } from '../lib/bucket';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable @stylistic/quote-props */
-/* eslint-disable no-console */
 
 describe('bucket', () => {
   test('default bucket', () => {
@@ -4487,7 +4485,7 @@ describe('bucket', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack');
       const dstBucket = new s3.Bucket(stack, 'DstBucket');
-      const dstBucketNoEncryption = new s3.Bucket(stack, 'DstBucketNoEncryption');
+      new s3.Bucket(stack, 'DstBucketNoEncryption');
       const replicationRole = new iam.Role(stack, 'ReplicationRole', {
         assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
       });
@@ -5212,7 +5210,7 @@ describe('bucket', () => {
         ],
       });
       const stack = new cdk.Stack(app, 'MyStack', {});
-      const b1 = new s3.Bucket(stack, 'my-bucket-1', {});
+      new s3.Bucket(stack, 'my-bucket-1', {});
       const template = Template.fromStack(stack).toJSON();
 
       // WHEN - no Injector, but props
@@ -5227,7 +5225,7 @@ describe('bucket', () => {
         lifecycleRules: [],
         removalPolicy: cdk.RemovalPolicy.RETAIN,
       });
-      const b2 = new s3.Bucket(stack2, 'my-bucket-1', {
+      new s3.Bucket(stack2, 'my-bucket-1', {
         accessControl: undefined,
         blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
         encryption: s3.BucketEncryption.KMS,
@@ -5251,13 +5249,13 @@ describe('bucket', () => {
         ],
       });
       const stack = new cdk.Stack(app, 'MyStack', {});
-      const b1 = new s3.Bucket(stack, 'my-bucket-1', {});
+      new s3.Bucket(stack, 'my-bucket-1', {});
       const template = Template.fromStack(stack).toJSON();
 
       // WHEN - no Injector, but props
       const app2 = new cdk.App({});
       const stack2 = new cdk.Stack(app2, 'MyStack', {});
-      const b2 = new s3.Bucket(stack2, 'my-bucket-1', {
+      new s3.Bucket(stack2, 'my-bucket-1', {
         blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
         enforceSSL: true,
       });

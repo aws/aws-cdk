@@ -29,31 +29,45 @@ Guard rules are organized in service-specific directories for granular control:
 
 ```
 rules/
-├── codepipeline/
-│   └── cross-account-role-trust-scope.guard
 ├── documentdb/
-│   └── encryption-enabled.guard
+│   └── documentdb-encryption-enabled.guard
 ├── ec2/
-│   ├── ebs-encryption-enabled.guard
-│   └── no-open-security-groups.guard
+│   ├── ec2-ebs-encryption-enabled.guard
+│   └── ec2-no-open-security-groups.guard
 ├── guard-hooks/
-│   └── no-root-principals-except-kms-secrets.guard
+│   └── guardhooks-no-root-principals-except-kms-secrets.guard
 ├── iam/
-│   ├── no-overly-permissive-passrole.guard
-│   ├── no-wildcard-actions.guard
-│   ├── no-world-accessible-trust-policy.guard
-│   ├── policy-no-broad-principals.guard
-│   └── role-no-broad-principals.guard
+│   ├── iam-no-overly-permissive-passrole.guard
+│   ├── iam-no-wildcard-actions.guard
+│   ├── iam-no-wildcard-actions-inline.guard
+│   ├── iam-no-world-accessible-trust-policy.guard
+│   ├── iam-policy-no-broad-principals.guard
+│   ├── iam-role-no-broad-principals.guard
+│   └── iam-role-root-principal-needs-conditions.guard
+├── kinesis/
+│   ├── kinesis-encryption-enabled.guard
+│   └── kinesis-firehose-encryption-enabled.guard
+├── neptune/
+│   └── neptune-encryption-enabled.guard
+├── redshift/
+│   └── redshift-encryption-enabled.guard
 ├── s3/
-│   ├── encryption-enabled.guard
-│   ├── no-world-readable.guard
-│   └── secure-transport.guard
-└── [other services...]
+│   ├── s3-no-confused-deputy.guard
+│   ├── s3-no-world-readable.guard
+│   ├── s3-no-world-writable.guard
+│   └── s3-secure-transport.guard
+├── sns/
+│   ├── sns-no-world-accessible.guard
+│   └── sns-no-world-accessible-inline.guard
+└── sqs/
+    ├── sqs-encryption-enabled.guard
+    ├── sqs-no-world-accessible.guard
+    └── sqs-no-world-accessible-inline.guard
 ```
 
 ### Always Flagged (High Risk)
 - **Cross-account wildcards**: `"*"` or `"arn:aws:iam::*:root"`
-- **Custom policies with root access**: Non-default policies granting root
+- **Root principals without conditions**: `:root` principals must have restrictive conditions
 - **Broad principals in sensitive resources**: IAM roles, S3 buckets, etc.
 
 ### Smart Exemptions (Configurable)
@@ -163,10 +177,38 @@ Rule: IAM_NO_WILDCARD_ACTIONS_INLINE (Type: Resolved)
 
 ## Suppressing Rules
 
-For integration tests or specific resources that generate false positives, you can suppress individual rules using CDK metadata:
+For integration tests or specific resources that generate false positives, you can suppress individual rules using CloudFormation resource metadata. The suppression must be added to the **L1 (CfnResource)** construct to appear in the synthesized CloudFormation template.
+
+### Method 1: Using CfnResource.addMetadata() (Recommended)
 
 ```typescript
-import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { SecurityGroup, Vpc, Peer, Port } from 'aws-cdk-lib/aws-ec2';
+import { Stack, StackProps, CfnResource } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+
+export class MyTestStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const vpc = new Vpc(this, 'Vpc');
+    const securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc });
+    
+    // Add ingress rule that would normally trigger security alert
+    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(80));
+
+    // Suppress security guardian rule - get the L1 construct
+    const cfnSecurityGroup = securityGroup.node.defaultChild as CfnResource;
+    cfnSecurityGroup.addMetadata('guard', {
+      SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+    });
+  }
+}
+```
+
+### Method 2: Direct CfnResource Creation
+
+```typescript
+import { CfnSecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
@@ -174,25 +216,86 @@ export class MyTestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const testBucket = new Bucket(this, 'TestBucket', {
-      autoDeleteObjects: true,
-      removalPolicy: RemovalPolicy.DESTROY,
+    const cfnSecurityGroup = new CfnSecurityGroup(this, 'SecurityGroup', {
+      groupDescription: 'Test security group',
+      vpcId: 'vpc-12345',
+      securityGroupIngress: [{
+        ipProtocol: 'tcp',
+        fromPort: 80,
+        toPort: 80,
+        cidrIp: '0.0.0.0/0',
+      }],
     });
 
-    // Suppress S3 encryption rule for integration test
-    testBucket.node.addMetadata('guard', {
-      SuppressedRules: ['S3_ENCRYPTION_ENABLED']
+    // Add suppression metadata
+    cfnSecurityGroup.addMetadata('guard', {
+      SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
     });
   }
 }
 ```
 
+### How It Works
+
+The suppression metadata appears in the synthesized CloudFormation template:
+
+```json
+{
+  "Resources": {
+    "SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Test security group",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      },
+      "Metadata": {
+        "guard": {
+          "SuppressedRules": [
+            "EC2_NO_OPEN_SECURITY_GROUPS"
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+The cfn-guard rules check for this metadata and skip validation for suppressed rules:
+
+```guard
+let security_groups = Resources.*[
+  Type == 'AWS::EC2::SecurityGroup'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "EC2_NO_OPEN_SECURITY_GROUPS"
+]
+```
+
+### Important Notes
+
+- **Suppressions must be added to L1 constructs** (CfnResource) to appear in CloudFormation templates
+- Using `construct.node.addMetadata()` on L2 constructs will NOT work - use `construct.node.defaultChild` to get the L1
+- After adding suppressions, **regenerate integration test snapshots** by running the tests
+- Commit the updated snapshot templates so Security Guardian can read them from git history
+
 **Available Rules to Suppress:**
+- `EC2_NO_OPEN_SECURITY_GROUPS`
 - `S3_ENCRYPTION_ENABLED`
+- `S3_NO_WORLD_READABLE`
+- `S3_SECURE_TRANSPORT`
 - `IAM_ROLE_NO_BROAD_PRINCIPALS` 
+- `IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS`
 - `IAM_NO_WILDCARD_ACTIONS`
+- `IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY`
 - `NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS`
 - `EBS_ENCRYPTION_ENABLED`
+- `DOCUMENTDB_ENCRYPTION_ENABLED`
 - `SNS_ENCRYPTION_ENABLED`
 - `SQS_ENCRYPTION_ENABLED`
 - And others (see individual `.guard` files in service subdirectories)

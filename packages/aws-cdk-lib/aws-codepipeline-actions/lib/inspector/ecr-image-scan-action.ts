@@ -3,6 +3,7 @@ import { InspectorScanActionBase, InspectorScanActionBaseProps } from './scan-ac
 import * as codepipeline from '../../../aws-codepipeline';
 import * as ecr from '../../../aws-ecr';
 import * as iam from '../../../aws-iam';
+import { IRepositoryRef } from '../../../interfaces/generated/aws-ecr-interfaces.generated';
 
 /**
  * Construction properties of the `InspectorEcrImageScanAction`.
@@ -11,7 +12,7 @@ export interface InspectorEcrImageScanActionProps extends InspectorScanActionBas
   /**
    * The Amazon ECR repository where the image is pushed.
    */
-  readonly repository: ecr.IRepository;
+  readonly repository: IRepositoryRef;
 
   /**
    * The tag used for the image.
@@ -35,7 +36,7 @@ export class InspectorEcrImageScanAction extends InspectorScanActionBase {
   protected renderActionConfiguration(): Record<string, any> {
     return {
       InspectorRunMode: 'ECRImageScan',
-      ECRRepositoryName: this.ecrProps.repository.repositoryName,
+      ECRRepositoryName: this.ecrProps.repository.repositoryRef.repositoryName,
       ImageTag: this.ecrProps.imageTag,
     };
   }
@@ -46,7 +47,7 @@ export class InspectorEcrImageScanAction extends InspectorScanActionBase {
 
     // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-InspectorScan.html#edit-role-InspectorScan
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.ecrProps.repository.repositoryArn],
+      resources: [this.ecrProps.repository.repositoryRef.repositoryArn],
       actions: [
         'ecr:GetDownloadUrlForLayer',
         'ecr:BatchGetImage',

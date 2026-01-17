@@ -1,4 +1,6 @@
 {
-    "exclude": [
-    ]
+  "exclude": [
+    "prefer-ref-interface:@aws-cdk/aws-location-alpha.Tracker.addGeofenceCollections.geofenceCollections",
+    "prefer-ref-interface:@aws-cdk/aws-location-alpha.TrackerProps.geofenceCollections"
+  ]
 }

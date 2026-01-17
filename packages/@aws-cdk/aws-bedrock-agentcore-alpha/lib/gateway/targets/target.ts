@@ -115,7 +115,7 @@ export interface GatewayTargetOpenApiProps extends GatewayTargetCommonProps {
   /**
    * Credential providers for authentication
    * OpenAPI targets support API key and OAuth authentication (not IAM)
-   * @default: If not provided, defaults to IAM role which will fail at runtime
+   * @default - If not provided, defaults to IAM role which will fail at runtime
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
 }
@@ -497,6 +497,8 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    * This method grants the `SynchronizeGatewayTargets` permission, which is primarily
    * needed for MCP Server targets when you need to refresh the tool catalog after the
    * MCP server's tools have changed.
+   *
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grantSync(grantee: iam.IGrantable): iam.Grant {
