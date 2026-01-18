@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { DirectoryBucketAccessPointGrants } from './access-point-grants';
 import { IDirectoryBucket } from './directory-bucket';
 import { CfnAccessPoint } from './s3express.generated';
-import * as iam from '../../aws-iam';
 import {
   ArnFormat,
   IResource,
@@ -29,25 +28,9 @@ export interface IDirectoryBucketAccessPoint extends IResource {
   readonly accessPointName: string;
 
   /**
-   * Grants read permissions for objects accessed through this access point to an IAM principal.
-   *
-   * @param identity The principal
+   * Collection of grant methods for this access point
    */
-  grantRead(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grants write permissions for objects accessed through this access point to an IAM principal.
-   *
-   * @param identity The principal
-   */
-  grantWrite(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grants read/write permissions for objects accessed through this access point to an IAM principal.
-   *
-   * @param identity The principal
-   */
-  grantReadWrite(identity: iam.IGrantable): iam.Grant;
+  readonly grants: DirectoryBucketAccessPointGrants;
 }
 
 /**
@@ -141,29 +124,18 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
       throw new UnscopedValidationError('Either accessPointArn or accessPointName must be specified in DirectoryBucketAccessPointAttributes');
     }
 
-    class Import extends Resource implements IDirectoryBucketAccessPoint {
+    class Import extends Resource implements IDirectoryBucketAccessPoint, IAccessPointRef {
       public readonly accessPointArn = accessPointArn;
       public readonly accessPointName = accessPointName;
 
-      public grantRead(identity: iam.IGrantable): iam.Grant {
-        return this.grant(identity, perms.OBJECT_READ_ACTIONS);
+      public get accessPointRef(): AccessPointReference {
+        return {
+          accessPointName: this.accessPointName,
+          accessPointArn: this.accessPointArn,
+        };
       }
 
-      public grantWrite(identity: iam.IGrantable): iam.Grant {
-        return this.grant(identity, perms.OBJECT_WRITE_ACTIONS);
-      }
-
-      public grantReadWrite(identity: iam.IGrantable): iam.Grant {
-        return this.grant(identity, [...perms.OBJECT_READ_ACTIONS, ...perms.OBJECT_WRITE_ACTIONS]);
-      }
-
-      private grant(grantee: iam.IGrantable, actions: string[]): iam.Grant {
-        return iam.Grant.addToPrincipal({
-          grantee,
-          actions,
-          resourceArns: [this.accessPointArn, `${this.accessPointArn}/object/*`],
-        });
-      }
+      public readonly grants = DirectoryBucketAccessPointGrants.fromAccessPoint(this);
     }
 
     return new Import(scope, id);
@@ -217,14 +189,10 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
    */
   public readonly grants = DirectoryBucketAccessPointGrants.fromAccessPoint(this);
 
-  private readonly bucket: IDirectoryBucket;
-
   constructor(scope: Construct, id: string, props: DirectoryBucketAccessPointProps) {
     super(scope, id, {
       physicalName: props.accessPointName,
     });
-
-    this.bucket = props.bucket;
 
     const accessPoint = new CfnAccessPoint(this, 'Resource', {
       bucket: props.bucket.bucketName,
@@ -239,60 +207,4 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
       resourceName: this.accessPointName,
     });
   }
-
-  /**
-   * Grants read permissions for objects accessed through this access point to an IAM principal.
-   *
-   * @param identity The principal
-   */
-  public grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, perms.OBJECT_READ_ACTIONS);
-  }
-
-  /**
-   * Grants write permissions for objects accessed through this access point to an IAM principal.
-   *
-   * @param identity The principal
-   */
-  public grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, perms.OBJECT_WRITE_ACTIONS);
-  }
-
-  /**
-   * Grants read/write permissions for objects accessed through this access point to an IAM principal.
-   *
-   * @param identity The principal
-   */
-  public grantReadWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, [...perms.OBJECT_READ_ACTIONS, ...perms.OBJECT_WRITE_ACTIONS]);
-  }
-
-  private grant(grantee: iam.IGrantable, actions: string[]): iam.Grant {
-    const grant = iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.accessPointArn, `${this.accessPointArn}/object/*`],
-    });
-
-    // Also grant CreateSession permission on the underlying bucket
-    this.bucket.grantRead(grantee);
-
-    return grant;
-  }
-}
-
-/**
- * S3 Express access point permission actions
- */
-class perms {
-  public static readonly OBJECT_READ_ACTIONS = [
-    's3:GetObject',
-    's3:ListBucket',
-  ];
-
-  public static readonly OBJECT_WRITE_ACTIONS = [
-    's3:PutObject',
-    's3:DeleteObject',
-    's3:AbortMultipartUpload',
-  ];
 }

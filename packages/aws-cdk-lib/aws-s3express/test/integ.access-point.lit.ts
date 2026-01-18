@@ -50,6 +50,6 @@ const writeFn = new lambda.Function(stack, 'WriteFunction', {
 });
 
 // Grant permissions through the access point
-accessPoint.grantRead(readFn);
-accessPoint.grantWrite(writeFn);
+accessPoint.grants.read(readFn);
+accessPoint.grants.write(writeFn);
 /// !hide

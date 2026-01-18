@@ -123,7 +123,7 @@ describe('DirectoryBucket', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    bucket.grantRead(user);
+    bucket.grants.read(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -185,7 +185,7 @@ describe('DirectoryBucket', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    bucket.grantWrite(user);
+    bucket.grants.write(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -215,7 +215,7 @@ describe('DirectoryBucket', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    bucket.grantReadWrite(user);
+    bucket.grants.readWrite(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -247,7 +247,7 @@ describe('DirectoryBucket', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    bucket.grantRead(user, 'prefix/*');
+    bucket.grants.read(user, 'prefix/*');
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -306,7 +306,7 @@ describe('DirectoryBucket', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    bucket.grantRead(user);
+    bucket.grants.read(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -371,7 +371,7 @@ describe('DirectoryBucket', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    bucket.grantRead(user);
+    bucket.grants.read(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

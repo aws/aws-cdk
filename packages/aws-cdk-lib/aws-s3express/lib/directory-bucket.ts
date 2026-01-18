@@ -32,37 +32,9 @@ export interface IDirectoryBucket extends IResource {
   readonly bucketName: string;
 
   /**
-   * Grants read permissions for this bucket and its contents to an IAM principal.
-   *
-   * If encryption is used, permission to use the key to decrypt the contents
-   * of the bucket will also be granted.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * Collection of grant methods for this directory bucket
    */
-  grantRead(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
-
-  /**
-   * Grants write permissions to this bucket to an IAM principal.
-   *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of the bucket will also be granted.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
-  grantWrite(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
-
-  /**
-   * Grants read/write permissions for this bucket and its contents to an IAM principal.
-   *
-   * If encryption is used, permission to use the key to decrypt/encrypt the contents
-   * of the bucket will also be granted.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
-  grantReadWrite(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
+  readonly grants: DirectoryBucketGrants;
 
   /**
    * Adds a statement to the resource policy for a principal.
@@ -212,56 +184,21 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket, IDire
   public static fromBucketArn(scope: Construct, id: string, directoryBucketArn: string): IDirectoryBucket {
     const bucketName = Stack.of(scope).splitArn(directoryBucketArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-    class Import extends Resource implements IDirectoryBucket {
+    class Import extends Resource implements IDirectoryBucket, IDirectoryBucketRef {
       public readonly bucketArn = directoryBucketArn;
       public readonly bucketName = bucketName;
 
-      public grantRead(identity: iam.IGrantable, objectsKeyPattern: string = '*'): iam.Grant {
-        return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
-          this.bucketArn,
-          this.arnForObjects(objectsKeyPattern));
+      public get directoryBucketRef(): DirectoryBucketReference {
+        return {
+          bucketName: this.bucketName,
+          directoryBucketArn: this.bucketArn,
+        };
       }
 
-      public grantWrite(identity: iam.IGrantable, objectsKeyPattern: string = '*'): iam.Grant {
-        return this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
-          this.bucketArn,
-          this.arnForObjects(objectsKeyPattern));
-      }
-
-      public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: string = '*'): iam.Grant {
-        const bucketGrant = this.grant(identity,
-          [...perms.BUCKET_READ_ACTIONS, ...perms.BUCKET_WRITE_ACTIONS],
-          [...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS],
-          this.bucketArn,
-          this.arnForObjects(objectsKeyPattern));
-        return bucketGrant;
-      }
+      public readonly grants = DirectoryBucketGrants.fromBucket(this);
 
       public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
-      }
-
-      private arnForObjects(keyPattern: string): string {
-        return `${this.bucketArn}/${keyPattern}`;
-      }
-
-      private grant(
-        grantee: iam.IGrantable,
-        bucketActions: string[],
-        _keyActions: string[],
-        resourceArn: string,
-        ...otherResourceArns: string[]
-      ): iam.Grant {
-        const resources = [resourceArn, ...otherResourceArns];
-
-        const grant = iam.Grant.addToPrincipalOrResource({
-          grantee,
-          actions: bucketActions,
-          resourceArns: resources,
-          resource: this,
-        });
-
-        return grant;
       }
     }
 
@@ -354,45 +291,6 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket, IDire
 
     this.policy.addStatements(permission);
     return { statementAdded: true, policyDependable: this.policy };
-  }
-
-  /**
-   * Grants read permissions for this bucket and its contents to an IAM principal.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
-  public grantRead(identity: iam.IGrantable, objectsKeyPattern: string = '*'): iam.Grant {
-    return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
-      this.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
-  }
-
-  /**
-   * Grants write permissions to this bucket to an IAM principal.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
-  public grantWrite(identity: iam.IGrantable, objectsKeyPattern: string = '*'): iam.Grant {
-    return this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
-      this.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
-  }
-
-  /**
-   * Grants read/write permissions for this bucket and its contents to an IAM principal.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
-  public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: string = '*'): iam.Grant {
-    const bucketGrant = this.grant(identity,
-      [...perms.BUCKET_READ_ACTIONS, ...perms.BUCKET_WRITE_ACTIONS],
-      [...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS],
-      this.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
-    return bucketGrant;
   }
 
   private validateProps(props: DirectoryBucketProps): void {
@@ -503,60 +401,4 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket, IDire
       }],
     };
   }
-
-  private arnForObjects(keyPattern: string): string {
-    return `${this.bucketArn}/${keyPattern}`;
-  }
-
-  private grant(
-    grantee: iam.IGrantable,
-    bucketActions: string[],
-    keyActions: string[],
-    resourceArn: string,
-    ...otherResourceArns: string[]
-  ): iam.Grant {
-    const resources = [resourceArn, ...otherResourceArns];
-
-    const grant = iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: bucketActions,
-      resourceArns: resources,
-      resource: this,
-    });
-
-    if (this.encryptionKey && keyActions.length > 0) {
-      this.encryptionKey.grant(grantee, ...keyActions);
-    }
-
-    return grant;
-  }
-}
-
-/**
- * S3 Express permission actions
- */
-class perms {
-  public static readonly BUCKET_READ_ACTIONS = [
-    's3express:CreateSession',
-    's3:GetObject',
-    's3:ListBucket',
-  ];
-
-  public static readonly BUCKET_WRITE_ACTIONS = [
-    's3express:CreateSession',
-    's3:PutObject',
-    's3:DeleteObject',
-    's3:AbortMultipartUpload',
-  ];
-
-  public static readonly KEY_READ_ACTIONS = [
-    'kms:Decrypt',
-    'kms:DescribeKey',
-  ];
-
-  public static readonly KEY_WRITE_ACTIONS = [
-    'kms:Encrypt',
-    'kms:ReEncrypt*',
-    'kms:GenerateDataKey*',
-  ];
 }

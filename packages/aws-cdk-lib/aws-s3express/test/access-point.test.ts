@@ -70,7 +70,7 @@ describe('DirectoryBucketAccessPoint', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    accessPoint.grantRead(user);
+    accessPoint.grants.read(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -104,7 +104,7 @@ describe('DirectoryBucketAccessPoint', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    accessPoint.grantWrite(user);
+    accessPoint.grants.write(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -139,7 +139,7 @@ describe('DirectoryBucketAccessPoint', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    accessPoint.grantReadWrite(user);
+    accessPoint.grants.readWrite(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -206,7 +206,7 @@ describe('DirectoryBucketAccessPoint', () => {
     const user = new iam.User(stack, 'MyUser');
 
     // WHEN
-    accessPoint.grantRead(user);
+    accessPoint.grants.read(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
