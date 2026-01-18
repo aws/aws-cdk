@@ -1,5 +1,5 @@
-import { IAccessPointRef } from '../../interfaces/generated/aws-s3express-interfaces.generated';
 import { Grant, IGrantable } from '../../aws-iam';
+import { IAccessPointRef } from '../../interfaces/generated/aws-s3express-interfaces.generated';
 
 /**
  * Collection of grant methods for a DirectoryBucketAccessPoint

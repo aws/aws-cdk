@@ -1,9 +1,8 @@
 import { Construct } from 'constructs';
+import { DirectoryBucketAccessPointGrants } from './access-point-grants';
 import { IDirectoryBucket } from './directory-bucket';
 import { CfnAccessPoint } from './s3express.generated';
-import { DirectoryBucketAccessPointGrants } from './access-point-grants';
 import * as iam from '../../aws-iam';
-import { IAccessPointRef, AccessPointReference } from '../../interfaces/generated/aws-s3express-interfaces.generated';
 import {
   ArnFormat,
   IResource,
@@ -11,6 +10,7 @@ import {
   Stack,
 } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { IAccessPointRef, AccessPointReference } from '../../interfaces/generated/aws-s3express-interfaces.generated';
 
 /**
  * Represents an S3 Express One Zone directory bucket access point

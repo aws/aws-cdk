@@ -1,9 +1,8 @@
 import { Construct } from 'constructs';
-import { CfnDirectoryBucket } from './s3express.generated';
 import { DirectoryBucketGrants } from './directory-bucket-grants';
+import { CfnDirectoryBucket } from './s3express.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IDirectoryBucketRef, DirectoryBucketReference } from '../../interfaces/generated/aws-s3express-interfaces.generated';
 import {
   ArnFormat,
   IResource,
@@ -14,6 +13,7 @@ import {
   Token,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { IDirectoryBucketRef, DirectoryBucketReference } from '../../interfaces/generated/aws-s3express-interfaces.generated';
 
 /**
  * Represents an S3 Express One Zone directory bucket
