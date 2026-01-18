@@ -310,7 +310,7 @@ const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
-    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPullOnly'),
     iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'),
   ],
     inlinePolicies: {
@@ -331,6 +331,25 @@ cluster.addNodegroupCapacity('custom-node-group', {
   nodeRole: eksClusterNodeGroupRole,
 });
 ```
+
+#### ECR Policy for Node Groups
+
+By default, the node group role is granted the `AmazonEC2ContainerRegistryReadOnly` managed policy for pulling container images from ECR. 
+
+To use the more restrictive `AmazonEC2ContainerRegistryPullOnly` managed policy instead, enable the `@aws-cdk/aws-eks:nodegroupUsePullOnlyEcrPolicy` feature flag in your `cdk.json`:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-eks:nodegroupUsePullOnlyEcrPolicy": true
+  }
+}
+```
+
+The `AmazonEC2ContainerRegistryPullOnly` policy provides:
+- Minimal permissions required to pull container images from ECR
+- Support for ECR pull-through cache via `ecr:BatchImportUpstreamImage` action
+- Better alignment with least-privilege security principles
 
 #### Spot Instances Support
 

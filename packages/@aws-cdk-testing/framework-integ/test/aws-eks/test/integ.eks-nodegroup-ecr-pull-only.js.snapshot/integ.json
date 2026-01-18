@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-nodegroup-ecr-pull-only/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-nodegroup-ecr-pull-only-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-nodegroup-ecr-pull-only/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksnodegroupecrpullonlyDefaultTestDeployAssertCB1B7AB1"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

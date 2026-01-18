@@ -109,6 +109,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
+| [@aws-cdk/aws-eks:nodegroupUsePullOnlyEcrPolicy](#aws-cdkaws-eksnodegroupusepullonlyecrpolicy) | When enabled, EKS node groups use the AmazonEC2ContainerRegistryPullOnly managed policy instead of AmazonEC2ContainerRegistryReadOnly | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -200,7 +201,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
-    "@aws-cdk/aws-route53-patterns:useDistribution": true
+    "@aws-cdk/aws-route53-patterns:useDistribution": true,
+    "@aws-cdk/aws-eks:nodegroupUsePullOnlyEcrPolicy": true
   }
 }
 ```
@@ -2309,6 +2311,36 @@ of the deprecated `CloudFrontWebDistribution` construct.
 | 2.233.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
+
+
+### @aws-cdk/aws-eks:nodegroupUsePullOnlyEcrPolicy
+
+*When enabled, EKS node groups use the AmazonEC2ContainerRegistryPullOnly managed policy instead of AmazonEC2ContainerRegistryReadOnly*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, the default node group role for EKS clusters will use the
+`AmazonEC2ContainerRegistryPullOnly` managed policy instead of `AmazonEC2ContainerRegistryReadOnly`.
+
+The `AmazonEC2ContainerRegistryPullOnly` policy provides:
+- Minimal permissions required to pull container images from ECR
+- Support for ECR pull-through cache via `ecr:BatchImportUpstreamImage` action
+- Better alignment with least-privilege security principles
+
+The `AmazonEC2ContainerRegistryReadOnly` policy includes broader ECR read permissions
+(e.g., `ecr:DescribeRepositories`, `ecr:ListImages`) that are not typically needed for
+node groups to pull container images.
+
+When this feature flag is disabled, the legacy `AmazonEC2ContainerRegistryReadOnly` policy
+will continue to be used for backward compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag or provide a custom node role with the desired ECR permissions.
 
 
 <!-- END details -->
