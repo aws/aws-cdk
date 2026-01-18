@@ -1,5 +1,5 @@
-import { Grant, IGrantable } from '../../aws-iam';
 import { IDirectoryBucket } from './directory-bucket';
+import { Grant, IGrantable } from '../../aws-iam';
 
 /**
  * Collection of grant methods for a DirectoryBucket
