@@ -536,6 +536,7 @@ export class Method extends Resource {
 
   /**
    * Grants an IAM principal permission to invoke this method.
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */

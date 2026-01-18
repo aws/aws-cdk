@@ -1005,6 +1005,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
@@ -1014,6 +1016,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
@@ -1025,6 +1029,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read/write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
@@ -1034,6 +1040,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1051,6 +1059,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param index The index to grant permissions for
    * @param identity The principal
    */
@@ -1066,6 +1076,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1083,6 +1095,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -1098,6 +1112,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -1112,6 +1128,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param path The path to grant permissions for
    * @param identity The principal
@@ -2000,8 +2018,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
-        kmsKeyId: encryptionAtRestEnabled
-          ? props.encryptionAtRest?.kmsKey?.keyRef.keyId
+        kmsKeyId: encryptionAtRestEnabled && props.encryptionAtRest?.kmsKey
+          ? this.selectKmsKeyIdentifier(props.encryptionAtRest.kmsKey)
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
@@ -2209,6 +2227,38 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
       }
     }
+  }
+
+  /**
+   * Selects the appropriate KMS key identifier (keyId or keyArn) based on whether
+   * the key is from the same account and region as the domain.
+   *
+   * For cross-account or cross-region KMS keys, OpenSearch requires the full ARN.
+   * For same-account, same-region keys, keyId is sufficient.
+   */
+  private selectKmsKeyIdentifier(key: kms.IKeyRef): string {
+    const stack = cdk.Stack.of(this);
+
+    const keyAccount = key.env.account;
+    const keyRegion = key.env.region;
+    const stackAccount = stack.account;
+    const stackRegion = stack.region;
+
+    // If either account or region is different (and not a token), use ARN
+    // Tokens are unresolved values that will be determined at deploy time
+    const isCrossAccount = !cdk.Token.isUnresolved(keyAccount) &&
+                          !cdk.Token.isUnresolved(stackAccount) &&
+                          keyAccount !== stackAccount;
+    const isCrossRegion = !cdk.Token.isUnresolved(keyRegion) &&
+                         !cdk.Token.isUnresolved(stackRegion) &&
+                         keyRegion !== stackRegion;
+
+    if (isCrossAccount || isCrossRegion) {
+      return key.keyRef.keyArn;
+    }
+
+    // For same-account, same-region keys, use keyId (maintains backward compatibility)
+    return key.keyRef.keyId;
   }
 }
 
