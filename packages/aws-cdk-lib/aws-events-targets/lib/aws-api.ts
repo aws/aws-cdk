@@ -81,7 +81,7 @@ export class AwsApi implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this AwsApi as a
    * result from an EventBridge event.
    */
-  public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, id?: string): events.RuleTargetConfig {
     const handler = new AwsApiSingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
       timeout: Duration.seconds(60),
       memorySize: 256,
