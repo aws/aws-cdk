@@ -270,8 +270,6 @@ For more details, see [Auto Validation](https://docs.aws.amazon.com/ses/latest/d
 
 ```ts
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
-  suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
-  // Override account-level Auto Validation settings
   confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.HIGH,
 });
 ```
