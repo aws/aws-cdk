@@ -1,7 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnDirectoryBucket } from './s3express.generated';
+import { DirectoryBucketGrants } from './directory-bucket-grants';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { IDirectoryBucketRef, DirectoryBucketReference } from '../../interfaces/generated/aws-s3express-interfaces.generated';
 import {
   ArnFormat,
   IResource,
@@ -183,6 +185,8 @@ export interface DirectoryBucketProps extends ResourceProps {
    * The encryption property must be set to KMS. An error will be emitted if
    * encryption is not KMS or if encryptionKey is specified without encryption set to KMS.
    *
+   * [disable-awslint:prefer-ref-interface]
+   *
    * @default - If encryption is set to KMS and this property is undefined,
    * a new KMS key will be created and associated with this bucket.
    */
@@ -197,7 +201,7 @@ export interface DirectoryBucketProps extends ResourceProps {
  *
  * @resource AWS::S3Express::DirectoryBucket
  */
-export class DirectoryBucket extends Resource implements IDirectoryBucket {
+export class DirectoryBucket extends Resource implements IDirectoryBucket, IDirectoryBucketRef {
   /**
    * Import an existing directory bucket given its ARN
    *
@@ -291,6 +295,21 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
    * @attribute
    */
   public readonly encryptionKey?: kms.IKey;
+
+  /**
+   * A reference to this directory bucket resource for use in other constructs.
+   */
+  public get directoryBucketRef(): DirectoryBucketReference {
+    return {
+      bucketName: this.bucketName,
+      directoryBucketArn: this.bucketArn,
+    };
+  }
+
+  /**
+   * Collection of grant methods for this directory bucket
+   */
+  public readonly grants = DirectoryBucketGrants.fromBucket(this);
 
   private policy?: iam.PolicyDocument;
 

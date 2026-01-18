@@ -1,7 +1,9 @@
 import { Construct } from 'constructs';
 import { IDirectoryBucket } from './directory-bucket';
 import { CfnAccessPoint } from './s3express.generated';
+import { DirectoryBucketAccessPointGrants } from './access-point-grants';
 import * as iam from '../../aws-iam';
+import { IAccessPointRef, AccessPointReference } from '../../interfaces/generated/aws-s3express-interfaces.generated';
 import {
   ArnFormat,
   IResource,
@@ -75,6 +77,8 @@ export interface DirectoryBucketAccessPointAttributes {
 export interface DirectoryBucketAccessPointProps {
   /**
    * The directory bucket to which this access point belongs.
+   *
+   * [disable-awslint:prefer-ref-interface]
    */
   readonly bucket: IDirectoryBucket;
 
@@ -106,7 +110,7 @@ export interface DirectoryBucketAccessPointProps {
  *
  * @resource AWS::S3Express::AccessPoint
  */
-export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBucketAccessPoint {
+export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBucketAccessPoint, IAccessPointRef {
   /**
    * Import an existing directory bucket access point from its attributes
    *
@@ -197,6 +201,21 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
 
   public readonly accessPointArn: string;
   public readonly accessPointName: string;
+
+  /**
+   * A reference to this access point resource for use in other constructs.
+   */
+  public get accessPointRef(): AccessPointReference {
+    return {
+      accessPointName: this.accessPointName,
+      accessPointArn: this.accessPointArn,
+    };
+  }
+
+  /**
+   * Collection of grant methods for this access point
+   */
+  public readonly grants = DirectoryBucketAccessPointGrants.fromAccessPoint(this);
 
   private readonly bucket: IDirectoryBucket;
 
