@@ -45,8 +45,8 @@ const fn = new lambda.Function(stack, 'MyFunction', {
   },
 });
 
-bucket.grantReadWrite(fn);
-encryptedBucket.grantRead(fn);
+bucket.grants.readWrite(fn);
+encryptedBucket.grants.read(fn);
 
 new IntegTest(app, 'DirectoryBucketTest', {
   testCases: [stack],
