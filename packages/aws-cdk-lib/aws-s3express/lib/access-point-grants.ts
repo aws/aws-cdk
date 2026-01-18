@@ -1,18 +1,18 @@
 import { Grant, IGrantable } from '../../aws-iam';
-import { IAccessPointRef } from '../../interfaces/generated/aws-s3express-interfaces.generated';
+import { IDirectoryBucketAccessPoint } from './access-point';
 
 /**
  * Collection of grant methods for a DirectoryBucketAccessPoint
  */
 export class DirectoryBucketAccessPointGrants {
   /**
-   * Creates grants for an IAccessPointRef
+   * Creates grants for an IDirectoryBucketAccessPoint
    */
-  public static fromAccessPoint(accessPoint: IAccessPointRef): DirectoryBucketAccessPointGrants {
+  public static fromAccessPoint(accessPoint: IDirectoryBucketAccessPoint): DirectoryBucketAccessPointGrants {
     return new DirectoryBucketAccessPointGrants(accessPoint);
   }
 
-  private constructor(private readonly accessPoint: IAccessPointRef) {
+  private constructor(private readonly accessPoint: IDirectoryBucketAccessPoint) {
   }
 
   /**
@@ -43,14 +43,21 @@ export class DirectoryBucketAccessPointGrants {
   }
 
   private grant(grantee: IGrantable, actions: string[]): Grant {
-    return Grant.addToPrincipal({
+    const grant = Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [
-        this.accessPoint.accessPointRef.accessPointArn,
-        `${this.accessPoint.accessPointRef.accessPointArn}/object/*`,
+        this.accessPoint.accessPointArn,
+        `${this.accessPoint.accessPointArn}/object/*`,
       ],
     });
+
+    // Also grant CreateSession permission on the underlying bucket
+    if (this.accessPoint.bucket) {
+      this.accessPoint.bucket.grants.read(grantee);
+    }
+
+    return grant;
   }
 }
 

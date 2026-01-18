@@ -28,6 +28,14 @@ export interface IDirectoryBucketAccessPoint extends IResource {
   readonly accessPointName: string;
 
   /**
+   * The directory bucket to which this access point belongs.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   * @attribute
+   */
+  readonly bucket?: IDirectoryBucket;
+
+  /**
    * Collection of grant methods for this access point
    */
   readonly grants: DirectoryBucketAccessPointGrants;
@@ -127,6 +135,7 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
     class Import extends Resource implements IDirectoryBucketAccessPoint, IAccessPointRef {
       public readonly accessPointArn = accessPointArn;
       public readonly accessPointName = accessPointName;
+      public readonly bucket?: IDirectoryBucket = undefined;
 
       public get accessPointRef(): AccessPointReference {
         return {
@@ -173,6 +182,7 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
 
   public readonly accessPointArn: string;
   public readonly accessPointName: string;
+  public readonly bucket?: IDirectoryBucket;
 
   /**
    * A reference to this access point resource for use in other constructs.
@@ -193,6 +203,8 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
     super(scope, id, {
       physicalName: props.accessPointName,
     });
+
+    this.bucket = props.bucket;
 
     const accessPoint = new CfnAccessPoint(this, 'Resource', {
       bucket: props.bucket.bucketName,

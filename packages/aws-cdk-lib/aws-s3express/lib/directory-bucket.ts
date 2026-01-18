@@ -32,6 +32,13 @@ export interface IDirectoryBucket extends IResource {
   readonly bucketName: string;
 
   /**
+   * The KMS key used to encrypt the directory bucket.
+   *
+   * @attribute
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
    * Collection of grant methods for this directory bucket
    */
   readonly grants: DirectoryBucketGrants;
@@ -187,6 +194,7 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket, IDire
     class Import extends Resource implements IDirectoryBucket, IDirectoryBucketRef {
       public readonly bucketArn = directoryBucketArn;
       public readonly bucketName = bucketName;
+      public readonly encryptionKey?: kms.IKey = undefined;
 
       public get directoryBucketRef(): DirectoryBucketReference {
         return {

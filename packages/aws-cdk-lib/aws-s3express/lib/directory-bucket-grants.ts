@@ -1,18 +1,18 @@
 import { Grant, IGrantable } from '../../aws-iam';
-import { IDirectoryBucketRef } from '../../interfaces/generated/aws-s3express-interfaces.generated';
+import { IDirectoryBucket } from './directory-bucket';
 
 /**
  * Collection of grant methods for a DirectoryBucket
  */
 export class DirectoryBucketGrants {
   /**
-   * Creates grants for an IDirectoryBucketRef
+   * Creates grants for an IDirectoryBucket
    */
-  public static fromBucket(bucket: IDirectoryBucketRef): DirectoryBucketGrants {
+  public static fromBucket(bucket: IDirectoryBucket): DirectoryBucketGrants {
     return new DirectoryBucketGrants(bucket);
   }
 
-  private constructor(private readonly bucket: IDirectoryBucketRef) {
+  private constructor(private readonly bucket: IDirectoryBucket) {
   }
 
   /**
@@ -22,8 +22,8 @@ export class DirectoryBucketGrants {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public read(identity: IGrantable, objectsKeyPattern: string = '*'): Grant {
-    return this.grant(identity, perms.BUCKET_READ_ACTIONS,
-      this.bucket.directoryBucketRef.directoryBucketArn,
+    return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
+      this.bucket.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
 
@@ -34,8 +34,8 @@ export class DirectoryBucketGrants {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public write(identity: IGrantable, objectsKeyPattern: string = '*'): Grant {
-    return this.grant(identity, perms.BUCKET_WRITE_ACTIONS,
-      this.bucket.directoryBucketRef.directoryBucketArn,
+    return this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
+      this.bucket.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
 
@@ -47,28 +47,36 @@ export class DirectoryBucketGrants {
    */
   public readWrite(identity: IGrantable, objectsKeyPattern: string = '*'): Grant {
     const bucketActions = [...perms.BUCKET_READ_ACTIONS, ...perms.BUCKET_WRITE_ACTIONS];
-    return this.grant(identity, bucketActions,
-      this.bucket.directoryBucketRef.directoryBucketArn,
+    const keyActions = [...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS];
+    return this.grant(identity, bucketActions, keyActions,
+      this.bucket.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
 
   private grant(
     grantee: IGrantable,
     bucketActions: string[],
+    keyActions: string[],
     resourceArn: string,
     ...otherResourceArns: string[]
   ): Grant {
     const resources = [resourceArn, ...otherResourceArns];
 
-    return Grant.addToPrincipal({
+    const ret = Grant.addToPrincipal({
       grantee,
       actions: bucketActions,
       resourceArns: resources,
     });
+
+    if (this.bucket.encryptionKey && keyActions.length > 0) {
+      this.bucket.encryptionKey.grant(grantee, ...keyActions);
+    }
+
+    return ret;
   }
 
   private arnForObjects(keyPattern: string): string {
-    return `${this.bucket.directoryBucketRef.directoryBucketArn}/${keyPattern}`;
+    return `${this.bucket.bucketArn}/${keyPattern}`;
   }
 }
 
@@ -87,5 +95,16 @@ class perms {
     's3:PutObject',
     's3:DeleteObject',
     's3:AbortMultipartUpload',
+  ];
+
+  public static readonly KEY_READ_ACTIONS = [
+    'kms:Decrypt',
+    'kms:DescribeKey',
+  ];
+
+  public static readonly KEY_WRITE_ACTIONS = [
+    'kms:Encrypt',
+    'kms:ReEncrypt*',
+    'kms:GenerateDataKey*',
   ];
 }
