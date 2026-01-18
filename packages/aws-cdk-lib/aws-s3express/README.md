@@ -99,16 +99,16 @@ declare const readFunction: lambda.IFunction;
 declare const writeFunction: lambda.IFunction;
 
 // Grant read access
-bucket.grantRead(readFunction);
+bucket.grants.read(readFunction);
 
 // Grant write access
-bucket.grantWrite(writeFunction);
+bucket.grants.write(writeFunction);
 
 // Grant full read/write access
-bucket.grantReadWrite(readFunction);
+bucket.grants.readWrite(readFunction);
 
 // Grant read access to specific objects
-bucket.grantRead(readFunction, 'prefix/*');
+bucket.grants.read(readFunction, 'prefix/*');
 ```
 
 #### Importing Existing Buckets
@@ -132,7 +132,7 @@ const importedByName = s3express.DirectoryBucket.fromBucketName(
 
 // Use imported bucket
 declare const myRole: iam.IRole;
-importedByArn.grantRead(myRole);
+importedByArn.grants.read(myRole);
 ```
 
 #### Bucket Policies
@@ -179,13 +179,13 @@ const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoin
 declare const readFunction: lambda.IFunction;
 
 // Grant read access through the access point
-accessPoint.grantRead(readFunction);
+accessPoint.grants.read(readFunction);
 
 // Grant write access
-accessPoint.grantWrite(readFunction);
+accessPoint.grants.write(readFunction);
 
 // Grant full read/write access
-accessPoint.grantReadWrite(readFunction);
+accessPoint.grants.readWrite(readFunction);
 ```
 
 #### Importing Existing Access Points
@@ -207,7 +207,7 @@ const importedByName = s3express.DirectoryBucketAccessPoint.fromAccessPointName(
 
 // Use imported access point
 declare const myRole: iam.IRole;
-importedByArn.grantRead(myRole);
+importedByArn.grants.read(myRole);
 ```
 
 #### Cross-Account Access Points
