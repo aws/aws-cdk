@@ -1,5 +1,5 @@
-import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as glue from '../lib';
 
 const app = new cdk.App();
