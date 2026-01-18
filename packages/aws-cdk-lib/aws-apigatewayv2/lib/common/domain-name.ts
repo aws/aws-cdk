@@ -180,12 +180,12 @@ export class DomainName extends Resource implements IDomainName {
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
       public readonly name = attrs.name;
       public readonly domainNameRef: DomainNameReference = {
-        domainName: attrs.regionalDomainName,
+        domainName: attrs.name,
         domainNameArn: Stack.of(this).formatArn({
           service: 'apigateway',
           arnFormat: ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
           resource: 'domainnames',
-          resourceName: attrs.regionalDomainName,
+          resourceName: attrs.name,
         }),
       };
     }
