@@ -6,7 +6,6 @@ import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
 import { ListenerTransform } from './transforms';
-import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Annotations, Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
