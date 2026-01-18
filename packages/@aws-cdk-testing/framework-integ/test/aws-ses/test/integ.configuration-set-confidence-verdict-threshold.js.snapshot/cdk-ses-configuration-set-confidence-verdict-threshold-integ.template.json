@@ -1,0 +1,89 @@
+{
+ "Resources": {
+  "ThresholdDisabledE05CACBB": {
+   "Type": "AWS::SES::ConfigurationSet",
+   "Properties": {
+    "Name": "threshold-disabled",
+    "SuppressionOptions": {
+     "ValidationOptions": {
+      "ConditionThreshold": {
+       "ConditionThresholdEnabled": "DISABLED"
+      }
+     }
+    }
+   }
+  },
+  "WithSuppressionReasons73CA0472": {
+   "Type": "AWS::SES::ConfigurationSet",
+   "Properties": {
+    "Name": "with-suppression-reasons",
+    "SuppressionOptions": {
+     "SuppressedReasons": [
+      "BOUNCE",
+      "COMPLAINT"
+     ],
+     "ValidationOptions": {
+      "ConditionThreshold": {
+       "ConditionThresholdEnabled": "ENABLED",
+       "OverallConfidenceThreshold": {
+        "ConfidenceVerdictThreshold": "MANAGED"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefThresholdDisabledE05CACBB1A0F341E": {
+   "Value": {
+    "Ref": "ThresholdDisabledE05CACBB"
+   },
+   "Export": {
+    "Name": "cdk-ses-configuration-set-confidence-verdict-threshold-integ:ExportsOutputRefThresholdDisabledE05CACBB1A0F341E"
+   }
+  },
+  "ExportsOutputRefWithSuppressionReasons73CA0472E55F91ED": {
+   "Value": {
+    "Ref": "WithSuppressionReasons73CA0472"
+   },
+   "Export": {
+    "Name": "cdk-ses-configuration-set-confidence-verdict-threshold-integ:ExportsOutputRefWithSuppressionReasons73CA0472E55F91ED"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
