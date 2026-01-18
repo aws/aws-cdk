@@ -42,7 +42,7 @@ describe('AlbIntegration', () => {
               },
             ],
           ],
-        }
+        },
       },
     });
 
