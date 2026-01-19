@@ -95,6 +95,11 @@ export interface InterceptorBindConfig {
 export class LambdaInterceptor implements IInterceptor {
   /**
    * Create a REQUEST interceptor that executes before the gateway calls the target
+   *
+   * **Important:** When this interceptor is added to a gateway, the gateway's IAM role
+   * will automatically be granted `lambda:InvokeFunction` permission on the specified
+   * Lambda function.
+   *
    * @param lambdaFunction The Lambda function to invoke
    * @param options Optional configuration for the interceptor
    * @returns A configured LambdaInterceptor for request interception
@@ -112,6 +117,11 @@ export class LambdaInterceptor implements IInterceptor {
 
   /**
    * Create a RESPONSE interceptor that executes after the target responds
+   *
+   * **Important:** When this interceptor is added to a gateway, the gateway's IAM role
+   * will automatically be granted `lambda:InvokeFunction` permission on the specified
+   * Lambda function.
+   *
    * @param lambdaFunction The Lambda function to invoke
    * @param options Optional configuration for the interceptor
    * @returns A configured LambdaInterceptor for response interception

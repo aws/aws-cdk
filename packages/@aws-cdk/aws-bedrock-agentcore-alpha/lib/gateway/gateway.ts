@@ -475,7 +475,6 @@ export class Gateway extends GatewayBase {
     this.tags = props.tags ?? {};
 
     // Initialize interceptors from props
-    // Permission granting is handled inside validateAndInitializeInterceptors
     if (props.interceptorConfigurations) {
       this.validateAndInitializeInterceptors(props.interceptorConfigurations);
     }
@@ -861,9 +860,18 @@ export class Gateway extends GatewayBase {
    * @internal
    */
   private validateAndInitializeInterceptors(interceptors: IInterceptor[]): void {
-    if (interceptors.length > 2) {
+    const requestCount = interceptors.filter(i => i.interceptionPoint === InterceptionPoint.REQUEST).length;
+    const responseCount = interceptors.filter(i => i.interceptionPoint === InterceptionPoint.RESPONSE).length;
+
+    if (requestCount > 1) {
       throw new ValidationError(
-        'Gateway can have at most 2 interceptors: one REQUEST interceptor and one RESPONSE interceptor.',
+        `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
+      );
+    }
+
+    if (responseCount > 1) {
+      throw new ValidationError(
+        `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
       );
     }
 

@@ -1906,6 +1906,10 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 });
 ```
 
+**Automatic Permission Granting:**
+
+When you add a Lambda interceptor to a gateway (either via constructor or `addInterceptor()`), the gateway's IAM role automatically receives `lambda:InvokeFunction` permission on the Lambda function. This permission grant happens internally during the bind process - you do not need to manually configure these IAM permissions.
+
 #### Adding Interceptors Dynamically
 
 ```typescript fixture=default
