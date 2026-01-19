@@ -2,7 +2,8 @@ import { Dependable, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 import * as cdk from '../../core';
-import { IEnvironmentAware } from '../../interfaces/environment-aware';
+import { IEnvironmentAware } from '../../core';
+import * as iam from '../index';
 
 /**
  * Basic options for a grant operation
@@ -420,6 +421,30 @@ interface GrantProps {
 }
 
 /**
+ * Result of a call to grantOnKey().
+ */
+export interface GrantOnKeyResult {
+  /**
+   * The Grant object, if a grant was created.
+   *
+   * @default No grant
+   */
+  readonly grant?: Grant;
+}
+
+/**
+ * A resource that contains data that can be encrypted, using a KMS key.
+ *
+ * [awslint:interface-extends-ref]
+ */
+export interface IEncryptedResource extends cdk.IResource {
+  /**
+   * Gives permissions to a grantable entity to perform actions on the encryption key.
+   */
+  grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult;
+}
+
+/**
  * A resource with a resource policy that can be added to
  */
 export interface IResourceWithPolicyV2 extends IEnvironmentAware {
@@ -427,6 +452,25 @@ export interface IResourceWithPolicyV2 extends IEnvironmentAware {
    * Add a statement to the resource's resource policy
    */
   addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
+}
+
+/**
+ * Utility methods to check for specific types of grantable resources
+ */
+export class GrantableResources {
+  /**
+   * Whether this resource admits a resource policy.
+   */
+  static isResourceWithPolicy(resource: IEnvironmentAware): resource is iam.IResourceWithPolicyV2 {
+    return (resource as unknown as iam.IResourceWithPolicyV2).addToResourcePolicy !== undefined;
+  }
+
+  /**
+   * Whether this resource holds data that can be encrypted using a KMS key.
+   */
+  static isEncryptedResource(resource: IConstruct): resource is iam.IEncryptedResource {
+    return (resource as unknown as iam.IEncryptedResource).grantOnKey !== undefined;
+  }
 }
 
 /**

@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnInfrastructureConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 
@@ -144,7 +145,7 @@ export interface InfrastructureConfigurationProps {
    * Note: You can provide an instanceProfile or a role, but not both.
    *
    * @example
-   * const role = new iam.Role(this, 'MyRole', {
+   * const instanceProfileRole = new iam.Role(this, 'MyRole', {
    *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
    * });
    *
@@ -292,6 +293,7 @@ abstract class InfrastructureConfigurationBase extends cdk.Resource implements I
 
   /**
    * Grant custom actions to the given grantee for the infrastructure configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The principal
    * @param actions - The list of actions
@@ -307,6 +309,7 @@ abstract class InfrastructureConfigurationBase extends cdk.Resource implements I
 
   /**
    * Grant read permissions to the given grantee for the infrastructure configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The principal
    */
@@ -413,6 +416,8 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, INFRASTRUCTURE_CONFIGURATION_SYMBOL, { value: true });
 

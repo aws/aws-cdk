@@ -43,8 +43,8 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
           throw new ValidationError(`'throughput' must be an integer, got: ${throughput}.`, construct);
         }
 
-        if (throughput < 125 || throughput > 1000) {
-          throw new ValidationError(`'throughput' must be between 125 and 1000, got ${throughput}.`, construct);
+        if (throughput < 125 || throughput > 2000) {
+          throw new ValidationError(`'throughput' must be between 125 and 2000, got ${throughput}.`, construct);
         }
 
         const maximumThroughputRatio = 0.25;

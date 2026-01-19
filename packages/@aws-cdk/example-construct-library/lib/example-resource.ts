@@ -11,12 +11,12 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
 // for files that are part of this package or part of core, we do import individual classes or functions
-import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, RemovalPolicy, Resource, Stack, Token } from 'aws-cdk-lib/core';
-import { exampleResourceArnComponents } from './private/example-resource-common';
+import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, IWaitConditionHandleRef, RemovalPolicy, Resource, Stack, Token, ValidationError, WaitConditionHandleReference } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { exampleResourceArnComponents } from './private/example-resource-common';
 
 /**
  * The interface that represents the ExampleResource resource.
@@ -67,7 +67,10 @@ export interface IExampleResource extends
   iam.IGrantable,
 
   // only for resources that are in a VPC and have SecurityGroups controlling their traffic
-  ec2.IConnectable {
+  ec2.IConnectable,
+
+  // Change this to the right resource type
+  IWaitConditionHandleRef {
 
   /**
    * The ARN of example resource.
@@ -167,7 +170,7 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
   /** Implement the ec2.IConnectable interface, using the _connections field. */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error('An imported ExampleResource cannot manage its security groups');
+      throw new ValidationError('An imported ExampleResource cannot manage its security groups', this);
     }
     return this._connections;
   }
@@ -182,7 +185,11 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
     }
   }
 
-  /** Implement the `IExampleResource.grantRead` method. */
+  /** Implement the `IExampleResource.grantRead` method.
+   *
+   * [disable-awslint:no-grants]
+   *
+   */
   public grantRead(identity: iam.IGrantable): iam.Grant {
     // usually, we would grant some service-specific permissions here,
     // but since this is just an example, let's use S3
@@ -222,6 +229,13 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
       dimensionsMap: { ExampleResource: this.exampleResourceName },
       ...props,
     }).attachTo(this);
+  }
+
+  public get waitConditionHandleRef(): WaitConditionHandleReference {
+    return {
+      // This should match the expected Ref interface properties to the correct field
+      waitConditionHandleId: this.exampleResourceName,
+    };
   }
 }
 
@@ -424,8 +438,8 @@ export class ExampleResource extends ExampleResourceBase {
     if (props.waitConditionHandleName !== undefined &&
         !Token.isUnresolved(props.waitConditionHandleName) &&
         !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
-      throw new Error('waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
-        `got: '${props.waitConditionHandleName}'`);
+      throw new ValidationError('waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
+        `got: '${props.waitConditionHandleName}'`, this);
     }
 
     // Inside the implementation of the L2,
