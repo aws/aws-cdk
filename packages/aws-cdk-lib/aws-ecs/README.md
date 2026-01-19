@@ -2372,3 +2372,39 @@ new ecs.ExternalService(this, 'ExternalService', {
   daemon: true,
 });
 ```
+
+### Force New Deployment
+
+You can force a new deployment of a service without changing the task definition or desired count. This can be useful to trigger a deployment when you want to deploy new tasks even if there are no changes to the service configuration.
+
+When enabled, ECS will start a new deployment even if there are no changes to the service configuration. This is accomplished by setting a unique timestamp nonce that forces CloudFormation to recognize the service as changed.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+});
+
+// Force a new deployment
+service.forceNewDeployment(true);
+```
+
+You can also disable force new deployment by calling the method with `false`:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+});
+
+// Disable force new deployment
+service.forceNewDeployment(false);
+```
+
+The `forceNewDeployment` method works with all service types including `FargateService`, `Ec2Service`, and `ExternalService`. Each call to this method generates a unique timestamp nonce, ensuring that multiple services or multiple calls to the same service will have different nonces.
