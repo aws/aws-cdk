@@ -89,10 +89,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/RouteTable": [
@@ -104,10 +101,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/DefaultRoute": [
@@ -125,10 +119,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2": [
@@ -162,10 +153,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/RouteTable": [
@@ -177,10 +165,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/DefaultRoute": [
@@ -220,10 +205,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/RouteTable": [
@@ -235,10 +217,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/DefaultRoute": [
@@ -278,10 +257,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/RouteTable": [
@@ -293,10 +269,7 @@
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/DefaultRoute": [
