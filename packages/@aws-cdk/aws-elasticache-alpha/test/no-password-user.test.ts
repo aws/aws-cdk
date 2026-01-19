@@ -1,5 +1,5 @@
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Stack } from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { NoPasswordUser, AccessControl, UserEngine } from '../lib';
 
 describe('NoPasswordUser', () => {
@@ -14,7 +14,7 @@ describe('NoPasswordUser', () => {
         userId: 'test-user',
         engine: UserEngine.VALKEY,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
-      })).toThrow('Valkey engine does not support no-password authentication.');
+      })).toThrow("Engine 'valkey' does not support no-password authentication. Supported engines: redis.");
     });
   });
 

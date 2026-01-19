@@ -1,7 +1,7 @@
-import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as eks from '../lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
+import * as eks from '../lib';
 
 const app = new App({
   postCliContext: {

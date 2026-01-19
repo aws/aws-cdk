@@ -10,6 +10,7 @@ import { RegionInfo } from 'aws-cdk-lib/region-info';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 class TestStack extends cdk.Stack {
   constructor(scope: Construct, id: string) {
@@ -77,7 +78,7 @@ class TestStack extends cdk.Stack {
 
     const eb = new elasticbeanstalk.CfnEnvironment(this, 'Environment', {
       applicationName: appName,
-      solutionStackName: '64bit Amazon Linux 2023 v6.4.3 running Node.js 20',
+      solutionStackName: SOLUTION_STACK_NAME.NODEJS_20,
       environmentName: 'MyEnvironment',
       optionSettings: optionSettingProperties,
       versionLabel: appVersion.ref,

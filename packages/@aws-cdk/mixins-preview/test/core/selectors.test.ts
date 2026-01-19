@@ -33,7 +33,7 @@ describe('ConstructSelector', () => {
     const bucket = new s3.CfnBucket(stack, 'Bucket');
     const logGroup = new logs.CfnLogGroup(stack, 'LogGroup');
 
-    const selected = ConstructSelector.resourcesOfType(s3.CfnBucket).select(stack);
+    const selected = ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME).select(stack);
     expect(selected).toContain(bucket);
     expect(selected).not.toContain(logGroup);
   });
@@ -51,7 +51,17 @@ describe('ConstructSelector', () => {
     const prodBucket = new s3.CfnBucket(stack, 'prod-bucket');
     const devBucket = new s3.CfnBucket(stack, 'dev-bucket');
 
-    const selected = ConstructSelector.byId(/prod-.*/).select(stack);
+    const selected = ConstructSelector.byId('*prod*').select(stack);
+    expect(selected).toContain(prodBucket);
+    expect(selected).not.toContain(devBucket);
+  });
+
+  test('byPath() selects by construct path pattern', () => {
+    const scope = new Construct(stack, 'Prefix');
+    const prodBucket = new s3.CfnBucket(scope, 'prod-bucket');
+    const devBucket = new s3.CfnBucket(stack, 'dev-bucket');
+
+    const selected = ConstructSelector.byPath('*/Prefix/**').select(stack);
     expect(selected).toContain(prodBucket);
     expect(selected).not.toContain(devBucket);
   });
@@ -65,5 +75,14 @@ describe('ConstructSelector', () => {
 
     const selectedFromL2 = ConstructSelector.cfnResource().select(l2Bucket);
     expect(selectedFromL2.length).toBeGreaterThan(0);
+  });
+
+  test('onlyItself() selects only the provided construct', () => {
+    const construct1 = new TestConstruct(stack, 'test1');
+    new TestConstruct(construct1, 'child');
+
+    const selected = ConstructSelector.onlyItself().select(construct1);
+    expect(selected).toEqual([construct1]);
+    expect(selected.length).toBe(1);
   });
 });

@@ -5,11 +5,12 @@ import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
 import { DeletionProtectionCheck } from './util';
-import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IEnvironmentRef, EnvironmentReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -55,6 +56,13 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   protected extensible!: ExtensibleBase;
   protected deploymentQueue: Array<CfnDeployment> = [];
 
+  public get environmentRef(): EnvironmentReference {
+    return {
+      applicationId: this.applicationId,
+      environmentId: this.environmentId,
+    };
+  }
+
   public addDeployment(configuration: IConfiguration): void {
     if (this.name === undefined) {
       throw new ValidationError('Environment name must be known to add a Deployment', this);
@@ -64,7 +72,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
       new CfnDeployment(configuration, `Deployment${getHash(this.name)}`, {
         applicationId: configuration.application.applicationId,
         configurationProfileId: configuration.configurationProfileId,
-        deploymentStrategyId: configuration.deploymentStrategy!.deploymentStrategyId,
+        deploymentStrategyId: configuration.deploymentStrategy!.deploymentStrategyRef.deploymentStrategyId,
         environmentId: this.environmentId,
         configurationVersion: configuration.versionNumber!,
         description: configuration.description,
@@ -124,6 +132,9 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     this.extensible.addExtension(extension);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -132,6 +143,9 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantReadConfig(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
@@ -189,6 +203,7 @@ export interface EnvironmentProps extends EnvironmentOptions {
 
 /**
  * An AWS AppConfig environment.
+ * [disable-awslint:no-grants]
  *
  * @resource AWS::AppConfig::Environment
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-environment.html
@@ -403,9 +418,9 @@ export abstract class Monitor {
    * @param alarm The Amazon CloudWatch alarm.
    * @param alarmRole The IAM role for AWS AppConfig to view the alarm state.
    */
-  public static fromCloudWatchAlarm(alarm: cloudwatch.IAlarm, alarmRole?: iam.IRoleRef): Monitor {
+  public static fromCloudWatchAlarm(alarm: IAlarmRef, alarmRole?: iam.IRoleRef): Monitor {
     return {
-      alarmArn: alarm.alarmArn,
+      alarmArn: alarm.alarmRef.alarmArn,
       alarmRoleArn: alarmRole?.roleRef.roleArn,
       monitorType: MonitorType.CLOUDWATCH,
     };
@@ -448,7 +463,7 @@ export abstract class Monitor {
   public abstract readonly isCompositeAlarm?: boolean;
 }
 
-export interface IEnvironment extends IResource {
+export interface IEnvironment extends IResource, IEnvironmentRef {
   /**
    * The application associated with the environment.
    */

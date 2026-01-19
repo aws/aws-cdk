@@ -1,0 +1,16 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "Bucket-Test/DefaultTest": {
+      "stacks": [
+        "L1L2BucketWithL2Rule",
+        "L1BucketWithL1Rule",
+        "L2BucketWithL1Rule",
+        "L2BucketOtherEventsWithL2Rule"
+      ],
+      "assertionStack": "Bucket-Test/DefaultTest/DeployAssert",
+      "assertionStackName": "BucketTestDefaultTestDeployAssert4091776C"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

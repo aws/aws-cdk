@@ -2,7 +2,7 @@ import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConf
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sqs from '../../aws-sqs';
-import { FeatureFlags, ValidationError } from '../../core';
+import { FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -13,9 +13,10 @@ export interface SqsQueueProps extends TargetBaseProps {
   /**
    * Message Group ID for messages sent to this queue
    *
-   * Required for FIFO queues, leave empty for regular queues.
+   * Required for FIFO queues. For standard queues, this parameter is optional
+   * and can be used for SQS fair queue feature and deduplication.
    *
-   * @default - no message group ID (regular queue)
+   * @default - no message group ID
    */
   readonly messageGroupId?: string;
 
@@ -41,9 +42,7 @@ export interface SqsQueueProps extends TargetBaseProps {
  */
 export class SqsQueue implements events.IRuleTarget {
   constructor(public readonly queue: sqs.IQueue, private readonly props: SqsQueueProps = {}) {
-    if (props.messageGroupId !== undefined && !queue.fifo) {
-      throw new ValidationError('messageGroupId cannot be specified for non-FIFO queues', queue);
-    }
+    // messageGroupId is now supported for both FIFO and standard SQS queues
   }
 
   /**
@@ -52,13 +51,13 @@ export class SqsQueue implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const restrictToSameAccount = FeatureFlags.of(rule).isEnabled(cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT);
 
     let conditions: any = {};
     if (!this.queue.encryptionMasterKey) {
       conditions = {
-        ArnEquals: { 'aws:SourceArn': rule.ruleArn },
+        ArnEquals: { 'aws:SourceArn': events.CfnRule.arnForRule(rule) },
       };
     } else if (restrictToSameAccount) {
       // Add only the account id as a condition, to avoid circular dependency. See issue #11158.

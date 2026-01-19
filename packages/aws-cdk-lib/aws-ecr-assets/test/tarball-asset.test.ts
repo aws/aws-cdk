@@ -8,7 +8,7 @@ import { App, Stack, DefaultStackSynthesizer } from '../../core';
 import * as cxapi from '../../cx-api';
 import { TarballImageAsset, DOCKER_LOAD_OUTPUT_REGEX } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('image asset', () => {
   const currentCdkDocker = process.env.CDK_DOCKER;

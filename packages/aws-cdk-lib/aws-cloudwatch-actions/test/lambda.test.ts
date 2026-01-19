@@ -167,7 +167,7 @@ test('can create alarms of multiple step scaling policy for the same lambda if u
   });
 
   const policy1 = new appscaling.StepScalingPolicy(stack, 'Policy1', {
-    scalingTarget: scalableTarget as unknown as appscaling.IScalableTarget, // Double cast
+    scalingTarget: scalableTarget, // Double cast
     metric: table.metricConsumedReadCapacityUnits(),
     scalingSteps: [
       { lower: 0, upper: 1, change: -1 },
@@ -176,7 +176,7 @@ test('can create alarms of multiple step scaling policy for the same lambda if u
   });
 
   const policy2 = new appscaling.StepScalingPolicy(stack, 'Policy2', {
-    scalingTarget: scalableTarget as unknown as appscaling.IScalableTarget, // Double cast
+    scalingTarget: scalableTarget, // Double cast
     metric: table.metricConsumedReadCapacityUnits(),
     scalingSteps: [
       { lower: 0, upper: 2, change: -1 },

@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import * as events from '../../../aws-events';
 import { ResourceEnvironment, Stack, Token, TokenComparison } from '../../../core';
-import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, IStage } from '../action';
+import { IPipelineRef } from '../../../interfaces/generated/aws-codepipeline-interfaces.generated';
+import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IStage } from '../action';
 
 /**
  * Helper routines to work with Actions
@@ -19,7 +20,7 @@ import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, 
 export class RichAction implements IAction {
   public readonly actionProperties: ActionProperties;
 
-  constructor(private readonly action: IAction, private readonly pipeline: IPipeline) {
+  constructor(private readonly action: IAction, private readonly pipeline: IPipelineRef) {
     this.actionProperties = action.actionProperties;
   }
 

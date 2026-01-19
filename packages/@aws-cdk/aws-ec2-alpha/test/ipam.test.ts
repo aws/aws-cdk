@@ -1,5 +1,5 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as vpc from '../lib';
 import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
 

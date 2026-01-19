@@ -1,7 +1,7 @@
-import { Github } from '../../lib/github.js';
-import { PROJECT_NUMBER } from '../../lib/config.js';
 import * as fs from 'node:fs/promises';
 import { join } from 'node:path';
+import { PROJECT_NUMBER } from '../../lib/config.js';
+import { Github } from '../../lib/github.js';
 
 const gh = Github.default();
 

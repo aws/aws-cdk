@@ -1,11 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { BrowserCustom, BrowserSigning } from '../../../lib/tools/browser';
 import { BrowserNetworkConfiguration } from '../../../lib/network/network-configuration';
+import { BrowserCustom, BrowserSigning } from '../../../lib/tools/browser';
 
 describe('BrowserCustom default tests', () => {
   let template: Template;

@@ -329,6 +329,7 @@ export abstract class TableBase extends Resource implements ITable {
 
   /**
    * Grant the given identity custom permissions.
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
@@ -341,6 +342,7 @@ export abstract class TableBase extends Resource implements ITable {
   /**
    * Grant the given identity custom permissions to ALL underlying resources of the table.
    * Permissions will be granted to the catalog, the database, and the table.
+   * [disable-awslint:no-grants]
    */
   public grantToUnderlyingResources(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({

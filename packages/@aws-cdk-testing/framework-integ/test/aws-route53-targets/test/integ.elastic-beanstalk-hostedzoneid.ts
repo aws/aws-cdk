@@ -7,6 +7,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as custom from 'aws-cdk-lib/custom-resources';
 import { RegionInfo } from '@aws-cdk/region-info';
+import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 const app = new App({
   postCliContext: {
@@ -63,7 +64,7 @@ const optionSettings: elasticbeanstalk.CfnEnvironment.OptionSettingProperty[] = 
 
 const ebsEnv = new elasticbeanstalk.CfnEnvironment(stack, 'Environment', {
   applicationName,
-  solutionStackName: '64bit Amazon Linux 2023 v6.5.0 running Node.js 22',
+  solutionStackName: SOLUTION_STACK_NAME.NODEJS_22,
   optionSettings,
 });
 ebsEnv.addDependency(ebsApp);

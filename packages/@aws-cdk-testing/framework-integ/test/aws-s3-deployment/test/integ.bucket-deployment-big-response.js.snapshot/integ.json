@@ -1,14 +1,14 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "integ-test-bucket-deployments/DefaultTest": {
+    "integ-test-bucket-deployment-big-response/DefaultTest": {
       "stacks": [
         "test-bucket-deployments-too-many-sources"
       ],
       "diffAssets": true,
-      "assertionStack": "integ-test-bucket-deployments/DefaultTest/DeployAssert",
-      "assertionStackName": "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF"
+      "assertionStack": "integ-test-bucket-deployment-big-response/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentbigresponseDefaultTestDeployAssert8AFCF5AC"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

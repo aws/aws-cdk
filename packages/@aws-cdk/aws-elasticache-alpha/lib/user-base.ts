@@ -1,6 +1,6 @@
+import { IResource, Resource, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { IResource, Resource, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib/core';
 
 /**
  * Access control configuration for ElastiCache users.
@@ -44,7 +44,7 @@ export interface UserBaseProps {
    * The engine type for the user.
    * Enum options: UserEngine.VALKEY, UserEngine.REDIS.
    *
-   * @default UserEngine.VALKEY.
+   * @default - UserEngine.REDIS for NoPasswordUser, UserEngine.VALKEY for all other user types.
    */
   readonly engine?: UserEngine;
   /**

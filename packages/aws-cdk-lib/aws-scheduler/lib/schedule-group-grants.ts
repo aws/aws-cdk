@@ -1,4 +1,4 @@
-/* eslint-disable @stylistic/max-len, eol-last */
+/* eslint-disable eol-last */
 import * as scheduler from './scheduler.generated';
 import * as iam from '../../aws-iam';
 import { Arn, Aws } from '../../core';

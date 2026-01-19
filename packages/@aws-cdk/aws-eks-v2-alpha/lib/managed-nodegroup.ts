@@ -1,13 +1,13 @@
-import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
-import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
+import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
-import * as cxapi from 'aws-cdk-lib/cx-api';
-import { isGpuInstanceType } from './private/nodegroup';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import * as cxapi from 'aws-cdk-lib/cx-api';
+import { Construct, Node } from 'constructs';
+import { Cluster, ICluster, IpFamily } from './cluster';
+import { isGpuInstanceType } from './private/nodegroup';
 
 /**
  * NodeGroup interface
@@ -253,7 +253,7 @@ export interface NodegroupOptions {
   /**
    * The maximum number of worker nodes that the managed node group can scale out to. Managed node groups can support up to 100 nodes by default.
    *
-   * @default - desiredSize
+   * @default - same as desiredSize property
    */
   readonly maxSize?: number;
   /**
@@ -326,7 +326,7 @@ export interface NodegroupOptions {
    * a key and an optional value, both of which you define. Node group tags do not propagate to any other resources
    * associated with the node group, such as the Amazon EC2 instances or subnets.
    *
-   * @default - None
+   * @default None
    */
   readonly tags?: { [name: string]: string };
   /**
@@ -338,7 +338,7 @@ export interface NodegroupOptions {
   /**
    * The capacity type of the nodegroup.
    *
-   * @default - ON_DEMAND
+   * @default CapacityType.ON_DEMAND
    */
   readonly capacityType?: CapacityType;
 
@@ -368,7 +368,7 @@ export interface NodegroupOptions {
    * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair
-   * @default - disabled
+   * @default false
    */
   readonly enableNodeAutoRepair?: boolean;
 }

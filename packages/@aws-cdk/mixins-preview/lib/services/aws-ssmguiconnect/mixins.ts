@@ -1,1 +1,1 @@
-export * from './ssmguiconnect.generated';
+export * from './cfn-props-mixins.generated';

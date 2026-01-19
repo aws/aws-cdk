@@ -7,7 +7,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
-import { ICluster } from '../cluster';
+import { IClusterRef } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 
 // Reference for the source in this package:
 //
@@ -25,7 +25,7 @@ export interface InstanceDrainHookProps {
   /**
    * The cluster on which tasks have been scheduled
    */
-  cluster: ICluster;
+  cluster: IClusterRef;
 
   /**
    * How many seconds to give tasks to drain before the instance is terminated anyway
@@ -67,7 +67,7 @@ export class InstanceDrainHook extends Construct {
       // up to a maximum of 15 minutes.
       timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),
       environment: {
-        CLUSTER: props.cluster.clusterName,
+        CLUSTER: props.cluster.clusterRef.clusterName,
       },
     });
 
@@ -101,7 +101,7 @@ export class InstanceDrainHook extends Construct {
       actions: ['ecs:DescribeContainerInstances', 'ecs:DescribeTasks'],
       resources: ['*'],
       conditions: {
-        ArnEquals: { 'ecs:cluster': props.cluster.clusterArn },
+        ArnEquals: { 'ecs:cluster': props.cluster.clusterRef.clusterArn },
       },
     }));
 
@@ -112,7 +112,7 @@ export class InstanceDrainHook extends Construct {
         'ecs:SubmitContainerStateChange',
         'ecs:SubmitTaskStateChange',
       ],
-      resources: [props.cluster.clusterArn],
+      resources: [props.cluster.clusterRef.clusterArn],
     }));
 
     // Restrict the container-instance operations to the ECS Cluster
@@ -122,7 +122,7 @@ export class InstanceDrainHook extends Construct {
         'ecs:ListTasks',
       ],
       conditions: {
-        ArnEquals: { 'ecs:cluster': props.cluster.clusterArn },
+        ArnEquals: { 'ecs:cluster': props.cluster.clusterRef.clusterArn },
       },
       resources: ['*'],
     }));

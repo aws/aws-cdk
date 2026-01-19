@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "1739d134cc12c2bfacb3f33271be30269b14b61f8ff44318abb3e3a0db0877e8": {
+      "displayName": "aws-cdk-imagebuilder-image-container-all-parameters Template",
+      "source": {
+        "path": "aws-cdk-imagebuilder-image-container-all-parameters.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ce8f286a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1739d134cc12c2bfacb3f33271be30269b14b61f8ff44318abb3e3a0db0877e8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

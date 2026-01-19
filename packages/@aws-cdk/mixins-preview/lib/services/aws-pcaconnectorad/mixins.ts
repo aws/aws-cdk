@@ -1,1 +1,1 @@
-export * from './pcaconnectorad.generated';
+export * from './cfn-props-mixins.generated';

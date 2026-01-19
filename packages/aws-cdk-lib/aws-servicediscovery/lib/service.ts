@@ -11,8 +11,9 @@ import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IServiceRef, ServiceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
-export interface IService extends IResource {
+export interface IService extends IResource, IServiceRef {
   /**
    * A name for the Cloudmap Service.
    * @attribute
@@ -152,6 +153,13 @@ abstract class ServiceBase extends Resource implements IService {
   public abstract routingPolicy: RoutingPolicy;
   public abstract readonly serviceName: string;
   public abstract discoveryType: DiscoveryType;
+
+  public get serviceRef(): ServiceReference {
+    return {
+      serviceId: this.serviceId,
+      serviceArn: this.serviceArn,
+    };
+  }
 }
 
 export interface ServiceAttributes {

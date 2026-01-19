@@ -3,11 +3,12 @@ import { CfnDBClusterParameterGroup } from './docdb.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IDBClusterParameterGroupRef, DBClusterParameterGroupReference } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
 /**
  * A parameter group
  */
-export interface IClusterParameterGroup extends IResource {
+export interface IClusterParameterGroup extends IResource, IDBClusterParameterGroupRef {
   /**
    * The name of this parameter group
    */
@@ -24,6 +25,12 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
     class Import extends Resource implements IClusterParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
+
+      public get dbClusterParameterGroupRef(): DBClusterParameterGroupReference {
+        return {
+          dbClusterParameterGroupId: this.parameterGroupName,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -32,6 +39,15 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
    * The name of the parameter group
    */
   public abstract readonly parameterGroupName: string;
+
+  /**
+   * A reference to this parameter group.
+   */
+  public get dbClusterParameterGroupRef(): DBClusterParameterGroupReference {
+    return {
+      dbClusterParameterGroupId: this.parameterGroupName,
+    };
+  }
 }
 
 /**

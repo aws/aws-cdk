@@ -12,7 +12,7 @@ type TestStackProps = {
   certificateArn: string;
   domainName: string;
   hostedZoneId: string;
-}
+};
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props: TestStackProps) {

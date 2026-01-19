@@ -3,18 +3,18 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { CfnCluster } from 'aws-cdk-lib/aws-msk';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as core from 'aws-cdk-lib/core';
 import { FeatureFlags } from 'aws-cdk-lib/core';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from 'aws-cdk-lib/cx-api';
 import * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
-import { CfnCluster } from 'aws-cdk-lib/aws-msk';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a MSK Cluster
@@ -530,11 +530,12 @@ export class Cluster extends ClusterBase {
 
     if (isExpress) {
       // Validate Kafka version compatibility
-      const supportedVersions = ['3.6', '3.8'];
+      // express broker documentation for supported versions https://docs.aws.amazon.com/msk/latest/developerguide/msk-broker-types-express.html#msk-broker-types-express-notes
+      const supportedVersions = ['3.6', '3.8', '3.9'];
       const kafkaVersionString = props.kafkaVersion.version;
       const isCompatibleVersion = supportedVersions.some(version => kafkaVersionString.includes(version));
       if (!isCompatibleVersion) {
-        throw new core.ValidationError(`Express brokers are only supported with Apache Kafka 3.6.x and 3.8.x, got ${kafkaVersionString}`, this);
+        throw new core.ValidationError(`Express brokers are only supported with Apache Kafka ${supportedVersions.join(', ')}, got ${kafkaVersionString}`, this);
       }
 
       if (!props.instanceType) {

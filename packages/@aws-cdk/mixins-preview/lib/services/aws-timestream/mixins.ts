@@ -1,1 +1,1 @@
-export * from './timestream.generated';
+export * from './cfn-props-mixins.generated';

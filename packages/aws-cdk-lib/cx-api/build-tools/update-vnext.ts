@@ -1,3 +1,4 @@
+
 /**
  * Load the `features.ts` source file, and replace the "V2NEXT" version markers with the actual current version
  */
@@ -23,7 +24,6 @@ async function main() {
 }
 
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

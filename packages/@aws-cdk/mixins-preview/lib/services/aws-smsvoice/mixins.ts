@@ -1,1 +1,1 @@
-export * from './smsvoice.generated';
+export * from './cfn-props-mixins.generated';

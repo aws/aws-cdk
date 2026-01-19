@@ -1,1 +1,1 @@
-export * from './opsworkscm.generated';
+export * from './cfn-props-mixins.generated';

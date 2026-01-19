@@ -31,14 +31,14 @@ export interface CodeBuildProjectProps extends TargetBaseProps {
  */
 export class CodeBuildProject implements events.IRuleTarget {
   constructor(
-    private readonly project: codebuild.IProject,
+    private readonly project: codebuild.IProjectRef,
     private readonly props: CodeBuildProjectProps = {},
   ) {}
 
   /**
    * Allows using build projects as event rule targets.
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
     }
@@ -46,12 +46,12 @@ export class CodeBuildProject implements events.IRuleTarget {
     const role = this.props.eventRole || singletonEventRole(this.project);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['codebuild:StartBuild'],
-      resources: [this.project.projectArn],
+      resources: [this.project.projectRef.projectArn],
     }));
 
     return {
       ...bindBaseTargetConfig(this.props),
-      arn: this.project.projectArn,
+      arn: this.project.projectRef.projectArn,
       role,
       input: this.props.event,
       targetResource: this.project,

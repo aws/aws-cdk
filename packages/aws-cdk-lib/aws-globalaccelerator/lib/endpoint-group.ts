@@ -2,16 +2,16 @@ import { Construct } from 'constructs';
 import { AcceleratorSecurityGroupPeer } from './_accelerator-security-group';
 import { IEndpoint } from './endpoint';
 import * as ga from './globalaccelerator.generated';
-import { IListener } from './listener';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IEndpointGroupRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
 /**
  * The interface of the EndpointGroup
  */
-export interface IEndpointGroup extends cdk.IResource {
+export interface IEndpointGroup extends cdk.IResource, IEndpointGroupRef {
   /**
    * EndpointGroup ARN
    * @attribute
@@ -148,7 +148,7 @@ export interface EndpointGroupProps extends EndpointGroupOptions {
   /**
    * The Amazon Resource Name (ARN) of the listener.
    */
-  readonly listener: IListener;
+  readonly listener: IListenerRef;
 }
 
 /**
@@ -165,6 +165,12 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   public static fromEndpointGroupArn(scope: Construct, id: string, endpointGroupArn: string): IEndpointGroup {
     class Import extends cdk.Resource implements IEndpointGroup {
       public readonly endpointGroupArn = endpointGroupArn;
+
+      public get endpointGroupRef(): ga.EndpointGroupReference {
+        return {
+          endpointGroupArn: this.endpointGroupArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -182,13 +188,19 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
    */
   protected readonly endpoints = new Array<IEndpoint>();
 
+  public get endpointGroupRef(): ga.EndpointGroupReference {
+    return {
+      endpointGroupArn: this.endpointGroupArn,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: EndpointGroupProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
-      listenerArn: props.listener.listenerArn,
+      listenerArn: props.listener.listenerRef.listenerArn,
       endpointGroupRegion: props.region ?? cdk.Lazy.string({ produce: () => this.firstEndpointRegion() }),
       endpointConfigurations: cdk.Lazy.any({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
       healthCheckIntervalSeconds: props.healthCheckInterval?.toSeconds({ integral: true }),

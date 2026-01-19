@@ -3,12 +3,11 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { CfnResource } from 'aws-cdk-lib';
 
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -69,6 +68,13 @@ container.addPortMappings({
 // Create a security group that allows tcp @ port 80
 const securityGroup = new ec2.SecurityGroup(stack, 'websvc-sg', { vpc });
 securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
+
+// Suppress security guardian rule for intentional test setup
+const cfnSecurityGroup = securityGroup.node.defaultChild as CfnResource;
+cfnSecurityGroup.addMetadata('guard', {
+  SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+});
+
 new ecs.Ec2Service(stack, 'Service', {
   cluster,
   taskDefinition,

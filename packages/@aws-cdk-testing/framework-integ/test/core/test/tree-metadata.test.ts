@@ -206,13 +206,13 @@ describe('tree metadata', () => {
     // GIVEN
     const buildStart = Date.now();
     const addedNodes = recurseBuild(app, 4, 4);
-    // eslint-disable-next-line no-console
+
     console.log('Built tree in', Date.now() - buildStart, 'ms');
 
     // WHEN
     const synthStart = Date.now();
     const assembly = app.synth();
-    // eslint-disable-next-line no-console
+
     console.log('Synthed tree in', Date.now() - synthStart, 'ms');
     try {
       const treeArtifact = assembly.tree();

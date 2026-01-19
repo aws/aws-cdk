@@ -1,7 +1,7 @@
+import { Stack, Size } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Stack, Size } from 'aws-cdk-lib';
 import { CacheEngine, ServerlessCache, UserEngine, UserGroup } from '../lib';
 
 describe('serverless cache', () => {
@@ -107,6 +107,22 @@ describe('serverless cache', () => {
         Description: 'Serverless cache',
         Engine: engine,
         MajorEngineVersion: version,
+      });
+    });
+
+    test('allow security group ingress with endpoint port', () => {
+      const cache = new ServerlessCache(stack, 'Cache', {
+        vpc,
+      });
+      new SecurityGroup(stack, 'SecurityGroup', { vpc }).connections.allowToDefaultPort(cache);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        FromPort: {
+          'Fn::GetAtt': ['Cache18F6EE16', 'Endpoint.Port'],
+        },
+        ToPort: {
+          'Fn::GetAtt': ['Cache18F6EE16', 'Endpoint.Port'],
+        },
       });
     });
   });

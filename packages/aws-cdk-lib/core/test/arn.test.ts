@@ -247,9 +247,8 @@ describe('arn', () => {
 
       expect(parsed.sep).toEqual('/');
 
-      // eslint-disable-next-line max-len
       expect(stack.resolve(parsed.resource)).toEqual({ 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
-      // eslint-disable-next-line max-len
+
       expect(stack.resolve(parsed.resourceName)).toEqual({ 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
     });
 

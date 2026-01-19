@@ -6,6 +6,7 @@ import {
   Resource,
   ValidationError,
 } from 'aws-cdk-lib';
+import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
   DimensionsMap,
   Metric,
@@ -13,12 +14,11 @@ import {
   MetricProps,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
-import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
@@ -200,6 +200,9 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
 
   /**
    * Grants IAM actions to the IAM Principal
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant permissions to
    * @param actions - The actions to grant
    * @returns An IAM Grant object representing the granted permissions
@@ -215,6 +218,8 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   /**
    * Grant read permissions on this code interpreter to an IAM principal.
    * This includes both read permissions on the specific code interpreter and list permissions on all code interpreters.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
@@ -240,6 +245,8 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   /**
    * Grant invoke permissions on this code interpreter to an IAM principal.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant invoke permissions to
    * @default - Default grant configuration:
    * - actions: ['bedrock-agentcore:StartCodeInterpreterSession', 'bedrock-agentcore:InvokeCodeInterpreter', 'bedrock-agentcore:StopCodeInterpreterSession']
@@ -255,6 +262,8 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
 
   /**
    * Grant invoke permissions on this code interpreter to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant invoke permissions to
    * @returns An IAM Grant object representing the granted permissions

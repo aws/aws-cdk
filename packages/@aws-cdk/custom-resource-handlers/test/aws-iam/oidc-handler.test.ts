@@ -5,12 +5,12 @@ import * as handler from '../../lib/aws-iam/oidc-handler/index';
 
 describe('custom resource provider handler', () => {
   external.log = () => { return; }; // disable verbosity for tests
-  const downloadThumbprint = external.downloadThumbprint = sinon.fake.returns('FAKE-THUMBPRINT');
-  const createOpenIDConnectProvider = external.createOpenIDConnectProvider = sinon.fake.resolves({ OpenIDConnectProviderArn: 'FAKE-ARN' });
-  const deleteOpenIDConnectProvider = external.deleteOpenIDConnectProvider = sinon.fake.resolves({ });
-  const updateOpenIDConnectProviderThumbprint = external.updateOpenIDConnectProviderThumbprint = sinon.fake.resolves({ });
-  const addClientIDToOpenIDConnectProvider = external.addClientIDToOpenIDConnectProvider = sinon.fake.resolves({ });
-  const removeClientIDFromOpenIDConnectProvider = external.removeClientIDFromOpenIDConnectProvider = sinon.fake.resolves({ });
+  const downloadThumbprint = external.downloadThumbprint = sinon.fake.resolves('FAKE-THUMBPRINT');
+  const createOpenIDConnectProvider = external.createOpenIDConnectProvider = sinon.fake.resolves({ OpenIDConnectProviderArn: 'FAKE-ARN' } as any);
+  const deleteOpenIDConnectProvider = external.deleteOpenIDConnectProvider = sinon.fake.resolves({ } as any);
+  const updateOpenIDConnectProviderThumbprint = external.updateOpenIDConnectProviderThumbprint = sinon.fake.resolves({ } as any);
+  const addClientIDToOpenIDConnectProvider = external.addClientIDToOpenIDConnectProvider = sinon.fake.resolves({ } as any);
+  const removeClientIDFromOpenIDConnectProvider = external.removeClientIDFromOpenIDConnectProvider = sinon.fake.resolves({ } as any);
 
   beforeEach(() => sinon.reset());
 
@@ -92,6 +92,7 @@ describe('custom resource provider handler', () => {
         ThumbprintList: ['THUMB1', 'THUMB2'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://old',
       },
     });
@@ -120,6 +121,7 @@ describe('custom resource provider handler', () => {
         Url: 'https://new',
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://old',
       },
     });
@@ -150,6 +152,7 @@ describe('custom resource provider handler', () => {
         RejectUnauthorized: true,
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://old',
       },
     });
@@ -181,6 +184,7 @@ describe('custom resource provider handler', () => {
         ThumbprintList: ['Foo', 'Bar'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://url',
         ThumbprintList: ['Foo'],
       },
@@ -207,6 +211,7 @@ describe('custom resource provider handler', () => {
         ClientIDList: ['A', 'B', 'C'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://url',
         ClientIDList: ['A', 'D'],
       },
@@ -239,6 +244,7 @@ describe('custom resource provider handler', () => {
         ClientIDList: ['A'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://url',
         ThumbprintList: ['OLD-LIST'],
         ClientIDList: [],
@@ -271,6 +277,7 @@ describe('custom resource provider handler', () => {
         ClientIDList: ['A'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://old-url',
         ThumbprintList: ['OLD-LIST'],
         ClientIDList: [],

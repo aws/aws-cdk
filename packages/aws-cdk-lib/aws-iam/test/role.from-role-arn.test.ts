@@ -5,7 +5,7 @@ import {
 } from '../../cx-api';
 import { AnyPrincipal, ArnPrincipal, Grant, IRole, Policy, PolicyStatement, Role } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 const roleAccount = '123456789012';
 const notRoleAccount = '012345678901';

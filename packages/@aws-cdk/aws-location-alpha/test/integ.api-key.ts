@@ -1,5 +1,5 @@
-import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { App, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { AllowMapsAction, AllowPlacesAction, AllowRoutesAction, ApiKey } from '../lib';
 

@@ -96,9 +96,9 @@ describe('Pipeline Actions', () => {
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
-              // eslint-disable-next-line max-len
+
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*']] },
-              // eslint-disable-next-line max-len
+
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*']] },
             ],
           },
@@ -168,9 +168,9 @@ describe('Pipeline Actions', () => {
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
-              // eslint-disable-next-line max-len
+
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*']] },
-              // eslint-disable-next-line max-len
+
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*']] },
             ],
           },
@@ -382,6 +382,11 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
     _scope: Construct,
   ): notifications.NotificationRuleSourceConfig {
     throw new Error('Method not implemented.');
+  }
+  public get pipelineRef(): import('../../../interfaces/generated/aws-codepipeline-interfaces.generated').PipelineReference {
+    return {
+      pipelineName: this.pipelineName,
+    };
   }
 }
 

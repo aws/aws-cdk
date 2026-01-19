@@ -30,7 +30,6 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
   // ------
 
   protected async onCreate(): Promise<AmplifyJobId> {
-    // eslint-disable-next-line no-console
     console.log('deploying to Amplify with options:', JSON.stringify(this.props, undefined, 2));
 
     // Verify no jobs are currently running.

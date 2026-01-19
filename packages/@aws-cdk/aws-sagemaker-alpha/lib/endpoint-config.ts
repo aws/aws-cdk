@@ -1,14 +1,14 @@
 import { EOL } from 'os';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { AcceleratorType } from './accelerator-type';
 import { InstanceType } from './instance-type';
 import { IModel } from './model';
 import { sameEnv } from './private/util';
-import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The interface for a SageMaker EndpointConfig resource.

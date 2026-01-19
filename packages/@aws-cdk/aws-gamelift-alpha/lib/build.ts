@@ -1,12 +1,12 @@
+import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { Content } from './content';
-import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { Content } from './content';
 
 /**
  * Your custom-built game server software that runs on GameLift and hosts game sessions for your players.
@@ -170,7 +170,7 @@ export interface BuildProps {
    *
    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html
    *
-   * @default - 4.0.2
+   * @default '4.0.2'
    */
   readonly serverSdkVersion?: string;
 }

@@ -1186,7 +1186,7 @@ describe('tests', () => {
         const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
 
         // WHEN
-        const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
           vpc,
           internetFacing: true,
           securityGroups: [sg1, sg2],
@@ -1220,7 +1220,7 @@ describe('tests', () => {
         const vpc = new ec2.Vpc(stack, 'Stack');
 
         // WHEN
-        const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
           vpc,
           internetFacing: true,
           securityGroups: [],
@@ -1241,7 +1241,7 @@ describe('tests', () => {
         const vpc = new ec2.Vpc(stack, 'Stack');
 
         // WHEN
-        const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
           vpc,
           internetFacing: true,
           disableSecurityGroups: true,
@@ -1262,7 +1262,7 @@ describe('tests', () => {
         const vpc = new ec2.Vpc(stack, 'Stack');
 
         // WHEN
-        const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
           vpc,
           internetFacing: true,
           disableSecurityGroups: false,

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "FunctionCapacityProviderMinimalTest/DefaultTest": {
+      "stacks": [
+        "FunctionCapacityProviderMinimalStack"
+      ],
+      "assertionStack": "FunctionCapacityProviderMinimalTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FunctionCapacityProviderMinimalTestDefaultTestDeployAssertBF6B9172"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -5,7 +5,7 @@ import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('variables', () => {
   describe('action-level variables', () => {

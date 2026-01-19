@@ -718,6 +718,52 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
 }));
 ```
 
+## Send events to an SQS queue
+
+Use the `SqsQueue` target to send events to an SQS queue.
+
+The code snippet below creates an event rule that sends events to an SQS queue every hour:
+
+```ts
+const queue = new sqs.Queue(this, 'MyQueue');
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.SqsQueue(queue));
+```
+
+### Using Message Group IDs
+
+You can specify a `messageGroupId` to ensure messages are processed in order. This parameter is required for FIFO queues and optional for standard queues:
+
+```ts
+// FIFO queue - messageGroupId required
+const fifoQueue = new sqs.Queue(this, 'MyFifoQueue', {
+  fifo: true,
+});
+
+const fifoRule = new events.Rule(this, 'FifoRule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+fifoRule.addTarget(new targets.SqsQueue(fifoQueue, {
+  messageGroupId: 'MyMessageGroupId',
+}));
+
+// Standard queue - messageGroupId optional (SQS Fair queue feature)
+const standardQueue = new sqs.Queue(this, 'MyStandardQueue');
+
+const standardRule = new events.Rule(this, 'StandardRule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+standardRule.addTarget(new targets.SqsQueue(standardQueue, {
+  messageGroupId: 'MyMessageGroupId', // Optional for standard queues
+}));
+```
+
 ## Publish to an SNS Topic
 
 Use the `SnsTopic` target to publish to an SNS Topic.

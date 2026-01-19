@@ -4,7 +4,7 @@ import * as codepipeline from '../../../aws-codepipeline';
 import { App, Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('CodeStar Connections source Action', () => {
   describe('CodeStar Connections source Action', () => {

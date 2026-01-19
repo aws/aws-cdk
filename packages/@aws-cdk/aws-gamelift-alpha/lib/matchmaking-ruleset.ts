@@ -1,10 +1,10 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
-import { RuleSetContent } from './matchmaking-ruleset-body';
+import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { RuleSetContent } from './matchmaking-ruleset-body';
 
 /**
  * Represents a Gamelift matchmaking ruleset

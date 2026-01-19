@@ -9,7 +9,7 @@ export interface IAlarmAction {
    * Return the properties required to send alarm actions to this CloudWatch alarm.
    *
    * @param scope root Construct that allows creating new Constructs
-   * @param alarm CloudWatch alarm that the action will target
+   * @param alarm CloudWatch alarm that the action will target [disable-awslint:prefer-ref-interface]
    */
   bind(scope: Construct, alarm: IAlarm): AlarmActionConfig;
 }

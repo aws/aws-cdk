@@ -1,6 +1,8 @@
 name: Security Guardian
 on:
-  pull_request: {}
+  pull_request:
+    paths:
+      - '**.js.snapshot**'
 
 jobs:
   log-skip:
@@ -19,6 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0  
 
       - name: Install cfn-guard
@@ -34,10 +37,21 @@ jobs:
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/security-guardian && yarn build
 
       - name: Run Security Guardian
+        id: security-guardian
         uses: ./tools/@aws-cdk/security-guardian
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           head_sha: ${{ github.event.pull_request.head.sha }}
           rule_set_path: './tools/@aws-cdk/security-guardian/rules'
-          show_summary: 'fail'
-          output_format: 'json'
+      - name: Save PR info for security-report
+        if: always()
+        run: |
+          echo "${{ github.event.pull_request.number }}" > ./test-results/pr_number
+          echo "${{ github.event.pull_request.head.sha }}" > ./test-results/pr_sha
+      
+      - name: Upload Security Guardian XML Reports
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: security-guardian-reports
+          path: test-results/

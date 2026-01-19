@@ -1,7 +1,8 @@
-/* eslint-disable-next-line import/no-unresolved */
-import * as AWSLambda from 'aws-lambda';
-/* eslint-disable-next-line import/no-extraneous-dependencies */
+/* eslint-disable import/no-extraneous-dependencies */
+
 import { SecretsManager } from '@aws-sdk/client-secrets-manager';
+import type * as AWSLambda from 'aws-lambda';
+
 import { executeStatement } from './redshift-data';
 import { ClusterProps } from './types';
 import { makePhysicalId } from './util';

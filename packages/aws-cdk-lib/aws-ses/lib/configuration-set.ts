@@ -1,16 +1,16 @@
 import { Construct } from 'constructs';
 import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
-import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
 import { Duration, IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IDedicatedIpPoolRef, IConfigurationSetRef, ConfigurationSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A configuration set
  */
-export interface IConfigurationSet extends IResource {
+export interface IConfigurationSet extends IResource, IConfigurationSetRef {
   /**
    * The name of the configuration set
    *
@@ -35,7 +35,7 @@ export interface ConfigurationSetProps {
    *
    * @default - do not use a dedicated IP pool
    */
-  readonly dedicatedIpPool?: IDedicatedIpPool;
+  readonly dedicatedIpPool?: IDedicatedIpPoolRef;
 
   /**
    * Specifies whether messages that use the configuration set are required to
@@ -201,11 +201,23 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
   public static fromConfigurationSetName(scope: Construct, id: string, configurationSetName: string): IConfigurationSet {
     class Import extends Resource implements IConfigurationSet {
       public readonly configurationSetName = configurationSetName;
+
+      public get configurationSetRef(): ConfigurationSetReference {
+        return {
+          configurationSetName: this.configurationSetName,
+        };
+      }
     }
     return new Import(scope, id);
   }
 
   public readonly configurationSetName: string;
+
+  public get configurationSetRef(): ConfigurationSetReference {
+    return {
+      configurationSetName: this.configurationSetName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ConfigurationSetProps = {}) {
     super(scope, id, {
@@ -231,7 +243,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
       deliveryOptions: undefinedIfNoKeys({
-        sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolName,
+        sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolRef.poolName,
         tlsPolicy: props.tlsPolicy,
         maxDeliverySeconds: props.maxDeliveryDuration?.toSeconds(),
       }),

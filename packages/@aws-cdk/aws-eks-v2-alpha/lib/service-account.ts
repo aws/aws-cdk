@@ -1,13 +1,13 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
-// import { FargateCluster } from './index';
 import { CfnPodIdentityAssociation } from 'aws-cdk-lib/aws-eks';
-import { KubernetesManifest } from './k8s-manifest';
 import {
   AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { CfnJson, Names } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
+// import { FargateCluster } from './index';
+import { KubernetesManifest } from './k8s-manifest';
 
 /**
  * Enum representing the different identity types that can be used for a Kubernetes service account.

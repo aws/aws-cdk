@@ -249,6 +249,41 @@ const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
 });
 ```
 
+#### Option 4: Use an ECR container image URI
+
+Reference an ECR container image directly by its URI. This is useful when you have a pre-existing ECR image URI from CloudFormation parameters or cross-stack references. No IAM permissions are automatically granted - you must ensure the runtime has ECR pull permissions.
+
+```typescript fixture=default
+// Direct URI reference
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromImageUri(
+  "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:v1.0.0"
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+You can also use CloudFormation parameters or references:
+
+```typescript fixture=default
+// Using a CloudFormation parameter
+const imageUriParam = new cdk.CfnParameter(this, "ImageUri", {
+  type: "String",
+  description: "Container image URI for the agent runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromImageUri(
+  imageUriParam.valueAsString
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
 ### Granting Permissions to Invoke Bedrock Models or Inference Profiles
 
 To grant the runtime permissions to invoke Bedrock models or inference profiles:
@@ -578,6 +613,54 @@ runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow Po
 
 // Allow outbound HTTPS to anywhere (for external API calls)
 runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
+```
+
+### Runtime IAM Permissions
+
+The Runtime construct provides convenient methods for granting IAM permissions to principals that need to invoke the runtime or manage its execution role.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create a runtime
+const runtime = new agentcore.Runtime(this, "MyRuntime", {
+  runtimeName: "my_runtime",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+
+// Create a Lambda function that needs to invoke the runtime
+const invokerFunction = new lambda.Function(this, "InvokerFunction", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+import boto3
+def handler(event, context):
+    client = boto3.client('bedrock-agentcore')
+    # Invoke the runtime...
+  `),
+});
+
+// Grant permission to invoke the runtime directly
+runtime.grantInvokeRuntime(invokerFunction);
+
+// Grant permission to invoke the runtime on behalf of a user
+// (requires X-Amzn-Bedrock-AgentCore-Runtime-User-Id header)
+runtime.grantInvokeRuntimeForUser(invokerFunction);
+
+// Grant both invoke permissions (most common use case)
+runtime.grantInvoke(invokerFunction);
+
+// Grant specific custom permissions to the runtime's execution role
+runtime.grant(['bedrock:InvokeModel'], ['arn:aws:bedrock:*:*:*']);
+
+// Add a policy statement to the runtime's execution role
+runtime.addToRolePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['arn:aws:s3:::my-bucket/*'],
+}));
 ```
 
 ### Other configuration
@@ -1083,6 +1166,39 @@ const lambdaRole = new iam.Role(this, "LambdaRole", {
 
 // The Lambda needs permission to invoke the gateway
 gateway.grantInvoke(lambdaRole);
+```
+
+**Cognito with M2M (Machine-to-Machine) Authentication (Default)** – When no authorizer is specified, the construct automatically creates a Cognito User Pool configured for OAuth 2.0 client credentials flow. This enables machine-to-machine authentication suitable for AI agents and service-to-service communication.
+
+For more information, see [Setting up Amazon Cognito for Gateway inbound authorization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-cognito.html).
+
+```typescript fixture=default
+// Create a gateway with default Cognito M2M authorizer
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Access the Cognito resources for authentication setup
+const userPool = gateway.userPool;
+const userPoolClient = gateway.userPoolClient;
+
+// Get the token endpoint URL and OAuth scopes for client credentials flow
+const tokenEndpointUrl = gateway.tokenEndpointUrl;
+const oauthScopes = gateway.oauthScopes;
+// oauthScopes are in the format: ['{resourceServerId}/read', '{resourceServerId}/write']
+```
+
+To authenticate with the gateway, request an access token using the client credentials flow and use it to call Gateway endpoints. For more information about the token endpoint, see [The token issuer endpoint](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html).
+
+The following is an example of a token request using curl:
+
+```bash
+curl -X POST "${TOKEN_ENDPOINT_URL}" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=${USER_POOL_CLIENT_ID}" \
+  -d "client_secret=${CLIENT_SECRET}" \
+  -d "scope=${OAUTH_SCOPES}"
 ```
 
 ### Gateway with KMS Encryption

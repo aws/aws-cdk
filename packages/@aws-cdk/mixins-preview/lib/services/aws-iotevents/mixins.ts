@@ -1,1 +1,1 @@
-export * from './iotevents.generated';
+export * from './cfn-props-mixins.generated';

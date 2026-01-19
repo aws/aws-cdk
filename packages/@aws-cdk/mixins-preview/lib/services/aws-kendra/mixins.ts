@@ -1,1 +1,1 @@
-export * from './kendra.generated';
+export * from './cfn-props-mixins.generated';

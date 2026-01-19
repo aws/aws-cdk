@@ -1,1 +1,1 @@
-export * from './codestarnotifications.generated';
+export * from './cfn-props-mixins.generated';

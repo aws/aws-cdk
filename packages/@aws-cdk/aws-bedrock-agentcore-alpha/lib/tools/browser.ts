@@ -8,6 +8,7 @@ import {
   Stack,
   ValidationError,
 } from 'aws-cdk-lib';
+import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
   DimensionsMap,
   Metric,
@@ -15,14 +16,13 @@ import {
   MetricProps,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Location } from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
@@ -235,6 +235,9 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 
   /**
    * Grants IAM actions to the IAM Principal
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant permissions to
    * @param actions - The actions to grant
    * @returns An IAM Grant object representing the granted permissions
@@ -250,6 +253,8 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
   /**
    * Grant read permissions on this browser to an IAM principal.
    * This includes both read permissions on the specific browser and list permissions on all browsers.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
@@ -274,6 +279,8 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 
   /**
    * Grant invoke permissions on this browser to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant invoke permissions to
    * @default - Default grant configuration:
@@ -483,7 +490,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 export interface RecordingConfig {
   /**
    * Whether recording is enabled
-   * @default - false
+   * @default false
    */
   readonly enabled?: boolean;
 

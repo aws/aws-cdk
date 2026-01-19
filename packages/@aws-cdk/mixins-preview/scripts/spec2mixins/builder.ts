@@ -5,11 +5,11 @@ import { ResourceDecider } from '@aws-cdk/spec2cdk/lib/cdk/resource-decider';
 import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
 import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
 import type { Method } from '@cdklabs/typewriter';
-import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, stmt, $E, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
+import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, stmt, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
 import { MIXINS_COMMON, MIXINS_CORE, MIXINS_UTILS } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import type { LocatedModule, SelectiveImport, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
+import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 
 class MixinsServiceModule extends BaseServiceSubmodule {
@@ -22,7 +22,6 @@ class MixinsServiceModule extends BaseServiceSubmodule {
 }
 
 export interface MixinsBuilderProps extends LibraryBuilderProps {
-  filePattern?: string;
 }
 
 export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
@@ -30,7 +29,7 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
 
   public constructor(props: MixinsBuilderProps) {
     super(props);
-    this.filePattern = props.filePattern ?? '%moduleName%/%serviceShortName%.generated.ts';
+    this.filePattern = '%moduleName%/cfn-props-mixins.generated.ts';
   }
 
   protected createServiceSubmodule(service: Service, submoduleName: string): MixinsServiceModule {
@@ -48,8 +47,6 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
     submodule.registerResource(resource.cloudFormationType, l1PropsMixin);
 
     l1PropsMixin.build();
-
-    submodule.registerSelectiveImports(...l1PropsMixin.imports);
   }
 
   private createMixinsModule(submodule: MixinsServiceModule, service: Service): LocatedModule<Module> {
@@ -87,7 +84,6 @@ class L1PropsMixin extends ClassType {
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
-  public readonly imports = new Array<SelectiveImport>();
 
   constructor(
     scope: Module,
@@ -127,14 +123,17 @@ class L1PropsMixin extends ClassType {
       },
     });
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db, false);
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, {
+      enableRelationships: false,
+      enableNestedRelationships: false,
+      refsImportLocation: 'aws-cdk-lib/interfaces',
+    });
     this.converter = TypeConverter.forMixin({
       db: db,
       resource: this.resource,
       resourceClass: this,
       relationshipDecider: this.relationshipDecider,
     });
-    this.imports = this.relationshipDecider.imports;
     this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
   }
 
@@ -230,9 +229,9 @@ class L1PropsMixin extends ClassType {
     method.addBody(
       stmt.ret(
         expr.binOp(
-          $E(expr.sym(CDK_CORE.CfnResource.symbol!)).isCfnResource(construct),
+          CallableProxy.fromName('CfnResource.isCfnResource', CDK_CORE).invoke(construct),
           '&&',
-          expr.eq($E(construct).cfnResourceType, expr.lit(this.resource.cloudFormationType)),
+          expr.eq(expr.get(construct, 'cfnResourceType'), expr.lit(this.resource.cloudFormationType)),
         ),
       ),
     );

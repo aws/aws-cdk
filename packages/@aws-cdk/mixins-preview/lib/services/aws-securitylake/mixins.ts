@@ -1,1 +1,1 @@
-export * from './securitylake.generated';
+export * from './cfn-props-mixins.generated';

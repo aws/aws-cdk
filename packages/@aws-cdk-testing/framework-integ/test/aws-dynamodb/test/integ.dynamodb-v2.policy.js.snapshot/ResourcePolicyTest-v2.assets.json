@@ -1,17 +1,17 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "192dc5b63bb0eb2c99bc1ea8a8fe1237a00e5067ac672d4e4f0986700f476849": {
+    "e31245b8f42cdabbe8b24f65dae6f9943d7c98ecfccc039072da8d27bffc67c7": {
+      "displayName": "ResourcePolicyTest-v2 Template",
       "source": {
         "path": "ResourcePolicyTest-v2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-west-1": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "192dc5b63bb0eb2c99bc1ea8a8fe1237a00e5067ac672d4e4f0986700f476849.json",
-          "region": "eu-west-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
+        "current_account-current_region-9f0f7b42": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e31245b8f42cdabbe8b24f65dae6f9943d7c98ecfccc039072da8d27bffc67c7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }

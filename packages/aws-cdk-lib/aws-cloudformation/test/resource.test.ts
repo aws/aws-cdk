@@ -6,8 +6,7 @@ import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
-/* eslint-disable @cdklabs/no-core-construct */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describeDeprecated('custom resources honor removalPolicy', () => {
   test('unspecified (aka .Destroy)', () => {

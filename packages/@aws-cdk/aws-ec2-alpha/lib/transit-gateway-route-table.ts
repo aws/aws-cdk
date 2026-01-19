@@ -1,13 +1,13 @@
-import { IResource, Resource } from 'aws-cdk-lib/core';
-import { ITransitGateway } from './transit-gateway';
-import { Construct } from 'constructs';
 import { CfnTransitGatewayRouteTable, IRouteTable } from 'aws-cdk-lib/aws-ec2';
+import { IResource, Resource } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { ITransitGateway } from './transit-gateway';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 import { TransitGatewayRoute, TransitGatewayBlackholeRoute, ITransitGatewayRoute } from './transit-gateway-route';
 import { ITransitGatewayRouteTableAssociation, TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { ITransitGatewayRouteTablePropagation, TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a Transit Gateway Route Table.

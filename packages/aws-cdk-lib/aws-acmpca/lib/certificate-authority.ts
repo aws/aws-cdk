@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
+import { ICertificateAuthorityRef } from './acmpca.generated';
 import * as cdk from '../../core';
 
 /**
  * Interface which all CertificateAuthority based class must implement
  */
-export interface ICertificateAuthority extends cdk.IResource {
+export interface ICertificateAuthority extends cdk.IResource, ICertificateAuthorityRef {
   /**
    * The Amazon Resource Name of the Certificate
    *
@@ -24,6 +25,7 @@ export class CertificateAuthority {
    */
   public static fromCertificateAuthorityArn(scope: Construct, id: string, certificateAuthorityArn: string): ICertificateAuthority {
     return new class extends cdk.Resource implements ICertificateAuthority {
+      readonly certificateAuthorityRef = { certificateAuthorityArn };
       readonly certificateAuthorityArn = certificateAuthorityArn;
     }(scope, id);
   }

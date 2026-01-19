@@ -1,9 +1,9 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Resource, IResource, Aws } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnInput } from 'aws-cdk-lib/aws-iotevents';
+import { Resource, IResource, Aws } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 
 /**
  * Represents an AWS IoT Events input.
@@ -44,10 +44,16 @@ abstract class InputBase extends Resource implements IInput {
 
   public abstract readonly inputArn: string;
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(grantee: iam.IGrantable) {
     return this.grant(grantee, 'iotevents:BatchPutMessage');
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,

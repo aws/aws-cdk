@@ -1,1 +1,1 @@
-export * from './rolesanywhere.generated';
+export * from './cfn-props-mixins.generated';

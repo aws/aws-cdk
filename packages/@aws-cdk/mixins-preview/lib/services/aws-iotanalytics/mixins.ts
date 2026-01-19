@@ -1,1 +1,1 @@
-export * from './iotanalytics.generated';
+export * from './cfn-props-mixins.generated';

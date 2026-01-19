@@ -29,7 +29,7 @@ export interface PrivateCertificateProps {
   /**
    * Private certificate authority (CA) that will be used to issue the certificate.
    */
-  readonly certificateAuthority: acmpca.ICertificateAuthority;
+  readonly certificateAuthority: acmpca.ICertificateAuthorityRef;
 
   /**
    * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
@@ -90,7 +90,7 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
-      certificateAuthorityArn: props.certificateAuthority.certificateAuthorityArn,
+      certificateAuthorityArn: props.certificateAuthority.certificateAuthorityRef.certificateAuthorityArn,
       keyAlgorithm: props.keyAlgorithm?.name,
       certificateExport,
     });

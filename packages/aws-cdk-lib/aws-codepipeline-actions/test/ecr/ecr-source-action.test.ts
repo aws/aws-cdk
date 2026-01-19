@@ -5,7 +5,7 @@ import * as ecr from '../../../aws-ecr';
 import { Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('ecr source action', () => {
   describe('ECR source Action', () => {

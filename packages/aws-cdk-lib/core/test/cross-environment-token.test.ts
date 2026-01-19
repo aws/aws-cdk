@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('cross environment', () => {
   describe('CrossEnvironmentToken', () => {

@@ -838,7 +838,7 @@ export class MathExpression implements IMetric {
       warnings['CloudWatch:Math:MetricsPeriodsOverridden'] = `Periods of metrics in 'usingMetrics' for Math expression '${this.expression}' have been overridden to ${this.period.toSeconds()} seconds.`;
     }
 
-    const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !validVariableName(x));
+    const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !cdk.Token.isUnresolved(x) && !validVariableName(x));
     if (invalidVariableNames.length > 0) {
       throw new cdk.UnscopedValidationError(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
@@ -1247,7 +1247,7 @@ interface IModifiableMetric {
 }
 
 function isModifiableMetric(m: any): m is IModifiableMetric {
-  return typeof m === 'object' && m !== null && !!m.with;
+  return typeof m === 'object' && m !== null && 'with' in m;
 }
 
 interface IMetricWithPeriod {
@@ -1255,7 +1255,7 @@ interface IMetricWithPeriod {
 }
 
 function isMetricWithPeriod(m: any): m is IMetricWithPeriod {
-  return typeof m === 'object' && m !== null && !!m.period;
+  return typeof m === 'object' && m !== null && 'period' in m;
 }
 
 // Polyfill for string.matchAll(regexp)

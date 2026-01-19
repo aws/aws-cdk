@@ -5,8 +5,8 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { Code } from '../code';
-import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
 import { IConnection } from '../connection';
+import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
 import { ISecurityConfiguration } from '../security-configuration';
 
 /**

@@ -1,1 +1,1 @@
-export * from './iottwinmaker.generated';
+export * from './cfn-props-mixins.generated';

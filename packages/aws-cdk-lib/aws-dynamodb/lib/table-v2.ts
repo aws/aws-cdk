@@ -94,7 +94,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    * Partition key attribute definition.
    *
    * If a single field forms the partition key, you can use this field.  Use the
-   * `partitionKeys` field if the partition key is a compound key (consists of
+   * `partitionKeys` field if the partition key is a multi-attribute key (consists of
    * multiple fields).
    *
    * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
@@ -105,7 +105,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    * Sort key attribute definition.
    *
    * If a single field forms the sort key, you can use this field.  Use the
-   * `sortKeys` field if the sort key is a compound key (consists of multiple
+   * `sortKeys` field if the sort key is a multi-attribute key (consists of multiple
    * fields).
    *
    * @default - no sort key
@@ -113,13 +113,13 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
   readonly sortKey?: Attribute;
 
   /**
-   * Compound partition key
+   * Multi-attribute partition key
    *
    * If a single field forms the partition key, you can use either
    * `partitionKey` or `partitionKeys` to specify the partition key. Exactly
    * one of these must be specified.
    *
-   * You must use `partitionKeys` field if the partition key is a compound key
+   * You must use `partitionKeys` field if the partition key is a multi-attribute key
    * (consists of multiple fields).
    *
    * NOTE: although the name of this field makes it sound like it creates
@@ -133,13 +133,13 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
   readonly partitionKeys?: Attribute[];
 
   /**
-   * Compound sort key
+   * Multi-attribute sort key
    *
    * If a single field forms the sort key, you can use either
    * `sortKey` or `sortKeys` to specify the sort key. At most one of these
    * may be specified.
    *
-   * You must use `sortKeys` field if the sort key is a compound key
+   * You must use `sortKeys` field if the sort key is a multi-attribute key
    * (consists of multiple fields).
    *
    * NOTE: although the name of this field makes it sound like it creates

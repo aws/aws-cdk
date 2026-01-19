@@ -2,13 +2,14 @@ import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { ArnFormat, Stack, ValidationError } from '../../../core';
+import { IStateMachineRef } from '../../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface StepFunctionsStartExecutionOptions {
   /**
    * The Step Functions state machine to start the execution on.
    */
-  readonly stateMachine: sfn.IStateMachine;
+  readonly stateMachine: IStateMachineRef;
 
   /**
    * The JSON input for the execution, same as that of StartExecution.
@@ -136,7 +137,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
       Resource: `${integrationResourceArn('states', 'startExecution', this.integrationPattern)}${suffix}`,
       ...this._renderParametersOrArguments({
         Input: input,
-        StateMachineArn: this.props.stateMachine.stateMachineArn,
+        StateMachineArn: this.props.stateMachine.stateMachineRef.stateMachineArn,
         Name: this.props.name,
       }, queryLanguage),
     };
@@ -155,7 +156,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.props.stateMachine.stateMachineArn],
+        resources: [this.props.stateMachine.stateMachineRef.stateMachineArn],
       }),
     ];
 
@@ -170,7 +171,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
               service: 'states',
               resource: 'execution',
               arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-              resourceName: `${stack.splitArn(this.props.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
+              resourceName: `${stack.splitArn(this.props.stateMachine.stateMachineRef.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
             }),
           ],
         }),

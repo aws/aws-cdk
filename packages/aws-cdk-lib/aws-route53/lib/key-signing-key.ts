@@ -6,6 +6,7 @@ import * as kms from '../../aws-kms';
 import { Resource, IResource, Lazy, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IKeySigningKeyRef, KeySigningKeyReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 /**
  * Properties for constructing a Key Signing Key.
@@ -56,7 +57,7 @@ export enum KeySigningKeyStatus {
 /**
  * A Key Signing Key for a Route 53 Hosted Zone.
  */
-export interface IKeySigningKey extends IResource {
+export interface IKeySigningKey extends IResource, IKeySigningKeyRef {
   /**
    * The hosted zone that the key signing key signs.
    *
@@ -125,6 +126,13 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
       get keySigningKeyId() {
         return `${this.hostedZone.hostedZoneId}|${this.keySigningKeyName}`;
       }
+
+      get keySigningKeyRef() {
+        return {
+          hostedZoneId: this.hostedZone.hostedZoneId,
+          keySigningKeyName: this.keySigningKeyName,
+        };
+      }
     }
 
     return new Import();
@@ -133,6 +141,13 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
   public readonly hostedZone: IHostedZone;
   public readonly keySigningKeyName: string;
   public readonly keySigningKeyId: string;
+
+  public get keySigningKeyRef(): KeySigningKeyReference {
+    return {
+      hostedZoneId: this.hostedZone.hostedZoneId,
+      keySigningKeyName: this.keySigningKeyName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: KeySigningKeyProps) {
     super(scope, id, {

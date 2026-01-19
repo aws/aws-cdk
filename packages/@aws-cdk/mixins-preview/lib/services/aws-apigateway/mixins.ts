@@ -1,1 +1,1 @@
-export * from './apigateway.generated';
+export * from './cfn-props-mixins.generated';

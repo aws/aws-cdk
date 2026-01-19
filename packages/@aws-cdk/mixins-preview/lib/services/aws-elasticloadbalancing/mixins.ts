@@ -1,1 +1,1 @@
-export * from './elasticloadbalancing.generated';
+export * from './cfn-props-mixins.generated';

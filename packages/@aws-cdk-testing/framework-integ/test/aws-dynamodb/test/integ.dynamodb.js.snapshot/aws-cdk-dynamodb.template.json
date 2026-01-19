@@ -18,6 +18,43 @@
     "ProvisionedThroughput": {
      "ReadCapacityUnits": 5,
      "WriteCapacityUnits": 5
+    },
+    "ResourcePolicy": {
+     "PolicyDocument": {
+      "Statement": [
+       {
+        "Action": [
+         "dynamodb:BatchGetItem",
+         "dynamodb:ConditionCheckItem",
+         "dynamodb:DescribeTable",
+         "dynamodb:GetItem",
+         "dynamodb:Query",
+         "dynamodb:Scan"
+        ],
+        "Effect": "Allow",
+        "Principal": {
+         "AWS": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":root"
+           ]
+          ]
+         }
+        },
+        "Resource": "*"
+       }
+      ],
+      "Version": "2012-10-17"
+     }
     }
    },
    "UpdateReplacePolicy": "Delete",

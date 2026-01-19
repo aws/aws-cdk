@@ -1,7 +1,7 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Channel, ChannelType, RecordingConfiguration, Resolution } from '../lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import { RenditionConfiguration } from '../lib/rendition-configuration';
 import { Storage, ThumbnailConfiguration } from '../lib/thumbnail-configuration';
 

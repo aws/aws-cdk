@@ -1,7 +1,7 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { App, Aspects, CfnResource, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, Aspects, CfnResource, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct, IConstruct } from 'constructs';
 import * as redshift from '../lib';
 

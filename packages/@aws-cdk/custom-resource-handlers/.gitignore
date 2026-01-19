@@ -19,7 +19,7 @@ nyc.config.js
 !test/integ/cli/**/*
 assets.json
 npm-shrinkwrap.json
-!.eslintrc.js
+!eslint.config.mjs
 !jest.config.js
 
 junit.xml
@@ -32,4 +32,3 @@ scripts/*.d.ts
 
 !lib/aws-certificatemanager/dns-validated-certificate-handler/index.js
 !test/aws-certificatemanager/dns-validated-certificate-handler.test.js
-!lib/aws-cloudfront/edge-function/index.js

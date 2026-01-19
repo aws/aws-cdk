@@ -1,13 +1,15 @@
 import { Construct } from 'constructs';
 import { DnsValidatedCertificate, ICertificate, Certificate, CertificateValidation } from '../../aws-certificatemanager';
-import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
+import { CloudFrontWebDistribution, Distribution, IDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
+import { S3StaticWebsiteOrigin } from '../../aws-cloudfront-origins';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '../../aws-route53';
 import { CloudFrontTarget } from '../../aws-route53-targets';
 import { BlockPublicAccess, Bucket, RedirectProtocol } from '../../aws-s3';
 import { ArnFormat, RemovalPolicy, Stack, Token, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { ROUTE53_PATTERNS_USE_CERTIFICATE } from '../../cx-api';
+import { ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION } from '../../cx-api';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Properties to configure an HTTPS Redirect
@@ -46,7 +48,7 @@ export interface HttpsRedirectProps {
    *
    * @default - A new certificate is created in us-east-1 (N. Virginia)
    */
-  readonly certificate?: ICertificate;
+  readonly certificate?: ICertificateRef;
 }
 
 /**
@@ -60,7 +62,7 @@ export class HttpsRedirect extends Construct {
     const domainNames = props.recordNames ?? [props.zone.zoneName];
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new ValidationError(`The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }
@@ -75,22 +77,39 @@ export class HttpsRedirect extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
     });
-    const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
-      defaultRootObject: '',
-      originConfigs: [{
-        behaviors: [{ isDefaultBehavior: true }],
-        customOriginSource: {
-          domainName: redirectBucket.bucketWebsiteDomainName,
-          originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
+
+    let redirectDist: IDistribution;
+
+    if (FeatureFlags.of(this).isEnabled(ROUTE53_PATTERNS_USE_DISTRIBUTION)) {
+      redirectDist = new Distribution(this, 'RedirectDistribution', {
+        defaultRootObject: '',
+        defaultBehavior: {
+          origin: new S3StaticWebsiteOrigin(redirectBucket),
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
-      }],
-      viewerCertificate: ViewerCertificate.fromAcmCertificate(redirectCert, {
-        aliases: domainNames,
-      }),
-      comment: `Redirect to ${props.targetDomain} from ${domainNames.join(', ')}`,
-      priceClass: PriceClass.PRICE_CLASS_ALL,
-      viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    });
+        domainNames,
+        certificate: redirectCert,
+        comment: `Redirect to ${props.targetDomain} from ${domainNames.join(', ')}`,
+        priceClass: PriceClass.PRICE_CLASS_ALL,
+      });
+    } else {
+      redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
+        defaultRootObject: '',
+        originConfigs: [{
+          behaviors: [{ isDefaultBehavior: true }],
+          customOriginSource: {
+            domainName: redirectBucket.bucketWebsiteDomainName,
+            originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
+          },
+        }],
+        viewerCertificate: ViewerCertificate.fromAcmCertificate(redirectCert, {
+          aliases: domainNames,
+        }),
+        comment: `Redirect to ${props.targetDomain} from ${domainNames.join(', ')}`,
+        priceClass: PriceClass.PRICE_CLASS_ALL,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      });
+    }
 
     domainNames.forEach((domainName) => {
       const hash = md5hash(domainName).slice(0, 6);

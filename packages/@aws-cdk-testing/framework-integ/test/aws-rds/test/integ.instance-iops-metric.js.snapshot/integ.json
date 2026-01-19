@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "rds-instance-iops-metric-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-iops-metric"
+      ],
+      "assertionStack": "rds-instance-iops-metric-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsinstanceiopsmetricintegtestDefaultTestDeployAssertCE0936F2"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

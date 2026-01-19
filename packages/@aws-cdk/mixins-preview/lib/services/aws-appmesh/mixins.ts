@@ -1,1 +1,1 @@
-export * from './appmesh.generated';
+export * from './cfn-props-mixins.generated';

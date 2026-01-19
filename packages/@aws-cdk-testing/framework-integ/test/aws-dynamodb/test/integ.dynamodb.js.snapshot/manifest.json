@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ffa7bdf0b4b7716929de4016b6cf86cbb8b3e6da9f6e51e97ed69184da30130.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4b6fb93c9fd5e59cc9be52a9335b51c0203f552086cc2b2e6b5403b0f7ce1d3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,6 +43,14 @@
                 "type": "S"
               },
               "removalPolicy": "destroy"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToResourcePolicy": [
+                {}
+              ]
             }
           }
         ],
@@ -82,11 +90,7 @@
             "data": {
               "addGlobalSecondaryIndex": [
                 {
-                  "indexName": "*",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "S"
-                  }
+                  "indexName": "*"
                 }
               ]
             }
@@ -97,10 +101,6 @@
               "addGlobalSecondaryIndex": [
                 {
                   "indexName": "*",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "S"
-                  },
                   "readCapacity": "*",
                   "writeCapacity": "*"
                 }
@@ -113,10 +113,6 @@
               "addGlobalSecondaryIndex": [
                 {
                   "indexName": "*",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "S"
-                  },
                   "projectionType": "KEYS_ONLY"
                 }
               ]
@@ -128,10 +124,6 @@
               "addGlobalSecondaryIndex": [
                 {
                   "indexName": "*",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "S"
-                  },
                   "projectionType": "INCLUDE",
                   "nonKeyAttributes": "*"
                 }
@@ -143,11 +135,7 @@
             "data": {
               "addGlobalSecondaryIndex": [
                 {
-                  "indexName": "*",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "N"
-                  }
+                  "indexName": "*"
                 }
               ]
             }
@@ -240,11 +228,7 @@
             "data": {
               "addGlobalSecondaryIndex": [
                 {
-                  "indexName": "*",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "S"
-                  }
+                  "indexName": "*"
                 }
               ]
             }
@@ -487,6 +471,22 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-dynamodb/User/Resource": [
@@ -513,6 +513,22 @@
             "data": {
               "attachToUser": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           },
@@ -1056,5 +1072,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1031.2"
+  "minimumCliVersion": "2.1033.0"
 }

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "lambda-durable-config/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-durable-config"
+      ],
+      "assertionStack": "lambda-durable-config/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdadurableconfigDefaultTestDeployAssert5291EFAC"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

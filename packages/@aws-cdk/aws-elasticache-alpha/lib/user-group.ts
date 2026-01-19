@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { UserEngine } from './common';
 import { CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
-import { IUser } from './user-base';
 import { IResource, Resource, ArnFormat, Stack, Lazy, ValidationError, UnscopedValidationError, Names } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { UserEngine } from './common';
+import { IUser } from './user-base';
 
 const ELASTICACHE_USERGROUP_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.UserGroup');
 
@@ -253,8 +253,8 @@ export class UserGroup extends UserGroupBase {
 
     this.engine = props.engine ?? UserEngine.VALKEY;
     this.userGroupName = props.userGroupName ?? Lazy.string({
-      // Elasticache not allowing uppercase user group id
-      produce: () => Names.uniqueId(this).toLocaleLowerCase(),
+      // ElastiCache is allowing only uppercase and max 40 characters for user group id
+      produce: () => Names.uniqueResourceName(this, { maxLength: 40 }).toLocaleLowerCase(),
     });
 
     if (props.users) {

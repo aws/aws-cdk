@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Annotations, Template, Match } from '../../assertions';
+import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
@@ -1060,6 +1060,21 @@ test('create a Add Key transformer against a log group', () => {
         },
       },
     ],
+  });
+});
+
+test('enable deletion protection', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new LogGroup(stack, 'LogGroup', {
+    deletionProtectionEnabled: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    DeletionProtectionEnabled: true,
   });
 });
 

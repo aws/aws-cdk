@@ -5,7 +5,7 @@ import { CfnParameter, Duration, Stack, App, Token } from '../../core';
 import * as sqs from '../lib';
 import { validateRedriveAllowPolicy } from '../lib/validate-queue-props';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('default properties', () => {
   const stack = new Stack();

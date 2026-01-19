@@ -1,1 +1,1 @@
-export * from './s3vectors.generated';
+export * from './cfn-props-mixins.generated';

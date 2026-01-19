@@ -1,8 +1,8 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import * as amplify from '../lib';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { BuildSpec } from 'aws-cdk-lib/aws-codebuild';
+import { Construct } from 'constructs';
+import * as amplify from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

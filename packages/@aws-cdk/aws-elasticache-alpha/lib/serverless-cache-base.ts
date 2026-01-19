@@ -1,9 +1,14 @@
-import { IUserGroup } from './user-group';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { IResource, Resource, Duration } from 'aws-cdk-lib/core';
+import {
+  IServerlessCacheRef,
+  ServerlessCacheReference,
+} from 'aws-cdk-lib/interfaces/generated/aws-elasticache-interfaces.generated';
+import { ServerlessCacheGrants } from './elasticache-grants.generated';
+import { IUserGroup } from './user-group';
 
 /**
  * Supported cache engines together with available versions.
@@ -44,7 +49,7 @@ export enum CacheEngine {
 /**
  * Represents a Serverless ElastiCache cache
  */
-export interface IServerlessCache extends IResource, ec2.IConnectable {
+export interface IServerlessCache extends IResource, ec2.IConnectable, IServerlessCacheRef {
   /**
    * The cache engine used by this cache
    */
@@ -162,15 +167,29 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
   public abstract readonly connections: ec2.Connections;
 
   /**
+   * Collection of grant methods for this cache
+   */
+  public readonly grants = ServerlessCacheGrants.fromServerlessCache(this);
+
+  public get serverlessCacheRef(): ServerlessCacheReference {
+    return {
+      serverlessCacheName: this.serverlessCacheName,
+      serverlessCacheArn: this.serverlessCacheArn,
+    };
+  }
+
+  /**
    * Grant connect permissions to the cache
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant permissions to
    */
   public grantConnect(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, 'elasticache:Connect', 'elasticache:DescribeServerlessCaches');
+    return this.grants.connect(grantee);
   }
   /**
    * Grant the given identity custom permissions
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant permissions to
    * @param actions The actions to grant

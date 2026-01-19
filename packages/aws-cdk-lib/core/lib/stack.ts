@@ -11,7 +11,7 @@ import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
-import { Environment } from './environment';
+import { Environment, ResourceEnvironment } from './environment';
 import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary, PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
@@ -987,7 +987,7 @@ export class Stack extends Construct implements ITaggable {
       const cycleDescription = cycle.map((cycleReason) => {
         return cycleReason.description;
       }).join(', ');
-      // eslint-disable-next-line max-len
+
       throw new ValidationError(`'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.description}) would create a cyclic reference.`, this);
     }
 
@@ -1405,7 +1405,6 @@ export class Stack extends Construct implements ITaggable {
     let transform: string | string[] | undefined;
 
     if (this.templateOptions.transform) {
-      // eslint-disable-next-line max-len
       Annotations.of(this).addWarningV2('@aws-cdk/core:stackDeprecatedTransform', 'This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
@@ -1633,6 +1632,16 @@ export class Stack extends Construct implements ITaggable {
    */
   public removeStackTag(tagName: string) {
     this.tags.removeTag(tagName, 0);
+  }
+
+  /**
+   * The environment this Stack deploys to
+   */
+  public get env(): ResourceEnvironment {
+    return {
+      account: this.account,
+      region: this.region,
+    };
   }
 }
 

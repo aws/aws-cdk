@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import { Octokit } from '@octokit/rest';
-import { CheckRun, GitHubComment, GitHubPr, Review } from "./github";
+import { CheckRun, GitHubComment, GitHubPr, Review } from './github';
 
 export const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
@@ -32,7 +33,6 @@ export interface PullRequestLinterBaseProps {
    */
   readonly linterLogin: string;
 }
-
 
 /**
  * Base "interacting with GitHub" functionality, devoid of any specific validation logic.
@@ -68,8 +68,8 @@ export class PullRequestLinterBase {
   }
 
   protected readonly client: Octokit;
-  protected readonly prParams: { owner: string, repo: string, pull_number: number };
-  protected readonly issueParams: { owner: string, repo: string, issue_number: number };
+  protected readonly prParams: { owner: string; repo: string; pull_number: number };
+  protected readonly issueParams: { owner: string; repo: string; issue_number: number };
   protected readonly linterLogin: string;
 
   private _pr: GitHubPr | undefined;
@@ -247,13 +247,12 @@ export class PullRequestLinterBase {
 
     // Closing the PR if it is opened from main branch of author's fork
     if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
-
       const errorMessageBody = 'Your pull request must be based off of a branch in a personal account '
       + '(not an organization owned account, and not the main branch). You must also have the setting '
       + 'enabled that <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork">allows the CDK team to push changes to your branch</a> '
       + '(this setting is enabled by default for personal accounts, and cannot be enabled for organization owned accounts). '
       + 'The reason for this is that our automation needs to synchronize your branch with our main after it has been approved, '
-      + 'and we cannot do that if we cannot push to your branch.'
+      + 'and we cannot do that if we cannot push to your branch.';
 
       console.log('👉 Closing pull request');
       await this.client.issues.createComment({
@@ -274,7 +273,7 @@ export class PullRequestLinterBase {
    * It *seems* like this only returns completed check runs. That is, in-progress
    * runs are not included.
    */
-  public async checkRuns(sha: string):  Promise<{[name: string]: CheckRun}> {
+  public async checkRuns(sha: string): Promise<{[name: string]: CheckRun}> {
     const response = await this.client.paginate(this.client.checks.listForRef, {
       owner: this.prParams.owner,
       repo: this.prParams.repo,
@@ -337,7 +336,6 @@ export class PullRequestLinterBase {
       name: label,
     });
   }
-
 }
 
 export class LinterError extends Error {

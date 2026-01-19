@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import * as fs from 'fs';
 import * as path from 'path';
 import { IntegManifest, Manifest } from 'aws-cdk-lib/cloud-assembly-schema';

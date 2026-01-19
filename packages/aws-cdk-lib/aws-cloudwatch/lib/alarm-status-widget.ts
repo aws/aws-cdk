@@ -1,6 +1,6 @@
-import { IAlarm } from './alarm-base';
 import { AlarmState } from './alarm-rule';
 import { ConcreteWidget } from './widget';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * The sort possibilities for AlarmStatusWidgets
@@ -34,7 +34,7 @@ export interface AlarmStatusWidgetProps {
   /**
    * CloudWatch Alarms to show in widget
    */
-  readonly alarms: IAlarm[];
+  readonly alarms: IAlarmRef[];
   /**
    * The title of the widget
    *
@@ -99,7 +99,7 @@ export class AlarmStatusWidget extends ConcreteWidget {
         y: this.y,
         properties: {
           title: this.props.title ? this.props.title : 'Alarm Status',
-          alarms: this.props.alarms.map((alarm) => alarm.alarmArn),
+          alarms: this.props.alarms.map((alarm) => alarm.alarmRef.alarmArn),
           states: this.props.states,
           sortBy: this.props.sortBy,
         },

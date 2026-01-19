@@ -1,5 +1,5 @@
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ivs from '../lib';
 

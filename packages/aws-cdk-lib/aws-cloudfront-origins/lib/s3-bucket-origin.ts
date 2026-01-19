@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
 import { Annotations, Aws, Names, Stack, UnscopedValidationError } from '../../core';
+import { IOriginAccessControlRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 interface BucketPolicyAction {
   readonly action: string;
@@ -38,7 +39,7 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
    *
    * @default - an Origin Access Control will be created.
    */
-  readonly originAccessControl?: cloudfront.IOriginAccessControl;
+  readonly originAccessControl?: IOriginAccessControlRef;
 
   /**
    * The level of permissions granted in the bucket policy and key policy (if applicable)
@@ -58,7 +59,7 @@ export interface S3BucketOriginWithOAIProps extends S3BucketOriginBaseProps {
    *
    * @default - an Origin Access Identity will be created.
    */
-  readonly originAccessIdentity?: cloudfront.IOriginAccessIdentity;
+  readonly originAccessIdentity?: cloudfront.ICloudFrontOriginAccessIdentityRef & iam.IGrantable;
 }
 
 /**
@@ -108,7 +109,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
 
 class S3BucketOriginWithOAC extends S3BucketOrigin {
   private readonly bucket: IBucket;
-  private originAccessControl?: cloudfront.IOriginAccessControl;
+  private originAccessControl?: IOriginAccessControlRef;
   private originAccessLevels?: cloudfront.AccessLevel[];
 
   constructor(bucket: IBucket, props?: S3BucketOriginWithOACProps) {
@@ -160,7 +161,7 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
       ...originBindConfig,
       originProperty: {
         ...originBindConfig.originProperty!,
-        originAccessControlId: this.originAccessControl.originAccessControlId,
+        originAccessControlId: this.originAccessControl.originAccessControlRef.originAccessControlId,
       },
     };
   }
@@ -221,7 +222,7 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
 
 class S3BucketOriginWithOAI extends S3BucketOrigin {
   private readonly bucket: IBucket;
-  private originAccessIdentity?: cloudfront.IOriginAccessIdentity;
+  private originAccessIdentity?: cloudfront.ICloudFrontOriginAccessIdentityRef & iam.IGrantable;
 
   constructor(bucket: IBucket, props?: S3BucketOriginWithOAIProps) {
     super(bucket, { ...props });
@@ -265,6 +266,6 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
     if (!this.originAccessIdentity) {
       throw new UnscopedValidationError('Origin access identity cannot be undefined');
     }
-    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
+    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.cloudFrontOriginAccessIdentityRef.cloudFrontOriginAccessIdentityId}` };
   }
 }

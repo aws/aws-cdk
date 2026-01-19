@@ -8,8 +8,8 @@ Shout out to our top contributors!
 - [njlynch](https://github.com/njlynch)
 - [jogold](https://github.com/jogold)
 - [iliapolo](https://github.com/iliapolo)
-- [corymhall](https://github.com/corymhall)
 - [mrgrain](https://github.com/mrgrain)
+- [corymhall](https://github.com/corymhall)
 - [shivlaks](https://github.com/shivlaks)
 - [otaviomacedo](https://github.com/otaviomacedo)
 - [mazyu36](https://github.com/mazyu36)
@@ -23,10 +23,10 @@ Shout out to our top contributors!
 - [robertd](https://github.com/robertd)
 - [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [lpizzinidev](https://github.com/lpizzinidev)
+- [phuhung273](https://github.com/phuhung273)
 - [msambol](https://github.com/msambol)
 - [peterwoodworth](https://github.com/peterwoodworth)
 - [GavinZZ](https://github.com/GavinZZ)
-- [colifran](https://github.com/colifran)
 
 
-_Last updated: Sat, 01 Nov 25 00:14:31 +0000_
+_Last updated: Thu, 01 Jan 26 00:16:08 +0000_

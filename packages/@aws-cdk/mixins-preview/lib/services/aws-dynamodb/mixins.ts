@@ -1,1 +1,1 @@
-export * from './dynamodb.generated';
+export * from './cfn-props-mixins.generated';

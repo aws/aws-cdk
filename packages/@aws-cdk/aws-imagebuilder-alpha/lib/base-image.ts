@@ -1,5 +1,6 @@
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { IImage } from './image';
 
 /**
  * Represents a base image that is used to start from in EC2 Image Builder image builds
@@ -12,6 +13,15 @@ export class BaseImage {
    */
   public static fromAmiId(amiId: string): BaseImage {
     return new BaseImage(amiId);
+  }
+
+  /**
+   * The EC2 Image Builder image to use as a base image in an image recipe
+   *
+   * @param image The EC2 Image Builder image to use as a base image
+   */
+  public static fromImage(image: IImage): BaseImage {
+    return new BaseImage(image.imageArn);
   }
 
   /**
@@ -94,6 +104,15 @@ export class BaseContainerImage {
    */
   public static fromEcrPublic(registryAlias: string, repositoryName: string, tag: string): BaseContainerImage {
     return new BaseContainerImage(`public.ecr.aws/${registryAlias}/${repositoryName}:${tag}`);
+  }
+
+  /**
+   * The EC2 Image Builder image to use as a base image in a container recipe
+   *
+   * @param image The EC2 Image Builder image to use as a base image
+   */
+  public static fromImage(image: IImage): BaseContainerImage {
+    return new BaseContainerImage(image.imageArn);
   }
 
   /**

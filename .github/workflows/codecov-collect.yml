@@ -28,7 +28,7 @@ jobs:
         run: cd packages/aws-cdk-lib && yarn test core
 
       - name: Upload Coverage and PR Info
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-artifacts
           path: |

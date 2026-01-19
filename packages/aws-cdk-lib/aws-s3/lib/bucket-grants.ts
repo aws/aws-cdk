@@ -22,10 +22,8 @@ interface IPubliclyAccessibleBucket extends IBucketRef {
 export class BucketGrants {
   /**
    * Creates grants for an IBucketRef
-   *
-   * @internal
    */
-  public static _fromBucket(bucket: IBucketRef): BucketGrants {
+  public static fromBucket(bucket: IBucketRef): BucketGrants {
     return new BucketGrants(
       bucket,
       iam.GrantableResources.isEncryptedResource(bucket) ? bucket : undefined,

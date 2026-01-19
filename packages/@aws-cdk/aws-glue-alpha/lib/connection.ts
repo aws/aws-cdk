@@ -1,9 +1,9 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib/core';
-import * as constructs from 'constructs';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
+import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import * as constructs from 'constructs';
 
 /**
  * The type of the glue connection

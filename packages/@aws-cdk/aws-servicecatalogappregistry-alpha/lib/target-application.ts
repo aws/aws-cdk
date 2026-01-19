@@ -111,12 +111,12 @@ class CreateTargetApplication extends TargetApplication {
   }
   public bind(scope: Construct): BindTargetApplicationResult {
     (this.applicationOptions.stackName as string) =
-            this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
+      this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
     const stackId = this.applicationOptions.stackName;
     (this.applicationOptions.description as string) =
-            this.applicationOptions.description || 'Stack to create AppRegistry application';
+      this.applicationOptions.description || 'Stack to create AppRegistry application';
     (this.applicationOptions.env as cdk.Environment) =
-            this.applicationOptions.env || { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+      this.applicationOptions.env || { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
     (this.applicationOptions.emitApplicationManagerUrlAsOutput as boolean) = this.applicationOptions.emitApplicationManagerUrlAsOutput ?? true;
 
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
@@ -150,7 +150,7 @@ class ExistingTargetApplication extends TargetApplication {
   }
   public bind(scope: Construct): BindTargetApplicationResult {
     (this.applicationOptions.stackName as string) =
-            this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
+      this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
     const stackId = this.applicationOptions.stackName;
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);

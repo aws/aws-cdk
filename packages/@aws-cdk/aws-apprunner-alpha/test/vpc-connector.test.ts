@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import { VpcConnector } from '../lib';
 
 test('create a vpcConnector with all properties', () => {

@@ -19,7 +19,7 @@ export class Stop implements ses.IReceiptRuleAction {
   constructor(private readonly props: StopProps = {}) {
   }
 
-  public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(_rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     return {
       stopAction: {
         scope: 'RuleSet',

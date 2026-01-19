@@ -1,1 +1,1 @@
-export * from './datapipeline.generated';
+export * from './cfn-props-mixins.generated';

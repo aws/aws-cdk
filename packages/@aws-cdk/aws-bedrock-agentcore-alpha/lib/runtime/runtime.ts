@@ -19,9 +19,9 @@ import { AgentRuntimeArtifact } from './runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configuration';
 import { RuntimeBase, IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 import { LifecycleConfiguration, ProtocolType, RequestHeaderConfiguration } from './types';
 import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
+import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 
 /******************************************************************************
  *                                Constants
@@ -281,11 +281,14 @@ export class Runtime extends RuntimeBase {
       this.validateRequestHeaderConfiguration(props.requestHeaderConfiguration);
     }
 
-    this.lifecycleConfiguration = {
-      idleRuntimeSessionTimeout: props.lifecycleConfiguration?.idleRuntimeSessionTimeout ?? LIFECYCLE_MIN_TIMEOUT,
-      maxLifetime: props.lifecycleConfiguration?.maxLifetime ?? LIFECYCLE_MAX_LIFETIME,
-    };
-    this.validateLifecycleConfiguration(this.lifecycleConfiguration);
+    this.lifecycleConfiguration = props.lifecycleConfiguration ? {
+      idleRuntimeSessionTimeout: props.lifecycleConfiguration?.idleRuntimeSessionTimeout,
+      maxLifetime: props.lifecycleConfiguration?.maxLifetime,
+    } : undefined;
+
+    if (this.lifecycleConfiguration) {
+      this.validateLifecycleConfiguration(this.lifecycleConfiguration);
+    }
 
     if (props.executionRole) {
       this.role = props.executionRole;

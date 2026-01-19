@@ -1,4 +1,4 @@
-import { handler } from '../../lib/aws-route53/cross-account-zone-delegation-handler/index';
+import { CrossAccountZoneDelegationEvent, handler } from '../../lib/aws-route53/cross-account-zone-delegation-handler/index';
 
 const mockAssumeRole = jest.fn();
 const mockChangeResourceRecordSets = jest.fn();
@@ -193,5 +193,5 @@ function getCfnEvent(
 // helper function to get around TypeScript expecting a complete event object,
 // even though our tests only need some of the fields
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
-  return handler(event as AWSLambda.CloudFormationCustomResourceEvent);
+  return handler(event as CrossAccountZoneDelegationEvent);
 }

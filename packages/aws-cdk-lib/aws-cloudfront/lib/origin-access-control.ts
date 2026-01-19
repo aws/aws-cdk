@@ -3,11 +3,12 @@ import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IOriginAccessControlRef, OriginAccessControlReference } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 /**
  * Represents a CloudFront Origin Access Control
  */
-export interface IOriginAccessControl extends IResource {
+export interface IOriginAccessControl extends IResource, IOriginAccessControlRef {
   /**
    * The unique identifier of the origin access control.
    * @attribute
@@ -178,6 +179,12 @@ export abstract class OriginAccessControlBase extends Resource implements IOrigi
    * @attribute
    */
   public abstract readonly originAccessControlId: string;
+
+  public get originAccessControlRef(): OriginAccessControlReference {
+    return {
+      originAccessControlId: this.originAccessControlId,
+    };
+  }
 }
 
 /**
@@ -197,6 +204,12 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
     class Import extends Resource implements IOriginAccessControl {
       public readonly originAccessControlId = originAccessControlId;
       public readonly originAccessControlOriginType = OriginAccessControlOriginType.S3;
+
+      public get originAccessControlRef(): OriginAccessControlReference {
+        return {
+          originAccessControlId: this.originAccessControlId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -245,6 +258,12 @@ export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
     class Import extends Resource implements IOriginAccessControl {
       public readonly originAccessControlId = originAccessControlId;
       public readonly originAccessControlOriginType = OriginAccessControlOriginType.LAMBDA;
+
+      public get originAccessControlRef(): OriginAccessControlReference {
+        return {
+          originAccessControlId: this.originAccessControlId,
+        };
+      }
     }
     return new Import(scope, id);
   }

@@ -3,7 +3,6 @@ import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { App, Stack } from '../../core';
 import * as ecs from '../lib';
 
 describe('AlternateTarget', () => {
@@ -303,7 +302,7 @@ describe('AlternateTarget', () => {
       taskDefinition,
     });
 
-    const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
     const nlbBlueTargetGroup = new elbv2.NetworkTargetGroup(stack, 'NlbBlueTG', {
       vpc,
       port: 80,

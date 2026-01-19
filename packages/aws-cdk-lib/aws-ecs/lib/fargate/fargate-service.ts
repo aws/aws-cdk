@@ -10,6 +10,7 @@ import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { ServiceReference } from '../ecs.generated';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -129,6 +130,12 @@ export class FargateService extends BaseService implements IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }

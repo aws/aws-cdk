@@ -4,9 +4,9 @@
 
 /// !cdk-integ aws-cdk-bedrock-agent-1
 
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as bedrock from '../../../bedrock';
 
 const app = new cdk.App();

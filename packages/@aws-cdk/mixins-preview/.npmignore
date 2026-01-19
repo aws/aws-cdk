@@ -13,13 +13,15 @@ dist
 
 # Include .jsii
 !.jsii
+!.jsii.gz
+!rosetta/_generated.ts-fixture
 
 *.snk
 
 *.tsbuildinfo
 
 tsconfig.json
-.eslintrc.js
+eslint.config.mjs
 jest.config.js
 
 # exclude cdk artifacts

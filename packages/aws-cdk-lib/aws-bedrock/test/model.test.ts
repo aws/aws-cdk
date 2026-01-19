@@ -1,7 +1,7 @@
 import * as cdk from '../../core';
 import * as bedrock from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('ProvisionedModel', () => {
   test('fromProvisionedModelArn', () => {

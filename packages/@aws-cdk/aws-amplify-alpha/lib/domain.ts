@@ -1,12 +1,12 @@
+import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Lazy, Resource, IResolvable, Token, ValidationError } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
-import { IApp } from './app';
-import { IBranch } from './branch';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { IApp } from './app';
+import { IBranch } from './branch';
 
 /**
  * Options to add a domain to an application
@@ -59,7 +59,7 @@ export interface DomainProps extends DomainOptions {
 
   /**
    * The IAM role with access to Route53 when using enableAutoSubdomain
-   * @default the IAM role from App.grantPrincipal
+   * @default - the IAM role from App.grantPrincipal
    */
   readonly autoSubDomainIamRole?: iam.IRole;
 }

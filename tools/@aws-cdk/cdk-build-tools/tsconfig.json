@@ -16,5 +16,6 @@
     "isolatedModules": true,
     "incremental": true
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
+  "exclude": ["**/*.d.ts"]
 }

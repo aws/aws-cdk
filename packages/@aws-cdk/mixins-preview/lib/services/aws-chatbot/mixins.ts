@@ -1,1 +1,1 @@
-export * from './chatbot.generated';
+export * from './cfn-props-mixins.generated';

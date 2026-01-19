@@ -1,1 +1,1 @@
-export * from './simspaceweaver.generated';
+export * from './cfn-props-mixins.generated';

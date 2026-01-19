@@ -40,7 +40,7 @@ export class Sns implements ses.IReceiptRuleAction {
   constructor(private readonly props: SnsProps) {
   }
 
-  public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(_rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     return {
       snsAction: {
         encoding: this.props.encoding,

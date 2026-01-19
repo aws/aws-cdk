@@ -71,6 +71,7 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
    * Grant the given principal identity permissions to perform actions on this agent alias.
    * Note: This grant will only work when the grantee is in the same AWS account
    * where the agent alias is defined. Cross-account grant is not supported.
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -84,6 +85,7 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
    * Grant the given identity permissions to invoke the agent alias.
    * Note: This grant will only work when the grantee is in the same AWS account
    * where the agent alias is defined. Cross-account invocation is not supported.
+   * [disable-awslint:no-grants]
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'bedrock:InvokeAgent');
@@ -93,6 +95,7 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
    * Grant the given identity permissions to get the agent alias.
    * Note: This grant will only work when the grantee is in the same AWS account
    * where the agent alias is defined. Cross-account agent read is not supported.
+   * [disable-awslint:no-grants]
    */
   public grantGet(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'bedrock:GetAgentAlias');
@@ -134,7 +137,7 @@ export interface AgentAliasProps {
    * The name for the agent alias.
    * This will be used as the physical name of the agent alias.
    *
-   * @default - "latest"
+   * @default "latest"
    */
   readonly agentAliasName?: string;
   /**

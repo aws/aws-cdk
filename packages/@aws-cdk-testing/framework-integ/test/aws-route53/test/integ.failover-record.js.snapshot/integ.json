@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "Route53FailoverRecordInteg/DefaultTest": {
+      "stacks": [
+        "failover-record"
+      ],
+      "assertionStack": "Route53FailoverRecordInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53FailoverRecordIntegDefaultTestDeployAssert3BE1FD33"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

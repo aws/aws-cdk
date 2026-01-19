@@ -12,7 +12,6 @@
  */
 
 import { Arn, ArnFormat, Duration, IResource, Lazy, Resource, Token } from 'aws-cdk-lib';
-import { IConstruct, Construct } from 'constructs';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CfnMemory, CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
@@ -26,6 +25,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { IConstruct, Construct } from 'constructs';
 // Internal Libs
 import { IMemoryStrategy } from './memory-strategy';
 import { MemoryPerms } from './perms';
@@ -205,6 +205,9 @@ export abstract class MemoryBase extends Resource implements IMemory {
   }
   /**
    * Grants IAM actions to the IAM Principal
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant permissions to
    * @param actions - The actions to grant
    * @returns An IAM Grant object representing the granted permissions
@@ -220,6 +223,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
   /**
    * Grant the given principal identity permissions to write content to short-term memory.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
    * - actions: ['bedrock-agentcore:CreateEvent'] on this.memoryArn
@@ -231,6 +236,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
   /**
    * Grant the given principal identity permissions to read the contents of this memory.
    * Both Short-Term Memory (STM) and Long-Term Memory (LTM).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
@@ -247,6 +254,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
   /**
    * Grant the given principal identity permissions to read the Short-Term Memory (STM) contents of this memory.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
    * - actions: ['bedrock-agentcore:GetEvent',
@@ -260,6 +269,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
   }
   /**
    * Grant the given principal identity permissions to read the Long-Term Memory (LTM) contents of this memory.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
@@ -278,6 +289,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
    *
    * Both Short-Term Memory (STM) and Long-Term Memory (LTM).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant delete permissions to
    * @default - Default grant configuration:
    * - actions: ['bedrock-agentcore:DeleteEvent',
@@ -290,6 +303,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
   /**
    * Grant the given principal identity permissions to delete Short-Term Memory (STM) content on this memory.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant delete permissions to
    * @default - Default grant configuration:
    * - actions: ['bedrock-agentcore:DeleteEvent'] on this.memoryArn
@@ -301,6 +316,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
   /**
    * Grant the given principal identity permissions to delete Long-Term Memory (LTM) content on this memory.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The IAM principal to grant delete permissions to
    * @default - Default grant configuration:
    * - actions: ['bedrock-agentcore:DeleteMemoryRecord'] on this.memoryArn
@@ -311,6 +328,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
   }
   /**
    * Grant the given principal identity permissions to manage the control plane of this memory.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant admin permissions to
    * @default - Default grant configuration:
@@ -325,6 +344,8 @@ export abstract class MemoryBase extends Resource implements IMemory {
   }
   /**
    * Grant the given principal identity permissions to do every action on this memory.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant full access permissions to
    * @default - Default grant configuration:

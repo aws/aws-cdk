@@ -7,6 +7,7 @@ import * as iam from '../../aws-iam';
 import { Arn, ArnFormat, IResource, PhysicalName, Resource, Size, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IFleetRef, FleetReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 /**
  * Construction properties of a CodeBuild Fleet.
@@ -175,7 +176,7 @@ export interface ComputeConfiguration {
 /**
  * Represents a Fleet for a reserved capacity CodeBuild project.
  */
-export interface IFleet extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IFleet extends IResource, iam.IGrantable, ec2.IConnectable, IFleetRef {
   /**
    * The ARN of the fleet.
    * @attribute
@@ -230,6 +231,12 @@ export class Fleet extends Resource implements IFleet {
       public readonly fleetName = Arn.split(fleetArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split(':')[0];
       public readonly fleetArn = fleetArn;
 
+      public get fleetRef(): FleetReference {
+        return {
+          fleetArn: this.fleetArn,
+        };
+      }
+
       public get computeType(): FleetComputeType {
         throw new UnscopedValidationError('Cannot retrieve computeType property from an imported Fleet');
       }
@@ -269,6 +276,12 @@ export class Fleet extends Resource implements IFleet {
    * made available to projects using this fleet
    */
   public readonly environmentType: EnvironmentType;
+
+  public get fleetRef(): FleetReference {
+    return {
+      fleetArn: this.fleetArn,
+    };
+  }
 
   // Lazily created connections. Only created if `vpc` is provided in props.
   private _connections?: ec2.Connections;

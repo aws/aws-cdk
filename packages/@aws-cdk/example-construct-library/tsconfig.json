@@ -33,6 +33,7 @@
     "**/*.ts"
   ],
   "exclude": [
+    "**/*.d.ts",
     "node_modules"
   ],
   "references": [

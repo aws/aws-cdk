@@ -3,15 +3,15 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
 import { InstanceType } from './instance';
-import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -538,6 +538,9 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   protected abstract enableIamAuthentication?: boolean;
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (this.enableIamAuthentication === false) {
       throw new ValidationError('Cannot grant permissions when IAM authentication is disabled', this);
@@ -560,6 +563,9 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantConnect(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'neptune-db:*');
   }

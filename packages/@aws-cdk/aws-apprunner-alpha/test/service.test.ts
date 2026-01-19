@@ -1,15 +1,15 @@
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
-import * as kms from 'aws-cdk-lib/aws-kms';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as cdk from 'aws-cdk-lib';
 import * as apprunner from '../lib';
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {

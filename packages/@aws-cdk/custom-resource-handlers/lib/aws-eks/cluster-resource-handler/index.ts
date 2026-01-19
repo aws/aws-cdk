@@ -1,11 +1,11 @@
-/* eslint-disable no-console */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { EKS } from '@aws-sdk/client-eks';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { NodeHttpHandler } from '@smithy/node-http-handler';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { ProxyAgent } from 'proxy-agent';
 import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';

@@ -1,1 +1,1 @@
-export * from './rbin.generated';
+export * from './cfn-props-mixins.generated';

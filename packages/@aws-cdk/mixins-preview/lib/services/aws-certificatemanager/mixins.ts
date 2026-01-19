@@ -1,1 +1,1 @@
-export * from './certificatemanager.generated';
+export * from './cfn-props-mixins.generated';

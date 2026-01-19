@@ -1,7 +1,7 @@
+import { CustomResource, Token, Duration } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
-import { CustomResource, Token, Duration } from 'aws-cdk-lib/core';
 
 /**
  * Properties for KubernetesObjectValue.
