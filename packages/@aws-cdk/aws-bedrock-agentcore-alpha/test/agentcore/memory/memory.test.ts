@@ -167,8 +167,6 @@ describe('Memory with built-in strategies tests', () => {
   });
 
   test('Should have Memory resource with built-in memory strategies', () => {
-    // Note: Episodic strategy CloudFormation rendering will be tested once L1 CFN types are updated
-    // For now, we verify that the construct accepts episodic strategies without errors
     const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
     const memoryResource = Object.values(memoryResources)[0];
 
