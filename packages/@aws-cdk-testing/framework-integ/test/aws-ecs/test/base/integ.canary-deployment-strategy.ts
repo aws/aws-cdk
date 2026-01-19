@@ -53,6 +53,7 @@ const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
 const listener = alb.addListener('ALBListener', {
   port: 80,
   defaultAction: elbv2.ListenerAction.fixedResponse(404),
+  open: false,
 });
 
 const prodListenerRule = new elbv2.ApplicationListenerRule(stack, 'ALBProductionListenerRule', {
