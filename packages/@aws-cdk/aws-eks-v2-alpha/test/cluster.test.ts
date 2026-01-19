@@ -1,10 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cdk8s from 'cdk8s';
-import { Construct } from 'constructs';
-import * as YAML from 'yaml';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
-import { testFixture, testFixtureNoVpc } from './util';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as asg from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -12,14 +8,16 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
+import * as cdk8s from 'cdk8s';
+import { Construct } from 'constructs';
+import * as YAML from 'yaml';
+import { testFixture, testFixtureNoVpc } from './util';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 
-/* eslint-disable max-len */
-
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_32;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
 const commonProps = {
   version: CLUSTER_VERSION,
   defaultCapacity: 0,
@@ -36,7 +34,7 @@ describe('cluster', () => {
         version: eks.AlbControllerVersion.V2_4_1,
       },
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -241,7 +239,7 @@ describe('cluster', () => {
       ...commonProps,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -336,7 +334,7 @@ describe('cluster', () => {
           ...commonProps,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -388,7 +386,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -431,7 +429,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -464,7 +462,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -931,7 +929,7 @@ describe('cluster', () => {
       ...commonProps,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -956,7 +954,7 @@ describe('cluster', () => {
       version: CLUSTER_VERSION,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     }); // cluster is under stack2
 
@@ -1072,7 +1070,7 @@ describe('cluster', () => {
             ...commonProps,
             prune: false,
             kubectlProviderOptions: {
-              kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+              kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
             },
           });
 
@@ -1143,7 +1141,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.32/'),
+          (v as any).Default.includes('/1.33/'),
       )).toEqual(true);
     });
 
@@ -1321,7 +1319,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.32/'),
+          (v as any).Default.includes('/aws-k8s-1.33/'),
       )).toEqual(true);
     });
 
@@ -1335,7 +1333,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1389,7 +1387,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1413,7 +1411,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1437,7 +1435,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1461,7 +1459,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1486,7 +1484,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1509,7 +1507,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1533,7 +1531,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1583,7 +1581,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1677,7 +1675,7 @@ describe('cluster', () => {
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         environment: {
           Foo: 'Bar',
         },
@@ -1699,7 +1697,7 @@ describe('cluster', () => {
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         environment: {
           Foo: 'Bar',
         },
@@ -1740,7 +1738,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
           role: kubectlRole,
         },
       });
@@ -1810,7 +1808,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1828,7 +1826,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         endpointAccess: eks.EndpointAccess.PUBLIC,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1860,7 +1858,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1878,7 +1876,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1897,7 +1895,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1928,7 +1926,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1988,7 +1986,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2055,7 +2053,7 @@ describe('cluster', () => {
           ],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2082,7 +2080,7 @@ describe('cluster', () => {
           ],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2110,7 +2108,7 @@ describe('cluster', () => {
           })],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2154,7 +2152,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2219,7 +2217,7 @@ describe('cluster', () => {
         vpc: vpc2,
         vpcSubnets: [{ subnetGroupName: 'Private1' }, { subnetGroupName: 'Private2' }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2300,7 +2298,7 @@ describe('cluster', () => {
       version: CLUSTER_VERSION,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -2373,7 +2371,7 @@ describe('cluster', () => {
       prune: false,
       kubectlProviderOptions: {
         awscliLayer: layer,
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 

@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "45.0.0",
   "testCases": {
     "healthCheckQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "healthCheckQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
       "assertionStackName": "healthCheckQueueProcessingFargateServiceTestDefaultTestDeployAssert29ADF26E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

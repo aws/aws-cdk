@@ -214,7 +214,9 @@ function integrationResponse() {
       selectionPattern: '5\\d{2}',
       statusCode: '500',
       responseTemplates: {
-        'application/json': '"error": $input.path(\'$.error\')',
+        'application/json': `{
+          "error": "$input.path('$.error')"
+        }`,
       },
     },
   ];

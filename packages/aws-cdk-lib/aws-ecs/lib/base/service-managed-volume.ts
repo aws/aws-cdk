@@ -127,6 +127,16 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - No tags are specified.
    */
   readonly tagSpecifications?: EBSTagSpecification[];
+
+  /**
+   * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate),
+   * at which to download the snapshot blocks from Amazon S3 to the volume.
+   *
+   * Valid range is between 100 and 300 MiB/s.
+   *
+   * @default undefined - The volume initialization rate is not set.
+   */
+  readonly volumeInitializationRate?: Size;
 }
 
 /**
@@ -247,7 +257,16 @@ export class ServiceManagedVolume extends Construct {
   private validateEbsVolumeConfiguration(volumeConfig?: ServiceManagedEBSVolumeConfiguration) {
     if (!volumeConfig) return;
 
-    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, size, throughput, snapShotId } = volumeConfig;
+    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, size, throughput, snapShotId, volumeInitializationRate } = volumeConfig;
+
+    if (volumeInitializationRate !== undefined && !Token.isUnresolved(volumeInitializationRate)) {
+      if (snapShotId === undefined) {
+        throw new ValidationError('\'volumeInitializationRate\' can only be specified when \'snapShotId\' is provided.', this);
+      }
+      if (volumeInitializationRate.toMebibytes() < 100 || volumeInitializationRate.toMebibytes() > 300) {
+        throw new ValidationError(`'volumeInitializationRate' must be between 100 and 300 MiB/s, got ${volumeInitializationRate.toMebibytes()} MiB/s.`, this);
+      }
+    }
 
     // Validate if both size and snapShotId are not specified.
     if (size === undefined && snapShotId === undefined) {
@@ -282,8 +301,8 @@ export class ServiceManagedVolume extends Construct {
     if (throughput !== undefined) {
       if (volumeType !== ec2.EbsDeviceVolumeType.GP3) {
         throw new ValidationError(`'throughput' can only be configured with gp3 volume type, got ${volumeType}`, this);
-      } else if (!Token.isUnresolved(throughput) && throughput > 1000) {
-        throw new ValidationError(`'throughput' must be less than or equal to 1000 MiB/s, got ${throughput} MiB/s`, this);
+      } else if (!Token.isUnresolved(throughput) && throughput > 2000) {
+        throw new ValidationError(`'throughput' must be less than or equal to 2000 MiB/s, got ${throughput} MiB/s`, this);
       }
     }
 
@@ -301,7 +320,7 @@ export class ServiceManagedVolume extends Construct {
 
     // Validate IOPS range if specified.
     const iopsRanges: { [key: string]: { min: number; max: number } } = {};
-    iopsRanges[ec2.EbsDeviceVolumeType.GP3]= { min: 3000, max: 16000 };
+    iopsRanges[ec2.EbsDeviceVolumeType.GP3]= { min: 3000, max: 80000 };
     iopsRanges[ec2.EbsDeviceVolumeType.IO1]= { min: 100, max: 64000 };
     iopsRanges[ec2.EbsDeviceVolumeType.IO2]= { min: 100, max: 256000 };
     if (iops !== undefined && !Token.isUnresolved(iops)) {

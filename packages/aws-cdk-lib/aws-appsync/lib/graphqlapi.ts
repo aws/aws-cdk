@@ -3,15 +3,15 @@ import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNam
 import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
-import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
-import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
+import { ManagedPolicy, Role, IRole, ServicePrincipal, IRoleRef } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Interface to specify default or additional authorization(s)
@@ -231,7 +231,7 @@ export interface LogConfig {
    *
    * @default - None
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.
@@ -251,7 +251,7 @@ export interface DomainOptions {
   /**
    * The certificate to use with the domain name.
    */
-  readonly certificate: ICertificate;
+  readonly certificate: ICertificateRef;
 
   /**
    * The actual domain name. For example, `api.example.com`.
@@ -693,7 +693,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (props.domainName) {
       this.domainNameResource = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
-        certificateArn: props.domainName.certificate.certificateArn,
+        certificateArn: props.domainName.certificate.certificateRef.certificateId,
         description: `domain for ${this.name} at ${this.graphqlUrl}`,
       });
       const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
@@ -865,7 +865,7 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private setupLogConfig(config?: LogConfig) {
     if (!config) return undefined;
-    const logsRoleArn: string = config.role?.roleArn ?? new Role(this, 'ApiLogsRole', {
+    const logsRoleArn: string = config.role?.roleRef.roleArn ?? new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),

@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from '../lib';
 import { testFixtureNoVpc } from './util';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_32;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
 
 describe('eks auto mode', () => {
   describe('basic configuration', () => {

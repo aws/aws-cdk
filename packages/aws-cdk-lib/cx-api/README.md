@@ -528,48 +528,6 @@ _cdk.json_
 }
 ```
 
-* `@aws-cdk/aws-ecs:disableEcsImdsBlocking`
-
-When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false.
-
-In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
-IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-
-**It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.**
-
-_cdk.json_
-
-```json
-{
-  "context": {
-    "@aws-cdk/aws-ecs:disableEcsImdsBlocking": true
-  }
-}
-```
-
-* `@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature`
-
-When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only.**
-
-In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
-feature alone with this feature flag will be deprecated by <ins>end of 2025</ins> as CDK cannot
-guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-
-**It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.**
-
-_cdk.json_
-
-```json
-{
-  "context": {
-    "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": false,
-  },
-}
-```
-
 * `@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault`
 
 When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere,
@@ -761,3 +719,57 @@ _cdk.json_
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
   }
 }
+```
+
+* `@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint`
+
+When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+When disabled, the JSONPath apiEndpoint property will only support a static string value.
+
+_cdk.json
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": true
+  }
+}
+```
+
+* `@aws-cdk/aws-signer:signingProfileNamePassedToCfn`
+
+When this feature flag is enabled, the `signingProfileName` property is passed to the L1 `CfnSigningProfile` construct,
+which ensures that the AWS Signer profile is created with the specified name.
+
+When this feature flag is disabled, the `signingProfileName` is not passed to CloudFormation, maintaining backward
+compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+This feature flag is needed because enabling it can cause existing signing profiles to be
+replaced during deployment if a `signingProfileName` was specified but not previously used
+in the CloudFormation template.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId`
+
+When enabled, ECS patterns will generate unique target group IDs that include the load balancer name and type (public/private). This prevents CloudFormation conflicts when switching between public and private load balancers.
+
+Without this flag, switching an ApplicationLoadBalancedFargateService from public to private (or vice versa) fails with "target group cannot be associated with more than one load balancer" error.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true
+  }
+}
+```

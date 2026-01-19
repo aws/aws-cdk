@@ -4,8 +4,8 @@
 
 /// !cdk-integ aws-cdk-bedrock-prompt-override-1
 
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as bedrock from '../../../lib';
 
@@ -15,7 +15,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-bedrock-prompt-override-1');
 
 // Create Lambda functions for the action group executors
 const promptOverrideFunction = new lambda.Function(stack, 'PromptOverrideFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -37,7 +37,7 @@ const promptOverrideFunction = new lambda.Function(stack, 'PromptOverrideFunctio
 });
 
 const customParserActionFunction = new lambda.Function(stack, 'CustomParserActionFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -60,7 +60,7 @@ const customParserActionFunction = new lambda.Function(stack, 'CustomParserActio
 
 // Create a Lambda function for the custom parser
 const parserFunction = new lambda.Function(stack, 'ParserFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

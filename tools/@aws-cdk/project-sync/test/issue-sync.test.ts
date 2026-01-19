@@ -1,7 +1,7 @@
-import { describe, test, expect, jest, beforeEach } from '@jest/globals';
-import * as issueSync from '../lib/issue-sync.js';
+/* eslint-disable @typescript-eslint/unbound-method */
 import { GithubMock } from './github-mock.js';
 import { Github } from '../lib/github.js';
+import * as issueSync from '../lib/issue-sync.js';
 
 jest.mock('../lib/github.js');
 
@@ -30,6 +30,7 @@ describe('Issue Sync', () => {
       PVTF_lADOACIPmc4A7TlPzgvqxXA: { date: new Date('2021-08-04T15:40:27Z') },
       PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-06-30T15:47:05Z') },
       PVTF_lADOACIPmc4A7TlPzgyBz60: { text: 'naseemkullah' },
+      PVTSSF_lADOACIPmc4A7TlPzgvpNe8: { singleSelectOptionId: '0a877460' },
     });
   });
 
@@ -43,8 +44,9 @@ describe('Issue Sync', () => {
     // and the expected creation and update dates
     expect(mockGithub.setProjectItem).toHaveBeenCalledWith('PVT_kwDOACIPmc4A7TlP', 'PVTI_lADOACIPmc4A7TlPzgbamKo', {
       PVTF_lADOACIPmc4A7TlPzgvqxXA: { date: new Date('2024-07-09T08:10:25Z') },
-      PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-07-08T15:43:28Z') },
+      PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-07-25T16:56:19Z') },
       PVTF_lADOACIPmc4A7TlPzgyBz60: { text: 'greg5123334' },
+      PVTSSF_lADOACIPmc4A7TlPzgvpNe8: { singleSelectOptionId: '0a877460' },
     });
   });
 
@@ -60,6 +62,7 @@ describe('Issue Sync', () => {
       PVTF_lADOACIPmc4A7TlPzgvqxXA: { date: new Date('2025-01-28T09:56:52Z') },
       PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-06-12T16:00:02Z') },
       PVTF_lADOACIPmc4A7TlPzgyBz60: { text: 'aubsamai' },
+      PVTSSF_lADOACIPmc4A7TlPzgvpNe8: { singleSelectOptionId: '0a877460' },
     });
   });
 

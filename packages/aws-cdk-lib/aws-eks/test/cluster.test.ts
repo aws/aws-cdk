@@ -17,8 +17,6 @@ import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 
-/* eslint-disable max-len */
-
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
 
 describe('cluster', () => {
@@ -1510,7 +1508,7 @@ describe('cluster', () => {
 
     test('throws warning when `outputConfigCommand=true` and `mastersRole` is not specified', () => {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'Cluster', {
@@ -2273,7 +2271,7 @@ describe('cluster', () => {
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+              ':iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
             ]],
           },
           {
@@ -2582,7 +2580,7 @@ describe('cluster', () => {
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+              ':iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
             ]],
           },
           {
@@ -3508,16 +3506,6 @@ describe('cluster', () => {
     });
   });
 
-  describe('kubectlLayer annotation', () => {
-    function message(version: string) {
-      return [
-        `You created a cluster with Kubernetes Version 1.${version} without specifying the kubectlLayer property.`,
-        'The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer.',
-        '[ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]',
-      ].join(' ');
-    }
-  });
-
   test('custom awscli layer can be provided', () => {
     // GIVEN
     const { stack } = testFixture();
@@ -3730,6 +3718,51 @@ describe('cluster', () => {
     });
   });
 
+  describe('removal policy', () => {
+    test('user provided role and vpc do not get removal policy applied', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const userVpc = new ec2.Vpc(stack, 'UserVpc');
+      const userRole = new iam.Role(stack, 'UserRole', {
+        assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
+      });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc: userVpc,
+        role: userRole,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+
+      // User-provided VPC should not have removal policy
+      template.hasResource('AWS::EC2::VPC', {
+        DeletionPolicy: Match.absent(),
+      });
+
+      // User-provided role should not have removal policy
+      template.hasResource('AWS::IAM::Role', {
+        Properties: {
+          AssumeRolePolicyDocument: {
+            Statement: [{
+              Principal: { Service: 'eks.amazonaws.com' },
+            }],
+          },
+        },
+        DeletionPolicy: Match.absent(),
+      });
+
+      // But cluster should have removal policy
+      template.hasResource('Custom::AWSCDK-EKS-Cluster', {
+        DeletionPolicy: 'Delete',
+      });
+    });
+  });
+
   describe('RemoteNetworkConfig', () => {
     test('create a cluster using remote network config with only remote node networks', () => {
       // GIVEN
@@ -3744,6 +3777,7 @@ describe('cluster', () => {
             cidrs: remoteNodeNetworkCidrs,
           },
         ],
+        kubectlLayer: undefined as any,
       });
 
       // THEN
@@ -3779,6 +3813,7 @@ describe('cluster', () => {
             cidrs: remotePodNetworkCidrs,
           },
         ],
+        kubectlLayer: undefined as any,
       });
 
       // THEN
@@ -3821,6 +3856,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`Remote node network CIDR block ${overlappingCidr} should not overlap with remote pod network CIDR block ${overlappingCidr}`);
     });
@@ -3844,6 +3880,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs2,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote node network #1 should not overlap with CIDR block ${overlappingCidr} in remote node network #2`);
     });
@@ -3873,6 +3910,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs2,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote pod network #1 should not overlap with CIDR block ${overlappingCidr} in remote pod network #2`);
     });
@@ -3892,6 +3930,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
     });
@@ -3917,6 +3956,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote pod network #1`);
     });

@@ -19,21 +19,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  pr-build:
     if: github.repository != 'aws/aws-cdk'
     runs-on: aws-cdk_ubuntu-latest_32-core
 
     env:
       PR_BUILD: true
+      JSII_SILENCE_WARNING_DEPRECATED_NODE_VERSION: true
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "yarn"
 
       - name: Set up Docker
@@ -41,7 +42,7 @@ jobs:
 
       - name: Load Docker images
         id: docker-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.docker-images.tar
@@ -52,7 +53,7 @@ jobs:
         run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.s3buildcache
@@ -64,7 +65,7 @@ jobs:
           sudo sysctl -w vm.max_map_count=2251954
 
       - name: Build
-        run: /bin/bash ./build.sh --ci
+        run: /bin/bash ./build.sh --ci --concurrency 10
 
       - name: Run Rosetta
         run: /bin/bash ./scripts/run-rosetta.sh
@@ -78,7 +79,7 @@ jobs:
 
       - name: Cache Docker images
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.docker-images.tar

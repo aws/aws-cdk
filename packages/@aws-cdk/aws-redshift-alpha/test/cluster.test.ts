@@ -1,11 +1,11 @@
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -893,7 +893,7 @@ describe('reboot for Parameter Changes', () => {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Handler: 'index.handler',
-            Runtime: 'nodejs18.x',
+            Runtime: 'nodejs22.x',
             Timeout: 900,
           },
         },

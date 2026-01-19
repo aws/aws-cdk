@@ -1379,7 +1379,7 @@ describe('fargate service', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      const service = new ecs.FargateService(stack, 'FargateService', {
+      new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
       });
@@ -1399,7 +1399,7 @@ describe('fargate service', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      const service = new ecs.FargateService(stack, 'FargateService', {
+      new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
         minHealthyPercent: 50,
@@ -2328,48 +2328,6 @@ describe('fargate service', () => {
       }).toThrow(/'throughput' can only be configured with gp3 volume type, got gp2/);
     });
 
-    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
-      // WHEN
-      container.addMountPoints({
-        containerPath: '/var/lib',
-        readOnly: false,
-        sourceVolume: 'nginx-vol',
-      });
-
-      expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.GP3,
-            size: cdk.Size.gibibytes(10),
-            throughput: 10001,
-          },
-        }));
-      }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
-    });
-
-    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
-      // WHEN
-      container.addMountPoints({
-        containerPath: '/var/lib',
-        readOnly: false,
-        sourceVolume: 'nginx-vol',
-      });
-
-      expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.GP3,
-            size: cdk.Size.gibibytes(10),
-            throughput: 10001,
-          },
-        }));
-      }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
-    });
-
     test('throw an error if iops is not supported for volume type sc1', ()=> {
       // WHEN
       container.addMountPoints({
@@ -2473,6 +2431,80 @@ describe('fargate service', () => {
       }).toThrow("io2' volumes must have 'iops' between 100 and 256000, got 256001");
     });
 
+    test('configure volume initialization role', () => {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      const vol = new ServiceManagedVolume(stack, 'EBS Volume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          snapShotId: 'snap-0d48decab5c493eee',
+          volumeInitializationRate: cdk.Size.mebibytes(100),
+        },
+      });
+      service.addVolume(vol);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['EBSVolumeEBSRoleD38B9F31', 'Arn'] },
+              SnapshotId: 'snap-0d48decab5c493eee',
+              FilesystemType: 'xfs',
+              VolumeInitializationRate: 100,
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+    });
+
+    test.each([
+      cdk.Size.mebibytes(99),
+      cdk.Size.mebibytes(301),
+    ])('throw an error if if volume initialization rate is out of range for 100-300 MiB/s', (volumeInitializationRate) => {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            snapShotId: 'snap-0d48decab5c493eee',
+            volumeInitializationRate,
+          },
+        }));
+      }).toThrow(`'volumeInitializationRate' must be between 100 and 300 MiB/s, got ${volumeInitializationRate.toMebibytes()} MiB/s.`);
+    });
+
+    test('throw an error if if volume initialization rate is specified without specifying snapshot ID', () => {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            volumeInitializationRate: cdk.Size.mebibytes(101),
+          },
+        }));
+      }).toThrow('\'volumeInitializationRate\' can only be specified when \'snapShotId\' is provided.');
+    });
+
     test('success adding gp3 volume with throughput 0', ()=> {
       // WHEN
       container.addMountPoints({
@@ -2505,6 +2537,27 @@ describe('fargate service', () => {
           },
         ],
       });
+    });
+
+    test('throw an error if throughput is greater than 2000 for volume type gp3', () => {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
+            size: cdk.Size.gibibytes(10),
+            throughput: 2001,
+          },
+        }));
+      }).toThrow("'throughput' must be less than or equal to 2000 MiB/s, got 2001 MiB/s");
     });
   });
 
@@ -4217,7 +4270,7 @@ describe('fargate service', () => {
     test('with circuit breaker and deployment controller feature flag enabled', () => {
       // GIVEN
       const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-          { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
+        { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
       const app = new App({ context: disableCircuitBreakerEcsDeploymentControllerFeatureFlag });
       const stack = new cdk.Stack(app);
       const cluster = new ecs.Cluster(stack, 'EcsCluster');

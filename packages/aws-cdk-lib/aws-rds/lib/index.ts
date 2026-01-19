@@ -13,6 +13,7 @@ export * from './endpoint';
 export * from './option-group';
 export * from './instance';
 export * from './proxy';
+export * from './proxy-endpoint';
 export * from './serverless-cluster';
 export * from './subnet-group';
 export * from './aurora-cluster-instance';

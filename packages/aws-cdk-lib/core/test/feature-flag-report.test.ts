@@ -13,7 +13,7 @@ describe('generate feature flag report', () => {
     const app = new App({
       context: {
         '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': true,
-        '@aws-cdk/core:aspectStabilization': false,
+        '@aws-cdk/core:newStyleStackSynthesis': false,
       },
     });
     const assembly = app.synth();
@@ -25,9 +25,14 @@ describe('generate feature flag report', () => {
         flags: expect.objectContaining({
           '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': expect.objectContaining({
             userValue: true,
+            recommendedValue: true,
           }),
-          '@aws-cdk/core:aspectStabilization': expect.objectContaining({
+          '@aws-cdk/core:newStyleStackSynthesis': expect.objectContaining({
             userValue: false,
+            recommendedValue: true,
+            unconfiguredBehavesLike: {
+              v2: true,
+            },
           }),
         }),
       }),
@@ -46,5 +51,16 @@ describe('generate feature flag report', () => {
         userValue: undefined,
       }),
     }));
+  });
+  test('expired flags are not included in report', () => {
+    const app = new App();
+    const builder = new cxapi.CloudAssemblyBuilder('/tmp/test');
+    const spy = jest.spyOn(builder, 'addArtifact');
+
+    generateFeatureFlagReport(builder, app);
+
+    const flags = (spy.mock.calls[0][1].properties as FeatureFlagReportProperties).flags;
+    // For example
+    expect(Object.keys(flags)).not.toContain('aws-cdk:enableDiffNoFail');
   });
 });

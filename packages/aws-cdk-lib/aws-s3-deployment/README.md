@@ -1,6 +1,5 @@
 # AWS S3 Deployment Construct Library
 
-
 This library allows populating an S3 bucket with the contents of .zip files
 from other S3 buckets or from local disk.
 
@@ -83,7 +82,7 @@ User: *** is not authorized to perform: kms:Decrypt on the resource associated w
 because no identity-based policy allows the kms:Decrypt action
 ```
 
-When this happens, users can use the public `handlerRole` property of `BucketDeployment` to manually 
+When this happens, users can use the public `handlerRole` property of `BucketDeployment` to manually
 add the KMS permissions:
 
 ```ts
@@ -325,6 +324,24 @@ new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
 });
 ```
 
+By default, the deployment will wait for invalidation to succeed to complete. This will poll Cloudfront for a maximum of 13 minutes to check for a successful invalidation. The drawback to this is that the deployment will fail if invalidation fails or if it takes longer than 13 minutes. As a workaround, there is the option `waitForDistributionInvalidation`, which can be set to false to skip waiting for the invalidation, but this can be risky as invalidation errors will not be reported.
+
+```ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+
+declare const bucket: s3.IBucket;
+declare const distribution: cloudfront.IDistribution;
+
+new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: bucket,
+  distribution,
+  distributionPaths: ['/images/*.png'],
+  // Invalidate cache but don't wait or verify that invalidation has completed successfully.
+  waitForDistributionInvalidation: false
+});
+```
+
 ## Signed Content Payloads
 
 By default, deployment uses streaming uploads which set the `x-amz-content-sha256`
@@ -357,6 +374,7 @@ resource handler.
 > of memory and storage size.
 
 ## JSON-Aware Source Processing
+
 When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the escaping option. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
 
 ```ts
@@ -444,7 +462,7 @@ to make from placeholders in a local file which will be resolved during deployme
 is especially useful in situations like creating an API from a spec file, where users might
 want to reference other CDK resources they have created.
 
-The syntax for template variables is `{{ variableName }}` in your local file. Then, you would 
+The syntax for template variables is `{{ variableName }}` in your local file. Then, you would
 specify the substitutions in CDK like this:
 
 ```ts
@@ -468,7 +486,7 @@ new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
 ```
 
 Nested variables, like `{{ {{ foo }} }}` or `{{ foo {{ bar }} }}`, are not supported by this
-construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only 
+construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only
 the `{{ foo }}` would be replaced by the substitution, and the extra brackets would remain in the file.
 In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be replaced
 in the file.
@@ -512,6 +530,67 @@ const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutE
 
 new cdk.CfnOutput(this, 'ObjectKey', {
   value: cdk.Fn.select(0, myBucketDeployment.objectKeys),
+});
+```
+
+## Specifying a Custom VPC, Subnets, and Security Groups in BucketDeployment
+
+By default, the AWS CDK BucketDeployment construct runs in a publicly accessible environment. However, for enhanced security and compliance, you may need to deploy your assets from within a VPC while restricting network access through custom subnets and security groups.
+
+### Using a Custom VPC
+
+To deploy assets within a private network, specify the vpc property in BucketDeploymentProps. This ensures that the deployment Lambda function executes within your specified VPC.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+new s3deploy.BucketDeployment(this, 'DeployToS3', {
+    destinationBucket: bucket,
+    vpc: vpc, 
+    sources: [s3deploy.Source.asset('./website')],
+});
+```
+
+### Specifying Subnets for Deployment
+
+By default, when you specify a VPC, the BucketDeployment function is deployed in the private subnets of that VPC.
+However, you can customize the subnet selection using the vpcSubnets property.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+new s3deploy.BucketDeployment(this, 'DeployToS3', {
+    destinationBucket: bucket,
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    sources: [s3deploy.Source.asset('./website')],
+});
+```
+
+### Defining Custom Security Groups
+
+For enhanced network security, you can now specify custom security groups in BucketDeploymentProps.
+This allows fine-grained control over ingress and egress rules for the deployment Lambda function.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+const securityGroup = new ec2.SecurityGroup(this, 'CustomSG', {
+    vpc: vpc,
+    description: 'Allow HTTPS outbound access',
+    allowAllOutbound: false,
+});
+
+securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Allow HTTPS traffic');
+
+new s3deploy.BucketDeployment(this, 'DeployWithSecurityGroup', {
+    destinationBucket: bucket,
+    vpc: vpc,
+    securityGroups: [securityGroup],
+    sources: [s3deploy.Source.asset('./website')],
 });
 ```
 

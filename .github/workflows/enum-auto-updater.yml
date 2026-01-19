@@ -13,10 +13,10 @@ jobs:
       pull-requests: write
     steps:
       - name: Check Out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "*"
         env:
@@ -79,9 +79,12 @@ jobs:
               echo "ERROR: Cannot find module directory for $module"
               continue
             fi
-            
+
+            # Branch name for the module            
+            branchName="enum-update/${moduleName#aws-}"
+
             # Check for existing PR with the same name
-            prExists=$(gh pr list --state open --search "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" --json number,title -q '.[].number')
+            prExists=$(gh pr list --state open --head ${branchName} --base main --json number,title -q '.[].number')
             
             # If a PR exists, close it
             if [[ -n "$prExists" ]]; then
@@ -92,7 +95,6 @@ jobs:
             fi
             
             # Create/switch to branch for the module
-            branchName="enum-update/${moduleName#aws-}"
             echo "Creating/switching to branch: $branchName"
             git checkout -B "$branchName" $original_branch  # -B forces branch creation/reset
   

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnRoute } from './appmesh.generated';
+import { CfnRoute, IRouteRef, RouteReference } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
 import { RouteSpec } from './route-spec';
@@ -11,7 +11,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface for which all Route based classes MUST implement
  */
-export interface IRoute extends cdk.IResource {
+export interface IRoute extends cdk.IResource, IRouteRef {
   /**
    * The name of the route
    *
@@ -82,6 +82,10 @@ export class Route extends cdk.Resource implements IRoute {
       readonly routeArn = routeArn;
       readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
       readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(routeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
+
+      public get routeRef(): RouteReference {
+        return { routeArn: this.routeArn };
+      }
     }(scope, id);
   }
 
@@ -97,6 +101,9 @@ export class Route extends cdk.Resource implements IRoute {
         resource: `mesh/${attrs.virtualRouter.mesh.meshName}/virtualRouter/${attrs.virtualRouter.virtualRouterName}/route`,
         resourceName: this.routeName,
       });
+      public get routeRef(): RouteReference {
+        return { routeArn: this.routeArn };
+      }
     }(scope, id);
   }
 
@@ -146,6 +153,10 @@ export class Route extends cdk.Resource implements IRoute {
       resource: `mesh/${props.mesh.meshName}/virtualRouter/${props.virtualRouter.virtualRouterName}/route`,
       resourceName: this.physicalName,
     });
+  }
+
+  public get routeRef(): RouteReference {
+    return { routeArn: this.routeArn };
   }
 }
 

@@ -15,6 +15,11 @@
     "CacheConfigType": [
       "AMPLIFY_MANAGED",
       "AMPLIFY_MANAGED_NO_COOKIES"
+    ],
+    "BuildComputeType": [
+      "STANDARD_8GB",
+      "LARGE_16GB",
+      "XLARGE_72GB"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/observability-configuration.ts": {
@@ -38,6 +43,92 @@
     "IpAddressType": [
       "IPV4",
       "DUAL_STACK"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway-base.ts": {
+    "GatewayExceptionLevel": [
+      "DEBUG"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/inbound-auth/authorizer.ts": {
+    "GatewayAuthorizerType": [
+      "CUSTOM_JWT",
+      "AWS_IAM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.ts": {
+    "ApiKeyCredentialLocationType": [
+      "HEADER",
+      "QUERY_PARAMETER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/credential-provider.ts": {
+    "CredentialProviderType": [
+      "API_KEY",
+      "OAUTH",
+      "GATEWAY_IAM_ROLE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/protocol.ts": {
+    "GatewayProtocolType": [
+      "MCP"
+    ],
+    "MCPProtocolVersion": [
+      "2025-06-18",
+      "2025-03-26"
+    ],
+    "McpGatewaySearchType": [
+      "SEMANTIC"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/schema/tool-schema.ts": {
+    "SchemaDefinitionType": [
+      "string",
+      "number",
+      "object",
+      "array",
+      "boolean",
+      "integer"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-base.ts": {
+    "GatewayTargetProtocolType": [
+      "MCP"
+    ],
+    "McpTargetType": [
+      "OPENAPI_SCHEMA",
+      "SMITHY_MODEL",
+      "LAMBDA",
+      "MCP_SERVER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
+    "MemoryStrategyType": [
+      "SUMMARIZATION",
+      "SEMANTIC",
+      "USER_PREFERENCE",
+      "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime-artifact.ts": {
+    "AgentCoreRuntime": [
+      "PYTHON_3_10",
+      "PYTHON_3_11",
+      "PYTHON_3_12",
+      "PYTHON_3_13"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/types.ts": {
+    "ProtocolType": [
+      "MCP",
+      "HTTP",
+      "A2A"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/tools/browser.ts": {
+    "BrowserSigning": [
+      "ENABLED",
+      "DISABLED"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
@@ -89,6 +180,59 @@
       "ROUTING_CLASSIFIER",
       "MEMORY_SUMMARIZATION",
       "KNOWLEDGE_BASE_RESPONSE_GENERATION"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts": {
+    "GuardrailAction": [
+      "BLOCK",
+      "ANONYMIZE",
+      "NONE"
+    ],
+    "TierConfig": [
+      "CLASSIC",
+      "STANDARD"
+    ],
+    "ContentFilterStrength": [
+      "NONE",
+      "LOW",
+      "MEDIUM",
+      "HIGH"
+    ],
+    "ModalityType": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "ContentFilterType": [
+      "SEXUAL",
+      "VIOLENCE",
+      "HATE",
+      "INSULTS",
+      "MISCONDUCT",
+      "PROMPT_ATTACK"
+    ],
+    "ManagedWordFilterType": [
+      "PROFANITY"
+    ],
+    "ContextualGroundingFilterType": [
+      "GROUNDING",
+      "RELEVANCE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts": {
+    "CrossRegionInferenceProfileRegion": [
+      "global",
+      "eu",
+      "us",
+      "us-gov",
+      "apac",
+      "jp",
+      "au"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts": {
+    "InferenceProfileType": [
+      "SYSTEM_DEFINED",
+      "APPLICATION"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts": {
@@ -235,6 +379,7 @@
       "AL2023_x86_64_STANDARD",
       "AL2023_x86_64_NEURON",
       "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
       "AL2023_ARM_64_STANDARD"
     ],
     "CapacityType": [
@@ -258,6 +403,27 @@
     "LifecycleLabel": [
       "OnDemand",
       "Ec2Spot"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
+    "UserEngine": [
+      "valkey",
+      "redis"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts": {
+    "CacheEngine": [
+      "valkey",
+      "valkey_7",
+      "valkey_8",
+      "redis",
+      "redis_7",
+      "memcached"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
+    "DataStorageUnit": [
+      "GB"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/build.ts": {
@@ -302,8 +468,14 @@
       "G.2X",
       "G.4X",
       "G.8X",
+      "G.12X",
+      "G.16X",
       "G.025X",
-      "Z.2X"
+      "Z.2X",
+      "R.1X",
+      "R.2X",
+      "R.4X",
+      "R.8X"
     ],
     "JobState": [
       "SUCCEEDED",
@@ -328,7 +500,8 @@
       "2.0",
       "3.0",
       "4.0",
-      "5.0"
+      "5.0",
+      "5.1"
     ],
     "JobLanguage": [
       "scala",
@@ -452,6 +625,159 @@
       "write.parallel",
       "write.maxfilesize.mb",
       "write.kms.key.id"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/component.ts": {
+    "ComponentAction": [
+      "AppendFile",
+      "Assert",
+      "CopyFile",
+      "CopyFolder",
+      "CreateFile",
+      "CreateFolder",
+      "CreateSymlink",
+      "DeleteFile",
+      "DeleteFolder",
+      "ExecuteBash",
+      "ExecuteBinary",
+      "ExecuteDocument",
+      "ExecutePowerShell",
+      "InstallMSI",
+      "ListFiles",
+      "MoveFile",
+      "MoveFolder",
+      "ReadFile",
+      "Reboot",
+      "SetFileEncoding",
+      "SetFileOwner",
+      "SetFolderOwner",
+      "SetFilePermissions",
+      "SetFolderPermissions",
+      "SetRegistry",
+      "S3Download",
+      "S3Upload",
+      "UninstallMSI",
+      "UpdateOS",
+      "WebDownload"
+    ],
+    "ComponentOnFailure": [
+      "Abort",
+      "Continue",
+      "Ignore"
+    ],
+    "ComponentParameterType": [
+      "string"
+    ],
+    "ComponentPhaseName": [
+      "build",
+      "container-host-test",
+      "test",
+      "validate"
+    ],
+    "ComponentSchemaVersion": [
+      "1.0"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/container-recipe.ts": {
+    "ContainerType": [
+      "DOCKER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/distribution-configuration.ts": {
+    "RepositoryService": [
+      "ECR"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image-pipeline.ts": {
+    "ScheduleStartCondition": [
+      "EXPRESSION_MATCH_ONLY",
+      "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE"
+    ],
+    "ImagePipelineStatus": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image.ts": {
+    "ImageArchitecture": [
+      "arm64",
+      "x86_64"
+    ],
+    "ImageType": [
+      "AMI",
+      "DOCKER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
+    ],
+    "Tenancy": [
+      "default",
+      "dedicated",
+      "host"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/lifecycle-policy.ts": {
+    "LifecyclePolicyActionType": [
+      "DELETE",
+      "DEPRECATE",
+      "DISABLE"
+    ],
+    "LifecyclePolicyStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "LifecyclePolicyResourceType": [
+      "AMI_IMAGE",
+      "CONTAINER_IMAGE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts": {
+    "Platform": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/workflow.ts": {
+    "WorkflowAction": [
+      "ApplyImageConfigurations",
+      "BootstrapInstanceForContainer",
+      "CollectImageMetadata",
+      "CollectImageScanFindings",
+      "CreateImage",
+      "DistributeImage",
+      "ExecuteComponents",
+      "ExecuteStateMachine",
+      "LaunchInstance",
+      "ModifyImageAttributes",
+      "RunCommand",
+      "RegisterImage",
+      "RunSysPrep",
+      "SanitizeInstance",
+      "TerminateInstance",
+      "WaitForAction",
+      "WaitForSSMAgent"
+    ],
+    "WorkflowOnFailure": [
+      "Abort",
+      "Continue"
+    ],
+    "WorkflowParameterType": [
+      "boolean",
+      "integer",
+      "string",
+      "stringList"
+    ],
+    "WorkflowSchemaVersion": [
+      "1.0"
+    ],
+    "WorkflowType": [
+      "BUILD",
+      "TEST",
+      "DISTRIBUTION"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts": {
@@ -677,6 +1003,10 @@
       "LOCAL",
       "TIERED"
     ],
+    "BrokerType": [
+      "STANDARD",
+      "EXPRESS"
+    ],
     "ClusterMonitoringLevel": [
       "DEFAULT",
       "PER_BROKER",
@@ -844,6 +1174,15 @@
       "AES256"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts": {
+    "OpenTableFormat": [
+      "ICEBERG"
+    ],
+    "Status": [
+      "enabled",
+      "disabled"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
     "InvocationHttpResponseCode": [
       "Invocation4XXErrors",
@@ -864,10 +1203,12 @@
   },
   "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts": {
     "Runtime": [
-      "nodejs18.x",
+      "nodejs20.x",
       "python3.9",
       "python3.10",
-      "python3.11"
+      "python3.11",
+      "python3.13",
+      "python3.13"
     ],
     "ComponentType": [
       "Function",
@@ -898,6 +1239,18 @@
       "DryRun"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/mixins/property-mixins.ts": {
+    "PropertyMergeStrategy": [
+      "override",
+      "merge"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.ts": {
+    "S3LogsDeliveryPermissionsVersion": [
+      "V1",
+      "V2"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/assets/lib/fs/follow-mode.ts": {
     "FollowMode": [
       "never",
@@ -913,6 +1266,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts": {
+    "ResponseTransferMode": [
+      "BUFFERED",
+      "STREAM"
+    ],
     "ContentHandling": [
       "CONVERT_TO_BINARY",
       "CONVERT_TO_TEXT"
@@ -1098,6 +1455,16 @@
       "WHEN_NO_MATCH",
       "NEVER",
       "WHEN_NO_TEMPLATES"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts": {
+    "Period": [
+      "DAY",
+      "WEEK",
+      "MONTH"
+    ],
+    "UsagePlanKeyType": [
+      "API_KEY"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.ts": {
@@ -1561,7 +1928,8 @@
   },
   "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts": {
     "JobStateTimeLimitActionsAction": [
-      "CANCEL"
+      "CANCEL",
+      "TERMINATE"
     ],
     "JobStateTimeLimitActionsReason": [
       "CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY",
@@ -1635,6 +2003,10 @@
       "BEST_FIT_PROGRESSIVE",
       "SPOT_CAPACITY_OPTIMIZED",
       "SPOT_PRICE_CAPACITY_OPTIMIZED"
+    ],
+    "DefaultInstanceClass": [
+      "default_x86_64",
+      "default_arm64"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -1692,7 +2064,9 @@
       "TLSv1.1_2016",
       "TLSv1.2_2018",
       "TLSv1.2_2019",
-      "TLSv1.2_2021"
+      "TLSv1.2_2021",
+      "TLSv1.2_2025",
+      "TLSv1.3_2025"
     ],
     "LambdaEdgeEventType": [
       "origin-request",
@@ -1734,6 +2108,11 @@
     "OriginSelectionCriteria": [
       "default",
       "media-quality-based"
+    ],
+    "OriginIpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts": {
@@ -1978,7 +2357,22 @@
       "BUILD_LAMBDA_4GB",
       "BUILD_LAMBDA_8GB",
       "BUILD_LAMBDA_10GB",
-      "ATTRIBUTE_BASED_COMPUTE"
+      "ATTRIBUTE_BASED_COMPUTE",
+      "CUSTOM_INSTANCE_TYPE"
+    ],
+    "DockerServerComputeType": [
+      "BUILD_GENERAL1_SMALL",
+      "BUILD_GENERAL1_MEDIUM",
+      "BUILD_GENERAL1_LARGE",
+      "BUILD_GENERAL1_XLARGE",
+      "BUILD_GENERAL1_2XLARGE",
+      "ATTRIBUTE_BASED_COMPUTE",
+      "BUILD_LAMBDA_10GB",
+      "BUILD_LAMBDA_1GB",
+      "BUILD_LAMBDA_2GB",
+      "BUILD_LAMBDA_4GB",
+      "BUILD_LAMBDA_8GB",
+      "CUSTOM_INSTANCE_TYPE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
@@ -2005,14 +2399,21 @@
       "BUILD_GENERAL1_LARGE",
       "BUILD_GENERAL1_XLARGE",
       "BUILD_GENERAL1_2XLARGE",
-      "ATTRIBUTE_BASED_COMPUTE"
+      "ATTRIBUTE_BASED_COMPUTE",
+      "CUSTOM_INSTANCE_TYPE"
+    ],
+    "FleetOverflowBehavior": [
+      "QUEUE",
+      "ON_DEMAND"
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/image-pull-principal-type.ts": {
     "ImagePullPrincipalType": [
       "CODEBUILD",
       "SERVICE_ROLE"
-    ],
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts": {
     "WindowsImageType": [
       "WINDOWS_CONTAINER",
       "WINDOWS_SERVER_2019_CONTAINER",
@@ -2387,6 +2788,10 @@
       "PAY_PER_REQUEST",
       "PROVISIONED"
     ],
+    "ContributorInsightsMode": [
+      "ACCESSED_AND_THROTTLED_KEYS",
+      "THROTTLED_KEYS"
+    ],
     "ProjectionType": [
       "KEYS_ONLY",
       "INCLUDE",
@@ -2395,6 +2800,10 @@
     "TableClass": [
       "STANDARD",
       "STANDARD_INFREQUENT_ACCESS"
+    ],
+    "MultiRegionConsistency": [
+      "EVENTUAL",
+      "STRONG"
     ],
     "TableEncryption": [
       "AWS_OWNED",
@@ -2442,6 +2851,63 @@
       10,
       12,
       24
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts": {
+    "AcceleratorType": [
+      "gpu",
+      "fpga",
+      "inference"
+    ],
+    "AcceleratorManufacturer": [
+      "amazon-web-services",
+      "amd",
+      "nvidia",
+      "xilinx",
+      "habana"
+    ],
+    "AcceleratorName": [
+      "a100",
+      "k80",
+      "m60",
+      "radeon-pro-v520",
+      "t4",
+      "v100",
+      "vu9p",
+      "a10g",
+      "h100",
+      "inferentia",
+      "k520",
+      "t4g"
+    ],
+    "BareMetal": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "BurstablePerformance": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "CpuManufacturer": [
+      "intel",
+      "amd",
+      "amazon-web-services",
+      "apple"
+    ],
+    "InstanceGeneration": [
+      "current",
+      "previous"
+    ],
+    "LocalStorage": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "LocalStorageType": [
+      "hdd",
+      "ssd"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-types.ts": {
@@ -2530,12 +2996,22 @@
       "r7i",
       "memory7-intel",
       "r7iz",
+      "memory8-intel-base",
+      "r8i",
+      "memory8-intel-flex",
+      "r8i-flex",
       "memory7-amd",
       "r7a",
+      "memory8-amd",
+      "r8a",
       "memory8-graviton",
       "r8g",
       "memory8-graviton4-nvme-drive",
       "r8gd",
+      "memory8-graviton4-high-network-bandwidth",
+      "r8gn",
+      "memory8-graviton4-ebs-optimized",
+      "r8gb",
       "compute3",
       "c3",
       "compute4",
@@ -2580,6 +3056,10 @@
       "c7i",
       "compute7-intel-flex",
       "c7i-flex",
+      "compute8-intel",
+      "c8i",
+      "compute8-intel-flex",
+      "c8i-flex",
       "compute7-amd",
       "c7a",
       "storage2",
@@ -2616,6 +3096,8 @@
       "i7i",
       "storage8-graviton",
       "i8g",
+      "storage8-graviton-storage-optimized",
+      "i8ge",
       "burstable2",
       "t2",
       "burstable3",
@@ -2702,12 +3184,20 @@
       "m7gd",
       "standard8-graviton4-nvme-drive",
       "m8gd",
+      "standard8-intel",
+      "m8i",
+      "standard8-intel-flex",
+      "m8i-flex",
       "standard7-intel",
       "m7i",
       "standard7-intel-flex",
       "m7i-flex",
       "standard7-amd",
       "m7a",
+      "standard8-amd",
+      "m8a",
+      "standard9-graviton",
+      "m9g",
       "high-compute-memory1",
       "z1d",
       "inference1",
@@ -2773,6 +3263,12 @@
       "metal-24xl",
       "metal-32xl",
       "metal-48xl"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/key-pair.ts": {
@@ -3140,7 +3636,8 @@
       "NetworkInterface",
       "TransitGateway",
       "VpcPeeringConnection",
-      "VpcEndpoint"
+      "VpcEndpoint",
+      "CoreNetwork"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpn.ts": {
@@ -3556,7 +4053,9 @@
     ],
     "TagMutability": [
       "MUTABLE",
-      "IMMUTABLE"
+      "IMMUTABLE",
+      "IMMUTABLE_WITH_EXCLUSION",
+      "MUTABLE_WITH_EXCLUSION"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts": {
@@ -3614,6 +4113,10 @@
       "CODE_DEPLOY",
       "EXTERNAL"
     ],
+    "DeploymentStrategy": [
+      "ROLLING",
+      "BLUE_GREEN"
+    ],
     "PropagatedTagSource": [
       "SERVICE",
       "TASK_DEFINITION",
@@ -3657,7 +4160,11 @@
       0,
       1,
       2,
-      3
+      3,
+      4,
+      5,
+      6,
+      7
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.ts": {
@@ -3674,6 +4181,14 @@
       "NONE",
       "DEFAULT",
       "OVERRIDE"
+    ],
+    "InstanceMonitoring": [
+      "BASIC",
+      "DETAILED"
+    ],
+    "PropagateManagedInstancesTags": [
+      "CAPACITY_PROVIDER",
+      "NONE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
@@ -3707,6 +4222,17 @@
     "VersionConsistency": [
       "enabled",
       "disabled"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts": {
+    "DeploymentLifecycleStage": [
+      "RECONCILE_SERVICE",
+      "PRE_SCALE_UP",
+      "POST_SCALE_UP",
+      "TEST_TRAFFIC_SHIFT",
+      "POST_TEST_TRAFFIC_SHIFT",
+      "PRODUCTION_TRAFFIC_SHIFT",
+      "POST_PRODUCTION_TRAFFIC_SHIFT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/environment-file.ts": {
@@ -3965,6 +4491,7 @@
       "AL2023_x86_64_STANDARD",
       "AL2023_x86_64_NEURON",
       "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
       "AL2023_ARM_64_STANDARD"
     ],
     "CapacityType": [
@@ -4157,6 +4684,18 @@
       "OAUTH_CLIENT_CREDENTIALS"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.ts": {
+    "IncludeDetail": [
+      "FULL",
+      "NONE"
+    ],
+    "Level": [
+      "INFO",
+      "ERROR",
+      "TRACE",
+      "OFF"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-events/lib/input.ts": {
     "InputType": [
       0,
@@ -4235,7 +4774,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/access-key.ts": {
     "AccessKeyStatus": [
       "Active",
-      "Inactive"
+      "Inactive",
+      "Expired"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy-statement.ts": {
@@ -4245,6 +4785,16 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts": {
+    "ShardLevelMetrics": [
+      "IncomingBytes",
+      "IncomingRecords",
+      "IteratorAgeMilliseconds",
+      "OutgoingBytes",
+      "OutgoingRecords",
+      "ReadProvisionedThroughputExceeded",
+      "WriteProvisionedThroughputExceeded",
+      "ALL"
+    ],
     "StreamEncryption": [
       "NONE",
       "KMS",
@@ -4268,6 +4818,16 @@
       2
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {
+    "ParquetWriterVersion": [
+      "V1",
+      "V2"
+    ],
+    "OrcFormatVersion": [
+      "V0_11",
+      "V0_12"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.ts": {
     "KeySpec": [
       "SYMMETRIC_DEFAULT",
@@ -4282,7 +4842,10 @@
       "HMAC_256",
       "HMAC_384",
       "HMAC_512",
-      "SM2"
+      "SM2",
+      "ML_DSA_44",
+      "ML_DSA_65",
+      "ML_DSA_87"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
@@ -4304,6 +4867,7 @@
       "package-lock.json",
       "yarn.lock",
       "bun.lockb",
+      "bun.lock",
       "pnpm-lock.yaml"
     ]
   },
@@ -4651,12 +5215,23 @@
       "open-source-rds-extended-support-disabled"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy-endpoint.ts": {
+    "ProxyEndpointTargetRole": [
+      "READ_WRITE",
+      "READ_ONLY"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
     "ClientPasswordAuthType": [
       "MYSQL_NATIVE_PASSWORD",
       "POSTGRES_SCRAM_SHA_256",
       "POSTGRES_MD5",
-      "SQL_SERVER_AUTHENTICATION"
+      "SQL_SERVER_AUTHENTICATION",
+      "MYSQL_CACHING_SHA2_PASSWORD"
+    ],
+    "DefaultAuthScheme": [
+      "IAM_AUTH",
+      "NONE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts": {
@@ -4731,6 +5306,10 @@
       "SVCB",
       "TLSA",
       "TXT"
+    ],
+    "Failover": [
+      "PRIMARY",
+      "SECONDARY"
     ],
     "CaaTag": [
       "issue",
@@ -5376,6 +5955,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts": {
+    "BrowserType": [
+      "CHROME",
+      "FIREFOX"
+    ],
     "Cleanup": [
       "nothing",
       "lambda"

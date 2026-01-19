@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
-import { ILogGroup, MetricFilterOptions } from './log-group';
+import { MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 import { Metric, MetricOptions } from '../../aws-cloudwatch';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Properties for a MetricFilter
@@ -13,7 +14,7 @@ export interface MetricFilterProps extends MetricFilterOptions {
   /**
    * The log group to create the filter on.
    */
-  readonly logGroup: ILogGroup;
+  readonly logGroup: ILogGroupRef;
 }
 
 /**
@@ -50,7 +51,7 @@ export class MetricFilter extends Resource {
     //
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html
     new CfnMetricFilter(this, 'Resource', {
-      logGroupName: props.logGroup.logGroupName,
+      logGroupName: props.logGroup.logGroupRef.logGroupName,
       filterName: this.physicalName,
       filterPattern: props.filterPattern.logPatternString,
       metricTransformations: [{
@@ -61,6 +62,7 @@ export class MetricFilter extends Resource {
         dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
         unit: props.unit,
       }],
+      applyOnTransformedLogs: props.applyOnTransformedLogs,
     });
   }
 

@@ -46,6 +46,7 @@ export enum CustomResourceProviderRuntime {
 
   /**
    * Node.js 16.x
+   * @deprecated Use latest version
    */
   NODEJS_16_X = 'nodejs16.x',
 

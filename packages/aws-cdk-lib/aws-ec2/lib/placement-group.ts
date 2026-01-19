@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnPlacementGroup } from './ec2.generated';
+import { CfnPlacementGroup, IPlacementGroupRef, PlacementGroupReference } from './ec2.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
  */
-export interface IPlacementGroup extends IResource {
+export interface IPlacementGroup extends IResource, IPlacementGroupRef {
   /**
    * The name of this placement group
    *
@@ -160,6 +160,11 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
   public static fromPlacementGroupName(scope: Construct, id: string, placementGroupName: string): IPlacementGroup {
     class Import extends Resource implements IPlacementGroup {
       public readonly placementGroupName = placementGroupName;
+      public get placementGroupRef(): PlacementGroupReference {
+        return {
+          groupName: this.placementGroupName,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -210,5 +215,11 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
       resource: 'compute-environment',
       resourceName: this.physicalName,
     });
+  }
+
+  public get placementGroupRef(): PlacementGroupReference {
+    return {
+      groupName: this.placementGroupName,
+    };
   }
 }

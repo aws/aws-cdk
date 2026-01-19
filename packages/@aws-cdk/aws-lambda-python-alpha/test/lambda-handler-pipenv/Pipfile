@@ -4,4 +4,4 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-requests = "==2.31.0"
+requests = "==2.32.4"

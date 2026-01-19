@@ -7,6 +7,7 @@ import * as route53 from '../../aws-route53';
 import { IResource, Token, Tags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Name tag constant
@@ -16,7 +17,7 @@ const NAME_TAG: string = 'Name';
 /**
  * Represents a certificate in AWS Certificate Manager
  */
-export interface ICertificate extends IResource {
+export interface ICertificate extends IResource, ICertificateRef {
   /**
    * The certificate's ARN
    *
@@ -79,6 +80,16 @@ export interface CertificateProps {
    * @default CertificateValidation.fromEmail()
    */
   readonly validation?: CertificateValidation;
+
+  /**
+   * Enable or disable export of this certificate.
+   *
+   * If you issue an exportable public certificate, there is a charge at certificate issuance and again when the certificate renews.
+   * Ref: https://aws.amazon.com/certificate-manager/pricing
+   *
+   * @default false
+   */
+  readonly allowExport?: boolean;
 
   /**
    * Enable or disable transparency logging for this certificate
@@ -319,6 +330,8 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
+    const certificateExport = (props.allowExport === true) ? 'ENABLED' : undefined;
+
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
       certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
@@ -329,6 +342,7 @@ export class Certificate extends CertificateBase implements ICertificate {
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: renderDomainValidation(this, validation, allDomainNames),
       validationMethod: validation.method,
+      certificateExport,
       certificateTransparencyLoggingPreference,
       keyAlgorithm: props.keyAlgorithm?.name,
     });

@@ -1104,6 +1104,18 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 });
 ```
 
+For cross-region VPC endpoints, specify the `serviceRegion` parameter:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.InterfaceVpcEndpoint(this, 'CrossRegionEndpoint', {
+  vpc,
+  service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
+  serviceRegion: 'us-east-1', // Same region as the service endpoint above
+});
+```
+
 #### Security groups for interface VPC endpoints
 
 By default, interface VPC endpoints create a new security group and all traffic to the endpoint from within the VPC will be automatically allowed.
@@ -1293,6 +1305,21 @@ const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
   },
 });
 ```
+
+To control whether clients are automatically disconnected when the maximum session duration is reached, use the `disconnectOnSessionTimeout` prop.
+By default (`true`), clients are disconnected and must manually reconnect.
+Set to `false` to allow automatic reconnection attempts:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  disconnectOnSessionTimeout: false, // Allow automatic reconnection attempts
+});
+```
+
+Detail information about maximum VPN session duration timeout can be found in the [AWS documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-max-duration.html).
 
 ## Instances
 
@@ -1880,7 +1907,7 @@ You can configure [tag propagation on volume creation](https://docs.aws.amazon.c
 
 #### Throughput on GP3 Volumes
 
-You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
+You can specify the `throughput` of a GP3 volume from 125 (default) to 2000.
 
 ```ts
 new ec2.Volume(this, 'Volume', {
@@ -1912,13 +1939,39 @@ The `volumeInitializationRate` must be:
 
 ### Configuring Instance Metadata Service (IMDS)
 
-#### Toggling IMDSv1
+#### Comprehensive Metadata Options
 
-You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
-allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options using individual properties. This provides comprehensive control over all metadata service settings:
 
-To do this for a single `Instance`, you can use the `requireImdsv2` property.
-The example below demonstrates IMDSv2 being required on a single `Instance`:
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+// Example 1: Enforce IMDSv2 with comprehensive options
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+  httpEndpoint: true,
+  httpProtocolIpv6: false,
+  httpPutResponseHopLimit: 2,
+  httpTokens: ec2.HttpTokens.REQUIRED,
+  instanceMetadataTags: true,
+});
+
+// Example 2: Enforce IMDSv2 with minimal configuration
+new ec2.Instance(this, 'SecureInstance', {
+  vpc,
+  instanceType,
+  machineImage,
+  httpTokens: ec2.HttpTokens.REQUIRED,
+});
+```
+
+#### Simple IMDSv2 Enforcement
+
+For simple IMDSv2 enforcement without additional configuration, you can use the `requireImdsv2` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1930,11 +1983,12 @@ new ec2.Instance(this, 'Instance', {
   instanceType,
   machineImage,
 
-  // ...
-
+  // Simple IMDSv2 enforcement
   requireImdsv2: true,
 });
 ```
+
+#### Applying to Multiple Instances
 
 You can also use the either the `InstanceRequireImdsv2Aspect` for EC2 instances or the `LaunchTemplateRequireImdsv2Aspect` for EC2 launch templates
 to apply the operation to multiple instances or launch templates, respectively.

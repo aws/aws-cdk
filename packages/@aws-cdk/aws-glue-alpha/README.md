@@ -68,7 +68,7 @@ for more granular details.
 
 ### Spark Jobs
 
-1. **ETL Jobs**
+#### ETL Jobs
 
 ETL jobs support pySpark and Scala languages, for which there are separate but
 similar constructors. ETL jobs default to the G2 worker type, but you can
@@ -113,7 +113,7 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V3_0,
+  glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
   workerType: glue.WorkerType.G_2X,
   maxConcurrentRuns: 100,
@@ -130,7 +130,7 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
 });
 ```
 
-**Streaming Jobs**
+#### Streaming Jobs
 
 Streaming jobs are similar to ETL jobs, except that they perform ETL on data
 streams using the Apache Spark Structured Streaming framework. Some Spark
@@ -169,7 +169,7 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V3_0,
+  glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
   workerType: glue.WorkerType.G_2X,
   maxConcurrentRuns: 100,
@@ -186,7 +186,7 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
 });
 ```
 
-**Flex Jobs**
+#### Flex Jobs
 
 The flexible execution class is appropriate for non-urgent jobs such as
 pre-production jobs, testing, and one-time data loads. Flexible jobs default
@@ -222,7 +222,7 @@ new glue.PySparkEtlJob(stack, 'pySparkEtlJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V3_0,
+  glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
   workerType: glue.WorkerType.G_2X,
   maxConcurrentRuns: 100,
@@ -343,6 +343,36 @@ new glue.RayJob(stack, 'ImportedJob', {
 });
 ```
 
+### Metrics Control
+
+By default, Glue jobs enable CloudWatch metrics (`--enable-metrics`) and observability metrics (`--enable-observability-metrics`) for monitoring and debugging. You can disable these metrics to reduce CloudWatch costs:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+
+// Disable both metrics for cost optimization
+new glue.PySparkEtlJob(stack, 'CostOptimizedJob', {
+  role,
+  script,
+  enableMetrics: false,
+  enableObservabilityMetrics: false,
+});
+
+// Selective control - keep observability, disable profiling
+new glue.PySparkEtlJob(stack, 'SelectiveJob', {
+  role,
+  script,
+  enableMetrics: false,
+  // enableObservabilityMetrics defaults to true
+});
+```
+
+This feature is available for all Spark job types (ETL, Streaming, Flex) and Ray jobs.
+
 ### Enable Job Run Queuing
 
 AWS Glue job queuing monitors your account level quotas and limits. If quotas or limits are insufficient to start a Glue job run, AWS Glue will automatically queue the job and wait for limits to free up. Once limits become available, AWS Glue will retry the job run. Glue jobs will queue for limits like max concurrent job runs per account, max concurrent Data Processing Units (DPU), and resource unavailable due to IP address exhaustion in Amazon Virtual Private Cloud (Amazon VPC).
@@ -389,14 +419,14 @@ override it if you prefer for your trigger not to start on creation.
 Reference the workflow-triggers.test.ts unit tests for examples of creating
 workflows and triggers.
 
-1. **On-Demand Triggers**
+#### **1. On-Demand Triggers**
 
 On-demand triggers can start glue jobs or crawlers. This construct provides
 convenience functions to create on-demand crawler or job triggers. The constructor
 takes an optional description parameter, but abstracts the requirement of an
 actions list using the job or crawler objects using conditional types.
 
-1. **Scheduled Triggers**
+#### **2. Scheduled Triggers**
 
 You can create scheduled triggers using cron expressions. This construct
 provides daily, weekly, and monthly convenience functions,
@@ -424,13 +454,13 @@ The trigger actions are executed when the predicateCondition is true.
 A `Connection` allows Glue jobs, crawlers and development endpoints to access
 certain types of data stores.
 
-***Secrets Management
-    **You must specify JDBC connection credentials in Secrets Manager and
+* **Secrets Management**
+    You must specify JDBC connection credentials in Secrets Manager and
     provide the Secrets Manager Key name as a property to the job connection.
 
 * **Networking - the CDK determines the best fit subnet for Glue connection
-configuration
-    **The prior version of the glue-alpha-module requires the developer to
+configuration**
+    The prior version of the glue-alpha-module requires the developer to
     specify the subnet of the Connection when it’s defined. Now, you can still
     specify the specific subnet you want to use, but are no longer required
     to. You are only required to provide a VPC and either a public or private

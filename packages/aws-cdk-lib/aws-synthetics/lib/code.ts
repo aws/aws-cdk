@@ -45,7 +45,7 @@ export abstract class Code {
    *
    * @returns `S3Code` associated with the specified S3 object.
    */
-  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+  public static fromBucket(bucket: s3.IBucketRef, key: string, objectVersion?: string): S3Code {
     return new S3Code(bucket, key, objectVersion);
   }
 
@@ -150,9 +150,34 @@ export class AssetCode extends Code {
       if (runtimeName && !Token.isUnresolved(runtimeName)) {
         const playwrightValidExtensions = ['.cjs', '.mjs', '.js'];
         const hasValidExtension = playwrightValidExtensions.some(ext => fs.existsSync(path.join(assetPath, `${filename}${ext}`)));
-        // Requires asset directory to have the structure 'nodejs/node_modules' for puppeteer runtime.
-        if (family === RuntimeFamily.NODEJS && runtimeName.includes('puppeteer') && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
-          throw new ValidationError(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`, scope);
+        // Validate Puppeteer runtime file structure requirements
+        if (family === RuntimeFamily.NODEJS && runtimeName.includes('puppeteer')) {
+          // Extract version number from runtime name (e.g., "syn-nodejs-puppeteer-11.0" -> 11.0)
+          const versionMatch = runtimeName.match(/syn-nodejs-puppeteer-(\d+\.\d+)/);
+          const version = versionMatch ? parseFloat(versionMatch[1]) : 0;
+
+          const rootPath = path.join(assetPath, nodeFilename); // Root-level: canary.js
+          const legacyPath = path.join(assetPath, 'nodejs', 'node_modules', nodeFilename); // Legacy: nodejs/node_modules/canary.js
+
+          // Check if files exist at each location
+          const hasRootFile = fs.existsSync(rootPath);
+          const hasLegacyFile = fs.existsSync(legacyPath);
+
+          const needsLegacyStructure = version < 11.0;
+          const isMissingRequiredFile = needsLegacyStructure
+            ? !hasLegacyFile // < 11.0: Only legacy structure allowed
+            : (!hasRootFile && !hasLegacyFile); // >= 11.0: Either root OR legacy structure allowed
+
+          if (isMissingRequiredFile) {
+            const expectedLocation = needsLegacyStructure
+              ? `"nodejs/node_modules/${nodeFilename}"` // < 11.0: Only legacy path
+              : `"${nodeFilename}" or "nodejs/node_modules/${nodeFilename}"`; // >= 11.0: Root OR legacy path
+
+            throw new ValidationError(
+              `The canary resource requires that the handler is present at ${expectedLocation} but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`,
+              scope,
+            );
+          }
         }
         // Requires the canary handler file to have the extension '.js', '.mjs', or '.cjs' for the playwright runtime.
         if (family === RuntimeFamily.NODEJS && runtimeName.includes('playwright') && !hasValidExtension) {
@@ -194,14 +219,14 @@ export class InlineCode extends Code {
  * S3 bucket path to the code zip file
  */
 export class S3Code extends Code {
-  public constructor(private bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  public constructor(private bucket: s3.IBucketRef, private key: string, private objectVersion?: string) {
     super();
   }
 
   public bind(_scope: Construct, _handler: string, _family: RuntimeFamily, _runtimeName?: string): CodeConfig {
     return {
       s3Location: {
-        bucketName: this.bucket.bucketName,
+        bucketName: this.bucket.bucketRef.bucketName,
         objectKey: this.key,
         objectVersion: this.objectVersion,
       },

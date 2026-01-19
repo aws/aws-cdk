@@ -376,6 +376,7 @@ can use the `environment` property to customize the build environment:
   details on how to define build images.
 * `certificate` defines the location of a PEM encoded certificate to import.
 * `computeType` defines the instance type used for the build.
+* `dockerServer` defines the docker server used for the build.
 * `privileged` can be set to `true` to allow privileged access.
 * `environmentVariables` can be set at this level (and also at the project
   level).
@@ -393,7 +394,7 @@ is available for specifying Lambda-compatible images.
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
 `WindowsBuildImage.WINDOWS_BASE_2_0`, `LinuxBuildImage.STANDARD_2_0`,
-`LinuxBuildImage.AMAZON_LINUX_2_5`, `MacBuildImage.BASE_14`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
+`LinuxBuildImage.AMAZON_LINUX_2_5`, `MacBuildImage.BASE_14`, `MacBuildImage.BASE_15`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
 `LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18` or `LinuxArmLambdaBuildImage.AMAZON_LINUX_2_NODE_18`.
 
 Alternatively, you can specify a custom image using one of the static methods on
@@ -573,6 +574,81 @@ const fleet = new codebuild.Fleet(this, 'MyFleet', {
     disk: Size.gibibytes(10),
     machineType: codebuild.MachineType.GENERAL,
   },
+});
+```
+
+### Custom instance types
+You can use [specific EC2 instance
+types](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.instance-types)
+for your fleet by setting the `computeType` to `CUSTOM_INSTANCE_TYPE`.  This
+allows you to specify the `instanceType` in `computeConfiguration`. Only certain
+EC2 instance types are supported; see the linked documentation for details.
+
+```ts
+import { Size } from 'aws-cdk-lib';
+
+const fleet = new codebuild.Fleet(this, 'MyFleet', {
+  baseCapacity: 1,
+  computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  computeConfiguration: {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+    // By default, 64 GiB of disk space is included. Any value optionally
+    // specified here is _incremental_ on top of the included disk space.
+    disk: Size.gibibytes(10),
+  },
+});
+```
+
+### Fleet overflow behavior
+
+When your builds exceed the capacity of your fleet, you can specify how CodeBuild should handle the overflow builds by setting the `overflowBehavior` property:
+
+```ts
+const fleet = new codebuild.Fleet(this, 'Fleet', {
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  overflowBehavior: codebuild.FleetOverflowBehavior.ON_DEMAND,
+});
+```
+
+The available overflow behaviors are:
+
+- `QUEUE` (default): Overflow builds wait for existing fleet instances to become available
+- `ON_DEMAND`: Overflow builds run on CodeBuild on-demand instances
+
+Note: If you set overflow behavior to `ON_DEMAND` for a VPC-connected fleet, ensure your VPC settings allow access to public AWS services.
+
+### VPCs
+The same considerations that apply to [Project
+VPCs](#definition-of-vpc-configuration-in-codebuild-project) also apply to Fleet
+VPCs.  When using a Fleet in a CodeBuild Project, it is an error to configure a
+VPC on the Project. Configure a VPC on the fleet instead.
+
+```ts
+declare const loadBalancer: elbv2.ApplicationLoadBalancer;
+
+const vpc = new ec2.Vpc(this, 'MyVPC');
+const fleet = new codebuild.Fleet(this, 'MyProject', {
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  vpc,
+});
+
+fleet.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
+
+const project = new codebuild.Project(this, 'MyProject', {
+  environment: {
+    fleet,
+  },
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+  }),
+  // Trying to configure a project-level VPC is an error, because this project
+  // runs on the Fleet created above.
+  // vpc,
 });
 ```
 

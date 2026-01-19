@@ -5,8 +5,10 @@ import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { ITaskDefinitionRef, TaskDefinitionReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
+import { IAlternateTarget } from '../alternate-target-configuration';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
+import { CfnTaskDefinition, CfnTaskDefinitionProps } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
@@ -16,7 +18,7 @@ import { RuntimePlatform } from '../runtime-platform';
 /**
  * The interface for all task definitions.
  */
-export interface ITaskDefinition extends IResource {
+export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
   /**
    * ARN of this task definition
    * @attribute
@@ -47,6 +49,11 @@ export interface ITaskDefinition extends IResource {
    * Return true if the task definition can be run on a ECS Anywhere cluster
    */
   readonly isExternalCompatible: boolean;
+
+  /**
+   * Return true if the task definition can be run on Managed Instances
+   */
+  readonly isManagedInstancesCompatible: boolean;
 
   /**
    * The networking mode to use for the containers in the task.
@@ -297,6 +304,15 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public abstract readonly executionRole?: iam.IRole;
 
   /**
+   * A reference to this task definition.
+   */
+  public get taskDefinitionRef(): TaskDefinitionReference {
+    return {
+      taskDefinitionArn: this.taskDefinitionArn,
+    };
+  }
+
+  /**
    * Return true if the task definition can be run on an EC2 cluster
    */
   public get isEc2Compatible(): boolean {
@@ -315,6 +331,13 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
    */
   public get isExternalCompatible(): boolean {
     return isExternalCompatible(this.compatibility);
+  }
+
+  /**
+   * Return true if the task definition can be run on Managed Instances
+   */
+  public get isManagedInstancesCompatible(): boolean {
+    return isManagedInstancesCompatible(this.compatibility);
   }
 }
 
@@ -449,7 +472,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.volumes.forEach(v => this.addVolume(v));
     }
 
-    this.networkMode = props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
+    this.networkMode = props.networkMode ??
+      (this.isFargateCompatible || this.isManagedInstancesCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new ValidationError(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`, this);
     }
@@ -472,8 +496,41 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new ValidationError(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`, this);
     }
 
-    if (!this.isFargateCompatible && props.runtimePlatform) {
-      throw new ValidationError('Cannot specify runtimePlatform in non-Fargate compatible tasks', this);
+    // Managed Instances validations
+    if (this.isManagedInstancesCompatible) {
+      // Managed Instances only support awsvpc and host network modes
+      if (![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
+        throw new ValidationError(`Managed Instances tasks can only have AwsVpc or Host network mode, got: ${this.networkMode}`, this);
+      }
+
+      // Managed Instances don't support inference accelerators
+      if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0) {
+        throw new ValidationError('Cannot use inference accelerators on tasks that run on Managed Instances', this);
+      }
+
+      // Managed Instances don't support ephemeral storage
+      if (props.ephemeralStorageGiB) {
+        throw new ValidationError('Ephemeral storage is not supported for tasks running on Managed Instances', this);
+      }
+
+      // Managed Instances don't support IPC mode
+      if (props.ipcMode) {
+        throw new ValidationError('IPC mode is not supported for tasks running on Managed Instances', this);
+      }
+
+      // Managed Instances don't support proxy configuration
+      if (props.proxyConfiguration) {
+        throw new ValidationError('Proxy configuration is not supported for tasks running on Managed Instances', this);
+      }
+
+      // Managed Instances only support LINUX operating system family
+      if (props.runtimePlatform?.operatingSystemFamily && !props.runtimePlatform.operatingSystemFamily.isLinux()) {
+        throw new ValidationError(`Managed Instances tasks only support LINUX operating system family, got: ${props.runtimePlatform.operatingSystemFamily._operatingSystemFamily}`, this);
+      }
+    }
+
+    if (!this.isFargateCompatible && !this.isManagedInstancesCompatible && props.runtimePlatform) {
+      throw new ValidationError('Cannot specify runtimePlatform in non-Fargate and non-Managed Instances compatible tasks', this);
     }
 
     // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html
@@ -505,7 +562,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this._cpu = props.cpu;
     this._memory = props.memoryMiB;
 
-    const taskDef = new CfnTaskDefinition(this, 'Resource', {
+    let taskDefProps: CfnTaskDefinitionProps = {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.string({ produce: () => this.executionRole && this.executionRole.roleArn }),
@@ -515,30 +572,39 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
         ...(isExternalCompatible(props.compatibility) ? ['EXTERNAL'] : []),
+        ...(isManagedInstancesCompatible(props.compatibility) ? ['MANAGED_INSTANCES'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.any({
         produce: () =>
-          !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
+          !isFargateCompatible(this.compatibility) && !isManagedInstancesCompatible(this.compatibility) ? this.placementConstraints : undefined,
       }, { omitEmptyArray: true }),
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
       pidMode: this.pidMode,
-      inferenceAccelerators: Lazy.any({
-        produce: () =>
-          !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
-      }, { omitEmptyArray: true }),
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
       } : undefined,
-      runtimePlatform: this.isFargateCompatible && this.runtimePlatform ? {
+      runtimePlatform: (this.isFargateCompatible || this.isManagedInstancesCompatible) && this.runtimePlatform ? {
         cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
         operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
       enableFaultInjection: props.enableFaultInjection,
-    });
+    };
+
+    if (props.inferenceAccelerators) {
+      taskDefProps = {
+        ...taskDefProps,
+        inferenceAccelerators: Lazy.any({
+          produce: () =>
+            this.renderInferenceAccelerators(),
+        }),
+      };
+    }
+
+    const taskDef = new CfnTaskDefinition(this, 'Resource', taskDefProps);
 
     if (props.placementConstraints) {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
@@ -611,7 +677,6 @@ export class TaskDefinition extends TaskDefinitionBase {
     const targetContainerPort = options.containerPort || targetContainer.containerPort;
     const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
-      // eslint-disable-next-line max-len
       throw new ValidationError(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`, this);
     }
     return {
@@ -706,6 +771,10 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private validateVolume(volume: Volume): void {
     if (volume.configuredAtLaunch !== true) {
+      // Validate DockerVolumeConfiguration is not used with Managed Instances
+      if (this.isManagedInstancesCompatible && volume.dockerVolumeConfiguration) {
+        throw new ValidationError(`DockerVolumeConfiguration is not supported for tasks running on Managed Instances. Volume '${volume.name}' cannot use dockerVolumeConfiguration`, this);
+      }
       return;
     }
 
@@ -756,6 +825,8 @@ export class TaskDefinition extends TaskDefinitionBase {
    *
    *   - ecs:RunTask
    *   - iam:PassRole
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant consume rights to
    */
@@ -1143,6 +1214,13 @@ export interface LoadBalancerTargetOptions {
    * @default Protocol.TCP
    */
   readonly protocol?: Protocol;
+
+  /**
+   * Alternate target configuration for blue/green deployments.
+   *
+   * @default - No alternate target configuration
+   */
+  readonly alternateTarget?: IAlternateTarget;
 }
 
 /**
@@ -1283,6 +1361,26 @@ export enum Compatibility {
    * The task should specify the External launch type.
    */
   EXTERNAL,
+
+  /**
+   * The task should specify the Managed Instances launch type.
+   */
+  MANAGED_INSTANCES,
+
+  /**
+   * The task can specify either the EC2 or Managed Instances launch types.
+   */
+  EC2_AND_MANAGED_INSTANCES,
+
+  /**
+   * The task can specify either the Fargate or Managed Instances launch types.
+   */
+  FARGATE_AND_MANAGED_INSTANCES,
+
+  /**
+   * The task can specify either the Fargate, EC2 or Managed Instances launch types.
+   */
+  FARGATE_AND_EC2_AND_MANAGED_INSTANCES,
 }
 
 /**
@@ -1307,14 +1405,14 @@ export interface ITaskDefinitionExtension {
  * Return true if the given task definition can be run on an EC2 cluster
  */
 export function isEc2Compatible(compatibility: Compatibility): boolean {
-  return [Compatibility.EC2, Compatibility.EC2_AND_FARGATE].includes(compatibility);
+  return [Compatibility.EC2, Compatibility.EC2_AND_FARGATE, Compatibility.EC2_AND_MANAGED_INSTANCES].includes(compatibility);
 }
 
 /**
  * Return true if the given task definition can be run on a Fargate cluster
  */
 export function isFargateCompatible(compatibility: Compatibility): boolean {
-  return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE].includes(compatibility);
+  return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE, Compatibility.FARGATE_AND_MANAGED_INSTANCES].includes(compatibility);
 }
 
 /**
@@ -1322,6 +1420,17 @@ export function isFargateCompatible(compatibility: Compatibility): boolean {
  */
 export function isExternalCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.EXTERNAL].includes(compatibility);
+}
+
+/**
+ * Return true if the given task definition can be run on Managed Instances
+ */
+export function isManagedInstancesCompatible(compatibility: Compatibility): boolean {
+  return [
+    Compatibility.MANAGED_INSTANCES,
+    Compatibility.EC2_AND_MANAGED_INSTANCES,
+    Compatibility.FARGATE_AND_MANAGED_INSTANCES,
+  ].includes(compatibility);
 }
 
 /**

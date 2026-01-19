@@ -1,21 +1,44 @@
-import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
+import { Construct, DependencyGroup, IConstruct, Node } from 'constructs';
 import { Grant } from './grant';
-import { CfnRole } from './iam.generated';
+import { CfnRole, IRoleRef, RoleReference } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AccountPrincipal, AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, ServicePrincipal } from './principals';
+import {
+  AddToPrincipalPolicyResult,
+  ArnPrincipal,
+  IPrincipal,
+  PrincipalPolicyFragment,
+} from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
+import { RoleGrants } from './role-grants';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, ContextProvider, ValidationError } from '../../core';
-import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
+import {
+  Annotations,
+  ArnFormat,
+  Aspects,
+  ContextProvider,
+  Duration,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Token,
+  TokenComparison,
+  ValidationError,
+} from '../../core';
+import {
+  CUSTOMIZE_ROLES_CONTEXT_KEY,
+  CustomizeRoleConfig,
+  getCustomizeRolesConfig,
+  getPrecreatedRoleConfig,
+} from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -457,6 +480,11 @@ export class Role extends Resource implements IRole {
    */
   public readonly permissionsBoundary?: IManagedPolicy;
 
+  /**
+   * Collection of grant methods for a Role
+   */
+  public readonly grants = RoleGrants.fromRole(this);
+
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -577,6 +605,13 @@ export class Role extends Resource implements IRole {
     this.node.addValidation({ validate: () => this.validateRole() });
   }
 
+  public get roleRef(): RoleReference {
+    return {
+      roleName: this.roleName,
+      roleArn: this.roleArn,
+    };
+  }
+
   /**
    * Adds a permission to the role's default policy document.
    * If there is no default policy attached to this role, it will be created.
@@ -648,7 +683,6 @@ export class Role extends Resource implements IRole {
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this,
     });
   }
 
@@ -657,7 +691,7 @@ export class Role extends Resource implements IRole {
    */
   @MethodMetadata()
   public grantPassRole(identity: IPrincipal) {
-    return this.grant(identity, 'iam:PassRole');
+    return this.grants.passRole(identity);
   }
 
   /**
@@ -665,11 +699,7 @@ export class Role extends Resource implements IRole {
    */
   @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal) {
-    // Service and account principals must use assumeRolePolicy
-    if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new ValidationError('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this);
-    }
-    return this.grant(identity, 'sts:AssumeRole');
+    return this.grants.assumeRole(identity);
   }
 
   /**
@@ -787,7 +817,7 @@ export class Role extends Resource implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IIdentity {
+export interface IRole extends IIdentity, IRoleRef {
   /**
    * Returns the ARN of this role.
    *

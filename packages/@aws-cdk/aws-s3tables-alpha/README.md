@@ -159,9 +159,36 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 });
 ```
 
+### Controlling Table Permissions
+
+```ts
+// Grant the principal read permissions to the table
+const accountId = '123456789012'
+table.grantRead(new iam.AccountPrincipal(accountId));
+
+// Grant the role write permissions to the table
+const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('sample') });
+table.grantWrite(role);
+
+// Grant the user read and write permissions to the table 
+table.grantReadWrite(new iam.User(stack, 'MyUser'));
+
+// Grant an account permissions to the table
+table.grantReadWrite(new iam.AccountPrincipal(accountId));
+
+// Add custom resource policy statements
+const permissions = new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: ['s3tables:*'],
+    principals: [ new iam.ServicePrincipal('example.aws.internal') ],
+    resources: ['*']
+});
+
+table.addToResourcePolicy(permissions);
+```
+
 ## Coming Soon
 
 L2 Construct support for:
 
-- Table Policy
 - KMS encryption support for Tables

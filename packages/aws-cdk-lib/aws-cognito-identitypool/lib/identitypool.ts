@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IUserPool, IUserPoolClient } from '../../aws-cognito';
-import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole } from '../../aws-iam';
+import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IdentityPoolReference, IIdentityPoolRef, IUserPool, IUserPoolClient } from '../../aws-cognito';
+import { Role, FederatedPrincipal, IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Cognito Identity Pool
  */
-export interface IIdentityPool extends IResource {
+export interface IIdentityPool extends IResource, IIdentityPoolRef {
   /**
    * The ID of the Identity Pool in the format REGION:GUID
    * @attribute
@@ -253,13 +253,13 @@ export interface IdentityPoolAuthenticationProviders {
    * The OpenIdConnect Provider associated with this Identity Pool
    * @default - no OpenIdConnectProvider
    */
-  readonly openIdConnectProviders?: IOpenIdConnectProvider[];
+  readonly openIdConnectProviders?: IOIDCProviderRef[];
 
   /**
    * The Security Assertion Markup Language provider associated with this Identity Pool
    * @default - no SamlProvider
    */
-  readonly samlProviders?: ISamlProvider[];
+  readonly samlProviders?: ISAMLProviderRef[];
 
   /**
    * The developer provider name to associate with this Identity Pool
@@ -410,6 +410,10 @@ export class IdentityPool extends Resource implements IIdentityPool {
         });
         this.identityPoolName = this.physicalName;
       }
+
+      public get identityPoolRef(): IdentityPoolReference {
+        return { identityPoolId: this.identityPoolId };
+      }
     }
     return new ImportedIdentityPool();
   }
@@ -463,11 +467,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>
-        openIdProvider.openIdConnectProviderArn,
+        openIdProvider.oidcProviderRef.oidcProviderArn,
       ) : undefined;
     const samlProviderArns = authProviders.samlProviders ?
       authProviders.samlProviders.map(samlProvider =>
-        samlProvider.samlProviderArn,
+        samlProvider.samlProviderRef.samlProviderArn,
       ) : undefined;
 
     let supportedLoginProviders:any = {};
@@ -542,6 +546,10 @@ export class IdentityPool extends Resource implements IIdentityPool {
       },
     }, 'sts:AssumeRoleWithWebIdentity');
   }
+
+  public get identityPoolRef(): IdentityPoolReference {
+    return { identityPoolId: this.identityPoolId };
+  }
 }
 
 /**
@@ -568,13 +576,13 @@ interface IdentityPoolRoleAttachmentProps {
    * Default authenticated (User) Role
    * @default - No default authenticated Role will be added
    */
-  readonly authenticatedRole?: IRole;
+  readonly authenticatedRole?: IRoleRef;
 
   /**
    * Default unauthenticated (Guest) Role
    * @default - No default unauthenticated Role will be added
    */
-  readonly unauthenticatedRole?: IRole;
+  readonly unauthenticatedRole?: IRoleRef;
 
   /**
    * Rules for mapping roles to users
@@ -611,8 +619,8 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
     let roles: any = undefined, roleMappings: any = undefined;
     if (props.authenticatedRole || props.unauthenticatedRole) {
       roles = {};
-      if (props.authenticatedRole) roles.authenticated = props.authenticatedRole.roleArn;
-      if (props.unauthenticatedRole) roles.unauthenticated = props.unauthenticatedRole.roleArn;
+      if (props.authenticatedRole) roles.authenticated = props.authenticatedRole.roleRef.roleArn;
+      if (props.unauthenticatedRole) roles.unauthenticated = props.unauthenticatedRole.roleRef.roleArn;
     }
     if (mappings) {
       roleMappings = this.configureRoleMappings(...mappings);

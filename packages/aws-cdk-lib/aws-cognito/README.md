@@ -480,12 +480,12 @@ new cognito.UserPool(this, 'myuserpool', {
 
 ### Threat Protection
 
-This feature is only available if your Feature Plan is set to PLUS. 
-
 Threat Protection can be set to configure enforcement levels and automatic responses for users in password-based and custom-challenge authentication flows.
 For configuration, there are 2 options for standard authentication and custom authentication.
 These are represented with properties `standardThreatProtectionMode` and `customThreatProtectionMode`.
 See the [documentation on Threat Protection](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-threat-protection.html)
+
+**Note**: Threat Protection requires the PLUS feature plan for new user pools. CDK allows you to configure threat protection settings at synthesis time, and CloudFormation will validate feature plan requirements at deployment time. Existing user pools that are grandfathered on LITE plans with threat protection enabled will continue to work.
 
 
 ### Emails
@@ -1001,6 +1001,17 @@ const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
   userPool: importedPool,
   generateSecret: true,
   enablePropagateAdditionalUserContextData: true,
+});
+```
+
+[Refresh token rotation](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation)
+can be configured to enable automatic rotation of refresh tokens. By default, refresh token rotation is disabled. When the refreshTokenRotationGracePeriod is 0, the grace period is disabled and a successful request immediately invalidates the submitted refresh token. 
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  refreshTokenRotationGracePeriod: Duration.seconds(40)
 });
 ```
 

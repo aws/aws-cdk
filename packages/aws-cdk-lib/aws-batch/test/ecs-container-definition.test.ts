@@ -1,7 +1,5 @@
 import * as path from 'path';
 import { capitalizePropertyNames } from './utils';
-import { Size, Stack } from '../..';
-import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
@@ -12,6 +10,8 @@ import { ArnPrincipal, Role } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
+import * as cdk from '../../core';
+import { Size, Stack } from '../../core';
 import { CfnJobDefinitionProps, EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, Secret, UlimitName } from '../lib';
 
 // GIVEN
@@ -1091,6 +1091,138 @@ describe('Fargate containers', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ContainerProperties: {
         ReadonlyRootFilesystem: Match.absent(),
+      },
+    });
+  });
+
+  test('enableExecuteCommand creates job role with SSM permissions when no job role provided', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        enableExecuteCommand: true,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        EnableExecuteCommand: true,
+        JobRoleArn: {
+          'Fn::GetAtt': ['EcsContainerJobRoleBF960830', 'Arn'],
+        },
+      },
+    });
+
+    // Job role should be created with required SSM permissions
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'ecs-tasks.amazonaws.com' },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: [
+            'ssmmessages:CreateControlChannel',
+            'ssmmessages:CreateDataChannel',
+            'ssmmessages:OpenControlChannel',
+            'ssmmessages:OpenDataChannel',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+        Version: '2012-10-17',
+      },
+      Roles: [{
+        Ref: 'EcsContainerJobRoleBF960830',
+      }],
+    });
+  });
+
+  test('enableExecuteCommand adds SSM permissions to existing job role', () => {
+    const existingJobRole = new Role(stack, 'ExistingJobRole', {
+      assumedBy: new ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
+    });
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        enableExecuteCommand: true,
+        jobRole: existingJobRole,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        EnableExecuteCommand: true,
+        JobRoleArn: {
+          'Fn::GetAtt': ['ExistingJobRole8F750976', 'Arn'],
+        },
+      },
+    });
+
+    // Existing job role should have SSM permissions added
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: [
+            'ssmmessages:CreateControlChannel',
+            'ssmmessages:CreateDataChannel',
+            'ssmmessages:OpenControlChannel',
+            'ssmmessages:OpenDataChannel',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+        Version: '2012-10-17',
+      },
+      Roles: [{
+        Ref: 'ExistingJobRole8F750976',
+      }],
+    });
+  });
+
+  test('enableExecuteCommand false does not create job role', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        enableExecuteCommand: false,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        EnableExecuteCommand: false,
+        JobRoleArn: Match.absent(),
+      },
+    });
+  });
+
+  test('enableExecuteCommand undefined does not affect job role', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        // enableExecuteCommand not specified
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        EnableExecuteCommand: Match.absent(),
+        JobRoleArn: Match.absent(),
       },
     });
   });

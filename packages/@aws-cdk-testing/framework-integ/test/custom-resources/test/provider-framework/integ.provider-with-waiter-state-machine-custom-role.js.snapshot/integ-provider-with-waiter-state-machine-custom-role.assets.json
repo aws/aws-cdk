@@ -1,30 +1,30 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6": {
+    "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a": {
       "displayName": "MyProviderWithCustomRole/framework-onEvent/Code",
       "source": {
-        "path": "asset.39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6",
+        "path": "asset.4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-8bd9c5bb": {
+        "current_account-current_region-f8801bef": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip",
+          "objectKey": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "a6ecb9c1d2c52aab3a5f46d5e76ac466ebb0e7af689629879c196295415a1bfa": {
+    "ff3ceadab9458afb1d360ae71a2271a1224c3a6f3126c5f32545bf3101526f01": {
       "displayName": "integ-provider-with-waiter-state-machine-custom-role Template",
       "source": {
         "path": "integ-provider-with-waiter-state-machine-custom-role.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-033e3e4f": {
+        "current_account-current_region-25989611": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a6ecb9c1d2c52aab3a5f46d5e76ac466ebb0e7af689629879c196295415a1bfa.json",
+          "objectKey": "ff3ceadab9458afb1d360ae71a2271a1224c3a6f3126c5f32545bf3101526f01.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

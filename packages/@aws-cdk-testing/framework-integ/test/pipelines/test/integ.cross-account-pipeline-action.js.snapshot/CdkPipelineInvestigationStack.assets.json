@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
     "8bdd8046137f3e99cc71490f4e85180148a55ecd058bac492ca98fa409cda117": {
       "displayName": "CdkPipelineInvestigationStack Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region": {
+        "12345678-test-region-232e2cc5": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
           "objectKey": "8bdd8046137f3e99cc71490f4e85180148a55ecd058bac492ca98fa409cda117.json",
           "region": "test-region",

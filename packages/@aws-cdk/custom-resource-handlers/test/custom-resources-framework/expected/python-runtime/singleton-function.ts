@@ -1,15 +1,15 @@
 /* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as path from "path";
-import { Construct } from "constructs";
 import * as lambda from "../../../aws-lambda";
+import { Construct } from "constructs";
 
 export class TestSingletonFunction extends lambda.SingletonFunction {
   public constructor(scope: Construct, id: string, props: TestSingletonFunctionProps) {
     super(scope, id, {
       ...props,
-      "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
-      "handler": "index.handler",
-      "runtime": lambda.Runtime.PYTHON_3_11
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
+      handler: "index.handler",
+      runtime: lambda.Runtime.PYTHON_3_11
     });
     this.addMetadata('aws:cdk:is-custom-resource-handler-singleton', true);
     this.addMetadata('aws:cdk:is-custom-resource-handler-runtime-family', this.runtime.family);

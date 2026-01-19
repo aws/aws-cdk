@@ -33,14 +33,15 @@
         "packageName": "awscdkneptunealpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -83,7 +84,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.189.2",
+    "@aws-cdk/integ-runner": "^2.193.4",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",
@@ -96,7 +97,7 @@
     "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 18.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",

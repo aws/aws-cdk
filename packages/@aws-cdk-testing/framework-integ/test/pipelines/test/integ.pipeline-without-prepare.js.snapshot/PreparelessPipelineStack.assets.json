@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "PreparelessPipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "55db8a136c6dde507bd628b8a2612afdaef0e697ad199bcb5c19ccf89c21acdf": {
+    "972258822b4ac839fb95a2d295286acb0d8ed23d00b9e0170c43d2f083ff9b9f": {
       "displayName": "PreparelessPipelineStack Template",
       "source": {
         "path": "PreparelessPipelineStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7255d215": {
+        "current_account-current_region-cf9091cd": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "55db8a136c6dde507bd628b8a2612afdaef0e697ad199bcb5c19ccf89c21acdf.json",
+          "objectKey": "972258822b4ac839fb95a2d295286acb0d8ed23d00b9e0170c43d2f083ff9b9f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

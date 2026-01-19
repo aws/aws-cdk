@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { findUp } from './util';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for a GolangFunction
@@ -112,6 +113,21 @@ export class GoFunction extends lambda.Function {
 
     const runtime = props.runtime ?? lambda.Runtime.PROVIDED_AL2;
     const architecture = props.architecture ?? lambda.Architecture.X86_64;
+
+    // Security warnings for potentially unsafe bundling options
+    if (props.bundling?.goBuildFlags?.length) {
+      cdk.Annotations.of(scope).addWarningV2(
+        '@aws-cdk/aws-lambda-go-alpha:goBuildFlagsSecurityWarning',
+        'goBuildFlags can execute arbitrary commands during bundling. Ensure all flags come from trusted sources. See: https://docs.aws.amazon.com/cdk/latest/guide/security.html',
+      );
+    }
+
+    if (props.bundling?.commandHooks?.beforeBundling || props.bundling?.commandHooks?.afterBundling) {
+      cdk.Annotations.of(scope).addWarningV2(
+        '@aws-cdk/aws-lambda-go-alpha:commandHooksSecurityWarning',
+        'commandHooks can execute arbitrary commands during bundling. Ensure all commands come from trusted sources. See: https://docs.aws.amazon.com/cdk/latest/guide/security.html',
+      );
+    }
 
     super(scope, id, {
       ...props,

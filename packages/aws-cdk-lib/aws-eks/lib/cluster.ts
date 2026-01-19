@@ -7,6 +7,7 @@ import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
+import { ClusterReference, IClusterRef } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
@@ -26,7 +27,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError } from '../../core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -37,7 +38,7 @@ const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.Inst
 /**
  * An EKS cluster
  */
-export interface ICluster extends IResource, ec2.IConnectable {
+export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
   /**
    * The VPC in which this Cluster was created
    */
@@ -664,7 +665,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
    *            using AWS-Managed encryption keys.
    */
-  readonly secretsEncryptionKey?: kms.IKey;
+  readonly secretsEncryptionKey?: kms.IKeyRef;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -716,6 +717,22 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - none
    */
   readonly remotePodNetworks?: RemotePodNetwork[];
+
+  /**
+   * The removal policy applied to all CloudFormation resources created by this construct
+   * when they are no longer managed by CloudFormation.
+   *
+   * This can happen in one of three situations:
+     - The resource is removed from the template, so CloudFormation stops managing it;
+     - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it;
+     - The stack is deleted, so CloudFormation stops managing all resources in it.
+   *
+   * This affects the EKS cluster itself, associated IAM roles, node groups, security groups, VPC
+   * and any other CloudFormation resources managed by this construct.
+   *
+   * @default - Resources will be deleted.
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -1042,6 +1059,15 @@ export class KubernetesVersion {
   public static readonly V1_33 = KubernetesVersion.of('1.33');
 
   /**
+   * Kubernetes version 1.34
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV34Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v34`.
+   */
+  public static readonly V1_34 = KubernetesVersion.of('1.34');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1321,6 +1347,13 @@ abstract class ClusterBase extends Resource implements ICluster {
       // be deleted before the controller.
       Node.of(this.albController).addDependency(autoScalingGroup);
     }
+  }
+
+  public get clusterRef(): ClusterReference {
+    return {
+      clusterArn: this.clusterArn,
+      clusterName: this.clusterName,
+    };
   }
 }
 
@@ -1753,7 +1786,7 @@ export class Cluster extends ClusterBase {
       ...(props.secretsEncryptionKey ? {
         encryptionConfig: [{
           provider: {
-            keyArn: props.secretsEncryptionKey.keyArn,
+            keyArn: props.secretsEncryptionKey.keyRef.keyArn,
           },
           resources: ['secrets'],
         }],
@@ -1898,6 +1931,11 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+
+    // Apply removal policy to all CFN resources created under this construct.
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**

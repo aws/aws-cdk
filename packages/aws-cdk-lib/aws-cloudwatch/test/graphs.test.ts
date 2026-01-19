@@ -1,4 +1,4 @@
-import { Duration, Stack } from '../../core';
+import { Duration, Stack, UnscopedValidationError } from '../../core';
 import {
   Alarm,
   AlarmWidget,
@@ -6,6 +6,7 @@ import {
   CustomWidget,
   GaugeWidget,
   GraphWidget,
+  GraphWidgetProps,
   GraphWidgetView,
   LegendPosition,
   LogQueryLanguage,
@@ -894,6 +895,52 @@ describe('Graphs', () => {
     }]);
   });
 
+  test('GraphWidget with displayLabelsOnChart true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const left = [new Metric({ namespace: 'CDK', metricName: 'Test' })];
+
+    // WHEN
+    const widget = new GraphWidget({
+      left: left,
+      view: GraphWidgetView.PIE,
+      displayLabelsOnChart: true,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        labels: {
+          visible: true,
+        },
+      },
+    }]);
+  });
+
+  test('GraphWidget with displayLabelsOnChart true and view not GraphWidgetView.PIE throws validation error', () => {
+    // GIVEN
+    const left = [new Metric({ namespace: 'CDK', metricName: 'Test' })];
+
+    // WHEN
+    const widgetProps: GraphWidgetProps = {
+      left: left,
+      view: GraphWidgetView.BAR,
+      displayLabelsOnChart: true,
+    };
+
+    // THEN
+    expect(() => new GraphWidget(widgetProps)).toThrow(UnscopedValidationError);
+  });
+
   test('add setPeriodToTimeRange to GraphWidget', () => {
     // GIVEN
     const stack = new Stack();
@@ -1064,9 +1111,6 @@ describe('Graphs', () => {
   });
 
   test('cannot specify an end without a start in GraphWidget', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     expect(() => {
       new GraphWidget({
@@ -1078,9 +1122,6 @@ describe('Graphs', () => {
   });
 
   test('cannot specify an end without a start in SingleValueWidget', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     expect(() => {
       new SingleValueWidget({
@@ -1091,9 +1132,6 @@ describe('Graphs', () => {
   });
 
   test('cannot specify an end without a start in GaugeWidget', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     expect(() => {
       new GaugeWidget({
@@ -1150,8 +1188,8 @@ describe('Graphs', () => {
   });
 
   describe('TableWidget', () => {
-    let stack;
-    let metric;
+    let stack: Stack;
+    let metric: Metric;
 
     beforeEach(() => {
       stack = new Stack();

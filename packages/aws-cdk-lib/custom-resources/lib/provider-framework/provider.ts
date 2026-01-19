@@ -86,7 +86,7 @@ export interface ProviderProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * The vpc to provision the lambda functions in.
@@ -163,7 +163,7 @@ export interface ProviderProps {
    *
    * @default -  AWS Lambda creates and uses an AWS managed customer master key (CMK)
    */
-  readonly providerFunctionEnvEncryption?: kms.IKey;
+  readonly providerFunctionEnvEncryption?: kms.IKeyRef;
 
   /**
    * Defines what execution history events of the waiter state machine are logged and where they are logged.
@@ -217,12 +217,12 @@ export class Provider extends Construct implements ICustomResourceProvider {
 
   private readonly entrypoint: lambda.Function;
   private readonly logRetention?: logs.RetentionDays;
-  private readonly logGroup?: logs.ILogGroup;
+  private readonly logGroup?: logs.ILogGroupRef;
   private readonly vpc?: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
   private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly role?: iam.IRole;
-  private readonly providerFunctionEnvEncryption?: kms.IKey;
+  private readonly providerFunctionEnvEncryption?: kms.IKeyRef;
   private readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {

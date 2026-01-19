@@ -1,6 +1,6 @@
 import { Construct, Node } from 'constructs';
 import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
-import { CfnNodegroup } from './eks.generated';
+import { CfnNodegroup, INodegroupRef, NodegroupReference } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags, ValidationError } from '../../core';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * NodeGroup interface
  */
-export interface INodegroup extends IResource {
+export interface INodegroup extends IResource, INodegroupRef {
   /**
    * Name of the nodegroup
    * @attribute
@@ -95,6 +95,10 @@ export enum NodegroupAmiType {
    */
   AL2023_X86_64_NVIDIA = 'AL2023_x86_64_NVIDIA',
   /**
+   * Amazon Linux 2023 with NVIDIA drivers (ARM-64)
+   */
+  AL2023_ARM_64_NVIDIA = 'AL2023_ARM_64_NVIDIA',
+  /**
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
@@ -156,6 +160,17 @@ export interface LaunchTemplateSpec {
 
 /**
  * Effect types of kubernetes node taint.
+ *
+ * Note: These values are specifically for AWS EKS NodeGroups and use the AWS API format.
+ * When using AWS CLI or API, taint effects must be NO_SCHEDULE, PREFER_NO_SCHEDULE, or NO_EXECUTE.
+ * When using Kubernetes directly or kubectl, taint effects must be NoSchedule, PreferNoSchedule, or NoExecute.
+ *
+ * For Kubernetes manifests (like Karpenter NodePools), use string literals with PascalCase format:
+ * - 'NoSchedule' instead of TaintEffect.NO_SCHEDULE
+ * - 'PreferNoSchedule' instead of TaintEffect.PREFER_NO_SCHEDULE
+ * - 'NoExecute' instead of TaintEffect.NO_EXECUTE
+ *
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/node-taints-managed-node-groups.html
  */
 export enum TaintEffect {
   /**
@@ -382,6 +397,11 @@ export class Nodegroup extends Resource implements INodegroup {
   public static fromNodegroupName(scope: Construct, id: string, nodegroupName: string): INodegroup {
     class Import extends Resource implements INodegroup {
       public readonly nodegroupName = nodegroupName;
+
+      public get nodegroupRef(): NodegroupReference {
+        // eslint-disable-next-line @cdklabs/no-throw-default-error
+        throw new Error('Cannot use Nodegroup.fromNodegroupName() in this API');
+      }
     }
     return new Import(scope, id);
   }
@@ -606,6 +626,16 @@ export class Nodegroup extends Resource implements INodegroup {
       }
     }
   }
+
+  public get nodegroupRef(): NodegroupReference {
+    return {
+      nodegroupArn: this.nodegroupArn,
+      get nodegroupId(): string {
+        // eslint-disable-next-line @cdklabs/no-throw-default-error
+        throw new Error('Cannot get nodegroupId from this NodeGroup');
+      },
+    };
+  }
 }
 
 /**
@@ -636,6 +666,7 @@ const gpuAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.AL2_X86_64_GPU,
   NodegroupAmiType.AL2023_X86_64_NEURON,
   NodegroupAmiType.AL2023_X86_64_NVIDIA,
+  NodegroupAmiType.AL2023_ARM_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
 ];

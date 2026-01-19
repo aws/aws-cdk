@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
-import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
+import { EventBusGrants } from './events-grants.generated';
+import { CfnEventBus, CfnEventBusPolicy, EventBusReference, IEventBusRef } from './events.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
@@ -10,9 +11,64 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
+ *  Whether EventBridge include detailed event information in the records it generates.
+ *  Detailed data can be useful for troubleshooting and debugging.
+ *  This information includes details of the event itself, as well as target details.
+ */
+export enum IncludeDetail {
+  /**
+   * FULL: Include all details related to event itself and the request EventBridge sends to the target.
+   * Detailed data can be useful for troubleshooting and debugging.
+   */
+  FULL = 'FULL',
+  /**
+   * NONE: Does not include any details.
+   */
+  NONE = 'NONE',
+}
+
+/**
+ * The level of logging detail to include. This applies to all log destinations for the event bus.
+ */
+export enum Level {
+  /**
+   * INFO: EventBridge sends any logs related to errors, as well as major steps performed during event processing
+   */
+  INFO = 'INFO',
+  /**
+   * ERROR: EventBridge sends any logs related to errors generated during event processing and target delivery.
+   */
+  ERROR = 'ERROR',
+  /**
+   * TRACE: EventBridge sends any logs generated during all steps in the event processing.
+   */
+  TRACE = 'TRACE',
+  /**
+   *  OFF: EventBridge does not send any logs. This is the default.
+   */
+  OFF = 'OFF',
+}
+
+/**
+ *  Interface for Logging Configuration of the Event Bus
+ */
+export interface LogConfig {
+  /**
+   * Whether EventBridge include detailed event information in the records it generates.
+   * @default no details
+   */
+  readonly includeDetail?: IncludeDetail;
+  /**
+   * Logging level
+   * @default OFF
+   */
+  readonly level?: Level;
+}
+
+/**
  * Interface which all EventBus based classes MUST implement
  */
-export interface IEventBus extends IResource {
+export interface IEventBus extends IResource, IEventBusRef {
   /**
    * The physical ID of this event bus resource
    *
@@ -112,6 +168,11 @@ export interface EventBusProps {
    * @default - Use an AWS managed key
    */
   readonly kmsKey?: kms.IKey;
+  /**
+   * The Logging Configuration of the Èvent Bus.
+   *  @default - no logging
+   */
+  readonly logConfig?: LogConfig;
 }
 
 /**
@@ -170,6 +231,18 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
    */
   public abstract readonly eventSourceName?: string;
 
+  /**
+   * Collection of grant methods for an EventBus
+   */
+  public readonly grants = EventBusGrants.fromEventBus(this);
+
+  public get eventBusRef(): EventBusReference {
+    return {
+      eventBusArn: this.eventBusArn,
+      eventBusName: this.eventBusName,
+    };
+  }
+
   public archive(id: string, props: BaseArchiveProps): Archive {
     return new Archive(this, id, {
       sourceEventBus: this,
@@ -180,6 +253,9 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPutEventsTo(grantee: iam.IGrantable, sid?: string): iam.Grant {
     const actions = ['events:PutEvents'];
     const resourceArns = [this.eventBusArn];
@@ -306,11 +382,10 @@ export class EventBus extends EventBusBase {
    * @param grantee The principal (no-op if undefined)
    */
   public static grantAllPutEvents(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['events:PutEvents'],
-      resourceArns: ['*'],
-    });
+    // FIXME Doing this hack because this method is static, and we don't have an actual instance of
+    //  IEventBusRef to use here for the grants.
+    const eventBus = EventBus.fromEventBusName(new Stack(), 'dummy', 'dummy');
+    return EventBusGrants.fromEventBus(eventBus).allPutEvents(grantee);
   }
 
   private static eventBusProps(defaultEventBusName: string, props: EventBusProps = {}) {
@@ -405,6 +480,7 @@ export class EventBus extends EventBusBase {
       } : undefined,
       description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
+      logConfig: props?.logConfig,
     });
 
     this.eventBusArn = this.getResourceArnAttribute(eventBus.attrArn, {

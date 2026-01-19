@@ -44,6 +44,7 @@ export async function syncAll() {
         console.log(`Processing issue #${issueNumber}: ${issue.title}`);
 
         try {
+          await new Promise(resolve => setTimeout(resolve, 500));
           await syncIssueData(issue);
           console.log(`Successfully synced issue #${issueNumber}`);
         } catch (error) {
@@ -57,6 +58,7 @@ export async function syncAll() {
         console.log(`Processing PR #${prNumber}: ${pr.title}`);
 
         try {
+          await new Promise(resolve => setTimeout(resolve, 500));
           await syncPrData(pr);
           console.log(`Successfully synced PR #${prNumber}`);
         } catch (error) {

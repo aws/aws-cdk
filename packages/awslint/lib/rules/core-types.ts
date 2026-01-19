@@ -14,7 +14,6 @@ enum CoreTypesFqn {
 }
 
 export class CoreTypes {
-
   /**
    * @returns true if assembly has the Core module
    */
@@ -44,11 +43,7 @@ export class CoreTypes {
       return false;
     }
 
-    if (!c.name.startsWith('Cfn')) {
-      return false;
-    }
-
-    return true;
+    return c.name.startsWith('Cfn');
   }
 
   /**
@@ -79,6 +74,24 @@ export class CoreTypes {
   }
 
   /**
+   * @returns true if `interfaceType` looks like an L2 interface (`IBucket`)
+   */
+  public static isL2Interface(interfaceType: reflect.InterfaceType) {
+    // We determine this by it being a behavioral interface, and it inheriting from `IResource`.
+    const baseInterface = interfaceType.system.findInterface(CoreTypesFqn.ResourceInterface);
+    return !interfaceType.datatype && interfaceExtends(interfaceType, baseInterface);
+  }
+
+  /**
+   * @returns true if `interfaceType` looks like an L1 Ref interface (`IBucketRef)`
+   */
+  public static isL1RefInterface(interfaceType: reflect.InterfaceType) {
+    // We determine this by it being a behavioral interface, and it living inside the `aws-cdk-lib.interfaces` namespace
+    // with a name ending in `Ref`.
+    return !interfaceType.datatype && interfaceType.fqn.startsWith('aws-cdk-lib.interfaces.') && interfaceType.name.endsWith('Ref');
+  }
+
+  /**
    * Return true if the nesting parent of the given interface is a CFN class
    */
   public static isCfnNestedType(interfaceType: reflect.Type) {
@@ -86,13 +99,38 @@ export class CoreTypes {
   }
 
   /**
-   * Return true if the given interface type is a CFN class or prop type
+   * Return true if the given interface type is a CFN class, prop type or interface
    */
-  public static isCfnType(interfaceType: reflect.Type) {
-    return interfaceType.name.startsWith('Cfn')
-      || (interfaceType.namespace && interfaceType.namespace.startsWith('Cfn'))
+  public static isCfnType(interfaceType: reflect.Type): boolean {
+    // aws_service.CfnTheResource
+    if (interfaceType.name.startsWith('Cfn')) {
+      return true;
+    }
+
+    // aws_service.ITheResourceRf
+    if (/^I\w+Ref/.test(interfaceType.name)) {
+      return true;
+    }
+
+    if (interfaceType.namespace) {
+      if (interfaceType.namespace.startsWith('Cfn')) {
+        return true;
+      }
+
+      const namespaceParts = interfaceType.namespace.split('.');
+
       // aws_service.CfnTheResource.SubType
-      || (interfaceType.namespace && interfaceType.namespace.split('.', 2).at(1)?.startsWith('Cfn'));
+      if (namespaceParts.at(1)?.startsWith('Cfn')) {
+        return true;
+      }
+
+      // aws_service.mixins.CfnTheResource.SubType
+      if (namespaceParts.at(1) === 'mixins' && namespaceParts.at(2)?.startsWith('Cfn')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -194,4 +232,8 @@ export class CoreTypes {
       return;
     }
   }
+}
+
+function interfaceExtends(interfaceType: reflect.InterfaceType, baseInterface: reflect.InterfaceType) {
+  return interfaceType.getInterfaces(true).some(i => i.fqn === baseInterface.fqn);
 }
