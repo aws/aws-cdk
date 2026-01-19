@@ -673,7 +673,6 @@ export class Memory extends MemoryBase {
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: MemoryProps = {}) {
     super(scope, id, {
-      // Maximum name length of 48 characters
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-memory.html#cfn-bedrockagentcore-memory-name
       physicalName: props?.memoryName ??
         Lazy.string({
