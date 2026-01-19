@@ -645,7 +645,7 @@ describe('When containerStartupHealthCheckTimeoutInSeconds is set', () => {
           containerStartupHealthCheckTimeout: cdk.Duration.seconds(30),
         }],
       });
-    }).toThrow('Configure \'containerStartupHealthCheckTimeout\' between 60 and 3600 seconds');
+    }).toThrow('containerStartupHealthCheckTimeout must be between 60 and 3600 seconds');
   });
 
   test('should throw error when timeout is greater than 3600 seconds', () => {
@@ -661,7 +661,7 @@ describe('When containerStartupHealthCheckTimeoutInSeconds is set', () => {
           containerStartupHealthCheckTimeout: cdk.Duration.hours(2), // 7200 seconds
         }],
       });
-    }).toThrow('Configure \'containerStartupHealthCheckTimeout\' between 60 and 3600 seconds');
+    }).toThrow('containerStartupHealthCheckTimeout must be between 60 and 3600 seconds');
   });
 
   test('should accept valid timeout values', () => {

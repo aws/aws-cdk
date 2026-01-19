@@ -48,11 +48,6 @@ interface ProductionVariantProps {
    * Name of the production variant.
    */
   readonly variantName: string;
-  /**
-   * The timeout value, in seconds, for your inference container to pass health check.
-   * @default - none
-   */
-  readonly containerStartupHealthCheckTimeout?: cdk.Duration;
 }
 
 /**
@@ -329,7 +324,6 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       throw new Error(`There is already a Production Variant with name '${props.variantName}'`);
     }
     this.validateInstanceProductionVariantProps(props);
-    this.validateHealthCheckTimeout(props.containerStartupHealthCheckTimeout);
     this.instanceProductionVariantsByName[props.variantName] = {
       acceleratorType: props.acceleratorType,
       initialInstanceCount: props.initialInstanceCount || 1,
@@ -418,6 +412,14 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     // check variant weight is not negative
     if (props.initialVariantWeight && props.initialVariantWeight < 0) {
       errors.push('Cannot have negative variant weight');
+    }
+
+    // check container startup health check timeout range
+    if (props.containerStartupHealthCheckTimeout) {
+      const timeoutInSeconds = props.containerStartupHealthCheckTimeout.toSeconds();
+      if (timeoutInSeconds < 60 || timeoutInSeconds > 3600) {
+        errors.push('containerStartupHealthCheckTimeout must be between 60 and 3600 seconds');
+      }
     }
 
     // check environment compatibility with model
@@ -526,17 +528,5 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
         provisionedConcurrency: variant.provisionedConcurrency,
       },
     }];
-  }
-
-  /**
-   * Validate the container startup health check timeout.
-   */
-  private validateHealthCheckTimeout(timeout?: cdk.Duration) {
-    if (timeout) {
-      const timeoutInSeconds = timeout.toSeconds();
-      if (timeoutInSeconds < 60 || timeoutInSeconds > 3600) {
-        throw new Error('Configure \'containerStartupHealthCheckTimeout\' between 60 and 3600 seconds');
-      }
-    }
   }
 }
