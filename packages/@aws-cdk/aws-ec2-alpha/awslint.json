@@ -41,6 +41,15 @@
     "prefer-ref-interface:@aws-cdk/aws-ec2-alpha.TransitGatewayVpcAttachmentProps.vpc",
     "prefer-ref-interface:@aws-cdk/aws-ec2-alpha.VPCPeeringConnectionProps.acceptorVpc",
     "prefer-ref-interface:@aws-cdk/aws-ec2-alpha.VPCPeeringConnectionProps.requestorVpc",
-    "prefer-ref-interface:@aws-cdk/aws-ec2-alpha.VPNGatewayV2Props.vpc"
+    "prefer-ref-interface:@aws-cdk/aws-ec2-alpha.VPNGatewayV2Props.vpc",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.IRouteV2",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.ITransitGateway",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.ITransitGatewayAssociation",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.ITransitGatewayAttachment",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.ITransitGatewayRoute",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.ITransitGatewayRouteTable",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.ITransitGatewayRouteTableAssociation",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.ITransitGatewayRouteTablePropagation",
+    "interface-extends-ref:@aws-cdk/aws-ec2-alpha.ITransitGatewayVpcAttachment"
   ]
 }

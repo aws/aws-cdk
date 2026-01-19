@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSlackChannelConfiguration } from './chatbot.generated';
+import { CfnSlackChannelConfiguration, ISlackChannelConfigurationRef, SlackChannelConfigurationReference } from './chatbot.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
@@ -121,7 +121,8 @@ export enum LoggingLevel {
 /**
  * Represents a Slack channel configuration
  */
-export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable, notifications.INotificationRuleTarget {
+// eslint-disable-next-line max-len
+export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable, notifications.INotificationRuleTarget, ISlackChannelConfigurationRef {
 
   /**
    * The ARN of the Slack channel configuration
@@ -200,6 +201,10 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
       targetType: 'AWSChatbotSlack',
       targetAddress: this.slackChannelConfigurationArn,
     };
+  }
+
+  public get slackChannelConfigurationRef(): SlackChannelConfigurationReference {
+    return { slackChannelConfigurationArn: this.slackChannelConfigurationArn };
   }
 }
 

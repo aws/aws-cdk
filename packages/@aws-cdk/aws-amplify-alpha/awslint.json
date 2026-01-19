@@ -12,6 +12,8 @@
     "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.Domain.mapSubDomain.branch",
     "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.DomainProps.customCertificate",
     "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.DomainProps.app",
-    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.DomainProps.autoSubDomainIamRole"
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.DomainProps.autoSubDomainIamRole",
+    "interface-extends-ref:@aws-cdk/aws-amplify-alpha.IApp",
+    "interface-extends-ref:@aws-cdk/aws-amplify-alpha.IBranch"
   ]
 }

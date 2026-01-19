@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVirtualRouter } from './appmesh.generated';
+import { CfnVirtualRouter, IVirtualRouterRef, VirtualRouterReference } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
 import { Route, RouteBaseProps } from './route';
@@ -11,7 +11,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface which all VirtualRouter based classes MUST implement
  */
-export interface IVirtualRouter extends cdk.IResource {
+export interface IVirtualRouter extends cdk.IResource, IVirtualRouterRef {
   /**
    * The name of the VirtualRouter
    *
@@ -85,6 +85,10 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
 
     return route;
   }
+
+  public get virtualRouterRef(): VirtualRouterReference {
+    return { virtualRouterArn: this.virtualRouterArn };
+  }
 }
 
 /**
@@ -111,6 +115,9 @@ export class VirtualRouter extends VirtualRouterBase {
       private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualRouterArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly virtualRouterName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+      public get virtualRouterRef(): VirtualRouterReference {
+        return { virtualRouterArn: this.virtualRouterArn };
+      }
     }(scope, id);
   }
 
@@ -126,6 +133,9 @@ export class VirtualRouter extends VirtualRouterBase {
         resource: `mesh/${attrs.mesh.meshName}/virtualRouter`,
         resourceName: this.virtualRouterName,
       });
+      public get virtualRouterRef(): VirtualRouterReference {
+        return { virtualRouterArn: this.virtualRouterArn };
+      }
     }(scope, id);
   }
 
