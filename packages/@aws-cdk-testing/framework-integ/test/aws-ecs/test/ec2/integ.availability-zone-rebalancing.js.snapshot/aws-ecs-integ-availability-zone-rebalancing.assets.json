@@ -1,15 +1,16 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "files": {
-    "80389954ddc853fe88b467b9c719bf3ad69591e71d704a541535576f86e378c0": {
+    "24a432afa691ac4b65ed53102f08f8a7dd08e373614d078bbdf93f2d6ec00284": {
+      "displayName": "aws-ecs-integ-availability-zone-rebalancing Template",
       "source": {
         "path": "aws-ecs-integ-availability-zone-rebalancing.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-84d544a9": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "80389954ddc853fe88b467b9c719bf3ad69591e71d704a541535576f86e378c0.json",
+          "objectKey": "24a432afa691ac4b65ed53102f08f8a7dd08e373614d078bbdf93f2d6ec00284.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,13 +1,13 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-test-bucket-deployment-data/DefaultTest": {
       "stacks": [
-        "TestBucketDeploymentContent"
+        "test-bucket-deployment-data"
       ],
       "assertionStack": "integ-test-bucket-deployment-data/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1027.0"
 }

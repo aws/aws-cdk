@@ -53,21 +53,23 @@ describe('cluster engine', () => {
       'aurora-postgresql9.6');
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('10.0', '10') }).parameterGroupFamily).toEqual(
       'aurora-postgresql10');
-    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('13.20', '13') }).parameterGroupFamily).toEqual(
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('13.21', '13') }).parameterGroupFamily).toEqual(
       'aurora-postgresql13');
-    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('14.3', '14') }).parameterGroupFamily).toEqual(
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('14.18', '14') }).parameterGroupFamily).toEqual(
       'aurora-postgresql14');
-    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('15.7', '15') }).parameterGroupFamily).toEqual(
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('15.13', '15') }).parameterGroupFamily).toEqual(
       'aurora-postgresql15');
-    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('16.3', '16') }).parameterGroupFamily).toEqual(
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('16.9', '16') }).parameterGroupFamily).toEqual(
       'aurora-postgresql16');
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('17.5', '17') }).parameterGroupFamily).toEqual(
+      'aurora-postgresql17');
   });
 
   test('supported log types', () => {
-    const mysqlLogTypes = ['error', 'general', 'slowquery', 'audit'];
+    const mysqlLogTypes = ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'];
     expect(DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }).supportedLogTypes).toEqual(mysqlLogTypes);
     expect(DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_12_3 }).supportedLogTypes).toEqual(mysqlLogTypes);
-    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }).supportedLogTypes).toEqual(['postgresql']);
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }).supportedLogTypes).toEqual(['postgresql', 'iam-db-auth-error', 'instance']);
   });
 
   test('AuroraMysqlEngineVersion.of() determines default combineImportAndExportRoles', () => {
@@ -221,6 +223,21 @@ describe('cluster engine', () => {
     const engine_ver_3_09_0 = DatabaseClusterEngine.auroraMysql({
       version: AuroraMysqlEngineVersion.VER_3_09_0,
     });
+    const engine_ver_3_10_0 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_10_0,
+    });
+    const engine_ver_3_10_1 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_10_1,
+    });
+    const engine_ver_3_10_2 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_10_2,
+    });
+    const engine_ver_3_11_0 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_11_0,
+    });
+    const engine_ver_3_11_1 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_11_1,
+    });
 
     // THEN
     expect(engine_ver_3_07_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
@@ -228,5 +245,10 @@ describe('cluster engine', () => {
     expect(engine_ver_3_08_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_08_2.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_09_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_10_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_10_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_10_2.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_11_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_11_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
   });
 });

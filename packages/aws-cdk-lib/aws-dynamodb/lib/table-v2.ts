@@ -15,9 +15,14 @@ import {
   PointInTimeRecoverySpecification,
   TableClass,
   WarmThroughput,
+  MultiRegionConsistency,
+  ContributorInsightsSpecification,
+  validateContributorInsights,
+  KeySchema,
+  parseKeySchema,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
-import { PolicyDocument } from '../../aws-iam';
+import { AddToResourcePolicyResult, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
 import {
@@ -46,14 +51,21 @@ const MAX_NON_KEY_ATTRIBUTES = 100;
 /**
  * Options used to configure global secondary indexes on a replica table.
  */
-export interface ReplicaGlobalSecondaryIndexOptions {
+export interface ReplicaGlobalSecondaryIndexOptions extends IContributorInsightsConfigurable {
   /**
    * Whether CloudWatch contributor insights is enabled for a specific global secondary
    * index on a replica table.
-   *
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default - inherited from the primary table
    */
   readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * for a specific global secondary index on a replica table.
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * The read capacity for a specific global secondary index on a replica table.
@@ -80,15 +92,65 @@ export interface ReplicaGlobalSecondaryIndexOptions {
 export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
   /**
    * Partition key attribute definition.
+   *
+   * If a single field forms the partition key, you can use this field.  Use the
+   * `partitionKeys` field if the partition key is a multi-attribute key (consists of
+   * multiple fields).
+   *
+   * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
    */
-  readonly partitionKey: Attribute;
+  readonly partitionKey?: Attribute;
 
   /**
    * Sort key attribute definition.
    *
+   * If a single field forms the sort key, you can use this field.  Use the
+   * `sortKeys` field if the sort key is a multi-attribute key (consists of multiple
+   * fields).
+   *
    * @default - no sort key
    */
   readonly sortKey?: Attribute;
+
+  /**
+   * Multi-attribute partition key
+   *
+   * If a single field forms the partition key, you can use either
+   * `partitionKey` or `partitionKeys` to specify the partition key. Exactly
+   * one of these must be specified.
+   *
+   * You must use `partitionKeys` field if the partition key is a multi-attribute key
+   * (consists of multiple fields).
+   *
+   * NOTE: although the name of this field makes it sound like it creates
+   * multiple keys, it does not. It defines a single key that consists of
+   * of multiple fields.
+   *
+   * The order of fields is not important.
+   *
+   * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
+   */
+  readonly partitionKeys?: Attribute[];
+
+  /**
+   * Multi-attribute sort key
+   *
+   * If a single field forms the sort key, you can use either
+   * `sortKey` or `sortKeys` to specify the sort key. At most one of these
+   * may be specified.
+   *
+   * You must use `sortKeys` field if the sort key is a multi-attribute key
+   * (consists of multiple fields).
+   *
+   * NOTE: although the name of this field makes it sound like it creates
+   * multiple keys, it does not. It defines a single key that consists of
+   * of multiple fields at the same time.
+   *
+   * NOTE: The order of fields is important!
+   *
+   * @default - no sort key
+   */
+  readonly sortKeys?: Attribute[];
 
   /**
    * The read capacity.
@@ -135,15 +197,38 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
 }
 
 /**
- * Options used to configure a DynamoDB table.
+ * Common interface for types that can configure contributor insights
+ * @internal
  */
-export interface TableOptionsV2 {
+interface IContributorInsightsConfigurable {
   /**
    * Whether CloudWatch contributor insights is enabled.
-   *
+   * @deprecated use `contributorInsightsSpecification` instead
+   */
+  readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+}
+
+/**
+ * Options used to configure a DynamoDB table.
+ */
+export interface TableOptionsV2 extends IContributorInsightsConfigurable {
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default false
    */
   readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * Whether deletion protection is enabled.
@@ -295,6 +380,24 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * @default - no replica tables
    */
   readonly replicas?: ReplicaTableProps[];
+
+  /**
+   * The witness Region for the MRSC global table.
+   * A MRSC global table can be configured with either three replicas, or with two replicas and one witness.
+   *
+   * Note: Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table.
+   * Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.
+   *
+   * @default - no witness region
+   */
+  readonly witnessRegion?: string;
+
+  /**
+   * Specifies the consistency mode for a new global table.
+   *
+   * @default MultiRegionConsistency.EVENTUAL
+   */
+  readonly multiRegionConsistency?: MultiRegionConsistency;
 
   /**
    * Global secondary indexes.
@@ -472,6 +575,20 @@ export class TableV2 extends TableBaseV2 {
         this.encryptionKey = attrs.encryptionKey;
         this.resourcePolicy = resourcePolicy;
       }
+
+      /**
+       * Adds a statement to the resource policy associated with this table.
+       *
+       * Note: This is a no-op for imported tables since resource policies cannot be modified.
+       *
+       * @param _statement The policy statement to add
+       */
+      public addToResourcePolicy(_statement: PolicyStatement): AddToResourcePolicyResult {
+        // No-op for imported tables - resource policies cannot be modified
+        return {
+          statementAdded: false,
+        };
+      }
     }
 
     let tableName: string;
@@ -596,11 +713,22 @@ export class TableV2 extends TableBaseV2 {
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
     props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
 
+    if (props.multiRegionConsistency === MultiRegionConsistency.STRONG) {
+      this.validateMrscConfiguration(props);
+    } else if (props.witnessRegion) {
+      throw new ValidationError('Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.', this);
+    }
+
+    // Initialize resourcePolicy from props or create empty one (KMS pattern)
+    this.resourcePolicy = props.resourcePolicy;
+
     const resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
+      globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
+      multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
@@ -633,6 +761,29 @@ export class TableV2 extends TableBaseV2 {
     if (props.tableName) {
       this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
     }
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  @MethodMetadata()
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    // Initialize resourcePolicy if it doesn't exist
+    if (!this.resourcePolicy) {
+      this.resourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.resourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.resourcePolicy,
+    };
   }
 
   /**
@@ -725,7 +876,7 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
-    const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
+    const contributorInsightsSpecification = this.validateCCI(props);
 
     // Determine if Point-In-Time Recovery (PITR) is enabled based on the provided property or table options (deprecated options).
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
@@ -748,8 +899,8 @@ export class TableV2 extends TableBaseV2 {
     * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
     */
     const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
-      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
-      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+      ? (props.region === this.region ? this.resourcePolicy : props.resourcePolicy) || undefined
+      : props.resourcePolicy ?? this.resourcePolicy;
 
     const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
       ({ ...p, [item.key]: item.value }), {},
@@ -769,9 +920,7 @@ export class TableV2 extends TableBaseV2 {
       kinesisStreamSpecification: props.kinesisStream
         ? { streamArn: props.kinesisStream.streamArn }
         : undefined,
-      contributorInsightsSpecification: contributorInsights !== undefined
-        ? { enabled: contributorInsights }
-        : undefined,
+      contributorInsightsSpecification: contributorInsightsSpecification,
       pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       readProvisionedThroughputSettings: props.readCapacity
         ? props.readCapacity._renderReadCapacity()
@@ -789,7 +938,7 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2): CfnGlobalTable.GlobalSecondaryIndexProperty {
-    const keySchema = this.configureIndexKeySchema(props.partitionKey, props.sortKey);
+    const keySchema = this.configureIndexKeySchema(parseKeySchema(props, this));
     const projection = this.configureIndexProjection(props);
 
     props.readCapacity && this.globalSecondaryIndexReadCapacitys.set(props.indexName, props.readCapacity);
@@ -814,7 +963,12 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureLocalSecondaryIndex(props: LocalSecondaryIndexProps): CfnGlobalTable.LocalSecondaryIndexProperty {
-    const keySchema = this.configureIndexKeySchema(this.partitionKey, props.sortKey);
+    const keySchema = this.configureIndexKeySchema(parseKeySchema({
+      ...props,
+      // The primary key is always the table PK, so copy that
+      partitionKey: this.partitionKey,
+      partitionKeys: undefined,
+    }, this));
     const projection = this.configureIndexProjection(props);
 
     return {
@@ -848,32 +1002,31 @@ export class TableV2 extends TableBaseV2 {
         ? { maxReadRequestUnits: maxReadRequestUnits }
         : undefined;
 
+      const contributorInsightsSpecification = this.validateCCI(options[indexName]) ||
+        (contributorInsights !== undefined ? { enabled: contributorInsights } as ContributorInsightsSpecification : undefined);
+
       replicaGlobalSecondaryIndexes.push({
         indexName,
         readProvisionedThroughputSettings,
         readOnDemandThroughputSettings,
-        contributorInsightsSpecification: contributorInsights !== undefined
-          ? { enabled: contributorInsights }
-          : undefined,
+        contributorInsightsSpecification: contributorInsightsSpecification,
       });
     }
 
     return replicaGlobalSecondaryIndexes.length > 0 ? replicaGlobalSecondaryIndexes : undefined;
   }
 
-  private configureIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute) {
-    this.addAttributeDefinition(partitionKey);
-
-    const indexKeySchema: CfnGlobalTable.KeySchemaProperty[] = [
-      { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
-    ];
-
-    if (sortKey) {
-      this.addAttributeDefinition(sortKey);
-      indexKeySchema.push({ attributeName: sortKey.name, keyType: RANGE_KEY_TYPE });
+  private configureIndexKeySchema(keySchema: KeySchema) {
+    // Register as an attribute
+    for (const attr of [...keySchema.partitionKeys, ...keySchema.sortKeys]) {
+      this.addAttributeDefinition(attr);
     }
 
-    return indexKeySchema;
+    // Return rendered properties
+    return [
+      ...keySchema.partitionKeys.map((pk) => ({ attributeName: pk.name, keyType: HASH_KEY_TYPE })),
+      ...keySchema.sortKeys.map((sk) => ({ attributeName: sk.name, keyType: RANGE_KEY_TYPE })),
+    ];
   }
 
   private configureIndexProjection(props: SecondaryIndexProps): CfnGlobalTable.ProjectionProperty {
@@ -912,23 +1065,11 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private renderGlobalIndexes() {
-    const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
-
-    for (const globalSecondaryIndex of this.globalSecondaryIndexes.values()) {
-      globalSecondaryIndexes.push(globalSecondaryIndex);
-    }
-
-    return globalSecondaryIndexes;
+    return Array.from(this.globalSecondaryIndexes.values());
   }
 
   private renderLocalIndexes() {
-    const localSecondaryIndexes: CfnGlobalTable.LocalSecondaryIndexProperty[] = [];
-
-    for (const localSecondaryIndex of this.localSecondaryIndexes.values()) {
-      localSecondaryIndexes.push(localSecondaryIndex);
-    }
-
-    return localSecondaryIndexes;
+    return Array.from(this.localSecondaryIndexes.values());
   }
 
   private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
@@ -1012,6 +1153,10 @@ export class TableV2 extends TableBaseV2 {
   private validateGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateIndexName(props.indexName);
 
+    // Calling this for its side effect of throwing an exception here. We will call it again later
+    // for its return value. Slightly wasteful but that's how the code was structured already.
+    parseKeySchema(props, this);
+
     if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
       throw new ValidationError(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`, this);
     }
@@ -1047,5 +1192,71 @@ export class TableV2 extends TableBaseV2 {
     if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
       throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
+  }
+
+  private validateMrscConfiguration(props: TablePropsV2) {
+    const regionSets = {
+      US: ['us-east-1', 'us-east-2', 'us-west-2'],
+      EU: ['eu-west-1', 'eu-west-2', 'eu-west-3', 'eu-central-1'],
+      AP: ['ap-northeast-1', 'ap-northeast-2', 'ap-northeast-3'],
+    };
+
+    const primaryRegion = this.stack.region;
+    const replicaRegions = (props.replicas || []).map(replica => replica.region);
+    const witnessRegion = props.witnessRegion;
+
+    if (Token.isUnresolved(primaryRegion)) {
+      throw new ValidationError('MRSC global tables with STRONG consistency are not supported in a region agnostic stack', this);
+    }
+
+    const allRegions = [primaryRegion, ...replicaRegions];
+    if (witnessRegion) {
+      allRegions.push(witnessRegion);
+    }
+
+    for (const region of allRegions) {
+      if (Token.isUnresolved(region)) {
+        throw new ValidationError('MRSC global tables with STRONG consistency do not support token-based regions', this);
+      }
+    }
+
+    let regionSet: string[] | undefined;
+    let regionSetName: string | undefined;
+
+    for (const [setName, regions] of Object.entries(regionSets)) {
+      if (regions.includes(primaryRegion)) {
+        regionSet = regions;
+        regionSetName = setName;
+        break;
+      }
+    }
+
+    if (!regionSet || !regionSetName) {
+      throw new ValidationError(`Primary region '${primaryRegion}' is not supported for MRSC global tables with STRONG consistency. Supported regions: ${Object.values(regionSets).flat().join(', ')}`, this);
+    }
+
+    for (const region of allRegions) {
+      if (!regionSet.includes(region)) {
+        throw new ValidationError(`Region '${region}' is not in the same region set (${regionSetName}) as the primary region '${primaryRegion}'. All regions must be within the same region set for MRSC global tables with STRONG consistency. Supported ${regionSetName} regions: ${regionSet.join(', ')}`, this);
+      }
+    }
+
+    const totalReplicas = replicaRegions.length + 1;
+    if (witnessRegion) {
+      if (totalReplicas !== 2) {
+        throw new ValidationError(`MRSC global table with witness region must have exactly 2 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}], witness region '${witnessRegion}'`, this);
+      }
+    } else {
+      if (totalReplicas !== 3) {
+        throw new ValidationError(`MRSC global table without witness region must have exactly 3 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}]`, this);
+      }
+    }
+  }
+
+  private validateCCI(props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
+    const contributorInsights = props?.contributorInsights ?? this.tableOptions?.contributorInsights;
+    const contributorInsightsSpecification = props?.contributorInsightsSpecification || this.tableOptions?.contributorInsightsSpecification;
+
+    return validateContributorInsights(contributorInsights, contributorInsightsSpecification, 'contributorInsights', this);
   }
 }

@@ -1124,7 +1124,6 @@ describe('fromCfnKey()', () => {
 });
 
 describe('addToResourcePolicy allowNoOp and there is no policy', () => {
-  // eslint-disable-next-line jest/expect-expect
   test('succeed if set to true (default)', () => {
     const stack = new cdk.Stack();
     const key = kms.Key.fromKeyArn(stack, 'Imported',
@@ -1411,6 +1410,38 @@ describe('SM2', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeySpec: 'SM2',
+    });
+  });
+});
+
+describe('ML-DSA', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test.each([
+    [KeySpec.ML_DSA_44, 'ML_DSA_44'],
+    [KeySpec.ML_DSA_65, 'ML_DSA_65'],
+    [KeySpec.ML_DSA_87, 'ML_DSA_87'],
+  ])('%s is not valid for default usage', (keySpec: KeySpec) => {
+    expect(() => new kms.Key(stack, 'Key1', { keySpec }))
+      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'ENCRYPT_DECRYPT\'`);
+  });
+
+  test.each([
+    [KeySpec.ML_DSA_44, 'ML_DSA_44'],
+    [KeySpec.ML_DSA_65, 'ML_DSA_65'],
+    [KeySpec.ML_DSA_87, 'ML_DSA_87'],
+  ])('%s can be used for KMS key creation', (keySpec: KeySpec, expected: string) => {
+    new kms.Key(stack, 'Key', {
+      keySpec,
+      keyUsage: KeyUsage.SIGN_VERIFY,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeySpec: expected,
+      KeyUsage: 'SIGN_VERIFY',
     });
   });
 });

@@ -23,7 +23,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-first-lambda\",\"status\":200}}",
-    "salt": "1699640961564"
+    "flattenResponse": "false",
+    "salt": "1761050867396"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -53,12 +54,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a5feac1d1e65b04919886f5961fd2ba1352489d558439d9d6592877e92fc2814.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -93,7 +94,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-first-lambda\",\"status\":200}}",
-    "salt": "1699640961564"
+    "flattenResponse": "false",
+    "salt": "1761050867398"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -121,7 +123,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-second-lambda\",\"status\":200}}",
-    "salt": "1699640961564"
+    "flattenResponse": "false",
+    "salt": "1761050867398"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -149,7 +152,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-second-lambda\",\"status\":200}}",
-    "salt": "1699640961565"
+    "flattenResponse": "false",
+    "salt": "1761050867398"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -177,7 +181,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-third-lambda\",\"status\":200}}",
-    "salt": "1699640961565"
+    "flattenResponse": "false",
+    "salt": "1761050867398"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -205,7 +210,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-third-lambda\",\"status\":200}}",
-    "salt": "1699640961565"
+    "flattenResponse": "false",
+    "salt": "1761050867398"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

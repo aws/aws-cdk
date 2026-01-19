@@ -9,54 +9,20 @@ import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token, Tokenization } from './token';
+import { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
 
 // v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
 // eslint-disable-next-line import/order
 import { Construct, IConstruct } from 'constructs';
 
 /**
- * Represents the environment a given resource lives in.
- * Used as the return value for the `IResource.env` property.
+ * Interface for L2 Resource constructs.
  */
-export interface ResourceEnvironment {
-  /**
-   * The AWS account ID that this resource belongs to.
-   * Since this can be a Token
-   * (for example, when the account is CloudFormation's AWS::AccountId intrinsic),
-   * make sure to use Token.compareStrings()
-   * instead of just comparing the values for equality.
-   */
-  readonly account: string;
-
-  /**
-   * The AWS region that this resource belongs to.
-   * Since this can be a Token
-   * (for example, when the region is CloudFormation's AWS::Region intrinsic),
-   * make sure to use Token.compareStrings()
-   * instead of just comparing the values for equality.
-   */
-  readonly region: string;
-}
-
-/**
- * Interface for the Resource construct.
- */
-export interface IResource extends IConstruct {
+export interface IResource extends IConstruct, IEnvironmentAware {
   /**
    * The stack in which this resource is defined.
    */
   readonly stack: Stack;
-
-  /**
-   * The environment this resource belongs to.
-   * For resources that are created and managed by the CDK
-   * (generally, those created by creating new class instances like Role, Bucket, etc.),
-   * this is always the same as the environment of the stack they belong to;
-   * however, for imported resources
-   * (those obtained from static methods like fromRoleArn, fromBucketName, etc.),
-   * that might be different than the stack they were imported into.
-   */
-  readonly env: ResourceEnvironment;
 
   /**
    * Apply the given removal policy to this resource
@@ -117,7 +83,7 @@ export interface ResourceProps {
 }
 
 /**
- * A construct which represents an AWS resource.
+ * An L2 construct which represents an AWS resource.
  */
 export abstract class Resource extends Construct implements IResource {
   /**

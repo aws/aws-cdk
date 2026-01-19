@@ -1,13 +1,14 @@
 {
-  "version": "35.0.0",
+  "version": "45.0.0",
   "files": {
     "4cd47558c35d37f22b4a35cb0e6f8da69d1ab1c18920d11e304d92e3a89167c5": {
+      "displayName": "aws-ecs-patterns-queue-health-check Template",
       "source": {
         "path": "aws-ecs-patterns-queue-health-check.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-36814eb9": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "4cd47558c35d37f22b4a35cb0e6f8da69d1ab1c18920d11e304d92e3a89167c5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
@@ -17,11 +18,12 @@
   },
   "dockerImages": {
     "205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03": {
+      "displayName": "HealthCheckQueueService/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage",
       "source": {
         "directory": "asset.205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-b26f3a33": {
           "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
           "imageTag": "205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"

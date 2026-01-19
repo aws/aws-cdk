@@ -1,7 +1,8 @@
 {
-  "version": "36.0.5",
+  "version": "45.0.0",
   "files": {
     "3239e363f9e8e5a4ef7c700724f38f69548a563607e006187dc64b4027f36839": {
+      "displayName": "cdk-amplify-app-cache-config Template",
       "source": {
         "path": "cdk-amplify-app-cache-config.template.json",
         "packaging": "file"

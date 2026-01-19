@@ -5,6 +5,8 @@ import {
   CfnVPNConnection,
   CfnVPNConnectionRoute,
   CfnVPNGateway,
+  IVPNConnectionRef,
+  IVPNGatewayRef, VPNConnectionReference, VPNGatewayReference,
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -12,7 +14,7 @@ import { IResource, Resource, SecretValue, Token, ValidationError } from '../../
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IVpnConnection extends IResource {
+export interface IVpnConnection extends IResource, IVPNConnectionRef {
   /**
    * The id of the VPN connection.
    * @attribute VpnConnectionId
@@ -38,7 +40,7 @@ export interface IVpnConnection extends IResource {
 /**
  * The virtual private gateway interface
  */
-export interface IVpnGateway extends IResource {
+export interface IVpnGateway extends IResource, IVPNGatewayRef {
 
   /**
    * The virtual private gateway Id
@@ -172,6 +174,8 @@ export class VpnGateway extends Resource implements IVpnGateway {
    */
   public readonly gatewayId: string;
 
+  public readonly vpnGatewayRef: VPNGatewayReference;
+
   constructor(scope: Construct, id: string, props: VpnGatewayProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -182,6 +186,7 @@ export class VpnGateway extends Resource implements IVpnGateway {
     // to be created for the CfnVPNGateway (and 'Resource' would not do that).
     const vpnGW = new CfnVPNGateway(this, 'Default', props);
     this.gatewayId = vpnGW.ref;
+    this.vpnGatewayRef = vpnGW.vpnGatewayRef;
   }
 }
 
@@ -220,6 +225,12 @@ export abstract class VpnConnectionBase extends Resource implements IVpnConnecti
   public abstract readonly customerGatewayId: string;
   public abstract readonly customerGatewayIp: string;
   public abstract readonly customerGatewayAsn: number;
+
+  public get vpnConnectionRef(): VPNConnectionReference {
+    return {
+      vpnConnectionId: this.customerGatewayId,
+    };
+  }
 }
 
 /**
@@ -336,9 +347,7 @@ export class VpnConnection extends VpnConnectionBase {
         }
 
         if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
-          /* eslint-disable max-len */
           throw new ValidationError(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`, this);
-          /* eslint-enable max-len */
         }
 
         if (options.tunnelInsideCidr) {
@@ -347,7 +356,6 @@ export class VpnConnection extends VpnConnectionBase {
           }
 
           if (!/^169\.254\.\d{1,3}\.\d{1,3}\/30$/.test(options.tunnelInsideCidr)) {
-            /* eslint-disable-next-line max-len */
             throw new ValidationError(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`, this);
           }
         }

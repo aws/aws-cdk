@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { readFileSync } from 'fs-extra';
 import { toCloudFormation } from './util';
+import * as cxapi from '../../cx-api';
 import {
   Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
 } from '../lib';
@@ -167,6 +168,30 @@ describe('nested-stack', () => {
     // THEN
     expect(() => toCloudFormation(stack2)).toThrow(
       /Cannot use resource 'Stack1\/MyNestedStack\/MyResource' in a cross-environment fashion/);
+  });
+
+  test('requires bundling when root stack has exact match in BUNDLING_STACKS', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack']);
+
+    const child = new NestedStack(stack, 'Child');
+    const child2 = new NestedStack(child, 'Child2');
+
+    expect(child.bundlingRequired).toBe(true);
+    expect(child2.bundlingRequired).toBe(true);
+  });
+
+  test('not requires bundling when root stack has no match in BUNDLING_STACKS', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack2']);
+
+    const child = new NestedStack(stack, 'Child');
+    const child2 = new NestedStack(child, 'Child2');
+
+    expect(child.bundlingRequired).toBe(false);
+    expect(child2.bundlingRequired).toBe(false);
   });
 });
 

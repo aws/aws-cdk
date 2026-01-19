@@ -8,6 +8,16 @@ export interface BucketCacheOptions {
    * The prefix to use to store the cache in the bucket
    */
   readonly prefix?: string;
+
+  /**
+   * Defines the scope of the cache.
+   * You can use this namespace to share a cache across multiple projects.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/caching-s3.html#caching-s3-sharing
+   *
+   * @default undefined - No cache namespace, which means that the cache is not shared across multiple projects.
+   */
+  readonly cacheNamespace?: string;
 }
 
 /**
@@ -70,6 +80,7 @@ export abstract class Cache {
       _toCloudFormation: () => ({
         type: 'S3',
         location: Fn.join('/', [bucket.bucketName, options && options.prefix || Aws.NO_VALUE]),
+        cacheNamespace: options?.cacheNamespace,
       }),
       _bind: (project) => {
         bucket.grantReadWrite(project);

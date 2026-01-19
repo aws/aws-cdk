@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-logs-insights-querydefinition-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-logs-insights-querydefinition-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3546c78647ea20567832041c960a034787f9bfc0128226ea8fbc0894366a4dd0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48c77ff7a7dcbd22d755692bb674f1b86a9fbfc5c21477f5e49713d382e30f84.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,16 +34,34 @@
         "aws-cdk-logs-insights-querydefinition-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-logs-insights-querydefinition-integ/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-logs-insights-querydefinition-integ/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogGroupF5B46931"
           }
         ],
+        "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinition": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinition/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryDefinition4190BC36"
+          }
+        ],
+        "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinitionWithMultipleStatements": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinitionWithMultipleStatements/Resource": [
@@ -79,6 +98,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "LogsInsightsQueryDefinitionIntegTestDefaultTestDeployAssert902BAAD5.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -119,5 +139,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

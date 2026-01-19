@@ -1,0 +1,168 @@
+{
+ "Resources": {
+  "AwsApiCallelasticloadbalancingv2describeLoadBalancersf7e9260de6322af2c929a6a6b2f8b607": {
+   "Type": "Custom::DeployAssert@SdkCallelastic-load-balancing-v2describ",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "elastic-load-balancing-v2",
+    "api": "describeLoadBalancers",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"LoadBalancers\":[{\"$ObjectLike\":{\"LoadBalancerArn\":\"",
+       {
+        "Fn::ImportValue": "NlbSecurityGroupStack:ExportsOutputRefNlbWithSecurityGroup8AA6FD5A445BAFDC"
+       },
+       "\",\"SecurityGroups\":{\"$ArrayWith\":[{\"$StringLike\":\"sg-[0-9a-f]{8,17}\"}]}}},{\"$ObjectLike\":{\"LoadBalancerArn\":\"",
+       {
+        "Fn::ImportValue": "NlbSecurityGroupStack:ExportsOutputRefNlbWithSecurityGroup2356361239BA6467E"
+       },
+       "\",\"SecurityGroups\":{\"$ArrayWith\":[{\"$StringLike\":\"sg-[0-9a-f]{8,17}\"}]}}},{\"$ObjectLike\":{\"LoadBalancerArn\":\"",
+       {
+        "Fn::ImportValue": "NlbSecurityGroupStack:ExportsOutputRefNlbWithoutSecurityGroup82D9E764BD43884F"
+       },
+       "\"}}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "LoadBalancerArns": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "NlbSecurityGroupStack:ExportsOutputRefNlbWithSecurityGroup8AA6FD5A445BAFDC"
+        },
+        "\",\"",
+        {
+         "Fn::ImportValue": "NlbSecurityGroupStack:ExportsOutputRefNlbWithSecurityGroup2356361239BA6467E"
+        },
+        "\",\"",
+        {
+         "Fn::ImportValue": "NlbSecurityGroupStack:ExportsOutputRefNlbWithoutSecurityGroup82D9E764BD43884F"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1761575956556"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "elasticloadbalancing:DescribeLoadBalancers"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallelasticloadbalancingv2describeLoadBalancersf7e9260de6322af2c929a6a6b2f8b607": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallelasticloadbalancingv2describeLoadBalancersf7e9260de6322af2c929a6a6b2f8b607",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

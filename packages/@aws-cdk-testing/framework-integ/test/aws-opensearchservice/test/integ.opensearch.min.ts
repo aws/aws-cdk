@@ -11,6 +11,8 @@ class TestStack extends Stack {
       opensearch.EngineVersion.OPENSEARCH_2_13,
       opensearch.EngineVersion.OPENSEARCH_2_15,
       opensearch.EngineVersion.OPENSEARCH_2_17,
+      opensearch.EngineVersion.OPENSEARCH_3_1,
+      opensearch.EngineVersion.OPENSEARCH_3_3,
     ];
 
     // deploy opensearch domain with minimal configuration

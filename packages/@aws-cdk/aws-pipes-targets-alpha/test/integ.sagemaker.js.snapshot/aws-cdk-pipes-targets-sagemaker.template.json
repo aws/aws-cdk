@@ -212,15 +212,15 @@
       "Fn::Join": [
        "",
        [
-        "{\"Version\":\"2020-12-01\",\"Metadata\":{},\"Parameters\":[{\"Name\":\"ParameterName\",\"Type\":\"String\",\"DefaultValue\":\"Value\"}],\"Steps\":[{\"Name\":\"TrainingStep\",\"Type\":\"Training\",\"Arguments\":{\"AlgorithmSpecification\":{\"TrainingImage\":\"382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1\",\"TrainingInputMode\":\"File\"},\"InputDataConfig\":[{\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"s3://",
+        "{\"PipelineDefinitionBody\":\"{\\\"Version\\\":\\\"2020-12-01\\\",\\\"Metadata\\\":{},\\\"Parameters\\\":[{\\\"Name\\\":\\\"ParameterName\\\",\\\"Type\\\":\\\"String\\\",\\\"DefaultValue\\\":\\\"Value\\\"}],\\\"Steps\\\":[{\\\"Name\\\":\\\"TrainingStep\\\",\\\"Type\\\":\\\"Training\\\",\\\"Arguments\\\":{\\\"AlgorithmSpecification\\\":{\\\"TrainingImage\\\":\\\"382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1\\\",\\\"TrainingInputMode\\\":\\\"File\\\"},\\\"InputDataConfig\\\":[{\\\"DataSource\\\":{\\\"S3DataSource\\\":{\\\"S3Uri\\\":\\\"s3://",
         {
          "Ref": "PipelineSourceBucket23FDFC28"
         },
-        "\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"s3://",
+        "\\\"}}}],\\\"OutputDataConfig\\\":{\\\"S3OutputPath\\\":\\\"s3://",
         {
          "Ref": "PipelineOutputBucket98EA5F71"
         },
-        "\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m5.large\",\"VolumeSizeInGB\":50},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}]}"
+        "\\\"},\\\"ResourceConfig\\\":{\\\"InstanceCount\\\":1,\\\"InstanceType\\\":\\\"ml.m5.large\\\",\\\"VolumeSizeInGB\\\":50},\\\"StoppingCondition\\\":{\\\"MaxRuntimeInSeconds\\\":3600}}}]}\"}"
        ]
       ]
      }
@@ -274,15 +274,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -419,136 +411,6 @@
       ]
      }
     }
-   }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
    }
   }
  },

@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { IScalableTarget } from './scalable-target';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 import { findAlarmThresholds, normalizeIntervals } from '../../aws-autoscaling-common';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 export interface BasicStepScalingPolicyProps {
   /**
@@ -91,7 +91,7 @@ export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
   /**
    * The scaling target
    */
-  readonly scalingTarget: IScalableTarget;
+  readonly scalingTarget: IScalableTargetRef;
 }
 
 /**
@@ -213,7 +213,7 @@ export interface ScalingInterval {
   /**
    * The lower bound of the interval.
    *
-   * The scaling adjustment will be applied if the metric is higher than this value.
+   * The scaling adjustment will be applied if the metric is higher than or equal this value.
    *
    * @default Threshold automatically derived from neighbouring intervals
    */

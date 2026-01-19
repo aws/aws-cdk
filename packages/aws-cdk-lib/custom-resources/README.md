@@ -121,6 +121,9 @@ def is_complete(event, context):
 > Do not use this library if your threat model requires that you cannot trust actors who are able
 > to list StepFunction executions in your account.
 
+
+> **Default behaviour change Note**: the Custom Resource Provider doesn't log anything by default. To enable logging for the Provider framework, toggle `disableWaiterStateMachineLogging` and `disableFrameworkLambdaLogging` depending on you requirement to see waiter state machine logs or provider framework lambda logs
+
 ### Handling Lifecycle Events: onEvent
 
 The user-defined `onEvent` AWS Lambda function is invoked whenever a resource
@@ -827,6 +830,62 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
   })]),
 });
 ```
+
+#### Using External IDs for Enhanced Security
+
+When assuming cross-account roles, you can specify an external ID to prevent the "confused deputy" problem. The external ID is a unique identifier provided by the third-party service that helps ensure the service is acting on behalf of the correct customer:
+
+```ts
+const crossAccountRoleArn = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccountRoleName';
+const serviceExternalId = 'unique-secret-value-12345'; // External ID provided by the third party service. This value should be unique among the third-party service's customers.
+
+
+new cr.AwsCustomResource(this, 'SecureCrossAccount', {
+  onCreate: {
+    assumedRoleArn: crossAccountRoleArn,
+    externalId: serviceExternalId, // Prevents confused deputy attacks
+    service: 'sts',
+    action: 'GetCallerIdentity',
+    physicalResourceId: cr.PhysicalResourceId.of('id'),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromStatements([iam.PolicyStatement.fromJson({
+    Effect: "Allow",
+    Action: "sts:AssumeRole",
+    Resource: crossAccountRoleArn,
+  })]),
+});
+```
+
+The external ID can also be different for each lifecycle operation:
+
+```ts
+declare const createRoleArn: string;
+declare const updateRoleArn: string;
+
+new cr.AwsCustomResource(this, 'MultiRoleSecure', {
+  onCreate: {
+    assumedRoleArn: createRoleArn,
+    externalId: 'create-secret-123',
+    service: 'ec2',
+    action: 'DescribeInstances',
+    physicalResourceId: cr.PhysicalResourceId.of('id'),
+  },
+  onUpdate: {
+    assumedRoleArn: updateRoleArn,
+    externalId: 'update-secret-456',
+    service: 'ec2',
+    action: 'DescribeInstances',
+  },
+  policy: cr.AwsCustomResourcePolicy.fromStatements([
+    new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: [createRoleArn, updateRoleArn],
+    }),
+  ]),
+});
+```
+
+For more information on external IDs and preventing confused deputy attacks, see the [AWS IAM User Guide](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html).
 
 #### Custom Resource Config
 

@@ -1,4 +1,5 @@
-/* eslint-disable quote-props */
+/* eslint-disable quotes */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable @stylistic/comma-dangle */
 /* eslint-disable @cdklabs/no-literal-partition */
 /*
@@ -9,28 +10,55 @@
  */
 
 export const AWS_CDK_ENUMS: { [key: string]: any } = {
-  'AccessEntryType': [
-    'STANDARD',
-    'FARGATE_LINUX',
-    'EC2_LINUX',
-    'EC2_WINDOWS'
+  "AcceleratorManufacturer": [
+    "amazon-web-services",
+    "amd",
+    "nvidia",
+    "xilinx",
+    "habana"
   ],
-  'AccessKeyStatus': [
-    'Active',
-    'Inactive'
+  "AcceleratorName": [
+    "a100",
+    "k80",
+    "m60",
+    "radeon-pro-v520",
+    "t4",
+    "v100",
+    "vu9p",
+    "a10g",
+    "h100",
+    "inferentia",
+    "k520",
+    "t4g"
   ],
-  'AccessLevel': [
-    'READ',
-    'READ_VERSIONED',
-    'LIST',
-    'WRITE',
-    'DELETE'
+  "AcceleratorType": [
+    "gpu",
+    "fpga",
+    "inference"
   ],
-  'AccessScopeType': [
-    'namespace',
-    'cluster'
+  "AccessEntryType": [
+    "STANDARD",
+    "FARGATE_LINUX",
+    "EC2_LINUX",
+    "EC2_WINDOWS"
   ],
-  'AccountRecovery': [
+  "AccessKeyStatus": [
+    "Active",
+    "Inactive",
+    "Expired"
+  ],
+  "AccessLevel": [
+    "READ",
+    "READ_VERSIONED",
+    "LIST",
+    "WRITE",
+    "DELETE"
+  ],
+  "AccessScopeType": [
+    "namespace",
+    "cluster"
+  ],
+  "AccountRecovery": [
     0,
     1,
     2,
@@ -38,286 +66,296 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     4,
     5
   ],
-  'Action': [
-    'allow',
-    'deny'
+  "Action": [
+    "allow",
+    "deny"
   ],
-  'ActionAfterCompletion': [
-    'NONE',
-    'DELETE'
+  "ActionAfterCompletion": [
+    "NONE",
+    "DELETE"
   ],
-  'ActionCategory': [
-    'Source',
-    'Build',
-    'Test',
-    'Approval',
-    'Deploy',
-    'Invoke',
-    'Compute'
+  "ActionCategory": [
+    "Source",
+    "Build",
+    "Test",
+    "Approval",
+    "Deploy",
+    "Invoke",
+    "Compute"
   ],
-  'ActionOnFailure': [
-    'TERMINATE_CLUSTER',
-    'CANCEL_AND_WAIT',
-    'CONTINUE'
+  "ActionOnFailure": [
+    "TERMINATE_CLUSTER",
+    "CANCEL_AND_WAIT",
+    "CONTINUE"
   ],
-  'ActionPoint': [
-    'PRE_CREATE_HOSTED_CONFIGURATION_VERSION',
-    'PRE_START_DEPLOYMENT',
-    'ON_DEPLOYMENT_START',
-    'ON_DEPLOYMENT_STEP',
-    'ON_DEPLOYMENT_BAKING',
-    'ON_DEPLOYMENT_COMPLETE',
-    'ON_DEPLOYMENT_ROLLED_BACK',
-    'AT_DEPLOYMENT_TICK'
+  "ActionPoint": [
+    "PRE_CREATE_HOSTED_CONFIGURATION_VERSION",
+    "PRE_START_DEPLOYMENT",
+    "ON_DEPLOYMENT_START",
+    "ON_DEPLOYMENT_STEP",
+    "ON_DEPLOYMENT_BAKING",
+    "ON_DEPLOYMENT_COMPLETE",
+    "ON_DEPLOYMENT_ROLLED_BACK",
+    "AT_DEPLOYMENT_TICK"
   ],
-  'AdditionalHealthCheckType': [
-    'ELB',
-    'EBS',
-    'VPC_LATTICE'
+  "AdditionalHealthCheckType": [
+    "ELB",
+    "EBS",
+    "VPC_LATTICE"
   ],
-  'AddressFamily': [
-    'IPv4',
-    'IPv6'
+  "AddressFamily": [
+    "IPv4",
+    "IPv6"
   ],
-  'AdjustmentType': [
-    'ChangeInCapacity',
-    'PercentChangeInCapacity',
-    'ExactCapacity'
+  "AdjustmentType": [
+    "ChangeInCapacity",
+    "PercentChangeInCapacity",
+    "ExactCapacity"
   ],
-  'AdotLambdaExecWrapper': [
-    '/opt/otel-handler',
-    '/opt/otel-proxy-handler',
-    '/opt/otel-stream-handler',
-    '/opt/otel-instrument',
-    '/opt/otel-sqs-handler'
+  "AdotLambdaExecWrapper": [
+    "/opt/otel-handler",
+    "/opt/otel-proxy-handler",
+    "/opt/otel-stream-handler",
+    "/opt/otel-instrument",
+    "/opt/otel-sqs-handler"
   ],
-  'AdotLambdaLayerType': [
-    'JAVA_SDK',
-    'JAVA_AUTO_INSTRUMENTATION',
-    'JAVASCRIPT_SDK',
-    'PYTHON_SDK',
-    'GENERIC'
+  "AdotLambdaLayerType": [
+    "JAVA_SDK",
+    "JAVA_AUTO_INSTRUMENTATION",
+    "JAVASCRIPT_SDK",
+    "PYTHON_SDK",
+    "GENERIC"
   ],
-  'AdvancedSecurityMode': [
-    'ENFORCED',
-    'AUDIT',
-    'OFF'
+  "AdvancedSecurityMode": [
+    "ENFORCED",
+    "AUDIT",
+    "OFF"
   ],
-  'AgentCollaboratorType': [
-    'SUPERVISOR',
-    'DISABLED',
-    'SUPERVISOR_ROUTER'
+  "AgentCollaboratorType": [
+    "SUPERVISOR",
+    "DISABLED",
+    "SUPERVISOR_ROUTER"
   ],
-  'AgentStepType': [
-    'PRE_PROCESSING',
-    'ORCHESTRATION',
-    'POST_PROCESSING',
-    'ROUTING_CLASSIFIER',
-    'MEMORY_SUMMARIZATION',
-    'KNOWLEDGE_BASE_RESPONSE_GENERATION'
+  "AgentCoreRuntime": [
+    "PYTHON_3_10",
+    "PYTHON_3_11",
+    "PYTHON_3_12",
+    "PYTHON_3_13"
   ],
-  'AlarmBehavior': [
-    'ROLLBACK_ON_ALARM',
-    'FAIL_ON_ALARM'
+  "AgentStepType": [
+    "PRE_PROCESSING",
+    "ORCHESTRATION",
+    "POST_PROCESSING",
+    "ROUTING_CLASSIFIER",
+    "MEMORY_SUMMARIZATION",
+    "KNOWLEDGE_BASE_RESPONSE_GENERATION"
   ],
-  'AlarmState': [
-    'ALARM',
-    'OK',
-    'INSUFFICIENT_DATA'
+  "AlarmBehavior": [
+    "ROLLBACK_ON_ALARM",
+    "FAIL_ON_ALARM"
   ],
-  'AlarmStatusWidgetSortBy': [
-    'default',
-    'stateUpdatedTimestamp',
-    'timestamp'
+  "AlarmState": [
+    "ALARM",
+    "OK",
+    "INSUFFICIENT_DATA"
   ],
-  'AlbScheme': [
-    'internal',
-    'internet-facing'
+  "AlarmStatusWidgetSortBy": [
+    "default",
+    "stateUpdatedTimestamp",
+    "timestamp"
   ],
-  'AllocationStrategy': [
-    'BEST_FIT',
-    'BEST_FIT_PROGRESSIVE',
-    'SPOT_CAPACITY_OPTIMIZED',
-    'SPOT_PRICE_CAPACITY_OPTIMIZED'
+  "AlbScheme": [
+    "internal",
+    "internet-facing"
   ],
-  'AllowMapsAction': [
-    'geo-maps:GetStaticMap',
-    'geo-maps:GetTile',
-    'geo-maps:*'
+  "AllocationStrategy": [
+    "BEST_FIT",
+    "BEST_FIT_PROGRESSIVE",
+    "SPOT_CAPACITY_OPTIMIZED",
+    "SPOT_PRICE_CAPACITY_OPTIMIZED"
   ],
-  'AllowPlacesAction': [
-    'geo-places:Autocomplete',
-    'geo-places:Geocode',
-    'geo-places:GetPlace',
-    'geo-places:ReverseGeocode',
-    'geo-places:SearchNearby',
-    'geo-places:SearchText',
-    'geo-places:Suggest',
-    'geo-places:*'
+  "AllowMapsAction": [
+    "geo-maps:GetStaticMap",
+    "geo-maps:GetTile",
+    "geo-maps:*"
   ],
-  'AllowRoutesAction': [
-    'geo-routes:CalculateIsolines',
-    'geo-routes:CalculateRoutes',
-    'geo-routes:CalculateRouteMatrix',
-    'geo-routes:OptimizeWaypoints',
-    'geo-routes:SnapToRoads',
-    'geo-routes:*'
+  "AllowPlacesAction": [
+    "geo-places:Autocomplete",
+    "geo-places:Geocode",
+    "geo-places:GetPlace",
+    "geo-places:ReverseGeocode",
+    "geo-places:SearchNearby",
+    "geo-places:SearchText",
+    "geo-places:Suggest",
+    "geo-places:*"
   ],
-  'AlpnPolicy': [
-    'HTTP1Only',
-    'HTTP2Only',
-    'HTTP2Optional',
-    'HTTP2Preferred',
-    'None'
+  "AllowRoutesAction": [
+    "geo-routes:CalculateIsolines",
+    "geo-routes:CalculateRoutes",
+    "geo-routes:CalculateRouteMatrix",
+    "geo-routes:OptimizeWaypoints",
+    "geo-routes:SnapToRoads",
+    "geo-routes:*"
   ],
-  'AmazonLinuxCpuType': [
-    'arm64',
-    'x86_64'
+  "AlpnPolicy": [
+    "HTTP1Only",
+    "HTTP2Only",
+    "HTTP2Optional",
+    "HTTP2Preferred",
+    "None"
   ],
-  'AmazonLinuxEdition': [
-    'standard',
-    'minimal'
+  "AmazonLinuxCpuType": [
+    "arm64",
+    "x86_64"
   ],
-  'AmazonLinuxGeneration': [
-    'amzn',
-    'amzn2',
-    'al2022',
-    'al2023'
+  "AmazonLinuxEdition": [
+    "standard",
+    "minimal"
   ],
-  'AmazonLinuxKernel': [
-    'kernel-5.10',
-    'kernel-6.1'
+  "AmazonLinuxGeneration": [
+    "amzn",
+    "amzn2",
+    "al2022",
+    "al2023"
   ],
-  'AmazonLinuxStorage': [
-    'ebs',
-    's3',
-    'gp2'
+  "AmazonLinuxKernel": [
+    "kernel-5.10",
+    "kernel-6.1"
   ],
-  'AmazonLinuxVirt': [
-    'hvm',
-    'pv'
+  "AmazonLinuxStorage": [
+    "ebs",
+    "s3",
+    "gp2"
   ],
-  'AmiHardwareType': [
-    'Standard',
-    'GPU',
-    'ARM64',
-    'Neuron'
+  "AmazonLinuxVirt": [
+    "hvm",
+    "pv"
   ],
-  'ApiKeySourceType': [
-    'HEADER',
-    'AUTHORIZER'
+  "AmiHardwareType": [
+    "Standard",
+    "GPU",
+    "ARM64",
+    "Neuron"
   ],
-  'AppSyncAuthorizationType': [
-    'API_KEY',
-    'AWS_IAM',
-    'AMAZON_COGNITO_USER_POOLS',
-    'OPENID_CONNECT',
-    'AWS_LAMBDA'
+  "ApiKeyCredentialLocationType": [
+    "HEADER",
+    "QUERY_PARAMETER"
   ],
-  'AppSyncDataSourceType': [
-    'AWS_LAMBDA',
-    'AMAZON_DYNAMODB',
-    'AMAZON_EVENTBRIDGE',
-    'AMAZON_OPENSEARCH_SERVICE',
-    'HTTP',
-    'RELATIONAL_DATABASE',
-    'AMAZON_BEDROCK_RUNTIME',
-    'AMAZON_ELASTICSEARCH'
+  "ApiKeySourceType": [
+    "HEADER",
+    "AUTHORIZER"
   ],
-  'AppSyncFieldLogLevel': [
-    'NONE',
-    'ERROR',
-    'INFO',
-    'DEBUG',
-    'ALL'
+  "AppSyncAuthorizationType": [
+    "API_KEY",
+    "AWS_IAM",
+    "AMAZON_COGNITO_USER_POOLS",
+    "OPENID_CONNECT",
+    "AWS_LAMBDA"
   ],
-  'ApplicationLoadBalancedServiceRecordType': [
+  "AppSyncDataSourceType": [
+    "AWS_LAMBDA",
+    "AMAZON_DYNAMODB",
+    "AMAZON_EVENTBRIDGE",
+    "AMAZON_OPENSEARCH_SERVICE",
+    "HTTP",
+    "RELATIONAL_DATABASE",
+    "AMAZON_BEDROCK_RUNTIME",
+    "AMAZON_ELASTICSEARCH"
+  ],
+  "AppSyncFieldLogLevel": [
+    "NONE",
+    "ERROR",
+    "INFO",
+    "DEBUG",
+    "ALL"
+  ],
+  "ApplicationLoadBalancedServiceRecordType": [
     0,
     1,
     2
   ],
-  'ApplicationLogLevel': [
-    'INFO',
-    'DEBUG',
-    'WARN',
-    'TRACE',
-    'ERROR',
-    'FATAL'
+  "ApplicationLogLevel": [
+    "INFO",
+    "DEBUG",
+    "WARN",
+    "TRACE",
+    "ERROR",
+    "FATAL"
   ],
-  'ApplicationProtocol': [
-    'HTTP',
-    'HTTPS'
+  "ApplicationProtocol": [
+    "HTTP",
+    "HTTPS"
   ],
-  'ApplicationProtocolVersion': [
-    'GRPC',
-    'HTTP1',
-    'HTTP2'
+  "ApplicationProtocolVersion": [
+    "GRPC",
+    "HTTP1",
+    "HTTP2"
   ],
-  'ApproximateCreationDateTimePrecision': [
-    'MILLISECOND',
-    'MICROSECOND'
+  "ApproximateCreationDateTimePrecision": [
+    "MILLISECOND",
+    "MICROSECOND"
   ],
-  'ArnFormat': [
-    'arn:aws:service:region:account:resource',
-    'arn:aws:service:region:account:resource:resourceName',
-    'arn:aws:service:region:account:resource/resourceName',
-    'arn:aws:service:region:account:/resource/resourceName'
+  "ArnFormat": [
+    "arn:aws:service:region:account:resource",
+    "arn:aws:service:region:account:resource:resourceName",
+    "arn:aws:service:region:account:resource/resourceName",
+    "arn:aws:service:region:account:/resource/resourceName"
   ],
-  'ArtifactsEncryptionMode': [
-    'SSE_S3',
-    'SSE_KMS'
+  "ArtifactsEncryptionMode": [
+    "SSE_S3",
+    "SSE_KMS"
   ],
-  'AssembleWith': [
-    'None',
-    'Line'
+  "AssembleWith": [
+    "None",
+    "Line"
   ],
-  'AssertionType': [
-    'equals',
-    'objectLike',
-    'arrayWith'
+  "AssertionType": [
+    "equals",
+    "objectLike",
+    "arrayWith"
   ],
-  'AssetHashType': [
-    'source',
-    'bundle',
-    'output',
-    'custom'
+  "AssetHashType": [
+    "source",
+    "bundle",
+    "output",
+    "custom"
   ],
-  'AssetType': [
-    'file',
-    'docker-image'
+  "AssetType": [
+    "file",
+    "docker-image"
   ],
-  'AttachmentTargetType': [
-    'AWS::RDS::DBInstance',
-    'deprecated_AWS::RDS::DBInstance',
-    'AWS::RDS::DBCluster',
-    'deprecated_AWS::RDS::DBCluster',
-    'AWS::RDS::DBProxy',
-    'AWS::Redshift::Cluster',
-    'AWS::DocDB::DBInstance',
-    'AWS::DocDB::DBCluster'
+  "AttachmentTargetType": [
+    "AWS::RDS::DBInstance",
+    "deprecated_AWS::RDS::DBInstance",
+    "AWS::RDS::DBCluster",
+    "deprecated_AWS::RDS::DBCluster",
+    "AWS::RDS::DBProxy",
+    "AWS::Redshift::Cluster",
+    "AWS::DocDB::DBInstance",
+    "AWS::DocDB::DBCluster"
   ],
-  'AttributeType': [
-    'B',
-    'N',
-    'S'
+  "AttributeType": [
+    "B",
+    "N",
+    "S"
   ],
-  'AuditCheck': [
-    'AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK',
-    'CA_CERTIFICATE_EXPIRING_CHECK',
-    'CA_CERTIFICATE_KEY_QUALITY_CHECK',
-    'CONFLICTING_CLIENT_IDS_CHECK',
-    'DEVICE_CERTIFICATE_EXPIRING_CHECK',
-    'DEVICE_CERTIFICATE_KEY_QUALITY_CHECK',
-    'DEVICE_CERTIFICATE_SHARED_CHECK',
-    'IOT_POLICY_OVERLY_PERMISSIVE_CHECK',
-    'IOT_ROLE_ALIAS_ALLOWS_ACCESS_TO_UNUSED_SERVICES_CHECK',
-    'IOT_ROLE_ALIAS_OVERLY_PERMISSIVE_CHECK',
-    'LOGGING_DISABLED_CHECK',
-    'REVOKED_CA_CERTIFICATE_STILL_ACTIVE_CHECK',
-    'REVOKED_DEVICE_CERTIFICATE_STILL_ACTIVE_CHECK',
-    'UNAUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK'
+  "AuditCheck": [
+    "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK",
+    "CA_CERTIFICATE_EXPIRING_CHECK",
+    "CA_CERTIFICATE_KEY_QUALITY_CHECK",
+    "CONFLICTING_CLIENT_IDS_CHECK",
+    "DEVICE_CERTIFICATE_EXPIRING_CHECK",
+    "DEVICE_CERTIFICATE_KEY_QUALITY_CHECK",
+    "DEVICE_CERTIFICATE_SHARED_CHECK",
+    "IOT_POLICY_OVERLY_PERMISSIVE_CHECK",
+    "IOT_ROLE_ALIAS_ALLOWS_ACCESS_TO_UNUSED_SERVICES_CHECK",
+    "IOT_ROLE_ALIAS_OVERLY_PERMISSIVE_CHECK",
+    "LOGGING_DISABLED_CHECK",
+    "REVOKED_CA_CERTIFICATE_STILL_ACTIVE_CHECK",
+    "REVOKED_DEVICE_CERTIFICATE_STILL_ACTIVE_CHECK",
+    "UNAUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
   ],
-  'AuroraCapacityUnit': [
+  "AuroraCapacityUnit": [
     1,
     2,
     4,
@@ -330,360 +368,400 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     256,
     384
   ],
-  'AuthType': [
-    'NO_AUTH',
-    'IAM_ROLE',
-    'RESOURCE_POLICY'
+  "AuthType": [
+    "NO_AUTH",
+    "IAM_ROLE",
+    "RESOURCE_POLICY"
   ],
-  'AuthenticationMethod': [
-    'SASL_SCRAM_512_AUTH',
-    'SASL_SCRAM_256_AUTH',
-    'BASIC_AUTH',
-    'CLIENT_CERTIFICATE_TLS_AUTH'
+  "AuthenticationMethod": [
+    "SASL_SCRAM_512_AUTH",
+    "SASL_SCRAM_256_AUTH",
+    "BASIC_AUTH",
+    "CLIENT_CERTIFICATE_TLS_AUTH"
   ],
-  'AuthenticationMode': [
-    'CONFIG_MAP',
-    'API_AND_CONFIG_MAP',
-    'API'
+  "AuthenticationMode": [
+    "CONFIG_MAP",
+    "API_AND_CONFIG_MAP",
+    "API"
   ],
-  'AuthorizationType': [
-    'API_KEY',
-    'BASIC',
-    'OAUTH_CLIENT_CREDENTIALS'
+  "AuthorizationType": [
+    "API_KEY",
+    "BASIC",
+    "OAUTH_CLIENT_CREDENTIALS"
   ],
-  'AuthorizerPayloadVersion': [
-    '1.0',
-    '2.0'
+  "AuthorizerPayloadVersion": [
+    "1.0",
+    "2.0"
   ],
-  'AutoRollbackEvent': [
-    'DEPLOYMENT_FAILURE',
-    'DEPLOYMENT_STOP_ON_ALARM',
-    'DEPLOYMENT_STOP_ON_REQUEST'
+  "AutoRollbackEvent": [
+    "DEPLOYMENT_FAILURE",
+    "DEPLOYMENT_STOP_ON_ALARM",
+    "DEPLOYMENT_STOP_ON_REQUEST"
   ],
-  'AvailabilityZoneRebalancing': [
-    'ENABLED',
-    'DISABLED'
+  "AvailabilityZoneRebalancing": [
+    "ENABLED",
+    "DISABLED"
   ],
-  'AwsLogDriverMode': [
-    'blocking',
-    'non-blocking'
+  "AwsLogDriverMode": [
+    "blocking",
+    "non-blocking"
   ],
-  'AwsServiceName': [
-    'ec2'
+  "AwsServiceName": [
+    "ec2"
   ],
-  'BackoffFunction': [
-    'ARITHMETIC',
-    'EXPONENTIAL',
-    'GEOMETRIC',
-    'LINEAR'
+  "BackoffFunction": [
+    "ARITHMETIC",
+    "EXPONENTIAL",
+    "GEOMETRIC",
+    "LINEAR"
   ],
-  'BackupMode': [
+  "BackupMode": [
     0,
     1
   ],
-  'BackupVaultEvents': [
-    'BACKUP_JOB_STARTED',
-    'BACKUP_JOB_COMPLETED',
-    'BACKUP_JOB_SUCCESSFUL',
-    'BACKUP_JOB_FAILED',
-    'BACKUP_JOB_EXPIRED',
-    'RESTORE_JOB_STARTED',
-    'RESTORE_JOB_COMPLETED',
-    'RESTORE_JOB_SUCCESSFUL',
-    'RESTORE_JOB_FAILED',
-    'COPY_JOB_STARTED',
-    'COPY_JOB_SUCCESSFUL',
-    'COPY_JOB_FAILED',
-    'RECOVERY_POINT_MODIFIED',
-    'BACKUP_PLAN_CREATED',
-    'BACKUP_PLAN_MODIFIED',
-    'S3_BACKUP_OBJECT_FAILED',
-    'S3_RESTORE_OBJECT_FAILED'
+  "BackupVaultEvents": [
+    "BACKUP_JOB_STARTED",
+    "BACKUP_JOB_COMPLETED",
+    "BACKUP_JOB_SUCCESSFUL",
+    "BACKUP_JOB_FAILED",
+    "BACKUP_JOB_EXPIRED",
+    "RESTORE_JOB_STARTED",
+    "RESTORE_JOB_COMPLETED",
+    "RESTORE_JOB_SUCCESSFUL",
+    "RESTORE_JOB_FAILED",
+    "COPY_JOB_STARTED",
+    "COPY_JOB_SUCCESSFUL",
+    "COPY_JOB_FAILED",
+    "RECOVERY_POINT_MODIFIED",
+    "BACKUP_PLAN_CREATED",
+    "BACKUP_PLAN_MODIFIED",
+    "S3_BACKUP_OBJECT_FAILED",
+    "S3_RESTORE_OBJECT_FAILED"
   ],
-  'BalancingStrategy': [
-    'SPOT_ONLY',
-    'SPOT_PREFERRED',
-    'ON_DEMAND_ONLY'
+  "BalancingStrategy": [
+    "SPOT_ONLY",
+    "SPOT_PREFERRED",
+    "ON_DEMAND_ONLY"
   ],
-  'BatchStrategy': [
-    'MultiRecord',
-    'SingleRecord'
+  "BareMetal": [
+    "included",
+    "required",
+    "excluded"
   ],
-  'BillingMode': [
-    'PAY_PER_REQUEST',
-    'PROVISIONED'
+  "BatchStrategy": [
+    "MultiRecord",
+    "SingleRecord"
   ],
-  'BinPackResource': [
-    'CPU',
-    'MEMORY'
+  "BillingMode": [
+    "PAY_PER_REQUEST",
+    "PROVISIONED"
   ],
-  'BottlerocketEcsVariant': [
-    'aws-ecs-1',
-    'aws-ecs-1-nvidia',
-    'aws-ecs-2',
-    'aws-ecs-2-nvidia'
+  "BinPackResource": [
+    "CPU",
+    "MEMORY"
   ],
-  'BucketAccessControl': [
-    'Private',
-    'PublicRead',
-    'PublicReadWrite',
-    'AuthenticatedRead',
-    'LogDeliveryWrite',
-    'BucketOwnerRead',
-    'BucketOwnerFullControl',
-    'AwsExecRead'
+  "BottlerocketEcsVariant": [
+    "aws-ecs-1",
+    "aws-ecs-1-nvidia",
+    "aws-ecs-2",
+    "aws-ecs-2-nvidia"
   ],
-  'BucketEncryption': [
-    'UNENCRYPTED',
-    'KMS_MANAGED',
-    'S3_MANAGED',
-    'KMS',
-    'DSSE_MANAGED',
-    'DSSE'
+  "BrokerType": [
+    "STANDARD",
+    "EXPRESS"
   ],
-  'BucketNotificationDestinationType': [
+  "BrowserSigning": [
+    "ENABLED",
+    "DISABLED"
+  ],
+  "BrowserType": [
+    "CHROME",
+    "FIREFOX"
+  ],
+  "BucketAccessControl": [
+    "Private",
+    "PublicRead",
+    "PublicReadWrite",
+    "AuthenticatedRead",
+    "LogDeliveryWrite",
+    "BucketOwnerRead",
+    "BucketOwnerFullControl",
+    "AwsExecRead"
+  ],
+  "BucketEncryption": [
+    "UNENCRYPTED",
+    "KMS_MANAGED",
+    "S3_MANAGED",
+    "KMS",
+    "DSSE_MANAGED",
+    "DSSE"
+  ],
+  "BucketNotificationDestinationType": [
     0,
     1,
     2
   ],
-  'BuildEnvironmentVariableType': [
-    'PLAINTEXT',
-    'PARAMETER_STORE',
-    'SECRETS_MANAGER'
+  "BuildComputeType": [
+    "STANDARD_8GB",
+    "LARGE_16GB",
+    "XLARGE_72GB"
   ],
-  'BundlingFileAccess': [
-    'VOLUME_COPY',
-    'BIND_MOUNT'
+  "BuildEnvironmentVariableType": [
+    "PLAINTEXT",
+    "PARAMETER_STORE",
+    "SECRETS_MANAGER"
   ],
-  'BundlingOutput': [
-    'archived',
-    'not-archived',
-    'auto-discover',
-    'single-file'
+  "BundlingFileAccess": [
+    "VOLUME_COPY",
+    "BIND_MOUNT"
   ],
-  'CaaTag': [
-    'issue',
-    'issuewild',
-    'iodef'
+  "BundlingOutput": [
+    "archived",
+    "not-archived",
+    "auto-discover",
+    "single-file"
   ],
-  'CacheConfigType': [
-    'AMPLIFY_MANAGED',
-    'AMPLIFY_MANAGED_NO_COOKIES'
+  "BurstablePerformance": [
+    "included",
+    "required",
+    "excluded"
   ],
-  'Capability': [
-    'ALL',
-    'AUDIT_CONTROL',
-    'AUDIT_WRITE',
-    'BLOCK_SUSPEND',
-    'CHOWN',
-    'DAC_OVERRIDE',
-    'DAC_READ_SEARCH',
-    'FOWNER',
-    'FSETID',
-    'IPC_LOCK',
-    'IPC_OWNER',
-    'KILL',
-    'LEASE',
-    'LINUX_IMMUTABLE',
-    'MAC_ADMIN',
-    'MAC_OVERRIDE',
-    'MKNOD',
-    'NET_ADMIN',
-    'NET_BIND_SERVICE',
-    'NET_BROADCAST',
-    'NET_RAW',
-    'SETFCAP',
-    'SETGID',
-    'SETPCAP',
-    'SETUID',
-    'SYS_ADMIN',
-    'SYS_BOOT',
-    'SYS_CHROOT',
-    'SYS_MODULE',
-    'SYS_NICE',
-    'SYS_PACCT',
-    'SYS_PTRACE',
-    'SYS_RAWIO',
-    'SYS_RESOURCE',
-    'SYS_TIME',
-    'SYS_TTY_CONFIG',
-    'SYSLOG',
-    'WAKE_ALARM'
+  "CaaTag": [
+    "issue",
+    "issuewild",
+    "iodef"
   ],
-  'CapacityDistributionStrategy': [
-    'balanced-only',
-    'balanced-best-effort'
+  "CacheConfigType": [
+    "AMPLIFY_MANAGED",
+    "AMPLIFY_MANAGED_NO_COOKIES"
   ],
-  'CapacityMode': [
-    'FIXED',
-    'AUTOSCALED'
+  "CacheEngine": [
+    "valkey",
+    "valkey_7",
+    "valkey_8",
+    "redis",
+    "redis_7",
+    "memcached"
   ],
-  'CapacityType': [
-    'SPOT',
-    'ON_DEMAND',
-    'CAPACITY_BLOCK'
+  "Capability": [
+    "ALL",
+    "AUDIT_CONTROL",
+    "AUDIT_WRITE",
+    "BLOCK_SUSPEND",
+    "CHOWN",
+    "DAC_OVERRIDE",
+    "DAC_READ_SEARCH",
+    "FOWNER",
+    "FSETID",
+    "IPC_LOCK",
+    "IPC_OWNER",
+    "KILL",
+    "LEASE",
+    "LINUX_IMMUTABLE",
+    "MAC_ADMIN",
+    "MAC_OVERRIDE",
+    "MKNOD",
+    "NET_ADMIN",
+    "NET_BIND_SERVICE",
+    "NET_BROADCAST",
+    "NET_RAW",
+    "SETFCAP",
+    "SETGID",
+    "SETPCAP",
+    "SETUID",
+    "SYS_ADMIN",
+    "SYS_BOOT",
+    "SYS_CHROOT",
+    "SYS_MODULE",
+    "SYS_NICE",
+    "SYS_PACCT",
+    "SYS_PTRACE",
+    "SYS_RAWIO",
+    "SYS_RESOURCE",
+    "SYS_TIME",
+    "SYS_TTY_CONFIG",
+    "SYSLOG",
+    "WAKE_ALARM"
   ],
-  'CfnCapabilities': [
-    '',
-    'CAPABILITY_IAM',
-    'CAPABILITY_NAMED_IAM',
-    'CAPABILITY_AUTO_EXPAND'
+  "CapacityDistributionStrategy": [
+    "balanced-only",
+    "balanced-best-effort"
   ],
-  'CfnDeletionPolicy': [
-    'Delete',
-    'Retain',
-    'RetainExceptOnCreate',
-    'Snapshot'
+  "CapacityMode": [
+    "FIXED",
+    "AUTOSCALED"
   ],
-  'CfnDynamicReferenceService': [
-    'ssm',
-    'ssm-secure',
-    'secretsmanager'
+  "CapacityType": [
+    "SPOT",
+    "ON_DEMAND",
+    "CAPACITY_BLOCK"
   ],
-  'CfnParsingContext': [
+  "CfnCapabilities": [
+    "",
+    "CAPABILITY_IAM",
+    "CAPABILITY_NAMED_IAM",
+    "CAPABILITY_AUTO_EXPAND"
+  ],
+  "CfnDeletionPolicy": [
+    "Delete",
+    "Retain",
+    "RetainExceptOnCreate",
+    "Snapshot"
+  ],
+  "CfnDynamicReferenceService": [
+    "ssm",
+    "ssm-secure",
+    "secretsmanager"
+  ],
+  "CfnParsingContext": [
     0,
     1
   ],
-  'CfnTrafficRoutingType': [
-    'AllAtOnce',
-    'TimeBasedCanary',
-    'TimeBasedLinear'
+  "CfnTrafficRoutingType": [
+    "AllAtOnce",
+    "TimeBasedCanary",
+    "TimeBasedLinear"
   ],
-  'CfnUtilsResourceType': [
-    'Custom::AWSCDKCfnJson',
-    'Custom::AWSCDKCfnJsonStringify'
+  "CfnUtilsResourceType": [
+    "Custom::AWSCDKCfnJson",
+    "Custom::AWSCDKCfnJsonStringify"
   ],
-  'ChannelType': [
-    'STANDARD',
-    'BASIC',
-    'ADVANCED_SD',
-    'ADVANCED_HD'
+  "ChannelType": [
+    "STANDARD",
+    "BASIC",
+    "ADVANCED_SD",
+    "ADVANCED_HD"
   ],
-  'Charset': [
-    'ascii',
-    'utf8'
+  "Charset": [
+    "ascii",
+    "utf8"
   ],
-  'Cleanup': [
-    'nothing',
-    'lambda'
+  "ChatMessageRole": [
+    "user",
+    "assistant"
   ],
-  'ClientAction': [
-    'elasticfilesystem:ClientMount',
-    'elasticfilesystem:ClientWrite',
-    'elasticfilesystem:ClientRootAccess'
+  "Cleanup": [
+    "nothing",
+    "lambda"
   ],
-  'ClientAffinity': [
-    'NONE',
-    'SOURCE_IP'
+  "ClientAction": [
+    "elasticfilesystem:ClientMount",
+    "elasticfilesystem:ClientWrite",
+    "elasticfilesystem:ClientRootAccess"
   ],
-  'ClientBrokerEncryption': [
-    'TLS',
-    'TLS_PLAINTEXT',
-    'PLAINTEXT'
+  "ClientAffinity": [
+    "NONE",
+    "SOURCE_IP"
   ],
-  'ClientPasswordAuthType': [
-    'MYSQL_NATIVE_PASSWORD',
-    'POSTGRES_SCRAM_SHA_256',
-    'POSTGRES_MD5',
-    'SQL_SERVER_AUTHENTICATION'
+  "ClientBrokerEncryption": [
+    "TLS",
+    "TLS_PLAINTEXT",
+    "PLAINTEXT"
   ],
-  'ClientRoutingPolicy': [
-    'availability_zone_affinity',
-    'partial_availability_zone_affinity',
-    'any_availability_zone'
+  "ClientPasswordAuthType": [
+    "MYSQL_NATIVE_PASSWORD",
+    "POSTGRES_SCRAM_SHA_256",
+    "POSTGRES_MD5",
+    "SQL_SERVER_AUTHENTICATION",
+    "MYSQL_CACHING_SHA2_PASSWORD"
   ],
-  'ClientVpnSessionTimeout': [
+  "ClientRoutingPolicy": [
+    "availability_zone_affinity",
+    "partial_availability_zone_affinity",
+    "any_availability_zone"
+  ],
+  "ClientVpnSessionTimeout": [
     8,
     10,
     12,
     24
   ],
-  'CloudFormationCapabilities': [
-    '',
-    'CAPABILITY_IAM',
-    'CAPABILITY_NAMED_IAM',
-    'CAPABILITY_AUTO_EXPAND'
+  "CloudFormationCapabilities": [
+    "",
+    "CAPABILITY_IAM",
+    "CAPABILITY_NAMED_IAM",
+    "CAPABILITY_AUTO_EXPAND"
   ],
-  'CloudFrontAllowedCachedMethods': [
-    'GH',
-    'GHO'
+  "CloudFrontAllowedCachedMethods": [
+    "GH",
+    "GHO"
   ],
-  'CloudFrontAllowedMethods': [
-    'GH',
-    'GHO',
-    'ALL'
+  "CloudFrontAllowedMethods": [
+    "GH",
+    "GHO",
+    "ALL"
   ],
-  'CloudWatchDimensionSource': [
-    'emailHeader',
-    'linkTag',
-    'messageTag'
+  "CloudWatchDimensionSource": [
+    "emailHeader",
+    "linkTag",
+    "messageTag"
   ],
-  'CloudWatchEncryptionMode': [
-    'SSE-KMS'
+  "CloudWatchEncryptionMode": [
+    "SSE-KMS"
   ],
-  'ClusterLoggingTypes': [
-    'api',
-    'audit',
-    'authenticator',
-    'controllerManager',
-    'scheduler'
+  "ClusterLoggingTypes": [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
   ],
-  'ClusterMonitoringLevel': [
-    'DEFAULT',
-    'PER_BROKER',
-    'PER_TOPIC_PER_BROKER',
-    'PER_TOPIC_PER_PARTITION'
+  "ClusterMonitoringLevel": [
+    "DEFAULT",
+    "PER_BROKER",
+    "PER_TOPIC_PER_BROKER",
+    "PER_TOPIC_PER_PARTITION"
   ],
-  'ClusterScailabilityType': [
-    'standard',
-    'limitless'
+  "ClusterScailabilityType": [
+    "standard",
+    "limitless"
   ],
-  'ClusterScalabilityType': [
-    'standard',
-    'limitless'
+  "ClusterScalabilityType": [
+    "standard",
+    "limitless"
   ],
-  'ClusterType': [
-    'single-node',
-    'multi-node'
+  "ClusterType": [
+    "single-node",
+    "multi-node"
   ],
-  'CodeBuildActionType': [
+  "CodeBuildActionType": [
     0,
     1
   ],
-  'CodeBuildProjectType': [
-    'SYNTH',
-    'ASSETS',
-    'SELF_MUTATE',
-    'STEP'
+  "CodeBuildProjectType": [
+    "SYNTH",
+    "ASSETS",
+    "SELF_MUTATE",
+    "STEP"
   ],
-  'CodeCommitTrigger': [
-    'None',
-    'Poll',
-    'Events'
+  "CodeCommitTrigger": [
+    "None",
+    "Poll",
+    "Events"
   ],
-  'ColumnCountMismatchHandlingAction': [
-    'DISABLED',
-    'FAIL',
-    'SET_TO_NULL',
-    'DROP_ROW'
+  "ColumnCountMismatchHandlingAction": [
+    "DISABLED",
+    "FAIL",
+    "SET_TO_NULL",
+    "DROP_ROW"
   ],
-  'ColumnEncoding': [
-    'AUTO',
-    'RAW',
-    'AZ64',
-    'BYTEDICT',
-    'DELTA',
-    'DELTA32K',
-    'LZO',
-    'MOSTLY8',
-    'MOSTLY16',
-    'MOSTLY32',
-    'RUNLENGTH',
-    'TEXT255',
-    'TEXT32K',
-    'ZSTD'
+  "ColumnEncoding": [
+    "AUTO",
+    "RAW",
+    "AZ64",
+    "BYTEDICT",
+    "DELTA",
+    "DELTA32K",
+    "LZO",
+    "MOSTLY8",
+    "MOSTLY16",
+    "MOSTLY32",
+    "RUNLENGTH",
+    "TEXT255",
+    "TEXT32K",
+    "ZSTD"
   ],
-  'ComparisonOperator': [
+  "ComparisonOperator": [
     0,
     1,
     2,
@@ -724,491 +802,649 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     37,
     38
   ],
-  'Compatibility': [
+  "Compatibility": [
     0,
     1,
     2,
-    3
+    3,
+    4,
+    5,
+    6,
+    7
   ],
-  'ComponentType': [
-    'Function',
-    'SingletonFunction',
-    'CustomResourceProvider',
-    'NoOp'
+  "ComponentAction": [
+    "AppendFile",
+    "Assert",
+    "CopyFile",
+    "CopyFolder",
+    "CreateFile",
+    "CreateFolder",
+    "CreateSymlink",
+    "DeleteFile",
+    "DeleteFolder",
+    "ExecuteBash",
+    "ExecuteBinary",
+    "ExecuteDocument",
+    "ExecutePowerShell",
+    "InstallMSI",
+    "ListFiles",
+    "MoveFile",
+    "MoveFolder",
+    "ReadFile",
+    "Reboot",
+    "SetFileEncoding",
+    "SetFileOwner",
+    "SetFolderOwner",
+    "SetFilePermissions",
+    "SetFolderPermissions",
+    "SetRegistry",
+    "S3Download",
+    "S3Upload",
+    "UninstallMSI",
+    "UpdateOS",
+    "WebDownload"
   ],
-  'CompoundOperator': [
+  "ComponentOnFailure": [
+    "Abort",
+    "Continue",
+    "Ignore"
+  ],
+  "ComponentParameterType": [
+    "string"
+  ],
+  "ComponentPhaseName": [
+    "build",
+    "container-host-test",
+    "test",
+    "validate"
+  ],
+  "ComponentSchemaVersion": [
+    "1.0"
+  ],
+  "ComponentType": [
+    "Function",
+    "SingletonFunction",
+    "CustomResourceProvider",
+    "NoOp"
+  ],
+  "CompoundOperator": [
     0,
     1
   ],
-  'CompressionType': [
-    'None',
-    'Gzip'
+  "CompressionType": [
+    "None",
+    "Gzip"
   ],
-  'ComputePlatform': [
-    'AWSLambda',
-    'Default'
+  "ComputePlatform": [
+    "AWSLambda",
+    "Default"
   ],
-  'ComputeType': [
-    'BUILD_GENERAL1_SMALL',
-    'BUILD_GENERAL1_MEDIUM',
-    'BUILD_GENERAL1_LARGE',
-    'BUILD_GENERAL1_XLARGE',
-    'BUILD_GENERAL1_2XLARGE',
-    'BUILD_LAMBDA_1GB',
-    'BUILD_LAMBDA_2GB',
-    'BUILD_LAMBDA_4GB',
-    'BUILD_LAMBDA_8GB',
-    'BUILD_LAMBDA_10GB',
-    'ATTRIBUTE_BASED_COMPUTE'
+  "ComputeType": [
+    "BUILD_GENERAL1_SMALL",
+    "BUILD_GENERAL1_MEDIUM",
+    "BUILD_GENERAL1_LARGE",
+    "BUILD_GENERAL1_XLARGE",
+    "BUILD_GENERAL1_2XLARGE",
+    "BUILD_LAMBDA_1GB",
+    "BUILD_LAMBDA_2GB",
+    "BUILD_LAMBDA_4GB",
+    "BUILD_LAMBDA_8GB",
+    "BUILD_LAMBDA_10GB",
+    "ATTRIBUTE_BASED_COMPUTE",
+    "CUSTOM_INSTANCE_TYPE"
   ],
-  'ConditionLogicalOperator': [
-    'EQUALS'
+  "ConditionLogicalOperator": [
+    "EQUALS"
   ],
-  'ConfigurationSetTlsPolicy': [
-    'REQUIRE',
-    'OPTIONAL'
+  "ConfigurationSetTlsPolicy": [
+    "REQUIRE",
+    "OPTIONAL"
   ],
-  'ConfigurationSourceType': [
-    'S3',
-    'SECRETS_MANAGER',
-    'SSM_PARAMETER',
-    'SSM_DOCUMENT',
-    'CODE_PIPELINE'
+  "ConfigurationSourceType": [
+    "S3",
+    "SECRETS_MANAGER",
+    "SSM_PARAMETER",
+    "SSM_DOCUMENT",
+    "CODE_PIPELINE"
   ],
-  'ConfigurationType': [
-    'AWS.Freeform',
-    'AWS.AppConfig.FeatureFlags'
+  "ConfigurationType": [
+    "AWS.Freeform",
+    "AWS.AppConfig.FeatureFlags"
   ],
-  'ConnectionProtocol': [
-    'TCP',
-    'UDP'
+  "ConnectionProtocol": [
+    "TCP",
+    "UDP"
   ],
-  'ConnectionType': [
-    'INTERNET',
-    'VPC_LINK'
+  "ConnectionType": [
+    "INTERNET",
+    "VPC_LINK"
   ],
-  'ContainerDependencyCondition': [
-    'START',
-    'COMPLETE',
-    'SUCCESS',
-    'HEALTHY'
+  "ContainerDependencyCondition": [
+    "START",
+    "COMPLETE",
+    "SUCCESS",
+    "HEALTHY"
   ],
-  'ContainerFormat': [
-    'TS',
-    'FRAGMENTED_MP4'
+  "ContainerFormat": [
+    "TS",
+    "FRAGMENTED_MP4"
   ],
-  'ContainerInsights': [
-    'enabled',
-    'disabled',
-    'enhanced'
+  "ContainerInsights": [
+    "enabled",
+    "disabled",
+    "enhanced"
   ],
-  'ContainerProviderTypes': [
-    'EKS'
+  "ContainerProviderTypes": [
+    "EKS"
   ],
-  'ContentHandling': [
-    'CONVERT_TO_BINARY',
-    'CONVERT_TO_TEXT'
+  "ContainerType": [
+    "DOCKER"
   ],
-  'ContentType': [
-    'text/plain',
-    'text/css',
-    'text/html',
-    'application/javascript',
-    'application/json'
+  "ContentFilterStrength": [
+    "NONE",
+    "LOW",
+    "MEDIUM",
+    "HIGH"
   ],
-  'Continent': [
-    'AF',
-    'AN',
-    'AS',
-    'EU',
-    'OC',
-    'NA',
-    'SA'
+  "ContentFilterType": [
+    "SEXUAL",
+    "VIOLENCE",
+    "HATE",
+    "INSULTS",
+    "MISCONDUCT",
+    "PROMPT_ATTACK"
   ],
-  'CoreDnsComputeType': [
-    'ec2',
-    'fargate'
+  "ContentHandling": [
+    "CONVERT_TO_BINARY",
+    "CONVERT_TO_TEXT"
   ],
-  'CorsHttpMethod': [
-    '*',
-    'DELETE',
-    'GET',
-    'HEAD',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT'
+  "ContentType": [
+    "text/plain",
+    "text/css",
+    "text/html",
+    "application/javascript",
+    "application/json"
   ],
-  'CountType': [
-    'imageCountMoreThan',
-    'sinceImagePushed'
+  "ContextualGroundingFilterType": [
+    "GROUNDING",
+    "RELEVANCE"
   ],
-  'CpuArch': [
-    'arm64',
-    'x86_64'
+  "Continent": [
+    "AF",
+    "AN",
+    "AS",
+    "EU",
+    "OC",
+    "NA",
+    "SA"
   ],
-  'CpuCredits': [
-    'standard',
-    'unlimited'
+  "ContributorInsightsMode": [
+    "ACCESSED_AND_THROTTLED_KEYS",
+    "THROTTLED_KEYS"
   ],
-  'CrawlerState': [
-    'RUNNING',
-    'CANCELLING',
-    'CANCELLED',
-    'SUCCEEDED',
-    'FAILED',
-    'ERROR'
+  "CoreDnsComputeType": [
+    "ec2",
+    "fargate"
   ],
-  'CsvDelimiter': [
-    'COMMA',
-    'PIPE',
-    'SEMICOLON',
-    'SPACE',
-    'TAB'
+  "CorsHttpMethod": [
+    "*",
+    "DELETE",
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT"
   ],
-  'CsvHeaderLocation': [
-    'FIRST_ROW',
-    'GIVEN'
+  "CountType": [
+    "imageCountMoreThan",
+    "sinceImagePushed"
   ],
-  'CustomControl': [
-    'RETURN_CONTROL'
+  "CpuArch": [
+    "arm64",
+    "x86_64"
   ],
-  'CustomLambdaDeploymentConfigType': [
-    'Canary',
-    'Linear'
+  "CpuCredits": [
+    "standard",
+    "unlimited"
   ],
-  'CustomLayer': [
-    'POI'
+  "CpuManufacturer": [
+    "intel",
+    "amd",
+    "amazon-web-services",
+    "apple"
   ],
-  'CustomResourceProviderRuntime': [
-    'nodejs12.x',
-    'deprecated_nodejs12.x',
-    'nodejs14.x',
-    'nodejs16.x',
-    'nodejs18.x',
-    'nodejs20.x',
-    'nodejs22.x'
+  "CrawlerState": [
+    "RUNNING",
+    "CANCELLING",
+    "CANCELLED",
+    "SUCCEEDED",
+    "FAILED",
+    "ERROR"
   ],
-  'CustomThreatProtectionMode': [
-    'ENFORCED',
-    'AUDIT'
+  "CredentialProviderType": [
+    "API_KEY",
+    "OAUTH",
+    "GATEWAY_IAM_ROLE"
   ],
-  'CustomizationType': [
-    'FINE_TUNING',
-    'CONTINUED_PRE_TRAINING',
-    'DISTILLATION'
+  "CrossRegionInferenceProfileRegion": [
+    "global",
+    "eu",
+    "us",
+    "us-gov",
+    "apac",
+    "jp",
+    "au"
   ],
-  'DBClusterStorageType': [
-    'aurora',
-    'aurora-iopt1'
+  "CsvDelimiter": [
+    "COMMA",
+    "PIPE",
+    "SEMICOLON",
+    "SPACE",
+    "TAB"
   ],
-  'DataResourceType': [
-    'AWS::Lambda::Function',
-    'AWS::S3::Object'
+  "CsvHeaderLocation": [
+    "FIRST_ROW",
+    "GIVEN"
   ],
-  'DataSource': [
-    'Esri',
-    'Grab',
-    'Here'
+  "CustomControl": [
+    "RETURN_CONTROL"
   ],
-  'DatabaseInsightsMode': [
-    'standard',
-    'advanced'
+  "CustomLambdaDeploymentConfigType": [
+    "Canary",
+    "Linear"
   ],
-  'DayOfWeek': [
-    'SUN',
-    'MON',
-    'TUE',
-    'WED',
-    'THU',
-    'FRI',
-    'SAT',
-    'UNSET_VALUE'
+  "CustomLayer": [
+    "POI"
   ],
-  'DeduplicationScope': [
-    'messageGroup',
-    'queue'
+  "CustomResourceProviderRuntime": [
+    "nodejs12.x",
+    "deprecated_nodejs12.x",
+    "nodejs14.x",
+    "nodejs16.x",
+    "nodejs18.x",
+    "nodejs20.x",
+    "nodejs22.x"
   ],
-  'DefaultCapacityType': [
+  "CustomThreatProtectionMode": [
+    "ENFORCED",
+    "AUDIT"
+  ],
+  "CustomizationType": [
+    "FINE_TUNING",
+    "CONTINUED_PRE_TRAINING",
+    "DISTILLATION"
+  ],
+  "DBClusterStorageType": [
+    "aurora",
+    "aurora-iopt1"
+  ],
+  "DataConverterType": [
     0,
     1
   ],
-  'DefaultInstanceTenancy': [
-    'default',
-    'dedicated',
-    'host'
+  "DataResourceType": [
+    "AWS::Lambda::Function",
+    "AWS::S3::Object"
   ],
-  'DefaultResult': [
-    'CONTINUE',
-    'ABANDON'
+  "DataSource": [
+    "Esri",
+    "Grab",
+    "Here"
   ],
-  'DeleteOption': [
-    'SAFE_DELETE',
-    'FORCE_DELETE',
-    'RETAIN'
+  "DataStorageUnit": [
+    "GB"
   ],
-  'DeletionProtectionCheck': [
-    'ACCOUNT_DEFAULT',
-    'APPLY',
-    'BYPASS'
+  "DatabaseInsightsMode": [
+    "standard",
+    "advanced"
   ],
-  'DependenciesFile': [
-    'requirements.txt',
-    'poetry.lock',
-    'Pipfile.lock',
-    ''
+  "DateTimeFormat": [
+    "yyyy-MM-dd'T'HH:mm:ss'Z'",
+    "epoch",
+    "custom"
   ],
-  'DependencyOperation': [
+  "DayOfWeek": [
+    "SUN",
+    "MON",
+    "TUE",
+    "WED",
+    "THU",
+    "FRI",
+    "SAT",
+    "UNSET_VALUE"
+  ],
+  "DeduplicationScope": [
+    "messageGroup",
+    "queue"
+  ],
+  "DefaultAuthScheme": [
+    "IAM_AUTH",
+    "NONE"
+  ],
+  "DefaultCapacityType": [
     0,
     1
   ],
-  'DeploymentControllerType': [
-    'ECS',
-    'CODE_DEPLOY',
-    'EXTERNAL'
+  "DefaultInstanceClass": [
+    "default_x86_64",
+    "default_arm64"
   ],
-  'DesiredState': [
-    'RUNNING',
-    'STOPPED'
+  "DefaultInstanceTenancy": [
+    "default",
+    "dedicated",
+    "host"
   ],
-  'DestinationType': [
-    'Failure',
-    'Success'
+  "DefaultResult": [
+    "CONTINUE",
+    "ABANDON"
   ],
-  'DesyncMitigationMode': [
-    'monitor',
-    'defensive',
-    'strictest'
+  "DeleteOption": [
+    "SAFE_DELETE",
+    "FORCE_DELETE",
+    "RETAIN"
   ],
-  'DetailType': [
-    'BASIC',
-    'FULL'
+  "DeletionProtectionCheck": [
+    "ACCOUNT_DEFAULT",
+    "APPLY",
+    "BYPASS"
   ],
-  'DevicePermission': [
-    'read',
-    'write',
-    'mknod'
+  "DelimiterCharacter": [
+    ",",
+    "\t",
+    " ",
+    ";",
+    "|"
   ],
-  'DiscoveryType': [
-    'API',
-    'DNS_AND_API'
+  "DependenciesFile": [
+    "requirements.txt",
+    "poetry.lock",
+    "Pipfile.lock",
+    "uv.lock",
+    ""
   ],
-  'Distribution': [
-    'ByLogStream',
-    'Random'
+  "DependencyOperation": [
+    0,
+    1
   ],
-  'DnsPolicy': [
-    'Default',
-    'ClusterFirst',
-    'ClusterFirstWithHostNet'
+  "DeploymentControllerType": [
+    "ECS",
+    "CODE_DEPLOY",
+    "EXTERNAL"
   ],
-  'DnsRecordType': [
-    'A',
-    'AAAA',
-    'A, AAAA',
-    'SRV',
-    'CNAME'
+  "DeploymentLifecycleStage": [
+    "RECONCILE_SERVICE",
+    "PRE_SCALE_UP",
+    "POST_SCALE_UP",
+    "TEST_TRAFFIC_SHIFT",
+    "POST_TEST_TRAFFIC_SHIFT",
+    "PRODUCTION_TRAFFIC_SHIFT",
+    "POST_PRODUCTION_TRAFFIC_SHIFT"
   ],
-  'DnsResponseType': [
-    'LOADBALANCER',
-    'ENDPOINTS'
+  "DeploymentStrategy": [
+    "ROLLING",
+    "BLUE_GREEN"
   ],
-  'DockerCredentialUsage': [
-    'SYNTH',
-    'SELF_UPDATE',
-    'ASSET_PUBLISHING'
+  "DesiredState": [
+    "RUNNING",
+    "STOPPED"
   ],
-  'DockerVolumeConsistency': [
-    'consistent',
-    'delegated',
-    'cached'
+  "DestinationType": [
+    "Failure",
+    "Success"
   ],
-  'DriveCacheType': [
-    'NONE',
-    'READ'
+  "DesyncMitigationMode": [
+    "monitor",
+    "defensive",
+    "strictest"
   ],
-  'DynamoConsumedCapacity': [
-    'INDEXES',
-    'TOTAL',
-    'NONE'
+  "DetailType": [
+    "BASIC",
+    "FULL"
   ],
-  'DynamoDBStartingPosition': [
-    'TRIM_HORIZON',
-    'LATEST'
+  "DevicePermission": [
+    "read",
+    "write",
+    "mknod"
   ],
-  'DynamoItemCollectionMetrics': [
-    'SIZE',
-    'NONE'
+  "DiscoveryType": [
+    "API",
+    "DNS_AND_API"
   ],
-  'DynamoMethod': [
-    'Get',
-    'Put',
-    'Delete',
-    'Update'
+  "Distribution": [
+    "ByLogStream",
+    "Random"
   ],
-  'DynamoReturnValues': [
-    'NONE',
-    'ALL_OLD',
-    'UPDATED_OLD',
-    'ALL_NEW',
-    'UPDATED_NEW'
+  "DnsPolicy": [
+    "Default",
+    "ClusterFirst",
+    "ClusterFirstWithHostNet"
   ],
-  'EasyDkimSigningKeyLength': [
-    'RSA_1024_BIT',
-    'RSA_2048_BIT'
+  "DnsRecordType": [
+    "A",
+    "AAAA",
+    "A, AAAA",
+    "SRV",
+    "CNAME"
   ],
-  'EbsDeviceVolumeType': [
-    'standard',
-    'io1',
-    'io2',
-    'gp2',
-    'gp3',
-    'st1',
-    'sc1',
-    'gp2',
-    'gp3',
-    'io1',
-    'io2',
-    'st1',
-    'sc1',
-    'standard'
+  "DnsResponseType": [
+    "LOADBALANCER",
+    "ENDPOINTS"
   ],
-  'EbsPropagatedTagSource': [
-    'SERVICE',
-    'TASK_DEFINITION'
+  "DockerCredentialUsage": [
+    "SYNTH",
+    "SELF_UPDATE",
+    "ASSET_PUBLISHING"
   ],
-  'Ec2InstanceAction': [
-    'stop',
-    'terminate',
-    'recover',
-    'reboot'
+  "DockerServerComputeType": [
+    "BUILD_GENERAL1_SMALL",
+    "BUILD_GENERAL1_MEDIUM",
+    "BUILD_GENERAL1_LARGE",
+    "BUILD_GENERAL1_XLARGE",
+    "BUILD_GENERAL1_2XLARGE",
+    "ATTRIBUTE_BASED_COMPUTE",
+    "BUILD_LAMBDA_10GB",
+    "BUILD_LAMBDA_1GB",
+    "BUILD_LAMBDA_2GB",
+    "BUILD_LAMBDA_4GB",
+    "BUILD_LAMBDA_8GB",
+    "CUSTOM_INSTANCE_TYPE"
   ],
-  'Ec2InstanceType': [
-    'EC2',
-    'SSM_MANAGED_NODE'
+  "DockerVolumeConsistency": [
+    "consistent",
+    "delegated",
+    "cached"
   ],
-  'EcsMachineImageType': [
-    'ECS_AL2',
-    'ECS_AL2023',
-    'ECS_AL2_NVIDIA'
+  "DriveCacheType": [
+    "NONE",
+    "READ"
   ],
-  'Effect': [
-    'Allow',
-    'Deny'
+  "DynamoConsumedCapacity": [
+    "INDEXES",
+    "TOTAL",
+    "NONE"
   ],
-  'EksMachineImageType': [
-    'EKS_AL2',
-    'EKS_AL2_NVIDIA'
+  "DynamoDBStartingPosition": [
+    "TRIM_HORIZON",
+    "LATEST"
   ],
-  'EmailEncoding': [
-    'Base64',
-    'UTF-8'
+  "DynamoItemCollectionMetrics": [
+    "SIZE",
+    "NONE"
   ],
-  'EmailSendingEvent': [
-    'send',
-    'reject',
-    'bounce',
-    'complaint',
-    'delivery',
-    'open',
-    'click',
-    'renderingFailure',
-    'deliveryDelay',
-    'subscription'
+  "DynamoMethod": [
+    "Get",
+    "Put",
+    "Delete",
+    "Update"
   ],
-  'EmptyDirMediumType': [
-    '',
-    'Memory'
+  "DynamoReturnValues": [
+    "NONE",
+    "ALL_OLD",
+    "UPDATED_OLD",
+    "ALL_NEW",
+    "UPDATED_NEW"
   ],
-  'EncryptionOption': [
-    'SSE_S3',
-    'SSE_KMS',
-    'CSE_KMS'
+  "EasyDkimSigningKeyLength": [
+    "RSA_1024_BIT",
+    "RSA_2048_BIT"
   ],
-  'EndpointType': [
-    'EDGE',
-    'REGIONAL'
+  "EbsDeviceVolumeType": [
+    "standard",
+    "io1",
+    "io2",
+    "gp2",
+    "gp3",
+    "st1",
+    "sc1",
+    "gp2",
+    "gp3",
+    "io1",
+    "io2",
+    "st1",
+    "sc1",
+    "standard"
   ],
-  'EngineLifecycleSupport': [
-    'open-source-rds-extended-support',
-    'open-source-rds-extended-support-disabled'
+  "EbsPropagatedTagSource": [
+    "SERVICE",
+    "TASK_DEFINITION"
   ],
-  'EnvironmentFileType': [
-    's3'
+  "Ec2InstanceAction": [
+    "stop",
+    "terminate",
+    "recover",
+    "reboot"
   ],
-  'EnvironmentType': [
-    'ARM_CONTAINER',
-    'LINUX_CONTAINER',
-    'LINUX_GPU_CONTAINER',
-    'WINDOWS_SERVER_2019_CONTAINER',
-    'WINDOWS_SERVER_2022_CONTAINER',
-    'MAC_ARM',
-    'LINUX_EC2',
-    'ARM_EC2',
-    'WINDOWS_EC2'
+  "Ec2InstanceType": [
+    "EC2",
+    "SSM_MANAGED_NODE"
   ],
-  'EventAction': [
-    'PUSH',
-    'PULL_REQUEST_CREATED',
-    'PULL_REQUEST_UPDATED',
-    'PULL_REQUEST_CLOSED',
-    'PULL_REQUEST_MERGED',
-    'PULL_REQUEST_REOPENED',
-    'RELEASED',
-    'PRERELEASED',
-    'WORKFLOW_JOB_QUEUED'
+  "EcsMachineImageType": [
+    "ECS_AL2",
+    "ECS_AL2023",
+    "ECS_AL2_NVIDIA"
   ],
-  'EventEvaluation': [
-    'BATCH',
-    'SERIAL'
+  "Effect": [
+    "Allow",
+    "Deny"
   ],
-  'EventSource': [
-    'aws.config'
+  "EksMachineImageType": [
+    "EKS_AL2",
+    "EKS_AL2_NVIDIA"
   ],
-  'EventType': [
-    's3:ObjectCreated:*',
-    's3:ObjectCreated:Put',
-    's3:ObjectCreated:Post',
-    's3:ObjectCreated:Copy',
-    's3:ObjectCreated:CompleteMultipartUpload',
-    's3:ObjectRemoved:*',
-    's3:ObjectRemoved:Delete',
-    's3:ObjectRemoved:DeleteMarkerCreated',
-    's3:ObjectRestore:Post',
-    's3:ObjectRestore:Completed',
-    's3:ObjectRestore:Delete',
-    's3:ReducedRedundancyLostObject',
-    's3:Replication:OperationFailedReplication',
-    's3:Replication:OperationMissedThreshold',
-    's3:Replication:OperationReplicatedAfterThreshold',
-    's3:Replication:OperationNotTracked',
-    's3:LifecycleExpiration:*',
-    's3:LifecycleExpiration:Delete',
-    's3:LifecycleExpiration:DeleteMarkerCreated',
-    's3:LifecycleTransition',
-    's3:IntelligentTiering',
-    's3:ObjectTagging:*',
-    's3:ObjectTagging:Put',
-    's3:ObjectTagging:Delete',
-    's3:ObjectAcl:Put',
-    's3:ObjectRestore:*',
-    's3:Replication:*'
+  "EmailEncoding": [
+    "Base64",
+    "UTF-8"
   ],
-  'ExecuteCommandLogging': [
-    'NONE',
-    'DEFAULT',
-    'OVERRIDE'
+  "EmailSendingEvent": [
+    "send",
+    "reject",
+    "bounce",
+    "complaint",
+    "delivery",
+    "open",
+    "click",
+    "renderingFailure",
+    "deliveryDelay",
+    "subscription"
   ],
-  'ExecutionClass': [
-    'FLEX',
-    'STANDARD'
+  "EmptyDirMediumType": [
+    "",
+    "Memory"
   ],
-  'ExecutionMode': [
-    'QUEUED',
-    'SUPERSEDED',
-    'PARALLEL'
+  "EncryptionOption": [
+    "SSE_S3",
+    "SSE_KMS",
+    "CSE_KMS"
   ],
-  'FailoverStatusCode': [
+  "EndpointType": [
+    "EDGE",
+    "REGIONAL"
+  ],
+  "EngineLifecycleSupport": [
+    "open-source-rds-extended-support",
+    "open-source-rds-extended-support-disabled"
+  ],
+  "EnvironmentFileType": [
+    "s3"
+  ],
+  "EnvironmentType": [
+    "ARM_CONTAINER",
+    "LINUX_CONTAINER",
+    "LINUX_GPU_CONTAINER",
+    "WINDOWS_SERVER_2019_CONTAINER",
+    "WINDOWS_SERVER_2022_CONTAINER",
+    "MAC_ARM",
+    "LINUX_EC2",
+    "ARM_EC2",
+    "WINDOWS_EC2"
+  ],
+  "EventAction": [
+    "PUSH",
+    "PULL_REQUEST_CREATED",
+    "PULL_REQUEST_UPDATED",
+    "PULL_REQUEST_CLOSED",
+    "PULL_REQUEST_MERGED",
+    "PULL_REQUEST_REOPENED",
+    "RELEASED",
+    "PRERELEASED",
+    "WORKFLOW_JOB_QUEUED"
+  ],
+  "EventEvaluation": [
+    "BATCH",
+    "SERIAL"
+  ],
+  "EventSource": [
+    "aws.config"
+  ],
+  "EventType": [
+    "s3:ObjectCreated:*",
+    "s3:ObjectCreated:Put",
+    "s3:ObjectCreated:Post",
+    "s3:ObjectCreated:Copy",
+    "s3:ObjectCreated:CompleteMultipartUpload",
+    "s3:ObjectRemoved:*",
+    "s3:ObjectRemoved:Delete",
+    "s3:ObjectRemoved:DeleteMarkerCreated",
+    "s3:ObjectRestore:Post",
+    "s3:ObjectRestore:Completed",
+    "s3:ObjectRestore:Delete",
+    "s3:ReducedRedundancyLostObject",
+    "s3:Replication:OperationFailedReplication",
+    "s3:Replication:OperationMissedThreshold",
+    "s3:Replication:OperationReplicatedAfterThreshold",
+    "s3:Replication:OperationNotTracked",
+    "s3:LifecycleExpiration:*",
+    "s3:LifecycleExpiration:Delete",
+    "s3:LifecycleExpiration:DeleteMarkerCreated",
+    "s3:LifecycleTransition",
+    "s3:IntelligentTiering",
+    "s3:ObjectTagging:*",
+    "s3:ObjectTagging:Put",
+    "s3:ObjectTagging:Delete",
+    "s3:ObjectAcl:Put",
+    "s3:ObjectRestore:*",
+    "s3:Replication:*"
+  ],
+  "ExecuteCommandLogging": [
+    "NONE",
+    "DEFAULT",
+    "OVERRIDE"
+  ],
+  "ExecutionClass": [
+    "FLEX",
+    "STANDARD"
+  ],
+  "ExecutionMode": [
+    "QUEUED",
+    "SUPERSEDED",
+    "PARALLEL"
+  ],
+  "Failover": [
+    "PRIMARY",
+    "SECONDARY"
+  ],
+  "FailoverStatusCode": [
     403,
     404,
     500,
@@ -1216,1386 +1452,1589 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     503,
     504
   ],
-  'FargatePlatformVersion': [
-    'LATEST',
-    '1.4.0',
-    '1.3.0',
-    '1.2.0',
-    '1.1.0',
-    '1.0.0'
+  "FargatePlatformVersion": [
+    "LATEST",
+    "1.4.0",
+    "1.3.0",
+    "1.2.0",
+    "1.1.0",
+    "1.0.0"
   ],
-  'FeaturePlan': [
-    'LITE',
-    'ESSENTIALS',
-    'PLUS'
+  "FeaturePlan": [
+    "LITE",
+    "ESSENTIALS",
+    "PLUS"
   ],
-  'FieldLogLevel': [
-    'NONE',
-    'ERROR',
-    'INFO',
-    'DEBUG',
-    'ALL'
+  "FieldLogLevel": [
+    "NONE",
+    "ERROR",
+    "INFO",
+    "DEBUG",
+    "ALL"
   ],
-  'FifoThroughputLimit': [
-    'perQueue',
-    'perMessageGroupId'
+  "FifoThroughputLimit": [
+    "perQueue",
+    "perMessageGroupId"
   ],
-  'FifoThroughputScope': [
-    'Topic',
-    'MessageGroup'
+  "FifoThroughputScope": [
+    "Topic",
+    "MessageGroup"
   ],
-  'FileAssetPackaging': [
-    'zip',
-    'file'
+  "FileAssetPackaging": [
+    "zip",
+    "file"
   ],
-  'FileSystemType': [
-    'ext3',
-    'ext4',
-    'xfs',
-    'ntfs'
+  "FileSystemType": [
+    "ext3",
+    "ext4",
+    "xfs",
+    "ntfs"
   ],
-  'FileSystemTypeVersion': [
-    '2.10',
-    '2.12',
-    '2.15'
+  "FileSystemTypeVersion": [
+    "2.10",
+    "2.12",
+    "2.15"
   ],
-  'FilterOrPolicyType': [
+  "FilterOrPolicyType": [
     0,
     1
   ],
-  'FirehoseRecordSeparator': [
-    '\n',
-    '\t',
-    '\r\n',
-    ','
+  "FirehoseRecordSeparator": [
+    "\n",
+    "\t",
+    "\r\n",
+    ","
   ],
-  'FirelensConfigFileType': [
-    's3',
-    'file'
+  "FirelensConfigFileType": [
+    "s3",
+    "file"
   ],
-  'FirelensLogRouterType': [
-    'fluentbit',
-    'fluentd'
+  "FirelensLogRouterType": [
+    "fluentbit",
+    "fluentd"
   ],
-  'FlagType': [
+  "FlagType": [
     0,
     1,
     2,
     3
   ],
-  'FleetComputeType': [
-    'BUILD_GENERAL1_SMALL',
-    'BUILD_GENERAL1_MEDIUM',
-    'BUILD_GENERAL1_LARGE',
-    'BUILD_GENERAL1_XLARGE',
-    'BUILD_GENERAL1_2XLARGE',
-    'ATTRIBUTE_BASED_COMPUTE'
+  "FleetComputeType": [
+    "BUILD_GENERAL1_SMALL",
+    "BUILD_GENERAL1_MEDIUM",
+    "BUILD_GENERAL1_LARGE",
+    "BUILD_GENERAL1_XLARGE",
+    "BUILD_GENERAL1_2XLARGE",
+    "ATTRIBUTE_BASED_COMPUTE",
+    "CUSTOM_INSTANCE_TYPE"
   ],
-  'FlowLogDestinationType': [
-    'cloud-watch-logs',
-    's3',
-    'kinesis-data-firehose'
+  "FleetOverflowBehavior": [
+    "QUEUE",
+    "ON_DEMAND"
   ],
-  'FlowLogFileFormat': [
-    'plain-text',
-    'parquet'
+  "FlowLogDestinationType": [
+    "cloud-watch-logs",
+    "s3",
+    "kinesis-data-firehose"
   ],
-  'FlowLogMaxAggregationInterval': [
+  "FlowLogFileFormat": [
+    "plain-text",
+    "parquet"
+  ],
+  "FlowLogMaxAggregationInterval": [
     60,
     600
   ],
-  'FlowLogTrafficType': [
-    'ACCEPT',
-    'ALL',
-    'REJECT'
+  "FlowLogTrafficType": [
+    "ACCEPT",
+    "ALL",
+    "REJECT"
   ],
-  'FollowMode': [
-    'never',
-    'always',
-    'external',
-    'internal-only'
+  "FollowMode": [
+    "never",
+    "always",
+    "external",
+    "internal-only"
   ],
-  'Frequency': [
-    'DAILY',
-    'WEEKLY',
-    'BIWEEKLY',
-    'MONTHLY'
+  "Frequency": [
+    "DAILY",
+    "WEEKLY",
+    "BIWEEKLY",
+    "MONTHLY"
   ],
-  'FunctionEventType': [
-    'viewer-request',
-    'viewer-response'
+  "FunctionEventType": [
+    "viewer-request",
+    "viewer-response"
   ],
-  'FunctionRuntimeFamily': [
-    'APPSYNC_JS'
+  "FunctionRuntimeFamily": [
+    "APPSYNC_JS"
   ],
-  'FunctionUrlAuthType': [
-    'AWS_IAM',
-    'NONE'
+  "FunctionUrlAuthType": [
+    "AWS_IAM",
+    "NONE"
   ],
-  'GelfCompressionType': [
-    'gzip',
-    'zlib',
-    'none'
+  "GatewayAuthorizerType": [
+    "CUSTOM_JWT",
+    "AWS_IAM"
   ],
-  'GitHubTrigger': [
-    'None',
-    'Poll',
-    'WebHook'
+  "GatewayExceptionLevel": [
+    "DEBUG"
   ],
-  'GitPullRequestEvent': [
-    'OPEN',
-    'UPDATED',
-    'CLOSED'
+  "GatewayProtocolType": [
+    "MCP"
   ],
-  'GlueVersion': [
-    '0.9',
-    '1.0',
-    '2.0',
-    '3.0',
-    '4.0',
-    '5.0'
+  "GatewayTargetProtocolType": [
+    "MCP"
   ],
-  'GraphWidgetView': [
-    'timeSeries',
-    'bar',
-    'pie'
+  "GelfCompressionType": [
+    "gzip",
+    "zlib",
+    "none"
   ],
-  'GrowthType': [
-    'LINEAR',
-    'EXPONENTIAL'
+  "GitHubTrigger": [
+    "None",
+    "Poll",
+    "WebHook"
   ],
-  'GrpcRetryEvent': [
-    'cancelled',
-    'deadline-exceeded',
-    'internal',
-    'resource-exhausted',
-    'unavailable'
+  "GitPullRequestEvent": [
+    "OPEN",
+    "UPDATED",
+    "CLOSED"
   ],
-  'HandlerBehavior': [
-    'CODE',
-    'DIRECT'
+  "GlueVersion": [
+    "0.9",
+    "1.0",
+    "2.0",
+    "3.0",
+    "4.0",
+    "5.0",
+    "5.1"
   ],
-  'HandlerName': [
-    'user',
-    'table',
-    'user-table-privileges'
+  "GraphWidgetView": [
+    "timeSeries",
+    "bar",
+    "pie"
   ],
-  'HeadersFrameOption': [
-    'DENY',
-    'SAMEORIGIN'
+  "GrowthType": [
+    "LINEAR",
+    "EXPONENTIAL"
   ],
-  'HeadersReferrerPolicy': [
-    'no-referrer',
-    'no-referrer-when-downgrade',
-    'origin',
-    'origin-when-cross-origin',
-    'same-origin',
-    'strict-origin',
-    'strict-origin-when-cross-origin',
-    'unsafe-url'
+  "GrpcRetryEvent": [
+    "cancelled",
+    "deadline-exceeded",
+    "internal",
+    "resource-exhausted",
+    "unavailable"
   ],
-  'HealthCheckProtocol': [
-    'TCP',
-    'HTTP',
-    'HTTPS'
+  "GuardrailAction": [
+    "BLOCK",
+    "ANONYMIZE",
+    "NONE"
   ],
-  'HealthCheckProtocolType': [
-    'HTTP',
-    'TCP'
+  "HandlerBehavior": [
+    "CODE",
+    "DIRECT"
   ],
-  'HealthCheckType': [
-    'HTTP',
-    'HTTPS',
-    'TCP'
+  "HandlerName": [
+    "user",
+    "table",
+    "user-table-privileges"
   ],
-  'HttpAuthorizerType': [
-    'AWS_IAM',
-    'JWT',
-    'REQUEST'
+  "HeadersFrameOption": [
+    "DENY",
+    "SAMEORIGIN"
   ],
-  'HttpCodeElb': [
-    'HTTPCode_ELB_3XX_Count',
-    'HTTPCode_ELB_4XX_Count',
-    'HTTPCode_ELB_5XX_Count',
-    'HTTPCode_ELB_500_Count',
-    'HTTPCode_ELB_502_Count',
-    'HTTPCode_ELB_503_Count',
-    'HTTPCode_ELB_504_Count'
+  "HeadersReferrerPolicy": [
+    "no-referrer",
+    "no-referrer-when-downgrade",
+    "origin",
+    "origin-when-cross-origin",
+    "same-origin",
+    "strict-origin",
+    "strict-origin-when-cross-origin",
+    "unsafe-url"
   ],
-  'HttpCodeTarget': [
-    'HTTPCode_Target_2XX_Count',
-    'HTTPCode_Target_3XX_Count',
-    'HTTPCode_Target_4XX_Count',
-    'HTTPCode_Target_5XX_Count'
+  "HealthCheckProtocol": [
+    "TCP",
+    "HTTP",
+    "HTTPS"
   ],
-  'HttpConnectionType': [
-    'VPC_LINK',
-    'INTERNET'
+  "HealthCheckProtocolType": [
+    "HTTP",
+    "TCP"
   ],
-  'HttpIntegrationSubtype': [
-    'EventBridge-PutEvents',
-    'SQS-SendMessage',
-    'SQS-ReceiveMessage',
-    'SQS-DeleteMessage',
-    'SQS-PurgeQueue',
-    'AppConfig-GetConfiguration',
-    'Kinesis-PutRecord',
-    'StepFunctions-StartExecution',
-    'StepFunctions-StartSyncExecution',
-    'StepFunctions-StopExecution'
+  "HealthCheckType": [
+    "HTTP",
+    "HTTPS",
+    "TCP"
   ],
-  'HttpIntegrationType': [
-    'HTTP_PROXY',
-    'AWS_PROXY'
+  "HttpAuthorizerType": [
+    "AWS_IAM",
+    "JWT",
+    "REQUEST"
   ],
-  'HttpLambdaResponseType': [
+  "HttpCodeElb": [
+    "HTTPCode_ELB_3XX_Count",
+    "HTTPCode_ELB_4XX_Count",
+    "HTTPCode_ELB_5XX_Count",
+    "HTTPCode_ELB_500_Count",
+    "HTTPCode_ELB_502_Count",
+    "HTTPCode_ELB_503_Count",
+    "HTTPCode_ELB_504_Count"
+  ],
+  "HttpCodeTarget": [
+    "HTTPCode_Target_2XX_Count",
+    "HTTPCode_Target_3XX_Count",
+    "HTTPCode_Target_4XX_Count",
+    "HTTPCode_Target_5XX_Count"
+  ],
+  "HttpConnectionType": [
+    "VPC_LINK",
+    "INTERNET"
+  ],
+  "HttpIntegrationSubtype": [
+    "EventBridge-PutEvents",
+    "SQS-SendMessage",
+    "SQS-ReceiveMessage",
+    "SQS-DeleteMessage",
+    "SQS-PurgeQueue",
+    "AppConfig-GetConfiguration",
+    "Kinesis-PutRecord",
+    "StepFunctions-StartExecution",
+    "StepFunctions-StartSyncExecution",
+    "StepFunctions-StopExecution"
+  ],
+  "HttpIntegrationType": [
+    "HTTP_PROXY",
+    "AWS_PROXY"
+  ],
+  "HttpLambdaResponseType": [
     0,
     1
   ],
-  'HttpMethod': [
-    'GET',
-    'POST',
-    'PUT',
-    'DELETE',
-    'PATCH',
-    'HEAD',
-    'OPTIONS'
+  "HttpMethod": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS"
   ],
-  'HttpMethods': [
-    'GET',
-    'POST',
-    'PUT',
-    'DELETE',
-    'PATCH',
-    'HEAD'
+  "HttpMethods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD"
   ],
-  'HttpRetryEvent': [
-    'server-error',
-    'gateway-error',
-    'client-error',
-    'stream-error'
+  "HttpRetryEvent": [
+    "server-error",
+    "gateway-error",
+    "client-error",
+    "stream-error"
   ],
-  'HttpRouteAuthorizationType': [
-    'AWS_IAM',
-    'JWT',
-    'CUSTOM',
-    'NONE'
+  "HttpRouteAuthorizationType": [
+    "AWS_IAM",
+    "JWT",
+    "CUSTOM",
+    "NONE"
   ],
-  'HttpRouteMethod': [
-    'GET',
-    'HEAD',
-    'POST',
-    'PUT',
-    'DELETE',
-    'CONNECT',
-    'OPTIONS',
-    'TRACE',
-    'PATCH'
+  "HttpRouteMethod": [
+    "GET",
+    "HEAD",
+    "POST",
+    "PUT",
+    "DELETE",
+    "CONNECT",
+    "OPTIONS",
+    "TRACE",
+    "PATCH"
   ],
-  'HttpRouteProtocol': [
-    'http',
-    'https'
+  "HttpRouteProtocol": [
+    "http",
+    "https"
   ],
-  'HttpVersion': [
-    'http1.1',
-    'http2',
-    'http2and3',
-    'http3'
+  "HttpTokens": [
+    "optional",
+    "required"
   ],
-  'HttpsPolicy': [
-    'REQUIRE',
-    'REQUIRE_OPEN_ONLY',
-    'OPTIONAL'
+  "HttpVersion": [
+    "http1.1",
+    "http2",
+    "http2and3",
+    "http3"
   ],
-  'IdentityPoolProviderType': [
-    'Facebook',
-    'Google',
-    'Amazon',
-    'Apple',
-    'Twitter',
-    'OpenId',
-    'Saml',
-    'UserPool',
-    'Custom'
+  "HttpsPolicy": [
+    "REQUIRE",
+    "REQUIRE_OPEN_ONLY",
+    "OPTIONAL"
   ],
-  'IdentityType': [
-    'IRSA',
-    'POD_IDENTITY'
+  "IdentityPoolProviderType": [
+    "Facebook",
+    "Google",
+    "Amazon",
+    "Apple",
+    "Twitter",
+    "OpenId",
+    "Saml",
+    "UserPool",
+    "Custom"
   ],
-  'IgnoreMode': [
-    'glob',
-    'git',
-    'docker'
+  "IdentityType": [
+    "IRSA",
+    "POD_IDENTITY"
   ],
-  'ImageId': [
-    'amazonlinux-2-x86_64',
-    'amazonlinux-2023-x86_64',
-    'ubuntu-18.04-x86_64',
-    'ubuntu-22.04-x86_64'
+  "IgnoreMode": [
+    "glob",
+    "git",
+    "docker"
   ],
-  'ImagePullPolicy': [
-    'Always',
-    'IfNotPresent',
-    'Never'
+  "ImageArchitecture": [
+    "arm64",
+    "x86_64"
   ],
-  'ImagePullPrincipalType': [
-    'CODEBUILD',
-    'SERVICE_ROLE'
+  "ImageId": [
+    "amazonlinux-2-x86_64",
+    "amazonlinux-2023-x86_64",
+    "ubuntu-18.04-x86_64",
+    "ubuntu-22.04-x86_64"
   ],
-  'ImageRepositoryType': [
-    'ECR_PUBLIC',
-    'ECR'
+  "ImagePipelineStatus": [
+    "ENABLED",
+    "DISABLED"
   ],
-  'IncludeExecutionData': [
-    'ALL'
+  "ImagePullPolicy": [
+    "Always",
+    "IfNotPresent",
+    "Never"
   ],
-  'InitElementType': [
-    'PACKAGE',
-    'GROUP',
-    'USER',
-    'SOURCE',
-    'FILE',
-    'COMMAND',
-    'SERVICE'
+  "ImagePullPrincipalType": [
+    "CODEBUILD",
+    "SERVICE_ROLE"
   ],
-  'InitPlatform': [
-    'WINDOWS',
-    'LINUX'
+  "ImageRepositoryType": [
+    "ECR_PUBLIC",
+    "ECR"
   ],
-  'InputCompressionType': [
-    'GZIP',
-    'ZSTD',
-    'NONE'
+  "ImageType": [
+    "AMI",
+    "DOCKER"
   ],
-  'InputMode': [
-    'Pipe',
-    'File',
-    'FastFile'
+  "IncludeDetail": [
+    "FULL",
+    "NONE"
   ],
-  'InputType': [
+  "IncludeExecutionData": [
+    "ALL"
+  ],
+  "InferenceProfileType": [
+    "SYSTEM_DEFINED",
+    "APPLICATION"
+  ],
+  "InitElementType": [
+    "PACKAGE",
+    "GROUP",
+    "USER",
+    "SOURCE",
+    "FILE",
+    "COMMAND",
+    "SERVICE"
+  ],
+  "InitPlatform": [
+    "WINDOWS",
+    "LINUX"
+  ],
+  "InputCompressionType": [
+    "GZIP",
+    "ZSTD",
+    "NONE"
+  ],
+  "InputMode": [
+    "Pipe",
+    "File",
+    "FastFile"
+  ],
+  "InputType": [
     0,
     1
   ],
-  'InstanceArchitecture': [
-    'arm64',
-    'x86_64'
+  "InstanceArchitecture": [
+    "arm64",
+    "x86_64"
   ],
-  'InstanceClass': [
-    'standard3',
-    'm3',
-    'standard4',
-    'm4',
-    'standard5',
-    'm5',
-    'standard5-nvme-drive',
-    'm5d',
-    'standard5-amd',
-    'm5a',
-    'standard5-amd-nvme-drive',
-    'm5ad',
-    'standard5-high-performance',
-    'm5n',
-    'standard5-nvme-drive-high-performance',
-    'm5dn',
-    'standard5-high-compute',
-    'm5zn',
-    'memory3',
-    'r3',
-    'memory4',
-    'r4',
-    'memory5',
-    'r5',
-    'memory6-amd',
-    'r6a',
-    'memory6-intel',
-    'r6i',
-    'memory6-intel-nvme-drive',
-    'r6id',
-    'memory6-intel-high-performance',
-    'r6in',
-    'memory6-intel-nvme-drive-high-performance',
-    'r6idn',
-    'memory5-high-performance',
-    'r5n',
-    'memory5-nvme-drive',
-    'r5d',
-    'memory5-nvme-drive-high-performance',
-    'r5dn',
-    'memory5-amd',
-    'r5a',
-    'memory5-amd-nvme-drive',
-    'r5ad',
-    'high-memory-3tb-1',
-    'u-3tb1',
-    'high-memory-6tb-1',
-    'u-6tb1',
-    'high-memory-9tb-1',
-    'u-9tb1',
-    'high-memory-12tb-1',
-    'u-12tb1',
-    'high-memory-18tb-1',
-    'u-18tb1',
-    'high-memory-24tb-1',
-    'u-24tb1',
-    'high-memory-6tb-7',
-    'u7i-6tb',
-    'high-memory-8tb-7',
-    'u7i-8tb',
-    'high-memory-12tb-7',
-    'u7i-12tb',
-    'high-memory-high-network-16tb-7',
-    'u7in-16tb',
-    'high-memory-high-network-24tb-7',
-    'u7in-24tb',
-    'high-memory-high-network-32tb-7',
-    'u7in-32tb',
-    'high-memory-high-network-hpe-32tb-7',
-    'u7inh-32tb',
-    'memory5-ebs-optimized',
-    'r5b',
-    'memory6-graviton',
-    'r6g',
-    'memory6-graviton2-nvme-drive',
-    'r6gd',
-    'memory7-graviton',
-    'r7g',
-    'memory7-graviton3-nvme-drive',
-    'r7gd',
-    'memory7-intel-base',
-    'r7i',
-    'memory7-intel',
-    'r7iz',
-    'memory7-amd',
-    'r7a',
-    'memory8-graviton',
-    'r8g',
-    'memory8-graviton4-nvme-drive',
-    'r8gd',
-    'compute3',
-    'c3',
-    'compute4',
-    'c4',
-    'compute5',
-    'c5',
-    'compute5-nvme-drive',
-    'c5d',
-    'compute5-amd',
-    'c5a',
-    'compute5-amd-nvme-drive',
-    'c5ad',
-    'compute5-high-performance',
-    'c5n',
-    'compute6-intel',
-    'c6i',
-    'compute6-intel-nvme-drive',
-    'c6id',
-    'compute6-intel-high-performance',
-    'c6in',
-    'compute6-amd',
-    'c6a',
-    'compute6-graviton2',
-    'c6g',
-    'compute7-graviton3',
-    'c7g',
-    'compute8-graviton4',
-    'c8g',
-    'compute6-graviton2-nvme-drive',
-    'c6gd',
-    'compute7-graviton3-nvme-drive',
-    'c7gd',
-    'compute8-graviton4-nvme-drive',
-    'c8gd',
-    'compute6-graviton2-high-network-bandwidth',
-    'c6gn',
-    'compute7-graviton3-high-network-bandwidth',
-    'c7gn',
-    'compute7-intel',
-    'c7i',
-    'compute7-intel-flex',
-    'c7i-flex',
-    'compute7-amd',
-    'c7a',
-    'storage2',
-    'd2',
-    'storage3',
-    'd3',
-    'storage3-enhanced-network',
-    'd3en',
-    'storage-compute-1',
-    'h1',
-    'training-accelerator1',
-    'trn1',
-    'training-accelerator1-enhanced-network',
-    'trn1n',
-    'training-accelerator2',
-    'trn2',
-    'training-accelerator2-ultraserver',
-    'trn2u',
-    'io3',
-    'i3',
-    'io3-dense-nvme-drive',
-    'i3en',
-    'io4_intel',
-    'i4i',
-    'storage4_graviton',
-    'i4g',
-    'storage4-graviton-network-optimized',
-    'im4gn',
-    'storage4-graviton-network-storage-optimized',
-    'is4gen',
-    'storage7-intel-storage-optimized',
-    'i7ie',
-    'io7_intel',
-    'i7i',
-    'storage8-graviton',
-    'i8g',
-    'burstable2',
-    't2',
-    'burstable3',
-    't3',
-    'burstable3-amd',
-    't3a',
-    'burstable4-graviton',
-    't4g',
-    'memory-intensive-1',
-    'x1',
-    'memory-intensive-1-extended',
-    'x1e',
-    'memory-intensive-2-graviton2',
-    'x2g',
-    'memory-intensive-2-graviton2-nvme-drive',
-    'x2gd',
-    'memory_intensive_2_xt_intel',
-    'x2iedn',
-    'memory_intensive_2_intel',
-    'x2idn',
-    'memory_intensive_2_xtz_intel',
-    'x2iezn',
-    'memory-intensive-8-graviton',
-    'x8g',
-    'fpga1',
-    'f1',
-    'fpga2',
-    'f2',
-    'graphics3-small',
-    'g3s',
-    'graphics3',
-    'g3',
-    'graphics4-nvme-drive-high-performance',
-    'g4dn',
-    'graphics4-amd-nvme-drive',
-    'g4ad',
-    'graphics5',
-    'g5',
-    'graphics5-graviton2',
-    'g5g',
-    'graphics6',
-    'g6',
-    'graphics6-efficient',
-    'g6e',
-    'graphics-ram-6',
-    'gr6',
-    'parallel2',
-    'p2',
-    'parallel3',
-    'p3',
-    'parallel3-nvme-drive-high-performance',
-    'p3dn',
-    'parallel4-nvme-drive-extended',
-    'p4de',
-    'parallel4',
-    'p4d',
-    'parallel5',
-    'p5',
-    'parallel5-extended',
-    'p5e',
-    'parallel5-extended-network',
-    'p5en',
-    'arm1',
-    'a1',
-    'standard6-graviton',
-    'm6g',
-    'standard6-intel',
-    'm6i',
-    'standard6-intel-nvme-drive',
-    'm6id',
-    'standard6-intel-high-performance',
-    'm6in',
-    'standard6-intel-nvme-drive-high-performance',
-    'm6idn',
-    'standard6-amd',
-    'm6a',
-    'standard6-graviton2-nvme-drive',
-    'm6gd',
-    'standard7-graviton',
-    'm7g',
-    'standard8-graviton',
-    'm8g',
-    'standard7-graviton3-nvme-drive',
-    'm7gd',
-    'standard8-graviton4-nvme-drive',
-    'm8gd',
-    'standard7-intel',
-    'm7i',
-    'standard7-intel-flex',
-    'm7i-flex',
-    'standard7-amd',
-    'm7a',
-    'high-compute-memory1',
-    'z1d',
-    'inference1',
-    'inf1',
-    'inference2',
-    'inf2',
-    'macintosh1-intel',
-    'mac1',
-    'macintosh2-m1',
-    'mac2',
-    'macintosh2-m2',
-    'mac2-m2',
-    'macintosh2-m2-pro',
-    'mac2-m2pro',
-    'macintosh2-m1-ultra',
-    'mac2-m1ultra',
-    'video-transcoding1',
-    'vt1',
-    'high-performance-computing6-amd',
-    'hpc6a',
-    'high-performance-computing6-intel-nvme-drive',
-    'hpc6id',
-    'high-performance-computing7-amd',
-    'hpc7a',
-    'high-performance-computing7-graviton',
-    'hpc7g',
-    'deep-learning1',
-    'dl1',
-    'deep-learning2-qualcomm',
-    'dl2q'
+  "InstanceClass": [
+    "standard3",
+    "m3",
+    "standard4",
+    "m4",
+    "standard5",
+    "m5",
+    "standard5-nvme-drive",
+    "m5d",
+    "standard5-amd",
+    "m5a",
+    "standard5-amd-nvme-drive",
+    "m5ad",
+    "standard5-high-performance",
+    "m5n",
+    "standard5-nvme-drive-high-performance",
+    "m5dn",
+    "standard5-high-compute",
+    "m5zn",
+    "memory3",
+    "r3",
+    "memory4",
+    "r4",
+    "memory5",
+    "r5",
+    "memory6-amd",
+    "r6a",
+    "memory6-intel",
+    "r6i",
+    "memory6-intel-nvme-drive",
+    "r6id",
+    "memory6-intel-high-performance",
+    "r6in",
+    "memory6-intel-nvme-drive-high-performance",
+    "r6idn",
+    "memory5-high-performance",
+    "r5n",
+    "memory5-nvme-drive",
+    "r5d",
+    "memory5-nvme-drive-high-performance",
+    "r5dn",
+    "memory5-amd",
+    "r5a",
+    "memory5-amd-nvme-drive",
+    "r5ad",
+    "high-memory-3tb-1",
+    "u-3tb1",
+    "high-memory-6tb-1",
+    "u-6tb1",
+    "high-memory-9tb-1",
+    "u-9tb1",
+    "high-memory-12tb-1",
+    "u-12tb1",
+    "high-memory-18tb-1",
+    "u-18tb1",
+    "high-memory-24tb-1",
+    "u-24tb1",
+    "high-memory-6tb-7",
+    "u7i-6tb",
+    "high-memory-8tb-7",
+    "u7i-8tb",
+    "high-memory-12tb-7",
+    "u7i-12tb",
+    "high-memory-high-network-16tb-7",
+    "u7in-16tb",
+    "high-memory-high-network-24tb-7",
+    "u7in-24tb",
+    "high-memory-high-network-32tb-7",
+    "u7in-32tb",
+    "high-memory-high-network-hpe-32tb-7",
+    "u7inh-32tb",
+    "memory5-ebs-optimized",
+    "r5b",
+    "memory6-graviton",
+    "r6g",
+    "memory6-graviton2-nvme-drive",
+    "r6gd",
+    "memory7-graviton",
+    "r7g",
+    "memory7-graviton3-nvme-drive",
+    "r7gd",
+    "memory7-intel-base",
+    "r7i",
+    "memory7-intel",
+    "r7iz",
+    "memory8-intel-base",
+    "r8i",
+    "memory8-intel-flex",
+    "r8i-flex",
+    "memory7-amd",
+    "r7a",
+    "memory8-amd",
+    "r8a",
+    "memory8-graviton",
+    "r8g",
+    "memory8-graviton4-nvme-drive",
+    "r8gd",
+    "memory8-graviton4-high-network-bandwidth",
+    "r8gn",
+    "memory8-graviton4-ebs-optimized",
+    "r8gb",
+    "compute3",
+    "c3",
+    "compute4",
+    "c4",
+    "compute5",
+    "c5",
+    "compute5-nvme-drive",
+    "c5d",
+    "compute5-amd",
+    "c5a",
+    "compute5-amd-nvme-drive",
+    "c5ad",
+    "compute5-high-performance",
+    "c5n",
+    "compute6-intel",
+    "c6i",
+    "compute6-intel-nvme-drive",
+    "c6id",
+    "compute6-intel-high-performance",
+    "c6in",
+    "compute6-amd",
+    "c6a",
+    "compute6-graviton2",
+    "c6g",
+    "compute7-graviton3",
+    "c7g",
+    "compute8-graviton4",
+    "c8g",
+    "compute6-graviton2-nvme-drive",
+    "c6gd",
+    "compute7-graviton3-nvme-drive",
+    "c7gd",
+    "compute8-graviton4-nvme-drive",
+    "c8gd",
+    "compute6-graviton2-high-network-bandwidth",
+    "c6gn",
+    "compute7-graviton3-high-network-bandwidth",
+    "c7gn",
+    "compute8-graviton4-high-network-bandwidth",
+    "c8gn",
+    "compute7-intel",
+    "c7i",
+    "compute7-intel-flex",
+    "c7i-flex",
+    "compute8-intel",
+    "c8i",
+    "compute8-intel-flex",
+    "c8i-flex",
+    "compute7-amd",
+    "c7a",
+    "storage2",
+    "d2",
+    "storage3",
+    "d3",
+    "storage3-enhanced-network",
+    "d3en",
+    "storage-compute-1",
+    "h1",
+    "training-accelerator1",
+    "trn1",
+    "training-accelerator1-enhanced-network",
+    "trn1n",
+    "training-accelerator2",
+    "trn2",
+    "training-accelerator2-ultraserver",
+    "trn2u",
+    "io3",
+    "i3",
+    "io3-dense-nvme-drive",
+    "i3en",
+    "io4_intel",
+    "i4i",
+    "storage4_graviton",
+    "i4g",
+    "storage4-graviton-network-optimized",
+    "im4gn",
+    "storage4-graviton-network-storage-optimized",
+    "is4gen",
+    "storage7-intel-storage-optimized",
+    "i7ie",
+    "io7_intel",
+    "i7i",
+    "storage8-graviton",
+    "i8g",
+    "storage8-graviton-storage-optimized",
+    "i8ge",
+    "burstable2",
+    "t2",
+    "burstable3",
+    "t3",
+    "burstable3-amd",
+    "t3a",
+    "burstable4-graviton",
+    "t4g",
+    "memory-intensive-1",
+    "x1",
+    "memory-intensive-1-extended",
+    "x1e",
+    "memory-intensive-2-graviton2",
+    "x2g",
+    "memory-intensive-2-graviton2-nvme-drive",
+    "x2gd",
+    "memory_intensive_2_xt_intel",
+    "x2iedn",
+    "memory_intensive_2_intel",
+    "x2idn",
+    "memory_intensive_2_xtz_intel",
+    "x2iezn",
+    "memory-intensive-8-graviton",
+    "x8g",
+    "fpga1",
+    "f1",
+    "fpga2",
+    "f2",
+    "graphics3-small",
+    "g3s",
+    "graphics3",
+    "g3",
+    "graphics4-nvme-drive-high-performance",
+    "g4dn",
+    "graphics4-amd-nvme-drive",
+    "g4ad",
+    "graphics5",
+    "g5",
+    "graphics5-graviton2",
+    "g5g",
+    "graphics6",
+    "g6",
+    "graphics6-efficient",
+    "g6e",
+    "graphics-ram-6",
+    "gr6",
+    "parallel2",
+    "p2",
+    "parallel3",
+    "p3",
+    "parallel3-nvme-drive-high-performance",
+    "p3dn",
+    "parallel4-nvme-drive-extended",
+    "p4de",
+    "parallel4",
+    "p4d",
+    "parallel5",
+    "p5",
+    "parallel5-extended",
+    "p5e",
+    "parallel5-extended-network",
+    "p5en",
+    "arm1",
+    "a1",
+    "standard6-graviton",
+    "m6g",
+    "standard6-intel",
+    "m6i",
+    "standard6-intel-nvme-drive",
+    "m6id",
+    "standard6-intel-high-performance",
+    "m6in",
+    "standard6-intel-nvme-drive-high-performance",
+    "m6idn",
+    "standard6-amd",
+    "m6a",
+    "standard6-graviton2-nvme-drive",
+    "m6gd",
+    "standard7-graviton",
+    "m7g",
+    "standard8-graviton",
+    "m8g",
+    "standard7-graviton3-nvme-drive",
+    "m7gd",
+    "standard8-graviton4-nvme-drive",
+    "m8gd",
+    "standard8-intel",
+    "m8i",
+    "standard8-intel-flex",
+    "m8i-flex",
+    "standard7-intel",
+    "m7i",
+    "standard7-intel-flex",
+    "m7i-flex",
+    "standard7-amd",
+    "m7a",
+    "standard8-amd",
+    "m8a",
+    "standard9-graviton",
+    "m9g",
+    "high-compute-memory1",
+    "z1d",
+    "inference1",
+    "inf1",
+    "inference2",
+    "inf2",
+    "macintosh1-intel",
+    "mac1",
+    "macintosh2-m1",
+    "mac2",
+    "macintosh2-m2",
+    "mac2-m2",
+    "macintosh2-m2-pro",
+    "mac2-m2pro",
+    "macintosh2-m1-ultra",
+    "mac2-m1ultra",
+    "video-transcoding1",
+    "vt1",
+    "high-performance-computing6-amd",
+    "hpc6a",
+    "high-performance-computing6-intel-nvme-drive",
+    "hpc6id",
+    "high-performance-computing7-amd",
+    "hpc7a",
+    "high-performance-computing7-graviton",
+    "hpc7g",
+    "deep-learning1",
+    "dl1",
+    "deep-learning2-qualcomm",
+    "dl2q"
   ],
-  'InstanceInitiatedShutdownBehavior': [
-    'stop',
-    'terminate'
+  "InstanceGeneration": [
+    "current",
+    "previous"
   ],
-  'InstanceSize': [
-    'nano',
-    'micro',
-    'small',
-    'medium',
-    'large',
-    'xlarge',
-    '2xlarge',
-    '3xlarge',
-    '4xlarge',
-    '6xlarge',
-    '8xlarge',
-    '9xlarge',
-    '10xlarge',
-    '12xlarge',
-    '16xlarge',
-    '18xlarge',
-    '24xlarge',
-    '32xlarge',
-    '48xlarge',
-    '56xlarge',
-    '96xlarge',
-    '112xlarge',
-    '224xlarge',
-    '480xlarge',
-    'metal',
-    'metal-16xl',
-    'metal-24xl',
-    'metal-32xl',
-    'metal-48xl'
+  "InstanceInitiatedShutdownBehavior": [
+    "stop",
+    "terminate"
   ],
-  'InstanceType': [
-    'PROVISIONED',
-    'SERVERLESS_V2'
+  "InstanceMonitoring": [
+    "BASIC",
+    "DETAILED"
   ],
-  'InstanceUpdateBehaviour': [
-    'BULK',
-    'ROLLING'
+  "InstanceSize": [
+    "nano",
+    "micro",
+    "small",
+    "medium",
+    "large",
+    "xlarge",
+    "2xlarge",
+    "3xlarge",
+    "4xlarge",
+    "6xlarge",
+    "8xlarge",
+    "9xlarge",
+    "10xlarge",
+    "12xlarge",
+    "16xlarge",
+    "18xlarge",
+    "24xlarge",
+    "32xlarge",
+    "48xlarge",
+    "56xlarge",
+    "96xlarge",
+    "112xlarge",
+    "224xlarge",
+    "480xlarge",
+    "metal",
+    "metal-16xl",
+    "metal-24xl",
+    "metal-32xl",
+    "metal-48xl"
   ],
-  'InsufficientDataHealthStatusEnum': [
-    'Healthy',
-    'Unhealthy',
-    'LastKnownStatus'
+  "InstanceType": [
+    "PROVISIONED",
+    "SERVERLESS_V2"
   ],
-  'IntegrationPattern': [
-    'REQUEST_RESPONSE',
-    'RUN_JOB',
-    'WAIT_FOR_TASK_TOKEN'
+  "InstanceUpdateBehaviour": [
+    "BULK",
+    "ROLLING"
   ],
-  'IntegrationType': [
-    'AWS',
-    'AWS_PROXY',
-    'HTTP',
-    'HTTP_PROXY',
-    'MOCK'
+  "InsufficientDataHealthStatusEnum": [
+    "Healthy",
+    "Unhealthy",
+    "LastKnownStatus"
   ],
-  'IntendedUse': [
-    'SingleUse',
-    'Storage'
+  "IntegrationPattern": [
+    "REQUEST_RESPONSE",
+    "RUN_JOB",
+    "WAIT_FOR_TASK_TOKEN"
   ],
-  'IntrospectionConfig': [
-    'ENABLED',
-    'DISABLED'
+  "IntegrationType": [
+    "AWS",
+    "AWS_PROXY",
+    "HTTP",
+    "HTTP_PROXY",
+    "MOCK"
   ],
-  'InvalidCharHandlingAction': [
-    'DISABLED',
-    'FAIL',
-    'SET_TO_NULL',
-    'DROP_ROW',
-    'REPLACE'
+  "IntendedUse": [
+    "SingleUse",
+    "Storage"
   ],
-  'InventoryFormat': [
-    'CSV',
-    'Parquet',
-    'ORC'
+  "IntrospectionConfig": [
+    "ENABLED",
+    "DISABLED"
   ],
-  'InventoryFrequency': [
-    'Daily',
-    'Weekly'
+  "InvalidCharHandlingAction": [
+    "DISABLED",
+    "FAIL",
+    "SET_TO_NULL",
+    "DROP_ROW",
+    "REPLACE"
   ],
-  'InventoryObjectVersion': [
-    'All',
-    'Current'
+  "InventoryFormat": [
+    "CSV",
+    "Parquet",
+    "ORC"
   ],
-  'InvocationHttpResponseCode': [
-    'Invocation4XXErrors',
-    'Invocation5XXErrors'
+  "InventoryFrequency": [
+    "Daily",
+    "Weekly"
   ],
-  'InvocationType': [
-    'RequestResponse',
-    'Event',
-    'DryRun'
+  "InventoryObjectVersion": [
+    "All",
+    "Current"
   ],
-  'InvokeMode': [
-    'BUFFERED',
-    'RESPONSE_STREAM'
+  "InvocationHttpResponseCode": [
+    "Invocation4XXErrors",
+    "Invocation5XXErrors"
   ],
-  'IpAddressType': [
-    'ipv4',
-    'dualstack',
-    'dualstack-without-public-ipv4'
+  "InvocationType": [
+    "RequestResponse",
+    "Event",
+    "DryRun"
   ],
-  'IpFamily': [
-    'ipv4',
-    'ipv6'
+  "InvokeMode": [
+    "BUFFERED",
+    "RESPONSE_STREAM"
   ],
-  'IpPreference': [
-    'IPv4_ONLY',
-    'IPv4_PREFERRED',
-    'IPv6_ONLY',
-    'IPv6_PREFERRED'
+  "IpAddressType": [
+    "ipv4",
+    "dualstack",
+    "dualstack-without-public-ipv4"
   ],
-  'IpProtocol': [
-    'Ipv4_Only',
-    'Dual_Stack'
+  "IpFamily": [
+    "ipv4",
+    "ipv6"
   ],
-  'IpamPoolPublicIpSource': [
-    'byoip',
-    'amazon'
+  "IpPreference": [
+    "IPv4_ONLY",
+    "IPv4_PREFERRED",
+    "IPv6_ONLY",
+    "IPv6_PREFERRED"
   ],
-  'IpamScopeType': [
-    'default',
-    'custom'
+  "IpProtocol": [
+    "Ipv4_Only",
+    "Dual_Stack"
   ],
-  'IpcMode': [
-    'none',
-    'host',
-    'task'
+  "IpamPoolPublicIpSource": [
+    "byoip",
+    "amazon"
   ],
-  'JenkinsActionType': [
+  "IpamScopeType": [
+    "default",
+    "custom"
+  ],
+  "IpcMode": [
+    "none",
+    "host",
+    "task"
+  ],
+  "JenkinsActionType": [
     0,
     1
   ],
-  'JitterType': [
-    'FULL',
-    'NONE'
+  "JitterType": [
+    "FULL",
+    "NONE"
   ],
-  'JobBookmarksEncryptionMode': [
-    'CSE-KMS'
+  "JobBookmarksEncryptionMode": [
+    "CSE-KMS"
   ],
-  'JobLanguage': [
-    'scala',
-    'python'
+  "JobLanguage": [
+    "scala",
+    "python"
   ],
-  'JobState': [
-    'SUCCEEDED',
-    'FAILED',
-    'TIMEOUT',
-    'STARTING',
-    'RUNNING',
-    'STOPPING',
-    'STOPPED'
+  "JobState": [
+    "SUCCEEDED",
+    "FAILED",
+    "TIMEOUT",
+    "STARTING",
+    "RUNNING",
+    "STOPPING",
+    "STOPPED"
   ],
-  'JobStateTimeLimitActionsAction': [
-    'CANCEL'
+  "JobStateTimeLimitActionsAction": [
+    "CANCEL",
+    "TERMINATE"
   ],
-  'JobStateTimeLimitActionsReason': [
-    'CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY',
-    'MISCONFIGURATION:COMPUTE_ENVIRONMENT_MAX_RESOURCE',
-    'MISCONFIGURATION:JOB_RESOURCE_REQUIREMENT'
+  "JobStateTimeLimitActionsReason": [
+    "CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY",
+    "MISCONFIGURATION:COMPUTE_ENVIRONMENT_MAX_RESOURCE",
+    "MISCONFIGURATION:JOB_RESOURCE_REQUIREMENT"
   ],
-  'JobStateTimeLimitActionsState': [
-    'RUNNABLE'
+  "JobStateTimeLimitActionsState": [
+    "RUNNABLE"
   ],
-  'JobType': [
-    'glueetl',
-    'gluestreaming',
-    'pythonshell',
-    'glueray'
+  "JobType": [
+    "glueetl",
+    "gluestreaming",
+    "pythonshell",
+    "glueray"
   ],
-  'JsonSchemaType': [
-    'null',
-    'boolean',
-    'object',
-    'array',
-    'number',
-    'integer',
-    'string'
+  "JsonMutatorType": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
   ],
-  'JsonSchemaVersion': [
-    'http://json-schema.org/draft-04/schema#',
-    'http://json-schema.org/draft-07/schema#'
+  "JsonSchemaType": [
+    "null",
+    "boolean",
+    "object",
+    "array",
+    "number",
+    "integer",
+    "string"
   ],
-  'KeyPairFormat': [
-    'ppk',
-    'pem'
+  "JsonSchemaVersion": [
+    "http://json-schema.org/draft-04/schema#",
+    "http://json-schema.org/draft-07/schema#"
   ],
-  'KeyPairType': [
-    'rsa',
-    'ed25519'
+  "KeyPairFormat": [
+    "ppk",
+    "pem"
   ],
-  'KeySigningKeyStatus': [
-    'ACTIVE',
-    'INACTIVE'
+  "KeyPairType": [
+    "rsa",
+    "ed25519"
   ],
-  'KeySpec': [
-    'SYMMETRIC_DEFAULT',
-    'RSA_2048',
-    'RSA_3072',
-    'RSA_4096',
-    'ECC_NIST_P256',
-    'ECC_NIST_P384',
-    'ECC_NIST_P521',
-    'ECC_SECG_P256K1',
-    'HMAC_224',
-    'HMAC_256',
-    'HMAC_384',
-    'HMAC_512',
-    'SM2'
+  "KeySigningKeyStatus": [
+    "ACTIVE",
+    "INACTIVE"
   ],
-  'KeyUsage': [
-    'ENCRYPT_DECRYPT',
-    'SIGN_VERIFY',
-    'GENERATE_VERIFY_MAC',
-    'KEY_AGREEMENT'
+  "KeySpec": [
+    "SYMMETRIC_DEFAULT",
+    "RSA_2048",
+    "RSA_3072",
+    "RSA_4096",
+    "ECC_NIST_P256",
+    "ECC_NIST_P384",
+    "ECC_NIST_P521",
+    "ECC_SECG_P256K1",
+    "HMAC_224",
+    "HMAC_256",
+    "HMAC_384",
+    "HMAC_512",
+    "SM2",
+    "ML_DSA_44",
+    "ML_DSA_65",
+    "ML_DSA_87"
   ],
-  'KinesisStartingPosition': [
-    'TRIM_HORIZON',
-    'LATEST',
-    'AT_TIMESTAMP'
+  "KeyUsage": [
+    "ENCRYPT_DECRYPT",
+    "SIGN_VERIFY",
+    "GENERATE_VERIFY_MAC",
+    "KEY_AGREEMENT"
   ],
-  'LambdaEdgeEventType': [
-    'origin-request',
-    'origin-response',
-    'viewer-request',
-    'viewer-response'
+  "KeyValueDelimiter": [
+    "=",
+    ":"
   ],
-  'LambdaFunctionInvocationType': [
-    'FIRE_AND_FORGET',
-    'REQUEST_RESPONSE'
+  "KeyValuePairDelimiter": [
+    "&",
+    ";",
+    " ",
+    "\n"
   ],
-  'LambdaInvocationType': [
-    'RequestResponse',
-    'Event',
-    'DryRun'
+  "KinesisStartingPosition": [
+    "TRIM_HORIZON",
+    "LATEST",
+    "AT_TIMESTAMP"
   ],
-  'LambdaInvokeType': [
-    'EVENT',
-    'REQUEST_RESPONSE'
+  "LambdaEdgeEventType": [
+    "origin-request",
+    "origin-response",
+    "viewer-request",
+    "viewer-response"
   ],
-  'LambdaVersion': [
-    'V1_0',
-    'V2_0',
-    'V3_0'
+  "LambdaFunctionInvocationType": [
+    "FIRE_AND_FORGET",
+    "REQUEST_RESPONSE"
   ],
-  'LatencyMode': [
-    'LOW',
-    'NORMAL'
+  "LambdaInvocationType": [
+    "RequestResponse",
+    "Event",
+    "DryRun"
   ],
-  'LaunchTemplateHttpTokens': [
-    'optional',
-    'required'
+  "LambdaInvokeType": [
+    "EVENT",
+    "REQUEST_RESPONSE"
   ],
-  'LaunchType': [
-    'EC2',
-    'FARGATE',
-    'EXTERNAL'
+  "LambdaVersion": [
+    "V1_0",
+    "V2_0",
+    "V3_0"
   ],
-  'LegendPosition': [
-    'bottom',
-    'right',
-    'hidden'
+  "LatencyMode": [
+    "LOW",
+    "NORMAL"
   ],
-  'LicenseModel': [
-    'license-included',
-    'bring-your-own-license',
-    'general-public-license'
+  "LaunchTemplateHttpTokens": [
+    "optional",
+    "required"
   ],
-  'LifecycleLabel': [
-    'OnDemand',
-    'Ec2Spot'
+  "LaunchType": [
+    "EC2",
+    "FARGATE",
+    "EXTERNAL"
   ],
-  'LifecyclePolicy': [
-    'AFTER_1_DAY',
-    'AFTER_7_DAYS',
-    'AFTER_14_DAYS',
-    'AFTER_30_DAYS',
-    'AFTER_60_DAYS',
-    'AFTER_90_DAYS',
-    'AFTER_180_DAYS',
-    'AFTER_270_DAYS',
-    'AFTER_365_DAYS'
+  "LegendPosition": [
+    "bottom",
+    "right",
+    "hidden"
   ],
-  'LifecycleTransition': [
-    'autoscaling:EC2_INSTANCE_LAUNCHING',
-    'autoscaling:EC2_INSTANCE_TERMINATING'
+  "Level": [
+    "INFO",
+    "ERROR",
+    "TRACE",
+    "OFF"
   ],
-  'LoadBalancerGeneration': [
+  "LicenseModel": [
+    "license-included",
+    "bring-your-own-license",
+    "general-public-license"
+  ],
+  "LifecycleLabel": [
+    "OnDemand",
+    "Ec2Spot"
+  ],
+  "LifecyclePolicy": [
+    "AFTER_1_DAY",
+    "AFTER_7_DAYS",
+    "AFTER_14_DAYS",
+    "AFTER_30_DAYS",
+    "AFTER_60_DAYS",
+    "AFTER_90_DAYS",
+    "AFTER_180_DAYS",
+    "AFTER_270_DAYS",
+    "AFTER_365_DAYS"
+  ],
+  "LifecyclePolicyActionType": [
+    "DELETE",
+    "DEPRECATE",
+    "DISABLE"
+  ],
+  "LifecyclePolicyResourceType": [
+    "AMI_IMAGE",
+    "CONTAINER_IMAGE"
+  ],
+  "LifecyclePolicyStatus": [
+    "ENABLED",
+    "DISABLED"
+  ],
+  "LifecycleTransition": [
+    "autoscaling:EC2_INSTANCE_LAUNCHING",
+    "autoscaling:EC2_INSTANCE_TERMINATING"
+  ],
+  "LoadBalancerGeneration": [
     0,
     1
   ],
-  'LoadBalancerIpAddressType': [
-    'ipv4',
-    'dualstack',
-    'dualstack-without-public-ipv4'
+  "LoadBalancerIpAddressType": [
+    "ipv4",
+    "dualstack",
+    "dualstack-without-public-ipv4"
   ],
-  'LoadBalancingProtocol': [
-    'tcp',
-    'ssl',
-    'http',
-    'https'
+  "LoadBalancingProtocol": [
+    "tcp",
+    "ssl",
+    "http",
+    "https"
   ],
-  'LocalCacheMode': [
-    'LOCAL_SOURCE_CACHE',
-    'LOCAL_DOCKER_LAYER_CACHE',
-    'LOCAL_CUSTOM_CACHE'
+  "LocalCacheMode": [
+    "LOCAL_SOURCE_CACHE",
+    "LOCAL_DOCKER_LAYER_CACHE",
+    "LOCAL_CUSTOM_CACHE"
   ],
-  'LockFile': [
-    'package-lock.json',
-    'yarn.lock',
-    'bun.lockb',
-    'pnpm-lock.yaml'
+  "LocalStorage": [
+    "included",
+    "required",
+    "excluded"
   ],
-  'LogFormat': [
-    'Text',
-    'JSON'
+  "LocalStorageType": [
+    "hdd",
+    "ssd"
   ],
-  'LogGroupClass': [
-    'STANDARD',
-    'INFREQUENT_ACCESS'
+  "LockFile": [
+    "package-lock.json",
+    "yarn.lock",
+    "bun.lockb",
+    "bun.lock",
+    "pnpm-lock.yaml"
   ],
-  'LogLevel': [
-    'OFF',
-    'ALL',
-    'ERROR',
-    'FATAL'
+  "LogFormat": [
+    "Text",
+    "JSON"
   ],
-  'LogQueryVisualizationType': [
-    'table',
-    'line',
-    'stackedarea',
-    'bar',
-    'pie'
+  "LogGroupClass": [
+    "STANDARD",
+    "INFREQUENT_ACCESS"
   ],
-  'LogType': [
-    'None',
-    'Tail'
+  "LogLevel": [
+    "OFF",
+    "ALL",
+    "ERROR",
+    "FATAL"
   ],
-  'LoggingFormat': [
-    'Text',
-    'JSON'
+  "LogQueryLanguage": [
+    "Logs",
+    "SQL",
+    "PPL"
   ],
-  'LoggingLevel': [
-    'ERROR',
-    'INFO',
-    'NONE'
+  "LogQueryVisualizationType": [
+    "table",
+    "line",
+    "stackedarea",
+    "bar",
+    "pie"
   ],
-  'LoggingProtocol': [
-    'http/s',
-    'sqs',
-    'lambda',
-    'firehose',
-    'application'
+  "LogType": [
+    "None",
+    "Tail"
   ],
-  'LustreAutoImportPolicy': [
-    'NONE',
-    'NEW',
-    'NEW_CHANGED',
-    'NEW_CHANGED_DELETED'
+  "LoggingFormat": [
+    "Text",
+    "JSON"
   ],
-  'LustreDataCompressionType': [
-    'NONE',
-    'LZ4'
+  "LoggingLevel": [
+    "ERROR",
+    "INFO",
+    "NONE"
   ],
-  'LustreDeploymentType': [
-    'SCRATCH_1',
-    'SCRATCH_2',
-    'PERSISTENT_1',
-    'PERSISTENT_2'
+  "LoggingProtocol": [
+    "http/s",
+    "sqs",
+    "lambda",
+    "firehose",
+    "application"
   ],
-  'MachineImageType': [
+  "LustreAutoImportPolicy": [
+    "NONE",
+    "NEW",
+    "NEW_CHANGED",
+    "NEW_CHANGED_DELETED"
+  ],
+  "LustreDataCompressionType": [
+    "NONE",
+    "LZ4"
+  ],
+  "LustreDeploymentType": [
+    "SCRATCH_1",
+    "SCRATCH_2",
+    "PERSISTENT_1",
+    "PERSISTENT_2"
+  ],
+  "MCPProtocolVersion": [
+    "2025-06-18",
+    "2025-03-26"
+  ],
+  "MachineImageType": [
     0,
     1
   ],
-  'MachineType': [
-    'GENERAL',
-    'NVME'
+  "MachineType": [
+    "GENERAL",
+    "NVME"
   ],
-  'MailFromBehaviorOnMxFailure': [
-    'USE_DEFAULT_VALUE',
-    'REJECT_MESSAGE'
+  "MailFromBehaviorOnMxFailure": [
+    "USE_DEFAULT_VALUE",
+    "REJECT_MESSAGE"
   ],
-  'MaintenanceTrackName': [
-    'current',
-    'trailing'
+  "MaintenanceTrackName": [
+    "current",
+    "trailing"
   ],
-  'ManagedLoginVersion': [
+  "ManagedLoginVersion": [
     1,
     2
   ],
-  'ManagementEventSources': [
-    'kms.amazonaws.com',
-    'rdsdata.amazonaws.com'
+  "ManagedWordFilterType": [
+    "PROFANITY"
   ],
-  'MaxCapacity': [
+  "ManagementEventSources": [
+    "kms.amazonaws.com",
+    "rdsdata.amazonaws.com"
+  ],
+  "MaxCapacity": [
     0.0625,
     1
   ],
-  'MaximumExecutionFrequency': [
-    'One_Hour',
-    'Three_Hours',
-    'Six_Hours',
-    'Twelve_Hours',
-    'TwentyFour_Hours'
+  "MaximumExecutionFrequency": [
+    "One_Hour",
+    "Three_Hours",
+    "Six_Hours",
+    "Twelve_Hours",
+    "TwentyFour_Hours"
   ],
-  'MaximumResolution': [
-    'FULL_HD',
-    'HD',
-    'SD'
+  "MaximumResolution": [
+    "FULL_HD",
+    "HD",
+    "SD"
   ],
-  'MemoryType': [
-    'SESSION_SUMMARY'
+  "McpGatewaySearchType": [
+    "SEMANTIC"
   ],
-  'MergeType': [
-    'MANUAL_MERGE',
-    'AUTO_MERGE'
+  "McpTargetType": [
+    "OPENAPI_SCHEMA",
+    "SMITHY_MODEL",
+    "LAMBDA",
+    "MCP_SERVER"
   ],
-  'MeshFilterType': [
-    'ALLOW_ALL',
-    'DROP_ALL'
+  "MemoryStrategyType": [
+    "SUMMARIZATION",
+    "SEMANTIC",
+    "USER_PREFERENCE",
+    "CUSTOM"
   ],
-  'MessageAttributeDataType': [
-    'String',
-    'String.Array',
-    'Number',
-    'Binary'
+  "MemoryType": [
+    "SESSION_SUMMARY"
   ],
-  'MessageLanguage': [
-    'en',
-    'jp',
-    'zh'
+  "MergeType": [
+    "MANUAL_MERGE",
+    "AUTO_MERGE"
   ],
-  'MessageType': [
-    'ConfigurationItemChangeNotification',
-    'OversizedConfigurationItemChangeNotification',
-    'ScheduledNotification',
-    'ConfigurationSnapshotDeliveryCompleted'
+  "MeshFilterType": [
+    "ALLOW_ALL",
+    "DROP_ALL"
   ],
-  'MetadataType': [
-    'aws:cdk:analytics:construct',
-    'aws:cdk:analytics:method',
-    'aws:cdk:analytics:featureflag'
+  "MessageAttributeDataType": [
+    "String",
+    "String.Array",
+    "Number",
+    "Binary"
   ],
-  'MethodLoggingLevel': [
-    'OFF',
-    'ERROR',
-    'INFO'
+  "MessageLanguage": [
+    "en",
+    "jp",
+    "zh"
   ],
-  'MetricAggregationType': [
-    'Average',
-    'Minimum',
-    'Maximum'
+  "MessageType": [
+    "ConfigurationItemChangeNotification",
+    "OversizedConfigurationItemChangeNotification",
+    "ScheduledNotification",
+    "ConfigurationSnapshotDeliveryCompleted"
   ],
-  'MetricType': [
-    'EventCount'
+  "MetadataType": [
+    "aws:cdk:analytics:construct",
+    "aws:cdk:analytics:method",
+    "aws:cdk:analytics:featureflag"
   ],
-  'MetricsLevel': [
-    'APPLICATION',
-    'TASK',
-    'OPERATOR',
-    'PARALLELISM'
+  "MethodLoggingLevel": [
+    "OFF",
+    "ERROR",
+    "INFO"
   ],
-  'Mfa': [
-    'OFF',
-    'OPTIONAL',
-    'ON'
+  "MetricAggregationType": [
+    "Average",
+    "Minimum",
+    "Maximum"
   ],
-  'Mode': [
-    'SingleModel',
-    'MultiModel'
+  "MetricType": [
+    "EventCount"
   ],
-  'MonitorType': [
+  "MetricsLevel": [
+    "APPLICATION",
+    "TASK",
+    "OPERATOR",
+    "PARALLELISM"
+  ],
+  "Mfa": [
+    "OFF",
+    "OPTIONAL",
+    "ON"
+  ],
+  "ModalityType": [
+    "TEXT",
+    "IMAGE"
+  ],
+  "Mode": [
+    "SingleModel",
+    "MultiModel"
+  ],
+  "MonitorType": [
     0,
     1
   ],
-  'Monitoring': [
+  "Monitoring": [
     0,
     1
   ],
-  'MqttQualityOfService': [
+  "MqttQualityOfService": [
     0,
     1
   ],
-  'MutualAuthenticationMode': [
-    'off',
-    'passthrough',
-    'verify'
+  "MultiRegionConsistency": [
+    "EVENTUAL",
+    "STRONG"
   ],
-  'NamespaceType': [
-    'HTTP',
-    'DNS_PRIVATE',
-    'DNS_PUBLIC'
+  "MutualAuthenticationMode": [
+    "off",
+    "passthrough",
+    "verify"
   ],
-  'NatConnectivityType': [
-    'public',
-    'private'
+  "NamespaceType": [
+    "HTTP",
+    "DNS_PRIVATE",
+    "DNS_PUBLIC"
   ],
-  'NatTrafficDirection': [
-    'OUTBOUND_ONLY',
-    'INBOUND_AND_OUTBOUND',
-    'NONE'
+  "NatConnectivityType": [
+    "public",
+    "private"
   ],
-  'NetworkLoadBalancedServiceRecordType': [
+  "NatTrafficDirection": [
+    "OUTBOUND_ONLY",
+    "INBOUND_AND_OUTBOUND",
+    "NONE"
+  ],
+  "NetworkLoadBalancedServiceRecordType": [
     0,
     1,
     2
   ],
-  'NetworkMode': [
-    'none',
-    'bridge',
-    'awsvpc',
-    'host',
-    'nat'
+  "NetworkMode": [
+    "none",
+    "bridge",
+    "awsvpc",
+    "host",
+    "nat"
   ],
-  'NetworkType': [
-    'IPV4',
-    'DUAL'
+  "NetworkType": [
+    "IPV4",
+    "DUAL"
   ],
-  'NodeType': [
-    'coordinator'
+  "NodeType": [
+    "coordinator"
   ],
-  'NodegroupAmiType': [
-    'AL2_x86_64',
-    'AL2_x86_64_GPU',
-    'AL2_ARM_64',
-    'BOTTLEROCKET_ARM_64',
-    'BOTTLEROCKET_x86_64',
-    'BOTTLEROCKET_ARM_64_NVIDIA',
-    'BOTTLEROCKET_x86_64_NVIDIA',
-    'BOTTLEROCKET_ARM_64_FIPS',
-    'BOTTLEROCKET_x86_64_FIPS',
-    'WINDOWS_CORE_2019_x86_64',
-    'WINDOWS_CORE_2022_x86_64',
-    'WINDOWS_FULL_2019_x86_64',
-    'WINDOWS_FULL_2022_x86_64',
-    'AL2023_x86_64_STANDARD',
-    'AL2023_x86_64_NEURON',
-    'AL2023_x86_64_NVIDIA',
-    'AL2023_ARM_64_STANDARD'
+  "NodegroupAmiType": [
+    "AL2_x86_64",
+    "AL2_x86_64_GPU",
+    "AL2_ARM_64",
+    "BOTTLEROCKET_ARM_64",
+    "BOTTLEROCKET_x86_64",
+    "BOTTLEROCKET_ARM_64_NVIDIA",
+    "BOTTLEROCKET_x86_64_NVIDIA",
+    "BOTTLEROCKET_ARM_64_FIPS",
+    "BOTTLEROCKET_x86_64_FIPS",
+    "WINDOWS_CORE_2019_x86_64",
+    "WINDOWS_CORE_2022_x86_64",
+    "WINDOWS_FULL_2019_x86_64",
+    "WINDOWS_FULL_2022_x86_64",
+    "AL2023_x86_64_STANDARD",
+    "AL2023_x86_64_NEURON",
+    "AL2023_x86_64_NVIDIA",
+    "AL2023_ARM_64_NVIDIA",
+    "AL2023_ARM_64_STANDARD"
   ],
-  'NumericOverflowHandlingAction': [
-    'DISABLED',
-    'FAIL',
-    'SET_TO_NULL',
-    'DROP_ROW'
+  "NumericOverflowHandlingAction": [
+    "DISABLED",
+    "FAIL",
+    "SET_TO_NULL",
+    "DROP_ROW"
   ],
-  'ObjectLockMode': [
-    'GOVERNANCE',
-    'COMPLIANCE'
+  "OCSFSourceType": [
+    "CloudTrail",
+    "Route53Resolver",
+    "VPCFlow",
+    "EKSAudit",
+    "AWSWAF"
   ],
-  'ObjectOwnership': [
-    'BucketOwnerEnforced',
-    'BucketOwnerPreferred',
-    'ObjectWriter'
+  "OCSFVersion": [
+    "V1.1"
   ],
-  'OidcAttributeRequestMethod': [
-    'GET',
-    'POST'
+  "ObjectLockMode": [
+    "GOVERNANCE",
+    "COMPLIANCE"
   ],
-  'OnDemandAllocationStrategy': [
-    'prioritized',
-    'lowest-price'
+  "ObjectOwnership": [
+    "BucketOwnerEnforced",
+    "BucketOwnerPreferred",
+    "ObjectWriter"
   ],
-  'OnPartialBatchItemFailure': [
-    'AUTOMATIC_BISECT'
+  "OidcAttributeRequestMethod": [
+    "GET",
+    "POST"
   ],
-  'OperatingSystem': [
-    'AMAZON_LINUX',
-    'AMAZON_LINUX_2',
-    'AMAZON_LINUX_2023',
-    'WINDOWS_2012',
-    'WINDOWS_2016'
+  "OnDemandAllocationStrategy": [
+    "prioritized",
+    "lowest-price"
   ],
-  'OperatingSystemType': [
+  "OnPartialBatchItemFailure": [
+    "AUTOMATIC_BISECT"
+  ],
+  "OpenTableFormat": [
+    "ICEBERG"
+  ],
+  "OperatingSystem": [
+    "AMAZON_LINUX",
+    "AMAZON_LINUX_2",
+    "AMAZON_LINUX_2023",
+    "WINDOWS_2012",
+    "WINDOWS_2016"
+  ],
+  "OperatingSystemType": [
     0,
     1,
     2
   ],
-  'Operation': [
-    'GetItem',
-    'BatchGetItem',
-    'Scan',
-    'Query',
-    'GetRecords',
-    'PutItem',
-    'DeleteItem',
-    'UpdateItem',
-    'BatchWriteItem',
-    'TransactWriteItems',
-    'TransactGetItems',
-    'ExecuteTransaction',
-    'BatchExecuteStatement',
-    'ExecuteStatement'
+  "Operation": [
+    "GetItem",
+    "BatchGetItem",
+    "Scan",
+    "Query",
+    "GetRecords",
+    "PutItem",
+    "DeleteItem",
+    "UpdateItem",
+    "BatchWriteItem",
+    "TransactWriteItems",
+    "TransactGetItems",
+    "ExecuteTransaction",
+    "BatchExecuteStatement",
+    "ExecuteStatement"
   ],
-  'Operator': [
-    'AND',
-    'OR',
-    'NOT'
+  "Operator": [
+    "AND",
+    "OR",
+    "NOT"
   ],
-  'OpsItemCategory': [
-    'Availability',
-    'Cost',
-    'Performance',
-    'Recovery',
-    'Security'
+  "OpsItemCategory": [
+    "Availability",
+    "Cost",
+    "Performance",
+    "Recovery",
+    "Security"
   ],
-  'OpsItemSeverity': [
-    '1',
-    '2',
-    '3',
-    '4'
+  "OpsItemSeverity": [
+    "1",
+    "2",
+    "3",
+    "4"
   ],
-  'OrcColumnMappingType': [
-    'name',
-    'position'
+  "OrcColumnMappingType": [
+    "name",
+    "position"
   ],
-  'OrchestrationType': [
-    'DEFAULT',
-    'CUSTOM_ORCHESTRATION'
+  "OrcFormatVersion": [
+    "V0_11",
+    "V0_12"
   ],
-  'OriginAccessControlOriginType': [
-    's3',
-    'lambda',
-    'mediastore',
-    'mediapackagev2'
+  "OrchestrationType": [
+    "DEFAULT",
+    "CUSTOM_ORCHESTRATION"
   ],
-  'OriginProtocolPolicy': [
-    'http-only',
-    'match-viewer',
-    'https-only'
+  "OriginAccessControlOriginType": [
+    "s3",
+    "lambda",
+    "mediastore",
+    "mediapackagev2"
   ],
-  'OriginSelectionCriteria': [
-    'default',
-    'media-quality-based'
+  "OriginIpAddressType": [
+    "ipv4",
+    "ipv6",
+    "dualstack"
   ],
-  'OriginSslPolicy': [
-    'SSLv3',
-    'TLSv1',
-    'TLSv1.1',
-    'TLSv1.2'
+  "OriginProtocolPolicy": [
+    "http-only",
+    "match-viewer",
+    "https-only"
   ],
-  'OutOfInfrequentAccessPolicy': [
-    'AFTER_1_ACCESS'
+  "OriginSelectionCriteria": [
+    "default",
+    "media-quality-based"
   ],
-  'OutputFormat': [
-    'cjs',
-    'esm'
+  "OriginSslPolicy": [
+    "SSLv3",
+    "TLSv1",
+    "TLSv1.1",
+    "TLSv1.2"
   ],
-  'OutputType': [
-    'JSON',
-    'JSONL'
+  "OutOfInfrequentAccessPolicy": [
+    "AFTER_1_ACCESS"
   ],
-  'ParameterDataType': [
-    'text',
-    'aws:ec2:image'
+  "OutputFormat": [
+    "cjs",
+    "esm"
   ],
-  'ParameterTier': [
-    'Advanced',
-    'Intelligent-Tiering',
-    'Standard'
+  "OutputType": [
+    "JSON",
+    "JSONL"
   ],
-  'ParameterType': [
-    'string',
-    'number',
-    'integer',
-    'boolean',
-    'array',
-    'object'
+  "ParameterDataType": [
+    "text",
+    "aws:ec2:image"
   ],
-  'ParameterValueType': [
-    'String',
-    'AWS::EC2::AvailabilityZone::Name',
-    'AWS::EC2::Image::Id',
-    'AWS::EC2::Instance::Id',
-    'AWS::EC2::KeyPair::KeyName',
-    'AWS::EC2::SecurityGroup::GroupName',
-    'AWS::EC2::SecurityGroup::Id',
-    'AWS::EC2::Subnet::Id',
-    'AWS::EC2::Volume::Id',
-    'AWS::EC2::VPC::Id',
-    'AWS::Route53::HostedZone::Id'
+  "ParameterTier": [
+    "Advanced",
+    "Intelligent-Tiering",
+    "Standard"
   ],
-  'ParamsAndSecretsLogLevel': [
-    'debug',
-    'info',
-    'warn',
-    'error',
-    'none'
+  "ParameterType": [
+    "string",
+    "number",
+    "integer",
+    "boolean",
+    "array",
+    "object"
   ],
-  'ParamsAndSecretsVersions': [
-    '1.0.103'
+  "ParameterValueType": [
+    "String",
+    "AWS::EC2::AvailabilityZone::Name",
+    "AWS::EC2::Image::Id",
+    "AWS::EC2::Instance::Id",
+    "AWS::EC2::KeyPair::KeyName",
+    "AWS::EC2::SecurityGroup::GroupName",
+    "AWS::EC2::SecurityGroup::Id",
+    "AWS::EC2::Subnet::Id",
+    "AWS::EC2::Volume::Id",
+    "AWS::EC2::VPC::Id",
+    "AWS::Route53::HostedZone::Id"
   ],
-  'Partition': [
-    'aws',
-    'aws-cn',
-    'aws-us-gov',
-    'aws-iso',
-    'aws-iso-b',
-    'aws-iso-f',
-    'aws-iso-e'
+  "ParamsAndSecretsLogLevel": [
+    "debug",
+    "info",
+    "warn",
+    "error",
+    "none"
   ],
-  'PartitionDateSource': [
-    'EventTime',
-    'DeliveryTime'
+  "ParamsAndSecretsVersions": [
+    "1.0.103"
   ],
-  'PasskeyUserVerification': [
-    'preferred',
-    'required'
+  "ParquetWriterVersion": [
+    "V1",
+    "V2"
   ],
-  'PassthroughBehavior': [
-    'WHEN_NO_MATCH',
-    'NEVER',
-    'WHEN_NO_TEMPLATES'
+  "ParserProcessorType": [
+    0,
+    1,
+    2,
+    3,
+    4
   ],
-  'PatchType': [
-    'json',
-    'merge',
-    'strategic'
+  "Partition": [
+    "aws",
+    "aws-cn",
+    "aws-us-gov",
+    "aws-iso",
+    "aws-iso-b",
+    "aws-iso-f",
+    "aws-iso-e",
+    "aws-eusc"
   ],
-  'PerformanceInsightRetention': [
+  "PartitionDateSource": [
+    "EventTime",
+    "DeliveryTime"
+  ],
+  "PasskeyUserVerification": [
+    "preferred",
+    "required"
+  ],
+  "PassthroughBehavior": [
+    "WHEN_NO_MATCH",
+    "NEVER",
+    "WHEN_NO_TEMPLATES"
+  ],
+  "PatchType": [
+    "json",
+    "merge",
+    "strategic"
+  ],
+  "PerformanceInsightRetention": [
     7,
     31,
     62,
@@ -2622,314 +3061,349 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     713,
     731
   ],
-  'PerformanceMode': [
-    'generalPurpose',
-    'maxIO'
+  "PerformanceMode": [
+    "generalPurpose",
+    "maxIO"
   ],
-  'Period': [
-    'DAY',
-    'WEEK',
-    'MONTH'
+  "Period": [
+    "DAY",
+    "WEEK",
+    "MONTH"
   ],
-  'PeriodOverride': [
-    'auto',
-    'inherit'
+  "PeriodOverride": [
+    "auto",
+    "inherit"
   ],
-  'PidMode': [
-    'host',
-    'task'
+  "PidMode": [
+    "host",
+    "task"
   ],
-  'PipeVariable': [
-    '<aws.pipes.pipe-arn>',
-    '<aws.pipes.pipe-name>',
-    '<aws.pipes.source-arn>',
-    '<aws.pipes.enrichment-arn>',
-    '<aws.pipes.target-arn>',
-    '<aws.pipes.event.ingestion-time>',
-    '<aws.pipes.event>',
-    '<aws.pipes.event.json>'
+  "PipeVariable": [
+    "<aws.pipes.pipe-arn>",
+    "<aws.pipes.pipe-name>",
+    "<aws.pipes.source-arn>",
+    "<aws.pipes.enrichment-arn>",
+    "<aws.pipes.target-arn>",
+    "<aws.pipes.event.ingestion-time>",
+    "<aws.pipes.event>",
+    "<aws.pipes.event.json>"
   ],
-  'PipelineNotificationEvents': [
-    'codepipeline-pipeline-pipeline-execution-failed',
-    'codepipeline-pipeline-pipeline-execution-canceled',
-    'codepipeline-pipeline-pipeline-execution-started',
-    'codepipeline-pipeline-pipeline-execution-resumed',
-    'codepipeline-pipeline-pipeline-execution-succeeded',
-    'codepipeline-pipeline-pipeline-execution-superseded',
-    'codepipeline-pipeline-stage-execution-started',
-    'codepipeline-pipeline-stage-execution-succeeded',
-    'codepipeline-pipeline-stage-execution-resumed',
-    'codepipeline-pipeline-stage-execution-canceled',
-    'codepipeline-pipeline-stage-execution-failed',
-    'codepipeline-pipeline-action-execution-succeeded',
-    'codepipeline-pipeline-action-execution-failed',
-    'codepipeline-pipeline-action-execution-canceled',
-    'codepipeline-pipeline-action-execution-started',
-    'codepipeline-pipeline-manual-approval-failed',
-    'codepipeline-pipeline-manual-approval-needed',
-    'codepipeline-pipeline-manual-approval-succeeded'
+  "PipelineNotificationEvents": [
+    "codepipeline-pipeline-pipeline-execution-failed",
+    "codepipeline-pipeline-pipeline-execution-canceled",
+    "codepipeline-pipeline-pipeline-execution-started",
+    "codepipeline-pipeline-pipeline-execution-resumed",
+    "codepipeline-pipeline-pipeline-execution-succeeded",
+    "codepipeline-pipeline-pipeline-execution-superseded",
+    "codepipeline-pipeline-stage-execution-started",
+    "codepipeline-pipeline-stage-execution-succeeded",
+    "codepipeline-pipeline-stage-execution-resumed",
+    "codepipeline-pipeline-stage-execution-canceled",
+    "codepipeline-pipeline-stage-execution-failed",
+    "codepipeline-pipeline-action-execution-succeeded",
+    "codepipeline-pipeline-action-execution-failed",
+    "codepipeline-pipeline-action-execution-canceled",
+    "codepipeline-pipeline-action-execution-started",
+    "codepipeline-pipeline-manual-approval-failed",
+    "codepipeline-pipeline-manual-approval-needed",
+    "codepipeline-pipeline-manual-approval-succeeded"
   ],
-  'PipelineType': [
-    'V1',
-    'V2'
+  "PipelineType": [
+    "V1",
+    "V2"
   ],
-  'PlacementGroupSpreadLevel': [
-    'host',
-    'rack'
+  "PlacementGroupSpreadLevel": [
+    "host",
+    "rack"
   ],
-  'PlacementGroupStrategy': [
-    'cluster',
-    'partition',
-    'spread'
+  "PlacementGroupStrategy": [
+    "cluster",
+    "partition",
+    "spread"
   ],
-  'Platform': [
-    'x86-64',
-    'ARM64'
+  "Platform": [
+    "x86-64",
+    "ARM64"
   ],
-  'Policy': [
-    'ALLOW',
-    'REQUIRE'
+  "Policy": [
+    "ALLOW",
+    "REQUIRE"
   ],
-  'PolicyValidationReportStatusBeta1': [
-    'success',
-    'failure'
+  "PolicyValidationReportStatusBeta1": [
+    "success",
+    "failure"
   ],
-  'PoliticalView': [
-    'IND'
+  "PoliticalView": [
+    "IND"
   ],
-  'PoolState': [
-    'Hibernated',
-    'Running',
-    'Stopped'
+  "PoolState": [
+    "Hibernated",
+    "Running",
+    "Stopped"
   ],
-  'PositionFiltering': [
-    'TimeBased',
-    'DistanceBased',
-    'AccuracyBased'
+  "PositionFiltering": [
+    "TimeBased",
+    "DistanceBased",
+    "AccuracyBased"
   ],
-  'PredefinedMetric': [
-    'ASGAverageCPUUtilization',
-    'ASGAverageNetworkIn',
-    'ASGAverageNetworkOut',
-    'ALBRequestCountPerTarget'
+  "PredefinedMetric": [
+    "ASGAverageCPUUtilization",
+    "ASGAverageNetworkIn",
+    "ASGAverageNetworkOut",
+    "ALBRequestCountPerTarget"
   ],
-  'PredicateLogical': [
-    'AND',
-    'ANY'
+  "PredicateLogical": [
+    "AND",
+    "ANY"
   ],
-  'Preset': [
-    'CONSTRAINED_BANDWIDTH_DELIVERY',
-    'HIGHER_BANDWIDTH_DELIVERY'
+  "Preset": [
+    "CONSTRAINED_BANDWIDTH_DELIVERY",
+    "HIGHER_BANDWIDTH_DELIVERY"
   ],
-  'PriceClass': [
-    'PriceClass_100',
-    'PriceClass_200',
-    'PriceClass_All'
+  "PriceClass": [
+    "PriceClass_100",
+    "PriceClass_200",
+    "PriceClass_All"
   ],
-  'PriorityType': [
-    'LATENCY',
-    'COST',
-    'DESTINATION',
-    'LOCATION'
+  "PriorityType": [
+    "LATENCY",
+    "COST",
+    "DESTINATION",
+    "LOCATION"
   ],
-  'ProcessorMode': [
-    'INLINE',
-    'DISTRIBUTED'
+  "ProcessorMode": [
+    "INLINE",
+    "DISTRIBUTED"
   ],
-  'ProcessorType': [
-    'STANDARD',
-    'EXPRESS'
+  "ProcessorType": [
+    "STANDARD",
+    "EXPRESS"
   ],
-  'ProjectNotificationEvents': [
-    'codebuild-project-build-state-failed',
-    'codebuild-project-build-state-succeeded',
-    'codebuild-project-build-state-in-progress',
-    'codebuild-project-build-state-stopped',
-    'codebuild-project-build-phase-failure',
-    'codebuild-project-build-phase-success'
+  "ProjectNotificationEvents": [
+    "codebuild-project-build-state-failed",
+    "codebuild-project-build-state-succeeded",
+    "codebuild-project-build-state-in-progress",
+    "codebuild-project-build-state-stopped",
+    "codebuild-project-build-phase-failure",
+    "codebuild-project-build-phase-success"
   ],
-  'ProjectVisibility': [
-    'PUBLIC_READ',
-    'PRIVATE'
+  "ProjectVisibility": [
+    "PUBLIC_READ",
+    "PRIVATE"
   ],
-  'ProjectionType': [
-    'KEYS_ONLY',
-    'INCLUDE',
-    'ALL'
+  "ProjectionType": [
+    "KEYS_ONLY",
+    "INCLUDE",
+    "ALL"
   ],
-  'PropagatedTagSource': [
-    'SERVICE',
-    'TASK_DEFINITION',
-    'NONE'
+  "PromptTemplateType": [
+    "TEXT",
+    "CHAT"
   ],
-  'Protocol': [
-    'HTTP',
-    'HTTPS',
-    'TCP',
-    'TLS',
-    'UDP',
-    'TCP_UDP'
+  "PropagateManagedInstancesTags": [
+    "CAPACITY_PROVIDER",
+    "NONE"
   ],
-  'ProviderType': [
-    'CodeStarSourceConnection'
+  "PropagatedTagSource": [
+    "SERVICE",
+    "TASK_DEFINITION",
+    "NONE"
   ],
-  'PythonVersion': [
-    '2',
-    '3',
-    '3.9'
+  "PropertyMergeStrategy": [
+    "override",
+    "merge"
   ],
-  'QueryLanguage': [
-    'JSONPath',
-    'JSONata'
+  "Protocol": [
+    "HTTP",
+    "HTTPS",
+    "TCP",
+    "TLS",
+    "UDP",
+    "TCP_UDP"
   ],
-  'QueueEncryption': [
-    'NONE',
-    'KMS_MANAGED',
-    'KMS',
-    'SQS_MANAGED'
+  "ProtocolType": [
+    "MCP",
+    "HTTP",
+    "A2A"
   ],
-  'ReadWriteType': [
-    'ReadOnly',
-    'WriteOnly',
-    'All',
-    'None'
+  "ProviderType": [
+    "CodeStarSourceConnection"
   ],
-  'ReceiptFilterPolicy': [
-    'Allow',
-    'Block'
+  "ProxyEndpointTargetRole": [
+    "READ_WRITE",
+    "READ_ONLY"
   ],
-  'RecordType': [
-    'A',
-    'AAAA',
-    'CAA',
-    'CNAME',
-    'DS',
-    'HTTPS',
-    'MX',
-    'NAPTR',
-    'NS',
-    'PTR',
-    'SOA',
-    'SPF',
-    'SRV',
-    'SSHFP',
-    'SVCB',
-    'TLSA',
-    'TXT'
+  "PythonVersion": [
+    "2",
+    "3",
+    "3.9"
   ],
-  'RecordWrapperType': [
-    'None',
-    'RecordIO'
+  "QueryLanguage": [
+    "JSONPath",
+    "JSONata"
   ],
-  'RecordingMode': [
-    'INTERVAL',
-    'DISABLED'
+  "QueueEncryption": [
+    "NONE",
+    "KMS_MANAGED",
+    "KMS",
+    "SQS_MANAGED"
   ],
-  'RecursiveLoop': [
-    'Allow',
-    'Terminate'
+  "QuoteCharacter": [
+    "\"",
+    "'"
   ],
-  'RedirectProtocol': [
-    'http',
-    'https'
+  "ReadWriteType": [
+    "ReadOnly",
+    "WriteOnly",
+    "All",
+    "None"
   ],
-  'RedirectStatus': [
-    '200',
-    '301',
-    '302',
-    '404',
-    '404-200'
+  "ReceiptFilterPolicy": [
+    "Allow",
+    "Block"
   ],
-  'RedrivePermission': [
-    'allowAll',
-    'denyAll',
-    'byQueue'
+  "RecordType": [
+    "A",
+    "AAAA",
+    "CAA",
+    "CNAME",
+    "DS",
+    "HTTPS",
+    "MX",
+    "NAPTR",
+    "NS",
+    "PTR",
+    "SOA",
+    "SPF",
+    "SRV",
+    "SSHFP",
+    "SVCB",
+    "TLSA",
+    "TXT"
   ],
-  'ReferenceRendering': [
+  "RecordWrapperType": [
+    "None",
+    "RecordIO"
+  ],
+  "RecordingMode": [
+    "INTERVAL",
+    "DISABLED"
+  ],
+  "RecursiveLoop": [
+    "Allow",
+    "Terminate"
+  ],
+  "RedirectProtocol": [
+    "http",
+    "https"
+  ],
+  "RedirectStatus": [
+    "200",
+    "301",
+    "302",
+    "404",
+    "404-200"
+  ],
+  "RedrivePermission": [
+    "allowAll",
+    "denyAll",
+    "byQueue"
+  ],
+  "ReferenceRendering": [
     0,
     1
   ],
-  'RegistryType': [
-    'private',
-    'public'
+  "RegistryType": [
+    "private",
+    "public"
   ],
-  'RelayConversationHistoryType': [
-    'TO_COLLABORATOR',
-    'DISABLED'
+  "RelayConversationHistoryType": [
+    "TO_COLLABORATOR",
+    "DISABLED"
   ],
-  'RemovalPolicy': [
-    'destroy',
-    'retain',
-    'snapshot',
-    'retain-on-update-or-delete'
+  "RemovalPolicy": [
+    "destroy",
+    "retain",
+    "snapshot",
+    "retain-on-update-or-delete"
   ],
-  'RenditionSelection': [
-    'ALL',
-    'NONE',
-    'CUSTOM'
+  "RenditionSelection": [
+    "ALL",
+    "NONE",
+    "CUSTOM"
   ],
-  'ReplicationOverwriteProtection': [
-    'ENABLED',
-    'DISABLED'
+  "ReplicationOverwriteProtection": [
+    "ENABLED",
+    "DISABLED"
   ],
-  'ReportGroupType': [
-    'TEST',
-    'CODE_COVERAGE'
+  "ReportGroupType": [
+    "TEST",
+    "CODE_COVERAGE"
   ],
-  'RepositoryEventTrigger': [
-    'all',
-    'updateReference',
-    'createReference',
-    'deleteReference'
+  "RepositoryEventTrigger": [
+    "all",
+    "updateReference",
+    "createReference",
+    "deleteReference"
   ],
-  'RepositoryNotificationEvents': [
-    'codecommit-repository-comments-on-commits',
-    'codecommit-repository-comments-on-pull-requests',
-    'codecommit-repository-approvals-status-changed',
-    'codecommit-repository-approvals-rule-override',
-    'codecommit-repository-pull-request-created',
-    'codecommit-repository-pull-request-source-updated',
-    'codecommit-repository-pull-request-status-changed',
-    'codecommit-repository-pull-request-merged',
-    'codecommit-repository-branches-and-tags-created',
-    'codecommit-repository-branches-and-tags-deleted',
-    'codecommit-repository-branches-and-tags-updated'
+  "RepositoryNotificationEvents": [
+    "codecommit-repository-comments-on-commits",
+    "codecommit-repository-comments-on-pull-requests",
+    "codecommit-repository-approvals-status-changed",
+    "codecommit-repository-approvals-rule-override",
+    "codecommit-repository-pull-request-created",
+    "codecommit-repository-pull-request-source-updated",
+    "codecommit-repository-pull-request-status-changed",
+    "codecommit-repository-pull-request-merged",
+    "codecommit-repository-branches-and-tags-created",
+    "codecommit-repository-branches-and-tags-deleted",
+    "codecommit-repository-branches-and-tags-updated"
   ],
-  'RepositoryVisibility': [
+  "RepositoryService": [
+    "ECR"
+  ],
+  "RepositoryVisibility": [
     0,
     1
   ],
-  'RequireConfirmation': [
-    'ENABLED',
-    'DISABLED'
+  "RequireConfirmation": [
+    "ENABLED",
+    "DISABLED"
   ],
-  'Resolution': [
-    'FULL_HD',
-    'HD',
-    'SD',
-    'LOWEST_RESOLUTION'
+  "Resolution": [
+    "FULL_HD",
+    "HD",
+    "SD",
+    "LOWEST_RESOLUTION"
   ],
-  'ResolutionTypeHint': [
-    'string',
-    'number',
-    'string-list'
+  "ResolutionTypeHint": [
+    "string",
+    "number",
+    "string-list"
   ],
-  'ResourceAction': [
-    'pause-cluster',
-    'resume-cluster',
-    'failover-primary-compute'
+  "ResourceAction": [
+    "pause-cluster",
+    "resume-cluster",
+    "failover-primary-compute"
   ],
-  'RestApiMode': [
-    'overwrite',
-    'merge'
+  "ResourceToReplicateTags": [
+    "lambda-function"
   ],
-  'Result': [
-    'ROLLBACK',
-    'FAIL',
-    'RETRY',
-    'SKIP'
+  "ResponseTransferMode": [
+    "BUFFERED",
+    "STREAM"
   ],
-  'RetentionDays': [
+  "RestApiMode": [
+    "overwrite",
+    "merge"
+  ],
+  "Result": [
+    "ROLLBACK",
+    "FAIL",
+    "RETRY",
+    "SKIP"
+  ],
+  "RetentionDays": [
     1,
     3,
     5,
@@ -2954,429 +3428,467 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     3653,
     9999
   ],
-  'RetryMode': [
-    'ALL_ACTIONS',
-    'FAILED_ACTIONS'
+  "RetryMode": [
+    "ALL_ACTIONS",
+    "FAILED_ACTIONS"
   ],
-  'RevisionType': [
-    'COMMIT_ID',
-    'IMAGE_DIGEST',
-    'S3_OBJECT_VERSION_ID',
-    'S3_OBJECT_KEY'
+  "RevisionType": [
+    "COMMIT_ID",
+    "IMAGE_DIGEST",
+    "S3_OBJECT_VERSION_ID",
+    "S3_OBJECT_KEY"
   ],
-  'RevocationType': [
-    'CRL'
+  "RevocationType": [
+    "CRL"
   ],
-  'RoleMappingMatchType': [
-    'Equals',
-    'Contains',
-    'StartsWith',
-    'NotEqual'
+  "RoleMappingMatchType": [
+    "Equals",
+    "Contains",
+    "StartsWith",
+    "NotEqual"
   ],
-  'RouterType': [
-    'CarrierGateway',
-    'EgressOnlyInternetGateway',
-    'Gateway',
-    'Instance',
-    'LocalGateway',
-    'NatGateway',
-    'NetworkInterface',
-    'TransitGateway',
-    'VpcPeeringConnection',
-    'VpcEndpoint'
+  "RouterType": [
+    "CarrierGateway",
+    "EgressOnlyInternetGateway",
+    "Gateway",
+    "Instance",
+    "LocalGateway",
+    "NatGateway",
+    "NetworkInterface",
+    "TransitGateway",
+    "VpcPeeringConnection",
+    "VpcEndpoint",
+    "CoreNetwork"
   ],
-  'RoutingPolicy': [
-    'WEIGHTED',
-    'MULTIVALUE'
+  "RoutingPolicy": [
+    "WEIGHTED",
+    "MULTIVALUE"
   ],
-  'Runtime': [
-    'nodejs18.x',
-    'python3.9',
-    'python3.10',
-    'python3.11'
+  "Runtime": [
+    "nodejs20.x",
+    "python3.9",
+    "python3.10",
+    "python3.11",
+    "python3.13",
+    "python3.13"
   ],
-  'RuntimeFamily': [
+  "RuntimeFamily": [
     0,
     1,
     2
   ],
-  'S3DataDistributionType': [
-    'FullyReplicated',
-    'ShardedByS3Key'
+  "S3DataDistributionType": [
+    "FullyReplicated",
+    "ShardedByS3Key"
   ],
-  'S3DataType': [
-    'ManifestFile',
-    'S3Prefix',
-    'AugmentedManifestFile'
+  "S3DataType": [
+    "ManifestFile",
+    "S3Prefix",
+    "AugmentedManifestFile"
   ],
-  'S3EncryptionMode': [
-    'SSE-S3',
-    'SSE-KMS'
+  "S3EncryptionMode": [
+    "SSE-S3",
+    "SSE-KMS"
   ],
-  'S3OutputFormat': [
-    'plain',
-    'json',
-    'w3c'
+  "S3LogsDeliveryPermissionsVersion": [
+    "V1",
+    "V2"
   ],
-  'S3Trigger': [
-    'None',
-    'Poll',
-    'Events'
+  "S3OutputFormat": [
+    "plain",
+    "json",
+    "w3c"
   ],
-  'SSLMethod': [
-    'sni-only',
-    'vip',
-    'static-ip'
+  "S3Trigger": [
+    "None",
+    "Poll",
+    "Events"
   ],
-  'ScalingEvent': [
-    'autoscaling:EC2_INSTANCE_LAUNCH',
-    'autoscaling:EC2_INSTANCE_TERMINATE',
-    'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
-    'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
-    'autoscaling:TEST_NOTIFICATION'
+  "SSLMethod": [
+    "sni-only",
+    "vip",
+    "static-ip"
   ],
-  'ScalingMode': [
-    'STANDARD',
-    'MANAGED'
+  "ScalingEvent": [
+    "autoscaling:EC2_INSTANCE_LAUNCH",
+    "autoscaling:EC2_INSTANCE_TERMINATE",
+    "autoscaling:EC2_INSTANCE_TERMINATE_ERROR",
+    "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+    "autoscaling:TEST_NOTIFICATION"
   ],
-  'ScalingProcess': [
-    'Launch',
-    'Terminate',
-    'HealthCheck',
-    'ReplaceUnhealthy',
-    'AZRebalance',
-    'AlarmNotification',
-    'ScheduledActions',
-    'AddToLoadBalancer',
-    'InstanceRefresh'
+  "ScalingMode": [
+    "STANDARD",
+    "MANAGED"
   ],
-  'Scope': [
-    'task',
-    'shared'
+  "ScalingProcess": [
+    "Launch",
+    "Terminate",
+    "HealthCheck",
+    "ReplaceUnhealthy",
+    "AZRebalance",
+    "AlarmNotification",
+    "ScheduledActions",
+    "AddToLoadBalancer",
+    "InstanceRefresh"
   ],
-  'SecurityPolicy': [
-    'TLS_1_0',
-    'TLS_1_2'
+  "ScheduleStartCondition": [
+    "EXPRESSION_MATCH_ONLY",
+    "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE"
   ],
-  'SecurityPolicyProtocol': [
-    'SSLv3',
-    'TLSv1',
-    'TLSv1_2016',
-    'TLSv1.1_2016',
-    'TLSv1.2_2018',
-    'TLSv1.2_2019',
-    'TLSv1.2_2021'
+  "SchemaDefinitionType": [
+    "string",
+    "number",
+    "object",
+    "array",
+    "boolean",
+    "integer"
   ],
-  'ServerSideEncryption': [
-    'AES256',
-    'aws:kms',
-    'aws:kms:dsse'
+  "Scope": [
+    "task",
+    "shared"
   ],
-  'ServiceIntegrationPattern': [
-    'FIRE_AND_FORGET',
-    'SYNC',
-    'WAIT_FOR_TASK_TOKEN'
+  "SecurityPolicy": [
+    "TLS_1_0",
+    "TLS_1_2"
   ],
-  'ServiceManager': [
+  "SecurityPolicyProtocol": [
+    "SSLv3",
+    "TLSv1",
+    "TLSv1_2016",
+    "TLSv1.1_2016",
+    "TLSv1.2_2018",
+    "TLSv1.2_2019",
+    "TLSv1.2_2021",
+    "TLSv1.2_2025",
+    "TLSv1.3_2025"
+  ],
+  "ServerSideEncryption": [
+    "AES256",
+    "aws:kms",
+    "aws:kms:dsse"
+  ],
+  "ServiceIntegrationPattern": [
+    "FIRE_AND_FORGET",
+    "SYNC",
+    "WAIT_FOR_TASK_TOKEN"
+  ],
+  "ServiceManager": [
     0,
     1,
     2
   ],
-  'ServiceNamespace': [
-    'ecs',
-    'elasticmapreduce',
-    'ec2',
-    'appstream',
-    'dynamodb',
-    'rds',
-    'sagemaker',
-    'custom-resource',
-    'lambda',
-    'comprehend',
-    'kafka',
-    'elasticache',
-    'neptune',
-    'cassandra',
-    'workspaces'
+  "ServiceNamespace": [
+    "ecs",
+    "elasticmapreduce",
+    "ec2",
+    "appstream",
+    "dynamodb",
+    "rds",
+    "sagemaker",
+    "custom-resource",
+    "lambda",
+    "comprehend",
+    "kafka",
+    "elasticache",
+    "neptune",
+    "cassandra",
+    "workspaces"
   ],
-  'Shading': [
-    'none',
-    'above',
-    'below'
+  "Shading": [
+    "none",
+    "above",
+    "below"
   ],
-  'SharePermission': [
+  "ShardLevelMetrics": [
+    "IncomingBytes",
+    "IncomingRecords",
+    "IteratorAgeMilliseconds",
+    "OutgoingBytes",
+    "OutgoingRecords",
+    "ReadProvisionedThroughputExceeded",
+    "WriteProvisionedThroughputExceeded",
+    "ALL"
+  ],
+  "SharePermission": [
     0,
     1
   ],
-  'SigningAlgorithm': [
-    'rsa-sha256'
+  "SigningAlgorithm": [
+    "rsa-sha256"
   ],
-  'SigningBehavior': [
-    'always',
-    'never',
-    'no-override'
+  "SigningBehavior": [
+    "always",
+    "never",
+    "no-override"
   ],
-  'SigningProtocol': [
-    'sigv4'
+  "SigningProtocol": [
+    "sigv4"
   ],
-  'SizeRoundingBehavior': [
+  "SizeRoundingBehavior": [
     0,
     1,
     2
   ],
-  'SnsActionMessageFormat': [
-    'RAW',
-    'JSON'
+  "SnsActionMessageFormat": [
+    "RAW",
+    "JSON"
   ],
-  'SourceMapMode': [
-    'default',
-    'external',
-    'inline',
-    'both'
+  "SourceMapMode": [
+    "default",
+    "external",
+    "inline",
+    "both"
   ],
-  'SourceType': [
-    'lambda',
-    'sqs',
-    'sns',
-    'events'
+  "SourceType": [
+    "lambda",
+    "sqs",
+    "sns",
+    "events"
   ],
-  'SplitType': [
-    'None',
-    'Line',
-    'RecordIO',
-    'TFRecord'
+  "SplitType": [
+    "None",
+    "Line",
+    "RecordIO",
+    "TFRecord"
   ],
-  'SplunkLogFormat': [
-    'inline',
-    'json',
-    'raw'
+  "SplunkLogFormat": [
+    "inline",
+    "json",
+    "raw"
   ],
-  'SpotAllocationStrategy': [
-    'lowest-price',
-    'capacity-optimized',
-    'capacity-optimized-prioritized',
-    'price-capacity-optimized'
+  "SpotAllocationStrategy": [
+    "lowest-price",
+    "capacity-optimized",
+    "capacity-optimized-prioritized",
+    "price-capacity-optimized"
   ],
-  'SpotInstanceInterruption': [
-    'stop',
-    'terminate',
-    'hibernate'
+  "SpotInstanceInterruption": [
+    "stop",
+    "terminate",
+    "hibernate"
   ],
-  'SpotRequestType': [
-    'one-time',
-    'persistent'
+  "SpotRequestType": [
+    "one-time",
+    "persistent"
   ],
-  'SslPolicy': [
-    'ELBSecurityPolicy-TLS13-1-2-2021-06',
-    'ELBSecurityPolicy-2016-08',
-    'ELBSecurityPolicy-TLS13-1-2-Res-2021-06',
-    'ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06',
-    'ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06',
-    'ELBSecurityPolicy-TLS13-1-0-2021-06',
-    'ELBSecurityPolicy-TLS13-1-1-2021-06',
-    'ELBSecurityPolicy-TLS13-1-3-2021-06',
-    'ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04',
-    'ELBSecurityPolicy-FS-1-2-Res-2020-10',
-    'ELBSecurityPolicy-FS-1-2-Res-2019-08',
-    'ELBSecurityPolicy-FS-1-2-2019-08',
-    'ELBSecurityPolicy-FS-1-1-2019-08',
-    'ELBSecurityPolicy-FS-2018-06',
-    'ELBSecurityPolicy-TLS-1-2-2017-01',
-    'ELBSecurityPolicy-TLS-1-2-Ext-2018-06',
-    'ELBSecurityPolicy-TLS-1-1-2017-01',
-    'ELBSecurityPolicy-TLS-1-0-2015-04'
+  "SslPolicy": [
+    "ELBSecurityPolicy-TLS13-1-2-2021-06",
+    "ELBSecurityPolicy-2016-08",
+    "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
+    "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06",
+    "ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06",
+    "ELBSecurityPolicy-TLS13-1-0-2021-06",
+    "ELBSecurityPolicy-TLS13-1-1-2021-06",
+    "ELBSecurityPolicy-TLS13-1-3-2021-06",
+    "ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04",
+    "ELBSecurityPolicy-FS-1-2-Res-2020-10",
+    "ELBSecurityPolicy-FS-1-2-Res-2019-08",
+    "ELBSecurityPolicy-FS-1-2-2019-08",
+    "ELBSecurityPolicy-FS-1-1-2019-08",
+    "ELBSecurityPolicy-FS-2018-06",
+    "ELBSecurityPolicy-TLS-1-2-2017-01",
+    "ELBSecurityPolicy-TLS-1-2-Ext-2018-06",
+    "ELBSecurityPolicy-TLS-1-1-2017-01",
+    "ELBSecurityPolicy-TLS-1-0-2015-04"
   ],
-  'StackSetOrganizationsAutoDeployment': [
-    'Enabled',
-    'Disabled',
-    'EnabledWithStackRetention'
+  "StackSetOrganizationsAutoDeployment": [
+    "Enabled",
+    "Disabled",
+    "EnabledWithStackRetention"
   ],
-  'StandardThreatProtectionMode': [
-    'ENFORCED',
-    'AUDIT',
-    'OFF'
+  "StandardThreatProtectionMode": [
+    "ENFORCED",
+    "AUDIT",
+    "OFF"
   ],
-  'StartingPosition': [
-    'TRIM_HORIZON',
-    'LATEST',
-    'AT_TIMESTAMP'
+  "StartingPosition": [
+    "TRIM_HORIZON",
+    "LATEST",
+    "AT_TIMESTAMP"
   ],
-  'StateMachineInvocationType': [
-    'FIRE_AND_FORGET',
-    'REQUEST_RESPONSE'
+  "StateMachineInvocationType": [
+    "FIRE_AND_FORGET",
+    "REQUEST_RESPONSE"
   ],
-  'StateMachineType': [
-    'EXPRESS',
-    'STANDARD'
+  "StateMachineType": [
+    "EXPRESS",
+    "STANDARD"
   ],
-  'StateType': [
-    'Pass',
-    'Task',
-    'Choice',
-    'Wait',
-    'Succeed',
-    'Fail',
-    'Parallel',
-    'Map'
+  "StateType": [
+    "Pass",
+    "Task",
+    "Choice",
+    "Wait",
+    "Succeed",
+    "Fail",
+    "Parallel",
+    "Map"
   ],
-  'Statistic': [
-    'SampleCount',
-    'Average',
-    'Sum',
-    'Minimum',
-    'Maximum'
+  "Statistic": [
+    "SampleCount",
+    "Average",
+    "Sum",
+    "Minimum",
+    "Maximum"
   ],
-  'Status': [
-    'pass',
-    'fail'
+  "Status": [
+    "pass",
+    "fail"
   ],
-  'Storage': [
-    'SEQUENTIAL',
-    'LATEST'
+  "Storage": [
+    "SEQUENTIAL",
+    "LATEST"
   ],
-  'StorageClass': [
-    'STANDARD',
-    'REDUCED_REDUNDANCY',
-    'STANDARD_IA',
-    'ONEZONE_IA',
-    'INTELLIGENT_TIERING',
-    'GLACIER',
-    'DEEP_ARCHIVE'
+  "StorageClass": [
+    "STANDARD",
+    "REDUCED_REDUNDANCY",
+    "STANDARD_IA",
+    "ONEZONE_IA",
+    "INTELLIGENT_TIERING",
+    "GLACIER",
+    "DEEP_ARCHIVE"
   ],
-  'StorageMode': [
-    'LOCAL',
-    'TIERED'
+  "StorageMode": [
+    "LOCAL",
+    "TIERED"
   ],
-  'StorageParameters': [
-    'skip.header.line.count',
-    'data_cleansing_enabled',
-    'compression_type',
-    'invalid_char_handling',
-    'replacement_char',
-    'numeric_overflow_handling',
-    'surplus_bytes_handling',
-    'surplus_char_handling',
-    'column_count_mismatch_handling',
-    'num_rows',
-    'serialization.null.format',
-    'orc.schema.resolution',
-    'write.parallel',
-    'write.maxfilesize.mb',
-    'write.kms.key.id'
+  "StorageParameters": [
+    "skip.header.line.count",
+    "data_cleansing_enabled",
+    "compression_type",
+    "invalid_char_handling",
+    "replacement_char",
+    "numeric_overflow_handling",
+    "surplus_bytes_handling",
+    "surplus_char_handling",
+    "column_count_mismatch_handling",
+    "num_rows",
+    "serialization.null.format",
+    "orc.schema.resolution",
+    "write.parallel",
+    "write.maxfilesize.mb",
+    "write.kms.key.id"
   ],
-  'StorageType': [
-    'standard',
-    'gp2',
-    'gp3',
-    'io1',
-    'io2'
+  "StorageType": [
+    "standard",
+    "gp2",
+    "gp3",
+    "io1",
+    "io2"
   ],
-  'StreamEncryption': [
-    'NONE',
-    'KMS',
-    'MANAGED'
+  "StreamEncryption": [
+    "NONE",
+    "KMS",
+    "MANAGED"
   ],
-  'StreamEncryptionType': [
+  "StreamEncryptionType": [
     0,
     1,
     2
   ],
-  'StreamMode': [
-    'PROVISIONED',
-    'ON_DEMAND'
+  "StreamMode": [
+    "PROVISIONED",
+    "ON_DEMAND"
   ],
-  'StreamViewType': [
-    'NEW_IMAGE',
-    'OLD_IMAGE',
-    'NEW_AND_OLD_IMAGES',
-    'KEYS_ONLY'
+  "StreamViewType": [
+    "NEW_IMAGE",
+    "OLD_IMAGE",
+    "NEW_AND_OLD_IMAGES",
+    "KEYS_ONLY"
   ],
-  'Style': [
-    'VectorEsriNavigation',
-    'RasterEsriImagery',
-    'VectorEsriLightGrayCanvas',
-    'VectorEsriTopographic',
-    'VectorEsriStreets',
-    'VectorEsriDarkGrayCanvas',
-    'VectorHereExplore',
-    'RasterHereExploreSatellite',
-    'HybridHereExploreSatellite',
-    'VectorHereContrast',
-    'VectorHereExploreTruck',
-    'VectorGrabStandardLight',
-    'VectorGrabStandardDark',
-    'VectorOpenDataStandardLight',
-    'VectorOpenDataStandardDark',
-    'VectorOpenDataVisualizationLight',
-    'VectorOpenDataVisualizationDark'
+  "StringMutatorType": [
+    0,
+    1,
+    2,
+    3,
+    4
   ],
-  'SubnetType': [
-    'Isolated',
-    'Deprecated_Isolated',
-    'Private',
-    'Deprecated_Private_NAT',
-    'Deprecated_Private',
-    'Public'
+  "Style": [
+    "VectorEsriNavigation",
+    "RasterEsriImagery",
+    "VectorEsriLightGrayCanvas",
+    "VectorEsriTopographic",
+    "VectorEsriStreets",
+    "VectorEsriDarkGrayCanvas",
+    "VectorHereExplore",
+    "RasterHereExploreSatellite",
+    "HybridHereExploreSatellite",
+    "VectorHereContrast",
+    "VectorHereExploreTruck",
+    "VectorGrabStandardLight",
+    "VectorGrabStandardDark",
+    "VectorOpenDataStandardLight",
+    "VectorOpenDataStandardDark",
+    "VectorOpenDataVisualizationLight",
+    "VectorOpenDataVisualizationDark"
   ],
-  'SubscriptionProtocol': [
-    'http',
-    'https',
-    'email',
-    'email-json',
-    'sms',
-    'sqs',
-    'application',
-    'lambda',
-    'firehose'
+  "SubnetType": [
+    "Isolated",
+    "Deprecated_Isolated",
+    "Private",
+    "Deprecated_Private_NAT",
+    "Deprecated_Private",
+    "Public"
   ],
-  'SuppressionReasons': [
-    'BOUNCES_AND_COMPLAINTS',
-    'BOUNCES_ONLY',
-    'COMPLAINTS_ONLY'
+  "SubscriptionProtocol": [
+    "http",
+    "https",
+    "email",
+    "email-json",
+    "sms",
+    "sqs",
+    "application",
+    "lambda",
+    "firehose"
   ],
-  'SurplusBytesHandlingAction': [
-    'SET_TO_NULL',
-    'DISABLED',
-    'FAIL',
-    'DROP_ROW',
-    'TRUNCATE'
+  "SuppressionReasons": [
+    "BOUNCES_AND_COMPLAINTS",
+    "BOUNCES_ONLY",
+    "COMPLAINTS_ONLY"
   ],
-  'SurplusCharHandlingAction': [
-    'SET_TO_NULL',
-    'DISABLED',
-    'FAIL',
-    'DROP_ROW',
-    'TRUNCATE'
+  "SurplusBytesHandlingAction": [
+    "SET_TO_NULL",
+    "DISABLED",
+    "FAIL",
+    "DROP_ROW",
+    "TRUNCATE"
   ],
-  'SymlinkFollowMode': [
-    'never',
-    'always',
-    'external',
-    'internal-only'
+  "SurplusCharHandlingAction": [
+    "SET_TO_NULL",
+    "DISABLED",
+    "FAIL",
+    "DROP_ROW",
+    "TRUNCATE"
   ],
-  'SynthesisMessageLevel': [
-    'info',
-    'warning',
-    'error'
+  "SymlinkFollowMode": [
+    "never",
+    "always",
+    "external",
+    "internal-only"
   ],
-  'SystemLogLevel': [
-    'INFO',
-    'DEBUG',
-    'WARN'
+  "SynthesisMessageLevel": [
+    "info",
+    "warning",
+    "error"
   ],
-  'TLSSecurityPolicy': [
-    'Policy-Min-TLS-1-0-2019-07',
-    'Policy-Min-TLS-1-2-2019-07',
-    'Policy-Min-TLS-1-2-PFS-2023-10'
+  "SystemLogLevel": [
+    "INFO",
+    "DEBUG",
+    "WARN"
   ],
-  'TableAction': [
+  "TLSSecurityPolicy": [
+    "Policy-Min-TLS-1-0-2019-07",
+    "Policy-Min-TLS-1-2-2019-07",
+    "Policy-Min-TLS-1-2-PFS-2023-10"
+  ],
+  "TableAction": [
     0,
     1,
     2,
@@ -3385,806 +3897,872 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     5,
     6
   ],
-  'TableBucketEncryption': [
-    'aws:kms',
-    'AES256'
+  "TableBucketEncryption": [
+    "aws:kms",
+    "AES256"
   ],
-  'TableClass': [
-    'STANDARD',
-    'STANDARD_INFREQUENT_ACCESS'
+  "TableClass": [
+    "STANDARD",
+    "STANDARD_INFREQUENT_ACCESS"
   ],
-  'TableDistStyle': [
-    'AUTO',
-    'EVEN',
-    'KEY',
-    'ALL'
+  "TableDistStyle": [
+    "AUTO",
+    "EVEN",
+    "KEY",
+    "ALL"
   ],
-  'TableEncryption': [
-    'AWS_OWNED',
-    'CUSTOMER_MANAGED',
-    'AWS_MANAGED'
+  "TableEncryption": [
+    "AWS_OWNED",
+    "CUSTOMER_MANAGED",
+    "AWS_MANAGED"
   ],
-  'TableLayout': [
-    'horizontal',
-    'vertical'
+  "TableLayout": [
+    "horizontal",
+    "vertical"
   ],
-  'TableSortStyle': [
-    'AUTO',
-    'COMPOUND',
-    'INTERLEAVED'
+  "TableSortStyle": [
+    "AUTO",
+    "COMPOUND",
+    "INTERLEAVED"
   ],
-  'TableSummaryColumn': [
-    'MIN',
-    'MAX',
-    'SUM',
-    'AVG'
+  "TableSummaryColumn": [
+    "MIN",
+    "MAX",
+    "SUM",
+    "AVG"
   ],
-  'TagMutability': [
-    'MUTABLE',
-    'IMMUTABLE'
+  "TagMutability": [
+    "MUTABLE",
+    "IMMUTABLE",
+    "IMMUTABLE_WITH_EXCLUSION",
+    "MUTABLE_WITH_EXCLUSION"
   ],
-  'TagOperation': [
-    'STRINGEQUALS',
-    'dummy'
+  "TagOperation": [
+    "STRINGEQUALS",
+    "dummy"
   ],
-  'TagStatus': [
-    'any',
-    'tagged',
-    'untagged'
+  "TagStatus": [
+    "any",
+    "tagged",
+    "untagged"
   ],
-  'TagType': [
-    'StandardTag',
-    'AutoScalingGroupTag',
-    'StringToStringMap',
-    'KeyValue',
-    'NotTaggable'
+  "TagType": [
+    "StandardTag",
+    "AutoScalingGroupTag",
+    "StringToStringMap",
+    "KeyValue",
+    "NotTaggable"
   ],
-  'TaintEffect': [
-    'NO_SCHEDULE',
-    'PREFER_NO_SCHEDULE',
-    'NO_EXECUTE'
+  "TaintEffect": [
+    "NO_SCHEDULE",
+    "PREFER_NO_SCHEDULE",
+    "NO_EXECUTE"
   ],
-  'TargetGroupIpAddressType': [
-    'ipv4',
-    'ipv6'
+  "TargetGroupIpAddressType": [
+    "ipv4",
+    "ipv6"
   ],
-  'TargetGroupLoadBalancingAlgorithmType': [
-    'round_robin',
-    'least_outstanding_requests',
-    'weighted_random'
+  "TargetGroupLoadBalancingAlgorithmType": [
+    "round_robin",
+    "least_outstanding_requests",
+    "weighted_random"
   ],
-  'TargetType': [
-    'instance',
-    'ip',
-    'lambda',
-    'alb'
+  "TargetType": [
+    "instance",
+    "ip",
+    "lambda",
+    "alb"
   ],
-  'TcpRetryEvent': [
-    'connection-error'
+  "TcpRetryEvent": [
+    "connection-error"
   ],
-  'TemplateType': [
-    'Text',
-    'Object'
+  "TemplateType": [
+    "Text",
+    "Object"
   ],
-  'TerminationPolicy': [
-    'AllocationStrategy',
-    'ClosestToNextInstanceHour',
-    'Default',
-    'NewestInstance',
-    'OldestInstance',
-    'OldestLaunchConfiguration',
-    'OldestLaunchTemplate',
-    'CustomLambdaFunction'
+  "Tenancy": [
+    "default",
+    "dedicated",
+    "host"
   ],
-  'TextWidgetBackground': [
-    'solid',
-    'transparent'
+  "TerminationPolicy": [
+    "AllocationStrategy",
+    "ClosestToNextInstanceHour",
+    "Default",
+    "NewestInstance",
+    "OldestInstance",
+    "OldestLaunchConfiguration",
+    "OldestLaunchTemplate",
+    "CustomLambdaFunction"
   ],
-  'ThroughputMode': [
-    'bursting',
-    'provisioned',
-    'elastic'
+  "TextWidgetBackground": [
+    "solid",
+    "transparent"
   ],
-  'TimeoutAction': [
-    'ForceApplyCapacityChange',
-    'RollbackCapacityChange'
+  "ThroughputMode": [
+    "bursting",
+    "provisioned",
+    "elastic"
   ],
-  'TlsMode': [
-    'STRICT',
-    'PERMISSIVE',
-    'DISABLED'
+  "TierConfig": [
+    "CLASSIC",
+    "STANDARD"
   ],
-  'TlsPolicy': [
-    'Optional',
-    'Require'
+  "TimeoutAction": [
+    "ForceApplyCapacityChange",
+    "RollbackCapacityChange"
   ],
-  'TmpfsMountOption': [
-    'defaults',
-    'ro',
-    'rw',
-    'suid',
-    'nosuid',
-    'dev',
-    'nodev',
-    'exec',
-    'noexec',
-    'sync',
-    'async',
-    'dirsync',
-    'remount',
-    'mand',
-    'nomand',
-    'atime',
-    'noatime',
-    'diratime',
-    'nodiratime',
-    'bind',
-    'rbind',
-    'unbindable',
-    'runbindable',
-    'private',
-    'rprivate',
-    'shared',
-    'rshared',
-    'slave',
-    'rslave',
-    'relatime',
-    'norelatime',
-    'strictatime',
-    'nostrictatime',
-    'mode',
-    'uid',
-    'gid',
-    'nr_inodes',
-    'nr_blocks',
-    'mpol'
+  "TlsMode": [
+    "STRICT",
+    "PERMISSIVE",
+    "DISABLED"
   ],
-  'TraceConfigurationVendor': [
-    'AWSXRAY'
+  "TlsPolicy": [
+    "Optional",
+    "Require"
   ],
-  'Tracing': [
-    'Active',
-    'PassThrough',
-    'Disabled'
+  "TmpfsMountOption": [
+    "defaults",
+    "ro",
+    "rw",
+    "suid",
+    "nosuid",
+    "dev",
+    "nodev",
+    "exec",
+    "noexec",
+    "sync",
+    "async",
+    "dirsync",
+    "remount",
+    "mand",
+    "nomand",
+    "atime",
+    "noatime",
+    "diratime",
+    "nodiratime",
+    "bind",
+    "rbind",
+    "unbindable",
+    "runbindable",
+    "private",
+    "rprivate",
+    "shared",
+    "rshared",
+    "slave",
+    "rslave",
+    "relatime",
+    "norelatime",
+    "strictatime",
+    "nostrictatime",
+    "mode",
+    "uid",
+    "gid",
+    "nr_inodes",
+    "nr_blocks",
+    "mpol"
   ],
-  'TracingConfig': [
-    'PassThrough',
-    'Active'
+  "TraceConfigurationVendor": [
+    "AWSXRAY"
   ],
-  'TrafficDirection': [
+  "Tracing": [
+    "Active",
+    "PassThrough",
+    "Disabled"
+  ],
+  "TracingConfig": [
+    "PassThrough",
+    "Active"
+  ],
+  "TrafficDirection": [
     0,
     1
   ],
-  'Transformation': [
-    'NONE',
-    'COMPACT',
-    'FLATTEN'
+  "Transformation": [
+    "NONE",
+    "COMPACT",
+    "FLATTEN"
   ],
-  'TransitGatewayFeatureStatus': [
-    'enable',
-    'disable'
+  "TransitGatewayFeatureStatus": [
+    "enable",
+    "disable"
   ],
-  'TransitionDefaultMinimumObjectSize': [
-    'all_storage_classes_128K',
-    'varies_by_storage_class'
+  "TransitionDefaultMinimumObjectSize": [
+    "all_storage_classes_128K",
+    "varies_by_storage_class"
   ],
-  'TransportProtocol': [
-    'tcp',
-    'udp'
+  "TransportProtocol": [
+    "tcp",
+    "udp"
   ],
-  'TreatMissingData': [
-    'breaching',
-    'notBreaching',
-    'ignore',
-    'missing'
+  "TreatMissingData": [
+    "breaching",
+    "notBreaching",
+    "ignore",
+    "missing"
   ],
-  'TriggerInvalidation': [
-    'WHEN_FUNCTION_CHANGES'
+  "TriggerInvalidation": [
+    "WHEN_FUNCTION_CHANGES"
   ],
-  'URLEncodingFormat': [
-    'BRACKETS',
-    'COMMAS',
-    'DEFAULT',
-    'INDICES',
-    'NONE',
-    'REPEAT'
+  "TypeConverterType": [
+    "boolean",
+    "integer",
+    "double",
+    "string"
   ],
-  'UlimitName': [
-    'core',
-    'cpu',
-    'data',
-    'fsize',
-    'locks',
-    'memlock',
-    'msgqueue',
-    'nice',
-    'nofile',
-    'nproc',
-    'rss',
-    'rtprio',
-    'rttime',
-    'sigpending',
-    'stack'
+  "URLEncodingFormat": [
+    "BRACKETS",
+    "COMMAS",
+    "DEFAULT",
+    "INDICES",
+    "NONE",
+    "REPEAT"
   ],
-  'UnauthenticatedAction': [
-    'deny',
-    'allow',
-    'authenticate'
+  "UlimitName": [
+    "core",
+    "cpu",
+    "data",
+    "fsize",
+    "locks",
+    "memlock",
+    "msgqueue",
+    "nice",
+    "nofile",
+    "nproc",
+    "rss",
+    "rtprio",
+    "rttime",
+    "sigpending",
+    "stack"
   ],
-  'Unit': [
-    'Seconds',
-    'Microseconds',
-    'Milliseconds',
-    'Bytes',
-    'Kilobytes',
-    'Megabytes',
-    'Gigabytes',
-    'Terabytes',
-    'Bits',
-    'Kilobits',
-    'Megabits',
-    'Gigabits',
-    'Terabits',
-    'Percent',
-    'Count',
-    'Bytes/Second',
-    'Kilobytes/Second',
-    'Megabytes/Second',
-    'Gigabytes/Second',
-    'Terabytes/Second',
-    'Bits/Second',
-    'Kilobits/Second',
-    'Megabits/Second',
-    'Gigabits/Second',
-    'Terabits/Second',
-    'Count/Second',
-    'None'
+  "UnauthenticatedAction": [
+    "deny",
+    "allow",
+    "authenticate"
   ],
-  'UnreferencedFileRemovalStatus': [
-    'Enabled',
-    'Disabled'
+  "Unit": [
+    "Seconds",
+    "Microseconds",
+    "Milliseconds",
+    "Bytes",
+    "Kilobytes",
+    "Megabytes",
+    "Gigabytes",
+    "Terabytes",
+    "Bits",
+    "Kilobits",
+    "Megabits",
+    "Gigabits",
+    "Terabits",
+    "Percent",
+    "Count",
+    "Bytes/Second",
+    "Kilobytes/Second",
+    "Megabytes/Second",
+    "Gigabytes/Second",
+    "Terabytes/Second",
+    "Bits/Second",
+    "Kilobits/Second",
+    "Megabits/Second",
+    "Gigabits/Second",
+    "Terabits/Second",
+    "Count/Second",
+    "None"
   ],
-  'UntrustedArtifactOnDeployment': [
-    'Enforce',
-    'Warn'
+  "UnreferencedFileRemovalStatus": [
+    "Enabled",
+    "Disabled"
   ],
-  'UpdateType': [
-    'None',
-    'Replace',
-    'RollingUpdate'
+  "UntrustedArtifactOnDeployment": [
+    "Enforce",
+    "Warn"
   ],
-  'UsagePlanKeyType': [
-    'API_KEY'
+  "UpdateType": [
+    "None",
+    "Replace",
+    "RollingUpdate"
   ],
-  'UserPoolDefaultAction': [
-    'ALLOW',
-    'DENY'
+  "UsagePlanKeyType": [
+    "API_KEY"
   ],
-  'UserPoolIdentityProviderSamlMetadataType': [
-    'url',
-    'file'
+  "UserEngine": [
+    "valkey",
+    "redis"
   ],
-  'ValidationMethod': [
-    'EMAIL',
-    'DNS'
+  "UserPoolDefaultAction": [
+    "ALLOW",
+    "DENY"
   ],
-  'ValidatorType': [
-    'JSON_SCHEMA',
-    'LAMBDA'
+  "UserPoolIdentityProviderSamlMetadataType": [
+    "url",
+    "file"
   ],
-  'VariableInputType': [
-    'input',
-    'radio',
-    'select'
+  "ValidationMethod": [
+    "EMAIL",
+    "DNS"
   ],
-  'VariableType': [
-    'property',
-    'pattern'
+  "ValidatorType": [
+    "JSON_SCHEMA",
+    "LAMBDA"
   ],
-  'VectorType': [
-    'FLOAT32',
-    'BINARY'
+  "VariableInputType": [
+    "input",
+    "radio",
+    "select"
   ],
-  'VerificationEmailStyle': [
-    'CONFIRM_WITH_CODE',
-    'CONFIRM_WITH_LINK'
+  "VariableType": [
+    "property",
+    "pattern"
   ],
-  'VersionConsistency': [
-    'enabled',
-    'disabled'
+  "VectorType": [
+    "FLOAT32",
+    "BINARY"
   ],
-  'VerticalShading': [
-    'none',
-    'before',
-    'after'
+  "VendedLogType": [
+    0,
+    1,
+    2,
+    3,
+    4
   ],
-  'ViewerProtocolPolicy': [
-    'https-only',
-    'redirect-to-https',
-    'allow-all'
+  "VerificationEmailStyle": [
+    "CONFIRM_WITH_CODE",
+    "CONFIRM_WITH_LINK"
   ],
-  'Visibility': [
-    'GLOBAL',
-    'PRIVATE'
+  "VersionConsistency": [
+    "enabled",
+    "disabled"
   ],
-  'VpcEndpointDnsRecordIpType': [
-    'ipv4',
-    'ipv6',
-    'dualstack',
-    'service-defined'
+  "VerticalShading": [
+    "none",
+    "before",
+    "after"
   ],
-  'VpcEndpointIpAddressType': [
-    'ipv4',
-    'ipv6',
-    'dualstack'
+  "ViewerProtocolPolicy": [
+    "https-only",
+    "redirect-to-https",
+    "allow-all"
   ],
-  'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint': [
-    'AllResolvers',
-    'OnlyInboundResolver'
+  "Visibility": [
+    "GLOBAL",
+    "PRIVATE"
   ],
-  'VpcEndpointType': [
-    'Interface',
-    'Gateway',
-    'GatewayLoadBalancer',
-    'ServiceNetwork',
-    'Resource'
+  "VpcEndpointDnsRecordIpType": [
+    "ipv4",
+    "ipv6",
+    "dualstack",
+    "service-defined"
   ],
-  'VpcSubnetGroupType': [
-    'Public',
-    'Private',
-    'Isolated'
+  "VpcEndpointIpAddressType": [
+    "ipv4",
+    "ipv6",
+    "dualstack"
   ],
-  'VpnConnectionType': [
-    'ipsec.1',
-    'dummy'
+  "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": [
+    "AllResolvers",
+    "OnlyInboundResolver"
   ],
-  'VpnPort': [
+  "VpcEndpointType": [
+    "Interface",
+    "Gateway",
+    "GatewayLoadBalancer",
+    "ServiceNetwork",
+    "Resource"
+  ],
+  "VpcSubnetGroupType": [
+    "Public",
+    "Private",
+    "Isolated"
+  ],
+  "VpnConnectionType": [
+    "ipsec.1",
+    "dummy"
+  ],
+  "VpnPort": [
     443,
     1194
   ],
-  'WebSocketAuthorizerType': [
-    'REQUEST',
-    'AWS_IAM'
+  "WebSocketAuthorizerType": [
+    "REQUEST",
+    "AWS_IAM"
   ],
-  'WebSocketIntegrationType': [
-    'AWS_PROXY',
-    'MOCK',
-    'AWS'
+  "WebSocketIntegrationType": [
+    "AWS_PROXY",
+    "MOCK",
+    "AWS"
   ],
-  'WebhookFilterTypes': [
-    'FILE_PATH',
-    'COMMIT_MESSAGE',
-    'HEAD_REF',
-    'ACTOR_ACCOUNT_ID',
-    'BASE_REF',
-    'REPOSITORY_NAME'
+  "WebhookFilterTypes": [
+    "FILE_PATH",
+    "COMMIT_MESSAGE",
+    "HEAD_REF",
+    "ACTOR_ACCOUNT_ID",
+    "BASE_REF",
+    "REPOSITORY_NAME"
   ],
-  'Weekday': [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7'
+  "Weekday": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7"
   ],
-  'WindowsImageType': [
-    'WINDOWS_CONTAINER',
-    'WINDOWS_SERVER_2019_CONTAINER',
-    'WINDOWS_SERVER_2022_CONTAINER'
+  "WindowsImageType": [
+    "WINDOWS_CONTAINER",
+    "WINDOWS_SERVER_2019_CONTAINER",
+    "WINDOWS_SERVER_2022_CONTAINER"
   ],
-  'WindowsOptimizedVersion': [
-    '2022',
-    '2019',
-    '2016'
+  "WindowsOptimizedVersion": [
+    "2025",
+    "2022",
+    "2019",
+    "2016"
   ],
-  'WindowsVersion': [
-    'Windows_Server-2019-English-Core-EKS_Optimized-1.22',
-    'Windows_Server-2019-English-Full-EKS_Optimized-1.22',
-    'Windows_Server-2019-English-Core-EKS_Optimized-1.23',
-    'Windows_Server-2019-English-Full-EKS_Optimized-1.23',
-    'Windows_Server-2019-English-Core-EKS_Optimized-1.24',
-    'Windows_Server-2019-English-Full-EKS_Optimized-1.24',
-    'Windows_Server-2019-English-Core-EKS_Optimized-1.25',
-    'Windows_Server-2019-English-Full-EKS_Optimized-1.25',
-    'Windows_Server-2019-English-Core-EKS_Optimized-1.26',
-    'Windows_Server-2019-English-Full-EKS_Optimized-1.26',
-    'Windows_Server-2019-English-Core-EKS_Optimized-1.27',
-    'Windows_Server-2019-English-Full-EKS_Optimized-1.27',
-    'Windows_Server-2019-English-Core-EKS_Optimized-1.28',
-    'Windows_Server-2019-English-Full-EKS_Optimized-1.28',
-    'Windows_Server-2022-English-Core-EKS_Optimized-1.23',
-    'Windows_Server-2022-English-Full-EKS_Optimized-1.23',
-    'Windows_Server-2022-English-Core-EKS_Optimized-1.24',
-    'Windows_Server-2022-English-Full-EKS_Optimized-1.24',
-    'Windows_Server-2022-English-Core-EKS_Optimized-1.25',
-    'Windows_Server-2022-English-Full-EKS_Optimized-1.25',
-    'Windows_Server-2022-English-Core-EKS_Optimized-1.26',
-    'Windows_Server-2022-English-Full-EKS_Optimized-1.26',
-    'Windows_Server-2022-English-Core-EKS_Optimized-1.27',
-    'Windows_Server-2022-English-Full-EKS_Optimized-1.27',
-    'Windows_Server-2022-English-Core-EKS_Optimized-1.28',
-    'Windows_Server-2022-English-Full-EKS_Optimized-1.28',
-    'Windows_Server-1709-English-Core-ContainersLatest',
-    'Windows_Server-1709-English-Core-Base',
-    'Windows_Server-1803-English-Core-Base',
-    'Windows_Server-1803-English-Core-ContainersLatest',
-    'Windows_Server-1809-English-Core-Base',
-    'Windows_Server-1809-English-Core-ContainersLatest',
-    'Windows_Server-2003-R2_SP2-Language_Packs-32Bit-Base',
-    'Windows_Server-2003-R2_SP2-English-64Bit-SQL_2005_SP4_Express',
-    'Windows_Server-2003-R2_SP2-Language_Packs-64Bit-SQL_2005_SP4_Standard',
-    'Windows_Server-2003-R2_SP2-English-32Bit-Base',
-    'Windows_Server-2003-R2_SP2-English-64Bit-Base',
-    'Windows_Server-2003-R2_SP2-Language_Packs-64Bit-SQL_2005_SP4_Express',
-    'Windows_Server-2003-R2_SP2-English-64Bit-SQL_2005_SP4_Standard',
-    'Windows_Server-2003-R2_SP2-Language_Packs-64Bit-Base',
-    'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-Base',
-    'Windows_Server-2008-SP2-English-64Bit-SQL_2008_SP4_Express',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Web',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Express',
-    'Windows_Server-2008-R2_SP1-Korean-64Bit-Base',
-    'Windows_Server-2008-R2_SP1-Chinese_Hong_Kong_SAR-64Bit-Base',
-    'Windows_Server-2008-R2_SP1-Chinese_PRC-64Bit-Base',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Express',
-    'Windows_Server-2008-SP2-English-32Bit-Base',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Web',
-    'Windows_Server-2008-R2_SP1-Japanese-64Bit-Base',
-    'Windows_Server-2008-SP2-English-64Bit-SQL_2008_SP4_Standard',
-    'Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2012_SP4_Express',
-    'Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2008_R2_SP3_Web',
-    'Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2012_SP4_Standard',
-    'Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2008_R2_SP3_Standard',
-    'Windows_Server-2008-SP2-English-64Bit-Base',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Enterprise',
-    'Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2008_R2_SP3_Express',
-    'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Base',
-    'Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Base',
-    'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-SQL_2008_R2_SP3_Standard',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_RTM_SP2_Enterprise',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Standard',
-    'Windows_Server-2008-SP2-Portuguese_Brazil-32Bit-Base',
-    'Windows_Server-2008-SP2-Portugese_Brazil-32Bit-Base',
-    'Windows_Server-2008-R2_SP1-English-64Bit-Base',
-    'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-SQL_2008_R2_SP3_Express',
-    'Windows_Server-2008-R2_SP1-English-64Bit-Core_SQL_2012_SP4_Standard',
-    'Windows_Server-2008-R2_SP1-English-64Bit-Core',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Standard',
-    'Windows_Server-2008-R2_SP1-English-64Bit-SharePoint_2010_SP2_Foundation',
-    'Windows_Server-2012-R2_RTM-Chinese_Simplified-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Chinese_Traditional-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Dutch-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Enterprise',
-    'Windows_Server-2012-R2_RTM-Hungarian-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-Base',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Express',
-    'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Core',
-    'Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Core',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Standard',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP2_Express',
-    'Windows_Server-2012-RTM-Italian-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Express',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Web',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Standard',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Express',
-    'Windows_Server-2012-R2_RTM-English-Deep-Learning',
-    'Windows_Server-2012-R2_RTM-German-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Express',
-    'Windows_Server-2012-R2_RTM-Russian-64Bit-Base',
-    'Windows_Server-2012-RTM-Chinese_Traditional_Hong_Kong_SAR-64Bit-Base',
-    'Windows_Server-2012-RTM-Hungarian-64Bit-Base',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP3_Standard',
-    'Windows_Server-2012-RTM-French-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-French-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Polish-64Bit-Base',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP4_Express',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Standard',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Standard',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Express',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Web',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Web',
-    'Windows_Server-2012-R2_RTM-English-64Bit-Core',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Web',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Enterprise',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Standard',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Web',
-    'Windows_Server-2012-RTM-Swedish-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Portuguese_Brazil-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Portugese_Brazil-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Portuguese_Portugal-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Portugese_Portugal-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Swedish-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2012_SP4_Enterprise',
-    'Windows_Server-2012-RTM-Chinese_Traditional-64Bit-Base',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP2_Standard',
-    'Windows_Server-2012-RTM-Czech-64Bit-Base',
-    'Windows_Server-2012-RTM-Turkish-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-HyperV',
-    'Windows_Server-2012-RTM-Korean-64Bit-Base',
-    'Windows_Server-2012-RTM-Russian-64Bit-Base',
-    'Windows_Server-2012_R2_RTM-English-Full-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Standard',
-    'Windows_Server-2012-R2_RTM-Italian-64Bit-Base',
-    'Windows_Server-2012-RTM-English-64Bit-Base',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Standard',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Standard',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Web',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP2_Web',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP2_Express',
-    'Windows_Server-2012-R2_RTM-Czech-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Standard',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP2_Express',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP4_Standard',
-    'Windows_Server-2008-SP2-Portuguese_Brazil-64Bit-Base',
-    'Windows_Server-2008-SP2-Portugese_Brazil-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Web',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP3_Express',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Enterprise',
-    'Windows_Server-2012-RTM-Japanese-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Enterprise',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Express',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Express',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP2_Standard',
-    'Windows_Server-2012_RTM-English-Full-Base',
-    'Windows_Server-2012-R2-English-STIG-Full',
-    'Windows_Server-2012-RTM-Portuguese_Portugal-64Bit-Base',
-    'Windows_Server-2012-RTM-Portugese_Portugal-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Enterprise',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP2_Web',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2008_R2_SP3_Express',
-    'Windows_Server-2012-R2_RTM-English-64Bit-Base',
-    'Windows_Server-2012-RTM-Portuguese_Brazil-64Bit-Base',
-    'Windows_Server-2012-RTM-Portugese_Brazil-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-P3',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP3_Standard',
-    'Windows_Server-2012-R2_RTM-Spanish-64Bit-Base',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP3_Express',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Standard',
-    'Windows_Server-2012-R2-English-STIG-Core',
-    'Windows_Server-2012-R2_RTM-Turkish-64Bit-Base',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Web',
-    'Windows_Server-2012-RTM-Polish-64Bit-Base',
-    'Windows_Server-2012-RTM-Spanish-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Web',
-    'Windows_Server-2012-R2_RTM-Korean-64Bit-Base',
-    'Windows_Server-2012-RTM-Dutch-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-Chinese_Traditional_Hong_Kong-64Bit-Base',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Express',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Enterprise',
-    'Windows_Server-2012-RTM-Chinese_Simplified-64Bit-Base',
-    'Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP4_Web',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP3_Web',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Express',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Web',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Standard',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Express',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Web',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP2_Standard',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Express',
-    'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Enterprise',
-    'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Enterprise',
-    'Windows_Server-2016-English-Core-Containers',
-    'Windows_Server-2016-English-Core-SQL_2016_SP1_Web',
-    'Windows_Server-2016-German-Full-Base',
-    'Windows_Server-2016-Germal-Full-Base',
-    'Windows_Server-2016-English-Core-SQL_2016_SP1_Express',
-    'Windows_Server-2016-English-Deep-Learning',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Web',
-    'Windows_Server-2016-Korean-Full-Base',
-    'Windows_Server-2016-Korean-Full-SQL_2016_SP2_Standard',
-    'Windows_Server-2016-Polish-Full-Base',
-    'Windows_Server-2016-English-Full-Containers',
-    'Windows_Server-2016-English-Full-SQL_2016_SP1_Standard',
-    'Windows_Server-2016-Russian-Full-Base',
-    'Windows_Server-2016-English-Core-SQL_2016_SP2_Enterprise',
-    'Windows_Server-2016-English-Full-SQL_2016_SP1_Express',
-    'Windows_Server-2016-Italian-Full-Base',
-    'Windows_Server-2016-Spanish-Full-Base',
-    'Windows_Server-2012-RTM-German-64Bit-Base',
-    'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2008_R2_SP3_Standard',
-    'Windows_Server-2016-English-Full-SQL_2016_SP2_Standard',
-    'Windows_Server-2016-English-Full-SQL_2016_SP2_Enterprise',
-    'Windows_Server-2016-English-Full-HyperV',
-    'Windows_Server-2016-English-Core-ContainersLatest',
-    'Windows_Server-2016-Dutch-Full-Base',
-    'Windows_Server-2016-English-Full-SQL_2016_SP2_Express',
-    'Windows_Server-2016-English-Full-SQL_2017_Enterprise',
-    'Windows_Server-2016-Hungarian-Full-Base',
-    'Windows_Server-2016-Korean-Full-SQL_2016_SP1_Standard',
-    'Windows_Server-2016-English-Core-Base',
-    'Windows_Server-2016-English-Full-Base',
-    'Windows_Server-2016-English-Full-SQL_2017_Web',
-    'Windows_Server-2016-English-Core-SQL_2016_SP1_Enterprise',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Web',
-    'Windows_Server-2016-Swedish-Full-Base',
-    'Windows_Server-2016-Turkish-Full-Base',
-    'Windows_Server-2016-Portuguese_Brazil-Full-Base',
-    'Windows_Server-2016-Portugese_Brazil-Full-Base',
-    'Windows_Server-2016-English-Full-SQL_2019_Standard',
-    'Windows_Server-2016-English-Full-SQL_2014_SP3_Standard',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Enterprise',
-    'Windows_Server-2016-English-64Bit-SQL_2012_SP4_Enterprise',
-    'Windows_Server-2016-English-Core-SQL_2016_SP1_Standard',
-    'Windows_Server-2016-English-Core-SQL_2016_SP2_Express',
-    'Windows_Server-2016-English-Core-SQL_2016_SP2_Web',
-    'Windows_Server-2016-English-Full-SQL_2017_Standard',
-    'Windows_Server-2016-Portuguese_Portugal-Full-Base',
-    'Windows_Server-2016-Portugese_Portugal-Full-Base',
-    'Windows_Server-2016-English-Full-SQL_2014_SP3_Enterprise',
-    'Windows_Server-2016-English-Full-SQL_2019_Enterprise',
-    'Windows_Server-2016-Japanese-Full-SQL_2017_Standard',
-    'Windows_Server-2016-English-Full-SQL_2019_Express',
-    'Windows_Server-2016-Japanese-Full-SQL_2017_Web',
-    'Windows_Server-2016-English-Core-SQL_2016_SP3_Web',
-    'Windows_Server-2016-English-Full-SQL_2016_SP3_Enterprise',
-    'Windows_Server-2016-English-STIG-Core',
-    'Windows_Server-2016-Korean-Full-SQL_2016_SP3_Standard',
-    'Windows_Server-2016-English-Full-ECS_Optimized',
-    'Windows_Server-2016-English-Full-SQL_2016_SP3_Standard',
-    'Windows_Server-2016-Japanese-Full-SQL_2017_Enterprise',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Express',
-    'Windows_Server-2016-Japanese-Full-SQL_2019_Web',
-    'Windows_Server-2016-English-Full-SQL_2016_SP3_Web',
-    'Windows_Server-2016-English-Full-SQL_2016_SP1_Web',
-    'Windows_Server-2016-English-P3',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Enterprise',
-    'Windows_Server-2016-Japanese-Full-Base',
-    'Windows_Server-2016-Chinese_Simplified-Full-Base',
-    'Windows_Server-2016-French-Full-Base',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Enterprise',
-    'Windows_Server-2016-Czech-Full-Base',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Standard',
-    'Windows_Server-2016-English-Core-SQL_2016_SP2_Standard',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Standard',
-    'Windows_Server-2016-Chinese_Traditional-Full-Base',
-    'Windows_Server-2016-English-Full-SQL_2016_SP2_Web',
-    'Windows_Server-2016-English-Full-SQL_2017_Express',
-    'Windows_Server-2016-English-Full-SQL_2019_Web',
-    'Windows_Server-2016-English-Core-SQL_2016_SP3_Express',
-    'Windows_Server-2016-Japanese-Full-SQL_2019_Standard',
-    'Windows_Server-2016-English-Tesla',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Express',
-    'Windows_Server-2016-English-STIG-Full',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Standard',
-    'Windows_Server-2016-Japanese-Full-SQL_2019_Enterprise',
-    'Windows_Server-2016-English-Core-SQL_2016_SP3_Enterprise',
-    'Windows_Server-2016-English-Full-SQL_2016_SP3_Express',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Web',
-    'Windows_Server-2016-English-Core-SQL_2016_SP3_Standard',
-    'Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Express',
-    'Windows_Server-2016-English-Full-SQL_2016_SP1_Enterprise',
-    'Windows_Server-2019-English-Full-SQL_2017_Web',
-    'Windows_Server-2019-French-Full-Base',
-    'Windows_Server-2019-Korean-Full-Base',
-    'Windows_Server-2019-Italian-Full-Base',
-    'Windows_Server-2019-Chinese_Simplified-Full-Base',
-    'Windows_Server-2019-English-Full-SQL_2016_SP2_Web',
-    'Windows_Server-2019-English-Full-HyperV',
-    'Windows_Server-2019-English-Full-SQL_2016_SP2_Standard',
-    'Windows_Server-2019-Hungarian-Full-Base',
-    'Windows_Server-2019-English-Full-SQL_2016_SP2_Express',
-    'Windows_Server-2019-Turkish-Full-Base',
-    'Windows_Server-2019-English-Full-SQL_2019_Standard',
-    'Windows_Server-2019-English-Full-SQL_2017_Standard',
-    'Windows_Server-2019-English-Core-ContainersLatest',
-    'Windows_Server-2019-English-Full-SQL_2017_Express',
-    'Windows_Server-2019-Japanese-Full-Base',
-    'Windows_Server-2019-Russian-Full-Base',
-    'Windows_Server-2019-Chinese_Traditional-Full-Base',
-    'Windows_Server-2019-English-Core-Base',
-    'Windows_Server-2019-English-Full-Base',
-    'Windows_Server-2019-Japanese-Full-SQL_2022_Standard',
-    'Windows_Server-2019-Japanese-Full-SQL_2022_Enterprise',
-    'Windows_Server-2019-English-Tesla',
-    'Windows_Server-2019-English-Full-SQL_2019_Enterprise',
-    'Windows_Server-2019-Spanish-Full-Base',
-    'Windows_Server-2019-English-Full-SQL_2022_Enterprise',
-    'Windows_Server-2019-English-STIG-Full',
-    'Windows_Server-2019-English-Full-SQL_2016_SP3_Web',
-    'Windows_Server-2019-English-Full-SQL_2016_SP3_Standard',
-    'Windows_Server-2019-Japanese-Full-SQL_2017_Enterprise',
-    'Windows_Server-2019-English-Full-SQL_2016_SP2_Enterprise',
-    'Windows_Server-2019-Portuguese_Portugal-Full-Base',
-    'Windows_Server-2019-Portugese_Portugal-Full-Base',
-    'Windows_Server-2019-Swedish-Full-Base',
-    'Windows_Server-2019-English-Full-SQL_2022_Express',
-    'Windows_Server-2019-Japanese-Full-SQL_2022_Web',
-    'Windows_Server-2019-English-Full-SQL_2016_SP3_Enterprise',
-    'Windows_Server-2019-English-Full-SQL_2022_Web',
-    'Windows_Server-2019-English-Full-SQL_2019_Web',
-    'Windows_Server-2019-Portuguese_Brazil-Full-Base',
-    'Windows_Server-2019-Portugese_Brazil-Full-Base',
-    'Windows_Server-2019-English-Full-ContainersLatest',
-    'Windows_Server-2019-English-Full-SQL_2017_Enterprise',
-    'Windows_Server-2019-Japanese-Full-SQL_2019_Enterprise',
-    'Windows_Server-2019-English-Full-SQL_2019_Express',
-    'Windows_Server-2019-Japanese-Full-SQL_2017_Web',
-    'Windows_Server-2019-English-Full-SQL_2016_SP3_Express',
-    'Windows_Server-2019-English-STIG-Core',
-    'Windows_Server-2019-English-Core-ECS_Optimized',
-    'Windows_Server-2019-English-Full-SQL_2022_Standard',
-    'Windows_Server-2019-Japanese-Full-SQL_2017_Standard',
-    'Windows_Server-2019-Japanese-Full-SQL_2019_Web',
-    'Windows_Server-2019-English-Full-ECS_Optimized',
-    'Windows_Server-2019-English-Deep-Learning',
-    'Windows_Server-2019-Japanese-Full-SQL_2019_Standard',
-    'Windows_Server-2019-Czech-Full-Base',
-    'Windows_Server-2019-Polish-Full-Base',
-    'Windows_Server-2019-German-Full-Base',
-    'Windows_Server-2019-Dutch-Full-Base',
-    'Windows_Server-2022-English-STIG-Full',
-    'Windows_Server-2022-Japanese-Full-SQL_2022_Web',
-    'Windows_Server-2022-English-Full-SQL_2022_Web',
-    'Windows_Server-2022-English-STIG-Core',
-    'Windows_Server-2022-Japanese-Full-SQL_2019_Enterprise',
-    'Windows_Server-2022-Portuguese_Brazil-Full-Base',
-    'Windows_Server-2022-Italian-Full-Base',
-    'Windows_Server-2022-English-Full-ContainersLatest',
-    'Windows_Server-2022-Russian-Full-Base',
-    'Windows_Server-2022-English-Full-SQL_2019_Express',
-    'Windows_Server-2022-Polish-Full-Base',
-    'Windows_Server-2022-English-Core-Base',
-    'Windows_Server-2022-Hungarian-Full-Base',
-    'Windows_Server-2022-English-Full-SQL_2017_Express',
-    'Windows_Server-2022-German-Full-Base',
-    'Windows_Server-2022-English-Core-ContainersLatest',
-    'Windows_Server-2022-English-Full-SQL_2019_Standard',
-    'Windows_Server-2022-Japanese-Full-SQL_2017_Web',
-    'Windows_Server-2022-English-Full-SQL_2017_Web',
-    'Windows_Server-2022-Japanese-Full-Base',
-    'Windows_Server-2022-Korean-Full-Base',
-    'Windows_Server-2022-Japanese-Full-SQL_2017_Enterprise',
-    'Windows_Server-2022-Japanese-Full-SQL_2019_Standard',
-    'Windows_Server-2022-Chinese_Simplified-Full-Base',
-    'Windows_Server-2022-English-Full-SQL_2019_Web',
-    'Windows_Server-2022-Spanish-Full-Base',
-    'Windows_Server-2022-English-Core-ECS_Optimized',
-    'Windows_Server-2022-English-Full-SQL_2017_Standard',
-    'Windows_Server-2022-Chinese_Traditional-Full-Base',
-    'Windows_Server-2022-English-Full-SQL_2019_Enterprise',
-    'Windows_Server-2022-French-Full-Base',
-    'Windows_Server-2022-Japanese-Full-SQL_2017_Standard',
-    'Windows_Server-2022-English-Full-Base',
-    'Windows_Server-2022-Japanese-Full-SQL_2019_Web',
-    'Windows_Server-2022-Turkish-Full-Base',
-    'Windows_Server-2022-English-Full-SQL_2017_Enterprise',
-    'Windows_Server-2022-Portuguese_Portugal-Full-Base',
-    'Windows_Server-2022-Czech-Full-Base',
-    'Windows_Server-2022-English-Full-ECS_Optimized',
-    'Windows_Server-2022-Dutch-Full-Base',
-    'Windows_Server-2022-Swedish-Full-Base',
-    'Windows_Server-2022-English-Full-SQL_2022_Enterprise',
-    'Windows_Server-2022-English-Full-SQL_2022_Express',
-    'Windows_Server-2022-English-Full-SQL_2022_Standard',
-    'Windows_Server-2022-Japanese-Full-SQL_2022_Standard',
-    'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise',
-    'Windows_Server-2025-Chinese_Simplified-Full-Base',
-    'Windows_Server-2025-Chinese_Traditional-Full-Base',
-    'Windows_Server-2025-English-Core-Base',
-    'Windows_Server-2025-English-Full-Base',
-    'Windows_Server-2025-English-Full-SQL_2022_Enterprise',
-    'Windows_Server-2025-English-Full-SQL_2022_Express',
-    'Windows_Server-2025-English-Full-SQL_2022_Standard',
-    'Windows_Server-2025-English-Full-SQL_2022_Web',
-    'Windows_Server-2025-Japanese-Full-Base',
-    'Windows_Server-2025-Korean-Full-Base'
+  "WindowsVersion": [
+    "Windows_Server-2019-English-Core-EKS_Optimized-1.22",
+    "Windows_Server-2019-English-Full-EKS_Optimized-1.22",
+    "Windows_Server-2019-English-Core-EKS_Optimized-1.23",
+    "Windows_Server-2019-English-Full-EKS_Optimized-1.23",
+    "Windows_Server-2019-English-Core-EKS_Optimized-1.24",
+    "Windows_Server-2019-English-Full-EKS_Optimized-1.24",
+    "Windows_Server-2019-English-Core-EKS_Optimized-1.25",
+    "Windows_Server-2019-English-Full-EKS_Optimized-1.25",
+    "Windows_Server-2019-English-Core-EKS_Optimized-1.26",
+    "Windows_Server-2019-English-Full-EKS_Optimized-1.26",
+    "Windows_Server-2019-English-Core-EKS_Optimized-1.27",
+    "Windows_Server-2019-English-Full-EKS_Optimized-1.27",
+    "Windows_Server-2019-English-Core-EKS_Optimized-1.28",
+    "Windows_Server-2019-English-Full-EKS_Optimized-1.28",
+    "Windows_Server-2022-English-Core-EKS_Optimized-1.23",
+    "Windows_Server-2022-English-Full-EKS_Optimized-1.23",
+    "Windows_Server-2022-English-Core-EKS_Optimized-1.24",
+    "Windows_Server-2022-English-Full-EKS_Optimized-1.24",
+    "Windows_Server-2022-English-Core-EKS_Optimized-1.25",
+    "Windows_Server-2022-English-Full-EKS_Optimized-1.25",
+    "Windows_Server-2022-English-Core-EKS_Optimized-1.26",
+    "Windows_Server-2022-English-Full-EKS_Optimized-1.26",
+    "Windows_Server-2022-English-Core-EKS_Optimized-1.27",
+    "Windows_Server-2022-English-Full-EKS_Optimized-1.27",
+    "Windows_Server-2022-English-Core-EKS_Optimized-1.28",
+    "Windows_Server-2022-English-Full-EKS_Optimized-1.28",
+    "Windows_Server-1709-English-Core-ContainersLatest",
+    "Windows_Server-1709-English-Core-Base",
+    "Windows_Server-1803-English-Core-Base",
+    "Windows_Server-1803-English-Core-ContainersLatest",
+    "Windows_Server-1809-English-Core-Base",
+    "Windows_Server-1809-English-Core-ContainersLatest",
+    "Windows_Server-2003-R2_SP2-Language_Packs-32Bit-Base",
+    "Windows_Server-2003-R2_SP2-English-64Bit-SQL_2005_SP4_Express",
+    "Windows_Server-2003-R2_SP2-Language_Packs-64Bit-SQL_2005_SP4_Standard",
+    "Windows_Server-2003-R2_SP2-English-32Bit-Base",
+    "Windows_Server-2003-R2_SP2-English-64Bit-Base",
+    "Windows_Server-2003-R2_SP2-Language_Packs-64Bit-SQL_2005_SP4_Express",
+    "Windows_Server-2003-R2_SP2-English-64Bit-SQL_2005_SP4_Standard",
+    "Windows_Server-2003-R2_SP2-Language_Packs-64Bit-Base",
+    "Windows_Server-2008-R2_SP1-Language_Packs-64Bit-Base",
+    "Windows_Server-2008-SP2-English-64Bit-SQL_2008_SP4_Express",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Web",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Express",
+    "Windows_Server-2008-R2_SP1-Korean-64Bit-Base",
+    "Windows_Server-2008-R2_SP1-Chinese_Hong_Kong_SAR-64Bit-Base",
+    "Windows_Server-2008-R2_SP1-Chinese_PRC-64Bit-Base",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Express",
+    "Windows_Server-2008-SP2-English-32Bit-Base",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Web",
+    "Windows_Server-2008-R2_SP1-Japanese-64Bit-Base",
+    "Windows_Server-2008-SP2-English-64Bit-SQL_2008_SP4_Standard",
+    "Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2012_SP4_Express",
+    "Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2008_R2_SP3_Web",
+    "Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2012_SP4_Standard",
+    "Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2008_R2_SP3_Standard",
+    "Windows_Server-2008-SP2-English-64Bit-Base",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Enterprise",
+    "Windows_Server-2008-R2_SP1-Japanese-64Bit-SQL_2008_R2_SP3_Express",
+    "Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Base",
+    "Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Base",
+    "Windows_Server-2008-R2_SP1-Language_Packs-64Bit-SQL_2008_R2_SP3_Standard",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_RTM_SP2_Enterprise",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Standard",
+    "Windows_Server-2008-SP2-Portuguese_Brazil-32Bit-Base",
+    "Windows_Server-2008-SP2-Portugese_Brazil-32Bit-Base",
+    "Windows_Server-2008-R2_SP1-English-64Bit-Base",
+    "Windows_Server-2008-R2_SP1-Language_Packs-64Bit-SQL_2008_R2_SP3_Express",
+    "Windows_Server-2008-R2_SP1-English-64Bit-Core_SQL_2012_SP4_Standard",
+    "Windows_Server-2008-R2_SP1-English-64Bit-Core",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Standard",
+    "Windows_Server-2008-R2_SP1-English-64Bit-SharePoint_2010_SP2_Foundation",
+    "Windows_Server-2012-R2_RTM-Chinese_Simplified-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Chinese_Traditional-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Dutch-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Enterprise",
+    "Windows_Server-2012-R2_RTM-Hungarian-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-Base",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Express",
+    "Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Core",
+    "Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Core",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Standard",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP2_Express",
+    "Windows_Server-2012-RTM-Italian-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Express",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Web",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Standard",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Express",
+    "Windows_Server-2012-R2_RTM-English-Deep-Learning",
+    "Windows_Server-2012-R2_RTM-German-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Express",
+    "Windows_Server-2012-R2_RTM-Russian-64Bit-Base",
+    "Windows_Server-2012-RTM-Chinese_Traditional_Hong_Kong_SAR-64Bit-Base",
+    "Windows_Server-2012-RTM-Hungarian-64Bit-Base",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP3_Standard",
+    "Windows_Server-2012-RTM-French-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-French-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Polish-64Bit-Base",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP4_Express",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Standard",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Standard",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Express",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Web",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Web",
+    "Windows_Server-2012-R2_RTM-English-64Bit-Core",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Web",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Enterprise",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Standard",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Web",
+    "Windows_Server-2012-RTM-Swedish-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Portuguese_Brazil-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Portugese_Brazil-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Portuguese_Portugal-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Portugese_Portugal-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Swedish-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2012_SP4_Enterprise",
+    "Windows_Server-2012-RTM-Chinese_Traditional-64Bit-Base",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP2_Standard",
+    "Windows_Server-2012-RTM-Czech-64Bit-Base",
+    "Windows_Server-2012-RTM-Turkish-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-HyperV",
+    "Windows_Server-2012-RTM-Korean-64Bit-Base",
+    "Windows_Server-2012-RTM-Russian-64Bit-Base",
+    "Windows_Server-2012_R2_RTM-English-Full-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Standard",
+    "Windows_Server-2012-R2_RTM-Italian-64Bit-Base",
+    "Windows_Server-2012-RTM-English-64Bit-Base",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Standard",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Standard",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Web",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP2_Web",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP2_Express",
+    "Windows_Server-2012-R2_RTM-Czech-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Standard",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP2_Express",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP4_Standard",
+    "Windows_Server-2008-SP2-Portuguese_Brazil-64Bit-Base",
+    "Windows_Server-2008-SP2-Portugese_Brazil-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Web",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP3_Express",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Enterprise",
+    "Windows_Server-2012-RTM-Japanese-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Enterprise",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Express",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Express",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP2_Standard",
+    "Windows_Server-2012_RTM-English-Full-Base",
+    "Windows_Server-2012-R2-English-STIG-Full",
+    "Windows_Server-2012-RTM-Portuguese_Portugal-64Bit-Base",
+    "Windows_Server-2012-RTM-Portugese_Portugal-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Enterprise",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP2_Web",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2008_R2_SP3_Express",
+    "Windows_Server-2012-R2_RTM-English-64Bit-Base",
+    "Windows_Server-2012-RTM-Portuguese_Brazil-64Bit-Base",
+    "Windows_Server-2012-RTM-Portugese_Brazil-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-P3",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP3_Standard",
+    "Windows_Server-2012-R2_RTM-Spanish-64Bit-Base",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP3_Express",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Standard",
+    "Windows_Server-2012-R2-English-STIG-Core",
+    "Windows_Server-2012-R2_RTM-Turkish-64Bit-Base",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Web",
+    "Windows_Server-2012-RTM-Polish-64Bit-Base",
+    "Windows_Server-2012-RTM-Spanish-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Web",
+    "Windows_Server-2012-R2_RTM-Korean-64Bit-Base",
+    "Windows_Server-2012-RTM-Dutch-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-Chinese_Traditional_Hong_Kong-64Bit-Base",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Express",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Enterprise",
+    "Windows_Server-2012-RTM-Chinese_Simplified-64Bit-Base",
+    "Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP4_Web",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP3_Web",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Express",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Web",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Standard",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Express",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Web",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP2_Standard",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Express",
+    "Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Enterprise",
+    "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Enterprise",
+    "Windows_Server-2016-English-Core-Containers",
+    "Windows_Server-2016-English-Core-SQL_2016_SP1_Web",
+    "Windows_Server-2016-German-Full-Base",
+    "Windows_Server-2016-Germal-Full-Base",
+    "Windows_Server-2016-English-Core-SQL_2016_SP1_Express",
+    "Windows_Server-2016-English-Deep-Learning",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Web",
+    "Windows_Server-2016-Korean-Full-Base",
+    "Windows_Server-2016-Korean-Full-SQL_2016_SP2_Standard",
+    "Windows_Server-2016-Polish-Full-Base",
+    "Windows_Server-2016-English-Full-Containers",
+    "Windows_Server-2016-English-Full-SQL_2016_SP1_Standard",
+    "Windows_Server-2016-Russian-Full-Base",
+    "Windows_Server-2016-English-Core-SQL_2016_SP2_Enterprise",
+    "Windows_Server-2016-English-Full-SQL_2016_SP1_Express",
+    "Windows_Server-2016-Italian-Full-Base",
+    "Windows_Server-2016-Spanish-Full-Base",
+    "Windows_Server-2012-RTM-German-64Bit-Base",
+    "Windows_Server-2012-RTM-Japanese-64Bit-SQL_2008_R2_SP3_Standard",
+    "Windows_Server-2016-English-Full-SQL_2016_SP2_Standard",
+    "Windows_Server-2016-English-Full-SQL_2016_SP2_Enterprise",
+    "Windows_Server-2016-English-Full-HyperV",
+    "Windows_Server-2016-English-Core-ContainersLatest",
+    "Windows_Server-2016-Dutch-Full-Base",
+    "Windows_Server-2016-English-Full-SQL_2016_SP2_Express",
+    "Windows_Server-2016-English-Full-SQL_2017_Enterprise",
+    "Windows_Server-2016-Hungarian-Full-Base",
+    "Windows_Server-2016-Korean-Full-SQL_2016_SP1_Standard",
+    "Windows_Server-2016-English-Core-Base",
+    "Windows_Server-2016-English-Full-Base",
+    "Windows_Server-2016-English-Full-SQL_2017_Web",
+    "Windows_Server-2016-English-Core-SQL_2016_SP1_Enterprise",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Web",
+    "Windows_Server-2016-Swedish-Full-Base",
+    "Windows_Server-2016-Turkish-Full-Base",
+    "Windows_Server-2016-Portuguese_Brazil-Full-Base",
+    "Windows_Server-2016-Portugese_Brazil-Full-Base",
+    "Windows_Server-2016-English-Full-SQL_2019_Standard",
+    "Windows_Server-2016-English-Full-SQL_2014_SP3_Standard",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Enterprise",
+    "Windows_Server-2016-English-64Bit-SQL_2012_SP4_Enterprise",
+    "Windows_Server-2016-English-Core-SQL_2016_SP1_Standard",
+    "Windows_Server-2016-English-Core-SQL_2016_SP2_Express",
+    "Windows_Server-2016-English-Core-SQL_2016_SP2_Web",
+    "Windows_Server-2016-English-Full-SQL_2017_Standard",
+    "Windows_Server-2016-Portuguese_Portugal-Full-Base",
+    "Windows_Server-2016-Portugese_Portugal-Full-Base",
+    "Windows_Server-2016-English-Full-SQL_2014_SP3_Enterprise",
+    "Windows_Server-2016-English-Full-SQL_2019_Enterprise",
+    "Windows_Server-2016-Japanese-Full-SQL_2017_Standard",
+    "Windows_Server-2016-English-Full-SQL_2019_Express",
+    "Windows_Server-2016-Japanese-Full-SQL_2017_Web",
+    "Windows_Server-2016-English-Core-SQL_2016_SP3_Web",
+    "Windows_Server-2016-English-Full-SQL_2016_SP3_Enterprise",
+    "Windows_Server-2016-English-STIG-Core",
+    "Windows_Server-2016-Korean-Full-SQL_2016_SP3_Standard",
+    "Windows_Server-2016-English-Full-ECS_Optimized",
+    "Windows_Server-2016-English-Full-SQL_2016_SP3_Standard",
+    "Windows_Server-2016-Japanese-Full-SQL_2017_Enterprise",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Express",
+    "Windows_Server-2016-Japanese-Full-SQL_2019_Web",
+    "Windows_Server-2016-English-Full-SQL_2016_SP3_Web",
+    "Windows_Server-2016-English-Full-SQL_2016_SP1_Web",
+    "Windows_Server-2016-English-P3",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Enterprise",
+    "Windows_Server-2016-Japanese-Full-Base",
+    "Windows_Server-2016-Chinese_Simplified-Full-Base",
+    "Windows_Server-2016-French-Full-Base",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Enterprise",
+    "Windows_Server-2016-Czech-Full-Base",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Standard",
+    "Windows_Server-2016-English-Core-SQL_2016_SP2_Standard",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Standard",
+    "Windows_Server-2016-Chinese_Traditional-Full-Base",
+    "Windows_Server-2016-English-Full-SQL_2016_SP2_Web",
+    "Windows_Server-2016-English-Full-SQL_2017_Express",
+    "Windows_Server-2016-English-Full-SQL_2019_Web",
+    "Windows_Server-2016-English-Core-SQL_2016_SP3_Express",
+    "Windows_Server-2016-Japanese-Full-SQL_2019_Standard",
+    "Windows_Server-2016-English-Tesla",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Express",
+    "Windows_Server-2016-English-STIG-Full",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Standard",
+    "Windows_Server-2016-Japanese-Full-SQL_2019_Enterprise",
+    "Windows_Server-2016-English-Core-SQL_2016_SP3_Enterprise",
+    "Windows_Server-2016-English-Full-SQL_2016_SP3_Express",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Web",
+    "Windows_Server-2016-English-Core-SQL_2016_SP3_Standard",
+    "Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Express",
+    "Windows_Server-2016-English-Full-SQL_2016_SP1_Enterprise",
+    "Windows_Server-2019-English-Full-SQL_2017_Web",
+    "Windows_Server-2019-French-Full-Base",
+    "Windows_Server-2019-Korean-Full-Base",
+    "Windows_Server-2019-Italian-Full-Base",
+    "Windows_Server-2019-Chinese_Simplified-Full-Base",
+    "Windows_Server-2019-English-Full-SQL_2016_SP2_Web",
+    "Windows_Server-2019-English-Full-HyperV",
+    "Windows_Server-2019-English-Full-SQL_2016_SP2_Standard",
+    "Windows_Server-2019-Hungarian-Full-Base",
+    "Windows_Server-2019-English-Full-SQL_2016_SP2_Express",
+    "Windows_Server-2019-Turkish-Full-Base",
+    "Windows_Server-2019-English-Full-SQL_2019_Standard",
+    "Windows_Server-2019-English-Full-SQL_2017_Standard",
+    "Windows_Server-2019-English-Core-ContainersLatest",
+    "Windows_Server-2019-English-Full-SQL_2017_Express",
+    "Windows_Server-2019-Japanese-Full-Base",
+    "Windows_Server-2019-Russian-Full-Base",
+    "Windows_Server-2019-Chinese_Traditional-Full-Base",
+    "Windows_Server-2019-English-Core-Base",
+    "Windows_Server-2019-English-Full-Base",
+    "Windows_Server-2019-Japanese-Full-SQL_2022_Standard",
+    "Windows_Server-2019-Japanese-Full-SQL_2022_Enterprise",
+    "Windows_Server-2019-English-Tesla",
+    "Windows_Server-2019-English-Full-SQL_2019_Enterprise",
+    "Windows_Server-2019-Spanish-Full-Base",
+    "Windows_Server-2019-English-Full-SQL_2022_Enterprise",
+    "Windows_Server-2019-English-STIG-Full",
+    "Windows_Server-2019-English-Full-SQL_2016_SP3_Web",
+    "Windows_Server-2019-English-Full-SQL_2016_SP3_Standard",
+    "Windows_Server-2019-Japanese-Full-SQL_2017_Enterprise",
+    "Windows_Server-2019-English-Full-SQL_2016_SP2_Enterprise",
+    "Windows_Server-2019-Portuguese_Portugal-Full-Base",
+    "Windows_Server-2019-Portugese_Portugal-Full-Base",
+    "Windows_Server-2019-Swedish-Full-Base",
+    "Windows_Server-2019-English-Full-SQL_2022_Express",
+    "Windows_Server-2019-Japanese-Full-SQL_2022_Web",
+    "Windows_Server-2019-English-Full-SQL_2016_SP3_Enterprise",
+    "Windows_Server-2019-English-Full-SQL_2022_Web",
+    "Windows_Server-2019-English-Full-SQL_2019_Web",
+    "Windows_Server-2019-Portuguese_Brazil-Full-Base",
+    "Windows_Server-2019-Portugese_Brazil-Full-Base",
+    "Windows_Server-2019-English-Full-ContainersLatest",
+    "Windows_Server-2019-English-Full-SQL_2017_Enterprise",
+    "Windows_Server-2019-Japanese-Full-SQL_2019_Enterprise",
+    "Windows_Server-2019-English-Full-SQL_2019_Express",
+    "Windows_Server-2019-Japanese-Full-SQL_2017_Web",
+    "Windows_Server-2019-English-Full-SQL_2016_SP3_Express",
+    "Windows_Server-2019-English-STIG-Core",
+    "Windows_Server-2019-English-Core-ECS_Optimized",
+    "Windows_Server-2019-English-Full-SQL_2022_Standard",
+    "Windows_Server-2019-Japanese-Full-SQL_2017_Standard",
+    "Windows_Server-2019-Japanese-Full-SQL_2019_Web",
+    "Windows_Server-2019-English-Full-ECS_Optimized",
+    "Windows_Server-2019-English-Deep-Learning",
+    "Windows_Server-2019-Japanese-Full-SQL_2019_Standard",
+    "Windows_Server-2019-Czech-Full-Base",
+    "Windows_Server-2019-Polish-Full-Base",
+    "Windows_Server-2019-German-Full-Base",
+    "Windows_Server-2019-Dutch-Full-Base",
+    "Windows_Server-2022-English-STIG-Full",
+    "Windows_Server-2022-Japanese-Full-SQL_2022_Web",
+    "Windows_Server-2022-English-Full-SQL_2022_Web",
+    "Windows_Server-2022-English-STIG-Core",
+    "Windows_Server-2022-Japanese-Full-SQL_2019_Enterprise",
+    "Windows_Server-2022-Portuguese_Brazil-Full-Base",
+    "Windows_Server-2022-Italian-Full-Base",
+    "Windows_Server-2022-English-Full-ContainersLatest",
+    "Windows_Server-2022-Russian-Full-Base",
+    "Windows_Server-2022-English-Full-SQL_2019_Express",
+    "Windows_Server-2022-Polish-Full-Base",
+    "Windows_Server-2022-English-Core-Base",
+    "Windows_Server-2022-Hungarian-Full-Base",
+    "Windows_Server-2022-English-Full-SQL_2017_Express",
+    "Windows_Server-2022-German-Full-Base",
+    "Windows_Server-2022-English-Core-ContainersLatest",
+    "Windows_Server-2022-English-Full-SQL_2019_Standard",
+    "Windows_Server-2022-Japanese-Full-SQL_2017_Web",
+    "Windows_Server-2022-English-Full-SQL_2017_Web",
+    "Windows_Server-2022-Japanese-Full-Base",
+    "Windows_Server-2022-Korean-Full-Base",
+    "Windows_Server-2022-Japanese-Full-SQL_2017_Enterprise",
+    "Windows_Server-2022-Japanese-Full-SQL_2019_Standard",
+    "Windows_Server-2022-Chinese_Simplified-Full-Base",
+    "Windows_Server-2022-English-Full-SQL_2019_Web",
+    "Windows_Server-2022-Spanish-Full-Base",
+    "Windows_Server-2022-English-Core-ECS_Optimized",
+    "Windows_Server-2022-English-Full-SQL_2017_Standard",
+    "Windows_Server-2022-Chinese_Traditional-Full-Base",
+    "Windows_Server-2022-English-Full-SQL_2019_Enterprise",
+    "Windows_Server-2022-French-Full-Base",
+    "Windows_Server-2022-Japanese-Full-SQL_2017_Standard",
+    "Windows_Server-2022-English-Full-Base",
+    "Windows_Server-2022-Japanese-Full-SQL_2019_Web",
+    "Windows_Server-2022-Turkish-Full-Base",
+    "Windows_Server-2022-English-Full-SQL_2017_Enterprise",
+    "Windows_Server-2022-Portuguese_Portugal-Full-Base",
+    "Windows_Server-2022-Czech-Full-Base",
+    "Windows_Server-2022-English-Full-ECS_Optimized",
+    "Windows_Server-2022-Dutch-Full-Base",
+    "Windows_Server-2022-Swedish-Full-Base",
+    "Windows_Server-2022-English-Full-SQL_2022_Enterprise",
+    "Windows_Server-2022-English-Full-SQL_2022_Express",
+    "Windows_Server-2022-English-Full-SQL_2022_Standard",
+    "Windows_Server-2022-Japanese-Full-SQL_2022_Standard",
+    "Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise",
+    "Windows_Server-2025-Chinese_Simplified-Full-Base",
+    "Windows_Server-2025-Chinese_Traditional-Full-Base",
+    "Windows_Server-2025-English-Core-Base",
+    "Windows_Server-2025-English-Full-Base",
+    "Windows_Server-2025-English-Full-SQL_2022_Enterprise",
+    "Windows_Server-2025-English-Full-SQL_2022_Express",
+    "Windows_Server-2025-English-Full-SQL_2022_Standard",
+    "Windows_Server-2025-English-Full-SQL_2022_Web",
+    "Windows_Server-2025-Japanese-Full-Base",
+    "Windows_Server-2025-Korean-Full-Base"
   ],
-  'WorkerType': [
-    'Standard',
-    'G.025X',
-    'G.1X',
-    'G.2X',
-    'G.4X',
-    'G.8X',
-    'Z.2X'
+  "WorkerType": [
+    "Standard",
+    "G.025X",
+    "G.1X",
+    "G.2X",
+    "G.4X",
+    "G.8X",
+    "Z.2X"
   ],
-  'WriteParallel': [
-    'on',
-    'off'
+  "WorkflowAction": [
+    "ApplyImageConfigurations",
+    "BootstrapInstanceForContainer",
+    "CollectImageMetadata",
+    "CollectImageScanFindings",
+    "CreateImage",
+    "DistributeImage",
+    "ExecuteComponents",
+    "ExecuteStateMachine",
+    "LaunchInstance",
+    "ModifyImageAttributes",
+    "RunCommand",
+    "RegisterImage",
+    "RunSysPrep",
+    "SanitizeInstance",
+    "TerminateInstance",
+    "WaitForAction",
+    "WaitForSSMAgent"
   ],
-  'XffHeaderProcessingMode': [
-    'append',
-    'preserve',
-    'remove'
+  "WorkflowOnFailure": [
+    "Abort",
+    "Continue"
+  ],
+  "WorkflowParameterType": [
+    "boolean",
+    "integer",
+    "string",
+    "stringList"
+  ],
+  "WorkflowSchemaVersion": [
+    "1.0"
+  ],
+  "WorkflowType": [
+    "BUILD",
+    "TEST",
+    "DISTRIBUTION"
+  ],
+  "WriteParallel": [
+    "on",
+    "off"
+  ],
+  "XffHeaderProcessingMode": [
+    "append",
+    "preserve",
+    "remove"
   ]
 };

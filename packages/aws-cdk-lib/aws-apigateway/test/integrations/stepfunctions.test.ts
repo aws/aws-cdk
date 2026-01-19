@@ -558,7 +558,9 @@ function getIntegrationResponse() {
       SelectionPattern: '5\\d{2}',
       StatusCode: '500',
       ResponseTemplates: {
-        'application/json': '"error": $input.path(\'$.error\')',
+        'application/json': `{
+          "error": "$input.path('$.error')"
+        }`,
       },
     },
   ];

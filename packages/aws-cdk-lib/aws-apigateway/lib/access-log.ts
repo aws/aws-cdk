@@ -1,7 +1,7 @@
-import { IStage } from './stage';
+import { IStageRef } from './apigateway.generated';
 import * as firehose from '../../aws-kinesisfirehose';
-import { ILogGroup } from '../../aws-logs';
 import { ValidationError } from '../../core/lib/errors';
+import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Access log destination for a RestApi Stage.
@@ -10,7 +10,7 @@ export interface IAccessLogDestination {
   /**
    * Binds this destination to the RestApi Stage.
    */
-  bind(stage: IStage): AccessLogDestinationConfig;
+  bind(stage: IStageRef): AccessLogDestinationConfig;
 }
 
 /**
@@ -27,15 +27,15 @@ export interface AccessLogDestinationConfig {
  * Use CloudWatch Logs as a custom access log destination for API Gateway.
  */
 export class LogGroupLogDestination implements IAccessLogDestination {
-  constructor(private readonly logGroup: ILogGroup) {
+  constructor(private readonly logGroup: ILogGroupRef) {
   }
 
   /**
    * Binds this destination to the CloudWatch Logs.
    */
-  public bind(_stage: IStage): AccessLogDestinationConfig {
+  public bind(_stage: IStageRef): AccessLogDestinationConfig {
     return {
-      destinationArn: this.logGroup.logGroupArn,
+      destinationArn: this.logGroup.logGroupRef.logGroupArn,
     };
   }
 }
@@ -50,7 +50,7 @@ export class FirehoseLogDestination implements IAccessLogDestination {
   /**
    * Binds this destination to the Firehose delivery stream.
    */
-  public bind(stage: IStage): AccessLogDestinationConfig {
+  public bind(stage: IStageRef): AccessLogDestinationConfig {
     if (!this.stream.deliveryStreamName?.startsWith('amazon-apigateway-')) {
       throw new ValidationError(`Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
     }
@@ -638,6 +638,30 @@ export class AccessLogField {
   public static contextWafStatus() {
     return '$context.waf.status';
   }
+
+  /**
+   * The event type: CONNECT, MESSAGE, or DISCONNECT.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  public static contextEventType() {
+    return '$context.eventType';
+  }
+
+  /**
+   * The selected route key.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  public static contextRouteKey() {
+    return '$context.routeKey';
+  }
+
+  /**
+   * A unique ID for the connection that can be used to make a callback to the client.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  public static contextConnectionId() {
+    return '$context.connectionId';
+  }
 }
 
 /**
@@ -752,7 +776,7 @@ export class AccessLogFormat {
    */
   private readonly format: string;
 
-  private constructor(format: string) {
+  constructor(format: string) {
     this.format = format;
   }
 

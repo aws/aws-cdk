@@ -3,7 +3,7 @@ import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
-import { CfnAlias } from './lambda.generated';
+import { AliasReference, CfnAlias, IAliasRef } from './lambda.generated';
 import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
 import { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
 import * as appscaling from '../../aws-applicationautoscaling';
@@ -14,7 +14,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IAlias extends IFunction {
+export interface IAlias extends IFunction, IAliasRef {
   /**
    * Name of this alias.
    *
@@ -109,6 +109,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
       protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
+
+      public get aliasRef(): AliasReference {
+        return {
+          aliasArn: this.functionArn,
+        };
+      }
     }
     return new Imported(scope, id);
   }
@@ -160,6 +166,10 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.version = props.version;
     this.architecture = this.lambda.architecture;
 
+    if (props.provisionedConcurrentExecutions && this.version.lambda.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
+      throw new ValidationError('Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+    }
+
     const alias = new CfnAlias(this, 'Resource', {
       name: this.aliasName,
       description: props.description,
@@ -200,6 +210,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
     this.functionName = `${this.stack.splitArn(this.functionArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!}:${this.aliasName}`;
+  }
+
+  public get aliasRef(): AliasReference {
+    return {
+      aliasArn: this.functionArn,
+    };
   }
 
   public get grantPrincipal() {

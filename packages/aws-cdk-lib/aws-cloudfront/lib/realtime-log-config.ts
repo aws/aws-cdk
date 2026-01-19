@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnRealtimeLogConfig } from './cloudfront.generated';
+import { CfnRealtimeLogConfig, IRealtimeLogConfigRef, RealtimeLogConfigReference } from './cloudfront.generated';
 import { Endpoint } from '../';
 import { IResource, Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents Realtime Log Configuration
  */
-export interface IRealtimeLogConfig extends IResource {
+export interface IRealtimeLogConfig extends IResource, IRealtimeLogConfigRef {
   /**
    * The name of the realtime log config.
    * @attribute
@@ -58,6 +58,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.RealtimeLogConfig';
   public readonly realtimeLogConfigName: string;
   public readonly realtimeLogConfigArn: string;
+  public readonly realtimeLogConfigRef: RealtimeLogConfigReference;
 
   constructor(scope: Construct, id: string, props: RealtimeLogConfigProps) {
     super(scope, id, {
@@ -78,6 +79,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
       name: this.physicalName,
       samplingRate: props.samplingRate,
     });
+    this.realtimeLogConfigRef = resource.realtimeLogConfigRef;
 
     this.realtimeLogConfigArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'cloudfront',

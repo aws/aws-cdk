@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 import * as ec2 from '../../aws-ec2';
@@ -260,7 +260,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -463,8 +463,8 @@ export enum AllocationStrategy {
 
   /**
    * If your workflow tolerates interruptions, you should enable `spot` on your `ComputeEnvironment`
-   * and use `SPOT_CAPACITY_OPTIMIZED` (this is the default if `spot` is enabled).
-   * This will tell Batch to choose the instance types from the ones you’ve specified that have
+   * and use `SPOT_CAPACITY_OPTIMIZED`.
+   * This will tell Batch to choose the instance types from the ones you've specified that have
    * the most spot capacity available to minimize the chance of interruption.
    * To get the most benefit from your spot instances,
    * you should allow Batch to choose from as many different instance types as possible.
@@ -482,15 +482,43 @@ export enum AllocationStrategy {
 }
 
 /**
+ * Batch default instances types
+ *
+ * @see https://docs.aws.amazon.com/batch/latest/userguide/instance-type-compute-table.html
+ */
+export enum DefaultInstanceClass {
+  /**
+   * x86 based instance types (from the m6i, c6i, r6i, and c7i instance families)
+   */
+  X86_64 = 'default_x86_64',
+
+  /**
+   * ARM64 based instance types (from the m6g, c6g, r6g, and c7g instance families)
+   */
+  ARM64 = 'default_arm64',
+}
+
+/**
  * Props for a ManagedEc2EcsComputeEnvironment
  */
 export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
+  /**
+   * Use batch's default instance types.
+   * A simpler way to choose up-to-date instance classes based on region
+   * instead of specifying exact instance classes.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/instance-type-compute-table.html
+   * @default - choose from instanceTypes and instanceClasses
+   */
+  readonly defaultInstanceClasses?: DefaultInstanceClass[];
+
   /**
    * Whether or not to use batch's optimal instance type.
    * The optimal instance type is equivalent to adding the
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
+   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -512,7 +540,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -595,7 +623,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroup;
+  readonly placementGroup?: ec2.IPlacementGroupRef;
 }
 
 /**
@@ -628,6 +656,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
+      public get computeEnvironmentRef() {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
+
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new ValidationError(`cannot add instance class to imported ComputeEnvironment '${id}'`, this);
       }
@@ -650,14 +684,18 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
-  public readonly placementGroup?: ec2.IPlacementGroup;
 
+  private readonly _placementGroup?: ec2.IPlacementGroupRef;
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
+      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+    }
 
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(this, props.allocationStrategy, this.spot);
@@ -684,7 +722,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
-    this.placementGroup = props.placementGroup;
+    this._placementGroup = props.placementGroup;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage, this.spotFleetRole);
@@ -698,7 +736,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
-          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses, props.defaultInstanceClasses),
         }),
         type: this.spot ? 'SPOT' : 'EC2',
         spotIamFleetRole: this.spotFleetRole?.roleArn,
@@ -713,7 +751,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
             imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
           };
         }),
-        placementGroup: this.placementGroup?.placementGroupName,
+        placementGroup: props.placementGroup?.placementGroupRef.groupName,
         tags: this.tags.renderedTags as any,
       },
     });
@@ -726,6 +764,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     });
 
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
+  }
+
+  public get placementGroup(): ec2.IPlacementGroup | undefined {
+    return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
   }
 
   @MethodMetadata()
@@ -779,7 +821,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -885,11 +927,22 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
   readonly eksCluster: eks.ICluster;
 
   /**
+   * Use batch's default instance types.
+   * A simpler way to choose up-to-date instance classes based on region
+   * instead of specifying exact instance classes.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/instance-type-compute-table.html
+   * @default - choose from instanceTypes and instanceClasses
+   */
+  readonly defaultInstanceClasses?: DefaultInstanceClass[];
+
+  /**
    * Whether or not to use batch's optimal instance type.
    * The optimal instance type is equivalent to adding the
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
+   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -910,7 +963,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -984,7 +1037,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroup;
+  readonly placementGroup?: ec2.IPlacementGroupRef;
 }
 
 /**
@@ -1010,14 +1063,18 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
-  public readonly placementGroup?: ec2.IPlacementGroup;
 
+  private readonly _placementGroup?: ec2.IPlacementGroupRef;
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
+      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+    }
 
     this.kubernetesNamespace = props.kubernetesNamespace;
     this.eksCluster = props.eksCluster;
@@ -1037,7 +1094,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
-    this.placementGroup = props.placementGroup;
+    this._placementGroup = props.placementGroup;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage);
@@ -1054,7 +1111,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
-        instanceTypes: Lazy.list({ produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) }),
+        instanceTypes: Lazy.list({
+          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses, props.defaultInstanceClasses),
+        }),
         type: this.spot ? 'SPOT' : 'EC2',
         allocationStrategy: this.allocationStrategy,
         bidPercentage: this.spotBidPercentage,
@@ -1067,7 +1126,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
             imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
           };
         }),
-        placementGroup: this.placementGroup?.placementGroupName,
+        placementGroup: props.placementGroup?.placementGroupRef.groupName,
         tags: this.tags.renderedTags as any,
       },
     });
@@ -1080,6 +1139,10 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     });
 
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
+  }
+
+  public get placementGroup(): ec2.IPlacementGroup | undefined {
+    return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
   }
 
   @MethodMetadata()
@@ -1128,6 +1191,12 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
       public readonly connections = { } as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
+
+      public get computeEnvironmentRef() {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -1159,7 +1228,11 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
   }
 }
 
-function renderInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+function renderInstances(
+  types?: ec2.InstanceType[],
+  classes?: ec2.InstanceClass[],
+  useOptimalInstanceClasses?: boolean,
+  defaultInstanceClasses?: DefaultInstanceClass[]): string[] {
   const instances = [];
 
   for (const instanceType of types ?? []) {
@@ -1168,7 +1241,9 @@ function renderInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass
   for (const instanceClass of classes ?? []) {
     instances.push(instanceClass);
   }
-  if (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined) {
+  if (defaultInstanceClasses?.length) {
+    instances.push(...defaultInstanceClasses);
+  } else if (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined) {
     instances.push('optimal');
   }
 
@@ -1209,9 +1284,13 @@ function determineAllocationStrategy(scope: Construct, allocationStrategy?: Allo
   return result;
 }
 
-function validateInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
-  if (renderInstances(types, classes, useOptimalInstanceClasses).length === 0) {
-    return ["Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes"];
+function validateInstances(
+  types?: ec2.InstanceType[],
+  classes?: ec2.InstanceClass[],
+  useOptimalInstanceClasses?: boolean,
+  defaultInstanceClasses?: DefaultInstanceClass[]): string[] {
+  if (renderInstances(types, classes, useOptimalInstanceClasses, defaultInstanceClasses).length === 0) {
+    return ["'defaultInstanceClasses' undefined without specifying any instance types or classes"];
   }
 
   return [];
@@ -1270,3 +1349,10 @@ function baseManagedResourceProperties(baseComputeEnvironment: ManagedComputeEnv
 
 const DEFAULT_MIN_VCPUS = 0;
 const DEFAULT_MAX_VCPUS = 256;
+
+function asPlacementGroup(x: ec2.IPlacementGroupRef, scope: IConstruct): ec2.IPlacementGroup {
+  if ('placementGroupName' in x) {
+    return x as ec2.IPlacementGroup;
+  }
+  throw new ValidationError(`Provided placement group is not an instance of IPlacementGroup: ${x.constructor.name}`, scope);
+}

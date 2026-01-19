@@ -19,6 +19,17 @@
      "Value": 60
     }
    }
+  },
+  "SigningProfileWithName6D0F168B": {
+   "Type": "AWS::Signer::SigningProfile",
+   "Properties": {
+    "PlatformId": "AWSLambda-SHA384-ECDSA",
+    "ProfileName": "test-signing-profile-name",
+    "SignatureValidityPeriod": {
+     "Type": "MONTHS",
+     "Value": 135
+    }
+   }
   }
  },
  "Parameters": {

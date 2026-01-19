@@ -1,13 +1,13 @@
 import { IAccessLogDestination } from './access-log';
-import { IDomainName } from './domain-name';
 import { AccessLogFormat } from '../../../aws-apigateway/lib';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { IResource } from '../../../core';
+import { IDomainNameRef, IStageRef } from '../apigatewayv2.generated';
 
 /**
  * Represents a Stage.
  */
-export interface IStage extends IResource {
+export interface IStage extends IResource, IStageRef {
   /**
    * The name of the stage; its primary identifier.
    * @attribute
@@ -25,6 +25,16 @@ export interface IStage extends IResource {
    * @default - average over 5 minutes
    */
   metric(metricName: string, props?: MetricOptions): Metric;
+
+  /**
+   * Adds a stage variable to this stage.
+   *
+   * @param name The name of the stage variable.
+   * @param value The value of the stage variable.
+   *
+   * The allowed characters for variable names and the required pattern for variable values are specified here: https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-apigateway-stage.html#cfn-apigateway-stage-variables
+   */
+  addStageVariable(name: string, value: string): void;
 }
 
 /**
@@ -35,7 +45,7 @@ export interface DomainMappingOptions {
    * The domain name for the mapping
    *
    */
-  readonly domainName: IDomainName;
+  readonly domainName: IDomainNameRef;
 
   /**
    * The API mapping key. Leave it undefined for the root path mapping.
@@ -89,6 +99,16 @@ export interface StageOptions {
    * @default - No access logging
    */
   readonly accessLogSettings?: IAccessLogSettings;
+
+  /**
+   * Stage variables for the stage.
+   * These are key-value pairs that you can define and use in your API routes.
+   *
+   * The allowed characters for variable names and the required pattern for variable values are specified here: https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-apigateway-stage.html#cfn-apigateway-stage-variables
+   *
+   * @default - No stage variables
+   */
+  readonly stageVariables?: { [key: string]: string };
 }
 
 /**

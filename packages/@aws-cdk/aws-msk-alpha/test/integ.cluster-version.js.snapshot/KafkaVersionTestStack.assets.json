@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
-    "304b1bdab8a361040f10eed2fe447f51257459ba220086f69e8bd2e5f4bc87a9": {
+    "b76501a118e5b3971fad01bab088ce95b547551791a9283fa23454427d62569c": {
       "displayName": "KafkaVersionTestStack Template",
       "source": {
         "path": "KafkaVersionTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-36d7fc93": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "304b1bdab8a361040f10eed2fe447f51257459ba220086f69e8bd2e5f4bc87a9.json",
+          "objectKey": "b76501a118e5b3971fad01bab088ce95b547551791a9283fa23454427d62569c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

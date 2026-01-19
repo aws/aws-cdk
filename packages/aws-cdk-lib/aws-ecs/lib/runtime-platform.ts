@@ -72,6 +72,14 @@ export class OperatingSystemFamily {
    * WINDOWS_SERVER_20H2_CORE
    */
   public static readonly WINDOWS_SERVER_20H2_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_20H2_CORE');
+  /**
+   * WINDOWS_SERVER_2025_FULL
+   */
+  public static readonly WINDOWS_SERVER_2025_FULL = OperatingSystemFamily.of('WINDOWS_SERVER_2025_FULL');
+  /**
+   * WINDOWS_SERVER_2025_CORE
+   */
+  public static readonly WINDOWS_SERVER_2025_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_2025_CORE');
 
   /**
    * Other operating system family.

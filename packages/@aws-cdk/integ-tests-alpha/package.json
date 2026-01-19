@@ -33,14 +33,15 @@
         "packageName": "awscdkintegtestsalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "scripts": {
     "build": "cdk-build",
@@ -67,7 +68,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.188.2",
+    "@aws-cdk/integ-runner": "^2.193.4",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
     "@aws-sdk/client-ec2": "3.632.0",
@@ -83,7 +84,7 @@
     "sinon": "^9.2.4",
     "aws-cdk-lib": "0.0.0",
     "node-fetch": "^2.7.0",
-    "@types/node-fetch": "^2.6.12",
+    "@types/node-fetch": "^2.6.13",
     "constructs": "^10.0.0"
   },
   "dependencies": {},
@@ -102,7 +103,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 18.0.0"
   },
   "cdk-build": {
     "pre": [

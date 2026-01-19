@@ -11,7 +11,7 @@ import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
-import { Environment } from './environment';
+import { Environment, ResourceEnvironment } from './environment';
 import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary, PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
@@ -121,7 +121,15 @@ export interface StackProps {
   readonly stackName?: string;
 
   /**
-   * Stack tags that will be applied to all the taggable resources and the stack itself.
+   * Tags that will be applied to the Stack
+   *
+   * These tags are applied to the CloudFormation Stack itself. They will not
+   * appear in the CloudFormation template.
+   *
+   * However, at deployment time, CloudFormation will apply these tags to all
+   * resources in the stack that support tagging. You will not be able to exempt
+   * resources from tagging (using the `excludeResourceTypes` property of
+   * `Tags.of(...).add()`) for tags applied in this way.
    *
    * @default {}
    */
@@ -130,7 +138,7 @@ export interface StackProps {
   /**
    * SNS Topic ARNs that will receive stack events.
    *
-   * @default - no notfication arns.
+   * @default - no notification arns.
    */
   readonly notificationArns?: string[];
 
@@ -431,7 +439,6 @@ export class Stack extends Construct implements ITaggable {
     // as the parent because apps implement much of the synthesis logic.
     scope = scope ?? new App({
       autoSynth: false,
-      outdir: FileSystem.mkdtemp('cdk-test-app-'),
     });
 
     // "Default" is a "hidden id" from a `node.uniqueId` perspective
@@ -980,7 +987,7 @@ export class Stack extends Construct implements ITaggable {
       const cycleDescription = cycle.map((cycleReason) => {
         return cycleReason.description;
       }).join(', ');
-      // eslint-disable-next-line max-len
+
       throw new ValidationError(`'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.description}) would create a cyclic reference.`, this);
     }
 
@@ -1398,7 +1405,6 @@ export class Stack extends Construct implements ITaggable {
     let transform: string | string[] | undefined;
 
     if (this.templateOptions.transform) {
-      // eslint-disable-next-line max-len
       Annotations.of(this).addWarningV2('@aws-cdk/core:stackDeprecatedTransform', 'This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
@@ -1608,6 +1614,34 @@ export class Stack extends Construct implements ITaggable {
       this.node.path, // use the same value for pattern matching as the aws-cdk CLI (displayName / hierarchicalId)
       pattern,
     ));
+  }
+
+  /**
+   * Configure a stack tag
+   *
+   * At deploy time, CloudFormation will automatically apply all stack tags to all resources in the stack.
+   */
+  public addStackTag(tagName: string, tagValue: string) {
+    this.tags.setTag(tagName, tagValue);
+  }
+
+  /**
+   * Remove a stack tag
+   *
+   * At deploy time, CloudFormation will automatically apply all stack tags to all resources in the stack.
+   */
+  public removeStackTag(tagName: string) {
+    this.tags.removeTag(tagName, 0);
+  }
+
+  /**
+   * The environment this Stack deploys to
+   */
+  public get env(): ResourceEnvironment {
+    return {
+      account: this.account,
+      region: this.region,
+    };
   }
 }
 
@@ -1837,7 +1871,6 @@ function count(xs: string[]): Record<string, number> {
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
 import { addDependency, Element } from './deps';
-import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';

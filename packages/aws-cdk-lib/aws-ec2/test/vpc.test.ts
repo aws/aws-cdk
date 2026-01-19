@@ -368,7 +368,7 @@ describe('vpc', () => {
 
     test('with only reserved subnets as public subnets, should not create the internet gateway', () => {
       const stack = getTestStack();
-      const vpc = new Vpc(stack, 'TheVPC', {
+      new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
             subnetType: SubnetType.PRIVATE_ISOLATED,
@@ -387,7 +387,7 @@ describe('vpc', () => {
 
     test('with only reserved subnets as private subnets with egress, should not create the internet gateway', () => {
       const stack = getTestStack();
-      const vpc = new Vpc(stack, 'TheVPC', {
+      new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
             subnetType: SubnetType.PRIVATE_ISOLATED,
@@ -2305,7 +2305,6 @@ describe('vpc', () => {
       const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
 
       // THEN
-      // eslint-disable-next-line max-len
       expect(() => subnet.availabilityZone).toThrow("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
     });
 
@@ -2318,7 +2317,6 @@ describe('vpc', () => {
 
       // THEN
       expect(subnet.subnetId).toEqual('pub-1');
-      // eslint-disable-next-line max-len
       expect(() => subnet.availabilityZone).toThrow("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
     });
 
@@ -2623,6 +2621,10 @@ describe('vpc', () => {
         routerType: RouterType.VPC_ENDPOINT,
         routerId: 'vpc-endpoint-id',
       });
+      (vpc.publicSubnets[0] as Subnet).addRoute('CoreNetworkRoute', {
+        routerType: RouterType.CORE_NETWORK,
+        routerId: 'core-network-arn',
+      });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
@@ -2636,6 +2638,9 @@ describe('vpc', () => {
       });
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
         VpcEndpointId: 'vpc-endpoint-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        CoreNetworkArn: 'core-network-arn',
       });
     });
   });
@@ -2735,7 +2740,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
     });
 
@@ -2753,7 +2758,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {
@@ -2772,7 +2777,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {
@@ -2796,7 +2801,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
     // WHEN
     stack.node.setContext(EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, true);
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {
@@ -2819,7 +2824,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
     stack.node.setContext(EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, true);
     // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {

@@ -143,6 +143,7 @@ env:
             {"area":"@aws-cdk/aws-ecs-patterns","keywords":["aws-ecs-patterns","ecs-patterns"],"labels":["@aws-cdk/aws-ecs-patterns"]},
             {"area":"@aws-cdk/aws-efs","keywords":["aws-efs","efs","accesspoint"],"labels":["@aws-cdk/aws-efs"]},
             {"area":"@aws-cdk/aws-eks","keywords":["aws-eks","eks","fargateprofile","fargatecluster"],"labels":["@aws-cdk/aws-eks"]},
+            {"area":"@aws-cdk/aws-eks-v2-alpha", "keywords":["aws-eks-v2", "eks-v2", "aws-eks-v2-alpha"],"labels":["@aws-cdk/aws-eks-v2-alpha"]},
             {"area":"@aws-cdk/aws-elasticache","keywords":["aws-elasticache","elastic-cache"],"labels":["@aws-cdk/aws-elasticache"]},
             {"area":"@aws-cdk/aws-elasticbeanstalk","keywords":["aws-elasticbeanstalk","elastic-beanstalk"],"labels":["@aws-cdk/aws-elasticbeanstalk"]},
             {"area":"@aws-cdk/aws-elasticloadbalancing","keywords":["aws-elasticloadbalancing","elastic-loadbalancing","elb"],"labels":["@aws-cdk/aws-elasticloadbalancing"]},
@@ -284,5 +285,13 @@ env:
             {"area":"@aws-cdk/integ-runner","keywords":["integ-runner"],"labels":["@aws-cdk/integ-runner"]},
             {"area":"@aws-cdk/app-staging-synthesizer-alpha", "keywords":["app-staging-synthesizer", "app-staging-synthesizer-alpha"],"labels":["@aws-cdk/app-staging-synthesizer-alpha"]},
             {"area":"@aws-cdk/aws-location-alpha", "keywords":["aws-location", "aws-location-alpha"],"labels":["@aws-cdk/aws-location-alpha"]},
-            {"area":"@aws-cdk/cli-lib-alpha", "keywords":["cli-lib", "cli-lib-alpha"],"labels":["@aws-cdk/cli-lib-alpha"]}
+            {"area":"@aws-cdk/cli-lib-alpha", "keywords":["cli-lib", "cli-lib-alpha"],"labels":["@aws-cdk/cli-lib-alpha"]},
+            {"area":"@aws-cdk/aws-applicationsignals-alpha", "keywords":["aws-applicationsignals", "aws-applicationsignals-alpha"],"labels":["@aws-cdk/aws-applicationsignals-alpha"]},
+            {"area":"@aws-cdk/aws-s3tables-alpha", "keywords":["aws-s3tables", "aws-s3tables-alpha"],"labels":["@aws-cdk/aws-s3tables-alpha"]},
+            {"area":"@aws-cdk/aws-pipes-enrichments-alpha", "keywords":["aws-pipes-enrichments", "aws-pipes-enrichments-alpha"],"labels":["@aws-cdk/aws-pipes-enrichments-alpha"]},
+            {"area":"@aws-cdk/aws-pipes-sources-alpha", "keywords":["aws-pipes-sources", "aws-pipes-sources-alpha"],"labels":["@aws-cdk/aws-pipes-sources-alpha"]},
+            {"area":"@aws-cdk/aws-pipes-targets-alpha", "keywords":["aws-pipes-targets", "aws-pipes-targets-alpha"],"labels":["@aws-cdk/aws-pipes-targets-alpha"]},
+            {"area":"@aws-cdk/aws-bedrock-alpha", "keywords":["aws-bedrock", "aws-bedrock-alpha"],"labels":["@aws-cdk/aws-bedrock-alpha"]},
+            {"area":"@aws-cdk/aws-bedrock-agentcore-alpha", "keywords":["aws-bedrock-agentcore", "aws-bedrock-agentcore-alpha"],"labels":["@aws-cdk/aws-bedrock-agentcore-alpha"]},
+            {"area":"@aws-cdk/aws-imagebuilder-alpha", "keywords":["aws-imagebuilder", "aws-imagebuilder-alpha"],"labels":["@aws-cdk/aws-imagebuilder-alpha"]}
           ]

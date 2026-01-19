@@ -418,6 +418,8 @@ aws-cdk-lib.aws_cloudwatch.IMetric#toAlarmConfig
 aws-cdk-lib.aws_cloudwatch.IMetric#toGraphConfig
 aws-cdk-lib.aws_cloudwatch.MathExpression#toAlarmConfig
 aws-cdk-lib.aws_cloudwatch.MathExpression#toGraphConfig
+aws-cdk-lib.aws_cloudwatch.SearchExpression#toAlarmConfig
+aws-cdk-lib.aws_cloudwatch.SearchExpression#toGraphConfig
 aws-cdk-lib.aws_cloudwatch.Metric#toAlarmConfig
 aws-cdk-lib.aws_cloudwatch.Metric#toGraphConfig
 aws-cdk-lib.aws_cloudwatch.MetricAlarmConfig

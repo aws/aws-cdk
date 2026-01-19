@@ -1,12 +1,13 @@
+import { UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Encryption options for a Table.
@@ -162,7 +163,7 @@ export class S3Table extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new Error(`Duplicate storage parameter key: ${param.key}`);
+              throw new ValidationError(`Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;
@@ -191,6 +192,7 @@ export class S3Table extends TableBase {
 
   /**
    * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -204,6 +206,7 @@ export class S3Table extends TableBase {
 
   /**
    * Grant write permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -217,6 +220,7 @@ export class S3Table extends TableBase {
 
   /**
    * Grant read and write permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -264,7 +268,7 @@ function createBucket(table: S3Table, props: S3TableProps) {
   let bucket = props.bucket;
 
   if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
-    throw new Error('you can not specify encryption settings if you also provide a bucket');
+    throw new UnscopedValidationError('you can not specify encryption settings if you also provide a bucket');
   }
 
   const encryption = props.encryption || TableEncryption.S3_MANAGED;

@@ -210,6 +210,13 @@ export class SubscriptionFilter {
   }
 
   /**
+   * Returns a subscription filter for absence of attribute key.
+   */
+  public static notExistsFilter() {
+    return new SubscriptionFilter([{ exists: false }]);
+  }
+
+  /**
    *
    * @param conditions conditions that specify the message attributes that should be included, excluded, matched, etc.
    */

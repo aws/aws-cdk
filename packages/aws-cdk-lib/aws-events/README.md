@@ -54,7 +54,12 @@ declare const project: codebuild.Project;
 
 const onCommitRule = repo.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
-  branches: ['master']
+  eventPattern: {
+    detail: {
+      referenceType: ['branch'],
+    }
+  },
+  branches: events.Match.prefix('main')
 });
 ```
 
@@ -332,6 +337,45 @@ new events.EventBus(this, 'Bus', {
 });
 ```
 
-**Note**: Archives and schema discovery are not supported for event buses encrypted using a customer managed key.
-To enable archives or schema discovery on an event bus, choose to use an AWS owned key.
+To use a customer managed key for an archive, use the `kmsKey` attribute. 
+
+Note: When you attach a customer managed key to either an EventBus or an Archive, a policy that allows EventBridge to interact with your resource will be added. 
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+import { Archive, EventBus } from 'aws-cdk-lib/aws-events';
+
+const stack = new Stack();
+
+declare const kmsKey: kms.IKey;
+
+const eventBus = new EventBus(stack, 'Bus');
+
+const archive = new Archive(stack, 'Archive', {
+  kmsKey: kmsKey,
+  sourceEventBus: eventBus,
+  eventPattern: {
+    source: ['aws.ec2']
+  },
+});
+```
+
+To enable archives or schema discovery on an event bus, customers has the choice of using either an AWS owned key or a customer managed key.
 For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
+
+## Configuring logging
+
+To configure logging for an Event Bus, leverage the LogConfig property. It allows different level of logging (NONE, INFO, TRACE, ERROR) and wether to include details or not.
+
+```ts
+import { EventBus, IncludeDetail, Level } from 'aws-cdk-lib/aws-events';
+
+const bus =  new EventBus(this, 'Bus', {
+      logConfig: {
+        includeDetail: IncludeDetail.FULL,
+        level: Level.TRACE,
+      },
+    });
+```
+
+See more [Specifying event bus log level](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-bus-logs-level)

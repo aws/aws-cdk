@@ -1,8 +1,7 @@
 import * as path from 'path';
+import { CODECOV_CHECKS } from '../constants';
 import { GitHubFile, GitHubLabel, GitHubPr } from '../github';
-import { CODE_BUILD_CONTEXT, CODECOV_CHECKS } from '../constants';
 import { PullRequestLinter } from '../lint';
-import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { createOctomock, OctoMock } from './octomock';
 
 type GitHubFileName = Omit<GitHubFile, 'deletions' | 'additions'>;
@@ -10,13 +9,13 @@ type GitHubFileName = Omit<GitHubFile, 'deletions' | 'additions'>;
 let mockRemoveLabel = jest.fn();
 let mockAddLabel = jest.fn();
 
-let mockListReviews = jest.fn().mockImplementation((_props: { _owner: string, _repo: string, _pull_number: number }) => {
+let mockListReviews = jest.fn().mockImplementation((_props: { _owner: string; _repo: string; _pull_number: number }) => {
   return { data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
 });
 
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation();
-  jest.spyOn(PullRequestLinter.prototype as any, 'getTrustedCommunityMembers').mockImplementation(() => ['trusted1', 'trusted2', 'trusted3'])
+  jest.spyOn(PullRequestLinter.prototype as any, 'getTrustedCommunityMembers').mockImplementation(() => ['trusted1', 'trusted2', 'trusted3']);
   process.env.REPO_ROOT = path.join(__dirname, '..', '..', '..', '..');
 });
 
@@ -112,8 +111,8 @@ test('disallow PRs from main branch of fork', async () => {
     },
     head: {
       label: 'author:main',
-      ref: 'main'
-    }
+      ref: 'main',
+    },
   };
   const prLinter = configureMock(issue, undefined);
   await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(/Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork./);
@@ -397,7 +396,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(
-      'Features must contain a change to an integration test file and the resulting snapshot.'
+      'Features must contain a change to an integration test file and the resulting snapshot.',
     );
   });
 
@@ -428,7 +427,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(
-      'Features must contain a change to an integration test file and the resulting snapshot.'
+      'Features must contain a change to an integration test file and the resulting snapshot.',
     );
   });
 
@@ -459,7 +458,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(
-      'Fixes must contain a change to an integration test file and the resulting snapshot.'
+      'Fixes must contain a change to an integration test file and the resulting snapshot.',
     );
   });
 
@@ -490,7 +489,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(
-      'Fixes must contain a change to an integration test file and the resulting snapshot.'
+      'Fixes must contain a change to an integration test file and the resulting snapshot.',
     );
   });
 
@@ -589,13 +588,22 @@ describe('integration tests required on features', () => {
     });
   });
 
-  describe('assess needs review from status event', () => {
+  describe('assess needs review', () => {
     const pr = {
+      title: 'chore(s3): something',
       draft: false,
       mergeable_state: 'behind',
       number: 1234,
       labels: [{ name: 'p2' }],
     };
+    const files = [
+      {
+        filename: 'some-test.test.ts',
+      },
+      {
+        filename: 'readme.md',
+      },
+    ];
     beforeEach(() => {
       mockListReviews.mockImplementation(() => {
         return {
@@ -606,12 +614,8 @@ describe('integration tests required on features', () => {
 
     test('needs a review', async () => {
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
@@ -626,12 +630,8 @@ describe('integration tests required on features', () => {
     test('needs a review and is p1', async () => {
       // WHEN
       pr.labels = [{ name: 'p1' }];
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
@@ -657,12 +657,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -688,12 +684,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
@@ -710,7 +702,7 @@ describe('integration tests required on features', () => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [
-            { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T17:43:43Z'},
+            { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T17:43:43Z' },
             { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED', submitted_at: '2019-11-18T17:43:43Z' },
           ],
         };
@@ -725,12 +717,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -758,12 +746,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -791,12 +775,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -831,12 +811,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -869,12 +845,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -899,12 +871,8 @@ describe('integration tests required on features', () => {
       (pr as any).labels = [];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls).toEqual([]);
@@ -927,41 +895,33 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls).toEqual([]);
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
 
-    test('trusted community members can change own review from approval to requesting changes',  async () => {
+    test('trusted community members can change own review from approval to requesting changes', async () => {
       // GIVEN
       mockListReviews.mockImplementation(() => {
         return {
           data: [
             { id: 1111122223, user: { login: 'trusted1' }, state: 'APPROVED', submitted_at: '2019-11-17T17:43:43Z' },
             { id: 1111122224, user: { login: 'trusted1' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-18T17:43:43Z' },
-          ]
-        }
+          ],
+        };
       });
       (pr as any).labels = [
         {
           name: 'pr/needs-maintainer-review',
-        }
+        },
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -980,18 +940,14 @@ describe('integration tests required on features', () => {
           data: [
             { id: 1111122223, user: { login: 'trusted1' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T17:43:43Z' },
             { id: 1111122224, user: { login: 'trusted1' }, state: 'APPROVED', submitted_at: '2019-11-18T17:43:43Z' },
-          ]
-        }
+          ],
+        };
       });
       (pr as any).labels = [];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls).toEqual([]);
@@ -1019,12 +975,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls).toEqual([]);
@@ -1079,18 +1031,18 @@ describe('integration tests required on features', () => {
 
     test('valid exemption request comment', async () => {
       const comments = [
-        { id: 1234, login: 'author', body: 'Exemption Request' }
+        { id: 1234, login: 'author', body: 'Exemption Request' },
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
       await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(
-        'Fixes must contain a change to an integration test file and the resulting snapshot.'
+        'Fixes must contain a change to an integration test file and the resulting snapshot.',
       );
     });
 
     test('valid exemption request with additional context', async () => {
       const comments = [
-        { id: 1234, login: 'author', body: 'Exemption Request: \nThe reason is blah blah blah.' }
+        { id: 1234, login: 'author', body: 'Exemption Request: \nThe reason is blah blah blah.' },
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1102,7 +1054,7 @@ describe('integration tests required on features', () => {
 
     test('valid exemption request with middle exemption request', async () => {
       const comments = [
-        { id: 1234, login: 'author', body: 'Random content - Exemption Request - hello world' }
+        { id: 1234, login: 'author', body: 'Random content - Exemption Request - hello world' },
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1114,7 +1066,7 @@ describe('integration tests required on features', () => {
 
     test('exemption only counts if requested by PR author', async () => {
       const comments = [
-        { id: 1234, login: 'bert', body: 'Random content - Exemption Request - hello world' }
+        { id: 1234, login: 'bert', body: 'Random content - Exemption Request - hello world' },
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1127,7 +1079,7 @@ describe('integration tests required on features', () => {
 
     test('bot does not trigger on its own exemption requests', async () => {
       const comments = [
-        { id: 1234, login: 'aws-cdk-automation', body: 'Random content - Exemption Request - hello world' }
+        { id: 1234, login: 'aws-cdk-automation', body: 'Random content - Exemption Request - hello world' },
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1198,8 +1150,8 @@ describe('integration tests required on features', () => {
           failures: [
             'The number of lines added (1001) is greater than 1000',
             'The number of lines removed (1002) is greater than 1000',
-          ]
-        }
+          ],
+        },
       }));
     });
 
@@ -1229,7 +1181,7 @@ describe('integration tests required on features', () => {
         labels: [
           { name: 'pr-linter/exempt-size-check' },
         ],
-      }
+      };
 
       const prLinter = configureMock(exemptPr, files);
 
@@ -1248,7 +1200,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr, files);
 
       await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
-        requestChanges: undefined
+        requestChanges: undefined,
       }));
     });
 
@@ -1262,7 +1214,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr, files);
 
       await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
-        requestChanges: undefined
+        requestChanges: undefined,
       }));
     });
   });
@@ -1343,13 +1295,14 @@ describe('for any PR', () => {
   });
 });
 
-function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existingComments?: Array<{ id: number, login: string, body: string }>): PullRequestLinter & { octomock: OctoMock } {
+// eslint-disable-next-line max-len
+function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existingComments?: Array<{ id: number; login: string; body: string }>): PullRequestLinter & { octomock: OctoMock } {
   const octomock = createOctomock();
 
-  octomock.pulls.get.mockImplementation((_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) => ({
-    data: { ...pr, base: { ref: 'main', ...pr?.base }, head: { sha: 'ABC', ...pr?.head }},
+  octomock.pulls.get.mockImplementation((_props: { _owner: string; _repo: string; _pull_number: number; _user: { _login: string} }) => ({
+    data: { ...pr, base: { ref: 'main', ...pr?.base }, head: { sha: 'ABC', ...pr?.head } },
   }));
-  octomock.pulls.listFiles.mockImplementation((_props: { _owner: string, _repo: string, _pull_number: number }) => ({
+  octomock.pulls.listFiles.mockImplementation((_props: { _owner: string; _repo: string; _pull_number: number }) => ({
     data: prFiles ?? [],
   }));
   octomock.pulls.createReview.mockImplementation((errorMessage) => {
@@ -1367,12 +1320,6 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existin
   });
   octomock.issues.addLabels = mockAddLabel;
   octomock.issues.removeLabel = mockRemoveLabel;
-  octomock.repos.listCommitStatusesForRef.mockImplementation(() => ({
-    data: [{
-      context: CODE_BUILD_CONTEXT,
-      state: 'success',
-    }],
-  }));
 
   // We need to pretend that all CodeCov checks are passing by default, otherwise
   // the linter will complain about these even in tests that aren't testing for this.
@@ -1382,6 +1329,19 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existin
       conclusion: 'success',
       started_at: '2020-01-01T00:00:00Z',
     })),
+  }));
+
+  // Mock workflow runs to simulate successful CodeBuild jobs
+  octomock.actions.listWorkflowRuns.mockImplementation(() => ({
+    data: {
+      workflow_runs: [
+        {
+          head_sha: SHA,
+          status: 'completed',
+          conclusion: 'success',
+        },
+      ],
+    },
   }));
 
   const linter = new PullRequestLinter({
@@ -1419,14 +1379,4 @@ async function legacyValidatePullRequestTarget(prLinter: PullRequestLinter) {
   const actions = await prLinter.validatePullRequestTarget();
   await prLinter.executeActions(actions);
   prLinter.actionsToException(actions);
-}
-
-/**
- * Same as for validatePullRequesTarget
- *
- * @deprecated Assert on the contents of `LinterActions` instead.
- */
-async function legacyValidateStatusEvent(prLinter: PullRequestLinter, statusEvent: StatusEvent) {
-  const actions = await prLinter.validateStatusEvent(statusEvent);
-  await prLinter.executeActions(actions);
 }

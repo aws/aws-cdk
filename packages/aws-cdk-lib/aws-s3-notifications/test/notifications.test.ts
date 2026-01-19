@@ -4,8 +4,7 @@ import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import * as s3n from '../lib';
 
-/* eslint-disable max-len */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('bucket without notifications', () => {
   const stack = new cdk.Stack();

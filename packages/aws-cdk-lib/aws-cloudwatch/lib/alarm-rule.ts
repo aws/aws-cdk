@@ -1,4 +1,6 @@
-import { IAlarm, IAlarmRule } from './alarm-base';
+import { IAlarmRule } from './alarm-base';
+import { UnscopedValidationError } from '../../core';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Enumeration indicates state of Alarm used in building Alarm Rule.
@@ -87,10 +89,10 @@ export class AlarmRule {
    * @param alarm IAlarm to be used in Rule Expression.
    * @param alarmState AlarmState to be used in Rule Expression.
    */
-  public static fromAlarm(alarm: IAlarm, alarmState: AlarmState): IAlarmRule {
+  public static fromAlarm(alarm: IAlarmRef, alarmState: AlarmState): IAlarmRule {
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
-        return `${alarmState}("${alarm.alarmArn}")`;
+        return `${alarmState}("${alarm.alarmRef.alarmArn}")`;
       }
     };
   }
@@ -111,6 +113,10 @@ export class AlarmRule {
   private static concat(operator: Operator, ...operands: IAlarmRule[]): IAlarmRule {
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
+        if (operands.length === 0) {
+          throw new UnscopedValidationError(`Did not detect any operands for AlarmRule.${operator === Operator.AND ? 'allOf' : 'anyOf'}()`);
+        }
+
         const expression = operands
           .map(operand => `${operand.renderAlarmRule()}`)
           .join(` ${operator} `);

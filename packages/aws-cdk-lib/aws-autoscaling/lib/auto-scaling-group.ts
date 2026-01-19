@@ -1,4 +1,3 @@
-
 import { Construct } from 'constructs';
 import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
@@ -28,6 +27,7 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
+import { AutoScalingGroupReference, IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Name tag constant
@@ -267,7 +267,7 @@ export interface CommonAutoScalingGroupProps {
    * to all current and future instances in the group. As an instance approaches its maximum duration,
    * it is terminated and replaced, and cannot be used again.
    *
-   * You must specify a value of at least 604,800 seconds (7 days). To clear a previously set value,
+   * You must specify a value of at least 86,400 seconds (one day). To clear a previously set value,
    * leave this property undefined.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
@@ -666,6 +666,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default - Do not provide any launch template
    */
   readonly launchTemplate?: ec2.ILaunchTemplate;
+
+  /**
+   * Whether safety guardrail should be enforced when migrating to the launch template.
+   *
+   * @default false
+   */
+  readonly migrateToLaunchTemplate?: boolean;
 
   /**
    * Mixed Instances Policy to use.
@@ -1135,6 +1142,13 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
   protected hasCalledScaleOnRequestCount: boolean = false;
+
+  public get autoScalingGroupRef(): AutoScalingGroupReference {
+    return {
+      autoScalingGroupName: this.autoScalingGroupName,
+      autoScalingGroupArn: this.autoScalingGroupArn,
+    };
+  }
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -1670,7 +1684,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.targetGroupArns.push(targetGroup.targetGroupArn);
+    this.targetGroupArns.push(targetGroup.targetGroupRef.targetGroupArn);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
@@ -1854,6 +1868,17 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
       };
+    }
+
+    if (props.migrateToLaunchTemplate === true) {
+      const updatePolicy = this.autoScalingGroup.cfnOptions.updatePolicy;
+      if (!updatePolicy || !updatePolicy!.autoScalingRollingUpdate) {
+        throw new ValidationError(
+          'When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate ' +
+          'to ensure instances are properly replaced during migration. ' +
+          'This prevents instances from referencing a deleted IAM instance profile.',
+          this);
+      }
     }
 
     if (props.signals && !props.init) {
@@ -2446,7 +2471,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup extends IResource, iam.IGrantable {
+export interface IAutoScalingGroup extends IAutoScalingGroupRef, IResource, iam.IGrantable {
   /**
    * The name of the AutoScalingGroup
    * @attribute
@@ -2592,7 +2617,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
       const { iops, volumeType, throughput } = ebs;
 
       if (throughput) {
-        const throughputRange = { Min: 125, Max: 1000 };
+        const throughputRange = { Min: 125, Max: 2000 };
         const { Min, Max } = throughputRange;
 
         if (volumeType != EbsDeviceVolumeType.GP3) {

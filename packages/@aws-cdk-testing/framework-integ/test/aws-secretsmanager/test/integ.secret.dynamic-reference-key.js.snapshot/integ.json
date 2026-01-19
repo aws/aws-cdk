@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "cdk-integ-secrets-dynamic-reference-key-test/DefaultTest": {
+      "stacks": [
+        "cdk-integ-secrets-dynamic-reference-key"
+      ],
+      "assertionStack": "cdk-integ-secrets-dynamic-reference-key-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsecretsdynamicreferencekeytestDefaultTestDeployAssert14A59A81"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

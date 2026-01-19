@@ -553,6 +553,7 @@ test('grantWrite', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: { Ref: 'SecretA720EF05' },
@@ -578,6 +579,7 @@ test('grantWrite with kms', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: { Ref: 'SecretA720EF05' },
@@ -860,6 +862,7 @@ test('fromSecretCompleteArn - grants', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: secretArn,
@@ -929,6 +932,7 @@ test('fromSecretPartialArn - grants', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: `${secretArn}-??????`,
@@ -1054,6 +1058,7 @@ testDeprecated('import by secret name with grants', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: expectedSecretReference,
@@ -1122,6 +1127,7 @@ test('import by secret name v2 with grants', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: expectedSecretReference,
@@ -1442,4 +1448,59 @@ test('cross-environment grant with imported from partialArn', () => {
       }],
     },
   });
+});
+
+test('dynamicReferenceKey', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+  // WHEN
+  const options = {
+    jsonField: 'json-key',
+    versionStage: 'version-stage',
+  };
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // THEN
+  expect(stack.resolve(secret.cfnDynamicReferenceKey(options))).toEqual(`${secretArn}:SecretString:${options.jsonField}:${options.versionStage}:`);
+});
+
+test('dynamicReferenceKey with versionId', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+  // WHEN
+  const options = {
+    jsonField: 'json-key',
+    versionId: 'version-id',
+  };
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // THEN
+  expect(stack.resolve(secret.cfnDynamicReferenceKey(options))).toEqual(`${secretArn}:SecretString:${options.jsonField}::${options.versionId}`);
+});
+
+test('dynamicReferenceKey with defaults', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+  // WHEN
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // THEN
+  expect(stack.resolve(secret.cfnDynamicReferenceKey())).toEqual(`${secretArn}:SecretString:::`);
+});
+
+test('dynamicReferenceKey with versionStage and versionId', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+  // WHEN
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // THEN
+  expect(() => secret.cfnDynamicReferenceKey({
+    versionStage: 'version-stage',
+    versionId: 'version-id',
+  })).toThrow(/were both provided but only one is allowed/);
 });

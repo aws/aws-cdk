@@ -1,8 +1,8 @@
 #!/usr/bin/env node
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { Stack, App, StackProps } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Stack, App, StackProps } from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as redshift from '../lib';
 
@@ -29,10 +29,22 @@ class RedshiftEnv extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  context: {
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+  },
+});
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
+  },
+});
+
+new RedshiftEnv(stack, 'redshift-loggingbucket-integ');
 
 new integ.IntegTest(app, 'LoggingBucketInteg', {
-  testCases: [new RedshiftEnv(app, 'redshift-loggingbucket-integ')],
+  testCases: [stack],
 });
 
 app.synth();

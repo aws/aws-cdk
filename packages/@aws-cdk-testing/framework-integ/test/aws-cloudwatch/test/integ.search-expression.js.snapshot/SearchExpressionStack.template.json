@@ -1,0 +1,56 @@
+{
+ "Resources": {
+  "SearchExpressionDashboardC39DD5E9": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Minimal vs Custom Properties\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)\",\"expression\":\"SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)\"}],[{\"label\":\"Custom Lambda Duration\",\"color\":\"#e377c2\",\"expression\":\"SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)\",\"accountId\":\"123456789012\",\"region\":\"us-west-2\",\"period\":600,\"yAxis\":\"right\"}],[{\"label\":\"Cross-Account Cross-Region S3\",\"color\":\"#9467bd\",\"expression\":\"SEARCH('{AWS/S3,BucketName} BucketSizeBytes', 'Average', 86400)\",\"accountId\":\"123456789012\",\"region\":\"ap-southeast-1\",\"period\":3600,\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "SearchExpressionTestDashboard"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

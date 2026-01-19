@@ -1,16 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "files": {
-    "29580ff3632143bf0335562f6d1b427bc4d07338f2e0a2286abeaa96de2fc932": {
+    "630c62d29eca0dbae7716c08784b262eecd7fa278475de45d0cfcbe01e29544d": {
       "displayName": "aws-cdk-expose-metric-with-dimensions-integ Template",
       "source": {
         "path": "aws-cdk-expose-metric-with-dimensions-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-9e4256ec": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "29580ff3632143bf0335562f6d1b427bc4d07338f2e0a2286abeaa96de2fc932.json",
+          "objectKey": "630c62d29eca0dbae7716c08784b262eecd7fa278475de45d0cfcbe01e29544d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

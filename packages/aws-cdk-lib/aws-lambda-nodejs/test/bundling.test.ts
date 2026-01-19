@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -12,8 +12,8 @@ import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-const STANDARD_RUNTIME = Runtime.NODEJS_18_X;
-const STANDARD_TARGET = 'node18';
+const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
+const STANDARD_TARGET = 'node20';
 const STANDARD_EXTERNAL = '@aws-sdk/*';
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
@@ -60,6 +60,7 @@ test('esbuild bundling in Docker', () => {
       '.png': 'dataurl',
     },
     forceDockerBundling: true,
+    network: 'host',
   });
 
   // Correctly bundles with esbuild
@@ -82,6 +83,7 @@ test('esbuild bundling in Docker', () => {
       IMAGE: expect.stringMatching(/build-nodejs/),
     }),
     platform: 'linux/amd64',
+    network: 'host',
   }));
 });
 
@@ -315,7 +317,6 @@ test('esbuild bundling source map default', () => {
 });
 
 test.each([
-  [Runtime.NODEJS_18_X, 'node18'],
   [Runtime.NODEJS_20_X, 'node20'],
 ]) ('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
   const cdkApp = new App({
@@ -356,7 +357,7 @@ test('esbuild bundling with bundleAwsSdk true with feature flag enabled using No
     projectRoot,
     depsLockFilePath,
     bundleAwsSDK: true,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
   });
 
@@ -393,7 +394,7 @@ test('esbuild bundling with feature flag enabled using Node Latest', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node22 --platform=node --outfile="/asset-output/index.js"',
       ],
     }),
   });
@@ -426,12 +427,12 @@ test('esbuild bundling with feature flag enabled using Node 16', () => {
   });
 });
 
-test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime.NODEJS_18_X', () => {
+test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime.NODEJS_20_X', () => {
   Bundling.bundle(stack, {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
   });
 
@@ -452,7 +453,7 @@ test('esbuild bundling includes aws-sdk', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
     bundleAwsSDK: true,
   });
@@ -622,6 +623,29 @@ test('Detects bun.lockb', () => {
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
         expect.stringMatching(/bun\.lockb.+bun install/),
+      ]),
+    }),
+  });
+});
+
+test('Detects bun.lock', () => {
+  const bunLock = path.join(__dirname, '..', 'bun.lock');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(bunLock),
+    depsLockFilePath: bunLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(bunLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringMatching(/bun\.lock.+bun install/),
       ]),
     }),
   });
@@ -1046,7 +1070,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node22 --platform=node --outfile="/asset-output/index.js"',
       ],
     }),
   });
@@ -1090,7 +1114,7 @@ test('bundling with >= Node18 warns when sdk v2 is external', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
     externalModules: ['aws-sdk'],
   });
@@ -1106,7 +1130,7 @@ test('bundling with >= Node18 does not warn with default externalModules', () =>
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
   });
 

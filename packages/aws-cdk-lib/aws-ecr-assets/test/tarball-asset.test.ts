@@ -8,9 +8,17 @@ import { App, Stack, DefaultStackSynthesizer } from '../../core';
 import * as cxapi from '../../cx-api';
 import { TarballImageAsset, DOCKER_LOAD_OUTPUT_REGEX } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('image asset', () => {
+  const currentCdkDocker = process.env.CDK_DOCKER;
+  beforeAll(() => {
+    process.env.CDK_DOCKER = 'docker';
+  });
+  afterAll(() => {
+    process.env.CDK_DOCKER = currentCdkDocker;
+  });
+
   const tarballFile = path.join(__dirname, 'demo-tarball', 'empty.tar');
   test('test instantiating Asset Image', () => {
     // GIVEN
@@ -29,8 +37,7 @@ describe('image asset', () => {
 
     expect(Object.keys(manifest.files ?? {}).length).toBe(1);
     expect(Object.keys(manifest.dockerImages ?? {}).length).toBe(1);
-
-    expect(manifest.dockerImages?.[asset.assetHash]?.destinations?.['current_account-current_region']).toStrictEqual(
+    expect(manifest.dockerImages?.[asset.assetHash]?.destinations?.['current_account-current_region-bdbba1c5']).toStrictEqual(
       {
         assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}',
         imageTag: asset.assetHash,
@@ -190,6 +197,40 @@ describe('image asset', () => {
     expect(oldSedWithNewFormat.status).toBe(0);
     expect(oldSedWithNewFormat.stdout.toString().trim()).not.toBe('sha256:4a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a');
     expect(oldSedWithNewFormat.stdout.toString().trim()).toBe('Loaded image ID: sha256:4a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a');
+  });
+
+  test('respects CDK_DOCKER environment variable', () => {
+    // GIVEN
+    const originalCdkDocker = process.env.CDK_DOCKER;
+    process.env.CDK_DOCKER = 'custom-docker';
+
+    try {
+      const app = new App();
+      const stack = new Stack(app);
+      const asset = new TarballImageAsset(stack, 'Image', {
+        tarballFile,
+      });
+
+      // WHEN
+      const asm = app.synth();
+
+      // THEN
+      const manifestArtifact = getAssetManifest(asm);
+      const manifest = readAssetManifest(manifestArtifact);
+
+      expect(manifest.dockerImages?.[asset.assetHash]?.source?.executable).toEqual([
+        'sh',
+        '-c',
+        `custom-docker load -i asset.${asset.assetHash}.tar | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+      ]);
+    } finally {
+      // Cleanup
+      if (originalCdkDocker !== undefined) {
+        process.env.CDK_DOCKER = originalCdkDocker;
+      } else {
+        delete process.env.CDK_DOCKER;
+      }
+    }
   });
 });
 

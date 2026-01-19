@@ -252,7 +252,7 @@ export class ResolveSsmParameterAtLaunchImage implements IMachineImage {
   /**
    * Return the image to use in the given context
    */
-  public getImage(_: Construct): MachineImageConfig {
+  public getImage(_scope: Construct): MachineImageConfig {
     const versionString = this.props.parameterVersion ? `:${this.props.parameterVersion}` : '';
     const osType = this.props.os ?? OperatingSystemType.LINUX;
     return {

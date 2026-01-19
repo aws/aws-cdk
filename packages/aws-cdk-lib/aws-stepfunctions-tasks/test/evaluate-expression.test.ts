@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { Runtime, RuntimeFamily } from '../../aws-lambda';
+import { Architecture, Runtime, RuntimeFamily } from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
 import { Stack } from '../../core';
 import * as tasks from '../lib';
@@ -35,15 +35,7 @@ test('Eval with Node.js', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: {
-      'Fn::FindInMap': [
-        'LatestNodeRuntimeMap',
-        {
-          Ref: 'AWS::Region',
-        },
-        'value',
-      ],
-    },
+    Runtime: 'nodejs22.x',
   });
 });
 
@@ -109,5 +101,50 @@ test('With Node.js 20.x', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs20.x',
+  });
+});
+
+test('With Node.js 22.x', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    runtime: Runtime.NODEJS_22_X,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs22.x',
+  });
+});
+
+test('With ARM64 architecture', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    architecture: Architecture.ARM_64,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['arm64'],
+  });
+});
+
+test('With X86_64 architecture', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    architecture: Architecture.X86_64,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['x86_64'],
   });
 });

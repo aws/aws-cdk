@@ -1,12 +1,13 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "testCases": {
     "RA3LargeNodeIntegTest/DefaultTest": {
       "stacks": [
-        "redshift-ra3-large-integ"
+        "MultiAzRedshift"
       ],
       "assertionStack": "RA3LargeNodeIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "RA3LargeNodeIntegTestDefaultTestDeployAssert1EF91947"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

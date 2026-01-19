@@ -59,6 +59,29 @@ variable in order to provide a custom Docker executable command or path. This ma
 be needed when building in environments where the standard docker cannot be executed
 (see https://github.com/aws/aws-cdk/issues/8460 for details).
 
+### Docker Alternatives
+
+The CDK supports several Docker alternatives through the `CDK_DOCKER` environment variable:
+
+#### Finch (AWS-supported)
+
+```bash
+export CDK_DOCKER=finch
+```
+
+**Note**: For Finch, you may also need to set the `DOCKER_HOST` environment variable. The socket path is OS-specific (e.g., on macOS: `unix:///Applications/Finch/lima/data/finch/sock/finch.sock`).
+
+#### Podman (Community-tested)
+
+```bash
+export CDK_DOCKER=podman
+export DOCKER_HOST=$(podman machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')
+```
+
+**Note**: While Finch receives official AWS support, Podman is community-tested and may work for many use cases. The CDK doesn't check which Docker replacement you are using to determine if it's supported. If the tool has equivalent Docker commands and behaves similarly, it should work.
+
+For some container runtimes, you may need to set the `DOCKER_HOST` environment variable to specify the correct socket path for the CDK to communicate with the container daemon.
+
 SSH agent sockets or keys may be passed to docker build via `buildSsh`.
 
 ```ts
@@ -162,6 +185,10 @@ const asset = new TarballImageAsset(this, 'MyBuildImage', {
 This will instruct the toolkit to add the tarball as a file asset. During deployment it will load the container image
 from `local-image.tar`, push it to an Amazon ECR repository and wire the name of the repository as CloudFormation parameters
 to your stack.
+
+Similar to `DockerImageAsset`, you can set the `CDK_DOCKER` environment variable to provide a custom Docker executable 
+command or path. This may be needed when building in environments where the standard docker cannot be executed or when 
+using alternative container runtimes like Finch.
 
 ## Publishing images to ECR repositories
 

@@ -1,4 +1,6 @@
 {
+  "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
+  "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
   "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
   "@aws-cdk/core:checkSecretUsage": true,
   "@aws-cdk/core:target-partitions": [
@@ -51,8 +53,7 @@
   "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
   "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
   "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
-  "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": false,
-  "@aws-cdk/aws-ecs:disableEcsImdsBlocking": true,
+  "@aws-cdk/core:explicitStackTags": true,
   "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
   "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": true,
   "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
@@ -75,5 +76,8 @@
   "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
   "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
   "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-  "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+  "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+  "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
+  "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
+  "@aws-cdk/aws-route53-patterns:useDistribution": true
 }

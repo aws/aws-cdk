@@ -1,14 +1,13 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "aws-cdk-redshift-distkey-test/DefaultTest": {
       "stacks": [
-        "aws-cdk-redshift-distkey-create",
-        "aws-cdk-redshift-distkey-update"
+        "aws-cdk-redshift-cluster-database"
       ],
       "assertionStack": "aws-cdk-redshift-distkey-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkredshiftdistkeytestDefaultTestDeployAssert61A36BE8"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.1"
 }

@@ -44,3 +44,16 @@ export function getWarnings(casm: CloudAssembly) {
   }
   return result;
 }
+
+export function getInfos(casm: CloudAssembly) {
+  const result = new Array<{ path: string; message: string }>();
+  for (const stack of Object.values(casm.manifest.artifacts ?? {})) {
+    const artifact = CloudArtifact.fromManifest(casm, 'art', stack);
+    artifact?.messages.forEach(message => {
+      if (message.level === SynthesisMessageLevel.INFO) {
+        result.push({ path: message.id, message: message.entry.data as string });
+      }
+    });
+  }
+  return result;
+}

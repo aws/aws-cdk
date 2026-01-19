@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "44.0.0",
   "testCases": {
     "LogsInsightsQueryDefinitionIntegTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "LogsInsightsQueryDefinitionIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "LogsInsightsQueryDefinitionIntegTestDefaultTestDeployAssert902BAAD5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

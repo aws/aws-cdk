@@ -1,27 +1,29 @@
 import * as path from 'path';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { Construct } from 'constructs';
 
-class TestBucketDeployment extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
-    super(scope, id);
+/**
+ * Integration test for bucket deployment with CloudFront distribution invalidation:
+ * - Deploys files to S3 bucket behind CloudFront distribution
+ * - Tests that CloudFront cache invalidation works with bucket deployments
+ */
+class TestBucketDeploymentCloudFront extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
-    const bucket = new s3.Bucket(this, 'Destination3', {
+    const bucket = new s3.Bucket(this, 'Destination', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true, // needed for integration test cleanup
     });
-    const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
-      originConfigs: [
-        {
-          s3OriginSource: {
-            s3BucketSource: bucket,
-          },
-          behaviors: [{ isDefaultBehavior: true }],
-        },
-      ],
+    const distribution = new cloudfront.Distribution(this, 'Distribution', {
+      defaultBehavior: {
+        origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+      },
     });
 
     new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
@@ -29,7 +31,7 @@ class TestBucketDeployment extends cdk.Stack {
       destinationBucket: bucket,
       distribution,
       distributionPaths: ['/images/*.png'],
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      retainOnDelete: false,
     });
   }
 }
@@ -41,10 +43,10 @@ const app = new cdk.App({
   },
 });
 
-const stack = new TestBucketDeployment(app, 'test-bucket-deployments-1');
+const testCase = new TestBucketDeploymentCloudFront(app, 'test-bucket-deployment-cloudfront');
 
-new IntegTest(app, 'TestBucketDeploymentInteg', {
-  testCases: [stack],
+new integ.IntegTest(app, 'integ-test-bucket-deployment-cloudfront', {
+  testCases: [testCase],
   diffAssets: true,
 });
 

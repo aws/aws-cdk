@@ -105,47 +105,91 @@ def get_oci_cmd(repository, version):
     private_registry = re.match(private_ecr_pattern, repository).groupdict()
     public_registry = re.match(public_ecr_pattern, repository).groupdict()
 
+    # Build helm pull command as array
+    helm_cmd = ['helm', 'pull', repository, '--version', version , '--untar']
+
     if private_registry['registry'] is not None:
         logger.info("Found AWS private repository")
-        cmnd = [
-            f"aws ecr get-login-password --region {private_registry['region']} | " \
-            f"helm registry login --username AWS --password-stdin {private_registry['registry']}; helm pull {repository} --version {version} --untar"
-            ]
+        ecr_login = ['aws', 'ecr', 'get-login-password', '--region', private_registry['region']]
+        helm_registry_login = ['helm', 'registry', 'login', '--username', 'AWS', '--password-stdin', private_registry['registry']]
+        return {'ecr_login': ecr_login, 'helm_registry_login': helm_registry_login, 'helm': helm_cmd}
     elif public_registry['registry'] is not None:
         logger.info("Found AWS public repository, will use default region as deployment")
         region = os.environ.get('AWS_REGION', 'us-east-1')
 
         if is_ecr_public_available(region):
-            cmnd = [
-                f"aws ecr-public get-login-password --region us-east-1 | " \
-                f"helm registry login --username AWS --password-stdin {public_registry['registry']}; helm pull {repository} --version {version} --untar"
-                ]
+            # Public ECR auth is always in us-east-1: https://docs.aws.amazon.com/AmazonECR/latest/public/public-registry-auth.html
+            ecr_login = ['aws', 'ecr-public', 'get-login-password', '--region', 'us-east-1']
+            helm_registry_login = ['helm', 'registry', 'login', '--username', 'AWS', '--password-stdin', public_registry['registry']]
+            return {'ecr_login': ecr_login, 'helm_registry_login': helm_registry_login, 'helm': helm_cmd}
         else:
-            # `aws ecr-public get-login-password` and `helm registry login` not required as ecr public is not available in current region
+            # No login required for public ECR in non-aws regions
             # see https://helm.sh/docs/helm/helm_registry_login/
-            cmnd = [f"helm pull {repository} --version {version} --untar"]
+            return {'helm': helm_cmd}
     else:
         logger.error("OCI repository format not recognized, falling back to helm pull")
-        cmnd = [f"helm pull {repository} --version {version} --untar"]
-
-    return cmnd
+        return {'helm': helm_cmd}
 
 
-def get_chart_from_oci(tmpdir, repository = None, version = None):
+def get_chart_from_oci(tmpdir, repository=None, version=None):
+    from subprocess import Popen, PIPE
 
-    cmnd = get_oci_cmd(repository, version)
+    commands = get_oci_cmd(repository, version)
 
     maxAttempts = 3
     retry = maxAttempts
     while retry > 0:
         try:
-            logger.info(cmnd)
-            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
+            # Execute login commands if needed
+            if 'ecr_login' in commands and 'helm_registry_login' in commands:
+                logger.info("Running login command: %s", commands['ecr_login'])
+                logger.info("Running registry login command: %s", commands['helm_registry_login'])
+
+                # Start first process: aws ecr get-login-password
+                # NOTE: We do NOT call p1.wait() here before starting p2.
+                # Doing so could deadlock if p1's output fills the pipe buffer
+                # before p2 starts reading. Instead, start p2 immediately so it
+                # can consume p1's stdout as it's produced.
+                p1 = Popen(commands['ecr_login'], stdout=PIPE, stderr=PIPE, cwd=tmpdir)
+
+                # Start second process: helm registry login
+                p2 = Popen(commands['helm_registry_login'], stdin=p1.stdout, stdout=PIPE, stderr=PIPE, cwd=tmpdir)
+                p1.stdout.close()  # Allow p1 to receive SIGPIPE if p2 exits early
+
+                # Wait for p2 to finish first (ensures full pipeline completes)
+                _, p2_err = p2.communicate()
+
+                # Now wait for p1 so we have a complete stderr and an exit code
+                p1.wait()
+
+                # Handle p1 failure
+                if p1.returncode != 0:
+                    p1_err = p1.stderr.read().decode('utf-8', errors='replace') if p1.stderr else ''
+                    logger.error(
+                        "ECR get-login-password failed for repository %s. Error: %s",
+                        repository,
+                        p1_err or "No error details"
+                    )
+                    raise subprocess.CalledProcessError(p1.returncode, commands['ecr_login'], p1_err.encode())
+
+                # Handle p2 failure
+                if p2.returncode != 0:
+                    logger.error(
+                        "Helm registry authentication failed for repository %s. Error: %s",
+                        repository,
+                        p2_err.decode('utf-8', errors='replace') or "No error details"
+                    )
+                    raise subprocess.CalledProcessError(p2.returncode, commands['helm_registry_login'], p2_err)
+
+            # Execute helm pull command
+            logger.info("Running helm command: %s", commands['helm'])
+            output = subprocess.check_output(commands['helm'], stderr=subprocess.STDOUT, cwd=tmpdir)
             logger.info(output)
 
             # effectively returns "$tmpDir/$lastPartOfOCIUrl", because this is how helm pull saves OCI artifact.
             # Eg. if we have oci://9999999999.dkr.ecr.us-east-1.amazonaws.com/foo/bar/pet-service repository, helm saves artifact under $tmpDir/pet-service
             return os.path.join(tmpdir, repository.rpartition('/')[-1])
+        
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'Broken pipe' in output:
@@ -153,12 +197,11 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
                 logger.info("Broken pipe, retries left: %s" % retry)
             else:
                 raise Exception(output)
+    
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
 
 
 def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, skip_crds = False, atomic = False):
-    import subprocess
-
     cmnd = ['helm', verb, release]
     if not chart is None:
         cmnd.append(chart)

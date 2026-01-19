@@ -1,7 +1,7 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as cdk from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
@@ -16,6 +16,16 @@ const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+  context: {
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+  },
+});
+
+const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
   },
 });
 
@@ -66,11 +76,11 @@ class RedshiftDistKeyStack extends cdk.Stack {
   }
 }
 
-const createStack = new RedshiftDistKeyStack(app, 'aws-cdk-redshift-distkey-create', {
+const createStack = new RedshiftDistKeyStack(stack, 'aws-cdk-redshift-distkey-create', {
   hasDistKey: false,
 });
 
-const updateStack = new RedshiftDistKeyStack(app, 'aws-cdk-redshift-distkey-update', {
+const updateStack = new RedshiftDistKeyStack(stack, 'aws-cdk-redshift-distkey-update', {
   hasDistKey: true,
 });
 
@@ -87,7 +97,7 @@ stacks.forEach(s => {
 });
 
 new integ.IntegTest(app, 'aws-cdk-redshift-distkey-test', {
-  testCases: stacks,
+  testCases: [stack],
 });
 
 app.synth();

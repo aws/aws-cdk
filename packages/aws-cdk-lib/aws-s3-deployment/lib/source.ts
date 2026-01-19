@@ -5,8 +5,9 @@ import { renderData } from './render-data';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { FileSystem, Stack } from '../../core';
+import { FileSystem, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import * as yaml_cfn from '../../core/lib/private/yaml-cfn';
 
 /**
  * Source information.
@@ -192,17 +193,22 @@ export class Source {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
-        const outputPath = join(workdir, objectKey);
-        const rendered = renderData(scope, data);
-        fs.mkdirSync(dirname(outputPath), { recursive: true });
-        fs.writeFileSync(outputPath, rendered.text);
-        const asset = this.asset(workdir).bind(scope, context);
-        return {
-          bucket: asset.bucket,
-          zipObjectKey: asset.zipObjectKey,
-          markers: rendered.markers,
-          markersConfig: markersConfig,
-        };
+        try {
+          const outputPath = join(workdir, objectKey);
+          const rendered = renderData(data);
+          fs.mkdirSync(dirname(outputPath), { recursive: true });
+          fs.writeFileSync(outputPath, rendered.text);
+          const asset = this.asset(workdir).bind(scope, context);
+          return {
+            bucket: asset.bucket,
+            zipObjectKey: asset.zipObjectKey,
+            markers: rendered.markers,
+            markersConfig: markersConfig,
+          };
+        } finally {
+          // Calling `this.asset()` has copied files to the assembly, so we can delete the temporary directory.
+          FileSystem.rmrf(workdir);
+        }
       },
     };
   }
@@ -224,7 +230,13 @@ export class Source {
     }
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
-        return Source.data(objectKey, Stack.of(scope).toJsonString(obj), markersConfig).bind(scope, context);
+        const serializedObj = JSON.stringify(Source.escapeTokens(scope, obj));
+
+        return Source.data(
+          objectKey,
+          serializedObj,
+          markersConfig,
+        ).bind(scope, context);
       },
     };
   }
@@ -241,9 +253,44 @@ export class Source {
   public static yamlData(objectKey: string, obj: any): ISource {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
-        return Source.data(objectKey, Stack.of(scope).toYamlString(obj)).bind(scope, context);
+        const serializedObj = yaml_cfn.serialize(Source.escapeTokens(scope, obj));
+
+        return Source.data(
+          objectKey,
+          serializedObj,
+        ).bind(scope, context);
       },
     };
+  }
+
+  /**
+   * Process objects such that it escapes token output suitable for JSON output.
+   *
+   * @param scope Parent construct scope
+   * @returns Object with with tokens escaped for JSON output.
+   */
+  private static escapeTokens(scope: Construct, obj: any): any {
+    if (Token.isUnresolved(obj)) {
+      // Return tokens as numbers. This is a hack to prevent the JSON serializer to wrap this token as a string.
+      // Stack.toJsonString should take care of escaping the object output for JSON.
+      return Token.asNumber(Stack.of(scope).toJsonString(obj));
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(v => Source.escapeTokens(scope, v));
+    }
+
+    if (obj !== null && typeof obj === 'object') {
+      return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => {
+          // As JSON keys are always strings, keys are assumed to be either regular strings or string tokens.
+          // Therefore, there is no need to escape it in the case that it is a list token.
+          return [key, Source.escapeTokens(scope, value)];
+        }),
+      );
+    }
+
+    return obj;
   }
 
   private constructor() { }

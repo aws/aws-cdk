@@ -2,7 +2,8 @@ import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
 import { StreamEncryption } from './encryption';
 import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import { DeliveryStreamGrants } from './kinesisfirehose-grants.generated';
+import { CfnDeliveryStream, DeliveryStreamReference, IDeliveryStreamRef } from './kinesisfirehose.generated';
 import { ISource } from './source';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -13,15 +14,10 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
-const PUT_RECORD_ACTIONS = [
-  'firehose:PutRecord',
-  'firehose:PutRecordBatch',
-];
-
 /**
  * Represents an Amazon Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, IDeliveryStreamRef {
   /**
    * The ARN of the delivery stream.
    *
@@ -100,6 +96,11 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * Collection of grant methods for a DeliveryStream
+   */
+  public readonly grants = DeliveryStreamGrants.fromDeliveryStream(this);
+
+  /**
    * Network connections between Amazon Data Firehose and other resources, i.e. Redshift cluster.
    */
   public readonly connections: ec2.Connections;
@@ -110,6 +111,16 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     this.connections = setConnections(this);
   }
 
+  public get deliveryStreamRef(): DeliveryStreamReference {
+    return {
+      deliveryStreamArn: this.deliveryStreamArn,
+      deliveryStreamName: this.deliveryStreamName,
+    };
+  }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.deliveryStreamArn],
@@ -118,8 +129,11 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPutRecords(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...PUT_RECORD_ACTIONS);
+    return this.grants.putRecords(grantee);
   }
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -311,13 +325,11 @@ export class DeliveryStream extends DeliveryStreamBase {
   private _role?: iam.IRole;
 
   public get grantPrincipal(): iam.IPrincipal {
-    if (this._role) {
-      return this._role;
-    }
-    // backwards compatibility
-    return new iam.Role(this, 'Service Role', {
+    // backwards compatibility - create role only once
+    this._role = this._role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
+    return this._role;
   }
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {

@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnApiKey } from './apigateway.generated';
+import { ApiKeyGrants } from './apigateway-grants.generated';
+import { ApiKeyReference, CfnApiKey, IApiKeyRef, IStageRef } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
 import { IStage } from './stage';
@@ -14,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * API keys are alphanumeric string values that you distribute to
  * app developer customers to grant access to your API
  */
-export interface IApiKey extends IResourceBase {
+export interface IApiKey extends IResourceBase, IApiKeyRef {
   /**
    * The API key ID.
    * @attribute
@@ -101,42 +102,44 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
   public abstract readonly keyArn: string;
 
   /**
+   * Collection of grant methods for an ApiKey
+   */
+  public readonly grants = ApiKeyGrants.fromApiKey(this);
+
+  /**
    * Permits the IAM principal all read operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: readPermissions,
-      resourceArns: [this.keyArn],
-    });
+    return this.grants.read(grantee);
   }
 
   /**
    * Permits the IAM principal all write operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: writePermissions,
-      resourceArns: [this.keyArn],
-    });
+    return this.grants.write(grantee);
   }
 
   /**
    * Permits the IAM principal all read and write operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: [...readPermissions, ...writePermissions],
-      resourceArns: [this.keyArn],
-    });
+    return this.grants.readWrite(grantee);
+  }
+
+  public get apiKeyRef(): ApiKeyReference {
+    return {
+      apiKeyId: this.keyId,
+    };
   }
 }
 
@@ -201,7 +204,7 @@ export class ApiKey extends ApiKeyBase {
     });
   }
 
-  private renderStageKeys(resources?: IRestApi[], stages?: IStage[]): CfnApiKey.StageKeyProperty[] | undefined {
+  private renderStageKeys(resources?: IRestApi[], stages?: IStageRef[]): CfnApiKey.StageKeyProperty[] | undefined {
     if (!resources && !stages) {
       return undefined;
     }
@@ -222,7 +225,7 @@ export class ApiKey extends ApiKeyBase {
         return { restApiId, stageName };
       })
       : stages ? stages.map((stage => {
-        return { restApiId: stage.restApi.restApiId, stageName: stage.stageName };
+        return { restApiId: stage.stageRef.restApiId, stageName: stage.stageRef.stageName };
       })) : undefined;
   }
 }
@@ -288,14 +291,3 @@ export class RateLimitedApiKey extends ApiKeyBase {
     this.keyArn = resource.keyArn;
   }
 }
-
-const readPermissions = [
-  'apigateway:GET',
-];
-
-const writePermissions = [
-  'apigateway:POST',
-  'apigateway:PUT',
-  'apigateway:PATCH',
-  'apigateway:DELETE',
-];

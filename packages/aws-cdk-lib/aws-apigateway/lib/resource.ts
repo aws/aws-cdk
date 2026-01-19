@@ -1,16 +1,16 @@
 import { Construct } from 'constructs';
-import { CfnResource, CfnResourceProps } from './apigateway.generated';
+import { CfnResource, CfnResourceProps, IResourceRef, ResourceReference } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
-import { Method, MethodOptions, AuthorizationType } from './method';
+import { AuthorizationType, Method, MethodOptions } from './method';
 import { IRestApi, RestApi } from './restapi';
 import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IResource extends IResourceBase {
+export interface IResource extends IResourceBase, IResourceRef {
   /**
    * The parent of this resource or undefined for the root resource.
    */
@@ -382,6 +382,13 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
    */
   public get url(): string {
     return this.restApi.urlForPath(this.path);
+  }
+
+  public get resourceRef(): ResourceReference {
+    return {
+      resourceId: this.resourceId,
+      restApiId: this.api.restApiId,
+    };
   }
 }
 

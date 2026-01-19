@@ -9,7 +9,7 @@ import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
-import { CfnService } from '../ecs.generated';
+import { CfnService, ServiceReference } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
 /**
@@ -96,7 +96,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * service must not be a target of a Classic Load Balancer.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
-   * @default AvailabilityZoneRebalancing.DISABLED
+   * @default AvailabilityZoneRebalancing.ENABLED
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
@@ -151,6 +151,12 @@ export class Ec2Service extends BaseService implements IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -163,7 +169,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   }
 
   private constraints?: CfnService.PlacementConstraintProperty[];
-  private readonly strategies: CfnService.PlacementStrategyProperty[];
+  private strategies?: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
   private readonly availabilityZoneRebalancingEnabled: boolean;
 
@@ -212,15 +218,13 @@ export class Ec2Service extends BaseService implements IEc2Service {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
       placementConstraints: Lazy.any({ produce: () => this.constraints }),
-      placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
+      placementStrategies: Lazy.any({ produce: () => this.strategies }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
       availabilityZoneRebalancing: props.availabilityZoneRebalancing,
     }, props.taskDefinition);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.constraints = undefined;
-    this.strategies = [];
     this.daemon = props.daemon || false;
     this.availabilityZoneRebalancingEnabled = props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED;
 
@@ -249,7 +253,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
     if (props.placementConstraints) {
       this.addPlacementConstraints(...props.placementConstraints);
     }
-    this.addPlacementStrategies(...props.placementStrategies || []);
+    if (props.placementStrategies) {
+      this.addPlacementStrategies(...props.placementStrategies);
+    }
 
     this.node.addValidation({
       validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
@@ -267,19 +273,22 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    */
   @MethodMetadata()
-  public addPlacementStrategies(...strategies: PlacementStrategy[]) {
-    if (strategies.length > 0 && this.daemon) {
+  public addPlacementStrategies(...newStrategies: PlacementStrategy[]) {
+    if (newStrategies.length > 0 && this.daemon) {
       throw new ValidationError("Can't configure placement strategies when daemon=true", this);
     }
 
-    if (strategies.length > 0 && this.strategies.length === 0 && this.availabilityZoneRebalancingEnabled) {
-      const [placement] = strategies[0].toJson();
+    if (newStrategies.length > 0 && !this.strategies && this.availabilityZoneRebalancingEnabled) {
+      const [placement] = newStrategies[0].toJson();
       if (placement.type !== 'spread' || placement.field !== BuiltInAttributes.AVAILABILITY_ZONE) {
         throw new ValidationError(`AvailabilityZoneBalancing.ENABLED requires that the first placement strategy, if any, be 'spread across "${BuiltInAttributes.AVAILABILITY_ZONE}"'`, this);
       }
     }
 
-    for (const strategy of strategies) {
+    if (!this.strategies) {
+      this.strategies = [];
+    }
+    for (const strategy of newStrategies) {
       this.strategies.push(...strategy.toJson());
     }
   }

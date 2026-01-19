@@ -12,7 +12,7 @@ import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('auto scaling group', () => {
   test('default fleet', () => {
@@ -1170,7 +1170,7 @@ describe('auto scaling group', () => {
     }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
   });
 
-  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
@@ -1188,7 +1188,7 @@ describe('auto scaling group', () => {
           }),
         }],
       });
-    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 2000/);
   });
 
   test.each([
@@ -3084,6 +3084,47 @@ describe('InstanceMaintenancePolicy', () => {
       });
     }).toThrow(/Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set/);
   });
+});
+
+test('throws if updatePolicy is not set when migrateToLaunchTemplate is true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+  const vpc = mockVpc(stack);
+  const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+    launchTemplateId: 'test-lt-id',
+    versionNumber: '0',
+  });
+
+  // THEN
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      vpc,
+      launchTemplate: lt,
+      migrateToLaunchTemplate: true,
+    });
+  }).toThrow(/When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate to ensure instances are properly replaced during migration. This prevents instances from referencing a deleted IAM instance profile./);
+});
+
+test('throws if updatePolicy is set with AutoScalingReplacingUpdate when migrateToLaunchTemplate is true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+  const vpc = mockVpc(stack);
+  const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+    launchTemplateId: 'test-lt-id',
+    versionNumber: '0',
+  });
+
+  // THEN
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      vpc,
+      launchTemplate: lt,
+      migrateToLaunchTemplate: true,
+      updatePolicy: autoscaling.UpdatePolicy.replacingUpdate(),
+    });
+  }).toThrow(/When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate to ensure instances are properly replaced during migration. This prevents instances from referencing a deleted IAM instance profile./);
 });
 
 function mockSecurityGroup(stack: cdk.Stack) {

@@ -326,7 +326,7 @@ export class Alarm extends AlarmBase {
     } else {
       const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
       this.annotation = {
-        // eslint-disable-next-line max-len
+
         label: `${props.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
         value: props.threshold,
       };
@@ -475,7 +475,7 @@ export class Alarm extends AlarmBase {
         };
       },
 
-      withExpression() {
+      withMathExpression: () => {
         // Expand the math expression metric into a set
         const mset = new MetricSet<boolean>();
         mset.addTopLevel(true, metric);
@@ -517,22 +517,25 @@ export class Alarm extends AlarmBase {
                   returnData,
                 };
               },
-              withExpression(expr, conf) {
-                const hasSubmetrics = mathExprHasSubmetrics(expr);
+              withMathExpression(mathExpr, conf) {
+                const hasSubmetrics = mathExprHasSubmetrics(mathExpr);
 
                 if (hasSubmetrics) {
-                  assertSubmetricsCount(self, expr);
+                  assertSubmetricsCount(self, mathExpr);
                 }
 
-                self.validateMetricExpression(expr);
+                self.validateMetricExpression(mathExpr);
 
                 return {
-                  expression: expr.expression,
+                  expression: mathExpr.expression,
                   id,
                   label: conf.renderingProperties?.label as string,
-                  period: hasSubmetrics ? undefined : expr.period,
+                  period: hasSubmetrics ? undefined : mathExpr.period,
                   returnData,
                 };
+              },
+              withSearchExpression: (_searchExpr, _conf) => {
+                throw new ValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
               },
             });
           }),
@@ -543,6 +546,9 @@ export class Alarm extends AlarmBase {
         }
 
         return { props, primaryId };
+      },
+      withSearchExpression: () => {
+        throw new ValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
       },
     });
   }
@@ -593,7 +599,7 @@ export class Alarm extends AlarmBase {
  * of the Alarm. "Modern" metrics are in a `metrics[]` array in the alarm
  * and have more features, like metric math.
  */
-type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>
+type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>;
 
 /**
  * Check if a metric is already an anomaly detection metric
@@ -608,9 +614,13 @@ function isAnomalyDetectionMetric(metric: IMetric): boolean {
       // Not an anomaly detection metric
       isAnomalyDetection = false;
     },
-    withExpression(expr) {
+    withMathExpression(mathExpr) {
       // Check if the expression is an anomaly detection band
-      isAnomalyDetection = expr.expression.includes('ANOMALY_DETECTION_BAND');
+      isAnomalyDetection = mathExpr.expression.includes('ANOMALY_DETECTION_BAND');
+    },
+    withSearchExpression() {
+      // Search expressions return multiple metrics; anomaly is only applicable for a single metric
+      isAnomalyDetection = false;
     },
   });
 
@@ -632,7 +642,10 @@ export class AnomalyDetectionAlarm extends Alarm {
     super(scope, id, {
       ...props,
       comparisonOperator: props.comparisonOperator ?? ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
-      metric: Metric.anomalyDetectionFor(props),
+      metric: Metric.anomalyDetectionFor({
+        ...props,
+        period: metricPeriod(props.metric), // AnomalyDetectionAlarmProps.period is deprecated - the guidance recommends encoding the period in the metric itself.
+      }),
       threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
     });
     // Enhanced CDK Analytics Telemetry

@@ -252,6 +252,13 @@ export interface MetricConfig {
   readonly mathExpression?: MetricExpressionConfig;
 
   /**
+   * In case the metric is a search expression, the details of the search expression
+   *
+   * @default - None
+   */
+  readonly searchExpression?: MetricExpressionConfig;
+
+  /**
    * Additional properties which will be rendered if the metric is used in a dashboard
    *
    * Examples are 'label' and 'color', but any key in here will be

@@ -1,6 +1,6 @@
 /* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
-import { ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { ISubnet, ISubnetRef, SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * The default names for every subnet type
@@ -22,7 +22,7 @@ export function defaultSubnetName(type: SubnetType) {
  *
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
-export function subnetGroupNameFromConstructId(subnet: ISubnet) {
+export function subnetGroupNameFromConstructId(subnet: ISubnetRef) {
   return subnet.node.id.replace(/Subnet\d+$/, '');
 }
 
@@ -215,8 +215,8 @@ export class CidrBlock {
    * then the next available block will be returned. For example, if
    * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
    */
-  constructor(cidr: string)
-  constructor(ipAddress: number, mask: number)
+  constructor(cidr: string);
+  constructor(ipAddress: number, mask: number);
   constructor(ipAddressOrCidr: string | number, mask?: number) {
     if (typeof ipAddressOrCidr === 'string') {
       this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);

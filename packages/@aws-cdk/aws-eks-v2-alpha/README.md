@@ -3,13 +3,13 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
@@ -33,39 +33,94 @@ Here is the minimal example of defining an AWS EKS cluster
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
 });
 ```
 
 ## Architecture
 
-```text
- +-----------------------------------------------+
- | EKS Cluster      | kubectl |  |
- | -----------------|<--------+| Kubectl Handler |
- | AWS::EKS::Cluster             (Optional)      |
- | +--------------------+    +-----------------+ |
- | |                    |    |                 | |
- | | Managed Node Group |    | Fargate Profile | |
- | |                    |    |                 | |
- | +--------------------+    +-----------------+ |
- +-----------------------------------------------+
-    ^
-    | connect self managed capacity
-    +
- +--------------------+
- | Auto Scaling Group |
- +--------------------+
+```text                                             +-----------------+
+                                         kubectl    |                 |
+                                      +------------>| Kubectl Handler |
+                                      |             |   (Optional)    |
+                                      |             +-----------------+
++-------------------------------------+-------------------------------------+
+|                        EKS Cluster (Auto Mode)                            |
+|                          AWS::EKS::Cluster                                |
+|                                                                           |
+|  +---------------------------------------------------------------------+  |
+|  |           Auto Mode Compute (Managed by EKS) (Default)              |  |
+|  |                                                                     |  |
+|  |  - Automatically provisions EC2 instances                           |  |
+|  |  - Auto scaling based on pod requirements                           |  |
+|  |  - No manual node group configuration needed                        |  |
+|  |                                                                     |  |
+|  +---------------------------------------------------------------------+  |
+|                                                                           |
++---------------------------------------------------------------------------+
 ```
 
 In a nutshell:
 
-- EKS Cluster - The cluster endpoint created by EKS.
-- Managed Node Group - EC2 worker nodes managed by EKS.
-- Fargate Profile - Fargate worker nodes managed by EKS.
-- Auto Scaling Group - EC2 worker nodes managed by the user.
-- Kubectl Handler (Optional) - Custom resource (i.e Lambda Function) for invoking kubectl commands on the
-  cluster - created by CDK
+- **[Auto Mode](#eks-auto-mode)** (Default) – The fully managed capacity mode in EKS.  
+  EKS automatically provisions and scales  EC2 capacity based on pod requirements.  
+  It manages internal *system* and *general-purpose* NodePools, handles networking and storage setup, and removes the need for user-managed node groups or Auto Scaling Groups.
+
+  ```ts
+  const cluster = new eks.Cluster(this, 'AutoModeCluster', {
+    version: eks.KubernetesVersion.V1_34,
+    // Auto Mode is enabled by default
+  });
+  ```
+
+- **[Managed Node Groups](#managed-node-groups)** – The semi-managed capacity mode.  
+  EKS provisions and manages EC2 nodes on your behalf but you configure the instance types, scaling ranges, and update strategy.  
+  AWS handles node health, draining, and rolling updates while you retain control over scaling and cost optimization.
+
+  You can also define *Fargate Profiles* that determine which pods or namespaces run on Fargate infrastructure.
+
+  ```ts
+  const cluster = new eks.Cluster(this, 'ManagedNodeCluster', {
+    version: eks.KubernetesVersion.V1_34,
+    defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+  });
+  
+  // Add a Fargate Profile for specific workloads (e.g., default namespace)
+  cluster.addFargateProfile('FargateProfile', {
+    selectors: [
+      { namespace: 'default' }, // Run pods in 'default' on Fargate
+  ],
+  });
+  ```
+
+- **[Fargate Mode](#fargate-profiles)** – The Fargate capacity mode.  
+  EKS runs your pods directly on AWS Fargate without provisioning EC2 nodes.
+
+  ```ts
+  const cluster = new eks.FargateCluster(this, 'FargateCluster', {
+    version: eks.KubernetesVersion.V1_34,
+  });
+  ```
+
+- **[Self-Managed Nodes](#self-managed-capacity)** – The fully manual capacity mode.  
+  You create and manage EC2 instances (via an Auto Scaling Group) and connect them to the cluster manually.  
+  This provides maximum flexibility for custom AMIs or configurations but also the highest operational overhead.
+
+  ```ts
+  const cluster = new eks.Cluster(this, 'SelfManagedCluster', {
+    version: eks.KubernetesVersion.V1_34,
+  });
+  
+  // Add self-managed Auto Scaling Group
+  cluster.addAutoScalingGroupCapacity('self-managed-asg', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+    minCapacity: 1,
+    maxCapacity: 5,
+  });
+  ```
+
+- **[Kubectl Handler](#kubectl-support) (Optional)** – A Lambda-backed custom resource created by the AWS CDK to execute `kubectl` commands (like `apply` or `patch`) during deployment.  
+  Regardless of the capacity mode, this handler may still be created to apply Kubernetes manifests as part of CDK provisioning.
 
 ## Provisioning cluster
 
@@ -73,7 +128,7 @@ Creating a new cluster is done using the `Cluster` constructs. The only required
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
 });
 ```
 
@@ -81,7 +136,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
 });
 ```
 
@@ -90,21 +145,21 @@ be created by default. It will only be deployed when `kubectlProviderOptions`
 property is used.**
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
   }
 });
 ```
 
-## EKS Auto Mode
+### EKS Auto Mode
 
 [Amazon EKS Auto Mode](https://aws.amazon.com/eks/auto-mode/) extends AWS management of Kubernetes clusters beyond the cluster itself, allowing AWS to set up and manage the infrastructure that enables the smooth operation of your workloads.
 
-### Using Auto Mode
+#### Using Auto Mode
 
 While `aws-eks` uses `DefaultCapacityType.NODEGROUP` by default, `aws-eks-v2` uses `DefaultCapacityType.AUTOMODE` as the default capacity type.
 
@@ -113,7 +168,7 @@ Auto Mode is enabled by default when creating a new cluster without specifying a
 ```ts
 // Create EKS cluster with Auto Mode implicitly enabled
 const cluster = new eks.Cluster(this, 'EksAutoCluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
 });
 ```
 
@@ -122,12 +177,12 @@ You can also explicitly enable Auto Mode using `defaultCapacityType`:
 ```ts
 // Create EKS cluster with Auto Mode explicitly enabled
 const cluster = new eks.Cluster(this, 'EksAutoCluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
 });
 ```
 
-### Node Pools
+#### Node Pools
 
 When Auto Mode is enabled, the cluster comes with two default node pools:
 
@@ -138,7 +193,7 @@ These node pools are managed automatically by EKS. You can configure which node 
 
 ```ts
 const cluster = new eks.Cluster(this, 'EksAutoCluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
   compute: {
     nodePools: ['system', 'general-purpose'],
@@ -148,13 +203,13 @@ const cluster = new eks.Cluster(this, 'EksAutoCluster', {
 
 For more information, see [Create a Node Pool for EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html).
 
-### Disabling Default Node Pools
+#### Disabling Default Node Pools
 
 You can disable the default node pools entirely by setting an empty array for `nodePools`. This is useful when you want to use Auto Mode features but manage your compute resources separately:
 
 ```ts
 const cluster = new eks.Cluster(this, 'EksAutoCluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
   compute: {
     nodePools: [], // Disable default node pools
@@ -171,7 +226,7 @@ If you prefer to manage your own node groups instead of using Auto Mode, you can
 ```ts
 // Create EKS cluster with traditional managed node group
 const cluster = new eks.Cluster(this, 'EksCluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 3, // Number of instances
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
@@ -182,7 +237,7 @@ You can also create a cluster with no initial capacity and add node groups later
 
 ```ts
 const cluster = new eks.Cluster(this, 'EksCluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 0,
 });
@@ -203,7 +258,7 @@ You can combine Auto Mode with traditional node groups for specific workload req
 
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
   compute: {
     nodePools: ['system', 'general-purpose'],
@@ -243,7 +298,7 @@ By default, when using `DefaultCapacityType.NODEGROUP`, this library will alloca
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
 });
 ```
@@ -252,7 +307,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
@@ -265,7 +320,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 0,
 });
@@ -316,7 +371,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
 });
 ```
 
@@ -327,6 +382,38 @@ pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
 Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
 on Amazon EKS (minimum version v1.1.4).
 
+### Self-managed capacity
+
+Self-managed capacity gives you the most control over your worker nodes by allowing you to create and manage your own EC2 Auto Scaling Groups. This approach provides maximum flexibility for custom AMIs, instance configurations, and scaling policies, but requires more operational overhead.
+
+You can add self-managed capacity to any cluster using the `addAutoScalingGroupCapacity` method:
+
+```ts
+const cluster = new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_34,
+});
+
+cluster.addAutoScalingGroupCapacity('self-managed-nodes', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  minCapacity: 1,
+  maxCapacity: 10,
+  desiredCapacity: 3,
+});
+```
+
+You can specify custom subnets for the Auto Scaling Group:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: eks.Cluster;
+
+cluster.addAutoScalingGroupCapacity('custom-subnet-nodes', {
+  vpcSubnets: { subnets: vpc.privateSubnets },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  minCapacity: 2,
+});
+```
+
 ### Endpoint Access
 
 When you create a new cluster, Amazon EKS creates an endpoint for the managed Kubernetes API server that you use to communicate with your cluster (using Kubernetes management tools such as `kubectl`)
@@ -335,7 +422,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
 });
 ```
@@ -357,7 +444,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   albController: {
     version: eks.AlbControllerVersion.V2_8_2,
   },
@@ -398,7 +485,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
 });
@@ -441,12 +528,12 @@ To create a `Kubectl Handler`, use `kubectlProviderOptions` when creating the cl
 `kubectlLayer` is the only required property in `kubectlProviderOptions`.
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
   }
 });
 ```
@@ -456,8 +543,6 @@ new eks.Cluster(this, 'hello-eks', {
 If you want to use an existing kubectl provider function, for example with tight trusted entities on your IAM Roles - you can import the existing provider and then use the imported provider when importing the cluster:
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
-
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
 // get the serivceToken from the custom resource provider
 const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
@@ -477,12 +562,12 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
 You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
     environment: {
         'http_proxy': 'http://proxy.myproxy.com',
     },
@@ -503,12 +588,12 @@ Depending on which version of kubernetes you're targeting, you will need to use 
 the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
   },
 });
 ```
@@ -518,14 +603,14 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 By default, the kubectl provider is configured with 1024MiB of memory. You can use the `memory` option to specify the memory size for the AWS Lambda function:
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 new eks.Cluster(this, 'MyCluster', {
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
     memory: Size.gibibytes(4),
   },
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
 });
 ```
 
@@ -556,7 +641,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 declare const role: iam.Role;
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   mastersRole: role,
 });
 ```
@@ -577,7 +662,7 @@ You can use the `secretsEncryptionKey` to configure which key the cluster will u
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
 });
 ```
 
@@ -587,7 +672,7 @@ You can also use a similar configuration for running a cluster built using the F
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
 });
 ```
 
@@ -628,7 +713,7 @@ eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', {
 Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 declare const vpc: ec2.Vpc;
 
 const clusterAdminRole = new iam.Role(this, 'ClusterAdminRole', {
@@ -642,9 +727,9 @@ const eksAdminRole = new iam.Role(this, 'EKSAdminRole', {
 const cluster = new eks.Cluster(this, 'Cluster', {
   vpc,
   mastersRole: clusterAdminRole,
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
     memory: Size.gibibytes(4),
   },
 });
@@ -829,7 +914,7 @@ when a cluster is defined:
 
 ```ts
 new eks.Cluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   prune: false,
 });
 ```
@@ -1145,7 +1230,7 @@ property. For example:
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
   // ...
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   clusterLogging: [
     eks.ClusterLoggingTypes.API,
     eks.ClusterLoggingTypes.AUTHENTICATOR,

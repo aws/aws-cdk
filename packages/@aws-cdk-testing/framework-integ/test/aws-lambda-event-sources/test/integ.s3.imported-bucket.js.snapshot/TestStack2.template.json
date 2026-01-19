@@ -157,7 +157,21 @@
         "s3:PutBucketNotification"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Fn::ImportValue": "TestStack1:ExportsOutputRefbucket43879C716CF1CFA3"
+          }
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -184,7 +198,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 300
    },
    "DependsOn": [

@@ -1,13 +1,12 @@
 import { Node, Construct } from 'constructs';
-import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
-import { CfnEventBusPolicy, CfnRule } from './events.generated';
+import { CfnEventBusPolicy, CfnRule, IEventBusRef, RuleReference } from './events.generated';
 import { EventCommonOptions } from './on-event-options';
 import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
-import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { IRole, IRoleRef, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -53,7 +52,7 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default - The default event bus.
    */
-  readonly eventBus?: IEventBus;
+  readonly eventBus?: IEventBusRef;
 
   /**
    * The role that is used for target invocation.
@@ -61,7 +60,7 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default - No role associated
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 }
 
 /**
@@ -87,6 +86,12 @@ export class Rule extends Resource implements IRule {
     class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
       public ruleName = parts.resourceName || '';
+
+      public get ruleRef(): RuleReference {
+        return {
+          ruleArn: this.ruleArn,
+        };
+      }
     }
     return new Import(scope, id, {
       environmentFromArn: eventRuleArn,
@@ -95,6 +100,12 @@ export class Rule extends Resource implements IRule {
 
   public readonly ruleArn: string;
   public readonly ruleName: string;
+
+  public get ruleRef(): RuleReference {
+    return {
+      ruleArn: this.ruleArn,
+    };
+  }
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
   private readonly eventPattern: EventPattern = { };
@@ -128,8 +139,8 @@ export class Rule extends Resource implements IRule {
       scheduleExpression: this.scheduleExpression,
       eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
       targets: Lazy.any({ produce: () => this.renderTargets() }),
-      eventBusName: props.eventBus && props.eventBus.eventBusName,
-      roleArn: props.role?.roleArn,
+      eventBusName: props.eventBus && props.eventBus.eventBusRef.eventBusName,
+      roleArn: props.role?.roleRef.roleArn,
     });
 
     this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -222,7 +233,7 @@ export class Rule extends Resource implements IRule {
         // and trigger on it there (there will be issues with construct references, for example). Especially
         // in the case of scheduled events, we will just trigger both rules in parallel in both environments.
         //
-        // A better solution would be to have the source rule add a unique token to the the event,
+        // A better solution would be to have the source rule add a unique token to the event,
         // and have the mirror rule trigger on that token only (thereby properly separating triggering, which
         // happens in the source env; and activating, which happens in the target env).
         //

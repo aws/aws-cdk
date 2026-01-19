@@ -1,11 +1,12 @@
 import { Construct } from 'constructs';
-import { ILogGroup, SubscriptionFilterOptions } from './log-group';
+import { SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
 import * as iam from '../../aws-iam';
 import { KinesisDestination } from '../../aws-logs-destinations';
 import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
@@ -21,7 +22,7 @@ export interface ILogSubscriptionDestination {
    * The destination may reconfigure its own permissions in response to this
    * function call.
    */
-  bind(scope: Construct, sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig;
+  bind(scope: Construct, sourceLogGroup: ILogGroupRef): LogSubscriptionDestinationConfig;
 }
 
 /**
@@ -48,7 +49,7 @@ export interface SubscriptionFilterProps extends SubscriptionFilterOptions {
   /**
    * The log group to create the subscription on.
    */
-  readonly logGroup: ILogGroup;
+  readonly logGroup: ILogGroupRef;
 }
 
 /**
@@ -78,9 +79,9 @@ export class SubscriptionFilter extends Resource {
     const destProps = props.destination.bind(this, props.logGroup);
 
     new CfnSubscriptionFilter(this, 'Resource', {
-      logGroupName: props.logGroup.logGroupName,
+      logGroupName: props.logGroup.logGroupRef.logGroupName,
       destinationArn: destProps.arn,
-      roleArn: destProps.role && destProps.role.roleArn,
+      roleArn: destProps.role?.roleArn,
       filterPattern: props.filterPattern.logPatternString,
       filterName: this.physicalName,
       distribution: props.distribution,

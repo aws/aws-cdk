@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-glue-job-metrics-disabled-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-job-metrics-disabled"
+      ],
+      "assertionStack": "aws-glue-job-metrics-disabled-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluejobmetricsdisabledintegtestDefaultTestDeployAssertF93341DC"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

@@ -4,6 +4,7 @@ import { PolicySynthesizer } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { Grant } from '../grant';
+import { RoleReference } from '../iam.generated';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyDocument } from '../policy-document';
@@ -103,6 +104,13 @@ export class PrecreatedRole extends Resource implements IRole {
       assumeRolePolicy: Stack.of(this).resolve(props.assumeRolePolicy?.toJSON()?.Statement),
       missing: props.missing,
     });
+  }
+
+  public get roleRef(): RoleReference {
+    return {
+      roleName: this.roleName,
+      roleArn: this.roleArn,
+    };
   }
 
   @MethodMetadata()

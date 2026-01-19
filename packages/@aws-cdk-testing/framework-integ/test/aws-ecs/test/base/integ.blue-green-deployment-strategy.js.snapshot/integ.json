@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-ecs-blue-green/DefaultTest": {
+      "stacks": [
+        "aws-ecs-blue-green-deployment"
+      ],
+      "assertionStack": "aws-ecs-blue-green/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsbluegreenDefaultTestDeployAssertA9C6C1DC"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

@@ -49,7 +49,7 @@ test('use custom synthesizer', () => {
     files: expect.objectContaining({
       '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197': {
         destinations: {
-          'current_account-current_region': {
+          'current_account-current_region-6191c755': {
             bucketName: 'write-bucket',
             objectKey: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
           },

@@ -1,11 +1,20 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'ResourceActionStack');
+const app = new cdk.App({
+  context: {
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+  },
+});
+const stack = new cdk.Stack(app, 'ResourceActionStack', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
+  },
+});
 
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {
