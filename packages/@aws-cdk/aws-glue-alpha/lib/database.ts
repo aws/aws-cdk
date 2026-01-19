@@ -1,7 +1,7 @@
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 
@@ -79,12 +79,12 @@ export class Database extends Resource implements IDatabase {
   /**
    * ARN of the Glue catalog in which this database is stored.
    */
-  public catalogArn: string;
+  public readonly catalogArn: string;
 
   /**
    * The catalog id of the database (usually, the AWS account id).
    */
-  public catalogId: string;
+  public readonly catalogId: string;
 
   /**
    * Location URI of this database.

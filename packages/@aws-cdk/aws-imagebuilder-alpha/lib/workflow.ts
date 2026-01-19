@@ -4,8 +4,8 @@ import { CfnWorkflow } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
@@ -714,24 +714,14 @@ export class Workflow extends WorkflowBase {
   }
 
   /**
-   * The ARN of the workflow
-   */
-  public workflowArn: string;
-
-  /**
-   * The name of the workflow
-   */
-  public workflowName: string;
-
-  /**
    * The type of the workflow
    */
-  public workflowType: string;
+  public readonly workflowType: string;
 
   /**
    * The version of the workflow
    */
-  public workflowVersion: string;
+  public readonly workflowVersion: string;
 
   private resource: CfnWorkflow;
 

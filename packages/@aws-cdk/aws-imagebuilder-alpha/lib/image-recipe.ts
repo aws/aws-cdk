@@ -2,8 +2,8 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImageRecipe } from 'aws-cdk-lib/aws-imagebuilder';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseImage } from './base-image';
@@ -303,21 +303,6 @@ export class ImageRecipe extends ImageRecipeBase {
   public static isImageRecipe(x: any): x is ImageRecipe {
     return x !== null && typeof x === 'object' && IMAGE_RECIPE_SYMBOL in x;
   }
-
-  /**
-   * The ARN of the image recipe
-   */
-  public imageRecipeArn: string;
-
-  /**
-   * The name of the image recipe
-   */
-  public imageRecipeName: string;
-
-  /**
-   * The version of the image recipe
-   */
-  public imageRecipeVersion: string;
 
   private readonly blockDevices: ec2.BlockDevice[] = [];
   private resource: CfnImageRecipe;

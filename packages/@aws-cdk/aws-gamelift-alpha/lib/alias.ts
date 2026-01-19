@@ -1,7 +1,7 @@
 import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
 import * as cdk from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IFleet } from './fleet-base';
@@ -186,16 +186,6 @@ export class Alias extends AliasBase {
     }
     return new Import(scope, id);
   }
-
-  /**
-   * The Identifier of the alias.
-   */
-  public aliasId: string;
-
-  /**
-   * The ARN of the alias.
-   */
-  public aliasArn: string;
 
   /**
    * A fleet that the alias points to.

@@ -1,8 +1,8 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import * as cdk from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { RuleSetContent } from './matchmaking-ruleset-body';
@@ -187,16 +187,6 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
     }
     return new Import(scope, id);
   }
-
-  /**
-   * The unique name of the ruleSet.
-   */
-  public matchmakingRuleSetName: string;
-
-  /**
-   * The ARN of the ruleSet.
-   */
-  public matchmakingRuleSetArn: string;
 
   private resource: CfnMatchmakingRuleSet;
 

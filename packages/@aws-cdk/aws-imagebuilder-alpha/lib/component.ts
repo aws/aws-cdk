@@ -4,8 +4,8 @@ import { CfnComponent } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
@@ -1004,31 +1004,14 @@ export class Component extends ComponentBase {
   }
 
   /**
-   * The ARN of the component
-   */
-  public componentArn: string;
-
-  /**
-   * The name of the component
-   */
-  public componentName: string;
-
-  /**
    * The version of the component
    */
-  public componentVersion: string;
+  public readonly componentVersion: string;
 
   /**
    * Whether the component is encrypted
    */
   public readonly encrypted: boolean;
-
-  /**
-   * The type of the component
-   *
-   * @attribute
-   */
-  public componentType: string;
 
   protected readonly kmsKey?: kms.IKey;
   private resource: CfnComponent;
@@ -1098,6 +1081,11 @@ export class Component extends ComponentBase {
     });
   }
 
+  /**
+   * The type of the component
+   *
+   * @attribute
+   */
   @memoizedGetter
   public get componentType(): string {
     return this.resource.attrType;

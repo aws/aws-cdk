@@ -5,8 +5,8 @@ import { CfnContainerRecipe } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseContainerImage, ContainerInstanceImage } from './base-image';
@@ -475,21 +475,6 @@ export class ContainerRecipe extends ContainerRecipeBase {
   public static isContainerRecipe(x: any): x is ContainerRecipe {
     return x !== null && typeof x === 'object' && CONTAINER_RECIPE_SYMBOL in x;
   }
-
-  /**
-   * The ARN of the container recipe
-   */
-  public containerRecipeArn: string;
-
-  /**
-   * The name of the container recipe
-   */
-  public containerRecipeName: string;
-
-  /**
-   * The version of the container recipe
-   */
-  public containerRecipeVersion: string;
 
   private readonly instanceBlockDevices: ec2.BlockDevice[] = [];
   private resource: CfnContainerRecipe;

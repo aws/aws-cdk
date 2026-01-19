@@ -106,8 +106,7 @@ export class PythonShellJob extends Job {
 
   @memoizedGetter
   public get jobArn(): string {
-    const resourceName = this.getResourceNameAttribute(this.resource.ref);
-    return this.buildJobArn(this, resourceName);
+    return this.buildJobArn(this, this.jobName);
   }
 
   @memoizedGetter

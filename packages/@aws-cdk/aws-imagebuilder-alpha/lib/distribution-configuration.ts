@@ -5,8 +5,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDistributionConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 
@@ -480,16 +480,6 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
   public static isDistributionConfiguration(x: any): x is DistributionConfiguration {
     return x !== null && typeof x === 'object' && DISTRIBUTION_CONFIGURATION_SYMBOL in x;
   }
-
-  /**
-   * The ARN of the distribution configuration
-   */
-  public distributionConfigurationArn: string;
-
-  /**
-   * The name of the distribution configuration
-   */
-  public distributionConfigurationName: string;
 
   private readonly resource: CfnDistributionConfiguration;
   private readonly amiDistributionsByRegion: { [region: string]: AmiDistribution } = {};

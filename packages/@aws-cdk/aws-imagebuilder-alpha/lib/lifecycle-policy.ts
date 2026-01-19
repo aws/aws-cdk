@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnLifecyclePolicy } from 'aws-cdk-lib/aws-imagebuilder';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IRecipeBase } from './recipe-base';
@@ -411,16 +411,6 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   public static isLifecyclePolicy(x: any): x is LifecyclePolicy {
     return x !== null && typeof x === 'object' && LIFECYCLE_POLICY_SYMBOL in x;
   }
-
-  /**
-   * The ARN of the lifecycle policy
-   */
-  public lifecyclePolicyArn: string;
-
-  /**
-   * The name of the lifecycle policy
-   */
-  public lifecyclePolicyName: string;
 
   /**
    * The execution role used for lifecycle policy executions

@@ -1,8 +1,8 @@
 import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IBuild } from './build';
@@ -64,16 +64,6 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
   static fromBuildFleetArn(scope: Construct, id: string, buildFleetArn: string): IBuildFleet {
     return this.fromFleetAttributes(scope, id, { fleetArn: buildFleetArn });
   }
-
-  /**
-   * The Identifier of the fleet.
-   */
-  public fleetId: string;
-
-  /**
-   * The ARN of the fleet.
-   */
-  public fleetArn: string;
 
   /**
    * The build content of the fleet

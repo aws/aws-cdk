@@ -1,7 +1,7 @@
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
 import { ArnFormat, IResource, Resource, Stack, Fn } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
@@ -121,14 +121,6 @@ export class Addon extends Resource implements IAddon {
     return new Import(scope, id);
   }
 
-  /**
-   * Name of the addon.
-   */
-  public addonName: string;
-  /**
-   * Arn of the addon.
-   */
-  public addonArn: string;
   private readonly clusterName: string;
   private resource: CfnAddon;
 
@@ -156,6 +148,9 @@ export class Addon extends Resource implements IAddon {
     });
   }
 
+  /**
+   * Name of the addon.
+   */
   @memoizedGetter
   public get addonName(): string {
     return this.getResourceNameAttribute(this.resource.ref);

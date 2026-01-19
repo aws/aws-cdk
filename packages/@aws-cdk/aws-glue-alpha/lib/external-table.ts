@@ -1,8 +1,8 @@
 import { ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IConnection } from './connection';
@@ -35,15 +35,6 @@ export interface ExternalTableProps extends TableBaseProps {
 export class ExternalTable extends TableBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ExternalTable';
-  /**
-   * Name of this table.
-   */
-  public tableName: string;
-
-  /**
-   * ARN of this table.
-   */
-  public tableArn: string;
 
   /**
    * The connection associated to this table
@@ -116,11 +107,17 @@ export class ExternalTable extends TableBase {
     }
   }
 
+  /**
+   * Name of this table.
+   */
   @memoizedGetter
   public get tableName(): string {
     return this.getResourceNameAttribute(this.resource.ref);
   }
 
+  /**
+   * ARN of this table.
+   */
   @memoizedGetter
   public get tableArn(): string {
     return this.stack.formatArn({

@@ -2,8 +2,8 @@ import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, In
 import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { Construct, Node } from 'constructs';
@@ -403,18 +403,6 @@ export class Nodegroup extends Resource implements INodegroup {
     return new Import(scope, id);
   }
   /**
-   * ARN of the nodegroup
-   *
-   * @attribute
-   */
-  public nodegroupArn: string;
-  /**
-   * Nodegroup name
-   *
-   * @attribute
-   */
-  public nodegroupName: string;
-  /**
    * the Amazon EKS cluster resource
    *
    * @attribute ClusterName
@@ -582,6 +570,11 @@ export class Nodegroup extends Resource implements INodegroup {
     }
   }
 
+  /**
+   * ARN of the nodegroup
+   *
+   * @attribute
+   */
   @memoizedGetter
   public get nodegroupArn(): string {
     return this.getResourceArnAttribute(this.resource.attrArn, {
@@ -591,6 +584,11 @@ export class Nodegroup extends Resource implements INodegroup {
     });
   }
 
+  /**
+   * Nodegroup name
+   *
+   * @attribute
+   */
   @memoizedGetter
   public get nodegroupName(): string {
     if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {

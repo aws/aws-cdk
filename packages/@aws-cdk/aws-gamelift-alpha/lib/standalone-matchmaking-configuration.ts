@@ -2,8 +2,8 @@ import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { MatchmakingConfigurationProps, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
@@ -40,16 +40,6 @@ export class StandaloneMatchmakingConfiguration extends MatchmakingConfiguration
   static fromStandaloneMatchmakingConfigurationArn(scope: Construct, id: string, matchmakingConfigurationArn: string): IMatchmakingConfiguration {
     return this.fromMatchmakingConfigurationAttributes(scope, id, { matchmakingConfigurationArn });
   }
-
-  /**
-   * The Identifier of the matchmaking configuration.
-   */
-  public matchmakingConfigurationName: string;
-
-  /**
-   * The ARN of the matchmaking configuration.
-   */
-  public matchmakingConfigurationArn: string;
 
   /**
    * The notification target for matchmaking events

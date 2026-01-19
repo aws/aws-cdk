@@ -1,8 +1,8 @@
 import { Fn, Lazy, Names, ValidationError } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as constructs from 'constructs';
 import { ClusterBase, ICluster } from '.';

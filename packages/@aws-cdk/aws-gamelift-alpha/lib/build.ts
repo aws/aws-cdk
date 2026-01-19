@@ -3,8 +3,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import * as cdk from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Content } from './content';
@@ -255,16 +255,6 @@ export class Build extends BuildBase {
     }
     return new Import(scope, id);
   }
-
-  /**
-   * The Identifier of the build.
-   */
-  public buildId: string;
-
-  /**
-   * The ARN of the build.
-   */
-  public buildArn: string;
 
   /**
    * The IAM role GameLift assumes to acccess server build content.

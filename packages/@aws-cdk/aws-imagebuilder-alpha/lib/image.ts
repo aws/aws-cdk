@@ -3,8 +3,8 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImage } from 'aws-cdk-lib/aws-imagebuilder';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseContainerImage, BaseImage } from './base-image';
@@ -402,28 +402,6 @@ export class Image extends ImageBase {
   }
 
   /**
-   * The ARN of the image
-   */
-  public imageArn: string;
-
-  /**
-   * The name of the image
-   */
-  public imageName: string;
-
-  /**
-   * The version of the image
-   */
-  public imageVersion: string;
-
-  /**
-   * The AMI ID of the EC2 AMI, or URI for the container
-   *
-   * @attribute
-   */
-  public imageId: string;
-
-  /**
    * The infrastructure configuration used for the image build
    */
   public readonly infrastructureConfiguration: IInfrastructureConfiguration;
@@ -457,7 +435,7 @@ export class Image extends ImageBase {
       },
     );
 
-    const [image, recipe] = this.createImageFromRecipe(props);
+    const [image, _] = this.createImageFromRecipe(props);
     this.resource = image;
   }
 
@@ -504,6 +482,11 @@ export class Image extends ImageBase {
     }
   }
 
+  /**
+   * The AMI ID of the EC2 AMI, or URI for the container
+   *
+   * @attribute
+   */
   @memoizedGetter
   public get imageId(): string {
     const recipe = this.props.recipe;
