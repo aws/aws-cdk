@@ -2356,6 +2356,70 @@ describe('cluster', () => {
         },
       });
     });
+
+    test('if EKS_USE_NATIVE_OIDC_PROVIDER feature flag is enabled, uses native OIDC provider', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      stack.node.setContext('@aws-cdk/aws-eks:useNativeOidcProvider', true);
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false, kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer') });
+
+      // WHEN
+      cluster.openIdConnectProvider;
+
+      // THEN
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::OIDCProvider', {
+        ClientIdList: [
+          'sts.amazonaws.com',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'Cluster9EE0221C',
+            'OpenIdConnectIssuerUrl',
+          ],
+        },
+      });
+    });
+
+    test('cluster can be used with both OidcProviderNative and OpenIdConnectProvider', () => {
+      const { stack } = testFixtureNoVpc();
+
+      const importedClusterOldProvider = eks.Cluster.fromClusterAttributes(stack, 'ImportedClusterOld', {
+        clusterName: 'my-cluster',
+        openIdConnectProvider: eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'ImportedOidcProviderOld', 'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E'),
+      });
+
+      const importedClusterNativeProvider = eks.Cluster.fromClusterAttributes(stack, 'ImportedClusterNative', {
+        clusterName: 'my-cluster',
+        openIdConnectProvider: eks.OidcProviderNative.fromOidcProviderArn(stack, 'ImportedOidcProviderNative', 'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E'),
+      });
+
+      expect(importedClusterOldProvider.openIdConnectProvider).toBeDefined();
+      expect(importedClusterNativeProvider.openIdConnectProvider).toBeDefined();
+    });
+
+    test('if EKS_USE_NATIVE_OIDC_PROVIDER feature flag is disabled, uses custom resource OIDC provider', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false, kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer') });
+
+      // WHEN
+      cluster.openIdConnectProvider;
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
+        ClientIDList: [
+          'sts.amazonaws.com',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'Cluster9EE0221C',
+            'OpenIdConnectIssuerUrl',
+          ],
+        },
+      });
+    });
+
     test('inf1 instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
