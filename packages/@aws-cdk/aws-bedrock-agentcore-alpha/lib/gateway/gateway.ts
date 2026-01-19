@@ -833,7 +833,7 @@ export class Gateway extends GatewayBase {
    *
    * A gateway can have at most one REQUEST interceptor and one RESPONSE interceptor.
    * @param interceptor The interceptor to add (use LambdaInterceptor factory methods)
-   * * @throws Error if an interceptor of the same type already exists
+   * @throws Error if an interceptor of the same type already exists
    */
   @MethodMetadata()
   public addInterceptor(interceptor: IInterceptor): void {
