@@ -109,7 +109,6 @@ export class DetectorModel extends Resource implements IDetectorModel {
     }(scope, id);
   }
 
-  public detectorModelName: string;
   private resource: CfnDetectorModel;
 
   constructor(scope: Construct, id: string, props: DetectorModelProps) {

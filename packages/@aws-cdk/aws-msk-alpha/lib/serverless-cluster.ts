@@ -77,9 +77,6 @@ export class ServerlessCluster extends ClusterBase {
     return new Import(scope, id);
   }
 
-  public clusterArn: string;
-  public clusterName: string;
-
   private resource: CfnServerlessCluster;
 
   private _securityGroups: ec2.ISecurityGroup[] = [];

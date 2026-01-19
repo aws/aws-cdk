@@ -573,16 +573,6 @@ export class TableBucket extends TableBucketBase {
    */
   public readonly tableBucketPolicy?: TableBucketPolicy;
 
-  /**
-   * The unique Amazon Resource Name (arn) of this table bucket
-   */
-  public tableBucketArn: string;
-
-  /**
-   * The name of this table bucket
-   */
-  public tableBucketName: string;
-
   public readonly encryptionKey?: kms.IKey | undefined;
 
   protected autoCreatePolicy: boolean = true;
@@ -613,11 +603,17 @@ export class TableBucket extends TableBucketBase {
     this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 
+  /**
+   * The name of this table bucket
+   */
   @memoizedGetter
   public get tableBucketName(): string {
     return this.getResourceNameAttribute(this.resource.ref);
   }
 
+  /**
+   * The unique Amazon Resource Name (arn) of this table bucket
+   */
   @memoizedGetter
   public get tableBucketArn(): string {
     return this.resource.attrTableBucketArn;

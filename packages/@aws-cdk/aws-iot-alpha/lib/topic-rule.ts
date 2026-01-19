@@ -104,18 +104,6 @@ export class TopicRule extends Resource implements ITopicRule {
     });
   }
 
-  /**
-   * Arn of this topic rule
-   * @attribute
-   */
-  public readonly topicRuleArn: string;
-
-  /**
-   * Name of this topic rule
-   * @attribute
-   */
-  public readonly topicRuleName: string;
-
   private readonly actions: CfnTopicRule.ActionProperty[] = [];
   private readonly resource: CfnTopicRule;
 

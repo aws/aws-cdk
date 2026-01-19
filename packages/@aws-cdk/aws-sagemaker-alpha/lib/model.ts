@@ -290,16 +290,6 @@ export class Model extends ModelBase {
   }
 
   /**
-   * Returns the ARN of this model.
-   * @attribute
-   */
-  public modelArn: string;
-  /**
-   * Returns the name of the model.
-   * @attribute
-   */
-  public modelName: string;
-  /**
    * Execution role for SageMaker Model
    */
   public readonly role?: iam.IRole;
@@ -345,11 +335,19 @@ export class Model extends ModelBase {
     this.resource.node.addDependency(this.role);
   }
 
+  /**
+   * Returns the name of the model.
+   * @attribute
+   */
   @memoizedGetter
   public get modelName(): string {
     return this.getResourceNameAttribute(this.resource.attrModelName);
   }
 
+  /**
+   * Returns the ARN of this model.
+   * @attribute
+   */
   @memoizedGetter
   public get modelArn(): string {
     return this.getResourceArnAttribute(this.resource.ref, {

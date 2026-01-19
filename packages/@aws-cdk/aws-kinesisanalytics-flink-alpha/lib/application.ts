@@ -973,9 +973,6 @@ export class Application extends ApplicationBase {
     });
   }
 
-  public applicationArn: string;
-  public applicationName: string;
-
   // Role must be optional for JSII compatibility
   public readonly role?: iam.IRole;
 

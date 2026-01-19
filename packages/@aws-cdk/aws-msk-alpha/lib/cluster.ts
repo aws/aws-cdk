@@ -483,8 +483,6 @@ export class Cluster extends ClusterBase {
     return new Import(scope, id);
   }
 
-  public clusterArn: string;
-  public clusterName: string;
   /** Key used to encrypt SASL/SCRAM users */
   public readonly saslScramAuthenticationKey?: kms.IKey;
   private resource: CfnCluster;

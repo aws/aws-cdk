@@ -404,18 +404,6 @@ export class Endpoint extends EndpointBase {
     return new Import(scope, id);
   }
 
-  /**
-   * The ARN of the endpoint.
-   *
-   * @attribute
-   */
-  public endpointArn: string;
-  /**
-   * The name of the endpoint.
-   *
-   * @attribute
-   */
-  public endpointName: string;
   private readonly endpointConfig: IEndpointConfig;
   private resource: CfnEndpoint;
 
@@ -436,11 +424,21 @@ export class Endpoint extends EndpointBase {
     });
   }
 
+  /**
+   * The name of the endpoint.
+   *
+   * @attribute
+   */
   @memoizedGetter
   public get endpointName(): string {
     return this.getResourceNameAttribute(this.resource.attrEndpointName);
   }
 
+  /**
+   * The ARN of the endpoint.
+   *
+   * @attribute
+   */
   @memoizedGetter
   public get endpointArn(): string {
     return this.getResourceArnAttribute(this.resource.ref, {

@@ -107,10 +107,6 @@ export class Input extends InputBase {
     }(scope, id);
   }
 
-  public inputName: string;
-
-  public inputArn: string;
-
   private resource: CfnInput;
 
   constructor(scope: Construct, id: string, props: InputProps) {

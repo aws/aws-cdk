@@ -20,18 +20,14 @@ export class Endpoint {
   /**
    * The combination of "HOSTNAME:PORT" for this endpoint
    */
+  @memoizedGetter
   public get socketAddress(): string {
-    return this.getSocketAddress();
+    const portDesc = Token.isUnresolved(this.port) ? Token.asString(this.port) : this.port;
+    return `${this.hostname}:${portDesc}`;
   }
 
   constructor(address: string, port: number) {
     this.hostname = address;
     this.port = port;
-  }
-
-  @memoizedGetter
-  private getSocketAddress(): string {
-    const portDesc = Token.isUnresolved(this.port) ? Token.asString(this.port) : this.port;
-    return `${this.hostname}:${portDesc}`;
   }
 }
