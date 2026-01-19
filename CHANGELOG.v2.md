@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.235.1](https://github.com/aws/aws-cdk/compare/v2.235.0...v2.235.1) (2026-01-19)
+
+
+### Bug Fixes
+
+* **apigatewayv2:** use custom domain name instead of regional domain name when importing domain name via fromDomainNameAttributes ([#36710](https://github.com/aws/aws-cdk/issues/36710)) ([29e5642](https://github.com/aws/aws-cdk/commit/29e5642266190ef7d8cf3cccdb50ea2caa6919db))
+
 ## [2.235.0](https://github.com/aws/aws-cdk/compare/v2.234.1...v2.235.0) (2026-01-15)
 
 
