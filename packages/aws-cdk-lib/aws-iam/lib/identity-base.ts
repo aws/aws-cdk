@@ -5,6 +5,8 @@ import { IResource } from '../../core';
 
 /**
  * A construct that represents an IAM principal, such as a user, group or role.
+ *
+ * [awslint:interface-extends-ref]
  */
 export interface IIdentity extends IPrincipal, IResource {
   /**
