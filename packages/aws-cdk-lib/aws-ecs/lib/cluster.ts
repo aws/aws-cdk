@@ -1704,7 +1704,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       infrastructureRoleArn: this.infrastructureRole.roleArn,
       instanceLaunchTemplate: {
         capacityOptionType: props.capacityOptionType,
-        ec2InstanceProfileArn: props.ec2InstanceProfile.instanceProfileArn,
+        ec2InstanceProfileArn: this.ec2InstanceProfile.instanceProfileArn,
         networkConfiguration: {
           subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),
           ...(props.securityGroups && {
