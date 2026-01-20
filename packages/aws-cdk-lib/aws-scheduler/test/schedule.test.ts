@@ -260,4 +260,30 @@ describe('Schedule', () => {
       });
     });
   });
+
+  describe('fromScheduleArn', () => {
+    test('correctly parses schedule name from ARN', () => {
+      // WHEN
+      const importedSchedule = Schedule.fromScheduleArn(
+        stack,
+        'ImportedSchedule',
+        'arn:aws:scheduler:us-east-1:123456789012:schedule/my-schedule-group/my-schedule-name',
+      );
+
+      // THEN
+      expect(importedSchedule.scheduleName).toEqual('my-schedule-name');
+      expect(importedSchedule.scheduleArn).toEqual('arn:aws:scheduler:us-east-1:123456789012:schedule/my-schedule-group/my-schedule-name');
+    });
+
+    test('throws error for invalid ARN format', () => {
+      // WHEN/THEN
+      expect(() => {
+        Schedule.fromScheduleArn(
+          stack,
+          'ImportedSchedule',
+          'arn:aws:scheduler:us-east-1:123456789012:schedule/invalid',
+        );
+      }).toThrow('Invalid schedule ARN format. Expected: arn:<partition>:scheduler:<region>:<account>:schedule/<group-name>/<schedule-name>, got: arn:aws:scheduler:us-east-1:123456789012:schedule/invalid');
+    });
+  });
 });
