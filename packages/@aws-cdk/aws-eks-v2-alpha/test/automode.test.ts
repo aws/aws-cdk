@@ -1,6 +1,8 @@
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { App, Stack } from 'aws-cdk-lib/core';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as eks from '../lib';
 import { testFixtureNoVpc } from './util';
 
@@ -354,6 +356,71 @@ describe('eks auto mode', () => {
         ScalingConfig: { MinSize: 1 },
         InstanceTypes: ['r5.xlarge'],
         Labels: { workload: 'memory-intensive' },
+      });
+    });
+  });
+
+  describe('node pool role ECR policy feature flag', () => {
+    test('uses AmazonEC2ContainerRegistryReadOnly when feature flag is disabled', () => {
+      const { stack } = testFixtureNoVpc();
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'ec2.amazonaws.com' },
+            },
+          ],
+        },
+        ManagedPolicyArns: Match.arrayWith([
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+            ]],
+          },
+        ]),
+      });
+    });
+
+    test('uses AmazonEC2ContainerRegistryPullOnly when feature flag is enabled', () => {
+      const app = new App({
+        postCliContext: {
+          [cxapi.EKS_NODEGROUP_USE_PULL_ONLY_ECR_POLICY]: true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'ec2.amazonaws.com' },
+            },
+          ],
+        },
+        ManagedPolicyArns: Match.arrayWith([
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
+            ]],
+          },
+        ]),
       });
     });
   });

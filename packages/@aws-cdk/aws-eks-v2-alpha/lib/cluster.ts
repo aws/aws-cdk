@@ -6,9 +6,10 @@ import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack, FeatureFlags } from 'aws-cdk-lib/core';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
@@ -863,7 +864,13 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
-    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+
+    // Use AmazonEC2ContainerRegistryPullOnly when feature flag is enabled (recommended),
+    // otherwise use AmazonEC2ContainerRegistryReadOnly for backward compatibility
+    const ecrPolicy = FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_USE_PULL_ONLY_ECR_POLICY)
+      ? 'AmazonEC2ContainerRegistryPullOnly'
+      : 'AmazonEC2ContainerRegistryReadOnly';
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(ecrPolicy));
 
     // EKS Required Tags
     // https://docs.aws.amazon.com/eks/latest/userguide/worker.html
@@ -1622,13 +1629,19 @@ export class Cluster extends ClusterBase {
   }
 
   private addNodePoolRole(id: string): iam.Role {
+    // Use AmazonEC2ContainerRegistryPullOnly when feature flag is enabled (recommended),
+    // otherwise use AmazonEC2ContainerRegistryReadOnly for backward compatibility
+    const ecrPolicy = FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_USE_PULL_ONLY_ECR_POLICY)
+      ? 'AmazonEC2ContainerRegistryPullOnly'
+      : 'AmazonEC2ContainerRegistryReadOnly';
+
     const role = new iam.Role(this, id, {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       // to be able to access the AWSLoadBalancerController
       managedPolicies: [
         // see https://docs.aws.amazon.com/eks/latest/userguide/automode-get-started-cli.html#auto-mode-create-roles
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(ecrPolicy),
       ],
     });
 

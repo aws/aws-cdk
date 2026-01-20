@@ -506,7 +506,13 @@ export class Nodegroup extends Resource implements INodegroup {
 
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
-      ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+
+      // Use AmazonEC2ContainerRegistryPullOnly when feature flag is enabled (recommended),
+      // otherwise use AmazonEC2ContainerRegistryReadOnly for backward compatibility
+      const ecrPolicy = FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_USE_PULL_ONLY_ECR_POLICY)
+        ? 'AmazonEC2ContainerRegistryPullOnly'
+        : 'AmazonEC2ContainerRegistryReadOnly';
+      ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(ecrPolicy));
 
       // Grant additional IPv6 networking permissions if running in IPv6
       // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
