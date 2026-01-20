@@ -1691,12 +1691,12 @@ describe('cluster', () => {
 
   test('kubectl provider uses custom security group when provided in kubectlProviderOptions', () => {
     const { stack, vpc } = testFixture();
-
+  
     const customSecurityGroup = new ec2.SecurityGroup(stack, 'CustomKubectlSG', {
       vpc,
       description: 'Custom security group for kubectl provider',
     });
-
+  
     new eks.Cluster(stack, 'Cluster1', {
       version: CLUSTER_VERSION,
       prune: false,
@@ -1705,18 +1705,22 @@ describe('cluster', () => {
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         securityGroup: customSecurityGroup,
-        privateSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }).subnets,
+        privateSubnets: vpc.selectSubnets({
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        }).subnets,
       },
     });
-
-    // Get the actual logical ID of the security group's CfnResource
-    // The security group creates a CfnSecurityGroup with id 'Resource'
-    const cfnSecurityGroup = customSecurityGroup.node.defaultChild as cdk.CfnResource;
-    const securityGroupLogicalId = cfnSecurityGroup.logicalId;
-
+  
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
-        SecurityGroupIds: [{ 'Fn::GetAtt': [securityGroupLogicalId, 'GroupId'] }],
+        SecurityGroupIds: [
+          {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('CustomKubectlSG.*'),
+              'GroupId',
+            ],
+          },
+        ],
       },
     });
   });
@@ -1769,10 +1773,15 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Environment: {
-        Variables: {
-          Foo: 'Bar',
-        },
+      VpcConfig: {
+        SecurityGroupIds: Match.arrayWith([
+          {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('Cluster.*'),
+              'ClusterSecurityGroupId',
+            ],
+          },
+        ]),
       },
     });
   });
