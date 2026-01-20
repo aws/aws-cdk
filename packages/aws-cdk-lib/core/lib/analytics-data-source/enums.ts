@@ -1118,6 +1118,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "messageGroup",
     "queue"
   ],
+  "DefaultAuthScheme": [
+    "IAM_AUTH",
+    "NONE"
+  ],
   "DefaultCapacityType": [
     0,
     1
@@ -1435,6 +1439,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "QUEUED",
     "SUPERSEDED",
     "PARALLEL"
+  ],
+  "Failover": [
+    "PRIMARY",
+    "SECONDARY"
   ],
   "FailoverStatusCode": [
     403,
@@ -2141,6 +2149,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "m7a",
     "standard8-amd",
     "m8a",
+    "standard9-graviton",
+    "m9g",
     "high-compute-memory1",
     "z1d",
     "inference1",

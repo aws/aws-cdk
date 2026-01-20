@@ -260,7 +260,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -463,8 +463,8 @@ export enum AllocationStrategy {
 
   /**
    * If your workflow tolerates interruptions, you should enable `spot` on your `ComputeEnvironment`
-   * and use `SPOT_CAPACITY_OPTIMIZED` (this is the default if `spot` is enabled).
-   * This will tell Batch to choose the instance types from the ones you’ve specified that have
+   * and use `SPOT_CAPACITY_OPTIMIZED`.
+   * This will tell Batch to choose the instance types from the ones you've specified that have
    * the most spot capacity available to minimize the chance of interruption.
    * To get the most benefit from your spot instances,
    * you should allow Batch to choose from as many different instance types as possible.
@@ -518,7 +518,6 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
-   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -540,7 +539,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -655,6 +654,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly connections = { } as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
+
+      public get computeEnvironmentRef() {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
 
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new ValidationError(`cannot add instance class to imported ComputeEnvironment '${id}'`, this);
@@ -815,7 +820,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -936,7 +941,6 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
-   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -957,7 +961,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -1067,7 +1071,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     addConstructMetadata(this, props);
 
     if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
-      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`.', this);
     }
 
     this.kubernetesNamespace = props.kubernetesNamespace;
@@ -1185,6 +1189,12 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
       public readonly connections = { } as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
+
+      public get computeEnvironmentRef() {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
     }
 
     return new Import(scope, id);

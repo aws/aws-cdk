@@ -59,7 +59,7 @@ export interface DomainProps extends DomainOptions {
 
   /**
    * The IAM role with access to Route53 when using enableAutoSubdomain
-   * @default the IAM role from App.grantPrincipal
+   * @default - the IAM role from App.grantPrincipal
    */
   readonly autoSubDomainIamRole?: iam.IRole;
 }
