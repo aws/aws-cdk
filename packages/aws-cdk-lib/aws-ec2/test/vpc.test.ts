@@ -2847,6 +2847,93 @@ describe('vpc', () => {
       ipv6Addresses: Ipv6Addresses.amazonProvided(),
     })).toThrow();
   });
+
+  describe('ipv6CidrBlockCreated', () => {
+    test('ipv6CidrBlockCreated is defined for dual-stack VPCs', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'DualStackStack');
+
+      // WHEN
+      const vpc = new Vpc(stack, 'Vpc', {
+        ipProtocol: IpProtocol.DUAL_STACK,
+      });
+
+      // THEN
+      expect(vpc.ipv6CidrBlockCreated).toBeDefined();
+    });
+
+    test('ipv6CidrBlockCreated is defined for IPv4-only VPCs (empty DependencyGroup)', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Ipv4OnlyStack');
+
+      // WHEN
+      const vpc = new Vpc(stack, 'Vpc');
+
+      // THEN
+      expect(vpc.ipv6CidrBlockCreated).toBeDefined();
+    });
+
+    test('resources depending on ipv6CidrBlockCreated have correct DependsOn for dual-stack VPCs', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'DualStackStack');
+
+      // WHEN
+      const vpc = new Vpc(stack, 'Vpc', {
+        ipProtocol: IpProtocol.DUAL_STACK,
+      });
+
+      // Create a resource that depends on ipv6CidrBlockCreated
+      const resource = new CfnResource(stack, 'DependentResource', {
+        type: 'AWS::CloudFormation::WaitConditionHandle',
+      });
+      resource.node.addDependency(vpc.ipv6CidrBlockCreated);
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::CloudFormation::WaitConditionHandle', {
+        DependsOn: Match.arrayWith([
+          Match.stringLikeRegexp('^Vpcipv6cidr.*'),
+        ]),
+      });
+    });
+
+    test('resources depending on ipv6CidrBlockCreated have no DependsOn for IPv4-only VPCs', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Ipv4OnlyStack');
+
+      // WHEN
+      const vpc = new Vpc(stack, 'Vpc');
+
+      // Create a resource that depends on ipv6CidrBlockCreated
+      const resource = new CfnResource(stack, 'DependentResource', {
+        type: 'AWS::CloudFormation::WaitConditionHandle',
+      });
+      resource.node.addDependency(vpc.ipv6CidrBlockCreated);
+
+      // THEN - No DependsOn should be present since IPv4-only VPCs have empty DependencyGroup
+      Template.fromStack(stack).hasResource('AWS::CloudFormation::WaitConditionHandle', {
+        DependsOn: Match.absent(),
+      });
+    });
+
+    test('imported VPCs have ipv6CidrBlockCreated property (empty DependencyGroup)', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'ImportedVpcStack');
+
+      // WHEN
+      const vpc = Vpc.fromVpcAttributes(stack, 'ImportedVpc', {
+        vpcId: 'vpc-12345',
+        availabilityZones: ['us-east-1a', 'us-east-1b'],
+      });
+
+      // THEN
+      expect(vpc.ipv6CidrBlockCreated).toBeDefined();
+    });
+  });
 });
 
 function getTestStack(): Stack {
