@@ -194,6 +194,9 @@ abstract class ParameterBase extends Resource implements IParameter, IEncryptedR
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -210,6 +213,9 @@ abstract class ParameterBase extends Resource implements IParameter, IEncryptedR
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     if (this.encryptionKey) {
       this.encryptionKey.grantEncrypt(grantee);

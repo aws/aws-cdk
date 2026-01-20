@@ -360,6 +360,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
     return rule;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -368,14 +371,23 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPull(grantee: iam.IGrantable) {
     return this.grants.pull(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPullPush(grantee: iam.IGrantable) {
     return this.grants.pullPush(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable) {
     return this.grants.read(grantee);
   }

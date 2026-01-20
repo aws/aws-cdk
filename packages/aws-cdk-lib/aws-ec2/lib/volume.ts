@@ -532,6 +532,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
@@ -559,6 +562,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
     const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
@@ -578,6 +584,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
@@ -588,6 +597,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
     const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;

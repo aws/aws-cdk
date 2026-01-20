@@ -360,6 +360,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
 
   /**
    * Grant custom actions to the given grantee for the image pipeline
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -375,6 +376,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */
@@ -393,6 +395,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
 
   /**
    * Grant read permissions to the given grantee for the image pipeline
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -402,6 +405,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
 
   /**
    * Grant permissions to the given grantee to start an execution of the image pipeline
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -700,6 +704,7 @@ export class ImagePipeline extends ImagePipelineBase {
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */

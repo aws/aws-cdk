@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import { Stack } from '../../core';
+import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Customize the Amazon Data Firehose Logs Destination
@@ -28,7 +29,7 @@ export class FirehoseDestination implements logs.ILogSubscriptionDestination {
   constructor(private readonly stream: firehose.IDeliveryStream, private readonly props: FirehoseDestinationProps = {}) {
   }
 
-  public bind(scope: Construct, _sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
+  public bind(scope: Construct, _sourceLogGroup: ILogGroupRef): logs.LogSubscriptionDestinationConfig {
     // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#FirehoseExample
     // Create a role to be assumed by CWL that can write to this stream.
     const id = 'CloudWatchLogsCanPutRecords';

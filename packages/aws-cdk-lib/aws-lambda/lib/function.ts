@@ -28,6 +28,7 @@ import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
+import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import {
@@ -583,7 +584,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default `/aws/lambda/${this.functionName}` - default log group created by Lambda
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * Sets the logFormat for the function.
@@ -1139,7 +1140,7 @@ export class Function extends FunctionBase {
       resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
     }
 
-    this._logGroup = props.logGroup;
+    this._logGroup = props.logGroup ? toILogGroup(props.logGroup) : undefined;
 
     resource.node.addDependency(this.role);
 
@@ -1317,7 +1318,7 @@ export class Function extends FunctionBase {
         logFormat: props.logFormat || props.loggingFormat,
         systemLogLevel: props.systemLogLevel || props.systemLogLevelV2,
         applicationLogLevel: props.applicationLogLevel || props.applicationLogLevelV2,
-        logGroup: props.logGroup?.logGroupName,
+        logGroup: props.logGroup?.logGroupRef.logGroupName,
       };
       return loggingConfig;
     }

@@ -1,4 +1,3 @@
-
 import { ChangeObject, diffLines } from 'diff';
 
 expect.extend({

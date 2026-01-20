@@ -27,7 +27,7 @@ export class NestedCloudAssemblyArtifact extends CloudArtifact {
    * this type-testing method instead.
    */
   public static isNestedCloudAssemblyArtifact(art: any): art is NestedCloudAssemblyArtifact {
-    return art && typeof art === 'object' && art[NESTED_CLOUD_ASSEMBLY_SYM];
+    return art && typeof art === 'object' && NESTED_CLOUD_ASSEMBLY_SYM in art;
   }
 
   /**

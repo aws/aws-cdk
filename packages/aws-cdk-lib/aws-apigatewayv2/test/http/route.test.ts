@@ -758,6 +758,22 @@ describe('HttpRoute', () => {
       ]],
     });
   });
+
+  test('adding a route to a referenced API', () => {
+    const stack = new Stack();
+
+    // Import HTTP API without apiEndpoint
+    const apiGateway = HttpApi.fromHttpApiAttributes(stack, 'ApiGateway', {
+      httpApiId: 'test-api-id',
+    });
+
+    // This fails in 2.234.0 with: "apiEndpoint is not configured on the imported HttpApi"
+    new HttpRoute(stack, 'ProxyApiRoute', {
+      httpApi: apiGateway,
+      routeKey: HttpRouteKey.with('/v2/integrations/{proxy+}', HttpMethod.ANY),
+      integration: new DummyIntegration(),
+    });
+  });
 });
 
 class DummyIntegration extends HttpRouteIntegration {

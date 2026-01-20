@@ -83,6 +83,8 @@ export class ManualApprovalAction extends Action {
    * For more info see:
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/approvals-iam-permissions.html
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantable the grantable to attach the permissions to
    */
   public grantManualApproval(grantable: iam.IGrantable): void {
