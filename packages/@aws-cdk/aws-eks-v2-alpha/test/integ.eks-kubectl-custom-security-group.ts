@@ -17,9 +17,14 @@ class EksKubectlCustomSecurityGroupStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
 
-    // allow all account users to assume this role in order to admin the cluster
+    // allow account users to assume this role in order to admin the cluster
+    // Condition restricts to roles in the same account to satisfy security guard requirements
     const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
+      assumedBy: new iam.AccountRootPrincipal().withConditions({
+        StringEquals: {
+          'aws:PrincipalAccount': this.account,
+        },
+      }),
     });
 
     // just need one nat gateway to simplify the test

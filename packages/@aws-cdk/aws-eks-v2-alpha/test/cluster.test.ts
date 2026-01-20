@@ -1709,9 +1709,14 @@ describe('cluster', () => {
       },
     });
 
+    // Get the actual logical ID of the security group's CfnResource
+    // The security group creates a CfnSecurityGroup with id 'Resource'
+    const cfnSecurityGroup = customSecurityGroup.node.defaultChild as cdk.CfnResource;
+    const securityGroupLogicalId = cfnSecurityGroup.logicalId;
+
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
-        SecurityGroupIds: [{ 'Fn::GetAtt': ['CustomKubectlSG', 'GroupId'] }],
+        SecurityGroupIds: [{ 'Fn::GetAtt': [securityGroupLogicalId, 'GroupId'] }],
       },
     });
   });
