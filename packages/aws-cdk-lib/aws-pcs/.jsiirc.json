@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.pcs"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.PCS"
+      "namespace": "Amazon.CDK.AWS.PCS"
     },
     "python": {
       "module": "aws_cdk.aws_pcs"

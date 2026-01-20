@@ -36,14 +36,13 @@ export class CannedMetricsModule extends Module {
 
   private metrics: Record<string, MetricsClass> = {};
   private _hasCannedMetrics: boolean = false;
+  private _returnType: MetricsReturnType | undefined;
 
   private constructor(private readonly db: SpecDatabase, service: Service, namespaces: string[]) {
     super(`${service.name}.canned-metrics`);
 
-    const returnType = new MetricsReturnType(this);
-
     for (const namespace of namespaces) {
-      this.metrics[namespace] = new MetricsClass(this, namespace, returnType);
+      this.metrics[namespace] = new MetricsClass(this, namespace, this.returnType());
     }
   }
 
@@ -58,6 +57,18 @@ export class CannedMetricsModule extends Module {
     this._hasCannedMetrics = true;
     const dimensions = this.db.follow('usesDimensionSet', metric).map((m) => m.entity);
     this.metrics[metric.namespace].addMetricWithDimensions(metric, dimensions);
+  }
+
+  /**
+   * Create and return the ReturnType class
+   *
+   * Do this only once, and lazily so we don't generate the type if it goes unused.
+   */
+  private returnType() {
+    if (!this._returnType) {
+      this._returnType = new MetricsReturnType(this);
+    }
+    return this._returnType;
   }
 }
 

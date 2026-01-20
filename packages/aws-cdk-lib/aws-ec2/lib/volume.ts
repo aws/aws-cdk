@@ -88,7 +88,7 @@ export interface EbsDeviceOptionsBase {
   /**
    * The throughput to provision for a `gp3` volume.
    *
-   * Valid Range: Minimum value of 125. Maximum value of 1000.
+   * Valid Range: Minimum value of 125. Maximum value of 2000.
    *
    * `gp3` volumes deliver a consistent baseline throughput performance of 125 MiB/s.
    * You can provision additional throughput for an additional cost at a ratio of 0.25 MiB/s per provisioned IOPS.
@@ -475,7 +475,7 @@ export interface VolumeProps {
 
   /**
    * The throughput that the volume supports, in MiB/s
-   * Takes a minimum of 125 and maximum of 1000.
+   * Takes a minimum of 125 and maximum of 2000.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-throughput
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
@@ -532,6 +532,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
@@ -559,6 +562,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
     const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
@@ -578,6 +584,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
@@ -588,6 +597,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
     const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
@@ -756,7 +768,7 @@ export class Volume extends VolumeBase {
       // Enforce minimum & maximum IOPS:
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
       const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
-      iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
+      iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 80000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
       const { Min, Max } = iopsRanges[volumeType];
@@ -818,7 +830,7 @@ export class Volume extends VolumeBase {
     }
 
     if (props.throughput) {
-      const throughputRange = { Min: 125, Max: 1000 };
+      const throughputRange = { Min: 125, Max: 2000 };
       const { Min, Max } = throughputRange;
       if (props.volumeType != EbsDeviceVolumeType.GP3) {
         throw new ValidationError(

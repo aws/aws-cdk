@@ -1,11 +1,9 @@
-import { testFixtureNoVpc, testFixtureCluster } from './util';
-import { Template } from 'aws-cdk-lib/assertions';
-import { CfnResource, Stack } from 'aws-cdk-lib/core';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnResource, Stack } from 'aws-cdk-lib/core';
+import { testFixtureNoVpc, testFixtureCluster } from './util';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart, KubectlProvider } from '../lib';
-
-/* eslint-disable max-len */
 
 const CLUSTER_VERSION = KubernetesVersion.V1_33;
 

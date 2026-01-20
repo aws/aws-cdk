@@ -1,4 +1,3 @@
-/* eslint-disable jest/expect-expect */
 import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
@@ -10,7 +9,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, TLSSecurityPolicy } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, NodeType, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -47,6 +46,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_17,
   EngineVersion.OPENSEARCH_2_19,
   EngineVersion.OPENSEARCH_3_1,
+  EngineVersion.OPENSEARCH_3_3,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -190,6 +190,77 @@ each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engin
   expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
 });
 
+each([testedOpenSearchVersions]).test('uses key ARN for cross-account KMS keys', (engineVersion) => {
+  // Create a cross-account KMS key using fromKeyArn
+  const crossAccountKey = kms.Key.fromKeyArn(
+    stack,
+    'CrossAccountKey',
+    'arn:aws:kms:us-east-1:999999999999:key/12345678-1234-1234-1234-123456789012',
+  );
+
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    encryptionAtRest: {
+      kmsKey: crossAccountKey,
+    },
+  });
+
+  // Verify that the KMS key ID in the CloudFormation template is the full ARN
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    EncryptionAtRestOptions: {
+      Enabled: true,
+      KmsKeyId: 'arn:aws:kms:us-east-1:999999999999:key/12345678-1234-1234-1234-123456789012',
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('uses key ARN for cross-region KMS keys', (engineVersion) => {
+  // Create a cross-region KMS key using fromKeyArn
+  const crossRegionKey = kms.Key.fromKeyArn(
+    stack,
+    'CrossRegionKey',
+    'arn:aws:kms:us-west-2:1234:key/12345678-1234-1234-1234-123456789012',
+  );
+
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    encryptionAtRest: {
+      kmsKey: crossRegionKey,
+    },
+  });
+
+  // Verify that the KMS key ID in the CloudFormation template is the full ARN
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    EncryptionAtRestOptions: {
+      Enabled: true,
+      KmsKeyId: 'arn:aws:kms:us-west-2:1234:key/12345678-1234-1234-1234-123456789012',
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('uses key ID for same-account same-region KMS keys', (engineVersion) => {
+  // Create a same-account, same-region KMS key
+  const key = new kms.Key(stack, 'Key');
+
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    encryptionAtRest: {
+      kmsKey: key,
+    },
+  });
+
+  // Verify that the KMS key ID in the CloudFormation template uses keyId (not ARN)
+  // This maintains backward compatibility - keyId returns a Ref to the key
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    EncryptionAtRestOptions: {
+      Enabled: true,
+      KmsKeyId: {
+        Ref: 'Key961B73FD',
+      },
+    },
+  });
+});
+
 each([
   [EngineVersion.OPENSEARCH_1_0, 'OpenSearch_1.0'],
   [EngineVersion.OPENSEARCH_1_1, 'OpenSearch_1.1'],
@@ -206,6 +277,7 @@ each([
   [EngineVersion.OPENSEARCH_2_17, 'OpenSearch_2.17'],
   [EngineVersion.OPENSEARCH_2_19, 'OpenSearch_2.19'],
   [EngineVersion.OPENSEARCH_3_1, 'OpenSearch_3.1'],
+  [EngineVersion.OPENSEARCH_3_3, 'OpenSearch_3.3'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
@@ -2006,7 +2078,9 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     'im4gn.2xlarge.search',
     'i4g.large.search',
     'i4i.xlarge.search',
+    'i8g.4xlarge.search',
     'r7gd.xlarge.search',
+    'r8gd.medium.search',
   ])('error when %s instance type is specified with EBS enabled', (dataNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
@@ -2017,7 +2091,26 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD and R8GD instance types do not support EBS storage volumes./);
+  });
+
+  test.each([
+    'i3.2xlarge.search',
+    'r6gd.large.search',
+    'im4gn.2xlarge.search',
+    'i4g.large.search',
+    'i4i.xlarge.search',
+    'i8g.4xlarge.search',
+    'r7gd.xlarge.search',
+    'r8gd.medium.search',
+  ])('should not throw when %s instance type is specified without EBS enabled', (dataNodeInstanceType) => {
+    expect(() => new Domain(stack, 'Domain2', {
+      version: engineVersion,
+      capacity: {
+        dataNodeInstanceType,
+      },
+      ebs: { enabled: false },
+    })).not.toThrow();
   });
 
   test.each([
@@ -2058,7 +2151,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       capacity: {
         masterNodeInstanceType,
       },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, IM4GN or R7GD./);
+    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD or R8GD./);
   });
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
@@ -2736,7 +2829,7 @@ function testMetric(
 
 each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOptions', (engineVersion) => {
   const coordinatorConfig: NodeOptions = {
-    nodeType: 'coordinator',
+    nodeType: NodeType.COORDINATOR,
     nodeConfig: {
       enabled: true,
       type: 'm5.large.search',
@@ -2744,7 +2837,7 @@ each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOp
     },
   };
 
-  const domain = new Domain(stack, 'Domain', {
+  new Domain(stack, 'Domain', {
     version: engineVersion,
     capacity: {
       nodeOptions: [coordinatorConfig],
@@ -2771,7 +2864,7 @@ each(testedOpenSearchVersions).test('throws when coordinator node instance type 
       version: engineVersion,
       capacity: {
         nodeOptions: [{
-          nodeType: 'coordinator' as const,
+          nodeType: NodeType.COORDINATOR,
           nodeConfig: {
             enabled: true,
             type: 'm5.large',
@@ -2788,7 +2881,7 @@ each(testedOpenSearchVersions).test('throws when coordinator node count is less 
       version: engineVersion,
       capacity: {
         nodeOptions: [{
-          nodeType: 'coordinator' as const,
+          nodeType: NodeType.COORDINATOR,
           nodeConfig: {
             enabled: true,
             count: 0,
@@ -2801,11 +2894,11 @@ each(testedOpenSearchVersions).test('throws when coordinator node count is less 
 });
 
 each(testedOpenSearchVersions).test('can disable coordinator nodes', (engineVersion) => {
-  const domain = new Domain(stack, 'Domain', {
+  new Domain(stack, 'Domain', {
     version: engineVersion,
     capacity: {
       nodeOptions: [{
-        nodeType: 'coordinator' as const,
+        nodeType: NodeType.COORDINATOR,
         nodeConfig: {
           enabled: false,
         },

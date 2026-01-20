@@ -10,7 +10,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
     // Create a target Lambda function that returns JSON response
     const targetLambda = new lambda.Function(this, 'TargetLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = async (event) => {

@@ -1,7 +1,9 @@
 import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
+import { IParameterRef, ParameterReference } from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 import * as iam from '../../aws-iam';
+import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
@@ -17,7 +19,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An SSM Parameter reference.
  */
-export interface IParameter extends IResource {
+export interface IParameter extends IResource, IParameterRef {
   /**
    * The ARN of the SSM Parameter resource.
    * @attribute
@@ -166,7 +168,7 @@ export interface StringListParameterProps extends ParameterOptions {
 /**
  * Basic features shared across all types of SSM Parameters.
  */
-abstract class ParameterBase extends Resource implements IParameter {
+abstract class ParameterBase extends Resource implements IParameter, IEncryptedResource {
   public abstract readonly parameterArn: string;
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
@@ -178,6 +180,23 @@ abstract class ParameterBase extends Resource implements IParameter {
    */
   public readonly encryptionKey?: kms.IKey;
 
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    const grant = this.encryptionKey
+      ? this.encryptionKey.grant(grantee, ...actions)
+      : undefined;
+
+    return { grant };
+  }
+
+  public get parameterRef(): ParameterReference {
+    return {
+      parameterName: this.parameterName,
+    };
+  }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -194,6 +213,9 @@ abstract class ParameterBase extends Resource implements IParameter {
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     if (this.encryptionKey) {
       this.encryptionKey.grantEncrypt(grantee);

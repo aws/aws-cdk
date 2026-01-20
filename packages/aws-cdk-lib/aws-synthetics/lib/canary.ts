@@ -635,7 +635,6 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.', this);
     }
     return this._connections;

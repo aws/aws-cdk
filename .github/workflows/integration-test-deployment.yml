@@ -7,6 +7,11 @@ on:
   workflow_dispatch: {}
   merge_group: {}
   pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
     branches:
       - main
     paths:
@@ -21,49 +26,33 @@ jobs:
   integration_test_deployment:
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
     environment: deployment-integ-test # Do not change or remove this without discussing with Appsec
-    if: contains(github.event.pull_request.labels.*.name, 'pr/needs-integration-tests-deployment ')
+    if: contains(github.event.pull_request.labels.*.name, 'pr/needs-integration-tests-deployment')
     name: 'Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)'
 
     env:
       PR_BUILD: true
 
     steps:
-      - name: Checkout BASE
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-          fetch-depth: 0
-          path: base
-
       - name: Checkout HEAD
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-          path: head
-      
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          role-to-assume: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
-          role-session-name: run-tests@aws-cdk-deployment-integ
-          aws-region: us-east-1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
           cache: "yarn"
           cache-dependency-path: |
-            base/yarn.lock
-            head/yarn.lock
+            yarn.lock
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
       - name: Load Docker images
         id: docker-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.docker-images.tar
@@ -74,7 +63,7 @@ jobs:
         run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.s3buildcache
@@ -85,29 +74,24 @@ jobs:
         run: |
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
           sudo sysctl -w vm.max_map_count=2251954
-
-      - name: Install dependencies for integration-test-deployment (BASE)
-        working-directory: base
-        run: yarn --cwd tools/@aws-cdk/integration-test-deployment install
+        
+      - name: Install dependencies for Integration Tests
+        run: yarn install --frozen-lockfile
       
-      - name: Build deployment-integ (BASE)
-        working-directory: base
+      - name: Build deployment-integ
         run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
         
-      - name: Install dependencies for Integration Tests (HEAD)
-        working-directory: head
-        run: yarn install 
-        
-      - name: Build Integration Tests (HEAD)
-        working-directory: head
-        run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
+      # Build integration test packages: @aws-cdk-testing/framework-integ (stable tests) and @aws-cdk/* (alpha tests)
+      - name: Build Integration Test packages 
+        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
 
-      - name: Run integration tests from HEAD using integration-test-deployment script from BASE
-        run: yarn --cwd ../base/tools/@aws-cdk/integration-test-deployment/ integration-test-deployment
-        working-directory: head
+      - name: Run integration tests using integration-test-deployment script
+        run: yarn run atmosphere-integ-test
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL}}
+          CDK_ATMOSPHERE_OIDC_ROLE: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
+          CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
           TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
           SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
           
@@ -117,7 +101,7 @@ jobs:
 
       - name: Cache Docker images
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.docker-images.tar

@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AppRunner.Alpha",
         "packageId": "Amazon.CDK.AWS.AppRunner.Alpha",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
@@ -87,7 +85,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.190.2",
+    "@aws-cdk/integ-runner": "^2.193.4",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "constructs": "^10.0.0",
