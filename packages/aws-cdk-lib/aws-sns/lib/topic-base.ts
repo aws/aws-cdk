@@ -1,10 +1,13 @@
 import * as constructs from 'constructs';
 import { Construct } from 'constructs';
 import { TopicPolicy } from './policy';
+import { TopicGrants } from './sns-grants.generated';
+import { ITopicRef, TopicReference } from './sns.generated';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
+import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { IResource, Resource, ResourceProps, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -12,7 +15,7 @@ import { ValidationError } from '../../core/lib/errors';
 /**
  * Represents an SNS topic
  */
-export interface ITopic extends IResource, notifications.INotificationRuleTarget {
+export interface ITopic extends IResource, notifications.INotificationRuleTarget, ITopicRef {
   /**
    * The ARN of the topic
    *
@@ -80,7 +83,7 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicBase extends Resource implements ITopic {
+export abstract class TopicBase extends Resource implements ITopic, IEncryptedResource {
   public abstract readonly topicArn: string;
 
   public abstract readonly topicName: string;
@@ -90,6 +93,11 @@ export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly fifo: boolean;
 
   public abstract readonly contentBasedDeduplication: boolean;
+
+  /**
+   * Collection of grant methods for a Topic
+   */
+  public readonly grants: TopicGrants = TopicGrants.fromTopic(this);
 
   /**
    * Controls automatic creation of policy objects.
@@ -109,6 +117,12 @@ export abstract class TopicBase extends Resource implements ITopic {
     super(scope, id, props);
 
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
+  public get topicRef(): TopicReference {
+    return {
+      topicArn: this.topicArn,
+    };
   }
 
   /**
@@ -201,32 +215,28 @@ export abstract class TopicBase extends Resource implements ITopic {
     });
   }
 
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    const grant = this.masterKey
+      ? this.masterKey.grant(grantee, ...actions)
+      : undefined;
+
+    return { grant };
+  }
+
   /**
    * Grant topic publishing permissions to the given identity
+   * [disable-awslint:no-grants]
    */
   public grantPublish(grantee: iam.IGrantable) {
-    const ret = iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: ['sns:Publish'],
-      resourceArns: [this.topicArn],
-      resource: this,
-    });
-    if (this.masterKey) {
-      this.masterKey.grant(grantee, 'kms:Decrypt', 'kms:GenerateDataKey*');
-    }
-    return ret;
+    return this.grants.publish(grantee);
   }
 
   /**
    * Grant topic subscribing permissions to the given identity
+   * [disable-awslint:no-grants]
    */
   public grantSubscribe(grantee: iam.IGrantable) {
-    return iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: ['sns:Subscribe'],
-      resourceArns: [this.topicArn],
-      resource: this,
-    });
+    return this.grants.subscribe(grantee);
   }
 
   /**

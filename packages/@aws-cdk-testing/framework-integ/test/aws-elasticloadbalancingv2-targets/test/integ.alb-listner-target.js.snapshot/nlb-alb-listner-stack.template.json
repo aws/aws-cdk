@@ -475,6 +475,14 @@
      }
     ],
     "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "NLBSecurityGroup69CBE94F",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
@@ -484,6 +492,24 @@
      }
     ],
     "Type": "network"
+   }
+  },
+  "NLBSecurityGroup69CBE94F": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB nlbalblistnerstackNLB0D509196",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "NLBListener96C8170F": {

@@ -1,9 +1,9 @@
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Stack } from 'aws-cdk-lib';
-import { ServerlessCache } from '../lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Alarm, ComparisonOperator } from 'aws-cdk-lib/aws-cloudwatch';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { ServerlessCache } from '../lib';
 
 describe('serverless cache base', () => {
   describe('metrics', () => {
@@ -143,7 +143,12 @@ describe('serverless cache base', () => {
                 'elasticache:Connect',
                 'elasticache:DescribeServerlessCaches',
               ],
-              Resource: { 'Fn::GetAtt': ['Cache18F6EE16', 'ARN'] },
+              Resource: {
+                'Fn::GetAtt': [
+                  'Cache18F6EE16',
+                  'ARN',
+                ],
+              },
             },
           ]),
         },

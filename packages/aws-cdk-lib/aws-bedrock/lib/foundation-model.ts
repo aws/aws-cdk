@@ -95,6 +95,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.nova-premier-v1:0". */
   public static readonly AMAZON_NOVA_PREMIER_V1_0 = new FoundationModelIdentifier('amazon.nova-premier-v1:0');
 
+  /** amazon.nova-2-multimodal-embeddings-v1:0 */
+  public static readonly AMAZON_NOVA_2_MULTIMODAL_EMBEDDINGS_V1_0 = new FoundationModelIdentifier('amazon.nova-2-multimodal-embeddings-v1:0');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
@@ -242,6 +245,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0:200k" */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:200k');
 
+  /** Base model "anthropic.claude-haiku-4-5-20251001-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_4_5_20251001_V1_0 = new FoundationModelIdentifier('anthropic.claude-haiku-4-5-20251001-v1:0');
+
   /** Base model "anthropic.claude-3-opus-20240229-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-opus-20240229-v1:0');
 
@@ -259,6 +265,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "anthropic.claude-opus-4-1-20250805-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-1-20250805-v1:0');
+
+  /** Base model "anthropic.claude-opus-4-5-20251101-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-5-20251101-v1:0');
 
   /**
    * Base model "anthropic.claude-instant-v1".
@@ -496,6 +505,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "twelvelabs.pegasus-1-2-v1:0". */
   public static readonly TWELVELABS_PEGASUS_1_2_V1_0 = new FoundationModelIdentifier('twelvelabs.pegasus-1-2-v1:0');
+
+  /** Basic model "twelvelabs.marengo-embed-3-0-v1:0" */
+  public static readonly TWELVELABS_MARENGO_EMBED_3_0_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-3-0-v1:0');
 
   /**
    * Constructor for foundation model identifier

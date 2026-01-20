@@ -1263,7 +1263,7 @@ test('it can override all possible ecs task properties via the input property', 
   }));
 
   // THEN
-  const template = Template.fromStack(stack);
+  Template.fromStack(stack);
   debugger;
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [

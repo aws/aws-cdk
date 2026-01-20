@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-managed-compute-environment-default-instance-class/DefaultTest": {
+      "stacks": [
+        "managed-compute-environment-default-instance-class"
+      ],
+      "assertionStack": "integ-managed-compute-environment-default-instance-class/DefaultTest/DeployAssert",
+      "assertionStackName": "integmanagedcomputeenvironmentdefaultinstanceclassDefaultTestDeployAssert1520E500"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -7,6 +7,7 @@ import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
+import { ClusterReference, IClusterRef } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
@@ -37,7 +38,7 @@ const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.Inst
 /**
  * An EKS cluster
  */
-export interface ICluster extends IResource, ec2.IConnectable {
+export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
   /**
    * The VPC in which this Cluster was created
    */
@@ -1058,6 +1059,15 @@ export class KubernetesVersion {
   public static readonly V1_33 = KubernetesVersion.of('1.33');
 
   /**
+   * Kubernetes version 1.34
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV34Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v34`.
+   */
+  public static readonly V1_34 = KubernetesVersion.of('1.34');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1337,6 +1347,13 @@ abstract class ClusterBase extends Resource implements ICluster {
       // be deleted before the controller.
       Node.of(this.albController).addDependency(autoScalingGroup);
     }
+  }
+
+  public get clusterRef(): ClusterReference {
+    return {
+      clusterArn: this.clusterArn,
+      clusterName: this.clusterName,
+    };
   }
 }
 

@@ -35,7 +35,7 @@ describe('code', () => {
 
     test('fails if command is empty', () => {
       // GIVEN
-      const command = [];
+      const command = new Array<string>();
 
       // THEN
       expect(() => lambda.Code.fromCustomCommand('', command)).toThrow('command must contain at least one argument. For example, ["node", "buildFile.js"].');

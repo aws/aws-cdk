@@ -121,7 +121,7 @@ const app = new cdk.App({
   },
 });
 const testStack = new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
 });
 const integTest = new integ.IntegTest(app, 'AwsCustomResourceTest', {
   testCases: [testStack],

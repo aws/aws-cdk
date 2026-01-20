@@ -65,7 +65,6 @@ export interface IDeploymentLifecycleHookTarget {
    * Bind this target to a deployment lifecycle hook
    *
    * @param scope The construct scope
-   * @param id A unique identifier for this binding
    */
   bind(scope: IConstruct): DeploymentLifecycleHookTargetConfig;
 }

@@ -3,7 +3,6 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
 import { Endpoint } from './endpoint';
-import { IClusterParameterGroup } from './parameter-group';
 import { BackupProps, Login, RotationMultiUserOptions } from './props';
 import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
@@ -14,6 +13,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { DBClusterReference, IDBClusterParameterGroupRef } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
 const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 const MIN_ENGINE_VERSION_FOR_SERVERLESS = 5;
@@ -172,7 +172,7 @@ export interface DatabaseClusterProps {
    *
    * @default no parameter group
    */
-  readonly parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IDBClusterParameterGroupRef;
 
   /**
    * A weekly time range in which maintenance should preferably execute.
@@ -366,6 +366,15 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
    * Security group identifier of this database
    */
   public abstract readonly securityGroupId: string;
+
+  /**
+   * A reference to this cluster.
+   */
+  public get dbClusterRef(): DBClusterReference {
+    return {
+      dbClusterId: this.clusterIdentifier,
+    };
+  }
 
   /**
    * Renders the secret attachment target specifications.
@@ -648,7 +657,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupName: subnetGroup.ref,
       port: props.port,
       vpcSecurityGroupIds: [this.securityGroupId],
-      dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
+      dbClusterParameterGroupName: props.parameterGroup?.dbClusterParameterGroupRef.dbClusterParameterGroupId,
       deletionProtection: props.deletionProtection,
       // Admin
       masterUsername: props.manageMasterUserPassword ? props.masterUser.username :

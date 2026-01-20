@@ -5,8 +5,8 @@
  * * verify that the lambda logs be put
  */
 import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as actions from '../../lib';
 
 class TestStack extends cdk.Stack {
@@ -18,7 +18,7 @@ class TestStack extends cdk.Stack {
       attributeJsonPaths: ['payload.deviceId'],
     });
     const func = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = (event) => {

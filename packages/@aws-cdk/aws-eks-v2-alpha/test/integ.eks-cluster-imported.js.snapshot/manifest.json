@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0506e34a0f2fa610c10f1550f28239207c880d75b90bbb636bec806b69f5d6d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a7c9a3b6830cbda6c65b0c7bed91015bc3dc26dae8a91cd2e39d3b5e7da9fd0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -921,12 +921,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterOpenIdConnectProviderE7EB0530"
-          }
-        ],
-        "/aws-cdk-eks-import-cluster-test/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [

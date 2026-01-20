@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "4791e255147093397aad917b75d90f40c5638d64df77621772f4fc86db423099": {
+    "bdd082ae39d6d3314af0ee76bf769321d0ac49191dd84aa1b921f7b64367e46b": {
       "displayName": "ApplicationSignalsPythonApp-Replica Template",
       "source": {
         "path": "ApplicationSignalsPythonApp-Replica.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d1003ad3": {
+        "current_account-current_region-244766cd": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4791e255147093397aad917b75d90f40c5638d64df77621772f4fc86db423099.json",
+          "objectKey": "bdd082ae39d6d3314af0ee76bf769321d0ac49191dd84aa1b921f7b64367e46b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

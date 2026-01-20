@@ -14,7 +14,7 @@ const stack = new cdk.Stack(app, 'cluster-data-api-to-imported-cluster');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const func = new lambda.Function(stack, 'Function', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async (event) => { return "hello"; }'),
 });

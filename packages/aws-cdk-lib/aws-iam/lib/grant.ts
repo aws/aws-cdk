@@ -2,6 +2,8 @@ import { Dependable, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 import * as cdk from '../../core';
+import { IEnvironmentAware } from '../../core';
+import * as iam from '../index';
 
 /**
  * Basic options for a grant operation
@@ -44,7 +46,7 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
    * The statement will be added to the resource policy if it couldn't be
    * added to the principal policy.
    */
-  readonly resource: IResourceWithPolicy;
+  readonly resource: IResourceWithPolicyV2;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -68,7 +70,7 @@ export interface GrantPolicyWithResourceOptions extends GrantWithResourceOptions
    * The policy statement to add to the resource's policy
    *
    * This statement will be passed to the resource's addToResourcePolicy method.
-   * The actual handling of the statement depends on the specific IResourceWithPolicy
+   * The actual handling of the statement depends on the specific IResourceWithPolicyV2
    * implementation.
    */
   readonly statement: PolicyStatement;
@@ -83,6 +85,7 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
    * Construct to report warnings on in case grant could not be registered
    *
    * @default - the construct in which this construct is defined
+   * @deprecated The scope argument is currently unused.
    */
   readonly scope?: IConstruct;
 }
@@ -97,7 +100,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
    *
    * The statement will always be added to the resource policy.
    */
-  readonly resource: IResourceWithPolicy;
+  readonly resource: IResourceWithPolicyV2;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -138,10 +141,7 @@ export class Grant implements IDependable {
    *   resource construct.
    */
   public static addToPrincipalOrResource(options: GrantWithResourceOptions): Grant {
-    const result = Grant.addToPrincipal({
-      ...options,
-      scope: options.resource,
-    });
+    const result = Grant.addToPrincipal(options);
 
     const resourceAndPrincipalAccountComparison = options.grantee.grantPrincipal.principalAccount
       ? cdk.Token.compareStrings(options.resource.env.account, options.grantee.grantPrincipal.principalAccount)
@@ -267,10 +267,7 @@ export class Grant implements IDependable {
    * Statement will be the resource statement.
    */
   public static addToPrincipalAndResource(options: GrantOnPrincipalAndResourceOptions): Grant {
-    const result = Grant.addToPrincipal({
-      ...options,
-      scope: options.resource,
-    });
+    const result = Grant.addToPrincipal(options);
 
     const statement = new PolicyStatement({
       actions: options.actions,
@@ -424,13 +421,67 @@ interface GrantProps {
 }
 
 /**
+ * Result of a call to grantOnKey().
+ */
+export interface GrantOnKeyResult {
+  /**
+   * The Grant object, if a grant was created.
+   *
+   * @default No grant
+   */
+  readonly grant?: Grant;
+}
+
+/**
+ * A resource that contains data that can be encrypted, using a KMS key.
+ *
+ * [awslint:interface-extends-ref]
+ */
+export interface IEncryptedResource extends cdk.IResource {
+  /**
+   * Gives permissions to a grantable entity to perform actions on the encryption key.
+   */
+  grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult;
+}
+
+/**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicy extends cdk.IResource {
+export interface IResourceWithPolicyV2 extends IEnvironmentAware {
   /**
    * Add a statement to the resource's resource policy
    */
   addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
+}
+
+/**
+ * Utility methods to check for specific types of grantable resources
+ */
+export class GrantableResources {
+  /**
+   * Whether this resource admits a resource policy.
+   */
+  static isResourceWithPolicy(resource: IEnvironmentAware): resource is iam.IResourceWithPolicyV2 {
+    return (resource as unknown as iam.IResourceWithPolicyV2).addToResourcePolicy !== undefined;
+  }
+
+  /**
+   * Whether this resource holds data that can be encrypted using a KMS key.
+   */
+  static isEncryptedResource(resource: IConstruct): resource is iam.IEncryptedResource {
+    return (resource as unknown as iam.IEncryptedResource).grantOnKey !== undefined;
+  }
+}
+
+/**
+ * A resource with a resource policy that can be added to
+ *
+ * This interface is maintained for backwards compatibility, but should
+ * not be used in new code. Prefer `IResourceWithPolicyV2` instead.
+ *
+ * @deprecated Implement `IResourceWithPolicyV2` instead.
+ */
+export interface IResourceWithPolicy extends IResourceWithPolicyV2, cdk.IResource {
 }
 
 /**

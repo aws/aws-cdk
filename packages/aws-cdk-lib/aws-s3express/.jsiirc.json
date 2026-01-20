@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.s3express"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.S3Express"
+      "namespace": "Amazon.CDK.AWS.S3Express"
     },
     "python": {
       "module": "aws_cdk.aws_s3express"

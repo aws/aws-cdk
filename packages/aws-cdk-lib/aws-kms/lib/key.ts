@@ -188,6 +188,8 @@ abstract class KeyBase extends Resource implements IKey {
    * This modifies both the principal's policy as well as the resource policy,
    * since the default CloudFormation setup for KMS keys is that the policy
    * must not be empty and so default grants won't work.
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     // KMS verifies whether the principals included in its key policy actually exist.
@@ -225,6 +227,8 @@ abstract class KeyBase extends Resource implements IKey {
 
   /**
    * Grant decryption permissions using this key to the given principal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
@@ -232,6 +236,8 @@ abstract class KeyBase extends Resource implements IKey {
 
   /**
    * Grant encryption permissions using this key to the given principal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
@@ -239,6 +245,8 @@ abstract class KeyBase extends Resource implements IKey {
 
   /**
    * Grant encryption and decryption permissions using this key to the given principal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
@@ -246,6 +254,8 @@ abstract class KeyBase extends Resource implements IKey {
 
   /**
    * Grant sign permissions using this key to the given principal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantSign(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.SIGN_ACTIONS);
@@ -253,6 +263,8 @@ abstract class KeyBase extends Resource implements IKey {
 
   /**
    * Grant verify permissions using this key to the given principal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantVerify(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.VERIFY_ACTIONS);
@@ -260,6 +272,8 @@ abstract class KeyBase extends Resource implements IKey {
 
   /**
    * Grant sign and verify permissions using this key to the given principal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
@@ -267,6 +281,8 @@ abstract class KeyBase extends Resource implements IKey {
 
   /**
    * Grant permissions to generating MACs to the given principal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
@@ -274,6 +290,8 @@ abstract class KeyBase extends Resource implements IKey {
 
   /**
    * Grant permissions to verifying MACs to the given principal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
@@ -819,6 +837,9 @@ export class Key extends KeyBase {
         KeySpec.HMAC_256,
         KeySpec.HMAC_384,
         KeySpec.HMAC_512,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
       [KeyUsage.SIGN_VERIFY]: [
         KeySpec.SYMMETRIC_DEFAULT,
@@ -837,6 +858,9 @@ export class Key extends KeyBase {
         KeySpec.ECC_SECG_P256K1,
         KeySpec.SYMMETRIC_DEFAULT,
         KeySpec.SM2,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
       [KeyUsage.KEY_AGREEMENT]: [
         KeySpec.SYMMETRIC_DEFAULT,
@@ -848,6 +872,9 @@ export class Key extends KeyBase {
         KeySpec.HMAC_256,
         KeySpec.HMAC_384,
         KeySpec.HMAC_512,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
@@ -937,6 +964,8 @@ export class Key extends KeyBase {
    *
    * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
    * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   *
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grantAdmin(grantee: iam.IGrantable): iam.Grant {
