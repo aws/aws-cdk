@@ -651,9 +651,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? kafkaConfig : undefined,
       provisionedPollerConfig: props.provisionedPollerConfig,
       metricsConfig: props.metricsConfig,
-      loggingConfig: {
-        systemLogLevel: props.logLevel,
-      },
+      loggingConfig: props.logLevel ? { systemLogLevel: props.logLevel } : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
     this.eventSourceMappingArn = EventSourceMapping.formatArn(this, this.eventSourceMappingId);
