@@ -125,8 +125,8 @@ export class Group extends cdk.Resource implements IGroup {
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
     super(scope, id, {
-      physicalName: props.groupName || cdk.Lazy.string({
-        produce: () => this.generateUniqueName(),
+      physicalName: props.groupName ?? cdk.Lazy.string({
+        produce: () => cdk.Names.uniqueResourceName(this, { maxLength: 64 }),
       }),
     });
 
@@ -174,22 +174,5 @@ export class Group extends cdk.Resource implements IGroup {
    */
   public get canaries(): ICanary[] {
     return Array.from(this._canaries);
-  }
-
-  /**
-   * Generate a unique name for the group
-   */
-  private generateUniqueName(): string {
-    const uniqueId = cdk.Names.uniqueId(this);
-    const maxLength = 64; // AWS limit for group names
-
-    if (uniqueId.length <= maxLength) {
-      return uniqueId;
-    }
-
-    // Truncate and add hash to ensure uniqueness
-    const hash = cdk.Names.nodeUniqueId(this.node).slice(-8);
-    const truncated = uniqueId.slice(0, maxLength - 9); // Leave room for hash and separator
-    return `${truncated}-${hash}`;
   }
 }
