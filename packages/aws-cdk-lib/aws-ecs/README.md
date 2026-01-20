@@ -1697,9 +1697,7 @@ const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
 });
 
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
-  infrastructureRole,
   capacityOptionType: ecs.CapacityOptionType.SPOT,
-  ec2InstanceProfile: instanceProfile,
   subnets: vpc.privateSubnets,
   securityGroups: [securityGroup],
   instanceRequirements: {
