@@ -462,6 +462,19 @@ new logs.LogGroup(this, 'LogGroupLambda', {
 });
 ```
 
+## Configure Deletion Protection
+
+Indicates whether deletion protection is enabled for this log group. When enabled, deletion protection blocks all deletion operations until it is explicitly disabled.
+
+For more information, see [Protecting log groups from deletion](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protecting-log-groups-from-deletion.html).
+
+```ts
+new logs.LogGroup(this, 'LogGroup', {
+  deletionProtectionEnabled: true,
+});
+```
+
+
 ## Field Index Policies
 
 Creates or updates a field index policy for the specified log group. You can use field index policies to create field indexes on fields found in log events in the log group. Creating field indexes lowers the costs for CloudWatch Logs Insights queries that reference those field indexes, because these queries attempt to skip the processing of log events that are known to not match the indexed field. Good fields to index are fields that you often need to query for and fields that have high cardinality of values.
