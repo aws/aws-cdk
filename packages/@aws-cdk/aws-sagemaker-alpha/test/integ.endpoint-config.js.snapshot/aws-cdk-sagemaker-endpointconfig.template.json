@@ -680,6 +680,7 @@
    "Properties": {
     "ProductionVariants": [
      {
+      "ContainerStartupHealthCheckTimeoutInSeconds": 300,
       "InitialInstanceCount": 1,
       "InitialVariantWeight": 1,
       "InstanceType": "ml.m5.large",
