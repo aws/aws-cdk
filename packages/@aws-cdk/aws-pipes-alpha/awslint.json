@@ -1,5 +1,16 @@
 {
   "exclude": [
-    "no-unused-type:@aws-cdk/aws-pipes-alpha.PipeVariable"
+    "no-unused-type:@aws-cdk/aws-pipes-alpha.PipeVariable",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.ISource.bind.pipe",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.ISource.grantRead.grantee",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.ITarget.bind.pipe",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.ITarget.grantPush.grantee",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.IEnrichment.bind.pipe",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.IEnrichment.grantInvoke.grantee",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.PipeProps.kmsKey",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.ILogDestination.bind.pipe",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.ILogDestination.grantPush.grantee",
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.PipeProps.role",
+    "interface-extends-ref:@aws-cdk/aws-pipes-alpha.IPipe"
   ]
 }
