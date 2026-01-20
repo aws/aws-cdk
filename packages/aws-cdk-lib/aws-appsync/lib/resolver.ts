@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-import { IAppsyncFunction } from './appsync-function';
 import { CfnResolver } from './appsync.generated';
 import { CachingConfig } from './caching-config';
 import { BASE_CACHING_KEYS } from './caching-key';
@@ -9,6 +8,8 @@ import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
 import { Token, ValidationError } from '../../core';
+import { extractFunctionIdFromFunctionRef } from './private/ref-utils';
+import { IFunctionConfigurationRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Basic properties for an AppSync resolver
@@ -28,7 +29,7 @@ export interface BaseResolverProps {
    * @default - no pipeline resolver configuration
    * An empty array | undefined sets resolver to be of kind, unit
    */
-  readonly pipelineConfig?: IAppsyncFunction[];
+  readonly pipelineConfig?: IFunctionConfigurationRef[];
   /**
    * The request mapping template for this resolver
    *
@@ -105,7 +106,7 @@ export class Resolver extends Construct {
     super(scope, id);
 
     const pipelineConfig = props.pipelineConfig && props.pipelineConfig.length ?
-      { functions: props.pipelineConfig.map((func) => func.functionId) }
+      { functions: props.pipelineConfig.map((func) => extractFunctionIdFromFunctionRef(func)) }
       : undefined;
 
     // If runtime is specified, code must also be
