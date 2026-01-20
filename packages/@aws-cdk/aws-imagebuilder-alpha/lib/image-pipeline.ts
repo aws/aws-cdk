@@ -8,6 +8,7 @@ import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metad
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IDistributionConfiguration } from './distribution-configuration';
+import { Image } from './image';
 import { IInfrastructureConfiguration, InfrastructureConfiguration } from './infrastructure-configuration';
 import {
   buildImageScanningConfiguration,
@@ -311,6 +312,25 @@ export interface ImagePipelineSchedule {
    * @default ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE
    */
   readonly startCondition?: ScheduleStartCondition;
+}
+
+/**
+ * Properties for creating by starting the associated image pipeline.
+ */
+export interface StartImagePipelineProps {
+  /**
+   * Indicates whether to trigger a new image build when an update is made to the image pipeline
+   *
+   * @default false
+   */
+  readonly onUpdate?: boolean;
+
+  /**
+   * The tags to apply to the image created from the pipeline
+   *
+   * @default None
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -621,6 +641,18 @@ export class ImagePipeline extends ImagePipelineBase {
   public readonly infrastructureConfiguration: IInfrastructureConfiguration;
 
   /**
+   * The deployment identifier of the pipeline, utilized to initiate new image pipeline executions.
+   *
+   * @attribute
+   */
+  public readonly imagePipelineDeploymentId: string;
+
+  /**
+   * @internal
+   */
+  public readonly _recipe: IRecipeBase;
+
+  /**
    * The execution role used for the image build. If there is no execution role, then the build will be executed with
    * the AWSServiceRoleForImageBuilder service-linked role.
    */
@@ -649,6 +681,7 @@ export class ImagePipeline extends ImagePipelineBase {
     this.validateImagePipelineName();
 
     this.props = props;
+    this._recipe = props.recipe;
 
     this.infrastructureConfiguration =
       props.infrastructureConfiguration ?? new InfrastructureConfiguration(this, 'InfrastructureConfiguration');
@@ -699,6 +732,22 @@ export class ImagePipeline extends ImagePipelineBase {
       service: 'imagebuilder',
       resource: 'image-pipeline',
       resourceName: this.physicalName,
+    });
+    this.imagePipelineDeploymentId = imagePipeline.attrDeploymentId;
+  }
+
+  /**
+   * Starts an image build from this image pipeline.
+   *
+   * @param props Properties for creating by starting the associated image pipeline
+   */
+  public start(props: StartImagePipelineProps = {}): Image {
+    return new Image(this, 'Image', {
+      imagePipelineExecutionSettings: {
+        imagePipeline: this,
+        ...(props.onUpdate !== undefined && { onUpdate: props.onUpdate }),
+      },
+      tags: props.tags,
     });
   }
 
