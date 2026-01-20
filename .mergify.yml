@@ -26,19 +26,6 @@ queue_rules:
       - or:
         - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    merge_conditions:
-      - -title~=(WIP|wip)
-      - -label~=(blocked|do-not-merge)
-      # Only if no-squash is set
-      - label~=no-squash
-      - -merged
-      - -closed
-      - "#approved-reviews-by>=1"
-      - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
-      - "#changes-requested-reviews-by=0"
-      - check-success=validate-pr
-      - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -64,19 +51,6 @@ queue_rules:
       - or:
         - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    merge_conditions:
-      - base!=release
-      - -title~=(WIP|wip)
-      - -label~=(blocked|do-not-merge|no-squash)
-      - label~=priority-pr
-      - -merged
-      - -closed
-      - "#approved-reviews-by>=1"
-      - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
-      - "#changes-requested-reviews-by=0"
-      - check-success=validate-pr
-      - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -101,18 +75,6 @@ queue_rules:
       - or:
         - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    merge_conditions:
-      - base!=release
-      - -title~=(WIP|wip)
-      - -label~=(blocked|do-not-merge|no-squash|priority-pr)
-      - -merged
-      - -closed
-      - "#approved-reviews-by>=1"
-      - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
-      - "#changes-requested-reviews-by=0"
-      - check-success=validate-pr
-      - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
