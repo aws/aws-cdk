@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnMesh } from './appmesh.generated';
+import { CfnMesh, IMeshRef, MeshReference } from './appmesh.generated';
 import { MeshServiceDiscovery } from './service-discovery';
 import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
@@ -29,7 +29,7 @@ export enum MeshFilterType {
 /**
  * Interface which all Mesh based classes MUST implement
  */
-export interface IMesh extends cdk.IResource {
+export interface IMesh extends cdk.IResource, IMeshRef {
   /**
    * The name of the AppMesh mesh
    *
@@ -108,6 +108,10 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
       ...props,
       mesh: this,
     });
+  }
+
+  public get meshRef(): MeshReference {
+    return { meshArn: this.meshArn };
   }
 }
 

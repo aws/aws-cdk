@@ -519,7 +519,6 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
-   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -950,7 +949,6 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
-   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -1094,7 +1092,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     addConstructMetadata(this, props);
 
     if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
-      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`.', this);
     }
 
     this.kubernetesNamespace = props.kubernetesNamespace;

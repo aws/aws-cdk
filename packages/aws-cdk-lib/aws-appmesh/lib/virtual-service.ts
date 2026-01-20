@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVirtualService } from './appmesh.generated';
+import { CfnVirtualService, IVirtualServiceRef, VirtualServiceReference } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
 import { IVirtualNode } from './virtual-node';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents the interface which all VirtualService based classes MUST implement
  */
-export interface IVirtualService extends cdk.IResource {
+export interface IVirtualService extends cdk.IResource, IVirtualServiceRef {
   /**
    * The name of the VirtualService
    *
@@ -75,6 +75,9 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualServiceArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+      public get virtualServiceRef(): VirtualServiceReference {
+        return { virtualServiceArn: this.virtualServiceArn };
+      }
     }(scope, id);
   }
 
@@ -90,6 +93,9 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
         resource: `mesh/${attrs.mesh.meshName}/virtualService`,
         resourceName: this.virtualServiceName,
       });
+      public get virtualServiceRef(): VirtualServiceReference {
+        return { virtualServiceArn: this.virtualServiceArn };
+      }
     }(scope, id);
   }
 
@@ -143,6 +149,10 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
           : undefined,
       },
     });
+  }
+
+  public get virtualServiceRef(): VirtualServiceReference {
+    return { virtualServiceArn: this.virtualServiceArn };
   }
 }
 

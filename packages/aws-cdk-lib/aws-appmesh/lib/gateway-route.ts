@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
+import { CfnGatewayRoute, CfnVirtualGateway, GatewayRouteReference, IGatewayRouteRef } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';
 import { renderMeshOwner } from './private/utils';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
@@ -11,7 +11,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface for which all GatewayRoute based classes MUST implement
  */
-export interface IGatewayRoute extends cdk.IResource {
+export interface IGatewayRoute extends cdk.IResource, IGatewayRouteRef {
   /**
    * The name of the GatewayRoute
    *
@@ -77,6 +77,10 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
       readonly gatewayRouteArn = gatewayRouteArn;
       readonly gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(gatewayRouteArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
       readonly virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', gatewayRouteArn);
+
+      public get gatewayRouteRef(): GatewayRouteReference {
+        return { gatewayRouteArn: this.gatewayRouteArn };
+      }
     }(scope, id);
   }
 
@@ -92,6 +96,10 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
         resourceName: this.gatewayRouteName,
       });
       readonly virtualGateway = attrs.virtualGateway;
+
+      public get gatewayRouteRef(): GatewayRouteReference {
+        return { gatewayRouteArn: this.gatewayRouteArn };
+      }
     }(scope, id);
   }
 
@@ -157,6 +165,10 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
         return [];
       },
     });
+  }
+
+  public get gatewayRouteRef(): GatewayRouteReference {
+    return { gatewayRouteArn: this.gatewayRouteArn };
   }
 }
 

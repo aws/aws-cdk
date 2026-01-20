@@ -12,7 +12,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 // for files that are part of this package or part of core, we do import individual classes or functions
-import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, IWaitConditionHandleRef, RemovalPolicy, Resource, Stack, Token, ValidationError, WaitConditionHandleReference } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -68,7 +68,10 @@ export interface IExampleResource extends
   iam.IGrantable,
 
   // only for resources that are in a VPC and have SecurityGroups controlling their traffic
-  ec2.IConnectable {
+  ec2.IConnectable,
+
+  // Change this to the right resource type
+  IWaitConditionHandleRef {
 
   /**
    * The ARN of example resource.
@@ -227,6 +230,13 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
       dimensionsMap: { ExampleResource: this.exampleResourceName },
       ...props,
     }).attachTo(this);
+  }
+
+  public get waitConditionHandleRef(): WaitConditionHandleReference {
+    return {
+      // This should match the expected Ref interface properties to the correct field
+      waitConditionHandleId: this.exampleResourceName,
+    };
   }
 }
 

@@ -91,6 +91,28 @@ export interface DeploymentCircuitBreaker {
 }
 
 /**
+ * Configuration for traffic shift during progressive deployments
+ */
+export interface TrafficShiftConfig {
+  /**
+   * The percentage of production traffic to shift in each step.
+   * - For linear deployment: multiples of 0.1 from 3.0 to 100.0
+   * - For canary deployment: multiples of 0.1 from 0.1 to 100.0
+   *
+   * @default - 10.0 for linear, 5.0 for canary
+   */
+  readonly stepPercent?: number;
+
+  /**
+   * The duration to wait between traffic shifting steps.
+   * Valid values are 0 to 1440 minutes (24 hours).
+   *
+   * @default - Duration.minutes(6) for linear, Duration.minutes(10) for canary
+   */
+  readonly stepBakeTime?: Duration;
+}
+
+/**
  * Deployment behavior when an ECS Service Deployment Alarm is triggered
  */
 export enum AlarmBehavior {
@@ -457,6 +479,23 @@ export interface BaseServiceOptions {
    * @default - none;
    */
   readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[];
+
+  /**
+   * Configuration for linear deployment strategy.
+   * Only valid when deploymentStrategy is set to LINEAR.
+   *
+   * @default - no linear configuration
+   */
+  readonly linearConfiguration?: TrafficShiftConfig;
+
+  /**
+   * Configuration for canary deployment strategy.
+   * Only valid when deploymentStrategy is set to CANARY.
+   *
+   * @default - no canary configuration
+   */
+  readonly canaryConfiguration?: TrafficShiftConfig;
+
 }
 
 /**
@@ -715,6 +754,11 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * The deployment strategy for the service
+   */
+  private readonly deploymentStrategy?: DeploymentStrategy;
+
+  /**
    * Constructs a new instance of the BaseService class.
    */
   constructor(
@@ -743,6 +787,15 @@ export abstract class BaseService extends Resource
 
     // Determine if this service is using the ECS deployment controller
     this.isEcsDeploymentController = !deploymentController || deploymentController.type === DeploymentControllerType.ECS;
+    this.deploymentStrategy = props.deploymentStrategy;
+
+    if (props.linearConfiguration) {
+      this.validateLinearConfiguration(props.linearConfiguration);
+    }
+    if (props.canaryConfiguration) {
+      this.validateCanaryConfiguration(props.canaryConfiguration);
+    }
+
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -757,6 +810,14 @@ export abstract class BaseService extends Resource
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
+        linearConfiguration: props.linearConfiguration ? {
+          stepPercent: props.linearConfiguration.stepPercent,
+          stepBakeTimeInMinutes: props.linearConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
+        canaryConfiguration: props.canaryConfiguration ? {
+          canaryPercent: props.canaryConfiguration.stepPercent,
+          canaryBakeTimeInMinutes: props.canaryConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
         lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
@@ -1123,6 +1184,62 @@ export abstract class BaseService extends Resource
         throw new ValidationError(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`, this);
       }
     });
+  }
+
+  /**
+   * Validate Canary Configuration
+   */
+  private validateCanaryConfiguration(config: TrafficShiftConfig) {
+    if (this.deploymentStrategy !== DeploymentStrategy.CANARY) {
+      throw new ValidationError('Canary configuration requires deploymentStrategy to be set to CANARY', this);
+    }
+
+    if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
+      if (!Number.isFinite(config.stepPercent) || config.stepPercent < 0.1 || config.stepPercent > 100.0) {
+        throw new ValidationError(`Canary deployment stepPercent must be between 0.1 and 100.0, received ${config.stepPercent}`, this);
+      }
+      if (!Number.isInteger(config.stepPercent * 10)) {
+        throw new ValidationError(`Canary deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+      }
+    }
+
+    if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
+      const minutes = config.stepBakeTime.toMinutes({ integral: false });
+      if (!Number.isInteger(minutes)) {
+        throw new ValidationError(`Canary deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+      }
+      if (minutes < 0 || minutes > 1440) {
+        throw new ValidationError(`Canary deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+      }
+    }
+  }
+
+  /**
+   * Validate Linear Configuration
+   */
+  private validateLinearConfiguration(config: TrafficShiftConfig) {
+    if (this.deploymentStrategy !== DeploymentStrategy.LINEAR) {
+      throw new ValidationError('Linear configuration requires deploymentStrategy to be set to LINEAR', this);
+    }
+
+    if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
+      if (!Number.isFinite(config.stepPercent) || config.stepPercent < 3.0 || config.stepPercent > 100.0) {
+        throw new ValidationError(`Linear deployment stepPercent must be between 3.0 and 100.0, received ${config.stepPercent}`, this);
+      }
+      if (!Number.isInteger(config.stepPercent * 10)) {
+        throw new ValidationError(`Linear deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+      }
+    }
+
+    if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
+      const minutes = config.stepBakeTime.toMinutes({ integral: false });
+      if (!Number.isInteger(minutes)) {
+        throw new ValidationError(`Linear deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+      }
+      if (minutes < 0 || minutes > 1440) {
+        throw new ValidationError(`Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+      }
+    }
   }
 
   /**
@@ -1832,6 +1949,14 @@ export enum DeploymentStrategy {
    * Blue/green deployment
    */
   BLUE_GREEN = 'BLUE_GREEN',
+  /**
+   * Linear deployment with progressive traffic shifting
+   */
+  LINEAR = 'LINEAR',
+  /**
+   * Canary deployment with fixed traffic percentage testing
+   */
+  CANARY = 'CANARY',
 }
 
 /**
