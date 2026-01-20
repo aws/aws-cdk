@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { IHttpApiRef } from './api';
 import { IHttpRoute } from './route';
-import { CfnAuthorizer } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
