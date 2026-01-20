@@ -1689,53 +1689,45 @@ describe('cluster', () => {
     });
   });
 
-  test('kubectl provider uses custom security group when provided in kubectlProviderOptions', () => {
+  test('kubectl provider passes security group to handler lambda', ()=> {
     const { stack, vpc } = testFixture();
-  
-    const customSecurityGroup = new ec2.SecurityGroup(stack, 'CustomKubectlSG', {
-      vpc,
-      description: 'Custom security group for kubectl provider',
+
+    const kubectlSecurityGroup = new ec2.SecurityGroup(stack, 'KubectlSecurityGroup', {
+      vpc: vpc,
+      description: 'for kubectl handler',
     });
-  
+
     new eks.Cluster(stack, 'Cluster1', {
       version: CLUSTER_VERSION,
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
-      vpc,
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
-        securityGroup: customSecurityGroup,
-        privateSubnets: vpc.selectSubnets({
-          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-        }).subnets,
+        securityGroup: kubectlSecurityGroup,
+        privateSubnets: vpc.privateSubnets,
       },
     });
-  
+
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
-        SecurityGroupIds: [
-          {
-            'Fn::GetAtt': [
-              Match.stringLikeRegexp('CustomKubectlSG.*'),
-              'GroupId',
-            ],
-          },
-        ],
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['KubectlSecurityGroupF060FCAE', 'GroupId'] }],
       },
     });
   });
 
-  test('kubectl provider falls back to cluster security group when custom security group is not provided', () => {
+  test('kubectl provider passes security group to handler lambda', () => {
     const { stack, vpc } = testFixture();
 
     new eks.Cluster(stack, 'Cluster1', {
       version: CLUSTER_VERSION,
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
-      vpc,
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
-        privateSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }).subnets,
+        privateSubnets: vpc.privateSubnets,
+        environment: {
+          Foo: 'Bar',
+        },
       },
     });
 
@@ -1773,15 +1765,10 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      VpcConfig: {
-        SecurityGroupIds: Match.arrayWith([
-          {
-            'Fn::GetAtt': [
-              Match.stringLikeRegexp('Cluster.*'),
-              'ClusterSecurityGroupId',
-            ],
-          },
-        ]),
+      Environment: {
+        Variables: {
+          Foo: 'Bar',
+        },
       },
     });
   });
