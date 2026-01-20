@@ -2950,12 +2950,18 @@ describe('cluster', () => {
         role: instanceRole,
       });
 
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
       // WHEN
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
         capacityOptionType: ecs.CapacityOptionType.ON_DEMAND,
+        securityGroups: [securityGroup],
       });
 
       // THEN
@@ -3010,12 +3016,18 @@ describe('cluster', () => {
         role: instanceRole,
       });
 
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
       // WHEN
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
         capacityOptionType: ecs.CapacityOptionType.SPOT,
+        securityGroups: [securityGroup],
       });
 
       // THEN
