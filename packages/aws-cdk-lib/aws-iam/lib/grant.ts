@@ -434,6 +434,8 @@ export interface GrantOnKeyResult {
 
 /**
  * A resource that contains data that can be encrypted, using a KMS key.
+ *
+ * [awslint:interface-extends-ref]
  */
 export interface IEncryptedResource extends cdk.IResource {
   /**

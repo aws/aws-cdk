@@ -14,6 +14,9 @@
     "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TableBucketAttributes.encryptionKey",
     "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TableBucketProps.encryptionKey",
     "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TableBucketPolicyProps.tableBucket",
-    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TablePolicyProps.table"
+    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TablePolicyProps.table",
+    "interface-extends-ref:@aws-cdk/aws-s3tables-alpha.INamespace",
+    "interface-extends-ref:@aws-cdk/aws-s3tables-alpha.ITable",
+    "interface-extends-ref:@aws-cdk/aws-s3tables-alpha.ITableBucket"
   ]
 }
