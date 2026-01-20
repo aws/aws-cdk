@@ -1552,26 +1552,43 @@ describe('cluster', () => {
       // THEN
       const template = app.synth().getStackArtifact(stack.artifactId).template;
 
-      const barrier = template.Resources.ClusterKubectlReadyBarrier200052AF;
+      const kubectlReadyBarrier = 'ClusterKubectlReadyBarrier200052AF';
+      const barrier = template.Resources[kubectlReadyBarrier];
 
-      expect(barrier.DependsOn).toEqual([
-        'ClusterClusterAdminRoleAccessF2BFF759',
-        'Clusterfargateprofileprofile1PodExecutionRoleE85F87B5',
-        'Clusterfargateprofileprofile129AEA3C6',
-        'Clusterfargateprofileprofile2PodExecutionRole22670AF8',
-        'Clusterfargateprofileprofile233B9A117',
-        'Clusterfargateprofileprofile3PodExecutionRole475C0D8F',
-        'Clusterfargateprofileprofile3D06F3076',
-        'Clusterfargateprofileprofile4PodExecutionRole086057FB',
-        'Clusterfargateprofileprofile4A0E3BBE8',
-        'ClusterEB0386A7',
-      ]);
+      const adminRoleAccess = 'ClusterClusterAdminRoleAccessF2BFF759';
+      const profile1PodExecutionRole = 'Clusterfargateprofileprofile1PodExecutionRoleE85F87B5';
+      const profile1 = 'Clusterfargateprofileprofile129AEA3C6';
+      const profile2PodExecutionRole = 'Clusterfargateprofileprofile2PodExecutionRole22670AF8';
+      const profile2 = 'Clusterfargateprofileprofile233B9A117';
+      const profile3PodExecutionRole = 'Clusterfargateprofileprofile3PodExecutionRole475C0D8F';
+      const profile3 = 'Clusterfargateprofileprofile3D06F3076';
+      const profile4PodExecutionRole = 'Clusterfargateprofileprofile4PodExecutionRole086057FB';
+      const profile4 = 'Clusterfargateprofileprofile4A0E3BBE8';
+      const clusterResource = 'ClusterEB0386A7';
 
-      const kubectlResources = ['chartF2447AFC', 'patch1B964AC93', 'Clustermanifestresource10B1C9505'];
+      const expectedBarrierDependencies = [
+        adminRoleAccess,
+        profile1PodExecutionRole,
+        profile1,
+        profile2PodExecutionRole,
+        profile2,
+        profile3PodExecutionRole,
+        profile3,
+        profile4PodExecutionRole,
+        profile4,
+        clusterResource,
+      ];
+
+      expect(barrier.DependsOn).toEqual(expectedBarrierDependencies);
+
+      const helmChart = 'chartF2447AFC';
+      const kubernetesPatch = 'patch1B964AC93';
+      const kubernetesManifest = 'Clustermanifestresource10B1C9505';
+      const kubectlResources = [helmChart, kubernetesPatch, kubernetesManifest];
 
       // check that all kubectl resources depend on the barrier
-      for (const r of kubectlResources) {
-        expect(template.Resources[r].DependsOn).toEqual(['ClusterKubectlReadyBarrier200052AF']);
+      for (const resource of kubectlResources) {
+        expect(template.Resources[resource].DependsOn).toEqual([kubectlReadyBarrier]);
       }
     });
 
