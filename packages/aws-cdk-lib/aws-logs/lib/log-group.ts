@@ -233,6 +233,8 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   /**
    * Give permissions to create and write to streams in this log group
+   *
+   * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
     return this.grants.write(grantee);
@@ -240,6 +242,8 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   /**
    * Give permissions to read and filter events from this log group
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
     return this.grants.read(grantee);
@@ -247,6 +251,8 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   /**
    * Give the indicated permissions on this log group and all streams
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipalOrResource({
@@ -538,6 +544,14 @@ export interface LogGroupProps {
   readonly dataProtectionPolicy?: DataProtectionPolicy;
 
   /**
+   * Indicates whether deletion protection is enabled for this log group. When enabled,
+   * deletion protection blocks all deletion operations until it is explicitly disabled.
+   *
+   * @default false
+   */
+  readonly deletionProtectionEnabled?: boolean;
+
+  /**
    * Field Index Policies for this log group.
    *
    * @default - no field index policies for this log group.
@@ -684,6 +698,7 @@ export class LogGroup extends LogGroupBase {
         Statement: dataProtectionPolicy?.statement,
         Configuration: dataProtectionPolicy?.configuration,
       } : undefined,
+      deletionProtectionEnabled: props.deletionProtectionEnabled,
       ...(props.fieldIndexPolicies && { fieldIndexPolicies: fieldIndexPolicies }),
     });
 

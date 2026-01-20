@@ -133,6 +133,7 @@ export abstract class SourceWithDeadLetterTarget implements ISource {
 
   /**
    * Grants the pipe role permission to publish to the dead-letter target.
+   * [disable-awslint:no-grants]
    */
   public grantPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
     if (deadLetterTarget instanceof Queue) {
