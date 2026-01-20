@@ -1441,13 +1441,18 @@ describe('cluster', () => {
         openIdConnectProvider: eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'ImportedOidcProviderOld', 'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E'),
       });
 
+      expect(importedClusterOldProvider.openIdConnectProvider.oidcProviderRef.oidcProviderArn).toBeDefined();
+      expect(importedClusterOldProvider.openIdConnectProvider.openIdConnectProviderIssuer).toBeDefined();
+      expect(importedClusterOldProvider.openIdConnectProvider.openIdConnectProviderArn).toBeDefined();
+
       const importedClusterNativeProvider = eks.Cluster.fromClusterAttributes(stack, 'ImportedClusterNative', {
         clusterName: 'my-cluster',
         openIdConnectProvider: eks.OidcProviderNative.fromOidcProviderArn(stack, 'ImportedOidcProviderNative', 'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E'),
       });
 
-      expect(importedClusterOldProvider.openIdConnectProvider).toBeDefined();
-      expect(importedClusterNativeProvider.openIdConnectProvider).toBeDefined();
+      expect(importedClusterNativeProvider.openIdConnectProvider.oidcProviderRef.oidcProviderArn).toBeDefined();
+      expect(importedClusterNativeProvider.openIdConnectProvider.openIdConnectProviderIssuer).toBeDefined();
+      expect(importedClusterNativeProvider.openIdConnectProvider.openIdConnectProviderArn).toBeDefined();
     });
 
     test('inf1 instances are supported', () => {
