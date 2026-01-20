@@ -10,6 +10,7 @@
     "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.PipeProps.kmsKey",
     "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.ILogDestination.bind.pipe",
     "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.ILogDestination.grantPush.grantee",
-    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.PipeProps.role"
+    "prefer-ref-interface:@aws-cdk/aws-pipes-alpha.PipeProps.role",
+    "interface-extends-ref:@aws-cdk/aws-pipes-alpha.IPipe"
   ]
 }
