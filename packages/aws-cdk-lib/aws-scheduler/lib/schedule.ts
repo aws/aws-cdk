@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ScheduleExpression } from './schedule-expression';
 import { IScheduleGroup } from './schedule-group';
-import { CfnSchedule } from './scheduler.generated';
+import { CfnSchedule, IScheduleRef, ScheduleReference } from './scheduler.generated';
 import { IScheduleTarget } from './target';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as kms from '../../aws-kms';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface representing a created or an imported `Schedule`.
  */
-export interface ISchedule extends IResource {
+export interface ISchedule extends IResource, IScheduleRef {
   /**
    * The arn of the schedule.
    * @attribute
@@ -255,9 +255,24 @@ export class Schedule extends Resource implements ISchedule {
    * Import an existing schedule using the ARN.
    */
   public static fromScheduleArn(scope: Construct, id: string, scheduleArn: string): ISchedule {
+    // Format: arn:aws:scheduler:region:account:schedule/SCHEDULE-GROUP/SCHEDULE-NAME
+    const parsedName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName?.split('/')[1];
+
+    if (!parsedName) {
+      throw new UnscopedValidationError(`Invalid schedule ARN format. Expected: arn:<partition>:scheduler:<region>:<account>:schedule/<group-name>/<schedule-name>, got: ${scheduleArn}`);
+    }
+
+    const scheduleName = parsedName;
+
     class Import extends Resource implements ISchedule {
       public readonly scheduleArn = scheduleArn;
-      public readonly scheduleName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split('/')[1];
+      public readonly scheduleName = scheduleName;
+      public get scheduleRef(): ScheduleReference {
+        return {
+          scheduleArn: this.scheduleArn,
+          scheduleName: this.scheduleName,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -368,5 +383,12 @@ export class Schedule extends Resource implements ISchedule {
     if (start && end && start >= end) {
       throw new ValidationError(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`, this);
     }
+  }
+
+  public get scheduleRef(): ScheduleReference {
+    return {
+      scheduleArn: this.scheduleArn,
+      scheduleName: this.scheduleName,
+    };
   }
 }

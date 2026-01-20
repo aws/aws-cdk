@@ -29,31 +29,45 @@ Guard rules are organized in service-specific directories for granular control:
 
 ```
 rules/
-├── codepipeline/
-│   └── cross-account-role-trust-scope.guard
 ├── documentdb/
-│   └── encryption-enabled.guard
+│   └── documentdb-encryption-enabled.guard
 ├── ec2/
-│   ├── ebs-encryption-enabled.guard
-│   └── no-open-security-groups.guard
+│   ├── ec2-ebs-encryption-enabled.guard
+│   └── ec2-no-open-security-groups.guard
 ├── guard-hooks/
-│   └── no-root-principals-except-kms-secrets.guard
+│   └── guardhooks-no-root-principals-except-kms-secrets.guard
 ├── iam/
-│   ├── no-overly-permissive-passrole.guard
-│   ├── no-wildcard-actions.guard
-│   ├── no-world-accessible-trust-policy.guard
-│   ├── policy-no-broad-principals.guard
-│   └── role-no-broad-principals.guard
+│   ├── iam-no-overly-permissive-passrole.guard
+│   ├── iam-no-wildcard-actions.guard
+│   ├── iam-no-wildcard-actions-inline.guard
+│   ├── iam-no-world-accessible-trust-policy.guard
+│   ├── iam-policy-no-broad-principals.guard
+│   ├── iam-role-no-broad-principals.guard
+│   └── iam-role-root-principal-needs-conditions.guard
+├── kinesis/
+│   ├── kinesis-encryption-enabled.guard
+│   └── kinesis-firehose-encryption-enabled.guard
+├── neptune/
+│   └── neptune-encryption-enabled.guard
+├── redshift/
+│   └── redshift-encryption-enabled.guard
 ├── s3/
-│   ├── encryption-enabled.guard
-│   ├── no-world-readable.guard
-│   └── secure-transport.guard
-└── [other services...]
+│   ├── s3-no-confused-deputy.guard
+│   ├── s3-no-world-readable.guard
+│   ├── s3-no-world-writable.guard
+│   └── s3-secure-transport.guard
+├── sns/
+│   ├── sns-no-world-accessible.guard
+│   └── sns-no-world-accessible-inline.guard
+└── sqs/
+    ├── sqs-encryption-enabled.guard
+    ├── sqs-no-world-accessible.guard
+    └── sqs-no-world-accessible-inline.guard
 ```
 
 ### Always Flagged (High Risk)
 - **Cross-account wildcards**: `"*"` or `"arn:aws:iam::*:root"`
-- **Custom policies with root access**: Non-default policies granting root
+- **Root principals without conditions**: `:root` principals must have restrictive conditions
 - **Broad principals in sensitive resources**: IAM roles, S3 buckets, etc.
 
 ### Smart Exemptions (Configurable)
@@ -276,6 +290,7 @@ let security_groups = Resources.*[
 - `S3_NO_WORLD_READABLE`
 - `S3_SECURE_TRANSPORT`
 - `IAM_ROLE_NO_BROAD_PRINCIPALS` 
+- `IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS`
 - `IAM_NO_WILDCARD_ACTIONS`
 - `IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY`
 - `NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS`
