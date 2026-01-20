@@ -78,11 +78,11 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   readonly schemaRegistryConfig?: ISchemaRegistry;
 
   /**
-   * Configuration for system logging from the event source mapping poller
+   * Configuration for logging verbosity from the event source mapping poller
    *
-   * @default - No systemLogLevel specified
+   * @default - No logLevel specified
    */
-  readonly systemLogLevel?: lambda.EventSourceMappingSystemLogLevel;
+  readonly logLevel?: lambda.EventSourceMappingLogLevel;
 
   /**
    * Configuration for enhanced monitoring metrics collection
@@ -266,7 +266,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
-        systemLogLevel: this.innerProps.systemLogLevel,
+        logLevel: this.innerProps.systemLogLevel,
         metricsConfig: this.innerProps.metricsConfig,
         bisectBatchOnError: this.innerProps.bisectBatchOnError,
         retryAttempts: this.innerProps.retryAttempts,
