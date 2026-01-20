@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IHttpApiRef } from './api';
 import { IHttpRoute } from './route';
-import { IRole } from '../../../aws-iam';
+import { IRoleRef } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -113,7 +113,7 @@ export interface HttpAuthorizerProps {
    *
    * @default - No role
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 }
 
 /**
@@ -215,7 +215,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
       authorizerPayloadFormatVersion,
       authorizerUri: props.authorizerUri,
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
-      authorizerCredentialsArn: props.role?.roleArn,
+      authorizerCredentialsArn: props.role?.roleRef.roleArn,
     });
 
     this.authorizerId = resource.ref;

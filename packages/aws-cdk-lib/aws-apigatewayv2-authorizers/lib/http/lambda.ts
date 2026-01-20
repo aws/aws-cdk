@@ -7,7 +7,7 @@ import {
   AuthorizerPayloadVersion,
   IHttpApi,
 } from '../../../aws-apigatewayv2';
-import { ServicePrincipal, IRole } from '../../../aws-iam';
+import { ServicePrincipal, IRoleRef } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { Stack, Duration, Names } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
@@ -68,7 +68,7 @@ export interface HttpLambdaAuthorizerProps {
    *
    * @default - No role
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 }
 
 /**
