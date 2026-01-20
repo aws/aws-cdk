@@ -3399,8 +3399,8 @@ describe('template synthesis with various configurations', () => {
     });
   });
 
-  describe('LoggingConfig', () => {
-    test('LoggingConfig with INFO log level for ManagedKafkaEventSource', () => {
+  describe('SystemLogLevel', () => {
+    test('SystemLogLevel with INFO log level for ManagedKafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -3412,9 +3412,7 @@ describe('template synthesis with various configurations', () => {
         clusterArn,
         topic: kafkaTopic,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-        loggingConfig: {
-          systemLogLevel: lambda.EventSourceMappingLogLevel.INFO,
-        },
+        systemLogLevel: lambda.EventSourceMappingSystemLogLevel.INFO,
       }));
 
       // THEN
