@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import { AccessPoint } from '../lib';
 
 class TestStack extends cdk.Stack {
@@ -9,13 +9,13 @@ class TestStack extends cdk.Stack {
 
     const bucket = new s3.Bucket(this, 'MyBucket');
     const handler1 = new lambda.Function(this, 'MyFunction1', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
 
     const handler2 = new lambda.Function(this, 'MyFunction2', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });

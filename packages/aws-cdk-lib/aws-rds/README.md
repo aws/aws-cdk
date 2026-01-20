@@ -203,6 +203,10 @@ v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverle
   capacity of all the instances in the cluster.
 - `ACUUtilization`: Value of the `ServerlessDatabaseCapacity`/ max ACU of the
   cluster.
+- `VolumeReadIOPs`: Cluster-level metric that represents the average number of disk read I/O operations per second.
+- `VolumeWriteIOPs`: Cluster-level metric that represents the average number of disk write I/O operations per second.
+- `ReadIOPS`: Instance-level metric that represents the average read I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
+- `WriteIOPS`: Instance-level metric that represents the average write I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -221,11 +225,45 @@ cluster.metricServerlessDatabaseCapacity({
     threshold: 1.5,
     evaluationPeriods: 3,
 });
+
 cluster.metricACUUtilization({
   period: Duration.minutes(10),
 }).createAlarm(this, 'alarm', {
   evaluationPeriods: 3,
   threshold: 90,
+});
+
+cluster.metricVolumeReadIOPs({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'VolumeReadIOPsAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
+});
+
+cluster.metricVolumeWriteIOPs({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'VolumeWriteIOPsAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
+});
+
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_6 }),
+  vpc
+});
+
+instance.metricReadIOPS({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'ReadIOPSAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
+});
+
+instance.metricWriteIOPS({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'WriteIOPSAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
 });
 ```
 
@@ -1042,6 +1080,33 @@ const proxy = new rds.DatabaseProxy(this, 'Proxy', {
 });
 ```
 
+### Default Authentication Scheme
+
+RDS Proxy supports different authentication schemes to connect to your database. You can configure the default authentication scheme using the `defaultAuthScheme` property.
+
+When using `DefaultAuthScheme.IAM_AUTH`, the proxy uses end-to-end IAM authentication to connect to the database, eliminating the need for secrets stored in AWS Secrets Manager:
+
+```ts
+declare const vpc: ec2.Vpc;
+const instance = new rds.DatabaseInstance(this, 'Database', {
+  engine: rds.DatabaseInstanceEngine.postgres({
+    version: rds.PostgresEngineVersion.VER_17_7,
+  }),
+  vpc,
+  iamAuthentication: true,
+});
+
+const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromInstance(instance),
+  vpc,
+  defaultAuthScheme: rds.DefaultAuthScheme.IAM_AUTH, // No secrets required
+});
+
+// Grant IAM permissions for database connection
+const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
+proxy.grantConnect(role, 'database-user'); // Database user must be specified when using IAM auth
+```
+
 ### Cluster
 
 The following example shows granting connection access for an IAM role to an Aurora Cluster.
@@ -1237,7 +1302,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
-  cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'], // Export all available MySQL-based logs
+  cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'], // Export all available MySQL-based logs
   cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   cloudwatchLogsRetentionRole: myLogsPublishingRole, // Optional - a role will be created if not provided
   // ...
@@ -1286,6 +1351,7 @@ new rds.OptionGroup(this, 'Options', {
       securityGroups: [securityGroup], // Optional - a default group will be created if not provided.
     },
   ],
+  optionGroupName: 'MyOptionGroup'
 });
 ```
 

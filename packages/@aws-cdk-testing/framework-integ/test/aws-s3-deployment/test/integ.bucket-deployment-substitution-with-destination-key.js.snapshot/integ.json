@@ -1,13 +1,13 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "deploy-time-substitution-with-destination-key-integ-test/DefaultTest": {
+    "integ-test-bucket-deployment-substitution-with-destination-key/DefaultTest": {
       "stacks": [
-        "test-s3-deploy-substitution-with-destination-key"
+        "test-bucket-deployment-substitution-with-destination-key"
       ],
-      "assertionStack": "deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert",
-      "assertionStackName": "deploytimesubstitutionwithdestinationkeyintegtestDefaultTestDeployAssertDE132BF7"
+      "assertionStack": "integ-test-bucket-deployment-substitution-with-destination-key/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentsubstitutionwithdestinationkeyDefaultTestDeployAssertE3C0FD56"
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1027.0"
 }

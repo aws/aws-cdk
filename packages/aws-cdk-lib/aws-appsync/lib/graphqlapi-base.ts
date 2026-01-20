@@ -19,6 +19,7 @@ import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { ArnFormat, CfnResource, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
+import { IGraphQLApiRef, GraphQLApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Optional configuration for data sources
@@ -156,7 +157,7 @@ export enum AuthorizationType {
 /**
  * Interface for GraphQL
  */
-export interface IGraphqlApi extends IResource {
+export interface IGraphqlApi extends IResource, IGraphQLApiRef {
 
   /**
    * an unique AWS AppSync GraphQL API identifier
@@ -551,6 +552,8 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * Adds an IAM policy statement associated with this GraphQLApi to an IAM
    * principal's policy.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
@@ -560,13 +563,14 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       grantee,
       actions,
       resourceArns: resources.resourceArns(this),
-      scope: this,
     });
   }
 
   /**
    * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
    * principal's policy.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param fields The fields to grant access to that are Mutations (leave blank for all)
@@ -579,6 +583,8 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
    * principal's policy.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal
    * @param fields The fields to grant access to that are Queries (leave blank for all)
    */
@@ -590,10 +596,18 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
    * principal's policy.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal
    * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
    */
   public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
     return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
+  }
+
+  public get graphQlApiRef(): GraphQLApiReference {
+    return {
+      graphQlApiArn: this.arn,
+    };
   }
 }

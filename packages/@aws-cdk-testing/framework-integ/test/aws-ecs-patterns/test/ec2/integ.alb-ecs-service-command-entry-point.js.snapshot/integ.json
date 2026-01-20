@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert",
       "assertionStackName": "AlbEc2ServiceWithCommandAndEntryPointDefaultTestDeployAssert91EF33D6"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

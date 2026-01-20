@@ -8,6 +8,7 @@ import * as kms from '../../aws-kms';
 import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IStreamRef, StreamReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -82,7 +83,7 @@ export enum ShardLevelMetrics {
 /**
  * A Kinesis Stream
  */
-export interface IStream extends IResource {
+export interface IStream extends IResource, IStreamRef {
   /**
    * The ARN of the stream.
    *
@@ -394,6 +395,16 @@ abstract class StreamBase extends Resource implements IStream {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
+   * A reference to this stream.
+   */
+  public get streamRef(): StreamReference {
+    return {
+      streamName: this.streamName,
+      streamArn: this.streamArn,
+    };
+  }
+
+  /**
    * Indicates if a stream resource policy should automatically be created upon
    * the first call to `addToResourcePolicy`.
    *
@@ -434,6 +445,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...READ_OPERATIONS);
@@ -451,6 +464,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to ues the key to encrypt the
    * contents of the stream will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...WRITE_OPERATIONS);
@@ -465,6 +480,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
@@ -475,6 +492,8 @@ abstract class StreamBase extends Resource implements IStream {
 
   /**
    * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipalOrResource({
@@ -493,10 +512,7 @@ abstract class StreamBase extends Resource implements IStream {
           }
           return { statementAdded: false };
         },
-        node: this.node,
-        stack: this.stack,
         env: this.env,
-        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
       },
     });
   }

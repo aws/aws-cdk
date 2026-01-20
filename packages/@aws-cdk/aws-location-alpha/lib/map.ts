@@ -1,10 +1,10 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnMap } from 'aws-cdk-lib/aws-location';
-import { generateUniqueId } from './util';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { generateUniqueId } from './util';
 
 /**
  * Represents the Amazon Location Service Map
@@ -317,6 +317,7 @@ export class Map extends Resource implements IMap {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this map.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -329,6 +330,7 @@ export class Map extends Resource implements IMap {
 
   /**
    * Grant the given identity permissions to rendering a map resource
+   * [disable-awslint:no-grants]
    * @See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
    */
   @MethodMetadata()

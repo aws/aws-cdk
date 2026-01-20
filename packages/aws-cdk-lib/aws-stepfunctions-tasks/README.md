@@ -49,6 +49,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [RunTask](#runtask)
       - [EC2](#ec2)
       - [Fargate](#fargate)
+      - [Capacity Provider Options](#capacity-provider-options)
       - [Override CPU and Memory Parameter](#override-cpu-and-memory-parameter)
       - [ECS enable Exec](#ecs-enable-exec)
   - [EMR](#emr)
@@ -140,6 +141,17 @@ new sfn.StateMachine(this, 'StateMachine', {
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
+
+The `EvaluateExpression` also supports an `architecture` prop to specify the Lambda
+architecture. This can be useful when migrating to ARM64 or when running integration
+tests on ARM64 systems.
+
+```ts
+const convertToSecondsArm64 = new tasks.EvaluateExpression(this, 'Convert to seconds', {
+  expression: '$.waitMilliseconds / 1000',
+  architecture: lambda.Architecture.ARM_64,
+});
+```
 
 ## API Gateway
 
@@ -818,6 +830,52 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 });
 ```
 
+#### Capacity Provider Options
+
+The `capacityProviderOptions` property allows you to configure the capacity provider
+strategy for both EC2 and Fargate launch targets.
+
+- When `CapacityProviderOptions.custom()` is used, you can specify a custom capacity provider strategy.
+- When `CapacityProviderOptions.default()` is used, the task uses the cluster's default capacity provider strategy.
+- If `capacityProviderOptions` is not specified, the task uses the launch type (EC2 or FARGATE) without a capacity provider strategy.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+
+const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  memoryMiB: '512',
+  cpu: '256',
+  compatibility: ecs.Compatibility.FARGATE,
+});
+
+// Use custom() option - specify custom capacity provider strategy
+const runTaskWithCustom = new tasks.EcsRunTask(this, 'RunTaskWithCustom', {
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsFargateLaunchTarget({
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    capacityProviderOptions: tasks.CapacityProviderOptions.custom([
+      { capacityProvider: 'FARGATE_SPOT', weight: 2, base: 1 },
+      { capacityProvider: 'FARGATE', weight: 1 },
+    ]),
+  }),
+});
+
+// Use default() option - uses cluster's default capacity provider strategy
+const runTaskWithDefault = new tasks.EcsRunTask(this, 'RunTaskWithDefault', {
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsFargateLaunchTarget({
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    capacityProviderOptions: tasks.CapacityProviderOptions.default(),
+  }),
+});
+```
+
 #### Override CPU and Memory Parameter
 
 By setting the property cpu or memoryMiB, you can override the Fargate or EC2 task instance size at runtime.
@@ -1374,12 +1432,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   clusterName: 'myEksCluster',
-  kubectlLayer: new KubectlV33Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {
@@ -1582,7 +1640,7 @@ const connection = new events.Connection(this, 'Connection', {
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiRoot: 'https://api.example.com',
-  apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
+  apiEndpoint: sfn.TaskInput.fromText(sfn.JsonPath.format('resource/{}/details', sfn.JsonPath.stringAt('$.resourceId'))),
   body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
   headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),

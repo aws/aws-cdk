@@ -10,8 +10,6 @@ import { App, CfnOutput, CustomResource, CustomResourceProvider, Stack, Token } 
 import { Construct } from 'constructs';
 import { STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME } from '../../config';
 
-/* eslint-disable @cdklabs/no-core-construct */
-
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);

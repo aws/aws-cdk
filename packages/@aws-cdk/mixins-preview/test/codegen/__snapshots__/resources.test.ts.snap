@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`L1 property mixin for a standard-issue resource 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as constructs from "constructs";
+import * as core from "../../core";
+import * as mixins from "../../mixins";
+import * as helpers from "../../util/property-mixins";
+import * as service from "aws-cdk-lib/aws-some";
+
+/**
+ * @cloudformationResource AWS::Some::Resource
+ * @mixin true
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
+ */
+export class CfnThingPropsMixin extends core.Mixin implements core.IMixin {
+  protected static readonly CFN_PROPERTY_KEYS: Array<string> = ["config", "externalId", "id"];
+
+  protected readonly props: CfnThingMixinProps;
+
+  protected readonly strategy: mixins.PropertyMergeStrategy;
+
+  /**
+   * Create a mixin to apply properties to \`AWS::Some::Resource\`.
+   *
+   * @param props L1 properties to apply
+   * @param options Mixin options
+   */
+  public constructor(props: CfnThingMixinProps, options: mixins.CfnPropertyMixinOptions = {}) {
+    super();
+    this.props = props;
+    this.strategy = (options.strategy ?? mixins.PropertyMergeStrategy.MERGE);
+  }
+
+  /**
+   * Check if this mixin supports the given construct
+   */
+  public supports(construct: constructs.IConstruct): construct is service.CfnThing {
+    return (cdk.CfnResource.isCfnResource(construct) && (construct.cfnResourceType === "AWS::Some::Resource"));
+  }
+
+  /**
+   * Apply the mixin properties to the construct
+   */
+  public applyTo(construct: constructs.IConstruct): constructs.IConstruct {
+    if (this.supports(construct)) {
+      if ((this.strategy === mixins.PropertyMergeStrategy.MERGE)) {
+        helpers.deepMerge(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
+      } else {
+        helpers.shallowAssign(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
+      }
+    }
+    return construct;
+  }
+}
+
+export namespace CfnThingPropsMixin {
+  /**
+   * @struct
+   * @stability external
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-some-resource-resourceconfig.html
+   */
+  export interface ResourceConfigProperty {
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-some-resource-resourceconfig.html#cfn-some-resource-resourceconfig-bar
+     */
+    readonly bar?: boolean | cdk.IResolvable;
+
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-some-resource-resourceconfig.html#cfn-some-resource-resourceconfig-foo
+     */
+    readonly foo?: string;
+  }
+}
+
+/**
+ * Properties for CfnThingPropsMixin
+ *
+ * @struct
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
+ */
+export interface CfnThingMixinProps {
+  /**
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-config
+   */
+  readonly config?: cdk.IResolvable | CfnThingPropsMixin.ResourceConfigProperty;
+
+  /**
+   * An external Id.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-externalid
+   */
+  readonly externalId?: string;
+
+  /**
+   * The identifier of the resource.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
+   */
+  readonly id?: string;
+}"
+`;

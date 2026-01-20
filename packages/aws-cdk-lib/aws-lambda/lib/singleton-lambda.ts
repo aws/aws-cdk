@@ -6,6 +6,7 @@ import { Version } from './lambda-version';
 import { ILayerVersion } from './layers';
 import { Permission } from './permission';
 import { Runtime } from './runtime';
+import { TenancyConfig } from './tenancy-config';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
@@ -51,6 +52,7 @@ export interface SingletonFunctionProps extends FunctionProps {
 export class SingletonFunction extends FunctionBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.SingletonFunction';
+  public readonly tenancyConfig?: TenancyConfig;
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;

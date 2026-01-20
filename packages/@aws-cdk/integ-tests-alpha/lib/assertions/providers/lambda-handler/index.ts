@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 /* eslint-disable no-console */
 import { AssertionHandler } from './assertion';
 import { HttpHandler } from './http';

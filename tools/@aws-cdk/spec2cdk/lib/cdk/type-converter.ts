@@ -1,3 +1,4 @@
+
 import {
   SpecDatabase,
   PropertyType,
@@ -8,7 +9,8 @@ import {
 } from '@aws-cdk/service-spec-types';
 import { ClassType, Module, PrimitiveType, RichScope, StructType, Type, TypeDeclaration } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { TypeDefinitionStruct } from './typedefinition-struct';
+import { RelationshipDecider } from './relationship-decider';
+import { PartialTypeDefinitionStruct, TypeDefinitionStruct } from './typedefinition-struct';
 import { structNameFromTypeDefinition } from '../naming/conventions';
 
 export interface TypeConverterOptions {
@@ -16,6 +18,11 @@ export interface TypeConverterOptions {
   readonly resource: Resource;
   readonly resourceClass: ClassType;
   readonly typeDefinitionConverter: TypeDefinitionConverter;
+  /**
+   * Special handling for event bridge types, defaults to false
+   * @default false
+   * */
+  readonly isEventBridgeType?: boolean;
 }
 
 /**
@@ -31,6 +38,7 @@ export type TypeDefinitionConverter = (
 export interface TypeConverterForResourceOptions extends Omit<TypeConverterOptions, 'typeDefinitionConverter'> {
   readonly resource: Resource;
   readonly resourceClass: ClassType;
+  readonly relationshipDecider: RelationshipDecider;
 }
 
 /**
@@ -64,6 +72,45 @@ export class TypeConverter {
           resourceClass: opts.resourceClass,
           converter,
           typeDefinition,
+          relationshipDecider: opts.relationshipDecider,
+        });
+
+        return {
+          structType: structType,
+          build: () => structType.build(),
+        };
+      },
+    });
+  }
+
+  /**
+   * Make a type converter for a resource that uses a default TypeDefinition builder for this resource scope
+   */
+  public static forMixin(opts: TypeConverterForResourceOptions) {
+    return new TypeConverter({
+      ...opts,
+      typeDefinitionConverter: (typeDefinition, converter) => {
+        // Defensive programming: we have some current issues in the database
+        // that would lead to duplicate definitions. Short-circuit that by checking if the
+        // type already exists and return that instead.
+        const existing = new RichScope(opts.resourceClass).tryFindTypeByName(
+          structNameFromTypeDefinition(typeDefinition),
+        );
+        if (existing) {
+          return {
+            structType: existing as StructType,
+            build: () => {},
+          };
+        }
+
+        const structType = new PartialTypeDefinitionStruct({
+          resource: opts.resource,
+          resourceClass: opts.resourceClass,
+          converter,
+          typeDefinition,
+          relationshipDecider: opts.relationshipDecider,
+          cfnProducer: false,
+          cfnParser: false,
         });
 
         return {
@@ -78,6 +125,7 @@ export class TypeConverter {
   public readonly module: Module;
   private readonly typeDefinitionConverter: TypeDefinitionConverter;
   private readonly typeDefCache = new Map<TypeDefinition, StructType>();
+  private readonly isEventBridgeType;
 
   /** Reverse mapping so we can find the original type back for every generated Type */
   private readonly originalTypes = new WeakMap<Type, PropertyType>();
@@ -86,6 +134,7 @@ export class TypeConverter {
     this.db = options.db;
     this.typeDefinitionConverter = options.typeDefinitionConverter;
     this.module = Module.of(options.resourceClass);
+    this.isEventBridgeType = options.isEventBridgeType;
   }
 
   /**
@@ -134,7 +183,9 @@ export class TypeConverter {
         case 'map':
           return Type.mapOf(this.typeFromSpecType(type.element));
         case 'ref':
-          const ref = this.db.get('typeDefinition', type.reference.$ref);
+          const ref = !this.isEventBridgeType ?
+            this.db.get('typeDefinition', type.reference.$ref)
+            : this.db.get('eventTypeDefinition', type.reference.$ref);
           return this.convertTypeDefinitionType(ref).type;
         case 'tag':
           return CDK_CORE.CfnTag;

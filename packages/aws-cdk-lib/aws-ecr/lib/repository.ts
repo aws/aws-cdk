@@ -27,6 +27,7 @@ import {
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
+import { IRepositoryRef, RepositoryReference } from '../../interfaces/generated/aws-ecr-interfaces.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -34,7 +35,7 @@ const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends IResource {
+export interface IRepository extends IResource, IRepositoryRef {
   /**
    * The name of the repository
    * @attribute
@@ -190,6 +191,16 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * The ARN of the repository
    */
   public abstract readonly repositoryArn: string;
+
+  /**
+   * A reference to this repository
+   */
+  public get repositoryRef(): RepositoryReference {
+    return {
+      repositoryName: this.repositoryName,
+      repositoryArn: this.repositoryArn,
+    };
+  }
 
   /**
    * Add a policy statement to the repository's resource policy
@@ -353,6 +364,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     const crossAccountPrincipal = this.unsafeCrossAccountResourcePolicyPrincipal(grantee);
@@ -382,7 +394,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
         grantee,
         actions,
         resourceArns: [this.repositoryArn],
-        scope: this,
       });
     } else {
       return iam.Grant.addToPrincipalOrResource({
@@ -397,6 +408,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to read the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
@@ -407,6 +419,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to use the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantPull(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...this.REPO_PULL_ACTIONS);
@@ -415,7 +428,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;
@@ -423,6 +435,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to use the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...this.REPO_PUSH_ACTIONS);
@@ -430,7 +443,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;
@@ -438,6 +450,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
+   * [disable-awslint:no-grants]
    */
   public grantPullPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee,
@@ -448,7 +461,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;
@@ -585,6 +597,16 @@ export interface RepositoryProps {
    *  @default TagMutability.MUTABLE
    */
   readonly imageTagMutability?: TagMutability;
+
+  /**
+   * The image tag mutability exclusion filters for the repository.
+   *
+   * These filters specify which image tags can override the repository's default image tag mutability setting.
+   *
+   * @default undefined - AWS ECR default is no exclusion filters
+   * @see https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html
+   */
+  readonly imageTagMutabilityExclusionFilters?: ImageTagMutabilityExclusionFilter[];
 
   /**
    * Whether all images should be automatically deleted when the repository is
@@ -804,6 +826,7 @@ export class Repository extends RepositoryBase {
     addConstructMetadata(this, props);
 
     Repository.validateRepositoryName(this.physicalName);
+    this.validateTagMutability(props.imageTagMutability, props.imageTagMutabilityExclusionFilters);
 
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
@@ -811,7 +834,10 @@ export class Repository extends RepositoryBase {
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
-      imageTagMutability: props.imageTagMutability || undefined,
+      imageTagMutability: props.imageTagMutability,
+      imageTagMutabilityExclusionFilters: props.imageTagMutabilityExclusionFilters?.map(
+        filter => filter._render(),
+      ),
       encryptionConfiguration: this.parseEncryption(props),
       emptyOnDelete: props.emptyOnDelete,
     });
@@ -904,6 +930,36 @@ export class Repository extends RepositoryBase {
     }
 
     this.lifecycleRules.push({ ...rule });
+  }
+
+  private validateTagMutability(tagMutability?: TagMutability, exclusionFilters?: ImageTagMutabilityExclusionFilter[]): void {
+    const EXCLUSION_REQUIRED_TAG_MUTABILITY = [
+      TagMutability.IMMUTABLE_WITH_EXCLUSION,
+      TagMutability.MUTABLE_WITH_EXCLUSION,
+    ];
+
+    const requiresExclusion = tagMutability && EXCLUSION_REQUIRED_TAG_MUTABILITY.includes(tagMutability);
+    const hasExclusionFilters = !!exclusionFilters;
+
+    if (hasExclusionFilters && !requiresExclusion) {
+      throw new ValidationError(
+        `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when imageTagMutabilityExclusionFilters is provided, got: ${tagMutability}.`,
+        this,
+      );
+    }
+
+    const filterCount = exclusionFilters?.length;
+
+    if (filterCount !== undefined && (filterCount < 1 || filterCount > 5)) {
+      throw new ValidationError(`imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
+    }
+
+    if (requiresExclusion && !hasExclusionFilters) {
+      throw new ValidationError(
+        `imageTagMutabilityExclusionFilters must be specified when imageTagMutability is '${tagMutability}'.`,
+        this,
+      );
+    }
   }
 
   /**
@@ -1049,6 +1105,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
     rulePriority: rule.rulePriority,
     description: rule.description,
     selection: {
+      // eslint-disable-next-line @cdklabs/no-evaluating-typeguard
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       tagPatternList: rule.tagPatternList,
@@ -1100,6 +1157,45 @@ export enum TagMutability {
    * allow image tags to be overwritten while allowing you to define some filters for tags that should remain unchanged.
    */
   MUTABLE_WITH_EXCLUSION = 'MUTABLE_WITH_EXCLUSION',
+}
+
+/**
+ * Represents an image tag mutability exclusion filter for ECR repository
+ */
+export class ImageTagMutabilityExclusionFilter {
+  /**
+   * Creates a wildcard filter for image tag mutability exclusion
+   * @param pattern The wildcard pattern to match image tags (e.g., 'dev-*', 'release-v*')
+   */
+  public static wildcard(pattern: string): ImageTagMutabilityExclusionFilter {
+    return new ImageTagMutabilityExclusionFilter('WILDCARD', pattern);
+  }
+
+  private constructor(
+    private readonly filterType: string,
+    private readonly filterValue: string,
+  ) {
+    if (!filterValue) {
+      throw new UnscopedValidationError('Pattern cannot be empty');
+    }
+    if (filterValue.length > 128) {
+      throw new UnscopedValidationError(`Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
+    }
+    if (!/^[0-9a-zA-Z._*-]+$/.test(filterValue)) {
+      throw new UnscopedValidationError(`Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
+    }
+  }
+
+  /**
+   * Renders the filter to CloudFormation properties
+   * @internal
+   */
+  public _render(): CfnRepository.ImageTagMutabilityExclusionFilterProperty {
+    return {
+      imageTagMutabilityExclusionFilterType: this.filterType,
+      imageTagMutabilityExclusionFilterValue: this.filterValue,
+    };
+  }
 }
 
 /**
