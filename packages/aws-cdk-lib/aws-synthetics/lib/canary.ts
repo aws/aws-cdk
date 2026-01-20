@@ -4,7 +4,7 @@ import { Code } from './code';
 import { Runtime, RuntimeFamily } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
-import { CfnCanary } from './synthetics.generated';
+import { CanaryReference, CfnCanary, ICanaryRef } from './synthetics.generated';
 import { Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -394,7 +394,7 @@ export enum ArtifactsEncryptionMode {
 /**
  * Represents a CloudWatch Synthetics Canary
  */
-export interface ICanary extends cdk.IResource {
+export interface ICanary extends cdk.IResource, ICanaryRef {
   /**
    * The ID of the canary
    * @attribute
@@ -451,6 +451,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
         resourceName: canaryName,
         arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       });
+      public get canaryRef(): CanaryReference {
+        return { canaryName: this.canaryName };
+      }
     }
 
     return new Import(scope, id);
@@ -489,6 +492,13 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
    * Bucket where data from each canary run is stored.
    */
   public readonly artifactsBucket: s3.IBucket;
+
+  /**
+   * A reference to the canary.
+   */
+  public get canaryRef(): CanaryReference {
+    return { canaryName: this.canaryName };
+  }
 
   /**
    * Actual connections object for the underlying Lambda

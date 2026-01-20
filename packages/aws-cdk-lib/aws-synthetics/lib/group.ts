@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICanary } from './canary';
-import { CfnGroup } from './synthetics.generated';
+import { CfnGroup, GroupReference, IGroupRef } from './synthetics.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 /**
  * Represents a CloudWatch Synthetics Group
  */
-export interface IGroup extends cdk.IResource {
+export interface IGroup extends cdk.IResource, IGroupRef {
   /**
    * The ID of the group
    * @attribute
@@ -93,6 +93,9 @@ export class Group extends cdk.Resource implements IGroup {
         resourceName: groupName,
         arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       });
+      public get groupRef(): GroupReference {
+        return { groupName: this.groupName };
+      }
 
       public addCanary(_canary: ICanary): void {
         throw new ValidationError('Cannot add canaries to an imported group', this);
@@ -119,6 +122,13 @@ export class Group extends cdk.Resource implements IGroup {
    * @attribute
    */
   public readonly groupArn: string;
+
+  /**
+   * A reference to the group.
+   */
+  public get groupRef(): GroupReference {
+    return { groupName: this.groupName };
+  }
 
   private readonly _resource: CfnGroup;
   private readonly _canaries: Set<ICanary> = new Set();
