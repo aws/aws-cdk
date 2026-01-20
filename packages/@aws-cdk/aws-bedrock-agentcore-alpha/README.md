@@ -155,7 +155,7 @@ to production by simply updating the endpoint to point to the newer version.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `runtimeName` | `string` | Yes | The name of the agent runtime. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
+| `runtimeName` | `string` | No | The name of the agent runtime. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long. If not provided, a unique name will be auto-generated |
 | `agentRuntimeArtifact` | `AgentRuntimeArtifact` | Yes | The artifact configuration for the agent runtime containing the container configuration with ECR URI |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the agent runtime. If not provided, a role will be created automatically |
 | `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `RuntimeNetworkConfiguration.usingPublicNetwork()` |
@@ -171,7 +171,7 @@ to production by simply updating the endpoint to point to the newer version.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `endpointName` | `string` | Yes | The name of the runtime endpoint. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
+| `endpointName` | `string` | No | The name of the runtime endpoint. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long. If not provided, a unique name will be auto-generated |
 | `agentRuntimeId` | `string` | Yes | The Agent Runtime ID for this endpoint |
 | `agentRuntimeVersion` | `string` | Yes | The Agent Runtime version for this endpoint. Must be between 1 and 5 characters long.|
 | `description` | `string` | No | Optional description for the runtime endpoint |
@@ -748,7 +748,7 @@ For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, p
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `browserCustomName` | `string` | Yes | The name of the browser. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}` |
+| `browserCustomName` | `string` | No | The name of the browser. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}`. If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the browser. Can have up to 200 characters |
 | `networkConfiguration` | `BrowserNetworkConfiguration` | No | Network configuration for browser. Defaults to PUBLIC network mode |
 | `recordingConfig` | `RecordingConfig` | No | Recording configuration for browser. Defaults to no recording |
@@ -959,7 +959,7 @@ For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, p
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `codeInterpreterCustomName` | `string` | Yes | The name of the code interpreter. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}` |
+| `codeInterpreterCustomName` | `string` | No | The name of the code interpreter. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}`. If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the code interpreter. Can have up to 200 characters |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the code interpreter to access AWS services. A new role will be created if not provided |
 | `networkConfiguration` | `CodeInterpreterNetworkConfiguration` | No | Network configuration for code interpreter. Defaults to PUBLIC network mode |
@@ -1084,7 +1084,7 @@ The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateway
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `gatewayName` | `string` | Yes | The name of the gateway. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). Maximum 100 characters |
+| `gatewayName` | `string` | No | The name of the gateway. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). Maximum 100 characters. If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the gateway. Maximum 200 characters |
 | `protocolConfiguration` | `IGatewayProtocolConfig` | No | The protocol configuration for the gateway. Defaults to MCP protocol |
 | `authorizerConfiguration` | `IGatewayAuthorizerConfig` | No | The authorizer configuration for the gateway. Defaults to Cognito |
@@ -1166,6 +1166,39 @@ const lambdaRole = new iam.Role(this, "LambdaRole", {
 
 // The Lambda needs permission to invoke the gateway
 gateway.grantInvoke(lambdaRole);
+```
+
+**Cognito with M2M (Machine-to-Machine) Authentication (Default)** – When no authorizer is specified, the construct automatically creates a Cognito User Pool configured for OAuth 2.0 client credentials flow. This enables machine-to-machine authentication suitable for AI agents and service-to-service communication.
+
+For more information, see [Setting up Amazon Cognito for Gateway inbound authorization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-cognito.html).
+
+```typescript fixture=default
+// Create a gateway with default Cognito M2M authorizer
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Access the Cognito resources for authentication setup
+const userPool = gateway.userPool;
+const userPoolClient = gateway.userPoolClient;
+
+// Get the token endpoint URL and OAuth scopes for client credentials flow
+const tokenEndpointUrl = gateway.tokenEndpointUrl;
+const oauthScopes = gateway.oauthScopes;
+// oauthScopes are in the format: ['{resourceServerId}/read', '{resourceServerId}/write']
+```
+
+To authenticate with the gateway, request an access token using the client credentials flow and use it to call Gateway endpoints. For more information about the token endpoint, see [The token issuer endpoint](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html).
+
+The following is an example of a token request using curl:
+
+```bash
+curl -X POST "${TOKEN_ENDPOINT_URL}" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=${USER_POOL_CLIENT_ID}" \
+  -d "client_secret=${CLIENT_SECRET}" \
+  -d "scope=${OAUTH_SCOPES}"
 ```
 
 ### Gateway with KMS Encryption
@@ -1274,7 +1307,7 @@ credential provider attached enabling you to securely access targets whether the
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `gatewayTargetName` | `string` | Yes | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen) |
+| `gatewayTargetName` | `string` | No | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
 | `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
@@ -1868,7 +1901,7 @@ To write to long-term memory, you need to configure extraction strategies which 
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `memoryName` | `string` | Yes | The name of the memory |
+| `memoryName` | `string` | No | The name of the memory. If not provided, a unique name will be auto-generated |
 | `expirationDuration` | `Duration` | No | Short-term memory expiration in days (between 7 and 365). Default: 90 days |
 | `description` | `string` | No | Optional description for the memory. Default: no description. |
 | `kmsKey` | `IKey` | No | Custom KMS key to use for encryption. Default: Your data is encrypted with a key that AWS owns and manages for you |

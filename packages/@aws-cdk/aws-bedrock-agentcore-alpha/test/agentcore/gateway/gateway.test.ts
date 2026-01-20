@@ -2307,3 +2307,196 @@ describe('MCP Server Target Configuration Tests', () => {
     expect(target.credentialProviderConfigurations).toHaveLength(1);
   });
 });
+
+describe('Gateway M2M Authentication Tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create default Cognito authorizer with M2M support', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: ['client_credentials'],
+      AllowedOAuthFlowsUserPoolClient: true,
+      GenerateSecret: true,
+    });
+
+    // Resource Server identifier is auto-generated using Names.uniqueResourceName()
+    template.hasResourceProperties('AWS::Cognito::UserPoolResourceServer', {
+      Scopes: [
+        { ScopeName: 'read', ScopeDescription: 'Read access to gateway tools' },
+        { ScopeName: 'write', ScopeDescription: 'Write access to gateway tools' },
+      ],
+    });
+
+    // Domain name is auto-generated using Names.uniqueResourceName()
+    template.resourceCountIs('AWS::Cognito::UserPoolDomain', 1);
+  });
+
+  test('Should set tokenEndpointUrl property with default Cognito authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeDefined();
+    expect(gateway.tokenEndpointUrl).toContain('.auth.us-east-1.amazoncognito.com/oauth2/token');
+  });
+
+  test('Should set oauthScopes property with default Cognito authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.oauthScopes).toBeDefined();
+    expect(gateway.oauthScopes).toHaveLength(2);
+    expect(gateway.oauthScopes![0]).toContain('/read');
+    expect(gateway.oauthScopes![1]).toContain('/write');
+  });
+
+  test('Should not set tokenEndpointUrl and oauthScopes when using custom authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeUndefined();
+    expect(gateway.oauthScopes).toBeUndefined();
+  });
+
+  test('Should not set tokenEndpointUrl and oauthScopes when using custom JWT authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+        allowedAudience: ['my-app'],
+      }),
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeUndefined();
+    expect(gateway.oauthScopes).toBeUndefined();
+  });
+});
+
+describe('Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create Gateway without gatewayName (auto-generated)', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+    });
+
+    expect(gateway.name).toBeDefined();
+    expect(gateway.name).not.toBe('');
+  });
+});
+
+describe('Gateway Target Optional Physical Names', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should create Lambda target without gatewayTargetName (auto-generated)', () => {
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    const target = gateway.addLambdaTarget('TestTarget', {
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create OpenAPI target without gatewayTargetName (auto-generated)', () => {
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
+
+    const target = gateway.addOpenApiTarget('TestTarget', {
+      apiSchema: apiSchema,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
+          providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          credentialLocation: ApiKeyCredentialLocation.header(),
+        }),
+      ],
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create Smithy target without gatewayTargetName (auto-generated)', () => {
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+
+    const target = gateway.addSmithyTarget('TestTarget', {
+      smithyModel: smithyModel,
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create MCP server target without gatewayTargetName (auto-generated)', () => {
+    const target = gateway.addMcpServerTarget('TestTarget', {
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read', 'write'],
+        }),
+      ],
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+});

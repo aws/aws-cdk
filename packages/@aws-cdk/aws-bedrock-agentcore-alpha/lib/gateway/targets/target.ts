@@ -1,4 +1,4 @@
-import { Lazy, Token } from 'aws-cdk-lib';
+import { Lazy, Token, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -26,8 +26,9 @@ export interface GatewayTargetCommonProps {
    * The name of the gateway target
    * The name must be unique within the gateway
    * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -429,12 +430,19 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   private readonly targetConfiguration: ITargetConfiguration;
 
   constructor(scope: Construct, id: string, props: GatewayTargetProps) {
-    super(scope, id);
+    super(scope, id, {
+      // Maximum name length of 100 characters
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gatewaytarget.html#cfn-bedrockagentcore-gatewaytarget-name
+      physicalName: props.gatewayTargetName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 100 }),
+        }),
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // Validate and assign properties
-    this.name = props.gatewayTargetName;
+    this.name = this.physicalName;
     this.validateGatewayTargetName(this.name);
 
     this.description = props.description;
@@ -497,6 +505,8 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    * This method grants the `SynchronizeGatewayTargets` permission, which is primarily
    * needed for MCP Server targets when you need to refresh the tool catalog after the
    * MCP server's tools have changed.
+   *
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grantSync(grantee: iam.IGrantable): iam.Grant {

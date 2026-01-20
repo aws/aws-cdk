@@ -5,11 +5,12 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { IResource } from '../../core';
+import { aws_rds } from '../../interfaces';
 
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, aws_rds.IDBClusterRef {
   /**
    * Identifier of the cluster
    */

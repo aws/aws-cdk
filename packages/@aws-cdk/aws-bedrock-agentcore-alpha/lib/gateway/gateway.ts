@@ -1,4 +1,4 @@
-import { Stack, Token } from 'aws-cdk-lib';
+import { Stack, Token, Lazy, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -29,8 +29,9 @@ export interface AddLambdaTargetOptions {
   /**
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -62,8 +63,9 @@ export interface AddOpenApiTargetOptions {
   /**
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -98,8 +100,9 @@ export interface AddSmithyTargetOptions {
   /**
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -126,8 +129,9 @@ export interface AddMcpServerTargetOptions {
   /**
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -162,8 +166,9 @@ export interface GatewayProps {
    * The name of the gateway
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
    * The name must be unique within your account
+   * @default - auto generate
    */
-  readonly gatewayName: string;
+  readonly gatewayName?: string;
 
   /**
    * Optional description for the gateway
@@ -389,15 +394,46 @@ export class Gateway extends GatewayBase {
    */
   public userPoolClient?: cognito.IUserPoolClient;
 
-  constructor(scope: Construct, id: string, props: GatewayProps) {
-    super(scope, id);
+  /**
+   * The Cognito User Pool Domain created for the gateway (if using default Cognito authorizer)
+   */
+  public userPoolDomain?: cognito.IUserPoolDomain;
+
+  /**
+   * The Cognito Resource Server created for the gateway (if using default Cognito authorizer)
+   */
+  public resourceServer?: cognito.IUserPoolResourceServer;
+
+  /**
+   * The OAuth2 token endpoint URL for client credentials flow.
+   * Only available when using the default Cognito authorizer.
+   */
+  public readonly tokenEndpointUrl?: string;
+
+  /**
+   * The OAuth2 scope strings for client credentials flow.
+   * Only available when using the default Cognito authorizer.
+   */
+  public readonly oauthScopes?: string[];
+
+  constructor(scope: Construct, id: string, props: GatewayProps = {}) {
+    super(scope, id, {
+      // Maximum name length of 48 characters is chosen instead of 100 characters that mentioned in documentation below,
+      // due to failure in CF deployment when more than 48 characters used
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gateway.html#cfn-bedrockagentcore-gateway-name
+      physicalName: props.gatewayName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
+        }),
+    });
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     // ------------------------------------------------------
     // Assignments
     // ------------------------------------------------------
 
-    this.name = props.gatewayName;
+    this.name = this.physicalName;
     this.validateGatewayName(this.name);
 
     this.description = props.description;
@@ -413,7 +449,14 @@ export class Gateway extends GatewayBase {
     }
 
     this.protocolConfiguration = props.protocolConfiguration ?? this.createDefaultMcpProtocolConfiguration();
-    this.authorizerConfiguration = props.authorizerConfiguration ?? this.createDefaultCognitoAuthorizerConfig();
+    if (props.authorizerConfiguration) {
+      this.authorizerConfiguration = props.authorizerConfiguration;
+    } else {
+      const defaultCognitoAuth = this.createDefaultCognitoAuthorizerConfig();
+      this.authorizerConfiguration = defaultCognitoAuth.authorizerConfig;
+      this.tokenEndpointUrl = defaultCognitoAuth.tokenEndpointUrl;
+      this.oauthScopes = defaultCognitoAuth.oauthScopes;
+    }
     this.exceptionLevel = props.exceptionLevel;
 
     this.tags = props.tags ?? {};
@@ -609,7 +652,7 @@ export class Gateway extends GatewayBase {
 
   /**
    * Validates the gateway name format
-   * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
+   * Pattern: ^([0-9a-zA-Z][-]?){1,48}$
    * Max length: 48 characters
    * @param name The gateway name to validate
    * @throws Error if the name is invalid
@@ -634,7 +677,7 @@ export class Gateway extends GatewayBase {
     const patternErrors = validateFieldPattern(
       name,
       'Gateway name',
-      /^([0-9a-zA-Z][-]?){1,100}$/,
+      /^([0-9a-zA-Z][-]?){1,48}$/,
       'Gateway name must contain only alphanumeric characters and hyphens, with hyphens only between characters',
     );
 
@@ -669,23 +712,81 @@ export class Gateway extends GatewayBase {
 
   /**
    * Creates a default Cognito authorizer for the gateway
-   * Provisions a Cognito User Pool and configures JWT authentication
+   * Provisions a Cognito User Pool and configures M2M (machine-to-machine) JWT authentication
+   * using OAuth 2.0 client credentials grant flow
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-cognito.html
    * @internal
    */
-  private createDefaultCognitoAuthorizerConfig(): IGatewayAuthorizerConfig {
+  private createDefaultCognitoAuthorizerConfig(): {
+    authorizerConfig: IGatewayAuthorizerConfig;
+    tokenEndpointUrl: string;
+    oauthScopes: string[];
+  } {
     const userPool = new cognito.UserPool(this, 'UserPool', {
-      userPoolName: `${this.name}-gw-userpool`,
       signInCaseSensitive: false,
     });
-    const userPoolClient = userPool.addClient('DefaultClient', {
-      userPoolClientName: `${this.name}-gw-client`,
+
+    const resourceServer = userPool.addResourceServer('ResourceServer', {
+      identifier: Names.uniqueResourceName(this, { maxLength: 256, separator: '-' }),
+      scopes: [
+        {
+          scopeName: 'read',
+          scopeDescription: 'Read access to gateway tools',
+        },
+        {
+          scopeName: 'write',
+          scopeDescription: 'Write access to gateway tools',
+        },
+      ],
     });
+
+    const oauthScopes = [
+      cognito.OAuthScope.resourceServer(resourceServer, {
+        scopeName: 'read',
+        scopeDescription: 'Read access to gateway tools',
+      }),
+      cognito.OAuthScope.resourceServer(resourceServer, {
+        scopeName: 'write',
+        scopeDescription: 'Write access to gateway tools',
+      }),
+    ];
+
+    const userPoolClient = userPool.addClient('DefaultClient', {
+      generateSecret: true,
+      oAuth: {
+        flows: {
+          clientCredentials: true,
+        },
+        scopes: oauthScopes,
+      },
+    });
+
+    // Create Cognito Domain for OAuth2 token endpoint
+    // Use uniqueResourceName to generate a unique domain prefix toLowerCase() is required because the hash portion is uppercase
+    const domainPrefix = Names.uniqueResourceName(this, {
+      maxLength: 63, // Cognito domain prefix max length
+      separator: '-',
+    }).toLowerCase();
+
+    const userPoolDomain = userPool.addDomain('Domain', {
+      cognitoDomain: {
+        domainPrefix: domainPrefix,
+      },
+    });
+
     this.userPool = userPool;
     this.userPoolClient = userPoolClient;
-    return GatewayAuthorizer.usingCognito({
-      userPool: userPool,
-      allowedClients: [userPoolClient],
-    });
+    this.userPoolDomain = userPoolDomain;
+    this.resourceServer = resourceServer;
+
+    return {
+      authorizerConfig: GatewayAuthorizer.usingCognito({
+        userPool: userPool,
+        allowedClients: [userPoolClient],
+      }),
+      tokenEndpointUrl: `https://${userPoolDomain.domainName}.auth.${Stack.of(this).region}.amazoncognito.com/oauth2/token`,
+      oauthScopes: oauthScopes.map(scope => scope.scopeName),
+    };
   }
 
   /**
