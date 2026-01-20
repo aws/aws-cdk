@@ -544,6 +544,14 @@ export interface LogGroupProps {
   readonly dataProtectionPolicy?: DataProtectionPolicy;
 
   /**
+   * Indicates whether deletion protection is enabled for this log group. When enabled,
+   * deletion protection blocks all deletion operations until it is explicitly disabled.
+   *
+   * @default false
+   */
+  readonly deletionProtectionEnabled?: boolean;
+
+  /**
    * Field Index Policies for this log group.
    *
    * @default - no field index policies for this log group.
@@ -690,6 +698,7 @@ export class LogGroup extends LogGroupBase {
         Statement: dataProtectionPolicy?.statement,
         Configuration: dataProtectionPolicy?.configuration,
       } : undefined,
+      deletionProtectionEnabled: props.deletionProtectionEnabled,
       ...(props.fieldIndexPolicies && { fieldIndexPolicies: fieldIndexPolicies }),
     });
 

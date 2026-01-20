@@ -46,6 +46,16 @@
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
     "prefer-ref-interface:@aws-cdk/aws-imagebuilder-alpha.LifecyclePolicyResourceSelection.recipes",
     "prefer-ref-interface:@aws-cdk/aws-imagebuilder-alpha.LifecyclePolicyProps.executionRole",
-    "prefer-ref-interface:@aws-cdk/aws-imagebuilder-alpha.WorkflowProps.kmsKey"
+    "prefer-ref-interface:@aws-cdk/aws-imagebuilder-alpha.WorkflowProps.kmsKey",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IComponent",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IContainerRecipe",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IDistributionConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IImage",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IImagePipeline",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IImageRecipe",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IInfrastructureConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.ILifecyclePolicy",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IRecipeBase",
+    "interface-extends-ref:@aws-cdk/aws-imagebuilder-alpha.IWorkflow"
   ]
 }
