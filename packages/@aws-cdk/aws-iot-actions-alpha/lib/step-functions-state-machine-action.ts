@@ -1,5 +1,5 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import { ArnFormat, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Stack, ValidationError } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as stepfunctions from 'aws-cdk-lib/aws-stepfunctions';
 import { CommonActionProps } from './common-action-props';
@@ -44,7 +44,7 @@ export class StepFunctionsStateMachineAction implements iot.IAction {
     const stateMachineName = Stack.of(this.stateMachine).splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
 
     if (!stateMachineName) {
-      throw new Error(`No state machine name found in ARN: '${this.stateMachine.stateMachineArn}'`);
+      throw new ValidationError(`No state machine name found in ARN: '${this.stateMachine.stateMachineArn}'`, rule);
     }
 
     role.addToPrincipalPolicy(new iam.PolicyStatement({
