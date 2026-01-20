@@ -370,11 +370,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     this.accessEntryType = props.accessEntryType;
 
     // Validate that certain access entry types cannot have access policies
-    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
-    if (props.accessEntryType && restrictedTypes.includes(props.accessEntryType) &&
-        !Token.isUnresolved(props.accessPolicies) && props.accessPolicies.length > 0) {
-      throw new ValidationError(`Access entry type '${props.accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
-    }
+    this.validateAccessPoliciesForRestrictedTypes(props.accessPolicies, props.accessEntryType);
 
     const resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
@@ -404,12 +400,24 @@ export class AccessEntry extends Resource implements IAccessEntry {
   @MethodMetadata()
   public addAccessPolicies(newAccessPolicies: IAccessPolicy[]): void {
     // Validate that restricted access entry types cannot have access policies
-    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
-    if (this.accessEntryType && restrictedTypes.includes(this.accessEntryType) &&
-        !Token.isUnresolved(newAccessPolicies) && newAccessPolicies.length > 0) {
-      throw new ValidationError(`Access entry type '${this.accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
-    }
+    this.validateAccessPoliciesForRestrictedTypes(newAccessPolicies, this.accessEntryType);
     // add newAccessPolicies to this.accessPolicies
     this.accessPolicies.push(...newAccessPolicies);
+  }
+
+  /**
+   * Validates that restricted access entry types cannot have access policies attached.
+   * 
+   * @param accessPolicies - The access policies to validate
+   * @param accessEntryType - The access entry type to check
+   * @throws {ValidationError} If a restricted access entry type has access policies
+   * @private
+   */
+  private validateAccessPoliciesForRestrictedTypes(accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType): void {
+    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+    if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
+        !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
+      throw new ValidationError(`Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
+    }
   }
 }
