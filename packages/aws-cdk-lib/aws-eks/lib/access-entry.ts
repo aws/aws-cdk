@@ -431,6 +431,8 @@ export class AccessEntry extends Resource implements IAccessEntry {
         !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
       throw new ValidationError(`Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
     }
+  }
+
   public get accessEntryRef(): AccessEntryReference {
     return {
       accessEntryArn: this.accessEntryArn,
