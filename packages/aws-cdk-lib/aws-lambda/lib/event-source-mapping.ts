@@ -652,7 +652,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       provisionedPollerConfig: props.provisionedPollerConfig,
       metricsConfig: props.metricsConfig,
       loggingConfig: {
-        systemLogLevel: props.systemLogLevel
+        systemLogLevel: props.logLevel
       },
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
