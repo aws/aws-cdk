@@ -7,6 +7,13 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:PrincipalAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "AWS": {
