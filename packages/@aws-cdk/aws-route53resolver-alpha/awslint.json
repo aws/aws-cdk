@@ -2,6 +2,16 @@
   "exclude": [
     "props-physical-name:@aws-cdk/aws-route53resolver-alpha.FirewallDomainListProps",
     "props-physical-name:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupProps",
-    "props-physical-name:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationProps"
+    "props-physical-name:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationProps",
+    "prefer-ref-interface:@aws-cdk/aws-route53resolver-alpha.FirewallRule.firewallDomainList",
+    "prefer-ref-interface:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationOptions.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationProps.vpc",
+    "prefer-ref-interface:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationProps.firewallRuleGroup",
+    "interface-extends-ref:@aws-cdk/aws-route53resolver-alpha.IFirewallDomainList",
+    "interface-extends-ref:@aws-cdk/aws-route53resolver-alpha.IFirewallRuleGroup"
   ]
 }
