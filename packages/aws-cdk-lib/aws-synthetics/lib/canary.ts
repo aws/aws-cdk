@@ -1,7 +1,6 @@
 import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { Code } from './code';
-import { ICanary } from './interfaces';
 import { Runtime, RuntimeFamily } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
@@ -390,6 +389,29 @@ export enum ArtifactsEncryptionMode {
    * Server-side encryption (SSE) with an AWS KMS customer managed key.
    */
   KMS = 'SSE_KMS',
+}
+
+/**
+ * Represents a CloudWatch Synthetics Canary
+ */
+export interface ICanary extends cdk.IResource {
+  /**
+   * The ID of the canary
+   * @attribute
+   */
+  readonly canaryId: string;
+
+  /**
+   * The name of the canary
+   * @attribute
+   */
+  readonly canaryName: string;
+
+  /**
+   * The ARN of the canary
+   * @attribute
+   */
+  readonly canaryArn: string;
 }
 
 /**

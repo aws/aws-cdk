@@ -1,9 +1,39 @@
 import { Construct } from 'constructs';
-import { ICanary, IGroup } from './interfaces';
+import { ICanary } from './canary';
 import { CfnGroup } from './synthetics.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+
+/**
+ * Represents a CloudWatch Synthetics Group
+ */
+export interface IGroup extends cdk.IResource {
+  /**
+   * The ID of the group
+   * @attribute
+   */
+  readonly groupId: string;
+
+  /**
+   * The name of the group
+   * @attribute
+   */
+  readonly groupName: string;
+
+  /**
+   * The ARN of the group
+   * @attribute
+   */
+  readonly groupArn: string;
+
+  /**
+   * Add a canary to this group
+   *
+   * @param canary The canary to add to the group
+   */
+  addCanary(canary: ICanary): void;
+}
 
 /**
  * Properties for defining a CloudWatch Synthetics Group
@@ -104,12 +134,10 @@ export class Group extends cdk.Resource implements IGroup {
     addConstructMetadata(this, props);
 
     if (props.canaries && props.canaries.length > 10) {
-      throw new ValidationError('A group can contain at most 10 canaries', this);
+      throw new ValidationError(`A group can contain at most 10 canaries, got: ${props.canaries.length}`, this);
     }
 
-    if (props.canaries) {
-      props.canaries.forEach(canary => this._canaries.add(canary));
-    }
+    props.canaries?.forEach(canary => this._canaries.add(canary));
 
     this._resource = new CfnGroup(this, 'Resource', {
       name: this.physicalName,

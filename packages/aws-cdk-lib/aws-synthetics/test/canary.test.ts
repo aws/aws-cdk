@@ -1349,10 +1349,12 @@ describe('Browser configurations', () => {
   });
 });
 
-describe('Browser configurations', () => {
+describe('Canary import', () => {
   test('can import canary by ARN', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, 'ImportStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
 
     // WHEN
     const canary = synthetics.Canary.fromCanaryArn(
@@ -1363,12 +1365,15 @@ describe('Browser configurations', () => {
 
     // THEN
     expect(canary.canaryName).toBe('my-canary');
-    expect(canary.canaryArn).toContain('my-canary');
+    expect(canary.canaryId).toBe('my-canary');
+    expect(canary.canaryArn).toBe(`arn:${stack.partition}:synthetics:us-east-1:123456789012:canary:my-canary`);
   });
 
   test('can import canary by name', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, 'ImportStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
 
     // WHEN
     const canary = synthetics.Canary.fromCanaryName(stack, 'ImportedCanary', 'my-canary');
@@ -1376,5 +1381,6 @@ describe('Browser configurations', () => {
     // THEN
     expect(canary.canaryName).toBe('my-canary');
     expect(canary.canaryId).toBe('my-canary');
+    expect(canary.canaryArn).toBe(`arn:${stack.partition}:synthetics:us-east-1:123456789012:canary:my-canary`);
   });
 });

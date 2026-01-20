@@ -473,8 +473,8 @@ You can create a group and associate canaries with it:
 
 ```ts
 // First, declare your canaries
-declare const canary1: synthetics.Canary;
-declare const canary2: synthetics.Canary;
+declare const canary1: synthetics.ICanary;
+declare const canary2: synthetics.ICanary;
 
 const group = new synthetics.Group(this, 'MyCanaryGroup', {
   groupName: 'production-canaries',
@@ -487,7 +487,7 @@ const group = new synthetics.Group(this, 'MyCanaryGroup', {
 You can add canaries to a group after creation:
 
 ```ts
-declare const canary: synthetics.Canary;
+declare const canary: synthetics.ICanary;
 
 const group = new synthetics.Group(this, 'MyCanaryGroup');
 

@@ -49,12 +49,12 @@ describe('Group', () => {
     // THEN
     const template = Template.fromStack(stack);
     const groupResources = template.findResources('AWS::Synthetics::Group');
-    const groupResource = Object.values(groupResources)[0] as any;
+    const groupResource = Object.values(groupResources)[0];
     expect(groupResource.Properties.ResourceArns).toHaveLength(1);
     expect(groupResource.Properties.ResourceArns[0]).toMatchObject({
-      'Fn::Join': expect.arrayContaining([
+      'Fn::Join': [
         '',
-        expect.arrayContaining([
+        [
           'arn:',
           { Ref: 'AWS::Partition' },
           ':synthetics:',
@@ -62,9 +62,9 @@ describe('Group', () => {
           ':',
           { Ref: 'AWS::AccountId' },
           ':canary:',
-          expect.any(Object),
-        ]),
-      ]),
+          { Ref: 'Canary11957FE2' },
+        ],
+      ],
     });
   });
 
@@ -85,7 +85,7 @@ describe('Group', () => {
     // THEN
     const template = Template.fromStack(stack);
     const groupResources = template.findResources('AWS::Synthetics::Group');
-    const groupResource = Object.values(groupResources)[0] as any;
+    const groupResource = Object.values(groupResources)[0];
     expect(groupResource.Properties.ResourceArns).toHaveLength(1);
   });
 
@@ -120,28 +120,40 @@ describe('Group', () => {
     );
 
     // WHEN / THEN
-    expect(() => new synthetics.Group(stack, 'Group', { canaries })).toThrow('A group can contain at most 10 canaries');
+    expect(() => new synthetics.Group(stack, 'Group', { canaries })).toThrow('A group can contain at most 10 canaries, got: 11');
   });
 
   test('can import group by ARN', () => {
+    // GIVEN
+    const importStack = new Stack(undefined, 'ImportStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
     // WHEN
     const group = synthetics.Group.fromGroupArn(
-      stack,
+      importStack,
       'ImportedGroup',
       'arn:aws:synthetics:us-east-1:123456789012:group:my-group',
     );
 
     // THEN
     expect(group.groupName).toBe('my-group');
-    expect(group.groupArn).toContain('my-group');
+    expect(group.groupId).toBe('my-group');
+    expect(group.groupArn).toBe(`arn:${importStack.partition}:synthetics:us-east-1:123456789012:group:my-group`);
   });
 
   test('can import group by name', () => {
+    // GIVEN
+    const importStack = new Stack(undefined, 'ImportStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
     // WHEN
-    const group = synthetics.Group.fromGroupName(stack, 'ImportedGroup', 'my-group');
+    const group = synthetics.Group.fromGroupName(importStack, 'ImportedGroup', 'my-group');
 
     // THEN
     expect(group.groupName).toBe('my-group');
     expect(group.groupId).toBe('my-group');
+    expect(group.groupArn).toBe(`arn:${importStack.partition}:synthetics:us-east-1:123456789012:group:my-group`);
   });
 });
