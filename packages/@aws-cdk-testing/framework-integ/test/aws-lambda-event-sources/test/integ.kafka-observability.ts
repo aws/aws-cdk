@@ -42,9 +42,7 @@ class KafkaObservabilityTest extends cdk.Stack {
         maximumPollers: 5,
       },
       // Configure DEBUG level logging for detailed troubleshooting
-      loggingConfig: {
-        systemLogLevel: lambda.EventSourceMappingLogLevel.DEBUG,
-      },
+      logLevel: lambda.EventSourceMappingLogLevel.DEBUG,
     }));
 
     // Scenario 2: Self-managed Kafka with MetricsConfig only
