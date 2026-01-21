@@ -195,7 +195,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return this.grants.grant(grantee, ...actions);
+    return this.grants.actions(grantee, ...actions);
   }
 
   /**
@@ -742,7 +742,9 @@ export class Key extends KeyBase {
   protected readonly trustAccountIdentities: boolean;
   private readonly enableKeyRotation?: boolean;
 
-  // Collection of grant methods for a Key
+  /**
+   * Collection of grant methods for a Key
+   */
   public readonly grants: KeyGrants;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {

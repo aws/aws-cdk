@@ -14,6 +14,9 @@ interface KeyGrantsProps {
  * Collection of grant methods for an IKey
  */
 export class KeyGrants {
+  /**
+   * Creates grants for an IKeyRef
+   */
   public static fromKey(resource: IKeyRef, trustAccountIdentities: boolean): KeyGrants {
     return new KeyGrants({ resource, trustAccountIdentities });
   }
@@ -28,7 +31,15 @@ export class KeyGrants {
     this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
   }
 
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+  /**
+   * Grant the indicated permissions on this key to the given principal
+   *
+   * This modifies both the principal's policy as well as the resource policy,
+   * since the default CloudFormation setup for KMS keys is that the policy
+   * must not be empty and so default grants won't work.
+   *
+   */
+  public actions(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     const granteeStackDependsOnKeyStack = this.granteeStackDependsOnKeyStack(grantee);
     const principal = granteeStackDependsOnKeyStack
       ? new iam.AccountPrincipal(granteeStackDependsOnKeyStack)
@@ -65,36 +76,68 @@ export class KeyGrants {
     }
   }
 
+  /**
+   * Grant decryption permissions using this key to the given principal
+   *
+   */
   public decrypt(grantee: IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
+    return this.actions(grantee, ...perms.DECRYPT_ACTIONS);
   }
 
+  /**
+   * Grant encryption permissions using this key to the given principal
+   *
+   */
   public encrypt(grantee: IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
+    return this.actions(grantee, ...perms.ENCRYPT_ACTIONS);
   }
 
+  /**
+   * Grant encryption and decryption permissions using this key to the given principal
+   *
+   */
   public encryptDecrypt(grantee: IGrantable): iam.Grant {
-    return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
+    return this.actions(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
   }
 
+  /**
+   * Grant sign permissions using this key to the given principal
+   *
+   */
   public sign(grantee: IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.SIGN_ACTIONS);
+    return this.actions(grantee, ...perms.SIGN_ACTIONS);
   }
 
+  /**
+   * Grant verify permissions using this key to the given principal
+   *
+   */
   public verify(grantee: IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+    return this.actions(grantee, ...perms.VERIFY_ACTIONS);
   }
 
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   *
+   */
   public signVerify(grantee: IGrantable): iam.Grant {
-    return this.grant(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
+    return this.actions(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
   }
 
+  /**
+   * Grant permissions to generating MACs to the given principal
+   *
+   */
   public generateMac(grantee: IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
+    return this.actions(grantee, ...perms.GENERATE_HMAC_ACTIONS);
   }
 
+  /**
+   * Grant permissions to verifying MACs to the given principal
+   *
+   */
   public verifyMac(grantee: IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
+    return this.actions(grantee, ...perms.VERIFY_HMAC_ACTIONS);
   }
 
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
