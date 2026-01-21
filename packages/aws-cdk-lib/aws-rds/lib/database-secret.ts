@@ -134,32 +134,6 @@ export class DatabaseSecret extends secretsmanager.Secret {
    * @param template - Connection string template with placeholders. If not provided, you must specify
    *                   a template (there is no default since the engine type is not known at this level).
    * @returns SecretValue that resolves to the interpolated connection string
-   *
-   * @example
-   * const secret = new DatabaseSecret(this, 'Secret', {
-   *   username: 'admin',
-   *   dbname: 'mydb'
-   * });
-   *
-   * // Attach to database to populate host and port
-   * const attachedSecret = secret.attach(database);
-   *
-   * // Use a MySQL connection string template
-   * const connectionString = attachedSecret.connectionString(
-   *   CONNECTION_STRING_TEMPLATES.MYSQL
-   * );
-   *
-   * // Or use a custom template
-   * const customConnectionString = attachedSecret.connectionString(
-   *   'postgresql://${username}:${password}@${host}:${port}/${dbname}?sslmode=require'
-   * );
-   *
-   * // Use in ECS task definition
-   * taskDefinition.addContainer('app', {
-   *   environment: {
-   *     DATABASE_URL: connectionString.unsafeUnwrap(),
-   *   },
-   * });
    */
   public connectionString(template: string): SecretValue {
     return this.connectionStringFromJson(template);

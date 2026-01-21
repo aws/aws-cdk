@@ -954,6 +954,9 @@ const mysqlConnectionString = secret.connectionStringFromJson(
 Connection strings are particularly useful for configuring containerized applications:
 
 ```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { CONNECTION_STRING_TEMPLATES } from 'aws-cdk-lib/aws-rds';
+
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),

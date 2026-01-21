@@ -65,24 +65,6 @@ export interface ISecret extends IResource, ISecretRef {
    *
    * @param template - Connection string template with placeholders like ${username}, ${password}, etc.
    * @returns SecretValue that resolves to the interpolated connection string
-   *
-   * @example
-   * const secret = new DatabaseSecret(this, 'Secret', {
-   *   username: 'admin',
-   *   dbname: 'mydb'
-   * });
-   *
-   * // Construct a MySQL connection string
-   * const connectionString = secret.connectionStringFromJson(
-   *   'mysql://${username}:${password}@${host}:${port}/${dbname}'
-   * );
-   *
-   * // Use in ECS task definition
-   * taskDefinition.addContainer('app', {
-   *   environment: {
-   *     DATABASE_URL: connectionString.unsafeUnwrap(),
-   *   },
-   * });
    */
   connectionStringFromJson(template: string): SecretValue;
 
