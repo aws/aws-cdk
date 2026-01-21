@@ -75,6 +75,12 @@ export interface InstanceProductionVariantProps extends ProductionVariantProps {
    * @default InstanceType.T2_MEDIUM
    */
   readonly instanceType?: InstanceType;
+  /**
+   * The timeout value, in seconds, for your inference container to pass health check.
+   * Range between 60 and 3600 seconds.
+   * @default - none
+   */
+  readonly containerStartupHealthCheckTimeout?: cdk.Duration;
 }
 
 /**
@@ -144,6 +150,12 @@ export interface InstanceProductionVariant extends ProductionVariant {
    * Instance type of the production variant.
    */
   readonly instanceType: InstanceType;
+  /**
+   * The timeout value, in seconds, for your inference container to pass health check.
+   * Range between 60 and 3600 seconds.
+   * @default - none
+   */
+  readonly containerStartupHealthCheckTimeoutInSeconds?: number;
 }
 
 /**
@@ -328,6 +340,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       instanceType: props.instanceType || InstanceType.T2_MEDIUM,
       modelName: props.model.modelName,
       variantName: props.variantName,
+      containerStartupHealthCheckTimeoutInSeconds: props.containerStartupHealthCheckTimeout?.toSeconds(),
     };
   }
 
@@ -408,6 +421,14 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     // check variant weight is not negative
     if (props.initialVariantWeight && props.initialVariantWeight < 0) {
       errors.push('Cannot have negative variant weight');
+    }
+
+    // check container startup health check timeout range
+    if (props.containerStartupHealthCheckTimeout) {
+      const timeoutInSeconds = props.containerStartupHealthCheckTimeout.toSeconds();
+      if (timeoutInSeconds < 60 || timeoutInSeconds > 3600) {
+        errors.push('containerStartupHealthCheckTimeout must be between 60 and 3600 seconds');
+      }
     }
 
     // check environment compatibility with model
@@ -493,6 +514,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       instanceType: v.instanceType.toString(),
       modelName: v.modelName,
       variantName: v.variantName,
+      containerStartupHealthCheckTimeoutInSeconds: v.containerStartupHealthCheckTimeoutInSeconds,
     }) );
   }
 
