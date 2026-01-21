@@ -5,6 +5,8 @@
     "prefer-ref-interface:@aws-cdk/aws-servicecatalogappregistry-alpha.IAttributeGroup.associateWith.application",
     "prefer-ref-interface:@aws-cdk/aws-servicecatalogappregistry-alpha.ShareOptions.roles",
     "prefer-ref-interface:@aws-cdk/aws-servicecatalogappregistry-alpha.ShareOptions.users",
-    "prefer-ref-interface:aws-cdk-lib.aws_iam.IUser.addToGroup.group"
+    "prefer-ref-interface:aws-cdk-lib.aws_iam.IUser.addToGroup.group",
+    "interface-extends-ref:@aws-cdk/aws-servicecatalogappregistry-alpha.IApplication",
+    "interface-extends-ref:@aws-cdk/aws-servicecatalogappregistry-alpha.IAttributeGroup"
   ]
 }
