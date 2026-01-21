@@ -11,6 +11,9 @@ import * as cxapi from '../../../cx-api';
 import { ManagedInstancesServiceBaseProps } from '../base/managed-instances-service-base';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
+/**
+ * The properties for the QueueProcessingManagedInstancesService service.
+ */
 export interface QueueProcessingManagedInstancesServiceProps
   extends QueueProcessingServiceBaseProps,
   ManagedInstancesServiceBaseProps {
@@ -63,10 +66,15 @@ export interface QueueProcessingManagedInstancesServiceProps
   /**
    * If provided and `capacityProviderStrategies` is omitted, we’ll default to using this provider.
    * (You still need to have added it to the cluster elsewhere or do so yourself before service creation.)
+   *
+   * @default - none
    */
   readonly managedInstancesCapacityProvider?: ManagedInstancesCapacityProvider;
 }
 
+/**
+ * Class to create a queue processing Managed Instances service.
+ */
 export class QueueProcessingManagedInstancesService extends QueueProcessingServiceBase {
   /**
    * The service in this construct.

@@ -1,5 +1,8 @@
 import { ManagedInstancesTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
 
+/**
+ * Base properties for Managed Instances services in ECS patterns.
+ */
 export interface ManagedInstancesServiceBaseProps {
   /**
    * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both.
