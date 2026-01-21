@@ -853,6 +853,23 @@ new rds.DatabaseInstance(this, 'InstanceWithCustomizedSecret', {
 });
 ```
 
+For applications that embed database credentials in connection URLs (such as Go applications using `net/url` parser), you can generate URL-safe passwords that exclude characters known to cause URL parsing issues:
+
+```ts
+declare const vpc: ec2.Vpc;
+const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 });
+
+new rds.DatabaseInstance(this, 'InstanceWithUrlSafePassword', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromGeneratedSecret('postgres', {
+    urlSafePassword: true, // Excludes characters that can cause URL parsing issues (like ^)
+  }),
+});
+```
+
+The `urlSafePassword` option extends the default character exclusion set to include characters that are problematic in URLs, particularly the caret (`^`) character which causes failures in Go's `net/url` parser. If you specify both `urlSafePassword: true` and `excludeCharacters`, the explicit `excludeCharacters` takes precedence.
+
 ### Snapshot credentials
 
 As noted above, Databases created with `DatabaseInstanceFromSnapshot` or `ServerlessClusterFromSnapshot` will not create user and auto-generated password by default because it's not possible to change the master username for a snapshot. Instead, they will use the existing username and password from the snapshot. You can still generate a new password - to generate a secret similarly to the other constructs, pass in credentials with `fromGeneratedSecret()` or `fromGeneratedPassword()`.
@@ -869,6 +886,18 @@ new rds.DatabaseInstanceFromSnapshot(this, 'InstanceFromSnapshotWithCustomizedSe
   credentials: rds.SnapshotCredentials.fromGeneratedSecret('username', {
     encryptionKey: myKey,
     excludeCharacters: '!&*^#@()',
+    replicaRegions: [{ region: 'eu-west-1' }, { region: 'eu-west-2' }],
+  }),
+});
+
+// Alternative: Generate URL-safe password for snapshot credentials
+new rds.DatabaseInstanceFromSnapshot(this, 'InstanceFromSnapshotWithUrlSafePassword', {
+  engine,
+  vpc,
+  snapshotIdentifier: 'mySnapshot',
+  credentials: rds.SnapshotCredentials.fromGeneratedSecret('username', {
+    encryptionKey: myKey,
+    urlSafePassword: true, // Excludes URL-problematic characters like ^
     replicaRegions: [{ region: 'eu-west-1' }, { region: 'eu-west-2' }],
   }),
 });
