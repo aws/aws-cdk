@@ -29,6 +29,7 @@ Any code that you submit will be released under that license.
   - [Step 2: Design (optional)](#step-2-design)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
   - [Step 4: Pull Request](#step-4-pull-request)
+  - [What Happens After You Submit Your PR](#what-happens-after-you-submit-your-pr)
   - [Step 5: Merge](#step-5-merge)
 - [Breaking Changes](#breaking-changes)
 - [Documentation](#documentation)
@@ -822,6 +823,45 @@ To disable coverage of specific lines, you can use:
 /* istanbul ignore next */
 console.log('This cannot be covered')
 ```
+
+### What Happens After You Submit Your PR
+
+After you submit your pull request, here's what to expect:
+
+#### 1. CodeBuild CI Validation
+
+Your PR will automatically trigger a CodeBuild CI pipeline that runs tests and validation checks. You are responsible for ensuring these checks pass:
+
+* **Monitor the build status** - Check the PR status checks to see if CodeBuild passes or fails.
+* **If the build fails** - You need to:
+  1. Click on the "Details" link next to the failed CodeBuild check to view the build logs
+  2. Identify the error message in the build log
+  3. Address the issue locally in your development environment
+  4. Commit and push the fixes to your PR branch
+  5. Repeat until the CodeBuild CI passes successfully
+
+> [!IMPORTANT]
+> Your PR cannot proceed to review until the CodeBuild CI check passes. If your build is failing without any work on it, your PR will be subject to closure for staleness.
+
+* **Resolve merge conflicts** - After CI passes, check if your PR has any merge conflicts with the base branch. If conflicts exist, you must resolve them either:
+  - From the GitHub web UI using the conflict resolution tool, or
+  - Locally in your IDE by pulling the latest changes from the base branch and resolving conflicts manually
+
+#### 2. Community Review Queue
+
+Once your PR passes all CI checks with no conflicts:
+
+* Your PR will be added to the [pending-community-review](https://github.com/aws/aws-cdk/pulls?q=is%3Apr+is%3Aopen+label%3Apr%2Fneeds-community-review) queue
+* [Eligible community reviewers](https://github.com/aws/aws-cdk/wiki/CDK-Community-PR-Reviews) can review and provide feedback on your changes
+* **One approving community review** will immediately bump your PR to the pending maintainer review queue
+
+#### 3. Maintainer Review Queue
+
+After receiving community approval:
+
+* Your PR will be promoted to the [pending-maintainer-review](https://github.com/aws/aws-cdk/pulls?q=is%3Apr+is%3Aopen+label%3Apr%2Fneeds-maintainer-review) queue
+* A CDK maintainer will perform a final review
+* The maintainer may request additional changes or approve your PR for merge
 
 ### Step 5: Merge
 
