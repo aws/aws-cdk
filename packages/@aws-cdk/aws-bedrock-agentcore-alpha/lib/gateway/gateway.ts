@@ -1,4 +1,4 @@
-import { Names, Lazy, Stack, Token } from 'aws-cdk-lib';
+import { Stack, Token, Lazy, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -30,8 +30,9 @@ export interface AddLambdaTargetOptions {
   /**
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -63,8 +64,9 @@ export interface AddOpenApiTargetOptions {
   /**
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -99,8 +101,9 @@ export interface AddSmithyTargetOptions {
   /**
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -127,8 +130,9 @@ export interface AddMcpServerTargetOptions {
   /**
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -163,8 +167,9 @@ export interface GatewayProps {
    * The name of the gateway
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
    * The name must be unique within your account
+   * @default - auto generate
    */
-  readonly gatewayName: string;
+  readonly gatewayName?: string;
 
   /**
    * Optional description for the gateway
@@ -438,15 +443,24 @@ export class Gateway extends GatewayBase {
    */
   public readonly oauthScopes?: string[];
 
-  constructor(scope: Construct, id: string, props: GatewayProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: GatewayProps = {}) {
+    super(scope, id, {
+      // Maximum name length of 48 characters is chosen instead of 100 characters that mentioned in documentation below,
+      // due to failure in CF deployment when more than 48 characters used
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gateway.html#cfn-bedrockagentcore-gateway-name
+      physicalName: props.gatewayName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
+        }),
+    });
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     // ------------------------------------------------------
     // Assignments
     // ------------------------------------------------------
 
-    this.name = props.gatewayName;
+    this.name = this.physicalName;
     this.validateGatewayName(this.name);
 
     this.description = props.description;
@@ -673,7 +687,7 @@ export class Gateway extends GatewayBase {
 
   /**
    * Validates the gateway name format
-   * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
+   * Pattern: ^([0-9a-zA-Z][-]?){1,48}$
    * Max length: 48 characters
    * @param name The gateway name to validate
    * @throws Error if the name is invalid
@@ -698,7 +712,7 @@ export class Gateway extends GatewayBase {
     const patternErrors = validateFieldPattern(
       name,
       'Gateway name',
-      /^([0-9a-zA-Z][-]?){1,100}$/,
+      /^([0-9a-zA-Z][-]?){1,48}$/,
       'Gateway name must contain only alphanumeric characters and hyphens, with hyphens only between characters',
     );
 

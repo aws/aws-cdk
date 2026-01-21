@@ -2388,6 +2388,120 @@ describe('Gateway M2M Authentication Tests', () => {
   });
 });
 
+describe('Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create Gateway without gatewayName (auto-generated)', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+    });
+
+    expect(gateway.name).toBeDefined();
+    expect(gateway.name).not.toBe('');
+  });
+});
+
+describe('Gateway Target Optional Physical Names', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should create Lambda target without gatewayTargetName (auto-generated)', () => {
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    const target = gateway.addLambdaTarget('TestTarget', {
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create OpenAPI target without gatewayTargetName (auto-generated)', () => {
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
+
+    const target = gateway.addOpenApiTarget('TestTarget', {
+      apiSchema: apiSchema,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
+          providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          credentialLocation: ApiKeyCredentialLocation.header(),
+        }),
+      ],
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create Smithy target without gatewayTargetName (auto-generated)', () => {
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+
+    const target = gateway.addSmithyTarget('TestTarget', {
+      smithyModel: smithyModel,
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create MCP server target without gatewayTargetName (auto-generated)', () => {
+    const target = gateway.addMcpServerTarget('TestTarget', {
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read', 'write'],
+        }),
+      ],
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+});
+
 describe('Gateway Interceptor Tests', () => {
   let stack: cdk.Stack;
 
