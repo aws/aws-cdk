@@ -22,7 +22,6 @@ import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import { CidrBlock } from '../../aws-ec2/lib/network-util';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
@@ -2337,7 +2336,7 @@ export class Cluster extends ClusterBase {
       const { cidrs } = network;
       if (cidrs.length > 1) {
         cidrs.forEach((cidr1, j) => {
-          if (cidrs.slice(j + 1).some(cidr2 => validateCidrPairOverlap(cidr1, cidr2))) {
+          if (cidrs.slice(j + 1).some(cidr2 => ec2.NetworkUtils.validateCidrPairOverlap(cidr1, cidr2))) {
             throw new ValidationError(`CIDR ${cidr1} should not overlap with another CIDR in remote node network #${index + 1}`, this);
           }
         });
@@ -2347,7 +2346,7 @@ export class Cluster extends ClusterBase {
     // validate that no two CIDRs overlap across different remote node networks
     props.remoteNodeNetworks.forEach((network1, i) => {
       props.remoteNodeNetworks!.slice(i + 1).forEach((network2, j) => {
-        const [overlap, remoteNodeCidr1, remoteNodeCidr2] = validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
+        const [overlap, remoteNodeCidr1, remoteNodeCidr2] = ec2.NetworkUtils.validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
         if (overlap) {
           throw new ValidationError(`CIDR block ${remoteNodeCidr1} in remote node network #${i + 1} should not overlap with CIDR block ${remoteNodeCidr2} in remote node network #${i + j + 2}`, this);
         }
@@ -2360,7 +2359,7 @@ export class Cluster extends ClusterBase {
         const { cidrs } = network;
         if (cidrs.length > 1) {
           cidrs.forEach((cidr1, j) => {
-            if (cidrs.slice(j + 1).some(cidr2 => validateCidrPairOverlap(cidr1, cidr2))) {
+            if (cidrs.slice(j + 1).some(cidr2 => ec2.NetworkUtils.validateCidrPairOverlap(cidr1, cidr2))) {
               throw new ValidationError(`CIDR ${cidr1} should not overlap with another CIDR in remote pod network #${index + 1}`, this);
             }
           });
@@ -2370,7 +2369,7 @@ export class Cluster extends ClusterBase {
       // validate that no two CIDRs overlap across different remote pod networks
       props.remotePodNetworks.forEach((network1, i) => {
         props.remotePodNetworks!.slice(i + 1).forEach((network2, j) => {
-          const [overlap, remotePodCidr1, remotePodCidr2] = validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
+          const [overlap, remotePodCidr1, remotePodCidr2] = ec2.NetworkUtils.validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
           if (overlap) {
             throw new ValidationError(`CIDR block ${remotePodCidr1} in remote pod network #${i + 1} should not overlap with CIDR block ${remotePodCidr2} in remote pod network #${i + j + 2}`, this);
           }
@@ -2380,7 +2379,7 @@ export class Cluster extends ClusterBase {
       // validate that no two CIDRs overlap between a given remote node network and remote pod network
       for (const nodeNetwork of props.remoteNodeNetworks!) {
         for (const podNetwork of props.remotePodNetworks) {
-          const [overlap, remoteNodeCidr, remotePodCidr] = validateCidrBlocksOverlap(nodeNetwork.cidrs, podNetwork.cidrs);
+          const [overlap, remoteNodeCidr, remotePodCidr] = ec2.NetworkUtils.validateCidrBlocksOverlap(nodeNetwork.cidrs, podNetwork.cidrs);
           if (overlap) {
             throw new ValidationError(`Remote node network CIDR block ${remoteNodeCidr} should not overlap with remote pod network CIDR block ${remotePodCidr}`, this);
           }
@@ -2864,35 +2863,4 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
 
 function flatten<A>(xss: A[][]): A[] {
   return Array.prototype.concat.call([], ...xss);
-}
-
-function validateCidrBlocksOverlap(cidrBlocks1: string[], cidrBlocks2: string[]): [boolean, string, string] {
-  for (const cidr1 of cidrBlocks1) {
-    for (const cidr2 of cidrBlocks2) {
-      const overlap = validateCidrPairOverlap(cidr1, cidr2);
-      if (overlap) {
-        return [true, cidr1, cidr2];
-      }
-    }
-  }
-
-  return [false, '', ''];
-}
-
-function validateCidrPairOverlap(cidr1: string, cidr2: string): boolean {
-  const cidr1Range = new CidrBlock(cidr1);
-  const cidr1IpRange: [string, string] = [cidr1Range.minIp(), cidr1Range.maxIp()];
-
-  const cidr2Range = new CidrBlock(cidr2);
-  const cidr2IpRange: [string, string] = [cidr2Range.minIp(), cidr2Range.maxIp()];
-
-  return rangesOverlap(cidr1IpRange, cidr2IpRange);
-}
-
-function rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
-  const [start1, end1] = range1;
-  const [start2, end2] = range2;
-
-  // Check if ranges overlap
-  return start1 <= end2 && start2 <= end1;
 }
