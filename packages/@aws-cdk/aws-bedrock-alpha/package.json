@@ -125,7 +125,11 @@
       "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.GuardrailProps.kmsKey",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptAttributes.kmsKey",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptProps.kmsKey",
-      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptVersionProps.prompt"
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptVersionProps.prompt",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IAgent",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IAgentAlias",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IGuardrail",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IPrompt"
     ]
   }
 }
