@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
-import { IFunction } from './function-base';
 import { CfnCapacityProvider, CfnFunction } from './lambda.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -8,7 +7,7 @@ import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, IResource, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { CapacityProviderReference, ICapacityProviderRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
+import { CapacityProviderReference, ICapacityProviderRef, IFunctionRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * Represents a Lambda capacity provider.
@@ -27,6 +26,14 @@ export interface ICapacityProvider extends IResource, ICapacityProviderRef {
    * @attribute
    */
   readonly capacityProviderName: string;
+
+  /**
+   * Configures a Lambda function to use this capacity provider.
+   *
+   * @param func The Lambda function to configure
+   * @param options Optional configuration for the function's capacity provider settings
+   */
+  addFunction(func: IFunctionRef, options?: CapacityProviderFunctionOptions): void;
 }
 
 /**
@@ -227,40 +234,6 @@ export class TargetTrackingScalingPolicy {
 }
 
 /**
- * Base class for a Lambda capacity provider.
- */
-abstract class CapacityProviderBase extends Resource implements ICapacityProvider {
-  /**
-   * The name of the capacity provider.
-   */
-  public abstract readonly capacityProviderName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) of the capacity provider.
-   */
-  public abstract readonly capacityProviderArn: string;
-
-  public get capacityProviderRef(): CapacityProviderReference {
-    return {
-      capacityProviderName: this.capacityProviderName,
-      capacityProviderArn: this.capacityProviderArn,
-    };
-  }
-}
-
-/**
- * Attributes for importing an existing Lambda capacity provider.
- */
-export interface CapacityProviderAttributes {
-  /**
-   * The Amazon Resource Name (ARN) of the capacity provider.
-   *
-   * Format: arn:<partition>:lambda:<region>:<account-id>:capacity-provider:<capacity-provider-name>
-   */
-  readonly capacityProviderArn: string;
-}
-
-/**
  * Options for creating a function associated with a capacity provider.
  */
 export interface CapacityProviderFunctionOptions {
@@ -318,6 +291,91 @@ export interface LatestPublishedScalingConfig {
    * @default - No maximum specified
    */
   readonly maxExecutionEnvironments?: number;
+}
+
+/**
+ * Base class for a Lambda capacity provider.
+ */
+abstract class CapacityProviderBase extends Resource implements ICapacityProvider {
+  /**
+   * The name of the capacity provider.
+   */
+  public abstract readonly capacityProviderName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the capacity provider.
+   */
+  public abstract readonly capacityProviderArn: string;
+
+  public get capacityProviderRef(): CapacityProviderReference {
+    return {
+      capacityProviderName: this.capacityProviderName,
+      capacityProviderArn: this.capacityProviderArn,
+    };
+  }
+
+  /**
+   * Configures a Lambda function to use this capacity provider.
+   *
+   * @param func The Lambda function to configure
+   * @param options Optional configuration for the function's capacity provider settings
+   */
+  @MethodMetadata()
+  public addFunction(func: IFunctionRef, options?: CapacityProviderFunctionOptions): void {
+    Annotations.of(func).addInfoV2('aws-lambda:Function.CapacityProviderConfiguration', 'Capacity provider configuration cannot be removed from a function, only modified.');
+
+    const cfnFunction = func.node.defaultChild as CfnFunction;
+
+    cfnFunction.publishToLatestPublished = options?.publishToLatestPublished;
+
+    cfnFunction.capacityProviderConfig = {
+      lambdaManagedInstancesCapacityProviderConfig: {
+        capacityProviderArn: this.capacityProviderArn,
+        perExecutionEnvironmentMaxConcurrency: options?.perExecutionEnvironmentMaxConcurrency,
+        executionEnvironmentMemoryGiBPerVCpu: options?.executionEnvironmentMemoryGiBPerVCpu,
+      },
+    };
+
+    const minExecutionEnvironments = options?.latestPublishedScalingConfig?.minExecutionEnvironments;
+    const maxExecutionEnvironments = options?.latestPublishedScalingConfig?.maxExecutionEnvironments;
+
+    if (minExecutionEnvironments !== undefined || maxExecutionEnvironments !== undefined) {
+      this.validateFunctionScalingConfig(minExecutionEnvironments, maxExecutionEnvironments);
+      cfnFunction.functionScalingConfig = {
+        minExecutionEnvironments,
+        maxExecutionEnvironments,
+      };
+    }
+  }
+
+  private validateFunctionScalingConfig(minExecutionEnvironments?: number, maxExecutionEnvironments?: number) {
+    const minDefined = minExecutionEnvironments !== undefined && !Token.isUnresolved(minExecutionEnvironments);
+    const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
+
+    if (minDefined && (minExecutionEnvironments < 0 || minExecutionEnvironments > 15000)) {
+      throw new ValidationError(`minExecutionEnvironments must be between 0 and 15000, but was ${minExecutionEnvironments}.`, this);
+    }
+
+    if (maxDefined && (maxExecutionEnvironments < 0 || maxExecutionEnvironments > 15000)) {
+      throw new ValidationError(`maxExecutionEnvironments must be between 0 and 15000, but was ${maxExecutionEnvironments}.`, this);
+    }
+
+    if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
+      throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments.', this);
+    }
+  }
+}
+
+/**
+ * Attributes for importing an existing Lambda capacity provider.
+ */
+export interface CapacityProviderAttributes {
+  /**
+   * The Amazon Resource Name (ARN) of the capacity provider.
+   *
+   * Format: arn:<partition>:lambda:<region>:<account-id>:capacity-provider:<capacity-provider-name>
+   */
+  readonly capacityProviderArn: string;
 }
 
 /**
@@ -508,59 +566,6 @@ export class CapacityProvider extends CapacityProviderBase {
 
     if (instanceTypeFilter?.excludedInstanceTypes && instanceTypeFilter.excludedInstanceTypes.length < 1) {
       throw new ValidationError(`instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.excludedInstanceTypes.length} items.`, this);
-    }
-  }
-
-  // Methods related to attaching a Lambda function to the capacity provider
-
-  /**
-   * Configures a Lambda function to use this capacity provider.
-   *
-   * @param func The Lambda function to configure
-   * @param options Optional configuration for the function's capacity provider settings
-   */
-  @MethodMetadata()
-  public addFunction(func: IFunction, options?: CapacityProviderFunctionOptions): void {
-    Annotations.of(func).addInfoV2('aws-lambda:Function.CapacityProviderConfiguration', 'Capacity provider configuration cannot be removed from a function, only modified.');
-
-    const cfnFunction = func.node.defaultChild as CfnFunction;
-
-    cfnFunction.publishToLatestPublished = options?.publishToLatestPublished;
-
-    cfnFunction.capacityProviderConfig = {
-      lambdaManagedInstancesCapacityProviderConfig: {
-        capacityProviderArn: this.capacityProviderArn,
-        perExecutionEnvironmentMaxConcurrency: options?.perExecutionEnvironmentMaxConcurrency,
-        executionEnvironmentMemoryGiBPerVCpu: options?.executionEnvironmentMemoryGiBPerVCpu,
-      },
-    };
-
-    const minExecutionEnvironments = options?.latestPublishedScalingConfig?.minExecutionEnvironments;
-    const maxExecutionEnvironments = options?.latestPublishedScalingConfig?.maxExecutionEnvironments;
-
-    if (minExecutionEnvironments !== undefined || maxExecutionEnvironments !== undefined) {
-      this.validateFunctionScalingConfig(minExecutionEnvironments, maxExecutionEnvironments);
-      cfnFunction.functionScalingConfig = {
-        minExecutionEnvironments,
-        maxExecutionEnvironments,
-      };
-    }
-  }
-
-  private validateFunctionScalingConfig(minExecutionEnvironments?: number, maxExecutionEnvironments?: number) {
-    const minDefined = minExecutionEnvironments !== undefined && !Token.isUnresolved(minExecutionEnvironments);
-    const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
-
-    if (minDefined && (minExecutionEnvironments < 0 || minExecutionEnvironments > 15000)) {
-      throw new ValidationError(`minExecutionEnvironments must be between 0 and 15000, but was ${minExecutionEnvironments}.`, this);
-    }
-
-    if (maxDefined && (maxExecutionEnvironments < 0 || maxExecutionEnvironments > 15000)) {
-      throw new ValidationError(`maxExecutionEnvironments must be between 0 and 15000, but was ${maxExecutionEnvironments}.`, this);
-    }
-
-    if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
-      throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments.', this);
     }
   }
 }
