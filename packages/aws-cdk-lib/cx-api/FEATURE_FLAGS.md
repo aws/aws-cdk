@@ -109,7 +109,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
-| [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | V2NEXT | new default |
+| [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2\_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -2331,5 +2331,6 @@ If `keyValueStore` is specified, the runtime will always be cloudfront-js-2.0 re
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.
+
 
 <!-- END details -->
