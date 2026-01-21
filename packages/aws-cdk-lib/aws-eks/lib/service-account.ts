@@ -78,7 +78,19 @@ export interface ServiceAccountOptions {
    * @default IdentityType.IRSA
    */
   readonly identityType?: IdentityType;
+
+  /**
+   * Overwrite existing service account.
+   *
+   * If this is set, we will use `kubectl apply` instead of `kubectl create`
+   * when the service account is created. Otherwise, if there is already a service account
+   * in the cluster with the same name, the operation will fail.
+   *
+   * @default false
+   */
+  readonly overwriteServiceAccount?: boolean;
 }
+
 export interface ServiceAccountOptions {
   /**
    * The name of the service account.
@@ -227,6 +239,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     // and since this stack inherintely depends on the cluster stack, we will have a circular dependency.
     new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
       cluster,
+      overwrite: props.overwriteServiceAccount,
       manifest: [{
         apiVersion: 'v1',
         kind: 'ServiceAccount',
