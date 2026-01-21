@@ -60,7 +60,7 @@ rules/
 │   ├── sns-no-world-accessible.guard
 │   └── sns-no-world-accessible-inline.guard
 └── sqs/
-    ├── sqs-encryption-enabled.guard
+    ├── sqs-encryption-not-disabled.guard
     ├── sqs-no-world-accessible.guard
     └── sqs-no-world-accessible-inline.guard
 ```
