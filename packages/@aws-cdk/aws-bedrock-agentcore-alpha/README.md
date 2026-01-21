@@ -1958,7 +1958,7 @@ You can use built-in extraction strategies for quick setup, or create custom ext
 
 ### Memory with Built-in Strategies
 
-The library provides three built-in LTM strategies. These are default strategies for organizing and extracting memory data,
+The library provides four built-in LTM strategies. These are default strategies for organizing and extracting memory data,
 each optimized for specific use cases.
 
 For example: An agent helps multiple users with cloud storage setup. From these conversations,
@@ -1985,6 +1985,14 @@ Extracted memory example: User needs clear guidance on cloud storage account con
    - Extracts user behavior patterns from raw conversations
    - Namespace: `/strategies/{memoryStrategyId}/actors/{actorId}`
 
+4. **Episodic Memory Strategy** (`MemoryStrategy.usingBuiltInEpisodic()`)
+Captures meaningful slices of user and system interactions, preserve them into compact records after summarizing.
+Extracted memory example: User first asked about pricing on Monday, then requested feature comparison on Tuesday, finally made purchase decision on Wednesday.
+
+   - Captures event sequences and temporal relationships
+   - Namespace: `/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}`
+   - Reflections: `/strategy/{memoryStrategyId}/actor/{actorId}` 
+
 ```typescript fixture=default
 // Create memory with built-in strategies
 const memory = new agentcore.Memory(this, "MyMemory", {
@@ -1995,6 +2003,7 @@ const memory = new agentcore.Memory(this, "MyMemory", {
     agentcore.MemoryStrategy.usingBuiltInSummarization(),
     agentcore.MemoryStrategy.usingBuiltInSemantic(),
     agentcore.MemoryStrategy.usingBuiltInUserPreference(),
+    agentcore.MemoryStrategy.usingBuiltInEpisodic(),
   ],
 });
 ```
@@ -2004,6 +2013,7 @@ The name generated for each built in memory strategy is as follows:
 - For Summarization: `summary_builtin_cdk001`
 - For Semantic:`semantic_builtin_cdk001>`
 - For User Preferences: `preference_builtin_cdk001`
+- For Episodic : `episodic_builtin_cdkGen0001`
 
 ### Memory with custom Strategies
 
@@ -2045,12 +2055,13 @@ You can customise the namespace, i.e. where the memories are stored by using the
 1. **Summarization Strategy** (`MemoryStrategy.usingSummarization(props)`)
 1. **Semantic Memory Strategy** (`MemoryStrategy.usingSemantic(props)`)
 1. **User Preference Strategy** (`MemoryStrategy.usingUserPreference(props)`)
+1. **Episodic Memory Strategy** (`MemoryStrategy.usingEpisodic(props)`)
 
 ```typescript fixture=default
-// Create memory with built-in strategies
+// Create memory with custom strategies
 const memory = new agentcore.Memory(this, "MyMemory", {
   memoryName: "my_memory",
-  description: "Memory with built-in strategies",
+  description: "Memory with custom strategies",
   expirationDuration: cdk.Duration.days(90),
   memoryStrategies: [
     agentcore.MemoryStrategy.usingUserPreference({
@@ -2060,6 +2071,13 @@ const memory = new agentcore.Memory(this, "MyMemory", {
     agentcore.MemoryStrategy.usingSemantic({
         name: "CustomerSupportSemantic",
         namespaces: ["support/customer/{actorId}/semantic"]
+    }),
+     agentcore.MemoryStrategy.usingEpisodic({
+        name: "customerJourneyEpisodic",
+        namespaces: ["/journey/customer/{actorId}/episodes"],
+        reflectionConfiguration: {
+            namespaces: ["/journey/customer/{actorId}/reflections"]
+        }
     }),
   ],
 });
