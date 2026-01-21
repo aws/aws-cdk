@@ -355,17 +355,14 @@ export interface EventSourceMappingOptions {
  * @example
  * // Configure INFO level logging for production monitoring
  * let func: lambda.IFunction;
- * [...]
  * const eventSourceMapping = func.addEventSourceMapping(`eventSourceMappingName`, {
- *   [...]
  *   logLevel: lambda.EventSourceMappingLogLevel.INFO
  * });
  *
+ * @example
  * // Configure DEBUG level logging for detailed troubleshooting
  * let func: lambda.IFunction;
- * [...]
  * const eventSourceMapping = func.addEventSourceMapping(`eventSourceMappingName`, {
- *   [...]
  *   logLevel: lambda.EventSourceMappingLogLevel.DEBUG
  * });
  */
