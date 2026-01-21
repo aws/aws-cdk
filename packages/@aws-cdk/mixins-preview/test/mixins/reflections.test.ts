@@ -366,6 +366,23 @@ describe('find KmsKey', () => {
     test('returns KMS key L1 if the initial key is an L2', () => {
       const kmsKey = new kms.Key(stack, 'Key');
       expect(tryFindKmsKeyConstruct(kmsKey)).toBe(kmsKey.node.defaultChild);
-    })
+    });
+
+    test('finds grandchild KMS key', () => {
+      const grandparent = new Construct(stack, 'Grandparent');
+      const parent = new Construct(grandparent, 'Parent');
+      const kmsKey = new kms.CfnKey(parent, 'Key');
+
+      expect(tryFindKmsKeyConstruct(kmsKey)).toBe(kmsKey);
+    });
+
+    test('finds correct key, even if it is deeper in the construct tree', () => {
+      const grandparent = new Construct(stack, 'Grandparent');
+      new kms.CfnKey(stack, 'Key1');
+      const parent = new Construct(grandparent, 'Parent');
+      const kmsKey2 = new kms.CfnKey(parent, 'Key2');
+
+      expect(tryFindKmsKeyConstruct(kmsKey2)).toBe(kmsKey2);
+    });
   });
 });
