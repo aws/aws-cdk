@@ -1607,7 +1607,7 @@ export interface ManagedInstancesCapacityProviderProps {
    * Specifies the capacity option type for instances launched by this capacity provider.
    * This determines whether instances are launched as On-Demand or Spot instances.
    *
-   * @default - not specified, ECS will use default behavior
+   * @default - `ON_DEMAND`
    */
   readonly capacityOptionType?: CapacityOptionType;
 }
