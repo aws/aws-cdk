@@ -21,7 +21,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Size, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -452,6 +452,80 @@ export enum NetworkType {
 }
 
 /**
+ * Storage types supported for additional storage volumes.
+ */
+export enum AdditionalStorageVolumeType {
+  /** General Purpose SSD (gp3) */
+  GP3 = 'gp3',
+  /** Provisioned IOPS SSD (io2) */
+  IO2 = 'io2',
+}
+
+/**
+ * Configuration for an additional storage volume.
+ *
+ * Additional storage volumes are supported for RDS for Oracle and RDS for SQL Server only.
+ * Volume names are automatically assigned based on the engine type and array index:
+ * - Oracle: rdsdbdata2, rdsdbdata3, rdsdbdata4
+ * - SQL Server: H:, I:, J:
+ *
+ * Requirements:
+ * - Instance types must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge)
+ * - Primary storage must be at least 200 GiB
+ * - Only gp3 and io2 storage types are supported
+ * - Oracle GP3: minimum 12,000 IOPS, maximum 64,000 IOPS
+ * - SQL Server GP3: minimum 3,000 IOPS, maximum 16,000 IOPS
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html
+ */
+export interface AdditionalStorageVolume {
+  /**
+   * The storage type for the additional storage volume.
+   *
+   * Only gp3 and io2 are supported for additional volumes.
+   *
+   * @default AdditionalStorageVolumeType.GP3
+   */
+  readonly storageType?: AdditionalStorageVolumeType;
+
+  /**
+   * The amount of storage to allocate.
+   *
+   * The minimum is 200 GiB. The maximum is 65,536 GiB (64 TiB).
+   *
+   * @example Size.gibibytes(200)
+   */
+  readonly allocatedStorage: Size;
+
+  /**
+   * The number of I/O operations per second (IOPS) to provision.
+   *
+   * @default - default IOPS for the storage type
+   */
+  readonly iops?: number;
+
+  /**
+   * The upper limit to which RDS can automatically scale storage.
+   *
+   * @default - no autoscaling
+   *
+   * @example Size.gibibytes(1000)
+   */
+  readonly maxAllocatedStorage?: Size;
+
+  /**
+   * The storage throughput.
+   *
+   * Only applicable for gp3 storage type.
+   *
+   * @default - default throughput for gp3
+   *
+   * @example Size.mebibytes(500)
+   */
+  readonly storageThroughput?: Size;
+}
+
+/**
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceNewProps {
@@ -867,6 +941,21 @@ export interface DatabaseInstanceNewProps {
    * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
    */
   readonly engineLifecycleSupport?: EngineLifecycleSupport;
+
+  /**
+   * Additional storage volumes for the DB instance.
+   *
+   * Additional storage volumes are only supported for RDS for Oracle and RDS for SQL Server.
+   * You can add up to 3 additional volumes.
+   *
+   * Note: Additional storage volumes require instance types with at least 64 GiB of memory
+   * (e.g., r5.2xlarge, r6i.2xlarge). Burstable instance types (t2, t3) are not supported.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html
+   *
+   * @default - no additional storage volumes
+   */
+  readonly additionalStorageVolumes?: AdditionalStorageVolume[];
 }
 
 /**
@@ -1034,6 +1123,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
       applyImmediately: props.applyImmediately,
       engineLifecycleSupport: props.engineLifecycleSupport,
+      // additionalStorageVolumes is rendered in DatabaseInstanceSource with engine type
     };
   }
 
@@ -1143,6 +1233,89 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
+    // Validate additionalStorageVolumes is only used with Oracle or SQL Server
+    if (props.additionalStorageVolumes && props.additionalStorageVolumes.length > 0) {
+      const supportsAdditionalVolumes = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
+      if (!supportsAdditionalVolumes) {
+        throw new ValidationError(
+          `Additional storage volumes are only supported for Oracle and SQL Server engines. Got: '${engineType}'`,
+          this,
+        );
+      }
+
+      // Validate max 3 additional volumes
+      if (props.additionalStorageVolumes.length > 3) {
+        throw new ValidationError(
+          `A maximum of 3 additional storage volumes can be specified. Got: ${props.additionalStorageVolumes.length}`,
+          this,
+        );
+      }
+
+      // Validate each volume
+      for (let i = 0; i < props.additionalStorageVolumes.length; i++) {
+        const volume = props.additionalStorageVolumes[i];
+        const volumeName = getVolumeName(engineType, i);
+        const volumeStorageType = volume.storageType ?? AdditionalStorageVolumeType.GP3;
+
+        // Validate storageThroughput is only for GP3
+        if (volume.storageThroughput && volumeStorageType !== AdditionalStorageVolumeType.GP3) {
+          throw new ValidationError(
+            `Storage throughput can only be specified with GP3 storage type for additional volume '${volumeName}'. Got: '${volumeStorageType}'.`,
+            this,
+          );
+        }
+
+        // Validate allocatedStorage range (200 - 65536 GiB for additional volumes)
+        if (!volume.allocatedStorage.isUnresolved()) {
+          const allocatedStorageGiB = volume.allocatedStorage.toGibibytes();
+          if (allocatedStorageGiB < 200 || allocatedStorageGiB > 65536) {
+            throw new ValidationError(
+              `Allocated storage for additional volume '${volumeName}' must be between 200 and 65,536 GiB. Got: ${allocatedStorageGiB} GiB.`,
+              this,
+            );
+          }
+        }
+
+        // Validate throughput/IOPS ratio for GP3
+        if (
+          volumeStorageType === AdditionalStorageVolumeType.GP3 &&
+          volume.storageThroughput &&
+          volume.iops &&
+          !volume.storageThroughput.isUnresolved() &&
+          !Token.isUnresolved(volume.iops)
+        ) {
+          const throughputMiBps = volume.storageThroughput.toMebibytes();
+          if (throughputMiBps / volume.iops > 0.25) {
+            throw new ValidationError(
+              `The maximum ratio of storage throughput to IOPS for additional volume '${volumeName}' is 0.25. Got ${throughputMiBps / volume.iops}.`,
+              this,
+            );
+          }
+        }
+
+        // Validate IOPS constraints for GP3 based on engine type
+        if (volumeStorageType === AdditionalStorageVolumeType.GP3 && volume.iops && !Token.isUnresolved(volume.iops)) {
+          if (engineType.startsWith('oracle-')) {
+            // Oracle GP3: minimum 12,000 IOPS, maximum 64,000 IOPS
+            if (volume.iops < 12000 || volume.iops > 64000) {
+              throw new ValidationError(
+                `IOPS for Oracle with GP3 storage must be between 12,000 and 64,000 for additional volume '${volumeName}'. Got: ${volume.iops}.`,
+                this,
+              );
+            }
+          } else if (engineType.startsWith('sqlserver-')) {
+            // SQL Server GP3: minimum 3,000 IOPS, maximum 16,000 IOPS
+            if (volume.iops < 3000 || volume.iops > 16000) {
+              throw new ValidationError(
+                `IOPS for SQL Server with GP3 storage must be between 3,000 and 16,000 for additional volume '${volumeName}'. Got: ${volume.iops}.`,
+                this,
+              );
+            }
+          }
+        }
+      }
+    }
+
     // only Oracle and SQL Server require the import and export Roles to be the same
     const combineRoles = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
     let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
@@ -1195,6 +1368,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       licenseModel: props.licenseModel,
       timezone: props.timezone,
       dbParameterGroupName,
+      additionalStorageVolumes: props.additionalStorageVolumes &&
+        renderAdditionalStorageVolumes(props.additionalStorageVolumes, engineType),
     };
   }
 
@@ -1621,4 +1796,53 @@ function defaultIops(storageType: StorageType, iops?: number): number | undefine
     case StorageType.IO2:
       return iops ?? 1000;
   }
+}
+
+/**
+ * Oracle volume names for additional storage volumes.
+ */
+const ORACLE_VOLUME_NAMES = ['rdsdbdata2', 'rdsdbdata3', 'rdsdbdata4'];
+
+/**
+ * SQL Server volume names for additional storage volumes (drive letters).
+ */
+const SQL_SERVER_VOLUME_NAMES = ['H:', 'I:', 'J:'];
+
+/**
+ * Returns the volume name based on engine type and array index.
+ */
+function getVolumeName(engineType: string, index: number): string {
+  if (engineType.startsWith('oracle-')) {
+    return ORACLE_VOLUME_NAMES[index];
+  } else {
+    // SQL Server
+    return SQL_SERVER_VOLUME_NAMES[index];
+  }
+}
+
+/**
+ * Renders additional storage volumes to L1 format.
+ */
+function renderAdditionalStorageVolumes(
+  volumes: AdditionalStorageVolume[],
+  engineType: string,
+): CfnDBInstance.AdditionalStorageVolumeProperty[] | undefined {
+  if (volumes.length === 0) {
+    return undefined;
+  }
+
+  return volumes.map((volume, index) => {
+    const allocatedStorageGiB = volume.allocatedStorage.toGibibytes();
+    return {
+      volumeName: getVolumeName(engineType, index),
+      storageType: volume.storageType ?? AdditionalStorageVolumeType.GP3,
+      // L1 expects string, use Tokenization.stringifyNumber for token support
+      allocatedStorage: Token.isUnresolved(allocatedStorageGiB)
+        ? Tokenization.stringifyNumber(allocatedStorageGiB)
+        : allocatedStorageGiB.toString(),
+      iops: volume.iops,
+      maxAllocatedStorage: volume.maxAllocatedStorage?.toGibibytes(),
+      storageThroughput: volume.storageThroughput?.toMebibytes(),
+    };
+  });
 }
