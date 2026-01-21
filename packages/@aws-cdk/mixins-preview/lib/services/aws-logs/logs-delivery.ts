@@ -4,10 +4,11 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource } from '../../mixins/private/reflections';
+import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFindKmsKeyConstruct } from '../../mixins/private/reflections';
 import { ConstructSelector, Mixins } from '../../core';
 import { BucketPolicyStatementsMixins } from '../../mixins/private/s3';
 import * as xray from '../aws-xray/policy';
+import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
  * The individual elements of a logs delivery integration.
@@ -56,6 +57,18 @@ export enum S3LogsDeliveryPermissionsVersion {
 }
 
 /**
+ * Properties for S3 logs destination configuration.
+ */
+export interface IS3LogsDestinationProps {
+  /**
+   * KMS key to use for encrypting logs in the S3 bucket.
+   *
+   * @default - No encryption key is configured
+   */
+  readonly encryptionKey?: IKeyRef;
+}
+
+/**
  * Props for S3LogsDelivery
  */
 export interface S3LogsDeliveryProps {
@@ -66,6 +79,13 @@ export interface S3LogsDeliveryProps {
    * @default "V2"
    */
   readonly permissionsVersion?: S3LogsDeliveryPermissionsVersion;
+  /**
+   * KMS key to use for encrypting logs in the S3 bucket.
+   * When provided, grants the logs delivery service permissions to use the key.
+   *
+   * @default - No encryption key is configured
+   */
+  readonly kmsKey?: IKeyRef;
 }
 
 /**
@@ -74,6 +94,7 @@ export interface S3LogsDeliveryProps {
 export class S3LogsDelivery implements ILogsDelivery {
   private readonly bucket: s3.IBucketRef;
   private readonly permissions: S3LogsDeliveryPermissionsVersion;
+  private readonly kmsKey: IKeyRef | undefined;
 
   /**
    * Creates a new S3 Bucket delivery.
@@ -81,6 +102,7 @@ export class S3LogsDelivery implements ILogsDelivery {
   constructor(bucket: s3.IBucketRef, props: S3LogsDeliveryProps = {}) {
     this.bucket = bucket;
     this.permissions = props.permissionsVersion ?? S3LogsDeliveryPermissionsVersion.V2;
+    this.kmsKey = props.kmsKey;
   }
 
   /**
@@ -94,6 +116,14 @@ export class S3LogsDelivery implements ILogsDelivery {
 
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
+
+    if (this.kmsKey) {
+      const key = tryFindKmsKeyConstruct(this.kmsKey);
+      
+      if (key) {
+        this.addToEncryptionKeyPolicy(key);
+      }
+    }
 
     const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
       destinationResourceArn: this.bucket.bucketRef.bucketArn,
@@ -180,6 +210,28 @@ export class S3LogsDelivery implements ILogsDelivery {
 
     Mixins.of(policy, ConstructSelector.onlyItself())
       .apply(new BucketPolicyStatementsMixins(statements));
+  }
+
+  private addToEncryptionKeyPolicy(key: CfnKey) {
+    const stack = Stack.of(key);
+
+    const existingKeyPolicy = key.keyPolicy;
+
+    existingKeyPolicy.addStatements(new PolicyStatement({
+      sid: 'Allow Logs Delivery to use the key',
+      effect: Effect.ALLOW,
+      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+      actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+      resources: ['*'],
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': [stack.account],
+        },
+        ArnLike: {
+          'aws:SourceArn': [`arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`],
+        },
+      },
+    }));
   }
 }
 

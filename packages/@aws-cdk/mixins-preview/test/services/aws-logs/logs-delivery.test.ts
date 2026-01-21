@@ -5,6 +5,7 @@ import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, Se
 import { DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../../lib/services/aws-logs';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
@@ -443,6 +444,53 @@ describe('S3 Delivery', () => {
       },
     },
     );
+  });
+
+  test('adds KMS key policy when bucket is encrypted with KMS key', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket = new Bucket(stack, 'Destination', {
+      encryptionKey: key,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket, { kmsKey: key });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Sid: 'Allow Logs Delivery to use the key',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
   });
 });
 
