@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83e776895a0487fd6f62d439629ae189ab36818970785c587f80073b5641a4d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5087805087e2b5119510c4fcdea002b43880ac99c954d3d33ec589f533c46590.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,12 +43,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/aws-cdk-eks-helm-test/AdminRole/ImportAdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-helm-test/AdminRole/Resource": [
@@ -394,12 +388,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-helm-test/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-helm-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -438,12 +426,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-helm-test/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/ClusternodePoolRole/Resource": [
@@ -591,12 +573,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -767,12 +743,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -982,12 +952,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1019,10 +983,6 @@
         "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
             "data": "*"
           }
         ],

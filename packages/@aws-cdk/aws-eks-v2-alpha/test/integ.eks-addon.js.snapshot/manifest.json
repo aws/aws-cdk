@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1caa1e09a36e325693f0bd19b932cf56e68567bd5720a3ac857fe0c2b6c239bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c14da4fc991ced8194f74cbf8bc018b10571d80b418063e21d19827b64f69592.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -396,12 +396,6 @@
             }
           }
         ],
-        "/EksClusterWithAddonStack/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EksClusterWithAddonStack/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -440,12 +434,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/EksClusterWithAddonStack/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterWithAddonStack/Cluster/ClusternodePoolRole/Resource": [
@@ -585,12 +573,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/EksClusterWithAddonStack/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterWithAddonStack/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -753,12 +735,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/EksClusterWithAddonStack/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterWithAddonStack/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a2d67d307c16f70254650bb08faf13215ca39c0a75f3705250bde8739cd24ed.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3672a85870c7d8ab47f529d0eaf1ebf7446b46f4018f27fa9abe1374963743d4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -340,12 +340,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -498,12 +492,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -668,12 +656,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -786,10 +768,6 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/OpenIdConnectProvider/Resource/Default": [
@@ -843,12 +821,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
@@ -922,12 +894,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInferenceInstances/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInferenceInstances/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -985,12 +951,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInference2Instances/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInference2Instances/NodeGroupRole/Resource": [
@@ -1174,12 +1134,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference-nodegroup/awscdkeksclusterinferencenodegroupCluster4FEA031E-AlbController/alb-sa/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/awscdkeksclusterinferencenodegroupCluster4FEA031E-AlbController/alb-sa/Role/Resource": [

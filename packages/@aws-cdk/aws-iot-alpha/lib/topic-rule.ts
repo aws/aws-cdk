@@ -1,5 +1,6 @@
 import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 import { ArnFormat, Resource, Stack, IResource, Lazy } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -103,19 +104,8 @@ export class TopicRule extends Resource implements ITopicRule {
     });
   }
 
-  /**
-   * Arn of this topic rule
-   * @attribute
-   */
-  public readonly topicRuleArn: string;
-
-  /**
-   * Name of this topic rule
-   * @attribute
-   */
-  public readonly topicRuleName: string;
-
   private readonly actions: CfnTopicRule.ActionProperty[] = [];
+  private readonly resource: CfnTopicRule;
 
   constructor(scope: Construct, id: string, props: TopicRuleProps) {
     super(scope, id, {
@@ -126,7 +116,7 @@ export class TopicRule extends Resource implements ITopicRule {
 
     const sqlConfig = props.sql.bind(this);
 
-    const resource = new CfnTopicRule(this, 'Resource', {
+    this.resource = new CfnTopicRule(this, 'Resource', {
       ruleName: this.physicalName,
       topicRulePayload: {
         actions: Lazy.any({ produce: () => this.actions }),
@@ -138,16 +128,31 @@ export class TopicRule extends Resource implements ITopicRule {
       },
     });
 
-    this.topicRuleArn = this.getResourceArnAttribute(resource.attrArn, {
+    props.actions?.forEach(action => {
+      this.addAction(action);
+    });
+  }
+
+  /**
+   * Arn of this topic rule
+   * @attribute
+   */
+  @memoizedGetter
+  public get topicRuleArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'iot',
       resource: 'rule',
       resourceName: this.physicalName,
     });
-    this.topicRuleName = this.getResourceNameAttribute(resource.ref);
+  }
 
-    props.actions?.forEach(action => {
-      this.addAction(action);
-    });
+  /**
+   * Name of this topic rule
+   * @attribute
+   */
+  @memoizedGetter
+  public get topicRuleName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

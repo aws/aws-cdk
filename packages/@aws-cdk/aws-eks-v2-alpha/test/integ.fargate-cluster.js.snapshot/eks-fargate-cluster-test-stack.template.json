@@ -609,6 +609,7 @@
     "Value": "aws:cdk:eks:kubectl-ready"
    },
    "DependsOn": [
+    "FargateTestClusterClusterAdminRoleAccess9EFE9888",
     "FargateTestClusterfargateprofiledefaultPodExecutionRole36251E64",
     "FargateTestClusterfargateprofiledefault120EDDF6",
     "FargateTestClusterCAF9262D"

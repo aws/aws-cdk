@@ -2673,3 +2673,30 @@ const expectedExecutionRolePolicy = {
     ],
   },
 };
+
+describe('Runtime Optional Physical Names', () => {
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should create Runtime without runtimeName (auto-generated)', () => {
+    const runtime = new Runtime(stack, 'TestRuntime', {
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    expect(runtime.agentRuntimeName).toBeDefined();
+    expect(runtime.agentRuntimeName).not.toBe('');
+  });
+});

@@ -740,6 +740,7 @@
     "Value": "aws:cdk:eks:kubectl-ready"
    },
    "DependsOn": [
+    "ClusterClusterAdminRoleAccessF2BFF759",
     "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
     "ClusterfargateprofiledefaultEFC59F14",
     "ClusterEB0386A7"

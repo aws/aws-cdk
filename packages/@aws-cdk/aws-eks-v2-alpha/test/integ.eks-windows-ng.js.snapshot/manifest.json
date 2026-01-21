@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b337020d49bdc11033e83aabb846c4263979044224a12319c637daf6ca2eb1b0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bff293b875fab4279182d8b02435d1d1a0c4a5b4a17ba9b8b961e9bdcd6fa31.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,12 +43,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-windows-ng-test/AdminRole/ImportAdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-windows-ng-test/AdminRole/Resource": [
@@ -391,12 +385,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-windows-ng-test/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-windows-ng-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -549,12 +537,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-windows-ng-test/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-windows-ng-test/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -717,12 +699,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-windows-ng-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-windows-ng-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -894,12 +870,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-windows-ng-test/Cluster/NodegroupLinuxNodegroup/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-windows-ng-test/Cluster/NodegroupLinuxNodegroup/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -957,12 +927,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-windows-ng-test/Cluster/NodegroupWindowsNodegroup/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-windows-ng-test/Cluster/NodegroupWindowsNodegroup/NodeGroupRole/Resource": [

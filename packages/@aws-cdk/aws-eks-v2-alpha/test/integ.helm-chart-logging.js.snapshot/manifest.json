@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/60b816047f706db8eaf78bd0ccec9ccef0d37ee957c9e5877f1c10c17b6d28eb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e536251e83baba7fe4eb502a3e937614454b88ad39b4f89b68d704d1ac1192b3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -367,12 +367,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -411,12 +405,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/ClusternodePoolRole/Resource": [
@@ -556,12 +544,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -730,12 +712,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [

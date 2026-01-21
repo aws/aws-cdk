@@ -573,6 +573,7 @@
     "Value": "aws:cdk:eks:kubectl-ready"
    },
    "DependsOn": [
+    "ClusterClusterAdminRoleAccessF2BFF759",
     "ClusterEB0386A7"
    ]
   },
