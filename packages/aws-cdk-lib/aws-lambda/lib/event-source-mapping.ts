@@ -352,14 +352,12 @@ export interface EventSourceMappingOptions {
  * on the event source mapping's internal operations such as connection management,
  * polling behavior, and infrastructure-level error conditions.
  *
- * @example
  * // Configure INFO level logging for production monitoring
  * let func: lambda.IFunction;
  * const eventSourceMapping = func.addEventSourceMapping(`eventSourceMappingName`, {
  *   logLevel: lambda.EventSourceMappingLogLevel.INFO
  * });
  *
- * @example
  * // Configure DEBUG level logging for detailed troubleshooting
  * let func: lambda.IFunction;
  * const eventSourceMapping = func.addEventSourceMapping(`eventSourceMappingName`, {

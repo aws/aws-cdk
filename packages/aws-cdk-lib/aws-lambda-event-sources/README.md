@@ -530,7 +530,7 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
     minimumPollers: 1,
     maximumPollers: 5,
   },
-  systemLogLevel: lambda.EventSourceMappingLogLevel.INFO
+  logLevel: lambda.EventSourceMappingLogLevel.INFO
 }));
 ```
 
