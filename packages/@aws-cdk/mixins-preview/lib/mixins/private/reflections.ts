@@ -102,7 +102,7 @@ export function tryFindDeliverySourceForResource(source: IConstruct, sourceArn: 
 /**
  * Attempts to find the L1 CfnResource for a given Ref interface.
  * Searches children first (for L2 wrappers), then the construct tree.
- * 
+ *
  * @param ref - The Ref interface (e.g., IKeyRef, IBucketRef)
  * @param cfnResourceType - The CloudFormation resource type (e.g., 'AWS::KMS::Key')
  * @param extractId - Function to extract the identifying property from the ref
@@ -114,14 +114,14 @@ export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource,
   cfnResourceType: string,
   extractId: (ref: TRef) => TReference,
   extractCfnId: (cfn: TCfn) => TReference,
-): TCfn | undefined { 
+): TCfn | undefined {
   // Helper to check if a CfnResource matches our criteria
   const isCfnMatch = (construct: IConstruct): construct is TCfn => {
     return CfnResource.isCfnResource(construct) && construct.cfnResourceType === cfnResourceType;
   };
-  
-  // First check if ref is an L2 construct with a defaultChild 
-  if(ref.node.defaultChild && isCfnMatch(ref.node.defaultChild)) {
+
+  // First check if ref is an L2 construct with a defaultChild
+  if (ref.node.defaultChild && isCfnMatch(ref.node.defaultChild)) {
     return ref.node.defaultChild;
   }
 
@@ -129,7 +129,7 @@ export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource,
   if (isCfnMatch(ref)) {
     return ref;
   }
-  
+
   // Finally search the broader construct tree
   return findClosestRelatedResource<TRef, TCfn>(
     ref,
