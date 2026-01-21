@@ -2,7 +2,7 @@ import type { IConstruct } from 'constructs';
 import { CfnResource } from 'aws-cdk-lib/core';
 import type { IBucketRef, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
-import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import { CfnKey, IKeyRef, KeyReference } from 'aws-cdk-lib/aws-kms';
 
 /**
  * Finds the closest related resource in the construct tree.
@@ -102,42 +102,34 @@ export function tryFindDeliverySourceForResource(source: IConstruct, sourceArn: 
 /**
  * Attempts to find the L1 CfnResource for a given Ref interface.
  * Searches children first (for L2 wrappers), then the construct tree.
- * 
+ *
  * @param ref - The Ref interface (e.g., IKeyRef, IBucketRef)
  * @param cfnResourceType - The CloudFormation resource type (e.g., 'AWS::KMS::Key')
  * @param extractId - Function to extract the identifying property from the ref
  * @param extractCfnId - Function to extract the identifying property from the CfnResource
  * @returns The L1 CfnResource if found, undefined otherwise
  */
-export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource>(
+export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource, TReference>(
   ref: TRef,
   cfnResourceType: string,
-  extractId: (ref: TRef) => string,
-  extractCfnId: (cfn: TCfn) => string,
+  extractId: (ref: TRef) => TReference,
+  extractCfnId: (cfn: TCfn) => TReference,
 ): TCfn | undefined {
-  const refId = extractId(ref);
-  
   // Helper to check if a CfnResource matches our criteria
   const isCfnMatch = (construct: IConstruct): construct is TCfn => {
     return CfnResource.isCfnResource(construct) && construct.cfnResourceType === cfnResourceType;
   };
-  
+
+  // First check if ref is an L2 construct with a defaultChild
+  if (ref.node.defaultChild && isCfnMatch(ref.node.defaultChild)) {
+    return ref.node.defaultChild;
+  }
+
   // First check if ref itself is the L1 construct
   if (isCfnMatch(ref)) {
     return ref;
   }
-  
-  // Then check immediate children (for L2 constructs that wrap L1)
-  for (const child of ref.node.children) {
-    if (isCfnMatch(child)) {
-      const candidateId = extractCfnId(child);
-      // Direct reference equality for tokens
-      if (candidateId === refId) {
-        return child;
-      }
-    }
-  }
-  
+
   // Finally search the broader construct tree
   return findClosestRelatedResource<TRef, TCfn>(
     ref,
@@ -147,10 +139,10 @@ export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource>
 }
 
 export function tryFindKmsKeyConstruct(kmsKey: IKeyRef): CfnKey | undefined {
-  return findL1FromRef<IKeyRef, CfnKey>(
+  return findL1FromRef<IKeyRef, CfnKey, KeyReference>(
     kmsKey,
     'AWS::KMS::Key',
-    (ref) => ref.keyRef.keyId,
-    (cfn) => cfn.ref,
+    (ref) => ref.keyRef,
+    (cfn) => cfn.keyRef,
   );
 }
