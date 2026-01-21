@@ -80,7 +80,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   /**
    * Configuration for logging verbosity from the event source mapping poller
    *
-   * @default - No logLevel specified
+   * @default - No logging
    */
   readonly logLevel?: lambda.EventSourceMappingLogLevel;
 

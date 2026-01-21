@@ -326,7 +326,7 @@ export interface EventSourceMappingOptions {
    * that reads events from the event source. The logs provide insights into the internal operations
    * of the event source mapping, including connection status, polling behavior, and error conditions.
    *
-   * @default - No logging configuration specified
+   * @default - No logging
    */
   readonly logLevel?: EventSourceMappingLogLevel;
 
