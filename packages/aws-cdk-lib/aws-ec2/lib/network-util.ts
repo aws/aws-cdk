@@ -3,8 +3,10 @@ import { UnscopedValidationError } from '../../core';
 /**
  * InvalidCidrRangeError is thrown when attempting to perform operations on a CIDR
  * range that is either not valid, or outside of the VPC size limits.
+ *
+ * @internal
  */
-export class InvalidCidrRangeError extends Error {
+export class InvalidCidrRangeError extends UnscopedValidationError {
   constructor(cidr: string) {
     super(cidr + ' is not a valid VPC CIDR range. VPCs must be between /16 and /28 and the minimum subnet size is /28.');
     // The following line is required for type checking of custom errors, and must be called right after super()
@@ -15,6 +17,8 @@ export class InvalidCidrRangeError extends Error {
 
 /**
  * NetworkUtils contains helpers to work with network constructs (subnets/ranges)
+ *
+ * @internal
  */
 export class NetworkUtils {
   /**
@@ -89,6 +93,8 @@ export class NetworkUtils {
 
 /**
  * Creates a network based on a CIDR Block to build contained subnets
+ *
+ * @internal
  */
 export class NetworkBuilder {
   /**
@@ -167,6 +173,8 @@ export class NetworkBuilder {
 
 /**
  * A block of IP address space with a given bit prefix
+ *
+ * @internal
  */
 export class CidrBlock {
   /**
