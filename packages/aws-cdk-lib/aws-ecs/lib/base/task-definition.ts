@@ -498,9 +498,9 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     // Managed Instances validations
     if (this.isManagedInstancesCompatible) {
-      // Managed Instances only support awsvpc and host network modes
-      if (![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
-        throw new ValidationError(`Managed Instances tasks can only have AwsVpc or Host network mode, got: ${this.networkMode}`, this);
+      // Managed Instances only support awsvpc network mode
+      if (this.networkMode !== NetworkMode.AWS_VPC) {
+        throw new ValidationError(`Managed Instances tasks can only have AwsVpc network mode, got: ${this.networkMode}`, this);
       }
 
       // Managed Instances don't support inference accelerators
@@ -1405,7 +1405,10 @@ export interface ITaskDefinitionExtension {
  * Return true if the given task definition can be run on an EC2 cluster
  */
 export function isEc2Compatible(compatibility: Compatibility): boolean {
-  return [Compatibility.EC2, Compatibility.EC2_AND_FARGATE, Compatibility.EC2_AND_MANAGED_INSTANCES].includes(compatibility);
+  return [Compatibility.EC2,
+    Compatibility.EC2_AND_FARGATE,
+    Compatibility.EC2_AND_MANAGED_INSTANCES,
+    Compatibility.MANAGED_INSTANCES].includes(compatibility);
 }
 
 /**
