@@ -2524,6 +2524,53 @@ describe('cluster', () => {
     });
   });
 
+  test('bootstrapSelfManagedAddons can be set to false', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      bootstrapSelfManagedAddons: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      BootstrapSelfManagedAddons: false,
+    });
+  });
+
+  test('bootstrapSelfManagedAddons can be set to true', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      bootstrapSelfManagedAddons: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      BootstrapSelfManagedAddons: true,
+    });
+  });
+
+  test('bootstrapSelfManagedAddons is not set when not provided', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      BootstrapSelfManagedAddons: Match.absent(),
+    });
+  });
+
   describe('AccessConfig', () => {
     // bootstrapClusterCreatorAdminPermissions can be explicitly enabled or disabled
     test.each([
