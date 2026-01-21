@@ -1842,6 +1842,124 @@ const target = new agentcore.GatewayTarget(this, "AdvancedTarget", {
 
 This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`) handle all of this internally.
 
+### Gateway Interceptors
+
+Gateway interceptors allow you to run custom code during each gateway invocation to implement fine-grained access control, transform requests and responses, or implement custom authorization logic. A gateway can have at most one REQUEST interceptor and one RESPONSE interceptor.
+
+**Interceptor Types:**
+
+- **REQUEST interceptors**: Execute before the gateway calls the target. Useful for request validation, transformation, or custom authorization
+- **RESPONSE interceptors**: Execute after the target responds but before the gateway sends the response back. Useful for response transformation, filtering, or adding custom headers
+
+**Security Best Practices:**
+
+1. Keep `passRequestHeaders` disabled unless absolutely necessary (default: false)
+2. Implement idempotent Lambda functions (gateway may retry on failures)
+3. Restrict gateway execution role to specific Lambda functions
+4. Avoid logging sensitive information in your interceptor
+
+For more information, see the [Gateway Interceptors documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html).
+
+#### Adding Interceptors via Constructor
+
+```typescript fixture=default
+// Create Lambda functions for interceptors
+const requestInterceptorFn = new lambda.Function(this, "RequestInterceptor", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+def handler(event, context):
+    # Validate and transform request
+    return {
+        "interceptorOutputVersion": "1.0",
+        "mcp": {
+            "transformedGatewayRequest": event["mcp"]["gatewayRequest"]
+        }
+    }
+  `),
+});
+
+const responseInterceptorFn = new lambda.Function(this, "ResponseInterceptor", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+def handler(event, context):
+    # Filter or transform response
+    return {
+        "interceptorOutputVersion": "1.0",
+        "mcp": {
+            "transformedGatewayResponse": event["mcp"]["gatewayResponse"]
+        }
+    }
+  `),
+});
+
+// Create gateway with interceptors
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  interceptorConfigurations: [
+    agentcore.LambdaInterceptor.forRequest(requestInterceptorFn, {
+      passRequestHeaders: true  // Only if you need to inspect headers
+    }),
+    agentcore.LambdaInterceptor.forResponse(responseInterceptorFn)
+  ]
+});
+```
+
+**Automatic Permission Granting:**
+
+When you add a Lambda interceptor to a gateway (either via constructor or `addInterceptor()`), the gateway's IAM role automatically receives `lambda:InvokeFunction` permission on the Lambda function. This permission grant happens internally during the bind process - you do not need to manually configure these IAM permissions.
+
+#### Adding Interceptors Dynamically
+
+```typescript fixture=default
+// Create a gateway first
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Create Lambda functions for interceptors
+const requestInterceptorFn = new lambda.Function(this, "RequestInterceptor", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+def handler(event, context):
+    # Custom request validation logic
+    return {
+        "interceptorOutputVersion": "1.0",
+        "mcp": {
+            "transformedGatewayRequest": event["mcp"]["gatewayRequest"]
+        }
+    }
+  `),
+});
+
+const responseInterceptorFn = new lambda.Function(this, "ResponseInterceptor", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+def handler(event, context):
+    # Filter sensitive data from response
+    return {
+        "interceptorOutputVersion": "1.0",
+        "mcp": {
+            "transformedGatewayResponse": event["mcp"]["gatewayResponse"]
+        }
+    }
+  `),
+});
+
+gateway.addInterceptor(
+  agentcore.LambdaInterceptor.forRequest(requestInterceptorFn, {
+    passRequestHeaders: false  // Default, headers not passed for security
+  })
+);
+
+gateway.addInterceptor(
+  agentcore.LambdaInterceptor.forResponse(responseInterceptorFn)
+);
+```
+
 ### Gateway Target IAM Permissions
 
 The Gateway Target construct provides convenient methods for granting IAM permissions:
