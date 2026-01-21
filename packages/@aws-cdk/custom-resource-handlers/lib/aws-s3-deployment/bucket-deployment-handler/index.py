@@ -74,6 +74,7 @@ def handler(event, context):
             include             = props.get('Include', [])
             sign_content        = props.get('SignContent', 'false').lower() == 'true'
             output_object_keys  = props.get('OutputObjectKeys', 'true') == 'true'
+            content_encoding_by_extension = props.get('ContentEncodingByExtension', [])
 
             # backwards compatibility - if "SourceMarkers" is not specified,
             # assume all sources have an empty market map
@@ -139,7 +140,7 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config, content_encoding_by_extension)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths, wait_for_distribution_invalidation)
@@ -171,7 +172,7 @@ def sanitize_message(message):
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config):
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config, content_encoding_by_extension=None):
     # list lengths are equal
     if len(s3_source_zips) != len(source_markers):
         raise Exception("'source_markers' and 's3_source_zips' must be the same length")
@@ -208,26 +209,102 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
                 aws_command("s3", "cp", s3_source_zip, contents_dir)
 
         # sync from "contents" to destination
+        if content_encoding_by_extension:
+            # When per-extension encoding is specified, run multiple sync commands
+            s3_deploy_with_encoding_by_extension(
+                contents_dir, s3_dest, user_metadata, system_metadata,
+                prune, exclude, include, content_encoding_by_extension
+            )
+        else:
+            # Original behavior: single sync command
+            s3_command = ["s3", "sync"]
 
-        s3_command = ["s3", "sync"]
+            if prune:
+              s3_command.append("--delete")
 
-        if prune:
-          s3_command.append("--delete")
+            if exclude:
+              for filter in exclude:
+                s3_command.extend(["--exclude", filter])
 
-        if exclude:
-          for filter in exclude:
-            s3_command.extend(["--exclude", filter])
+            if include:
+              for filter in include:
+                s3_command.extend(["--include", filter])
 
-        if include:
-          for filter in include:
-            s3_command.extend(["--include", filter])
-
-        s3_command.extend([contents_dir, s3_dest])
-        s3_command.extend(create_metadata_args(user_metadata, system_metadata))
-        aws_command(*s3_command)
+            s3_command.extend([contents_dir, s3_dest])
+            s3_command.extend(create_metadata_args(user_metadata, system_metadata))
+            aws_command(*s3_command)
     finally:
         if not os.getenv(ENV_KEY_SKIP_CLEANUP):
             shutil.rmtree(workdir)
+
+#---------------------------------------------------------------------------------------------------
+# deploy with per-extension content encoding using multiple sync commands
+def s3_deploy_with_encoding_by_extension(contents_dir, s3_dest, user_metadata, system_metadata, prune, exclude, include, content_encoding_by_extension):
+    """
+    Deploy files with different Content-Encoding headers based on file extension patterns.
+    
+    This runs multiple s3 sync commands:
+    1. First sync: all files EXCEPT those matching encoding patterns (with prune if enabled)
+    2. Subsequent syncs: each encoding pattern with its specific Content-Encoding (no prune)
+    """
+    # Extract all patterns that have specific encodings
+    encoding_patterns = [mapping['include'] for mapping in content_encoding_by_extension]
+    
+    logger.info("| content_encoding_by_extension patterns: %s" % encoding_patterns)
+    
+    # Step 1: Sync files that don't match any encoding pattern
+    # This sync handles pruning and applies global system metadata (without content-encoding)
+    main_sync_command = ["s3", "sync"]
+    
+    if prune:
+        main_sync_command.append("--delete")
+    
+    # Apply user-specified excludes first
+    if exclude:
+        for filter in exclude:
+            main_sync_command.extend(["--exclude", filter])
+    
+    # Exclude files that will be handled by per-extension encoding
+    for pattern in encoding_patterns:
+        main_sync_command.extend(["--exclude", pattern])
+    
+    # Apply user-specified includes
+    if include:
+        for filter in include:
+            main_sync_command.extend(["--include", filter])
+    
+    main_sync_command.extend([contents_dir, s3_dest])
+    
+    # Create system metadata without content-encoding for the main sync
+    main_system_metadata = {k: v for k, v in system_metadata.items() if k != 'content-encoding'}
+    main_sync_command.extend(create_metadata_args(user_metadata, main_system_metadata))
+    
+    logger.info("| main sync (excluding encoding patterns)")
+    aws_command(*main_sync_command)
+    
+    # Step 2: Sync each encoding pattern with its specific Content-Encoding
+    for mapping in content_encoding_by_extension:
+        pattern = mapping['include']
+        encoding = mapping['encoding']
+        
+        encoding_sync_command = ["s3", "sync"]
+        # Don't prune on subsequent syncs - we already handled that
+        
+        # Exclude everything first
+        encoding_sync_command.extend(["--exclude", "*"])
+        
+        # Then include only the specific pattern
+        encoding_sync_command.extend(["--include", pattern])
+        
+        encoding_sync_command.extend([contents_dir, s3_dest])
+        
+        # Create system metadata with the specific content-encoding
+        encoding_system_metadata = dict(system_metadata)
+        encoding_system_metadata['content-encoding'] = encoding
+        encoding_sync_command.extend(create_metadata_args(user_metadata, encoding_system_metadata))
+        
+        logger.info("| encoding sync for pattern '%s' with encoding '%s'" % (pattern, encoding))
+        aws_command(*encoding_sync_command)
 
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches

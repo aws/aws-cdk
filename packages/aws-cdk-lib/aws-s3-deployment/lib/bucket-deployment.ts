@@ -20,6 +20,32 @@ import { AwsCliLayer } from '../../lambda-layer-awscli';
 const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
 
 /**
+ * Mapping of file patterns to content-encoding values.
+ *
+ * This allows specifying different Content-Encoding headers for different file types
+ * in a single bucket deployment.
+ */
+export interface ContentEncodingMapping {
+  /**
+   * File pattern to match (glob pattern).
+   *
+   * @example '*.br' - matches all files ending with .br
+   * @example '*.gz' - matches all files ending with .gz
+   * @example 'assets/*.br' - matches .br files in assets directory
+   */
+  readonly include: string;
+
+  /**
+   * Content-Encoding value to apply to matched files.
+   *
+   * Common values: 'br' (Brotli), 'gzip', 'compress', 'deflate', 'identity'
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
+   */
+  readonly encoding: string;
+}
+
+/**
  * Properties for `BucketDeployment`.
  */
 export interface BucketDeploymentProps {
@@ -205,6 +231,25 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly contentEncoding?: string;
+  /**
+   * Content-encoding metadata to apply based on file patterns.
+   *
+   * Each mapping specifies a file pattern and the Content-Encoding value to apply.
+   * Files matching multiple patterns will use the first matching pattern.
+   * Files not matching any pattern will use the `contentEncoding` property if specified.
+   *
+   * This is useful for serving pre-compressed static websites where different files
+   * have different compression formats (e.g., Brotli for `.br` files, Gzip for `.gz` files).
+   *
+   * @example
+   * contentEncodingByExtension: [
+   *   { include: '*.br', encoding: 'br' },
+   *   { include: '*.gz', encoding: 'gzip' },
+   * ]
+   *
+   * @default - No per-extension content encoding
+   */
+  readonly contentEncodingByExtension?: ContentEncodingMapping[];
   /**
    * System-defined content-language metadata to be set on all objects in the deployment.
    * @default - Not set.
@@ -478,6 +523,7 @@ export class BucketDeployment extends Construct {
         Include: props.include,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
+        ContentEncodingByExtension: props.contentEncodingByExtension,
         DistributionId: props.distribution?.distributionRef.distributionId,
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
