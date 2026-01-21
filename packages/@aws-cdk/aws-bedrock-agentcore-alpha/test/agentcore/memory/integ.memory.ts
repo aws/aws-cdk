@@ -86,6 +86,16 @@ new agentcore.Memory(stack, 'MemoryWithSelfManagedStrategy', {
   ],
 });
 
+// Create a memory with built-in episodic strategy
+new agentcore.Memory(stack, 'MemoryWithBuiltinEpisodicEx', {
+  memoryName: 'memory_with_builtin_episodic_example',
+  description: 'A test memory with built-in episodic strategy',
+  expirationDuration: cdk.Duration.days(90),
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingBuiltInEpisodic(),
+  ],
+});
+
 new integ.IntegTest(app, 'BedrockAgentCoreMemory', {
   testCases: [stack],
 });
