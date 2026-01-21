@@ -2527,14 +2527,12 @@ describe('cluster', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
-        Config: {
-          remoteNetworkConfig: {
-            remoteNodeNetworks: [
-              {
-                cidrs: remoteNodeNetworkCidrs,
-              },
-            ],
-          },
+        RemoteNetworkConfig: {
+          RemoteNodeNetworks: [
+            {
+              Cidrs: remoteNodeNetworkCidrs,
+            },
+          ],
         },
       });
     });
@@ -2562,19 +2560,17 @@ describe('cluster', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
-        Config: {
-          remoteNetworkConfig: {
-            remoteNodeNetworks: [
-              {
-                cidrs: remoteNodeNetworkCidrs,
-              },
-            ],
-            remotePodNetworks: [
-              {
-                cidrs: remotePodNetworkCidrs,
-              },
-            ],
-          },
+        RemoteNetworkConfig: {
+          RemoteNodeNetworks: [
+            {
+              Cidrs: remoteNodeNetworkCidrs,
+            },
+          ],
+          RemotePodNetworks: [
+            {
+              Cidrs: remotePodNetworkCidrs,
+            },
+          ],
         },
       });
     });
