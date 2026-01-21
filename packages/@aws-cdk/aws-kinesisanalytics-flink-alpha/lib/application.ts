@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from 'aws-cdk-lib/aws-kinesisanalytics';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as core from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -972,13 +973,12 @@ export class Application extends ApplicationBase {
     });
   }
 
-  public readonly applicationArn: string;
-  public readonly applicationName: string;
-
   // Role must be optional for JSII compatibility
   public readonly role?: iam.IRole;
 
   public readonly grantPrincipal: iam.IPrincipal;
+
+  private resource: CfnApplicationV2;
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
     super(scope, id, { physicalName: props.applicationName });
@@ -1041,6 +1041,7 @@ export class Application extends ApplicationBase {
       },
     });
     resource.node.addDependency(this.role);
+    this.resource = resource;
 
     const logGroup = props.logGroup ?? new logs.LogGroup(this, 'LogGroup');
     const logStream = new logs.LogStream(this, 'LogStream', { logGroup });
@@ -1071,7 +1072,7 @@ export class Application extends ApplicationBase {
     }));
 
     new CfnApplicationCloudWatchLoggingOptionV2(this, 'LoggingOption', {
-      applicationName: resource.ref,
+      applicationName: this.resource.ref,
       cloudWatchLoggingOption: {
         logStreamArn,
       },
@@ -1095,15 +1096,22 @@ export class Application extends ApplicationBase {
       }));
     }
 
-    this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(
-      core.Stack.of(this).formatArn(applicationArnComponents(resource.ref)),
-      applicationArnComponents(this.physicalName),
-    );
-
-    resource.applyRemovalPolicy(props.removalPolicy, {
+    this.resource.applyRemovalPolicy(props.removalPolicy, {
       default: core.RemovalPolicy.DESTROY,
     });
+  }
+
+  @memoizedGetter
+  public get applicationName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get applicationArn(): string {
+    return this.getResourceArnAttribute(
+      core.Stack.of(this).formatArn(applicationArnComponents(this.resource.ref)),
+      applicationArnComponents(this.physicalName),
+    );
   }
 }
 

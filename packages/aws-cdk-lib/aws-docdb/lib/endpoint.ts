@@ -40,11 +40,6 @@ export class Endpoint {
   public readonly port: number;
 
   /**
-   * The combination of ``HOSTNAME:PORT`` for this endpoint.
-   */
-  public readonly socketAddress: string;
-
-  /**
    * Constructs an Endpoint instance.
    *
    * @param address - The hostname or address of the endpoint
@@ -57,9 +52,14 @@ export class Endpoint {
 
     this.hostname = address;
     this.port = port;
+  }
 
-    const portDesc = Token.isUnresolved(port) ? Token.asString(port) : port;
-    this.socketAddress = `${address}:${portDesc}`;
+  /**
+   * The combination of ``HOSTNAME:PORT`` for this endpoint.
+   */
+  public get socketAddress(): string {
+    const portDesc = Token.isUnresolved(this.port) ? Token.asString(this.port) : this.port;
+    return `${this.hostname}:${portDesc}`;
   }
 
   /**

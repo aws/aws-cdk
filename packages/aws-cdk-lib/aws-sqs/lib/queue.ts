@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -352,12 +353,21 @@ export class Queue extends QueueBase {
   /**
    * The ARN of this queue
    */
-  public readonly queueArn: string;
+  @memoizedGetter
+  public get queueArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'sqs',
+      resource: this.physicalName,
+    });
+  }
 
   /**
    * The name of this queue
    */
-  public readonly queueName: string;
+  @memoizedGetter
+  public get queueName(): string {
+    return this.getResourceNameAttribute(this._resource.attrQueueName);
+  }
 
   /**
    * The URL of this queue
@@ -385,6 +395,8 @@ export class Queue extends QueueBase {
   public readonly deadLetterQueue?: DeadLetterQueue;
 
   protected readonly autoCreatePolicy = true;
+
+  private readonly _resource: CfnQueue;
 
   constructor(scope: Construct, id: string, props: QueueProps = {}) {
     super(scope, id, {
@@ -434,11 +446,7 @@ export class Queue extends QueueBase {
     });
     queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
-    this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
-      service: 'sqs',
-      resource: this.physicalName,
-    });
-    this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
+    this._resource = queue;
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
     this.deadLetterQueue = props.deadLetterQueue;

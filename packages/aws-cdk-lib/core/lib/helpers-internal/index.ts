@@ -6,3 +6,4 @@ export * from './string-specializer';
 export * from './validate-all-props';
 export * from './strings';
 export { constructInfoFromConstruct, constructInfoFromStack } from '../private/runtime-info';
+export * from './memoize';

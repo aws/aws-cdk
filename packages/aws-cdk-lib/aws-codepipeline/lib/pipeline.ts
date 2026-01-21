@@ -38,6 +38,7 @@ import {
   Token,
   ValidationError,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -564,23 +565,6 @@ export class Pipeline extends PipelineBase {
   public readonly role: iam.IRole;
 
   /**
-   * ARN of this pipeline
-   */
-  public readonly pipelineArn: string;
-
-  /**
-   * The name of the pipeline
-   */
-  public readonly pipelineName: string;
-
-  /**
-   * The version of the pipeline
-   *
-   * @attribute
-   */
-  public readonly pipelineVersion: string;
-
-  /**
    * Bucket used to store output artifacts
    */
   public readonly artifactBucket: s3.IBucket;
@@ -597,6 +581,35 @@ export class Pipeline extends PipelineBase {
   private readonly usePipelineRoleForActions: boolean;
   private readonly variables = new Array<Variable>();
   private readonly triggers = new Array<Trigger>();
+
+  /**
+   * ARN of this pipeline
+   */
+  @memoizedGetter
+  public get pipelineArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'codepipeline',
+      resource: this.pipelineName,
+    });
+  }
+
+  /**
+   * The name of the pipeline
+   */
+  @memoizedGetter
+  public get pipelineName(): string {
+    return this.getResourceNameAttribute(this.codePipeline.ref);
+  }
+
+  /**
+   * The version of the pipeline
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get pipelineVersion(): string {
+    return this.codePipeline.attrVersion;
+  }
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -697,8 +710,6 @@ export class Pipeline extends PipelineBase {
     this.codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
-    this.pipelineName = this.getResourceNameAttribute(this.codePipeline.ref);
-    this.pipelineVersion = this.codePipeline.attrVersion;
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
 
     for (const [region, replicationBucket] of Object.entries(props.crossRegionReplicationBuckets || {})) {
@@ -707,12 +718,6 @@ export class Pipeline extends PipelineBase {
         stack: Stack.of(replicationBucket),
       };
     }
-
-    // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-    this.pipelineArn = Stack.of(this).formatArn({
-      service: 'codepipeline',
-      resource: this.pipelineName,
-    });
 
     for (const stage of props.stages || []) {
       this.addStage(stage);
