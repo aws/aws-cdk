@@ -694,7 +694,6 @@ import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 new eks.Cluster(this, 'Cluster', {
   version: eks.KubernetesVersion.V1_34,
-  kubectlLayer: new KubectlV34Layer(this, 'KubectlLayer'),
   remoteNodeNetworks: [
     {
       cidrs: ['10.0.0.0/16'],
