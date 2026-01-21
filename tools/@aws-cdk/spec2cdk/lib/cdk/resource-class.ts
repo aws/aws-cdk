@@ -214,16 +214,13 @@ export class ResourceClass extends ClassType implements Referenceable {
       });
     }
 
-    for (const prop of this.decider.classAttributeProperties) {
-      this.addProperty(prop.propertySpec);
-    }
-
     for (const prop of this.decider.classProperties) {
       this.addProperty(prop.propertySpec);
     }
 
     // Copy properties onto class and props type
     this.makeConstructor();
+    this.makeAttributeGetters();
     this.makeInspectMethod();
     this.makeCfnProperties();
     this.makeRenderProperties();
@@ -233,6 +230,17 @@ export class ResourceClass extends ClassType implements Referenceable {
     cfnMapping.makeCfnParser(this.module, this.propsType);
 
     this.makeMustRenderStructs();
+  }
+
+  private makeAttributeGetters() {
+    for (const prop of this.decider.classAttributeProperties) {
+      this.addProperty({
+        ...prop.propertySpec,
+        // Turn initializer into a getter
+        initializer: undefined,
+        getterBody: Block.with(stmt.ret(prop.initializer)),
+      });
+    }
   }
 
   /**
@@ -734,11 +742,6 @@ export class ResourceClass extends ClassType implements Referenceable {
     }
 
     init.addBody(
-      // Attributes
-      ...this.decider.classAttributeProperties.map(({ propertySpec: { name }, initializer }) =>
-        stmt.assign($this[name], initializer),
-      ),
-
       // Props
       ...this.decider.classProperties.map(({ propertySpec: { name }, initializer }) =>
         stmt.assign($this[name], initializer(props)),
