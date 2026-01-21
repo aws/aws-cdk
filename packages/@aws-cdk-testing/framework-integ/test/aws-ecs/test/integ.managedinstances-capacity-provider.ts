@@ -49,6 +49,7 @@ const fmiSecurityGroup = new ec2.SecurityGroup(stack, 'ManagedInstancesSecurityG
 // Create MI Capacity Provider
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'ManagedInstancesCapacityProvider', {
   infrastructureRole: infrastructureRole,
+  capacityOptionType: ecs.CapacityOptionType.SPOT,
   ec2InstanceProfile: instanceProfile,
   subnets: vpc.privateSubnets,
   securityGroups: [fmiSecurityGroup],

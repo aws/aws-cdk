@@ -1678,6 +1678,8 @@ new ecs.Ec2Service(this, 'EC2Service', {
 
 Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements. You can  define detailed instance requirements to control which types of instances are used for your workloads.
 
+Capacity Option Type provides the purchasing option for the EC2 instances used in the capacity provider. Determines whether to use On-Demand or Spot instances. Valid values are `ON_DEMAND` and `SPOT`. Defaults to `ON_DEMAND` when not specified. Changing this value will trigger replacement of the capacity provider. For more information, see [Amazon EC2 billing and purchasing options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html) in the Amazon EC2 User Guide.
+
 See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
 
 #### IAM Roles Setup
@@ -1695,6 +1697,7 @@ const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
 });
 
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  capacityOptionType: ecs.CapacityOptionType.SPOT,
   subnets: vpc.privateSubnets,
   securityGroups: [securityGroup],
   instanceRequirements: {

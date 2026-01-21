@@ -1493,6 +1493,21 @@ export enum PropagateManagedInstancesTags {
 }
 
 /**
+ * The capacity option type for instances launched by a Managed Instances Capacity Provider.
+ */
+export enum CapacityOptionType {
+  /**
+   * Launch instances as On-Demand instances
+   */
+  ON_DEMAND = 'ON_DEMAND',
+
+  /**
+   * Launch instances as Spot instances
+   */
+  SPOT = 'SPOT',
+}
+
+/**
  * The options for creating a Managed Instances Capacity Provider.
  */
 export interface ManagedInstancesCapacityProviderProps {
@@ -1585,6 +1600,14 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default PropagateManagedInstancesTags.NONE - no tag propagation
    */
   readonly propagateTags?: PropagateManagedInstancesTags;
+
+  /**
+   * Specifies the capacity option type for instances launched by this capacity provider.
+   * This determines whether instances are launched as On-Demand or Spot instances.
+   *
+   * @default - `ON_DEMAND`
+   */
+  readonly capacityOptionType?: CapacityOptionType;
 }
 
 /**
@@ -1680,6 +1703,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     const managedInstancesProviderConfig: CfnCapacityProvider.ManagedInstancesProviderProperty = {
       infrastructureRoleArn: this.infrastructureRole.roleArn,
       instanceLaunchTemplate: {
+        capacityOptionType: props.capacityOptionType,
         ec2InstanceProfileArn: this.ec2InstanceProfile.instanceProfileArn,
         networkConfiguration: {
           subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),

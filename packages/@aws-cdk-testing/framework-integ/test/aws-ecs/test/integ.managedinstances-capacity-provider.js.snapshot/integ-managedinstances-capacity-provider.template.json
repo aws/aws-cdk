@@ -547,6 +547,7 @@
       ]
      },
      "InstanceLaunchTemplate": {
+      "CapacityOptionType": "SPOT",
       "Ec2InstanceProfileArn": {
        "Fn::GetAtt": [
         "InstanceProfile9F2F41CB",
