@@ -1,6 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
 import { Resource, IResource } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -108,7 +109,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
     }(scope, id);
   }
 
-  public readonly detectorModelName: string;
+  private resource: CfnDetectorModel;
 
   constructor(scope: Construct, id: string, props: DetectorModelProps) {
     super(scope, id, {
@@ -125,7 +126,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
       assumedBy: new iam.ServicePrincipal('iotevents.amazonaws.com'),
     });
 
-    const resource = new CfnDetectorModel(this, 'Resource', {
+    this.resource = new CfnDetectorModel(this, 'Resource', {
       detectorModelName: this.physicalName,
       detectorModelDescription: props.description,
       evaluationMethod: props.evaluationMethod,
@@ -136,7 +137,10 @@ export class DetectorModel extends Resource implements IDetectorModel {
       },
       roleArn: role.roleArn,
     });
+  }
 
-    this.detectorModelName = this.getResourceNameAttribute(resource.ref);
+  @memoizedGetter
+  public get detectorModelName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 }

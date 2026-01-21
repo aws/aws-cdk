@@ -79,7 +79,7 @@
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.193.4",
+    "@aws-cdk/integ-runner": "^2.193.5",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.14",
@@ -125,7 +125,11 @@
       "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.GuardrailProps.kmsKey",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptAttributes.kmsKey",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptProps.kmsKey",
-      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptVersionProps.prompt"
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptVersionProps.prompt",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IAgent",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IAgentAlias",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IGuardrail",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IPrompt"
     ]
   }
 }

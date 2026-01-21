@@ -2,6 +2,7 @@ import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -41,19 +42,11 @@ export class StandaloneMatchmakingConfiguration extends MatchmakingConfiguration
   }
 
   /**
-   * The Identifier of the matchmaking configuration.
-   */
-  public readonly matchmakingConfigurationName: string;
-
-  /**
-   * The ARN of the matchmaking configuration.
-   */
-  public readonly matchmakingConfigurationArn: string;
-
-  /**
    * The notification target for matchmaking events
    */
   public readonly notificationTarget?: sns.ITopic;
+
+  private resource: gamelift.CfnMatchmakingConfiguration;
 
   constructor(scope: Construct, id: string, props: StandaloneMatchmakingConfigurationProps) {
     super(scope, id, {
@@ -117,8 +110,17 @@ export class StandaloneMatchmakingConfiguration extends MatchmakingConfiguration
       ruleSetName: props.ruleSet.matchmakingRuleSetName,
     });
 
-    this.matchmakingConfigurationName = this.getResourceNameAttribute(resource.ref);
-    this.matchmakingConfigurationArn = cdk.Stack.of(scope).formatArn({
+    this.resource = resource;
+  }
+
+  @memoizedGetter
+  public get matchmakingConfigurationName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get matchmakingConfigurationArn(): string {
+    return cdk.Stack.of(this).formatArn({
       service: 'gamelift',
       resource: 'matchmakingconfiguration',
       resourceName: this.matchmakingConfigurationName,

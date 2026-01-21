@@ -23,6 +23,7 @@ import {
   Token,
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -1329,12 +1330,22 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Name of the AutoScalingGroup
    */
-  public readonly autoScalingGroupName: string;
+  @memoizedGetter
+  public get autoScalingGroupName(): string {
+    return this.getResourceNameAttribute(this.autoScalingGroup.ref);
+  }
 
   /**
    * Arn of the AutoScalingGroup
    */
-  public readonly autoScalingGroupArn: string;
+  @memoizedGetter
+  public get autoScalingGroupArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'autoscaling',
+      resource: 'autoScalingGroup:*:autoScalingGroupName',
+      resourceName: this.autoScalingGroupName,
+    });
+  }
 
   /**
    * The maximum spot price configured for the autoscaling group. `undefined`
@@ -1613,12 +1624,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
-    this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref),
-    this.autoScalingGroupArn = Stack.of(this).formatArn({
-      service: 'autoscaling',
-      resource: 'autoScalingGroup:*:autoScalingGroupName',
-      resourceName: this.autoScalingGroupName,
-    });
     this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props, { desiredCapacity, minCapacity });
