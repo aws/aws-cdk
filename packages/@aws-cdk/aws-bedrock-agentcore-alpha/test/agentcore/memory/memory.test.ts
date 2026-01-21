@@ -2051,6 +2051,25 @@ describe('Memory with custom execution role and strategies tests', () => {
   });
 });
 
+describe('Memory Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create Memory without memoryName (auto-generated)', () => {
+    const memory = new Memory(stack, 'TestMemory', {
+    });
+
+    expect(memory.memoryName).toBeDefined();
+    expect(memory.memoryName).not.toBe('');
+  });
+});
+
 describe('Episodic Memory Strategy unit tests', () => {
   test('Should create built-in episodic strategy with valid properties', () => {
     const strategy = MemoryStrategy.usingBuiltInEpisodic();
