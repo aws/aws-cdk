@@ -942,6 +942,15 @@
     "Name": "aws-cdk-imagebuilder-image-pipeline-ami-all-parameters-amidistributionconfiguration-12cb7eed"
    }
   },
+  "CustomBuildWorkflow21831B01": {
+   "Type": "AWS::ImageBuilder::Workflow",
+   "Properties": {
+    "Data": "name: build-image\ndescription: Workflow to build an AMI\nschemaVersion: \"1.0\"\nsteps:\n  - name: LaunchBuildInstance\n    action: LaunchInstance\n    onFailure: Abort\n    inputs:\n      waitFor: ssmAgent\n  - name: ApplyBuildComponents\n    action: ExecuteComponents\n    onFailure: Abort\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: InventoryCollection\n    action: CollectImageMetadata\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - booleanEquals: true\n          value: $.imagebuilder.collectImageMetadata\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: RunSanitizeScript\n    action: SanitizeInstance\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - not:\n            stringEquals: Windows\n            value: $.imagebuilder.platform\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: RunSysPrepScript\n    action: RunSysPrep\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - stringEquals: Windows\n          value: $.imagebuilder.platform\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: CreateOutputAMI\n    action: CreateImage\n    onFailure: Abort\n    if:\n      stringEquals: AMI\n      value: $.imagebuilder.imageType\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: TerminateBuildInstance\n    action: TerminateInstance\n    onFailure: Continue\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\noutputs:\n  - name: ImageId\n    value: $.stepOutputs.CreateOutputAMI.imageId\n",
+    "Name": "aws-cdk-imagebuilder-image-pipeline-ami-all-parameters-custombuildworkflow-f2c91f11",
+    "Type": "BUILD",
+    "Version": "1.0.0"
+   }
+  },
   "ImagePipelineAMI7635ECE0": {
    "Type": "AWS::ImageBuilder::ImagePipeline",
    "Properties": {
@@ -962,7 +971,7 @@
     "ImageRecipeArn": {
      "Fn::GetAtt": [
       "ImageRecipe8C789631",
-      "Arn"
+      "LatestVersion.Major"
      ]
     },
     "ImageScanningConfiguration": {
@@ -997,19 +1006,9 @@
     "Workflows": [
      {
       "WorkflowArn": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":imagebuilder:",
-         {
-          "Ref": "AWS::Region"
-         },
-         ":aws:workflow/build/build-image/x.x.x"
-        ]
+       "Fn::GetAtt": [
+        "CustomBuildWorkflow21831B01",
+        "LatestVersion.Arn"
        ]
       }
      }

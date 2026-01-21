@@ -909,7 +909,7 @@
     "ContainerRecipeArn": {
      "Fn::GetAtt": [
       "ContainerRecipe8A7CC9ED",
-      "Arn"
+      "LatestVersion.Minor"
      ]
     },
     "DistributionConfigurationArn": {

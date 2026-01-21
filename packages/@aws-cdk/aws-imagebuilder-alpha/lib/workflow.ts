@@ -8,16 +8,10 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
+import { LATEST_VERSION } from './private/constants';
+import { getLatestWorkflowVersions } from './private/version-helper';
 
 const WORKFLOW_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Workflow');
-
-/**
- * Represents the latest version of a workflow. When using the workflow in a pipeline, the pipeline will use the
- * latest workflow at the time of execution.
- *
- * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ibhow-semantic-versioning.html
- */
-const LATEST_VERSION = 'x.x.x';
 
 /**
  * An EC2 Image Builder Workflow.
@@ -50,6 +44,34 @@ export interface IWorkflow extends cdk.IResource {
    * @attribute
    */
   readonly workflowVersion: string;
+
+  /**
+   * The latest version of the workflow
+   *
+   * @attribute
+   */
+  readonly workflowLatestVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major version
+   *
+   * @attribute
+   */
+  readonly workflowLatestMajorVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major and minor version
+   *
+   * @attribute
+   */
+  readonly workflowLatestMinorVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major, minor, and patch version
+   *
+   * @attribute
+   */
+  readonly workflowLatestPatchVersion: IWorkflow;
 
   /**
    * Grant custom actions to the given grantee for the workflow
@@ -583,6 +605,26 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   abstract readonly workflowVersion: string;
 
   /**
+   * The latest version of the workflow
+   */
+  abstract readonly workflowLatestVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major version
+   */
+  abstract readonly workflowLatestMajorVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major and minor version
+   */
+  abstract readonly workflowLatestMinorVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major, minor, and patch version
+   */
+  abstract readonly workflowLatestPatchVersion: IWorkflow;
+
+  /**
    * Grant custom actions to the given grantee for the workflow
    * [disable-awslint:no-grants]
    *
@@ -632,16 +674,6 @@ export class Workflow extends WorkflowBase {
    * provide a dynamic expression for the workflowArn or workflowType
    */
   public static fromWorkflowAttributes(scope: Construct, id: string, attrs: WorkflowAttributes): IWorkflow {
-    if (
-      attrs.workflowArn !== undefined &&
-      (attrs.workflowName !== undefined || attrs.workflowType !== undefined || attrs.workflowVersion !== undefined)
-    ) {
-      throw new cdk.ValidationError(
-        'a workflowName, workflowType, or workflowVersion cannot be provided when a workflowArn is provided',
-        scope,
-      );
-    }
-
     if (attrs.workflowArn === undefined && (attrs.workflowName === undefined || attrs.workflowType === undefined)) {
       throw new cdk.ValidationError('either workflowArn, or workflowName and workflowType is required', scope);
     }
@@ -650,17 +682,13 @@ export class Workflow extends WorkflowBase {
       throw new cdk.ValidationError('workflowType cannot be an unresolved token', scope);
     }
 
-    const workflowArn = (() => {
-      if (attrs.workflowArn !== undefined) {
-        return attrs.workflowArn;
-      }
-
-      return cdk.Stack.of(scope).formatArn({
+    const workflowArn =
+      attrs.workflowArn ??
+      cdk.Stack.of(scope).formatArn({
         service: 'imagebuilder',
         resource: 'workflow',
         resourceName: `${attrs.workflowType!.toLowerCase()}/${attrs.workflowName!}/${attrs.workflowVersion ?? LATEST_VERSION}`,
       });
-    })();
 
     const [workflowType, workflowName, workflowVersion] = (() => {
       if (attrs.workflowName !== undefined) {
@@ -695,11 +723,66 @@ export class Workflow extends WorkflowBase {
       return [workflowTypeFromArn.toUpperCase(), workflowNameFromArn, workflowVersionFromArn];
     })();
 
+    const { latest, major, minor, patch } = getLatestWorkflowVersions(workflowArn);
+
+    class LatestVersionImport extends WorkflowBase {
+      public readonly workflowArn = latest.arn;
+      public readonly workflowName = latest.name;
+      public readonly workflowVersion = latest.version;
+      public readonly workflowType = workflowType;
+      public readonly workflowLatestVersion = this;
+      public readonly workflowLatestMajorVersion = this;
+      public readonly workflowLatestMinorVersion = this;
+      public readonly workflowLatestPatchVersion = this;
+    }
+    const latestVersionImport = new LatestVersionImport(scope, `${id}-Latest`);
+
+    class LatestMajorVersionImport extends WorkflowBase {
+      public readonly workflowArn = major.arn;
+      public readonly workflowName = major.name;
+      public readonly workflowType = workflowType;
+      public readonly workflowVersion = major.version;
+      public readonly workflowLatestVersion = latestVersionImport;
+      public readonly workflowLatestMajorVersion = this;
+      public readonly workflowLatestMinorVersion = this;
+      public readonly workflowLatestPatchVersion = this;
+    }
+    const latestMajorVersionImport = new LatestMajorVersionImport(scope, `${id}-LatestMajor`);
+
+    class LatestMinorVersionImport extends WorkflowBase {
+      public readonly workflowArn = minor.arn;
+      public readonly workflowName = minor.name;
+      public readonly workflowType = workflowType;
+      public readonly workflowVersion = minor.version;
+      public readonly workflowLatestVersion = latestVersionImport;
+      public readonly workflowLatestMajorVersion = latestMajorVersionImport;
+      public readonly workflowLatestMinorVersion = this;
+      public readonly workflowLatestPatchVersion = this;
+    }
+
+    const latestMinorVersionImport = new LatestMinorVersionImport(scope, `${id}-LatestMinor`);
+
+    class LatestPatchVersionImport extends WorkflowBase {
+      public readonly workflowArn = patch.arn;
+      public readonly workflowName = patch.name;
+      public readonly workflowType = workflowType;
+      public readonly workflowVersion = patch.version;
+      public readonly workflowLatestVersion = latestVersionImport;
+      public readonly workflowLatestMajorVersion = latestMajorVersionImport;
+      public readonly workflowLatestMinorVersion = latestMinorVersionImport;
+      public readonly workflowLatestPatchVersion = this;
+    }
+    const latestPatchVersionImport = new LatestPatchVersionImport(scope, `${id}-LatestPatch`);
+
     class Import extends WorkflowBase {
       public readonly workflowArn = workflowArn;
       public readonly workflowName = workflowName;
       public readonly workflowType = workflowType;
       public readonly workflowVersion = workflowVersion;
+      public readonly workflowLatestVersion = latestVersionImport;
+      public readonly workflowLatestMajorVersion = latestMajorVersionImport;
+      public readonly workflowLatestMinorVersion = latestMinorVersionImport;
+      public readonly workflowLatestPatchVersion = latestPatchVersionImport;
     }
 
     return new Import(scope, id);
@@ -732,6 +815,26 @@ export class Workflow extends WorkflowBase {
    */
   public readonly workflowVersion: string;
 
+  /**
+   * The latest version of the workflow
+   */
+  public readonly workflowLatestVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major version
+   */
+  public readonly workflowLatestMajorVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major and minor version
+   */
+  public readonly workflowLatestMinorVersion: IWorkflow;
+
+  /**
+   * The latest version of the workflow with the same major, minor, and patch version
+   */
+  public readonly workflowLatestPatchVersion: IWorkflow;
+
   public constructor(scope: Construct, id: string, props: WorkflowProps) {
     super(scope, id, {
       physicalName:
@@ -753,6 +856,8 @@ export class Workflow extends WorkflowBase {
     this.validateWorkflowName();
 
     const workflowVersion = props.workflowVersion ?? '1.0.0';
+    const workflowVersionSplit = cdk.Fn.split('.', workflowVersion);
+
     const workflow = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,
       version: workflowVersion,
@@ -768,6 +873,34 @@ export class Workflow extends WorkflowBase {
     this.workflowArn = workflow.attrArn;
     this.workflowVersion = workflowVersion;
     this.workflowType = props.workflowType;
+    this.workflowLatestVersion = Workflow.fromWorkflowAttributes(this, `${id}-Latest`, {
+      workflowArn: workflow.attrLatestVersionArn,
+      workflowType: props.workflowType,
+      workflowName: this.physicalName,
+      workflowVersion: LATEST_VERSION,
+    });
+    this.workflowLatestMajorVersion = Workflow.fromWorkflowAttributes(this, `${id}-LatestMajor`, {
+      workflowArn: workflow.attrLatestVersionMajor,
+      workflowType: props.workflowType,
+      workflowName: this.physicalName,
+      workflowVersion: cdk.Fn.join('.', [cdk.Fn.select(0, workflowVersionSplit), 'x', 'x']),
+    });
+    this.workflowLatestMinorVersion = Workflow.fromWorkflowAttributes(this, `${id}-LatestMinor`, {
+      workflowArn: workflow.attrLatestVersionMinor,
+      workflowType: props.workflowType,
+      workflowName: this.physicalName,
+      workflowVersion: cdk.Fn.join('.', [
+        cdk.Fn.select(0, workflowVersionSplit),
+        cdk.Fn.select(1, workflowVersionSplit),
+        'x',
+      ]),
+    });
+    this.workflowLatestPatchVersion = Workflow.fromWorkflowAttributes(this, `${id}-LatestPatch`, {
+      workflowArn: workflow.attrLatestVersionPatch,
+      workflowType: props.workflowType,
+      workflowName: this.physicalName,
+      workflowVersion,
+    });
   }
 
   private validateWorkflowName() {

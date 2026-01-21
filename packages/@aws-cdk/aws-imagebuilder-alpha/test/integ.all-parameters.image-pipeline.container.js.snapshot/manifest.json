@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a65b8cf1b3b121eb0aa6e9497bb73a0ad6e7caebec9f789658be96ceb1a2d03f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a25ae44cfe9791c0f313f72e32fba88fd51ad76bcf841aca82880419c46211cd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -727,6 +727,16 @@
             "data": "ContainerDistributionConfiguration18609EDB"
           }
         ],
+        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -817,12 +827,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImagePipelineContainerImagePipelineAutoDisabledTriggerRule567551D9"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/Image/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainerImageF8CBEC27"
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/BootstrapVersion": [
@@ -1385,10 +1389,14 @@
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1031.2"
+  "minimumCliVersion": "2.1033.0"
 }

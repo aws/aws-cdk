@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/725373b477b838f8002ee36492bc2ad7d45deedd7dd4b8f86c095d38c46a179a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e618d7f9b95ddda4b9b14552be1c0a5d6e67f5cb514ea729e33c36bf8fa857e1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,22 @@
         "aws-cdk-imagebuilder-component-s3-data.assets"
       ],
       "metadata": {
+        "/aws-cdk-imagebuilder-component-s3-data/S3AssetComponent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-imagebuilder-component-s3-data/S3AssetComponent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "S3AssetComponentBDFBFAD2"
+          }
+        ],
+        "/aws-cdk-imagebuilder-component-s3-data/ComponentVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComponentVersion"
           }
         ],
         "/aws-cdk-imagebuilder-component-s3-data/BootstrapVersion": [
@@ -55,19 +67,19 @@
       },
       "displayName": "aws-cdk-imagebuilder-component-s3-data"
     },
-    "ComponentTestDefaultTestDeployAssert990A2773.assets": {
+    "ComponentTestS3DefaultTestDeployAssert26A63882.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ComponentTestDefaultTestDeployAssert990A2773.assets.json",
+        "file": "ComponentTestS3DefaultTestDeployAssert26A63882.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ComponentTestDefaultTestDeployAssert990A2773": {
+    "ComponentTestS3DefaultTestDeployAssert26A63882": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ComponentTestDefaultTestDeployAssert990A2773.template.json",
+        "templateFile": "ComponentTestS3DefaultTestDeployAssert26A63882.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -76,7 +88,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ComponentTestDefaultTestDeployAssert990A2773.assets"
+          "ComponentTestS3DefaultTestDeployAssert26A63882.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -85,23 +97,23 @@
         }
       },
       "dependencies": [
-        "ComponentTestDefaultTestDeployAssert990A2773.assets"
+        "ComponentTestS3DefaultTestDeployAssert26A63882.assets"
       ],
       "metadata": {
-        "/ComponentTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ComponentTest-S3/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ComponentTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ComponentTest-S3/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ComponentTest/DefaultTest/DeployAssert"
+      "displayName": "ComponentTest-S3/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -600,10 +612,14 @@
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1031.2"
+  "minimumCliVersion": "2.1033.0"
 }

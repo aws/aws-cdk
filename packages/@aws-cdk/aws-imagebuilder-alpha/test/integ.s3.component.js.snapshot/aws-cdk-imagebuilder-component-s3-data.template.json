@@ -21,6 +21,16 @@
    }
   }
  },
+ "Outputs": {
+  "ComponentVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "S3AssetComponentBDFBFAD2",
+     "Version"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

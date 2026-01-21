@@ -58,6 +58,16 @@
    }
   }
  },
+ "Outputs": {
+  "ComponentVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "InlineComponent537607D7",
+     "Version"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

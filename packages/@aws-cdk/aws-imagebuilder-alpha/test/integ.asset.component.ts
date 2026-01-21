@@ -6,7 +6,7 @@ import * as imagebuilder from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-component-asset');
 
-new imagebuilder.Component(stack, 'S3AssetComponent', {
+const component = new imagebuilder.Component(stack, 'S3AssetComponent', {
   componentName: 'aws-cdk-imagebuilder-component-all-parameters-s3-asset-component',
   componentVersion: '1.0.0',
   platform: imagebuilder.Platform.LINUX,
@@ -17,6 +17,8 @@ new imagebuilder.Component(stack, 'S3AssetComponent', {
   ),
 });
 
-new integ.IntegTest(app, 'ComponentTest', {
+new cdk.CfnOutput(stack, 'ComponentVersion', { value: component.componentVersion });
+
+new integ.IntegTest(app, 'ComponentTest-Asset', {
   testCases: [stack],
 });

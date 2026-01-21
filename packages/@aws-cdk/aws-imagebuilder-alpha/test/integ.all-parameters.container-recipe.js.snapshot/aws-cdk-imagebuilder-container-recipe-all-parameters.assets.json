@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "e87db65fcd4d5bb5b177638609ec2eec0b23db6f629a3c5e15e68de9919e2e68": {
+    "5ab62e6ed2c6041796405e07dbf42aabda6d40f3ead12a0de57c1fd6e4e87519": {
       "displayName": "aws-cdk-imagebuilder-container-recipe-all-parameters Template",
       "source": {
         "path": "aws-cdk-imagebuilder-container-recipe-all-parameters.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a421d656": {
+        "current_account-current_region-e0b34fe6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e87db65fcd4d5bb5b177638609ec2eec0b23db6f629a3c5e15e68de9919e2e68.json",
+          "objectKey": "5ab62e6ed2c6041796405e07dbf42aabda6d40f3ead12a0de57c1fd6e4e87519.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
