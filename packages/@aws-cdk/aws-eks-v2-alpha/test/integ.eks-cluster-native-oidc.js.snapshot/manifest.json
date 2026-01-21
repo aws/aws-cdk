@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "49.0.0",
   "artifacts": {
     "aws-cdk-eks-v2-alpha-cluster-native-oidc.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/14b9d068bf525c76e10d3a308919a95e49dc5a64d47b05753d79a311b5e3c48b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/f37cdea95e7e5f3aff12e7d286282b97c8ebe11637f6c97110ab436820af914e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -396,12 +396,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -440,12 +434,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/ClusternodePoolRole/Resource": [
@@ -585,12 +573,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -761,12 +743,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -908,12 +884,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-cluster-native-oidc/ServiceAccount/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-cluster-native-oidc/ServiceAccount/Role/Resource": [
@@ -1121,12 +1091,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-cluster-native-oidc/AlbController/alb-sa/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-cluster-native-oidc/AlbController/alb-sa/Role/Resource": [
@@ -1857,6 +1821,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1868,6 +1833,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -1879,5 +1845,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1100.3"
 }

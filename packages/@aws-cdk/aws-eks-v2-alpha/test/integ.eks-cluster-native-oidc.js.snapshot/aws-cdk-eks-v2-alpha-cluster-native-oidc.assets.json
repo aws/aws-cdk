@@ -46,16 +46,16 @@
         }
       }
     },
-    "4c0f7bf9173df1c120604820692548150b09e29f6fba95f38b11caa17c9696bb": {
+    "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0": {
       "displayName": "Cluster/KubectlProvider/AwsCliLayer/Code",
       "source": {
-        "path": "asset.4c0f7bf9173df1c120604820692548150b09e29f6fba95f38b11caa17c9696bb.zip",
+        "path": "asset.c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-71d33ab3": {
+        "current_account-us-east-1-1394c884": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "4c0f7bf9173df1c120604820692548150b09e29f6fba95f38b11caa17c9696bb.zip",
+          "objectKey": "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }
@@ -91,16 +91,16 @@
         }
       }
     },
-    "14b9d068bf525c76e10d3a308919a95e49dc5a64d47b05753d79a311b5e3c48b": {
+    "f37cdea95e7e5f3aff12e7d286282b97c8ebe11637f6c97110ab436820af914e": {
       "displayName": "aws-cdk-eks-v2-alpha-cluster-native-oidc Template",
       "source": {
         "path": "aws-cdk-eks-v2-alpha-cluster-native-oidc.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-3263cf8d": {
+        "current_account-us-east-1-aa05e430": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "14b9d068bf525c76e10d3a308919a95e49dc5a64d47b05753d79a311b5e3c48b.json",
+          "objectKey": "f37cdea95e7e5f3aff12e7d286282b97c8ebe11637f6c97110ab436820af914e.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }
