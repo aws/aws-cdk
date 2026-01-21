@@ -874,6 +874,140 @@ new rds.DatabaseInstanceFromSnapshot(this, 'InstanceFromSnapshotWithCustomizedSe
 });
 ```
 
+## Connection Strings
+
+Database secrets can generate connection strings that are resolved at deployment time using CloudFormation dynamic references. This allows you to use connection strings in your application configuration without exposing credentials in your CDK code.
+
+### Basic Usage
+
+Use `connectionStringFromJson()` to generate a connection string from a database secret:
+
+```ts
+declare const cluster: rds.DatabaseCluster;
+
+// Get the secret from the cluster
+const secret = cluster.secret!;
+
+// Generate a MySQL connection string
+const connectionString = secret.connectionStringFromJson(
+  'mysql://${username}:${password}@${host}:${port}/${dbname}'
+);
+
+// Use in ECS task definition
+declare const taskDefinition: ecs.TaskDefinition;
+taskDefinition.addContainer('app', {
+  image: ecs.ContainerImage.fromRegistry('my-app'),
+  environment: {
+    DATABASE_URL: connectionString.unsafeUnwrap(),
+  },
+});
+```
+
+### Using Default Templates
+
+The `CONNECTION_STRING_TEMPLATES` constant provides standard connection string formats for common database engines:
+
+```ts
+import { CONNECTION_STRING_TEMPLATES } from 'aws-cdk-lib/aws-rds';
+
+declare const cluster: rds.DatabaseCluster;
+const secret = cluster.secret!;
+
+// MySQL/MariaDB
+const mysqlUrl = secret.connectionStringFromJson(CONNECTION_STRING_TEMPLATES.MYSQL);
+// Result: mysql://${username}:${password}@${host}:${port}/${dbname}
+
+// PostgreSQL
+const postgresUrl = secret.connectionStringFromJson(CONNECTION_STRING_TEMPLATES.POSTGRES);
+// Result: postgresql://${username}:${password}@${host}:${port}/${dbname}
+
+// SQL Server
+const sqlServerUrl = secret.connectionStringFromJson(CONNECTION_STRING_TEMPLATES.SQLSERVER);
+// Result: sqlserver://${host}:${port};database=${dbname};user=${username};password=${password}
+
+// Oracle
+const oracleUrl = secret.connectionStringFromJson(CONNECTION_STRING_TEMPLATES.ORACLE);
+// Result: oracle://${username}:${password}@${host}:${port}/${dbname}
+```
+
+### Custom Templates with Query Parameters
+
+You can create custom connection string templates with query parameters for SSL/TLS configuration or other connection options:
+
+```ts
+declare const cluster: rds.DatabaseCluster;
+const secret = cluster.secret!;
+
+// PostgreSQL with SSL and connection timeout
+const connectionString = secret.connectionStringFromJson(
+  'postgresql://${username}:${password}@${host}:${port}/${dbname}?sslmode=require&connect_timeout=10'
+);
+
+// MySQL with SSL enforcement
+const mysqlConnectionString = secret.connectionStringFromJson(
+  'mysql://${username}:${password}@${host}:${port}/${dbname}?ssl-mode=REQUIRED'
+);
+```
+
+### Using with ECS Task Definitions
+
+Connection strings are particularly useful for configuring containerized applications:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryLimitMiB: 512,
+  cpu: 256,
+});
+
+const connectionString = cluster.secret!.connectionStringFromJson(
+  CONNECTION_STRING_TEMPLATES.MYSQL
+);
+
+taskDefinition.addContainer('app', {
+  image: ecs.ContainerImage.fromRegistry('my-app'),
+  environment: {
+    DATABASE_URL: connectionString.unsafeUnwrap(),
+  },
+});
+
+// Grant the task read access to the secret
+cluster.secret!.grantRead(taskDefinition.taskRole);
+```
+
+### Security Considerations
+
+**Important**: Connection strings contain sensitive credentials and should be handled securely:
+
+- **Do not log connection strings** in application logs or CloudWatch Logs
+- **Use IAM authentication** when possible instead of password-based authentication
+- **Enable SSL/TLS** for all production database connections using query parameters (e.g., `?sslmode=require` for PostgreSQL, `?ssl-mode=REQUIRED` for MySQL)
+- **Rotate credentials regularly** using Secrets Manager rotation
+- **Grant minimal permissions** - only grant `grantRead` on the secret to services that need database access
+
+For production workloads, always enforce SSL/TLS connections:
+
+```ts
+declare const cluster: rds.DatabaseCluster;
+const secret = cluster.secret!;
+
+// PostgreSQL with required SSL
+const secureConnection = secret.connectionStringFromJson(
+  'postgresql://${username}:${password}@${host}:${port}/${dbname}?sslmode=require'
+);
+
+// MySQL with required SSL
+const secureMysqlConnection = secret.connectionStringFromJson(
+  'mysql://${username}:${password}@${host}:${port}/${dbname}?ssl-mode=REQUIRED'
+);
+```
+
 ## Connecting
 
 To control who can access the cluster or instance, use the `.connections` attribute. RDS databases have
