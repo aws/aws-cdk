@@ -38,8 +38,6 @@ export class KeyGrants {
     const crossRegionAccess = this.isGranteeFromAnotherRegion(grantee);
     const crossEnvironment = crossAccountAccess || crossRegionAccess;
 
-    // TODO: handle the L1 case (in which there is no policy resource)
-
     if (!this.policyResource) {
       return iam.Grant.addToPrincipal({
         actions: actions,
