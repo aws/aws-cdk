@@ -3,7 +3,7 @@ import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
 import { BackupResource, TagOperation } from './resource';
 import * as iam from '../../aws-iam';
-import { Lazy, Resource, Aspects } from '../../core';
+import { Lazy, Resource, Aspects, Token, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -288,9 +288,18 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       return undefined;
     }
 
-    return conditions.map((condition) => ({
-      ConditionKey: `aws:ResourceTag/${condition.key}`,
-      ConditionValue: condition.value,
-    }));
+    return conditions.map((condition) => {
+      if (Token.isUnresolved(condition.key)) {
+        throw new UnscopedValidationError(
+          'Backup selection condition keys must be static strings. ' +
+          'Dynamic tag keys (tokens) are not supported by AWS Backup. ' +
+          `Received: ${condition.key}`,
+        );
+      }
+      return {
+        ConditionKey: `aws:ResourceTag/${condition.key}`,
+        ConditionValue: condition.value,
+      };
+    });
   }
 }

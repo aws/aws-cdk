@@ -935,3 +935,58 @@ test('conditions can be used together with fromTag (both ListOfTags and Conditio
     },
   });
 });
+
+
+test('throws error when condition key contains a token', () => {
+  // GIVEN - Use Lazy.string to create a token for the key
+  const { Lazy } = require('../../core');
+  const dynamicKey = Lazy.string({ produce: () => 'dynamic-key' });
+
+  // WHEN/THEN
+  expect(() => {
+    new BackupSelection(stack, 'Selection', {
+      backupPlan: plan,
+      resources: [
+        BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+      ],
+      conditions: {
+        stringEquals: [
+          { key: dynamicKey, value: 'some-value' },
+        ],
+      },
+    });
+  }).toThrow(/Backup selection condition keys must be static strings/);
+});
+
+test('allows token values in conditions (only keys must be static)', () => {
+  // GIVEN - Use Lazy.string to create a token for the value
+  const { Lazy } = require('../../core');
+  const dynamicValue = Lazy.string({ produce: () => 'dynamic-value' });
+
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+    ],
+    conditions: {
+      stringEquals: [
+        { key: 'static-key', value: dynamicValue },
+      ],
+    },
+  });
+
+  // THEN - Should succeed (values can be tokens, only keys must be static)
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Conditions: {
+        StringEquals: [
+          {
+            ConditionKey: 'aws:ResourceTag/static-key',
+            ConditionValue: 'dynamic-value',
+          },
+        ],
+      },
+    },
+  });
+});

@@ -135,6 +135,39 @@ This selects EC2 volumes that:
 - Have a `project` tag starting with `my-project-` AND
 - Do NOT have `temporary=true`
 
+#### Understanding ListOfTags vs Conditions
+
+When using both `BackupResource.fromTag()` and `conditions` together, it's important to understand how they interact:
+
+- **`BackupResource.fromTag()`** uses the CloudFormation `ListOfTags` property with **OR logic** - resources matching ANY of the specified tags are selected
+- **`conditions`** uses the CloudFormation `Conditions` property with **AND logic** - resources must match ALL specified conditions
+
+When both are used together, AWS Backup applies them as follows:
+1. Resources must match the ARN patterns in `resources`
+2. AND resources must match ALL conditions in `conditions` (if specified)
+3. OR resources must match ANY tag in `ListOfTags` (from `fromTag()`)
+
+```ts
+declare const plan: backup.BackupPlan;
+
+// This selects:
+// - EC2 volumes with aws-backup=1 tag, OR
+// - Any resource with legacy-backup=yes tag
+plan.addSelection('Selection', {
+  resources: [
+    backup.BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+    backup.BackupResource.fromTag('legacy-backup', 'yes'), // OR logic via ListOfTags
+  ],
+  conditions: {
+    stringEquals: [
+      { key: 'aws-backup', value: '1' }, // AND logic via Conditions
+    ],
+  },
+});
+```
+
+> **Note:** Condition keys must be static strings. Dynamic values (CDK Tokens) are not supported for condition keys because AWS Backup requires literal tag key names. Condition values can be tokens.
+
 To add rules to a plan, use `addRule()`:
 
 ```ts
