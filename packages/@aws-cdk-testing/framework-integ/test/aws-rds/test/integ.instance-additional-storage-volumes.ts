@@ -7,6 +7,7 @@ import {
   DatabaseInstanceEngine,
   LicenseModel,
   OracleEngineVersion,
+  SqlServerEngineVersion,
   StorageType,
 } from 'aws-cdk-lib/aws-rds';
 
@@ -17,7 +18,9 @@ const vpc = new Vpc(stack, 'Vpc', { natGateways: 0 });
 
 // Additional storage volumes require instance types with at least 64 GiB memory
 // r5.2xlarge has 64 GiB memory
-new DatabaseInstance(stack, 'Instance', {
+
+// Oracle instance
+new DatabaseInstance(stack, 'OracleInstance', {
   engine: DatabaseInstanceEngine.oracleSe2({ version: OracleEngineVersion.VER_19 }),
   licenseModel: LicenseModel.LICENSE_INCLUDED,
   instanceType: InstanceType.of(InstanceClass.R5, InstanceSize.XLARGE2),
@@ -37,10 +40,29 @@ new DatabaseInstance(stack, 'Instance', {
   ],
 });
 
+// SQL Server instance
+new DatabaseInstance(stack, 'SqlServerInstance', {
+  engine: DatabaseInstanceEngine.sqlServerEe({ version: SqlServerEngineVersion.VER_16 }),
+  licenseModel: LicenseModel.LICENSE_INCLUDED,
+  instanceType: InstanceType.of(InstanceClass.R5, InstanceSize.XLARGE2),
+  vpc,
+  vpcSubnets: {
+    subnetType: SubnetType.PRIVATE_ISOLATED,
+  },
+  allocatedStorage: 200,
+  storageType: StorageType.GP3,
+  additionalStorageVolumes: [
+    {
+      allocatedStorage: Size.gibibytes(200),
+      storageType: AdditionalStorageVolumeType.GP3,
+      iops: 3000,
+      storageThroughput: Size.mebibytes(125),
+    },
+  ],
+});
+
 RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY);
 
 new integ.IntegTest(app, 'InstanceAdditionalStorageVolumesTest', {
   testCases: [stack],
 });
-
-app.synth();

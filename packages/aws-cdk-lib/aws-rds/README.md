@@ -757,6 +757,7 @@ new rds.DatabaseInstance(this, 'SqlServerInstance', {
       allocatedStorage: Size.gibibytes(200),
       storageType: rds.AdditionalStorageVolumeType.GP3,
       iops: 3000,
+      storageThroughput: Size.mebibytes(125),
     },
     {
       allocatedStorage: Size.gibibytes(300),
@@ -773,12 +774,21 @@ new rds.DatabaseInstance(this, 'SqlServerInstance', {
 - **Instance types**: Must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge). Burstable instance types (t2, t3) are not supported.
 - **Primary storage**: Must be at least 200 GiB
 - **Storage types**: Only `gp3` and `io2` are supported for additional volumes
-- **IOPS constraints**:
-  - Oracle GP3: 12,000 - 64,000 IOPS
-  - SQL Server GP3: 3,000 - 16,000 IOPS
-- **Maximum throughput/IOPS ratio**: 0.25
+- **GP3 IOPS** (baseline IOPS when not specified):
+  - Oracle: 12,000 - 64,000 IOPS (baseline: 12,000)
+  - SQL Server: 3,000 - 16,000 IOPS (baseline: 3,000)
+- **GP3 Throughput** (baseline throughput when not specified):
+  - Oracle: 500 - 4,000 MiB/s (baseline: 500 MiB/s)
+  - SQL Server: 125 - 1,000 MiB/s (baseline: 125 MiB/s)
+- **IO2 IOPS** (must be explicitly specified, no baseline):
+  - Oracle: 1,000 - 256,000 IOPS
+  - SQL Server: 1,000 - 256,000 IOPS
+- **IO2 Throughput**:
+  - Oracle: up to 16,000 MiB/s (for 200+ GiB)
+  - SQL Server: up to 4,000 MiB/s
+- **Maximum throughput/IOPS ratio** (GP3 only): 0.25
 
-For more information, see [Adding storage volumes](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html).
+For more information, see [Adding storage volumes](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html) and [Amazon RDS DB instance storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html).
 
 Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for the instance:

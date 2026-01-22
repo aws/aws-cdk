@@ -478,10 +478,17 @@ export enum AdditionalStorageVolumeType {
  * - Instance types must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge)
  * - Primary storage must be at least 200 GiB
  * - Only gp3 and io2 storage types are supported
- * - Oracle GP3: minimum 12,000 IOPS, maximum 64,000 IOPS
- * - SQL Server GP3: minimum 3,000 IOPS, maximum 16,000 IOPS
+ *
+ * GP3 Storage Limits (differs by engine):
+ * - Oracle: 12,000-64,000 IOPS, 500-4,000 MiB/s throughput
+ * - SQL Server: 3,000-16,000 IOPS, 125-1,000 MiB/s throughput
+ *
+ * IO2 Block Express Limits (differs by engine):
+ * - Oracle (200+ GiB): 1,000-256,000 IOPS, up to 16,000 MiB/s throughput
+ * - SQL Server: 1,000-256,000 IOPS, up to 4,000 MiB/s throughput
  *
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html
  */
 export interface AdditionalStorageVolume {
   /**
@@ -505,7 +512,16 @@ export interface AdditionalStorageVolume {
   /**
    * The number of I/O operations per second (IOPS) to provision.
    *
-   * @default - default IOPS for the storage type
+   * GP3 IOPS ranges:
+   * - Oracle: 12,000-64,000 IOPS
+   * - SQL Server: 3,000-16,000 IOPS
+   *
+   * IO2 IOPS ranges (must be explicitly provisioned):
+   * - Oracle: 1,000-256,000 IOPS
+   * - SQL Server: 1,000-256,000 IOPS
+   *
+   * @default - For GP3: baseline IOPS (Oracle: 12,000, SQL Server: 3,000).
+   * For IO2: IOPS must be explicitly specified (no baseline).
    */
   readonly iops?: number;
 
@@ -523,7 +539,11 @@ export interface AdditionalStorageVolume {
    *
    * Only applicable for gp3 storage type.
    *
-   * @default - default throughput for gp3
+   * GP3 throughput ranges:
+   * - Oracle: 500-4,000 MiB/s
+   * - SQL Server: 125-1,000 MiB/s
+   *
+   * @default - baseline throughput for gp3 (Oracle: 500 MiB/s, SQL Server: 125 MiB/s)
    *
    * @example Size.mebibytes(500)
    */
