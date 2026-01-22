@@ -1374,7 +1374,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       timezone: props.timezone,
       dbParameterGroupName,
       additionalStorageVolumes: props.additionalStorageVolumes &&
-        renderAdditionalStorageVolumes(props.additionalStorageVolumes, engineType),
+        renderAdditionalStorageVolumes(props.additionalStorageVolumes),
     };
   }
 
@@ -1838,7 +1838,6 @@ function getVolumeName(index: number): string {
  */
 function renderAdditionalStorageVolumes(
   volumes: AdditionalStorageVolume[],
-  engineType: string,
 ): CfnDBInstance.AdditionalStorageVolumeProperty[] | undefined {
   if (volumes.length === 0) {
     return undefined;
@@ -1849,7 +1848,6 @@ function renderAdditionalStorageVolumes(
     return {
       volumeName: getVolumeName(index),
       storageType: volume.storageType ?? AdditionalStorageVolumeType.GP3,
-      // L1 expects string, use Tokenization.stringifyNumber for token support
       allocatedStorage: Token.isUnresolved(allocatedStorageGiB)
         ? Tokenization.stringifyNumber(allocatedStorageGiB)
         : allocatedStorageGiB.toString(),
