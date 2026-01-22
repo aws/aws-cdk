@@ -59,6 +59,7 @@ describe('EventBridgeIntegration', () => {
         Detail: '$request.body.Detail',
         DetailType: '$request.body.DetailType',
         Source: '$request.body.Source',
+        EventBusName: stack.resolve(bus.eventBusName),
       },
     });
   });

@@ -13,13 +13,14 @@ export interface HttpEventBridgeIntegrationProps {
    *
    * When not provided, a default mapping will be used that expects the
    * incoming request body to contain the fields `Detail`, `DetailType`, and
-   * `Source`.
+   * `Source`. The `EventBusName` is automatically included from `eventBusRef`.
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html
    *
    * @default - set `Detail` to `$request.body.Detail`,
-   * `DetailType` to `$request.body.DetailType`, and `Source` to `$request.body.Source`.
+   * `DetailType` to `$request.body.DetailType`, `Source` to `$request.body.Source`,
+   * and `EventBusName` to the event bus name from `eventBusRef`.
    */
   readonly parameterMapping?: apigwv2.ParameterMapping;
 
@@ -86,13 +87,15 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
   private createDefaultParameterMapping(scope: IConstruct): apigwv2.ParameterMapping {
     switch (this.subtype) {
       case apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS:
-        // Default mapping includes only the required PutEvents parameters: Detail, DetailType, and Source.
-        // Optional parameters (for example, EventBusName, Time, Resources) are intentionally omitted.
+        // Default mapping includes the required PutEvents parameters: Detail, DetailType, and Source.
+        // EventBusName is automatically included from eventBusRef to avoid redundant configuration.
+        // Other optional parameters (for example, Time, Resources) are intentionally omitted.
         // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html#EventBridge-PutEvents
         return new apigwv2.ParameterMapping()
           .custom('Detail', '$request.body.Detail')
           .custom('DetailType', '$request.body.DetailType')
-          .custom('Source', '$request.body.Source');
+          .custom('Source', '$request.body.Source')
+          .custom('EventBusName', this.props.eventBusRef.eventBusName);
       default:
         throw new ValidationError(`Unsupported subtype: ${this.subtype}`, scope);
     }

@@ -86,7 +86,10 @@
     "RequestParameters": {
      "Detail": "$request.body.Detail",
      "DetailType": "$request.body.DetailType",
-     "Source": "$request.body.Source"
+     "Source": "$request.body.Source",
+     "EventBusName": {
+      "Ref": "BusEA82B648"
+     }
     }
    }
   },
@@ -174,7 +177,10 @@
     "RequestParameters": {
      "Detail": "$request.body.Detail",
      "DetailType": "$request.body.DetailType",
-     "Source": "$request.body.Source"
+     "Source": "$request.body.Source",
+     "EventBusName": {
+      "Ref": "BusEA82B648"
+     }
     }
    }
   },
