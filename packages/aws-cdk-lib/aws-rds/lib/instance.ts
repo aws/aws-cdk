@@ -471,9 +471,8 @@ export enum AdditionalStorageVolumeType {
  * Configuration for an additional storage volume.
  *
  * Additional storage volumes are supported for RDS for Oracle and RDS for SQL Server only.
- * Volume names are automatically assigned based on the engine type and array index:
- * - Oracle: rdsdbdata2, rdsdbdata3, rdsdbdata4
- * - SQL Server: H:, I:, J:
+ * Volume names are automatically assigned based on the array index: rdsdbdata2, rdsdbdata3, rdsdbdata4
+ * For SQL Server, these are automatically mapped to drive letters H:\, I:\, J:\ respectively.
  *
  * Requirements:
  * - Instance types must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge)
@@ -1260,7 +1259,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       // Validate each volume
       for (let i = 0; i < props.additionalStorageVolumes.length; i++) {
         const volume = props.additionalStorageVolumes[i];
-        const volumeName = getVolumeName(engineType, i);
+        const volumeName = getVolumeName(i);
         const volumeStorageType = volume.storageType ?? AdditionalStorageVolumeType.GP3;
 
         // Validate storageThroughput is only for GP3
@@ -1823,25 +1822,15 @@ function defaultIops(storageType: StorageType, iops?: number): number | undefine
 }
 
 /**
- * Oracle volume names for additional storage volumes.
+ * Volume names for additional storage volumes.
  */
-const ORACLE_VOLUME_NAMES = ['rdsdbdata2', 'rdsdbdata3', 'rdsdbdata4'];
+const VOLUME_NAMES = ['rdsdbdata2', 'rdsdbdata3', 'rdsdbdata4'];
 
 /**
- * SQL Server volume names for additional storage volumes (drive letters).
+ * Returns the volume name based on array index.
  */
-const SQL_SERVER_VOLUME_NAMES = ['H:', 'I:', 'J:'];
-
-/**
- * Returns the volume name based on engine type and array index.
- */
-function getVolumeName(engineType: string, index: number): string {
-  if (engineType.startsWith('oracle-')) {
-    return ORACLE_VOLUME_NAMES[index];
-  } else {
-    // SQL Server
-    return SQL_SERVER_VOLUME_NAMES[index];
-  }
+function getVolumeName(index: number): string {
+  return VOLUME_NAMES[index];
 }
 
 /**
@@ -1858,7 +1847,7 @@ function renderAdditionalStorageVolumes(
   return volumes.map((volume, index) => {
     const allocatedStorageGiB = volume.allocatedStorage.toGibibytes();
     return {
-      volumeName: getVolumeName(engineType, index),
+      volumeName: getVolumeName(index),
       storageType: volume.storageType ?? AdditionalStorageVolumeType.GP3,
       // L1 expects string, use Tokenization.stringifyNumber for token support
       allocatedStorage: Token.isUnresolved(allocatedStorageGiB)

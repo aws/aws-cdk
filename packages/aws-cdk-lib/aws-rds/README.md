@@ -716,9 +716,8 @@ For RDS for Oracle and RDS for SQL Server, you can attach up to three additional
 to provision up to 256 TiB of total storage. This allows you to scale storage beyond the limits
 of a single volume.
 
-Volume names are automatically assigned based on the engine type and array index:
-- Oracle: `rdsdbdata2`, `rdsdbdata3`, `rdsdbdata4`
-- SQL Server: `H:`, `I:`, `J:`
+Volume names are automatically assigned based on the array index: `rdsdbdata2`, `rdsdbdata3`, `rdsdbdata4`.
+For SQL Server, these are automatically mapped to drive letters `H:\`, `I:\`, `J:\` respectively.
 
 ```ts
 declare const vpc: ec2.Vpc;

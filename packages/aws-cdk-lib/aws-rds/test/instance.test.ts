@@ -2547,9 +2547,9 @@ describe('instance', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         AdditionalStorageVolumes: [
-          Match.objectLike({ VolumeName: 'H:', AllocatedStorage: '200' }),
-          Match.objectLike({ VolumeName: 'I:', AllocatedStorage: '300' }),
-          Match.objectLike({ VolumeName: 'J:', AllocatedStorage: '400' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata2', AllocatedStorage: '200' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata3', AllocatedStorage: '300' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata4', AllocatedStorage: '400' }),
         ],
       });
     });
