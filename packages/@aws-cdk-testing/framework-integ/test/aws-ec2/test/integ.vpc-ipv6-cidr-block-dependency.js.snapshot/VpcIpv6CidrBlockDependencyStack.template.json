@@ -322,7 +322,14 @@
    },
    "DependsOn": [
     "DualStackVpcipv6cidr0D52F270"
-   ]
+   ],
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
+   }
   }
  },
  "Outputs": {

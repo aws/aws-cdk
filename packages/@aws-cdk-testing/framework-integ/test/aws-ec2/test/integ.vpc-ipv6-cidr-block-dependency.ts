@@ -46,6 +46,13 @@ class TestStack extends cdk.Stack {
       allowAllOutbound: true,
     });
 
+    // Suppress Security Guardian rule - this test intentionally creates an open security group
+    // to verify the IPv6 CIDR block dependency fix
+    const cfnSecurityGroup = securityGroup.node.defaultChild as cdk.CfnResource;
+    cfnSecurityGroup.addMetadata('guard', {
+      SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+    });
+
     // Add an ingress rule using the VPC's IPv6 CIDR blocks
     // This is the scenario that causes the race condition without proper dependency
     securityGroup.addIngressRule(
