@@ -44,6 +44,11 @@ export enum CacheEngine {
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   MEMCACHED_LATEST = 'memcached',
+  /**
+   * Memcached engine, minor version 1.6, patch version is selected automatically
+   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   */
+  MEMCACHED_1_6 = 'memcached_1.6',
 }
 
 /**
