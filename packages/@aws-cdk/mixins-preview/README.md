@@ -137,8 +137,10 @@ Mixins.of(bucket).apply(new EnableVersioning());
 **BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
 
 ```typescript
+declare const bucket: s3.IBucketRef;
+
 const bucketPolicy = new s3.CfnBucketPolicy(scope, "BucketPolicy", {
-  bucket: bucket.ref,
+  bucket: bucket,
   policyDocument: new iam.PolicyDocument(),
 });
 Mixins.of(bucketPolicy).apply(new BucketPolicyStatementsMixin([
