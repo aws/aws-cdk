@@ -85,7 +85,6 @@ export interface DynamicPartitioningProps {
   /**
    * Whether to enable the dynamic partitioning.
    *
-   * You can enable dynamic partitioning only when you create a new Firehose stream.
    * You cannot enable dynamic partitioning for an existing Firehose stream that does not have dynamic partitioning already enabled.
    *
    * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-enable.html

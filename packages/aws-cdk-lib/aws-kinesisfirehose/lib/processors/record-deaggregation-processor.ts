@@ -29,7 +29,10 @@ export enum SubRecordType {
 }
 
 /**
- * The data processor for multi record deaggrecation
+ * The data processor for multi record deaggrecation.
+ *
+ * Record deaggregation by JSON or by delimiter is capped at 500 per record.
+ *
  * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-multirecord-deaggergation.html
  */
 export class RecordDeAggregationProcessor implements IDataProcessor {

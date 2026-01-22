@@ -660,7 +660,7 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 });
 ```
 
-You can also specify custom delimiter using `RecordDeAggregationProcessor.delmited()`.
+You can also specify custom delimiter using `RecordDeAggregationProcessor.delimited()`.
 
 ``` ts
 declare const bucket: s3.Bucket;

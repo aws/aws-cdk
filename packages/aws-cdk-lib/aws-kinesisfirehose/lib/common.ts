@@ -123,7 +123,7 @@ export interface CommonDestinationS3Props {
    * A prefix that Amazon Data Firehose evaluates and adds to failed records before writing them to S3.
    *
    * This prefix appears immediately following the bucket name.
-   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#prefix-rules
    *
    * @default - See the documentation above
    */
