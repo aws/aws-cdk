@@ -116,12 +116,12 @@ class ConnectionStringTestStack extends cdk.Stack {
     const secret = cluster.secret!;
 
     // Generate connection string using MySQL template (without dbname since cluster secret doesn't include it)
-    const mysqlConnectionString = secret.connectionStringFromJson(
+    const mysqlConnectionString = secret.connectionStringFromJson!(
       'mysql://${username}:${password}@${host}:${port}',
     );
 
     // Generate connection string with custom template (with query parameters, no dbname)
-    const customConnectionString = secret.connectionStringFromJson(
+    const customConnectionString = secret.connectionStringFromJson!(
       'mysql://${username}:${password}@${host}:${port}?ssl-mode=REQUIRED&connect_timeout=10',
     );
 
