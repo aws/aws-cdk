@@ -1,0 +1,5 @@
+{
+  "exclude": [
+    "no-grants:@aws-cdk/aws-bedrock-alpha.CrossRegionInferenceProfile.grantProfileUsage"
+  ]
+}
