@@ -366,7 +366,7 @@ export class AlbController extends Construct {
           repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
           tag: props.version.version,
         },
-        ...props.additionalHelmChartValues, // additional helm chart options for ALB controller chart
+        ...props.additionalHelmChartValues,
       },
     });
 
