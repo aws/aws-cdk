@@ -1,35 +1,12 @@
-import { Construct, IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { AWS_CDK_CONSTRUCTOR_PROPS } from './analytics-data-source/classes';
 import { AWS_CDK_ENUMS } from './analytics-data-source/enums';
 import { Annotations } from './annotations';
-import { RESOURCE_SYMBOL, JSII_RUNTIME_SYMBOL } from './constants';
+import { JSII_RUNTIME_SYMBOL } from './constants';
 import { FeatureFlags } from './feature-flags';
-import { Resource } from './resource';
+import { MetadataType } from './metadata-type';
 import { Token } from './token';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
-
-/**
- * Enumeration of metadata types used for tracking analytics in AWS CDK.
- */
-export enum MetadataType {
-  /**
-   * Metadata type for construct properties.
-   * This is used to represent properties of CDK constructs.
-   */
-  CONSTRUCT = 'aws:cdk:analytics:construct',
-
-  /**
-   * Metadata type for method properties.
-   * This is used to track parameters and details of CDK method calls.
-   */
-  METHOD = 'aws:cdk:analytics:method',
-
-  /**
-   * Metadata type for feature flags.
-   * This is used to track analytics related to feature flags in the CDK.
-   */
-  FEATURE_FLAG = 'aws:cdk:analytics:featureflag',
-}
 
 export function addConstructMetadata(scope: Construct, props: any): void {
   try {
@@ -93,15 +70,6 @@ export function addMetadata(scope: Construct, type: MetadataType, props: any): v
   }
   const fqn: string = Object.getPrototypeOf(scope).constructor[JSII_RUNTIME_SYMBOL].fqn;
   scope.node.addMetadata(type, redactMetadata(fqn, props));
-}
-
-/**
- * Check whether the given construct is a Resource. Note that this is
- * duplicated function from 'core/lib/resource.ts' to avoid circular
- * dependencies in imports.
- */
-export function isResource(construct: IConstruct): construct is Resource {
-  return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
 }
 
 /**
