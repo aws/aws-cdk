@@ -1689,7 +1689,7 @@ describe('cluster', () => {
     });
   });
 
-  test('kubectl provider passes security group to handler lambda', ()=> {
+  test('kubectl provider uses the explicitly provided security group for the handler lambda', ()=> {
     const { stack, vpc } = testFixture();
 
     const kubectlSecurityGroup = new ec2.SecurityGroup(stack, 'KubectlSecurityGroup', {
@@ -1715,7 +1715,7 @@ describe('cluster', () => {
     });
   });
 
-  test('kubectl provider passes security group to handler lambda', () => {
+  test('kubectl provider uses the cluster security group for the handler lambda when no SG is provided', () => {
     const { stack, vpc } = testFixture();
 
     new eks.Cluster(stack, 'Cluster1', {
