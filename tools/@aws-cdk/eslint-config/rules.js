@@ -9,6 +9,8 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     '@cdklabs/no-literal-partition': ['error'],
     '@cdklabs/no-invalid-path': ['error'],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
+    '@cdklabs/no-evaluating-typeguard': [ 'error' ],
+    '@cdklabs/no-unconditional-token-allocation': [ 'error' ],
 
     // Error handling
     'no-throw-literal': [ 'error' ],
@@ -216,7 +218,9 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
 export function makeTestRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
+    // Only for library code, not test code
     '@cdklabs/no-throw-default-error': 'off',
+    '@cdklabs/no-unconditional-token-allocation': 'off',
     'no-console': 'off',
   };
   return ret;

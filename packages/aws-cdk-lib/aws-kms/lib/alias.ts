@@ -4,6 +4,7 @@ import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generat
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
@@ -117,38 +118,65 @@ abstract class AliasBase extends Resource implements IAlias {
     return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return this.aliasTargetKey.grant(grantee, ...actions);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantDecrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncryptDecrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantSign(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantSign(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantVerify(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantVerify(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantSignVerify(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantGenerateMac(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantVerifyMac(grantee);
   }
@@ -294,8 +322,18 @@ export class Alias extends AliasBase {
     return new Import(scope, id);
   }
 
-  public readonly aliasName: string;
+  private readonly resource: CfnAlias;
+
   public readonly aliasTargetKey: IKey;
+
+  @memoizedGetter
+  public get aliasName(): string {
+    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
+      return this.getResourceNameAttribute(this.resource.ref);
+    } else {
+      return this.getResourceNameAttribute(this.resource.aliasName);
+    }
+  }
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     let aliasName = props.aliasName;
@@ -340,19 +378,13 @@ export class Alias extends AliasBase {
 
     this.aliasTargetKey = props.targetKey;
 
-    const resource = new CfnAlias(this, 'Resource', {
+    this.resource = new CfnAlias(this, 'Resource', {
       aliasName: this.physicalName,
       targetKeyId: this.aliasTargetKey.keyArn,
     });
 
-    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
-      this.aliasName = this.getResourceNameAttribute(resource.ref);
-    } else {
-      this.aliasName = this.getResourceNameAttribute(resource.aliasName);
-    }
-
     if (props.removalPolicy) {
-      resource.applyRemovalPolicy(props.removalPolicy);
+      this.resource.applyRemovalPolicy(props.removalPolicy);
     }
   }
 

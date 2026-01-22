@@ -818,14 +818,14 @@ interface Prefixable {
  * Whether an object is a Prefixable
  */
 function isPrefixable(x: any): x is Prefixable {
-  return typeof(x) === 'object' && x.addPrefix;
+  return typeof(x) === 'object' && 'addPrefix' in x;
 }
 
 /**
  * Whether an object is INextable
  */
 function isNextable(x: any): x is INextable {
-  return typeof(x) === 'object' && x.next;
+  return typeof(x) === 'object' && 'next' in x;
 }
 
 /**

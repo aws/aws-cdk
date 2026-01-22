@@ -37,6 +37,7 @@ import {
   Size,
   Lazy,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -210,16 +211,6 @@ export class Cluster extends Resource implements ICluster {
   public readonly vpc: ec2.IVpc;
 
   /**
-   * The Amazon Resource Name (ARN) that identifies the cluster.
-   */
-  public readonly clusterArn: string;
-
-  /**
-   * The name of the cluster.
-   */
-  public readonly clusterName: string;
-
-  /**
    * Collection of grant methods for a Cluster
    */
   public readonly grants = ClusterGrants.fromCluster(this);
@@ -269,6 +260,20 @@ export class Cluster extends Resource implements ICluster {
    * CfnCluster instance
    */
   private _cfnCluster: CfnCluster;
+
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.getResourceArnAttribute(this._cfnCluster.attrArn, {
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(this._cfnCluster.ref);
+  }
 
   /**
    * Constructs a new instance of the Cluster class.
@@ -322,13 +327,6 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings,
       configuration: this.renderClusterConfiguration(),
     });
-
-    this.clusterArn = this.getResourceArnAttribute(this._cfnCluster.attrArn, {
-      service: 'ecs',
-      resource: 'cluster',
-      resourceName: this.physicalName,
-    });
-    this.clusterName = this.getResourceNameAttribute(this._cfnCluster.ref);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
@@ -469,7 +467,7 @@ export class Cluster extends Resource implements ICluster {
     }
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
-      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupName,
+      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupRef.logGroupName,
       s3BucketName: logConfiguration?.s3Bucket?.bucketName,
       s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
       s3KeyPrefix: logConfiguration?.s3KeyPrefix,
@@ -778,6 +776,7 @@ export class Cluster extends Resource implements ICluster {
    * Grants an ECS Task Protection API permission to the specified grantee.
    * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
    * permission, enabling the grantee to manage task protection in the ECS cluster.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
    */
@@ -1323,7 +1322,7 @@ export interface ExecuteCommandLogConfiguration {
    * The name of the CloudWatch log group to send logs to. The CloudWatch log group must already be created.
    * @default - none
    */
-  readonly cloudWatchLogGroup?: logs.ILogGroup;
+  readonly cloudWatchLogGroup?: logs.ILogGroupRef;
 
   /**
    * The name of the S3 bucket to send logs to. The S3 bucket must already be created.
@@ -1494,6 +1493,21 @@ export enum PropagateManagedInstancesTags {
 }
 
 /**
+ * The capacity option type for instances launched by a Managed Instances Capacity Provider.
+ */
+export enum CapacityOptionType {
+  /**
+   * Launch instances as On-Demand instances
+   */
+  ON_DEMAND = 'ON_DEMAND',
+
+  /**
+   * Launch instances as Spot instances
+   */
+  SPOT = 'SPOT',
+}
+
+/**
  * The options for creating a Managed Instances Capacity Provider.
  */
 export interface ManagedInstancesCapacityProviderProps {
@@ -1545,11 +1559,8 @@ export interface ManagedInstancesCapacityProviderProps {
   /**
    * The security groups to associate with the launched EC2 instances.
    * These security groups control the network traffic allowed to and from the instances.
-   * If not specified, the default security group of the VPC containing the subnets will be used.
-   *
-   * @default - default security group of the VPC
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
    * The size of the task volume storage attached to each instance.
@@ -1589,6 +1600,14 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default PropagateManagedInstancesTags.NONE - no tag propagation
    */
   readonly propagateTags?: PropagateManagedInstancesTags;
+
+  /**
+   * Specifies the capacity option type for instances launched by this capacity provider.
+   * This determines whether instances are launched as On-Demand or Spot instances.
+   *
+   * @default - `ON_DEMAND`
+   */
+  readonly capacityOptionType?: CapacityOptionType;
 }
 
 /**
@@ -1649,6 +1668,10 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       throw new ValidationError('Subnets are required and should be non-empty.', this);
     }
 
+    if (props.securityGroups.length === 0) {
+      throw new ValidationError('Security groups cannot be an empty array. Provide at least one security group.', this);
+    }
+
     // Create or use provided infrastructure role
     const roleId = `${id}Role`;
     this.infrastructureRole = props.infrastructureRole ?? new iam.Role(this, roleId, {
@@ -1680,6 +1703,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     const managedInstancesProviderConfig: CfnCapacityProvider.ManagedInstancesProviderProperty = {
       infrastructureRoleArn: this.infrastructureRole.roleArn,
       instanceLaunchTemplate: {
+        capacityOptionType: props.capacityOptionType,
         ec2InstanceProfileArn: this.ec2InstanceProfile.instanceProfileArn,
         networkConfiguration: {
           subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),

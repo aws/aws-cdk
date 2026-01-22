@@ -4,6 +4,7 @@ import { Column, Row } from './layout';
 import { IVariable } from './variable';
 import { IWidget } from './widget';
 import { Lazy, Resource, Stack, Token, Annotations, Duration, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -108,7 +109,10 @@ export class Dashboard extends Resource {
    *
    * @attribute
    */
-  public readonly dashboardName: string;
+  @memoizedGetter
+  get dashboardName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * ARN of this dashboard
@@ -120,6 +124,7 @@ export class Dashboard extends Resource {
   private readonly rows: IWidget[] = [];
 
   private readonly variables: IVariable[] = [];
+  private readonly resource: CfnDashboard;
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
     super(scope, id, {
@@ -163,7 +168,7 @@ export class Dashboard extends Resource {
       }),
     });
 
-    this.dashboardName = this.getResourceNameAttribute(dashboard.ref);
+    this.resource = dashboard;
 
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);

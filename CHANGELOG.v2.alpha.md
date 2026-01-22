@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.235.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.235.0-alpha.0...v2.235.1-alpha.0) (2026-01-19)
+
+## [2.235.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.234.1-alpha.0...v2.235.0-alpha.0) (2026-01-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bedrock-agentcore-alpha:** The User Pool Client will be replaced and new Resource Server and Domain resources will be added for existing Gateway stacks using the default Cognito authorizer.
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** default Cognito User Pool for AgentCore Gateway is not set up for M2M authentication. ([#36323](https://github.com/aws/aws-cdk/issues/36323)) ([5a5605a](https://github.com/aws/aws-cdk/commit/5a5605aafdba676ea1d73edd3ebdbfaf7dfe668d))
+
+## [2.234.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.234.0-alpha.0...v2.234.1-alpha.0) (2026-01-08)
+
+## [2.234.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.233.0-alpha.0...v2.234.0-alpha.0) (2026-01-08)
+
+
+### Features
+
+* **msk-alpha:** support express broker for Kafka v3.9 ([#36450](https://github.com/aws/aws-cdk/issues/36450)) ([afcc953](https://github.com/aws/aws-cdk/commit/afcc95362cbf1dff56f2a3d96f37915dc877d01b))
+
+
+### Bug Fixes
+
+* **elasticache-alpha:** deployment fails when serverlessCacheName or userGroupId is not specified ([#36459](https://github.com/aws/aws-cdk/issues/36459)) ([b3f62f7](https://github.com/aws/aws-cdk/commit/b3f62f7acd935176d540d6c4e227a4c660fc7481)), closes [#36458](https://github.com/aws/aws-cdk/issues/36458)
+* **elasticache-alpha:** security group for `ServerlessCache` does not use default endpoint port ([#35738](https://github.com/aws/aws-cdk/issues/35738)) ([79d91ad](https://github.com/aws/aws-cdk/commit/79d91ad156452540525710b1c5049904bcbfc053))
+
 ## [2.233.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.232.2-alpha.0...v2.233.0-alpha.0) (2025-12-18)
 
 
