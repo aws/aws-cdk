@@ -19,4 +19,10 @@ export enum MetadataType {
    * This is used to track analytics related to feature flags in the CDK.
    */
   FEATURE_FLAG = 'aws:cdk:analytics:featureflag',
+
+  /**
+   * Metadata type for Mixin use.
+   * This is used to track analytics related to CDK Mixins.
+   */
+  MIXIN = 'aws:cdk:analytics:mixin',
 }

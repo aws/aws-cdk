@@ -159,8 +159,8 @@ describe('MetadataResource', () => {
     expect(analytics).toBeDefined();
     expect(analytics.length).toBe(2); // TestConstruct + jsii-runtime
     expect(analytics[0].fqn).toEqual('@amzn/core.TestConstruct');
-    expect(analytics[0].telemetryMetadata).toBeDefined();
-    expect(analytics[0].telemetryMetadata).toEqual([
+    expect(analytics[0].additionalTelemetry).toBeDefined();
+    expect(analytics[0].additionalTelemetry).toEqual([
       { hello: 'world' },
       {
         bool: true,
@@ -171,6 +171,29 @@ describe('MetadataResource', () => {
       },
       'foobar',
     ]);
+  });
+
+  test('mixin metadata is always collected', () => {
+    const construct = new TestConstruct(stack, 'Test');
+    construct.node.addMetadata(MetadataType.MIXIN, { mixin: '@aws-cdk/mixins-preview.TestMixin' });
+
+    const analytics = constructAnalyticsFromScope(construct);
+    expect(analytics[0].metadata).toEqual([{ mixin: '@aws-cdk/mixins-preview.TestMixin' }]);
+  });
+
+  test('mixin metadata is included even without feature flag', () => {
+    const appWithoutFlag = new App({
+      analyticsReporting: true,
+      postCliContext: {
+        [ENABLE_ADDITIONAL_METADATA_COLLECTION]: false,
+      },
+    });
+    const stackWithoutFlag = new Stack(appWithoutFlag, 'Stack');
+    const construct = new TestConstruct(stackWithoutFlag, 'Test');
+    construct.node.addMetadata(MetadataType.MIXIN, { mixin: '@aws-cdk/mixins-preview.TestMixin' });
+
+    const analytics = constructAnalyticsFromScope(construct);
+    expect(analytics[0].metadata).toEqual([{ mixin: '@aws-cdk/mixins-preview.TestMixin' }]);
   });
 
   function stackAnalytics(stage: Stage = app, stackName: string = 'Stack') {
@@ -237,9 +260,9 @@ describe('formatAnalytics', () => {
     [[{ custom: { foo: 'bar' } }], '1.2.3!aws-cdk-lib.Construct[{\"custom\":{\"foo\":\"bar\"}}]'],
     [[], '1.2.3!aws-cdk-lib.Construct'],
     [undefined, '1.2.3!aws-cdk-lib.Construct'],
-  ])('format analytics with metadata and enabled additional telemetry', (telemetryMetadata, output) => {
+  ])('format analytics with metadata and enabled additional telemetry', (additionalTelemetry, output) => {
     const constructAnalytics = [
-      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3', telemetryMetadata },
+      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3', additionalTelemetry },
     ];
 
     expect(plaintextConstructsFromAnalytics(formatAnalytics(constructAnalytics))).toMatch(output);
