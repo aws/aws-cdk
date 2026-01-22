@@ -1513,6 +1513,7 @@ crossRegionProfile.grantProfileUsage(lambdaFunction);
 The `grantProfileUsage` method adds the necessary IAM permissions to the resource, allowing it to use the inference profile. This includes permissions to call `bedrock:GetInferenceProfile` and `bedrock:InvokeModel*` actions on the inference profile resource.
 
 **Important for Cross-Region Inference Profiles**: When using `CrossRegionInferenceProfile.grantProfileUsage()`, permissions are granted across ALL regions within the configured geoRegion, not just the current deployment region. This is required because cross-region inference profiles dynamically route requests to any region within the geoRegion based on availability and demand. For example:
+
 - **US geoRegion**: Grants access to us-east-1, us-east-2, us-west-1, us-west-2
 - **EU geoRegion**: Grants access to eu-central-1, eu-west-1, eu-west-2, eu-west-3, eu-north-1, etc.
 - **APAC geoRegion**: Grants access to ap-* regions and me-central-1 (Middle East UAE)
