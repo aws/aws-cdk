@@ -4,6 +4,7 @@ import { AccessEntryReference, CfnAccessEntry, IAccessEntryRef } from './eks.gen
 import {
   Resource, IResource, Aws, Lazy,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -329,14 +330,24 @@ export class AccessEntry extends Resource implements IAccessEntry {
   /**
    * The name of the access entry.
    */
-  public readonly accessEntryName: string;
-  /**
-   * The Amazon Resource Name (ARN) of the access entry.
-   */
-  public readonly accessEntryArn: string;
   private cluster: ICluster;
   private principal: string;
   private accessPolicies: IAccessPolicy[];
+  private readonly resource: CfnAccessEntry;
+
+  @memoizedGetter
+  public get accessEntryName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get accessEntryArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrAccessEntryArn, {
+      service: 'eks',
+      resource: 'accessentry',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
@@ -347,7 +358,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     this.principal = props.principal;
     this.accessPolicies = props.accessPolicies;
 
-    const resource = new CfnAccessEntry(this, 'Resource', {
+    this.resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
       type: props.accessEntryType,
@@ -361,12 +372,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
         })),
       }),
 
-    });
-    this.accessEntryName = this.getResourceNameAttribute(resource.ref);
-    this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
-      service: 'eks',
-      resource: 'accessentry',
-      resourceName: this.physicalName,
     });
   }
   /**

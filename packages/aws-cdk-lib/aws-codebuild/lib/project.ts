@@ -31,6 +31,7 @@ import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IProjectRef, ProjectReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
@@ -1056,17 +1057,28 @@ export class Project extends ProjectBase {
   /**
    * The ARN of the project.
    */
-  public readonly projectArn: string;
+  @memoizedGetter
+  get projectArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'codebuild',
+      resource: 'project',
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The name of the project.
    */
-  public readonly projectName: string;
+  @memoizedGetter
+  get projectName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   private readonly source: ISource;
   private readonly buildImage: IBuildImage;
   private readonly _secondarySources: CfnProject.SourceProperty[];
   private readonly _secondarySourceVersions: CfnProject.ProjectSourceVersionProperty[];
+  private readonly resource: CfnProject;
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
   private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
@@ -1179,12 +1191,7 @@ export class Project extends ProjectBase {
 
     this.addVpcRequiredPermissions(props, resource);
 
-    this.projectArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'codebuild',
-      resource: 'project',
-      resourceName: this.physicalName,
-    });
-    this.projectName = this.getResourceNameAttribute(resource.ref);
+    this.resource = resource;
 
     this.addToRolePolicy(this.createLoggingPermission());
     // add permissions to create and use test report groups
