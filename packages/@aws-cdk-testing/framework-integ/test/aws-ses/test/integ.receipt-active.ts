@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ses from 'aws-cdk-lib/aws-ses';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -13,7 +13,11 @@ new ses.ReceiptRuleSet(stack, 'ActiveRuleSet', {
   active: true,
 });
 
-new IntegTest(app, 'cdk-ses-receipt-active-integ', {
+const integ = new IntegTest(app, 'cdk-ses-receipt-active-integ', {
   testCases: [stack],
   diffAssets: true,
 });
+
+// Assert that the rule set is actually active by calling DescribeActiveReceiptRuleSet
+integ.assertions.awsApiCall('SES', 'describeActiveReceiptRuleSet', {})
+  .assertAtPath('Metadata.Name', ExpectedResult.stringLikeRegexp('cdk-integ-active-rule-set'));

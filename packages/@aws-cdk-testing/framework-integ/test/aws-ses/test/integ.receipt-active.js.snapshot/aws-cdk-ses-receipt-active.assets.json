@@ -1,16 +1,30 @@
 {
   "version": "48.0.0",
   "files": {
-    "243a99026659efa53929fac9e168aff77f83b767f789154dbd3cb621b4552cb9": {
+    "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-e635f89b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "8272fdddef6ce1460d877801432bc54ec03fc58995ca68524b4f1105478d18ce": {
       "displayName": "aws-cdk-ses-receipt-active Template",
       "source": {
         "path": "aws-cdk-ses-receipt-active.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-228a66ce": {
+        "current_account-current_region-9671d601": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "243a99026659efa53929fac9e168aff77f83b767f789154dbd3cb621b4552cb9.json",
+          "objectKey": "8272fdddef6ce1460d877801432bc54ec03fc58995ca68524b4f1105478d18ce.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
