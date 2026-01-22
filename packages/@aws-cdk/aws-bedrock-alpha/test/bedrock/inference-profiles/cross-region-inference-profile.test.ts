@@ -323,6 +323,30 @@ describe('CrossRegionInferenceProfile', () => {
       expect(bedrockAlpha.REGION_TO_GEO_AREA['ap-southeast-1']).toBe(bedrockAlpha.CrossRegionInferenceProfileRegion.APAC);
       expect(bedrockAlpha.REGION_TO_GEO_AREA['ap-southeast-2']).toBe(bedrockAlpha.CrossRegionInferenceProfileRegion.APAC);
     });
+
+    test('all CrossRegionInferenceProfileRegion enum values are supported by grantProfileUsage', () => {
+      // This test ensures that all geoRegion enum values have corresponding region mappings
+      // and won't throw an error when grantProfileUsage is called
+      const allGeoRegions = Object.values(bedrockAlpha.CrossRegionInferenceProfileRegion);
+
+      for (const geoRegion of allGeoRegions) {
+        // Create a fresh stack for each test to avoid resource name conflicts
+        const testApp = new core.App();
+        const testStack = new core.Stack(testApp, `TestStack-${geoRegion}`);
+
+        const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+          geoRegion: geoRegion,
+          model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        });
+
+        const role = new iam.Role(testStack, 'TestRole', {
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // This should not throw - all enum values should be supported
+        expect(() => profile.grantProfileUsage(role)).not.toThrow();
+      }
+    });
   });
 
   describe('integration with application inference profiles', () => {

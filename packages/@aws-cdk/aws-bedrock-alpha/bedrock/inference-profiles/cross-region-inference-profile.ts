@@ -299,7 +299,8 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    * Returns the list of AWS regions for the configured geographic area.
    * Uses RegionInfo to dynamically determine regions based on the geoRegion prefix.
    *
-   * @returns Array of region names for the geoRegion, or ['*'] as fallback for unknown geoRegions
+   * @returns Array of region names for the geoRegion
+   * @throws CrossRegionInferenceProfileError if geoRegion is not recognized
    */
   private getRegionsForGeoArea(): string[] {
     const prefixMappings: Record<CrossRegionInferenceProfileRegion, string[]> = {
@@ -314,7 +315,11 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
 
     const prefixes = prefixMappings[this.geoRegion];
     if (!prefixes) {
-      return ['*']; // Fallback to wildcard for unknown geoRegions
+      // Throw error instead of falling back to wildcard to enforce least-privilege
+      throw new CrossRegionInferenceProfileError(
+        `Unknown geoRegion '${this.geoRegion}'. Cannot determine regions for IAM permissions. ` +
+        `Please use a supported geoRegion: ${Object.values(CrossRegionInferenceProfileRegion).join(', ')}`,
+      );
     }
 
     // For GLOBAL geoRegion, return wildcard
