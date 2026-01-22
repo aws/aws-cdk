@@ -23,6 +23,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Size, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -449,6 +450,11 @@ export enum NetworkType {
    * Dual-stack network type.
    */
   DUAL = 'DUAL',
+
+  /**
+   * IPv6 only network type.
+   */
+  IPV6 = 'IPV6',
 }
 
 /**
@@ -1495,12 +1501,18 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstance';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+
+  private readonly _resource: CfnDBInstance;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
@@ -1522,7 +1534,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
+    this._resource = instance;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
@@ -1598,12 +1610,18 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceFromSnapshot';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+
+  private readonly _resource: CfnDBInstance;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
@@ -1640,7 +1658,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
-    this.instanceIdentifier = instance.ref;
+    this._resource = instance;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
@@ -1710,7 +1728,11 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceReadReplica';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
 
@@ -1724,6 +1746,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;
+
+  private readonly _resource: CfnDBInstance;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
@@ -1756,8 +1780,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       allocatedStorage: props.allocatedStorage?.toString(),
     });
 
+    this._resource = instance;
     this.instanceType = props.instanceType;
-    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
