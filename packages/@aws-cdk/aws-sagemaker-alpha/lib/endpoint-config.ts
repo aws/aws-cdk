@@ -1,7 +1,9 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { EOL } from 'os';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -266,14 +268,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     });
   }
 
-  /**
-   * The ARN of the endpoint configuration.
-   */
-  public readonly endpointConfigArn: string;
-  /**
-   * The name of the endpoint configuration.
-   */
-  public readonly endpointConfigName: string;
+  private readonly resource: CfnEndpointConfig;
 
   private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } = {};
   private serverlessProductionVariant?: ServerlessProductionVariant;
@@ -297,13 +292,27 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     }
 
     // create the endpoint configuration resource
-    const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {
+    this.resource = new CfnEndpointConfig(this, 'EndpointConfig', {
       kmsKeyId: (props.encryptionKey) ? props.encryptionKey.keyRef.keyArn : undefined,
       endpointConfigName: this.physicalName,
       productionVariants: cdk.Lazy.any({ produce: () => this.renderProductionVariants() }),
     });
-    this.endpointConfigName = this.getResourceNameAttribute(endpointConfig.attrEndpointConfigName);
-    this.endpointConfigArn = this.getResourceArnAttribute(endpointConfig.ref, {
+  }
+
+  /**
+   * The name of the endpoint configuration.
+   */
+  @memoizedGetter
+  public get endpointConfigName(): string {
+    return this.getResourceNameAttribute(this.resource.attrEndpointConfigName);
+  }
+
+  /**
+   * The ARN of the endpoint configuration.
+   */
+  @memoizedGetter
+  public get endpointConfigArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
       service: 'sagemaker',
       resource: 'endpoint-config',
       resourceName: this.physicalName,

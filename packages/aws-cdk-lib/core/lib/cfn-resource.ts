@@ -78,7 +78,7 @@ export class CfnResource extends CfnRefElement {
    *
    * Is filled during prepare().
    */
-  private readonly dependsOn = new Set<CfnResource>();
+  private dependsOn: Set<CfnResource> | undefined;
 
   /**
    * Creates a resource construct.
@@ -402,6 +402,9 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _addResourceDependency(target: CfnResource) {
+    if (!this.dependsOn) {
+      this.dependsOn = new Set();
+    }
     this.dependsOn.add(target);
   }
 
@@ -410,7 +413,7 @@ export class CfnResource extends CfnRefElement {
    * in the same stack.
    */
   public obtainResourceDependencies() {
-    return Array.from(this.dependsOn.values());
+    return Array.from(this.dependsOn?.values() ?? []);
   }
 
   /**
@@ -420,7 +423,7 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _removeResourceDependency(target: CfnResource) {
-    this.dependsOn.delete(target);
+    this.dependsOn?.delete(target);
   }
 
   /**
@@ -482,7 +485,11 @@ export class CfnResource extends CfnRefElement {
 
     // returns the set of logical ID (tokens) this resource depends on
     // sorted by construct paths to ensure test determinism
-    function renderDependsOn(dependsOn: Set<CfnResource>) {
+    function renderDependsOn(dependsOn: Iterable<CfnResource> | undefined) {
+      if (!dependsOn) {
+        return [];
+      }
+
       return Array
         .from(dependsOn)
         .sort((x, y) => x.node.path.localeCompare(y.node.path))
