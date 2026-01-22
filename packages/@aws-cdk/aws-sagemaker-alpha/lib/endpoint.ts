@@ -6,6 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import { CfnEndpoint } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -295,6 +296,7 @@ abstract class EndpointBase extends cdk.Resource implements IEndpoint {
 
   /**
    * Permits an IAM principal to invoke this endpoint
+   * [disable-awslint:no-grants]
    * @param grantee The principal to grant access to
    */
   public grantInvoke(grantee: iam.IGrantable) {
@@ -303,6 +305,12 @@ abstract class EndpointBase extends cdk.Resource implements IEndpoint {
       actions: ['sagemaker:InvokeEndpoint'],
       resourceArns: [this.endpointArn],
     });
+  }
+
+  public get endpointRef(): sagemaker.EndpointReference {
+    return {
+      endpointArn: this.endpointArn,
+    };
   }
 }
 
@@ -396,19 +404,8 @@ export class Endpoint extends EndpointBase {
     return new Import(scope, id);
   }
 
-  /**
-   * The ARN of the endpoint.
-   *
-   * @attribute
-   */
-  public readonly endpointArn: string;
-  /**
-   * The name of the endpoint.
-   *
-   * @attribute
-   */
-  public readonly endpointName: string;
   private readonly endpointConfig: IEndpointConfig;
+  private resource: CfnEndpoint;
 
   constructor(scope: Construct, id: string, props: EndpointProps) {
     super(scope, id, {
@@ -421,12 +418,30 @@ export class Endpoint extends EndpointBase {
     this.endpointConfig = props.endpointConfig;
 
     // create the endpoint resource
-    const endpoint = new CfnEndpoint(this, 'Endpoint', {
+    this.resource = new CfnEndpoint(this, 'Endpoint', {
       endpointConfigName: props.endpointConfig.endpointConfigName,
       endpointName: this.physicalName,
     });
-    this.endpointName = this.getResourceNameAttribute(endpoint.attrEndpointName);
-    this.endpointArn = this.getResourceArnAttribute(endpoint.ref, {
+  }
+
+  /**
+   * The name of the endpoint.
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get endpointName(): string {
+    return this.getResourceNameAttribute(this.resource.attrEndpointName);
+  }
+
+  /**
+   * The ARN of the endpoint.
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get endpointArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
       service: 'sagemaker',
       resource: 'endpoint',
       resourceName: this.physicalName,

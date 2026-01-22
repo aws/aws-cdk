@@ -30,6 +30,7 @@ import {
   FeatureFlags,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { DYNAMODB_TABLE_RETAIN_TABLE_REPLICA } from '../../cx-api';
@@ -768,6 +769,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
@@ -781,6 +783,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
@@ -796,6 +800,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantReadData(grantee: iam.IGrantable): iam.Grant {
@@ -804,6 +810,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
 
   /**
    * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    */
@@ -819,6 +827,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
@@ -831,6 +841,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -846,6 +858,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
@@ -857,6 +871,8 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -1113,6 +1129,9 @@ export class Table extends TableBase {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @deprecated Use `#grantTableListStreams` for more granular permission
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal (no-op if undefined)
    */
   public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
@@ -1216,21 +1235,6 @@ export class Table extends TableBase {
    */
   public resourcePolicy?: iam.PolicyDocument;
 
-  /**
-   * @attribute
-   */
-  public readonly tableArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableName: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableStreamArn: string | undefined;
-
   private readonly table: CfnTable;
 
   private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
@@ -1255,6 +1259,25 @@ export class Table extends TableBase {
   private readonly globalReplicaCustomResources = new Array<CustomResource>();
 
   public readonly regions? = new Array<string>();
+
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.getResourceArnAttribute(this.table.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.table.ref);
+  }
+
+  @memoizedGetter
+  public get tableStreamArn(): string | undefined {
+    return this.table.streamSpecification ? this.table.attrStreamArn : undefined;
+  }
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
@@ -1343,16 +1366,7 @@ export class Table extends TableBase {
 
     this.encryptionKey = encryptionKey;
 
-    this.tableArn = this.getResourceArnAttribute(this.table.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
-    });
-    this.tableName = this.getResourceNameAttribute(this.table.ref);
-
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName); }
-
-    this.tableStreamArn = streamSpecification ? this.table.attrStreamArn : undefined;
 
     this.scalingRole = this.makeScalingRole();
 

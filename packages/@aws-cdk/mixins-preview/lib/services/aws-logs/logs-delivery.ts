@@ -6,8 +6,8 @@ import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { tryFindBucketConstruct, tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
 import { ConstructSelector, Mixins } from '../../core';
-import { BucketPolicyStatementsMixins } from '../../mixins/private/s3';
 import * as xray from '../aws-xray/policy';
+import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
 import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
@@ -203,7 +203,7 @@ export class S3LogsDelivery implements ILogsDelivery {
     }
 
     Mixins.of(policy, ConstructSelector.onlyItself())
-      .apply(new BucketPolicyStatementsMixins(statements));
+      .apply(new BucketPolicyStatementsMixin(statements));
   }
 
   private findEncryptionKey() {

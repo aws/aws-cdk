@@ -7,6 +7,7 @@ import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IExtensionRef, ExtensionReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
@@ -139,8 +140,8 @@ export class EventBridgeDestination implements IEventDestination {
   public readonly extensionUri: string;
   public readonly type: SourceType;
 
-  constructor(bus: events.IEventBus) {
-    this.extensionUri = bus.eventBusArn;
+  constructor(bus: events.IEventBusRef) {
+    this.extensionUri = bus.eventBusRef.eventBusArn;
     this.type = SourceType.EVENTS;
   }
 }
@@ -501,7 +502,14 @@ export class Extension extends Resource implements IExtension {
    *
    * @attribute
    */
-  public readonly extensionArn: string;
+  @memoizedGetter
+  public get extensionArn(): string {
+    return this.getResourceArnAttribute(this._cfnExtension.attrArn, {
+      service: 'appconfig',
+      resource: 'extension',
+      resourceName: `${this.extensionId}/${this.extensionVersionNumber}`,
+    });
+  }
 
   /**
    * The ID of the extension.
@@ -571,11 +579,6 @@ export class Extension extends Resource implements IExtension {
 
     this.extensionId = this._cfnExtension.attrId;
     this.extensionVersionNumber = this._cfnExtension.attrVersionNumber;
-    this.extensionArn = this.getResourceArnAttribute(this._cfnExtension.attrArn, {
-      service: 'appconfig',
-      resource: 'extension',
-      resourceName: `${this.extensionId}/${this.extensionVersionNumber}`,
-    });
   }
 
   private getExecutionRole(eventDestination: IEventDestination, actionName: string): iam.IRoleRef {

@@ -12,6 +12,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -69,7 +70,7 @@ export interface LogOptions {
    *
    * @default No log group. Required if your log level is not set to OFF.
    */
-  readonly destination?: logs.ILogGroup;
+  readonly destination?: logs.ILogGroupRef;
 
   /**
    * Determines whether execution data is included in your log.
@@ -230,6 +231,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to start an execution of this state
    * machine.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
     return this.grants.startExecution(identity);
@@ -238,6 +241,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to start a synchronous execution of
    * this state machine.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
     return this.grants.startSyncExecution(identity);
@@ -246,6 +251,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to read results from state
    * machine.
+   * [disable-awslint:no-grants]
    */
   public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grants.read(identity);
@@ -253,6 +259,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity task response permissions on a state machine
+   * [disable-awslint:no-grants]
    */
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
     return this.grants.taskResponse(identity);
@@ -260,6 +267,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permissions on all executions of the state machine
+   * [disable-awslint:no-grants]
    */
   public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
     return this.grants.execution(identity, ...actions);
@@ -267,6 +275,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permission to redrive the execution of the state machine
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRedriveExecution(identity: iam.IGrantable): iam.Grant {
     return this.grantExecution(identity, 'states:RedriveExecution');
@@ -274,6 +284,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity custom permissions
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
     return this.grants.actions(identity, ...actions);
@@ -387,12 +399,23 @@ export class StateMachine extends StateMachineBase {
    * The name of the state machine
    * @attribute
    */
-  public readonly stateMachineName: string;
+  @memoizedGetter
+  public get stateMachineName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
 
   /**
    * The ARN of the state machine
    */
-  public readonly stateMachineArn: string;
+  @memoizedGetter
+  public get stateMachineArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'states',
+      resource: 'stateMachine',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * Type of the state machine
@@ -405,6 +428,8 @@ export class StateMachine extends StateMachineBase {
    * @attribute
    */
   public readonly stateMachineRevisionId: string;
+
+  private readonly resource: CfnStateMachine;
 
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
@@ -501,13 +526,7 @@ export class StateMachine extends StateMachineBase {
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
     resource.node.addDependency(this.role);
-    this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
-    this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'states',
-      resource: 'stateMachine',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.resource = resource;
 
     if (definitionBody instanceof ChainDefinitionBody) {
       graph!.bind(this);
@@ -569,7 +588,7 @@ export class StateMachine extends StateMachineBase {
         resources: ['*'],
       }));
       destinations = [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupRef.logGroupArn },
       }];
     }
 

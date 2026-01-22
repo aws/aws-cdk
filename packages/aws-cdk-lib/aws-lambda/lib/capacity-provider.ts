@@ -6,13 +6,15 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, IResource, Resource, Stack, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { CapacityProviderReference, ICapacityProviderRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * Represents a Lambda capacity provider.
  */
-export interface ICapacityProvider extends IResource {
+export interface ICapacityProvider extends IResource, ICapacityProviderRef {
   /**
    * The ARN of the capacity provider.
    *
@@ -238,6 +240,13 @@ abstract class CapacityProviderBase extends Resource implements ICapacityProvide
    * The Amazon Resource Name (ARN) of the capacity provider.
    */
   public abstract readonly capacityProviderArn: string;
+
+  public get capacityProviderRef(): CapacityProviderReference {
+    return {
+      capacityProviderName: this.capacityProviderName,
+      capacityProviderArn: this.capacityProviderArn,
+    };
+  }
 }
 
 /**
@@ -375,15 +384,28 @@ export class CapacityProvider extends CapacityProviderBase {
     return new Import(scope, id);
   }
 
+  private readonly capacityProvider: CfnCapacityProvider;
+
   /**
    * The name of the capacity provider.
    */
-  public readonly capacityProviderName: string;
+  @memoizedGetter
+  public get capacityProviderName(): string {
+    return this.getResourceNameAttribute(this.capacityProvider.ref);
+  }
 
   /**
    * The Amazon Resource Name (ARN) of the capacity provider.
    */
-  public readonly capacityProviderArn: string;
+  @memoizedGetter
+  public get capacityProviderArn(): string {
+    return this.getResourceArnAttribute(this.capacityProvider.attrArn, {
+      service: 'lambda',
+      resource: 'capacity-provider',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * Creates a new Lambda capacity provider.
@@ -418,7 +440,7 @@ export class CapacityProvider extends CapacityProviderBase {
       })),
     } : undefined;
 
-    const capacityProvider = new CfnCapacityProvider(this, 'Resource', {
+    this.capacityProvider = new CfnCapacityProvider(this, 'Resource', {
       capacityProviderName: this.physicalName,
       vpcConfig: {
         securityGroupIds: props.securityGroups.map((sg) => sg.securityGroupId),
@@ -430,14 +452,6 @@ export class CapacityProvider extends CapacityProviderBase {
       instanceRequirements,
       capacityProviderScalingConfig,
       kmsKeyArn: props.kmsKey?.keyArn,
-    });
-
-    this.capacityProviderName = this.getResourceNameAttribute(capacityProvider.ref);
-    this.capacityProviderArn = this.getResourceArnAttribute(capacityProvider.attrArn, {
-      service: 'lambda',
-      resource: 'capacity-provider',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
