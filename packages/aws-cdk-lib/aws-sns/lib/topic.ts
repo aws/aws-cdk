@@ -5,6 +5,7 @@ import { IRoleRef } from '../../aws-iam';
 import { IKey, Key } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -288,13 +289,25 @@ export class Topic extends TopicBase {
     });
   }
 
-  public readonly topicArn: string;
-  public readonly topicName: string;
+  @memoizedGetter
+  public get topicArn(): string {
+    return this.getResourceArnAttribute(this._resource.ref, {
+      service: 'sns',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get topicName(): string {
+    return this.getResourceNameAttribute(this._resource.attrTopicName);
+  }
   public readonly masterKey?: IKey;
   public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
 
   protected readonly autoCreatePolicy: boolean = true;
+
+  private readonly _resource: CfnTopic;
 
   private readonly loggingConfigs: LoggingConfig[] = [];
 
@@ -370,11 +383,7 @@ export class Topic extends TopicBase {
       fifoThroughputScope: props.fifoThroughputScope,
     });
 
-    this.topicArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'sns',
-      resource: this.physicalName,
-    });
-    this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
+    this._resource = resource;
     this.masterKey = props.masterKey;
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;

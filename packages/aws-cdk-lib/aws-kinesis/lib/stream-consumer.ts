@@ -4,6 +4,7 @@ import { ResourcePolicy } from './resource-policy';
 import { IStream, Stream } from './stream';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IStreamConsumerRef, StreamConsumerReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
@@ -210,15 +211,7 @@ export class StreamConsumer extends StreamConsumerBase {
     return new Import(scope, id);
   }
 
-  /**
-   * The Amazon Resource Name (ARN) of the stream consumer.
-   */
-  public readonly streamConsumerArn: string;
-
-  /**
-   * The name of the stream consumer.
-   */
-  public readonly streamConsumerName: string;
+  private readonly streamConsumer: CfnStreamConsumer;
 
   /**
    * The Kinesis data stream this consumer is associated with.
@@ -227,6 +220,28 @@ export class StreamConsumer extends StreamConsumerBase {
 
   protected readonly autoCreatePolicy = true;
 
+  /**
+   * The Amazon Resource Name (ARN) of the stream consumer.
+   */
+  @memoizedGetter
+  public get streamConsumerArn(): string {
+    return this.getResourceArnAttribute(this.streamConsumer.attrConsumerArn, {
+      service: 'kinesis',
+      resource: 'stream',
+      // use '*' in place of the consumer creation timestamp for cross environment references
+      resourceName: `${this.stream.streamName}/consumer/${this.physicalName}:*`,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+  }
+
+  /**
+   * The name of the stream consumer.
+   */
+  @memoizedGetter
+  public get streamConsumerName(): string {
+    return this.getResourceNameAttribute(this.streamConsumer.attrConsumerName);
+  }
+
   constructor(scope: Construct, id: string, props: StreamConsumerProps) {
     super(scope, id, {
       physicalName: props.streamConsumerName,
@@ -234,19 +249,11 @@ export class StreamConsumer extends StreamConsumerBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const streamConsumer = new CfnStreamConsumer(this, 'Resource', {
+    this.streamConsumer = new CfnStreamConsumer(this, 'Resource', {
       consumerName: props.streamConsumerName,
       streamArn: props.stream.streamArn,
     });
 
-    this.streamConsumerArn = this.getResourceArnAttribute(streamConsumer.attrConsumerArn, {
-      service: 'kinesis',
-      resource: 'stream',
-      // use '*' in place of the consumer creation timestamp for cross environment references
-      resourceName: `${props.stream.streamName}/consumer/${this.physicalName}:*`,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-    });
-    this.streamConsumerName = this.getResourceNameAttribute(streamConsumer.attrConsumerName);
     this.stream = props.stream;
   }
 }

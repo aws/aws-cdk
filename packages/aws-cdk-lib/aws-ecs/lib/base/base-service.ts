@@ -24,6 +24,7 @@ import {
   Fn,
   ValidationError,
 } from '../../../core';
+import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import * as cxapi from '../../../cx-api';
 import { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
@@ -665,18 +666,6 @@ export abstract class BaseService extends Resource
   public readonly connections: ec2.Connections = new ec2.Connections();
 
   /**
-   * The Amazon Resource Name (ARN) of the service.
-   */
-  public readonly serviceArn: string;
-
-  /**
-   * The name of the service.
-   *
-   * @attribute
-   */
-  public readonly serviceName: string;
-
-  /**
    * A reference to this service.
    */
   public get serviceRef(): ServiceReference {
@@ -749,6 +738,20 @@ export abstract class BaseService extends Resource
    * @default - none
    */
   private readonly lifecycleHooks: IDeploymentLifecycleHookTarget[] = [];
+
+  @memoizedGetter
+  public get serviceArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'ecs',
+      resource: 'service',
+      resourceName: `${this.cluster.clusterName}/${this.physicalName}`,
+    });
+  }
+
+  @memoizedGetter
+  public get serviceName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
 
   /**
    * The deployment strategy for the service
@@ -871,13 +874,6 @@ export abstract class BaseService extends Resource
       }
       this.node.addDependency(taskDefinition);
     }
-
-    this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
-      service: 'ecs',
-      resource: 'service',
-      resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
-    });
-    this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;
 

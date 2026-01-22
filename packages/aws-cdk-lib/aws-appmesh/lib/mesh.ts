@@ -5,6 +5,7 @@ import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -187,12 +188,24 @@ export class Mesh extends MeshBase {
   /**
    * The name of the AppMesh mesh
    */
-  public readonly meshName: string;
+  @memoizedGetter
+  public get meshName(): string {
+    return this.getResourceNameAttribute(this.resource.attrMeshName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
-  public readonly meshArn: string;
+  @memoizedGetter
+  public get meshArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: 'mesh',
+      resourceName: this.physicalName,
+    });
+  }
+
+  private readonly resource: CfnMesh;
 
   constructor(scope: Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
@@ -201,7 +214,7 @@ export class Mesh extends MeshBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const mesh = new CfnMesh(this, 'Resource', {
+    this.resource = new CfnMesh(this, 'Resource', {
       meshName: this.physicalName,
       spec: {
         egressFilter: props.egressFilter ? {
@@ -209,13 +222,6 @@ export class Mesh extends MeshBase {
         } : undefined,
         serviceDiscovery: props.serviceDiscovery,
       },
-    });
-
-    this.meshName = this.getResourceNameAttribute(mesh.attrMeshName);
-    this.meshArn = this.getResourceArnAttribute(mesh.ref, {
-      service: 'appmesh',
-      resource: 'mesh',
-      resourceName: this.physicalName,
     });
   }
 }

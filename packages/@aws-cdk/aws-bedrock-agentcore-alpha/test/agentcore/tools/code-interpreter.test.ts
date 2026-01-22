@@ -984,3 +984,22 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
     expect(sessionDurationMetric).toBeDefined();
   });
 });
+
+describe('CodeInterpreter Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create CodeInterpreterCustom without codeInterpreterCustomName (auto-generated)', () => {
+    const codeInterpreter = new CodeInterpreterCustom(stack, 'TestCodeInterpreter', {
+    });
+
+    expect(codeInterpreter.name).toBeDefined();
+    expect(codeInterpreter.name).not.toBe('');
+  });
+});

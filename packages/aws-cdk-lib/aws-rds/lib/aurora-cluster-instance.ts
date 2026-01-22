@@ -11,6 +11,7 @@ import { IRoleRef } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
@@ -488,16 +489,22 @@ export interface IAuroraClusterInstance extends IResource, aws_rds.IDBInstanceRe
 class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.AuroraClusterInstance';
-  public readonly dbInstanceArn: string;
   public readonly dbiResourceId: string;
   public readonly dbInstanceEndpointAddress: string;
-  public readonly instanceIdentifier: string;
+
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly type: InstanceType;
   public readonly tier: number;
   public readonly instanceSize?: string;
   public readonly performanceInsightsEnabled: boolean;
   public readonly performanceInsightRetention?: PerformanceInsightRetention;
   public readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  private readonly _resource: CfnDBInstance;
   constructor(scope: Construct, id: string, props: AuroraClusterInstanceProps) {
     super(
       scope,
@@ -596,15 +603,19 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
       instance.node.addDependency(internetConnected);
     }
 
-    this.dbInstanceArn = this.getResourceArnAttribute(instance.attrDbInstanceArn, {
+    this._resource = instance;
+    this.dbiResourceId = instance.attrDbiResourceId;
+    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+  }
+
+  @memoizedGetter
+  public get dbInstanceArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrDbInstanceArn, {
       resource: 'db',
       service: 'rds',
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.physicalName,
     });
-    this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
-    this.dbiResourceId = instance.attrDbiResourceId;
-    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
   }
 
   /**
