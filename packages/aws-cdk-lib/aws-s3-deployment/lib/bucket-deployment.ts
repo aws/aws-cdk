@@ -391,6 +391,9 @@ export class BucketDeployment extends Construct {
       throw new ValidationError('Vpc must be specified if useEfs is set', this);
     }
 
+    // Validate contentEncodingByExtension inputs
+    this.validateContentEncodingByExtension(props.contentEncodingByExtension);
+
     this.destinationBucket = props.destinationBucket;
 
     const accessPointPath = '/lambda';
@@ -712,6 +715,52 @@ export class BucketDeployment extends Construct {
     const stack = cdk.Stack.of(scope);
     const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
     return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
+  }
+
+  /**
+   * Validates contentEncodingByExtension inputs for security and correctness.
+   *
+   * - Validates encoding values against standard HTTP Content-Encoding values
+   * - Validates include patterns contain only safe glob characters
+   * - Rejects path traversal sequences
+   */
+  private validateContentEncodingByExtension(mappings?: ContentEncodingMapping[]): void {
+    if (!mappings || mappings.length === 0) {
+      return;
+    }
+
+    const VALID_ENCODING_VALUES = ['br', 'gzip', 'compress', 'deflate', 'identity', 'zstd'];
+    // Allow alphanumeric, dots, asterisks, question marks, slashes, hyphens, underscores, and backslashes
+    const SAFE_PATTERN_REGEX = /^[a-zA-Z0-9.*?\/\\_-]+$/;
+
+    for (const [index, mapping] of mappings.entries()) {
+      // Validate include pattern
+      if (!cdk.Token.isUnresolved(mapping.include)) {
+        if (!SAFE_PATTERN_REGEX.test(mapping.include)) {
+          throw new ValidationError(
+            `contentEncodingByExtension[${index}].include contains invalid characters. ` +
+            `Only alphanumeric characters, dots, asterisks, question marks, slashes, hyphens, underscores, and backslashes are allowed. Got: '${mapping.include}'`,
+            this,
+          );
+        }
+        if (mapping.include.includes('../') || mapping.include.includes('..\\')) {
+          throw new ValidationError(
+            `contentEncodingByExtension[${index}].include contains path traversal sequences ('../' or '..\\'). Got: '${mapping.include}'`,
+            this,
+          );
+        }
+      }
+
+      // Validate encoding value
+      if (!cdk.Token.isUnresolved(mapping.encoding)) {
+        if (!VALID_ENCODING_VALUES.includes(mapping.encoding.toLowerCase())) {
+          throw new ValidationError(
+            `contentEncodingByExtension[${index}].encoding must be one of: ${VALID_ENCODING_VALUES.join(', ')}. Got: '${mapping.encoding}'`,
+            this,
+          );
+        }
+      }
+    }
   }
 }
 

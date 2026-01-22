@@ -1917,3 +1917,104 @@ test('contentEncodingByExtension with directory pattern', () => {
     ],
   });
 });
+
+test('contentEncodingByExtension throws on invalid encoding value', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // THEN
+  expect(() => {
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      contentEncodingByExtension: [
+        { include: '*.br', encoding: 'brotli' }, // Invalid - should be 'br'
+      ],
+    });
+  }).toThrow(/contentEncodingByExtension\[0\]\.encoding must be one of: br, gzip, compress, deflate, identity, zstd\. Got: 'brotli'/);
+});
+
+test('contentEncodingByExtension throws on invalid pattern characters', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // THEN
+  expect(() => {
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      contentEncodingByExtension: [
+        { include: '*.br; rm -rf /', encoding: 'br' }, // Invalid - contains shell metacharacters
+      ],
+    });
+  }).toThrow(/contentEncodingByExtension\[0\]\.include contains invalid characters/);
+});
+
+test('contentEncodingByExtension throws on path traversal in pattern', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // THEN
+  expect(() => {
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      contentEncodingByExtension: [
+        { include: '../../../etc/passwd', encoding: 'br' }, // Invalid - path traversal
+      ],
+    });
+  }).toThrow(/contentEncodingByExtension\[0\]\.include contains path traversal sequences/);
+});
+
+test('contentEncodingByExtension accepts valid patterns with special glob characters', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN - should not throw
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    contentEncodingByExtension: [
+      { include: '**/*.br', encoding: 'br' },
+      { include: 'assets/js/*.gz', encoding: 'gzip' },
+      { include: 'data-?.json.br', encoding: 'br' },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    ContentEncodingByExtension: [
+      { include: '**/*.br', encoding: 'br' },
+      { include: 'assets/js/*.gz', encoding: 'gzip' },
+      { include: 'data-?.json.br', encoding: 'br' },
+    ],
+  });
+});
+
+test('contentEncodingByExtension accepts case-insensitive encoding values', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN - should not throw (case insensitive)
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    contentEncodingByExtension: [
+      { include: '*.br', encoding: 'BR' },
+      { include: '*.gz', encoding: 'GZIP' },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    ContentEncodingByExtension: [
+      { include: '*.br', encoding: 'BR' },
+      { include: '*.gz', encoding: 'GZIP' },
+    ],
+  });
+});
