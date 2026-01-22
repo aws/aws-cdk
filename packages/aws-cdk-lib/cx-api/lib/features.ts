@@ -1148,11 +1148,16 @@ export const FLAGS: Record<string, FlagInfo> = {
 
   //////////////////////////////////////////////////////////////////////
   [EKS_USE_NATIVE_OIDC_PROVIDER]: {
-    type: FlagType.ApiDefault,
-    summary: 'When enabled, EKS clusters will use the native OIDC provider resource  AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource.',
+    type: FlagType.BugFix,
+    summary: 'When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider).',
     detailsMd: `
       When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OIDCProvider
       CloudFormation resource instead of the custom resource provider for creating OIDC providers.
+
+			WARNING: Enabling this flag on a cluster with an existing OIDC provider created by the custom resource (iam.OpenIDConnectProvider)
+			will cause the OIDC provider to be replaced with the native resource, which may lead to disruption.
+
+			To migrate in place without disruption, follow the guide at: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-eks/README.md#migrating-from-the-deprecated-eksopenidconnectprovider-to-eksoidcprovidernative
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

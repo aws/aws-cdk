@@ -109,7 +109,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
-| [@aws-cdk/aws-eks:useNativeOidcProvider](#aws-cdkaws-eksusenativeoidcprovider) | When enabled, EKS clusters will use the native OIDC provider resource  AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource. | V2NEXT | new default |
+| [@aws-cdk/aws-eks:useNativeOidcProvider](#aws-cdkaws-eksusenativeoidcprovider) | When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider). | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -2315,12 +2315,17 @@ of the deprecated `CloudFrontWebDistribution` construct.
 
 ### @aws-cdk/aws-eks:useNativeOidcProvider
 
-*When enabled, EKS clusters will use the native OIDC provider resource  AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource.*
+*When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider).*
 
-Flag type: New default behavior
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OIDCProvider
-CloudFormation resource instead of the custom resource provider for creating OIDC providers.
+      CloudFormation resource instead of the custom resource provider for creating OIDC providers.
+
+			WARNING: Enabling this flag on a cluster with an existing OIDC provider created by the custom resource (iam.OpenIDConnectProvider)
+			will cause the OIDC provider to be replaced with the native resource, which may lead to disruption.
+
+			To migrate in place without disruption, follow the guide at: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-eks/README.md#migrating-from-the-deprecated-eksopenidconnectprovider-to-eksoidcprovidernative
 
 
 | Since | Unset behaves like | Recommended value |
