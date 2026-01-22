@@ -233,7 +233,9 @@ describe('connection string', () => {
       );
 
       // WHEN
-      const connectionString = secret.connectionStringFromJson(
+      // Note: connectionStringFromJson is optional on ISecret interface for backward compatibility,
+      // but all built-in implementations (via SecretBase) provide it
+      const connectionString = secret.connectionStringFromJson!(
         'mysql://${username}:${password}@${host}:${port}/${dbname}',
       );
 

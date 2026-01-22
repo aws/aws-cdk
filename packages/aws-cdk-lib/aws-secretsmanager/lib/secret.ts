@@ -63,10 +63,14 @@ export interface ISecret extends IResource, ISecretRef {
    * The template uses `${fieldName}` syntax for placeholders, which will be replaced
    * with the corresponding secret field values at deployment time.
    *
+   * This method is optional to maintain backward compatibility with existing
+   * implementations of the ISecret interface. Implementers are encouraged to
+   * provide this method for full functionality.
+   *
    * @param template - Connection string template with placeholders like ${username}, ${password}, etc.
    * @returns SecretValue that resolves to the interpolated connection string
    */
-  connectionStringFromJson(template: string): SecretValue;
+  connectionStringFromJson?(template: string): SecretValue;
 
   /**
    * Grants reading the secret value to some role.
