@@ -60,9 +60,9 @@ function safeConstructAnalyticsFromStack(scope: Stack ) {
   }
 
   // otherwise we filter it out now
-  return constructAnalytics.map(removeAdditionalTelemetry);
+  return constructAnalytics.map(retainOnlyConstructInfo);
 
-  function removeAdditionalTelemetry(analytics: ConstructAnalytics): ConstructAnalytics {
+  function retainOnlyConstructInfo(analytics: ConstructAnalytics): ConstructAnalytics {
     return {
       fqn: analytics.fqn,
       version: analytics.version,
