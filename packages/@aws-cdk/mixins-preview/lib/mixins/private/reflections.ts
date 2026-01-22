@@ -1,6 +1,6 @@
 import type { IConstruct } from 'constructs';
 import { CfnResource } from 'aws-cdk-lib/core';
-import type { IBucketRef, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { type IBucketRef, type CfnBucketPolicy, CfnBucket, BucketReference } from 'aws-cdk-lib/aws-s3';
 import { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
 import { CfnKey, IKeyRef, KeyReference } from 'aws-cdk-lib/aws-kms';
 
@@ -99,6 +99,14 @@ export function tryFindDeliverySourceForResource(source: IConstruct, sourceArn: 
   );
 }
 
+export function tryFindKmsKeyforBucket(bucket: IBucketRef, keyId: string): CfnKey | undefined {
+  return findClosestRelatedResource<IConstruct, CfnKey>(
+    bucket,
+    'AWS::KMS::Key',
+    (_, key) => key.ref === keyId || key.attrKeyId === keyId || key.attrArn === keyId,
+  );
+}
+
 /**
  * Attempts to find the L1 CfnResource for a given Ref interface.
  * Searches children first (for L2 wrappers), then the construct tree.
@@ -144,5 +152,14 @@ export function tryFindKmsKeyConstruct(kmsKey: IKeyRef): CfnKey | undefined {
     'AWS::KMS::Key',
     (ref) => ref.keyRef,
     (cfn) => cfn.keyRef,
+  );
+}
+
+export function tryFindBucketConstruct(bucket: IBucketRef): CfnBucket | undefined {
+  return findL1FromRef<IBucketRef, CfnBucket, BucketReference>(
+    bucket,
+    'AWS::S3::Bucket',
+    (ref) => ref.bucketRef,
+    (cfn) => cfn.bucketRef,
   );
 }

@@ -1,5 +1,5 @@
 import { Stack } from 'aws-cdk-lib';
-import { Bucket, BucketPolicy, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { Bucket, BucketEncryption, BucketPolicy, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
@@ -446,7 +446,7 @@ describe('S3 Delivery', () => {
     );
   });
 
-  test('adds KMS key policy when bucket is encrypted with KMS key', () => {
+  test('adds KMS key policy when bucket is encrypted with KMS key and KMS key is passed in to S3LogsDelivery', () => {
     const key = new Key(stack, 'EncryptionKey');
     const bucket = new Bucket(stack, 'Destination', {
       encryptionKey: key,
@@ -489,6 +489,75 @@ describe('S3 Delivery', () => {
             },
           }),
         ]),
+      },
+    });
+  });
+
+  test('adds KMS key policy when bucket is encrypted with KMS key and KMS key is not passed in to S3LogsDelivery', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket = new Bucket(stack, 'Destination', {
+      encryptionKey: key,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket);
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Sid: 'Allow Logs Delivery to use the key',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('does not add KMS key policy when bucket is encrypted using AWS managed keys', () => {
+    const bucket = new Bucket(stack, 'Destination', {
+      encryption: BucketEncryption.KMS_MANAGED,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket);
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+            },
+          },
+        ],
       },
     });
   });
