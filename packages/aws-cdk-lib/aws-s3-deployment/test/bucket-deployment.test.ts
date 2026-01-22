@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -1918,24 +1918,26 @@ test('contentEncodingByExtension with directory pattern', () => {
   });
 });
 
-test('contentEncodingByExtension throws on invalid encoding value', () => {
+test('contentEncodingByExtension warns on non-standard encoding value', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
 
-  // THEN
-  expect(() => {
-    new s3deploy.BucketDeployment(stack, 'Deploy', {
-      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-      destinationBucket: bucket,
-      contentEncodingByExtension: [
-        { include: '*.br', encoding: 'brotli' }, // Invalid - should be 'br'
-      ],
-    });
-  }).toThrow(/contentEncodingByExtension\[0\]\.encoding must be one of: br, gzip, compress, deflate, identity, zstd\. Got: 'brotli'/);
+  // WHEN - should not throw, but should add warning
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    contentEncodingByExtension: [
+      { include: '*.br', encoding: 'brotli' }, // Non-standard - should warn
+    ],
+  });
+
+  // THEN - should have warning annotation
+  const annotations = Annotations.fromStack(stack);
+  annotations.hasWarning('/Default/Deploy', Match.stringLikeRegexp('non-standard value.*brotli'));
 });
 
-test('contentEncodingByExtension throws on invalid pattern characters', () => {
+test('contentEncodingByExtension throws on dangerous pattern characters', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1949,7 +1951,7 @@ test('contentEncodingByExtension throws on invalid pattern characters', () => {
         { include: '*.br; rm -rf /', encoding: 'br' }, // Invalid - contains shell metacharacters
       ],
     });
-  }).toThrow(/contentEncodingByExtension\[0\]\.include contains invalid characters/);
+  }).toThrow(/contentEncodingByExtension\[0\]\.include contains potentially dangerous characters/);
 });
 
 test('contentEncodingByExtension throws on path traversal in pattern', () => {
@@ -2015,6 +2017,91 @@ test('contentEncodingByExtension accepts case-insensitive encoding values', () =
     ContentEncodingByExtension: [
       { include: '*.br', encoding: 'BR' },
       { include: '*.gz', encoding: 'GZIP' },
+    ],
+  });
+});
+
+test('contentEncodingByExtension accepts vendor extension encodings', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN - should not throw or warn for x-* vendor extensions
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    contentEncodingByExtension: [
+      { include: '*.gz', encoding: 'x-gzip' },
+      { include: '*.custom', encoding: 'x-custom-encoding' },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    ContentEncodingByExtension: [
+      { include: '*.gz', encoding: 'x-gzip' },
+      { include: '*.custom', encoding: 'x-custom-encoding' },
+    ],
+  });
+});
+
+test('contentEncodingByExtension warns when catch-all pattern used with contentEncoding', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    contentEncoding: 'gzip',
+    contentEncodingByExtension: [
+      { include: '*', encoding: 'br' }, // Catch-all makes contentEncoding ineffective
+    ],
+  });
+
+  // THEN - should have warning annotation
+  const annotations = Annotations.fromStack(stack);
+  annotations.hasWarning('/Default/Deploy', Match.stringLikeRegexp('catch-all pattern.*contentEncoding.*ineffective'));
+});
+
+test('contentEncodingByExtension detects mixed separator path traversal', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // THEN - mixed separators should still be detected
+  expect(() => {
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      contentEncodingByExtension: [
+        { include: 'foo/..\\bar', encoding: 'br' }, // Mixed separator path traversal
+      ],
+    });
+  }).toThrow(/contentEncodingByExtension\[0\]\.include contains path traversal sequences/);
+});
+
+test('contentEncodingByExtension allows glob patterns with brackets and braces', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN - should allow common glob patterns (brackets/braces are not in dangerous chars)
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    contentEncodingByExtension: [
+      { include: '*.[jt]s.br', encoding: 'br' },
+      { include: '*.{br,gz}', encoding: 'br' },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    ContentEncodingByExtension: [
+      { include: '*.[jt]s.br', encoding: 'br' },
+      { include: '*.{br,gz}', encoding: 'br' },
     ],
   });
 });

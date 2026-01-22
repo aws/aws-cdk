@@ -392,7 +392,7 @@ export class BucketDeployment extends Construct {
     }
 
     // Validate contentEncodingByExtension inputs
-    this.validateContentEncodingByExtension(props.contentEncodingByExtension);
+    this.validateContentEncodingByExtension(props.contentEncodingByExtension, props.contentEncoding);
 
     this.destinationBucket = props.destinationBucket;
 
@@ -720,32 +720,47 @@ export class BucketDeployment extends Construct {
   /**
    * Validates contentEncodingByExtension inputs for security and correctness.
    *
-   * - Validates encoding values against standard HTTP Content-Encoding values
-   * - Validates include patterns contain only safe glob characters
-   * - Rejects path traversal sequences
+   * - Validates encoding values against standard HTTP Content-Encoding values (plus vendor extensions)
+   * - Validates include patterns don't contain dangerous shell characters
+   * - Rejects path traversal sequences with comprehensive detection
+   * - Warns when catch-all patterns are used with contentEncoding
    */
-  private validateContentEncodingByExtension(mappings?: ContentEncodingMapping[]): void {
+  private validateContentEncodingByExtension(mappings?: ContentEncodingMapping[], contentEncoding?: string): void {
     if (!mappings || mappings.length === 0) {
       return;
     }
 
-    const VALID_ENCODING_VALUES = ['br', 'gzip', 'compress', 'deflate', 'identity', 'zstd'];
-    // Allow alphanumeric, dots, asterisks, question marks, slashes, hyphens, underscores, and backslashes
-    const SAFE_PATTERN_REGEX = /^[a-zA-Z0-9.*?\/\\_-]+$/;
+    // Skip validation if the entire array is a token
+    if (cdk.Token.isUnresolved(mappings)) {
+      return;
+    }
+
+    const STANDARD_ENCODINGS = ['br', 'gzip', 'compress', 'deflate', 'identity', 'zstd', 'x-gzip', 'x-compress'];
+    // Block dangerous shell characters instead of allowlisting safe ones
+    const DANGEROUS_CHARS = /[;|&$`"'<>()!#\n\r\t\0]/;
 
     for (const [index, mapping] of mappings.entries()) {
+      // Skip validation if the entire mapping object is a token
+      if (cdk.Token.isUnresolved(mapping)) {
+        continue;
+      }
+
       // Validate include pattern
       if (!cdk.Token.isUnresolved(mapping.include)) {
-        if (!SAFE_PATTERN_REGEX.test(mapping.include)) {
+        // Check for dangerous shell characters
+        if (DANGEROUS_CHARS.test(mapping.include)) {
           throw new ValidationError(
-            `contentEncodingByExtension[${index}].include contains invalid characters. ` +
-            `Only alphanumeric characters, dots, asterisks, question marks, slashes, hyphens, underscores, and backslashes are allowed. Got: '${mapping.include}'`,
+            `contentEncodingByExtension[${index}].include contains potentially dangerous characters. Got: '${mapping.include}'`,
             this,
           );
         }
-        if (mapping.include.includes('../') || mapping.include.includes('..\\')) {
+
+        // Comprehensive path traversal detection: normalize and check segments
+        const normalizedPath = mapping.include.replace(/\\/g, '/').replace(/\/+/g, '/');
+        const pathSegments = normalizedPath.split('/').filter(s => s.length > 0);
+        if (pathSegments.includes('..')) {
           throw new ValidationError(
-            `contentEncodingByExtension[${index}].include contains path traversal sequences ('../' or '..\\'). Got: '${mapping.include}'`,
+            `contentEncodingByExtension[${index}].include contains path traversal sequences. Got: '${mapping.include}'`,
             this,
           );
         }
@@ -753,12 +768,32 @@ export class BucketDeployment extends Construct {
 
       // Validate encoding value
       if (!cdk.Token.isUnresolved(mapping.encoding)) {
-        if (!VALID_ENCODING_VALUES.includes(mapping.encoding.toLowerCase())) {
-          throw new ValidationError(
-            `contentEncodingByExtension[${index}].encoding must be one of: ${VALID_ENCODING_VALUES.join(', ')}. Got: '${mapping.encoding}'`,
-            this,
+        const isStandard = STANDARD_ENCODINGS.includes(mapping.encoding.toLowerCase());
+        const isVendorExtension = /^x-[\w-]+$/i.test(mapping.encoding);
+
+        if (!isStandard && !isVendorExtension) {
+          cdk.Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-s3-deployment:nonStandardEncoding',
+            `contentEncodingByExtension[${index}].encoding uses non-standard value '${mapping.encoding}'. ` +
+            `Standard values are: ${STANDARD_ENCODINGS.join(', ')}`,
           );
         }
+      }
+    }
+
+    // Warn when catch-all patterns are used alongside contentEncoding
+    if (contentEncoding) {
+      const hasCatchAll = mappings.some(m =>
+        !cdk.Token.isUnresolved(m) &&
+        !cdk.Token.isUnresolved(m.include) &&
+        ['*', '**', '*.*'].includes(m.include.trim()),
+      );
+      if (hasCatchAll) {
+        cdk.Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-s3-deployment:catchAllWithContentEncoding',
+          'Both contentEncoding and a catch-all pattern in contentEncodingByExtension are specified. ' +
+          'The catch-all pattern will match all files, making the contentEncoding property ineffective.',
+        );
       }
     }
   }

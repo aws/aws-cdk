@@ -2,6 +2,7 @@ import contextlib
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -32,6 +33,11 @@ ENV_KEY_SKIP_CLEANUP = "SKIP_CLEANUP"
 
 AWS_CLI_CONFIG_FILE = "/tmp/aws_cli_config"
 CUSTOM_RESOURCE_OWNER_TAG = "aws-cdk:cr-owned"
+
+# Runtime validation constants for contentEncodingByExtension (defense-in-depth)
+VALID_ENCODINGS = {'br', 'gzip', 'compress', 'deflate', 'identity', 'zstd', 'x-gzip', 'x-compress'}
+DANGEROUS_CHARS_RE = re.compile(r'[;|&$`"\'<>()!#\n\r\t\0]')
+VENDOR_EXTENSION_RE = re.compile(r'^x-[\w-]+$', re.IGNORECASE)
 
 os.putenv('AWS_CONFIG_FILE', AWS_CLI_CONFIG_FILE)
 
@@ -238,6 +244,40 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
             shutil.rmtree(workdir)
 
 #---------------------------------------------------------------------------------------------------
+# Runtime validation for contentEncodingByExtension (defense-in-depth)
+def validate_content_encoding_mappings(mappings):
+    """
+    Validate contentEncodingByExtension mappings at runtime.
+    This provides defense-in-depth for values that may have bypassed CDK validation
+    (e.g., CDK Tokens resolved at deployment time).
+    """
+    if not mappings:
+        return
+    
+    for i, mapping in enumerate(mappings):
+        include_pattern = mapping.get('include', '')
+        encoding = mapping.get('encoding', '')
+        
+        # Validate include pattern doesn't contain dangerous characters
+        if DANGEROUS_CHARS_RE.search(include_pattern):
+            raise ValueError(f"contentEncodingByExtension[{i}].include contains dangerous characters: {include_pattern}")
+        
+        # Validate no path traversal
+        normalized_path = include_pattern.replace('\\', '/').replace('//', '/')
+        path_segments = [s for s in normalized_path.split('/') if s]
+        if '..' in path_segments:
+            raise ValueError(f"contentEncodingByExtension[{i}].include contains path traversal: {include_pattern}")
+        
+        # Validate encoding value
+        encoding_lower = encoding.lower()
+        is_standard = encoding_lower in VALID_ENCODINGS
+        is_vendor_ext = VENDOR_EXTENSION_RE.match(encoding)
+        
+        if not is_standard and not is_vendor_ext:
+            # Log warning but don't fail - allow non-standard encodings with warning
+            logger.warning(f"| contentEncodingByExtension[{i}].encoding uses non-standard value: {encoding}")
+
+#---------------------------------------------------------------------------------------------------
 # deploy with per-extension content encoding using multiple sync commands
 def s3_deploy_with_encoding_by_extension(contents_dir, s3_dest, user_metadata, system_metadata, prune, exclude, include, content_encoding_by_extension):
     """
@@ -247,6 +287,9 @@ def s3_deploy_with_encoding_by_extension(contents_dir, s3_dest, user_metadata, s
     1. First sync: all files EXCEPT those matching encoding patterns (with prune if enabled)
     2. Subsequent syncs: each encoding pattern with its specific Content-Encoding (no prune)
     """
+    # Runtime validation (defense-in-depth)
+    validate_content_encoding_mappings(content_encoding_by_extension)
+    
     # Extract all patterns that have specific encodings
     encoding_patterns = [mapping['include'] for mapping in content_encoding_by_extension]
     
