@@ -91,7 +91,7 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
  * @resource AWS::IAM::OIDCProvider
  */
 @propertyInjectable
-export class OidcProviderNative extends iam.OidcProviderNative implements iam.IOpenIdConnectProvider {
+export class OidcProviderNative extends iam.OidcProviderNative {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.OidcProviderNative';
 
