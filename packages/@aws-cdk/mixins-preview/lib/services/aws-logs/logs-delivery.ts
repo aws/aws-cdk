@@ -213,8 +213,11 @@ export class S3LogsDelivery implements ILogsDelivery {
       kmsKey = tryFindKmsKeyConstruct(this.kmsKey);
     } else {
       const l1Bucket = tryFindBucketConstruct(this.bucket);
-      const kmsMasterKeyId = l1Bucket && Array.isArray((l1Bucket.bucketEncryption as s3.CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration)
-        ? (((l1Bucket.bucketEncryption as s3.CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as s3.CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as s3.CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
+      const kmsMasterKeyId = l1Bucket && Array.isArray((l1Bucket.bucketEncryption as
+        s3.CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration) ?
+        (((l1Bucket.bucketEncryption as s3.CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as
+        s3.CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as
+        s3.CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
         : undefined;
       kmsKey = kmsMasterKeyId ? tryFindKmsKeyforBucket(this.bucket, kmsMasterKeyId) : undefined;
     }
@@ -226,9 +229,16 @@ export class S3LogsDelivery implements ILogsDelivery {
     const stack = Stack.of(key);
 
     const existingKeyPolicy = key.keyPolicy;
+    const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
+    const sid = 'AWS CDK: Allow Logs Delivery to use the key';
+    // Check if a statement with this SID already exists
+    const hasDuplicateSid = existingKeyPolicy.statements.some((stmt: PolicyStatement) => stmt.sid === sid);
+    if (hasDuplicateSid) {
+      return;
+    }
 
     existingKeyPolicy.addStatements(new PolicyStatement({
-      sid: 'Allow Logs Delivery to use the key',
+      sid,
       effect: Effect.ALLOW,
       principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
       actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
@@ -238,7 +248,7 @@ export class S3LogsDelivery implements ILogsDelivery {
           'aws:SourceAccount': [stack.account],
         },
         ArnLike: {
-          'aws:SourceArn': [`arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`],
+          'aws:SourceArn': [`arn:${stack.partition}:logs:${stack.region}:${stack.account}:${sourceArnPostfix}`],
         },
       },
     }));

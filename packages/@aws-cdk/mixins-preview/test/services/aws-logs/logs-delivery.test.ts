@@ -459,7 +459,7 @@ describe('S3 Delivery', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Sid: 'Allow Logs Delivery to use the key',
+            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
             Effect: 'Allow',
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
@@ -506,7 +506,7 @@ describe('S3 Delivery', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Sid: 'Allow Logs Delivery to use the key',
+            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
             Effect: 'Allow',
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
@@ -538,6 +538,31 @@ describe('S3 Delivery', () => {
         ]),
       },
     });
+  });
+
+  test('KMS key policy is not duplicated when multiple buckets use the same key for encryption', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket1 = new Bucket(stack, 'Destination1', {
+      encryptionKey: key,
+    });
+
+    const bucket2 = new Bucket(stack, 'Destination2', {
+      encryptionKey: key,
+    });
+
+    const s3Logs1 = new S3LogsDelivery(bucket1, { kmsKey: key });
+    const s3Logs2 = new S3LogsDelivery(bucket2);
+    s3Logs1.bind(source, logType, source.bucketArn);
+    s3Logs2.bind(source, logType, source.bucketArn);
+
+    const template = Template.fromStack(stack);
+    const keyResource = template.findResources('AWS::KMS::Key');
+    const keyPolicy = Object.values(keyResource)[0].Properties.KeyPolicy;
+    const logsDeliveryStatements = keyPolicy.Statement.filter((stmt: any) =>
+      stmt.Sid === 'AWS CDK: Allow Logs Delivery to use the key',
+    );
+
+    expect(logsDeliveryStatements).toHaveLength(1);
   });
 
   test('does not add KMS key policy when bucket is encrypted using AWS managed keys', () => {
