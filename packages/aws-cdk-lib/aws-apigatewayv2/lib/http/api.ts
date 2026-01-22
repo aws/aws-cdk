@@ -118,6 +118,12 @@ export interface IHttpApi extends IApi, IHttpApiRef {
    * If 'stage' is not specified, it also defaults to '*', representing all stages.
    */
   arnForExecuteApi(method?: string, path?: string, stage?: string): string;
+
+  /**
+   * Add multiple routes that uses the same configuration. The routes all go to the same path, but for different
+   * methods.
+   */
+  addRoutes(options: AddRoutesOptions): HttpRoute[];
 }
 
 /**
@@ -307,6 +313,8 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
   public abstract override readonly apiId: string;
   public abstract readonly httpApiId: string;
   public abstract override readonly apiEndpoint: string;
+  public abstract readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  public abstract readonly defaultAuthorizationScopes?: string[];
   public readonly isHttpApi = true;
   private vpcLinks: Record<string, VpcLink> = {};
 
@@ -351,6 +359,25 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
     return HttpApiHelper.fromHttpApi(this).arnForExecuteApi(method, path, stage);
   }
 
+  /**
+   * Add multiple routes that uses the same configuration. The routes all go to the same path, but for different
+   * methods.
+   */
+  public addRoutes(options: AddRoutesOptions): HttpRoute[] {
+    const methods = options.methods ?? [HttpMethod.ANY];
+    return methods.map((method) => {
+      const authorizationScopes = options.authorizationScopes ?? this.defaultAuthorizationScopes;
+
+      return new HttpRoute(this, `${method}${options.path}`, {
+        httpApi: this,
+        routeKey: HttpRouteKey.with(options.path, method),
+        integration: options.integration,
+        authorizer: options.authorizer ?? this.defaultAuthorizer,
+        authorizationScopes,
+      });
+    });
+  }
+
   public get apiRef(): ApiReference {
     return { apiId: this.apiId };
   }
@@ -371,6 +398,21 @@ export interface HttpApiAttributes {
    * @default - throws an error if apiEndpoint is accessed.
    */
   readonly apiEndpoint?: string;
+
+  /**
+   * Default Authorizer applied to all routes in the gateway.
+   *
+   * @default - no default authorizer
+   */
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   * The scopes are used with a COGNITO_USER_POOLS authorizer to authorize the method invocation.
+   *
+   * @default - no default authorization scopes
+   */
+  readonly defaultAuthorizationScopes?: string[];
 }
 
 /**
@@ -391,6 +433,8 @@ export class HttpApi extends HttpApiBase {
     class Import extends HttpApiBase {
       public readonly apiId = attrs.httpApiId;
       public readonly httpApiId = attrs.httpApiId;
+      public readonly defaultAuthorizer = attrs.defaultAuthorizer;
+      public readonly defaultAuthorizationScopes = attrs.defaultAuthorizationScopes;
       private readonly _apiEndpoint = attrs.apiEndpoint;
 
       public get apiEndpoint(): string {
@@ -543,26 +587,6 @@ export class HttpApi extends HttpApiBase {
       ...options,
     });
     return stage;
-  }
-
-  /**
-   * Add multiple routes that uses the same configuration. The routes all go to the same path, but for different
-   * methods.
-   */
-  @MethodMetadata()
-  public addRoutes(options: AddRoutesOptions): HttpRoute[] {
-    const methods = options.methods ?? [HttpMethod.ANY];
-    return methods.map((method) => {
-      const authorizationScopes = options.authorizationScopes ?? this.defaultAuthorizationScopes;
-
-      return new HttpRoute(this, `${method}${options.path}`, {
-        httpApi: this,
-        routeKey: HttpRouteKey.with(options.path, method),
-        integration: options.integration,
-        authorizer: options.authorizer ?? this.defaultAuthorizer,
-        authorizationScopes,
-      });
-    });
   }
 }
 

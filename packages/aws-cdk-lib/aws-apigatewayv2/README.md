@@ -5,6 +5,7 @@
 - [Introduction](#introduction)
 - [HTTP API](#http-api)
   - [Defining HTTP APIs](#defining-http-apis)
+  - [Importing HTTP APIs](#importing-http-apis)
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
@@ -111,6 +112,59 @@ Valid values are `IPV4` (default) and `DUAL_STACK`.
 ```ts
 new apigwv2.HttpApi(this, 'HttpApi', {
   ipAddressType: apigwv2.IpAddressType.DUAL_STACK,
+});
+```
+
+### Importing HTTP APIs
+
+An existing HTTP API can be imported into a CDK app using `HttpApi.fromHttpApiAttributes()`. This is useful for
+cross-stack references or when you need to add routes to an API defined elsewhere.
+
+```ts
+const importedApi = apigwv2.HttpApi.fromHttpApiAttributes(this, 'ImportedApi', {
+  httpApiId: 'my-api-id',
+  apiEndpoint: 'https://my-api-id.execute-api.us-east-1.amazonaws.com', // optional
+});
+```
+
+You can add routes to an imported HTTP API using `addRoutes()`:
+
+```ts
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const handler: lambda.Function;
+
+const importedApi = apigwv2.HttpApi.fromHttpApiAttributes(this, 'ImportedApi', {
+  httpApiId: 'my-api-id',
+});
+
+importedApi.addRoutes({
+  path: '/pets',
+  methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.POST],
+  integration: new HttpLambdaIntegration('PetsIntegration', handler),
+});
+```
+
+When importing an API, you can also specify a default authorizer and authorization scopes that will be applied
+to routes added via `addRoutes()`:
+
+```ts
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const handler: lambda.Function;
+declare const authorizer: apigwv2.IHttpRouteAuthorizer;
+
+const importedApi = apigwv2.HttpApi.fromHttpApiAttributes(this, 'ImportedApi', {
+  httpApiId: 'my-api-id',
+  defaultAuthorizer: authorizer,
+  defaultAuthorizationScopes: ['read:pets'],
+});
+
+// Routes will use the default authorizer and scopes
+importedApi.addRoutes({
+  path: '/pets',
+  methods: [apigwv2.HttpMethod.GET],
+  integration: new HttpLambdaIntegration('GetPetsIntegration', handler),
 });
 ```
 

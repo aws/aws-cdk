@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "http-api-import-routes/DefaultTest": {
+      "stacks": [
+        "ApiStack",
+        "RouteStack"
+      ],
+      "assertionStack": "http-api-import-routes/DefaultTest/DeployAssert",
+      "assertionStackName": "httpapiimportroutesDefaultTestDeployAssertB1C2584F"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

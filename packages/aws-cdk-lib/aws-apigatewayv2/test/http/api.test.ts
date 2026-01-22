@@ -657,3 +657,188 @@ class DummyAuthorizer implements IHttpRouteAuthorizer {
     };
   }
 }
+
+describe('addRoutes() on imported HttpApi', () => {
+  test('can add routes to imported HttpApi', () => {
+    const stack = new Stack();
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+    });
+
+    api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET, HttpMethod.POST],
+      integration: new DummyRouteIntegration(),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: 'imported-api-id',
+      RouteKey: 'GET /pets',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: 'imported-api-id',
+      RouteKey: 'POST /pets',
+    });
+  });
+
+  test('addRoutes() on imported HttpApi creates ANY method by default', () => {
+    const stack = new Stack();
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+    });
+
+    api.addRoutes({
+      path: '/pets',
+      integration: new DummyRouteIntegration(),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: 'imported-api-id',
+      RouteKey: 'ANY /pets',
+    });
+  });
+
+  test('can add routes with explicit authorizer to imported HttpApi', () => {
+    const stack = new Stack();
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+    });
+
+    const authorizer = new DummyAuthorizer();
+
+    api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET],
+      integration: new DummyRouteIntegration(),
+      authorizer,
+      authorizationScopes: ['read:pets'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: 'imported-api-id',
+      RouteKey: 'GET /pets',
+      AuthorizerId: 'auth-1234',
+      AuthorizationType: 'JWT',
+      AuthorizationScopes: ['read:pets'],
+    });
+  });
+
+  test('can import HttpApi with default authorizer and use it in addRoutes', () => {
+    const stack = new Stack();
+    const authorizer = new DummyAuthorizer();
+
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+      defaultAuthorizer: authorizer,
+      defaultAuthorizationScopes: ['read:pets'],
+    });
+
+    api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET],
+      integration: new DummyRouteIntegration(),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: 'imported-api-id',
+      RouteKey: 'GET /pets',
+      AuthorizerId: 'auth-1234',
+      AuthorizationType: 'JWT',
+      AuthorizationScopes: ['read:pets'],
+    });
+  });
+
+  test('can override default authorizer when adding routes to imported HttpApi', () => {
+    const stack = new Stack();
+    const defaultAuthorizer = new DummyAuthorizer();
+
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+      defaultAuthorizer,
+      defaultAuthorizationScopes: ['read:pets'],
+    });
+
+    api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET],
+      integration: new DummyRouteIntegration(),
+    });
+
+    api.addRoutes({
+      path: '/public',
+      methods: [HttpMethod.GET],
+      integration: new DummyRouteIntegration(),
+      authorizer: new HttpNoneAuthorizer(),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      RouteKey: 'GET /pets',
+      AuthorizerId: 'auth-1234',
+      AuthorizationType: 'JWT',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      RouteKey: 'GET /public',
+      AuthorizationType: 'NONE',
+      AuthorizerId: Match.absent(),
+    });
+  });
+
+  test('imported HttpApi without default authorizer has undefined authorizer', () => {
+    const stack = new Stack();
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+    });
+
+    api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET],
+      integration: new DummyRouteIntegration(),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: 'imported-api-id',
+      RouteKey: 'GET /pets',
+      AuthorizationType: 'NONE',
+    });
+  });
+
+  test('can override default scopes when adding routes to imported HttpApi', () => {
+    const stack = new Stack();
+    const authorizer = new DummyAuthorizer();
+
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+      defaultAuthorizer: authorizer,
+      defaultAuthorizationScopes: ['read:default'],
+    });
+
+    api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET],
+      integration: new DummyRouteIntegration(),
+      authorizationScopes: ['read:pets', 'write:pets'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      RouteKey: 'GET /pets',
+      AuthorizationScopes: ['read:pets', 'write:pets'],
+    });
+  });
+
+  test('addRoutes returns HttpRoute instances for imported HttpApi', () => {
+    const stack = new Stack();
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+    });
+
+    const routes = api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET, HttpMethod.POST],
+      integration: new DummyRouteIntegration(),
+    });
+
+    expect(routes).toHaveLength(2);
+  });
+});
