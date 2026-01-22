@@ -130,6 +130,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
+    "@aws-cdk/cloud-assembly-api": "^2.0.0",
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/aws-service-spec": "^0.1.142",
     "@aws-cdk/cdk-build-tools": "0.0.0",

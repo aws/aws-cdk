@@ -1,22 +1,69 @@
-export * from './cxapi';
-export * from './context/vpc';
-export * from './context/ami';
-export * from './context/load-balancer';
-export * from './context/availability-zones';
-export * from './context/endpoint-service-availability-zones';
-export * from './context/security-group';
-export * from './context/key';
-export * from './cloud-artifact';
-import './cloud-artifact-aug';
-export * from './artifacts/asset-manifest-artifact';
-export * from './artifacts/cloudformation-artifact';
-export * from './artifacts/tree-cloud-artifact';
-export * from './artifacts/nested-cloud-assembly-artifact';
-import './artifacts/nested-cloud-assembly-artifact-aug';
-export * from './cloud-assembly';
-export * from './assets';
-export * from './environment';
-export * from './metadata';
-export * from './features';
-export * from './placeholders';
-export * from './app';
+// Re-exports of members and types that historically used to live here, but have been moved to a more apt package.
+//
+// Re-exported here for backwards compatibility.
+export {
+  ASSET_PREFIX_SEPARATOR,
+  ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY,
+  ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY,
+  ASSET_RESOURCE_METADATA_ENABLED_CONTEXT,
+  ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY,
+  ASSET_RESOURCE_METADATA_PATH_KEY,
+  ASSET_RESOURCE_METADATA_PROPERTY_KEY,
+  AssetManifestArtifact,
+  AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY,
+  CloudArtifact,
+  CloudAssembly,
+  CloudAssemblyBuilder,
+  CloudFormationStackArtifact,
+  ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+  EnvironmentPlaceholders,
+  EnvironmentUtils,
+  LoadBalancerIpAddressType,
+  NestedCloudAssemblyArtifact,
+  PATH_METADATA_KEY,
+  PROVIDER_ERROR_KEY,
+  SSMPARAM_NO_INVALIDATE,
+  SynthesisMessageLevel,
+  TreeCloudArtifact,
+  UNKNOWN_ACCOUNT,
+  UNKNOWN_REGION,
+  VpcSubnetGroupType,
+} from "@aws-cdk/cloud-assembly-api";
+
+export type {
+  AmiContextResponse,
+  AssemblyBuildOptions,
+  AvailabilityZonesContextResponse,
+  CloudAssemblyBuilderProps,
+  EndpointServiceAvailabilityZonesContextQuery,
+  EndpointServiceAvailabilityZonesContextResponse,
+  Environment,
+  EnvironmentPlaceholderValues,
+  IEnvironmentPlaceholderProvider,
+  KeyContextResponse,
+  LoadBalancerContextResponse,
+  LoadBalancerListenerContextResponse,
+  MetadataEntry,
+  MetadataEntryResult,
+  MissingContext,
+  RuntimeInfo,
+  SecurityGroupContextResponse,
+  StackMetadata,
+  SynthesisMessage,
+  VpcContextResponse,
+  VpcSubnet,
+  VpcSubnetGroup,
+} from "@aws-cdk/cloud-assembly-api";
+
+// The modules below define values that the CLI can pass to the CDK framework
+// to control its behavior.
+export * from "./cxapi";
+export * from "./features";
+export * from "./app";
