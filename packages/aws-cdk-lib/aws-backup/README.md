@@ -81,6 +81,60 @@ plan.addSelection('Selection', {
 });
 ```
 
+### Advanced resource selection with conditions
+
+When you need to select resources that match both an ARN pattern AND specific tag conditions,
+use the `conditions` property. This uses AND logic (intersection) instead of the OR logic
+used by `BackupResource.fromTag()`.
+
+For example, to back up only EC2 volumes that have a specific tag:
+
+```ts
+declare const plan: backup.BackupPlan;
+
+plan.addSelection('Selection', {
+  resources: [
+    backup.BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+  ],
+  conditions: {
+    stringEquals: [
+      { key: 'aws-backup', value: '1' },
+    ],
+  },
+});
+```
+
+This will back up only EC2 volumes that have the tag `aws-backup=1`, rather than backing up
+all EC2 volumes OR all resources with that tag (which is what would happen with `BackupResource.fromTag()`).
+
+You can also use multiple conditions with different operators:
+
+```ts
+declare const plan: backup.BackupPlan;
+
+plan.addSelection('Selection', {
+  resources: [
+    backup.BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+  ],
+  conditions: {
+    stringEquals: [
+      { key: 'environment', value: 'production' },
+    ],
+    stringLike: [
+      { key: 'project', value: 'my-project-*' },
+    ],
+    stringNotEquals: [
+      { key: 'temporary', value: 'true' },
+    ],
+  },
+});
+```
+
+This selects EC2 volumes that:
+- Have `environment=production` AND
+- Have a `project` tag starting with `my-project-` AND
+- Do NOT have `temporary=true`
+
 To add rules to a plan, use `addRule()`:
 
 ```ts

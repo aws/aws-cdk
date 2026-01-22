@@ -684,3 +684,254 @@ test('fromRdsServerlessCluster', () => {
     },
   });
 });
+
+test('conditions with stringEquals', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+    ],
+    conditions: {
+      stringEquals: [
+        { key: 'aws-backup', value: '1' },
+      ],
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Resources: [
+        'arn:aws:ec2:*:*:volume/*',
+      ],
+      Conditions: {
+        StringEquals: [
+          {
+            ConditionKey: 'aws:ResourceTag/aws-backup',
+            ConditionValue: '1',
+          },
+        ],
+      },
+    },
+  });
+});
+
+test('conditions with all operation types', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+    ],
+    conditions: {
+      stringEquals: [
+        { key: 'environment', value: 'production' },
+      ],
+      stringLike: [
+        { key: 'project', value: 'my-project-*' },
+      ],
+      stringNotEquals: [
+        { key: 'temporary', value: 'true' },
+      ],
+      stringNotLike: [
+        { key: 'name', value: 'test-*' },
+      ],
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Resources: [
+        'arn:aws:ec2:*:*:volume/*',
+      ],
+      Conditions: {
+        StringEquals: [
+          {
+            ConditionKey: 'aws:ResourceTag/environment',
+            ConditionValue: 'production',
+          },
+        ],
+        StringLike: [
+          {
+            ConditionKey: 'aws:ResourceTag/project',
+            ConditionValue: 'my-project-*',
+          },
+        ],
+        StringNotEquals: [
+          {
+            ConditionKey: 'aws:ResourceTag/temporary',
+            ConditionValue: 'true',
+          },
+        ],
+        StringNotLike: [
+          {
+            ConditionKey: 'aws:ResourceTag/name',
+            ConditionValue: 'test-*',
+          },
+        ],
+      },
+    },
+  });
+});
+
+test('conditions with multiple stringEquals (AND logic)', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+    ],
+    conditions: {
+      stringEquals: [
+        { key: 'aws-backup', value: '1' },
+        { key: 'environment', value: 'production' },
+        { key: 'team', value: 'platform' },
+      ],
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Resources: [
+        'arn:aws:ec2:*:*:volume/*',
+      ],
+      Conditions: {
+        StringEquals: [
+          {
+            ConditionKey: 'aws:ResourceTag/aws-backup',
+            ConditionValue: '1',
+          },
+          {
+            ConditionKey: 'aws:ResourceTag/environment',
+            ConditionValue: 'production',
+          },
+          {
+            ConditionKey: 'aws:ResourceTag/team',
+            ConditionValue: 'platform',
+          },
+        ],
+      },
+    },
+  });
+});
+
+test('conditions are not rendered when empty', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    conditions: {
+      stringEquals: [],
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Resources: [
+        'arn1',
+      ],
+      Conditions: Match.absent(),
+    },
+  });
+});
+
+test('conditions are not rendered when undefined', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Resources: [
+        'arn1',
+      ],
+      Conditions: Match.absent(),
+    },
+  });
+});
+
+test('existing fromTag behavior unchanged (uses ListOfTags for OR logic)', () => {
+  // WHEN - This is a regression test to ensure existing behavior is preserved
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+      BackupResource.fromTag('stage', 'prod'),
+      BackupResource.fromTag('environment', 'production'),
+    ],
+  });
+
+  // THEN - Should use ListOfTags (OR logic), not Conditions (AND logic)
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Resources: [
+        'arn:aws:ec2:*:*:volume/*',
+      ],
+      ListOfTags: [
+        {
+          ConditionKey: 'stage',
+          ConditionType: 'STRINGEQUALS',
+          ConditionValue: 'prod',
+        },
+        {
+          ConditionKey: 'environment',
+          ConditionType: 'STRINGEQUALS',
+          ConditionValue: 'production',
+        },
+      ],
+      // Conditions should NOT be present when using fromTag
+      Conditions: Match.absent(),
+    },
+  });
+});
+
+test('conditions can be used together with fromTag (both ListOfTags and Conditions)', () => {
+  // WHEN - Using both conditions (AND logic) and fromTag (OR logic)
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+      BackupResource.fromTag('legacy-tag', 'yes'),
+    ],
+    conditions: {
+      stringEquals: [
+        { key: 'aws-backup', value: '1' },
+      ],
+    },
+  });
+
+  // THEN - Both ListOfTags and Conditions should be present
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Resources: [
+        'arn:aws:ec2:*:*:volume/*',
+      ],
+      ListOfTags: [
+        {
+          ConditionKey: 'legacy-tag',
+          ConditionType: 'STRINGEQUALS',
+          ConditionValue: 'yes',
+        },
+      ],
+      Conditions: {
+        StringEquals: [
+          {
+            ConditionKey: 'aws:ResourceTag/aws-backup',
+            ConditionValue: '1',
+          },
+        ],
+      },
+    },
+  });
+});

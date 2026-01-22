@@ -10,6 +10,66 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IBackupPlanRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
+ * A condition for backup selection using tag-based filtering.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-backup-backupselection-conditionparameter.html
+ */
+export interface BackupSelectionCondition {
+  /**
+   * The tag key to match.
+   *
+   * Note: The key will be automatically prefixed with 'aws:ResourceTag/'
+   * when generating CloudFormation.
+   */
+  readonly key: string;
+
+  /**
+   * The tag value to match.
+   */
+  readonly value: string;
+}
+
+/**
+ * Conditions for backup selection using AND logic.
+ *
+ * When multiple conditions are specified, resources must match ALL conditions
+ * to be included in the backup selection. This is different from
+ * `BackupResource.fromTag()` which uses OR logic via ListOfTags.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-backup-backupselection-conditions.html
+ */
+export interface BackupSelectionConditions {
+  /**
+   * Filters resources for exact tag value matches.
+   *
+   * @default - no stringEquals conditions
+   */
+  readonly stringEquals?: BackupSelectionCondition[];
+
+  /**
+   * Filters resources for tag values matching a wildcard pattern.
+   * Use '*' as a wildcard character.
+   *
+   * @default - no stringLike conditions
+   */
+  readonly stringLike?: BackupSelectionCondition[];
+
+  /**
+   * Filters resources for tag values that do NOT match exactly.
+   *
+   * @default - no stringNotEquals conditions
+   */
+  readonly stringNotEquals?: BackupSelectionCondition[];
+
+  /**
+   * Filters resources for tag values that do NOT match a wildcard pattern.
+   *
+   * @default - no stringNotLike conditions
+   */
+  readonly stringNotLike?: BackupSelectionCondition[];
+}
+
+/**
  * Options for a BackupSelection
  */
 export interface BackupSelectionOptions {
@@ -54,6 +114,21 @@ export interface BackupSelectionOptions {
    * @default false
    */
   readonly allowRestores?: boolean;
+
+  /**
+   * Conditions for selecting resources using AND logic.
+   *
+   * When conditions are specified, resources must match ALL conditions
+   * to be included in the backup selection. This is different from
+   * `BackupResource.fromTag()` which uses OR logic via ListOfTags.
+   *
+   * Use this property when you need to select resources that match
+   * both an ARN pattern AND specific tag conditions.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-backup-backupselection-conditions.html
+   * @default - no conditions
+   */
+  readonly conditions?: BackupSelectionConditions;
 }
 
 /**
@@ -123,6 +198,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
         resources: Lazy.list({
           produce: () => [...this.resources, ...this.backupableResourcesCollector.resources],
         }, { omitEmpty: true }),
+        conditions: this.renderConditions(props.conditions),
       },
     });
 
@@ -156,5 +232,65 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       // Will be concatenated to `this.resources` in a `Lazy.list`
       // in the constructor instead.
     }
+  }
+
+  /**
+   * Renders the conditions property for CloudFormation.
+   * Returns undefined if no conditions are specified.
+   *
+   * Note: We output CloudFormation-format (PascalCase) directly because
+   * the L1 construct uses objectToCloudFormation which doesn't convert
+   * nested property names.
+   */
+  private renderConditions(conditions?: BackupSelectionConditions): any {
+    if (!conditions) {
+      return undefined;
+    }
+
+    const hasConditions =
+      (conditions.stringEquals && conditions.stringEquals.length > 0) ||
+      (conditions.stringLike && conditions.stringLike.length > 0) ||
+      (conditions.stringNotEquals && conditions.stringNotEquals.length > 0) ||
+      (conditions.stringNotLike && conditions.stringNotLike.length > 0);
+
+    if (!hasConditions) {
+      return undefined;
+    }
+
+    const result: any = {};
+
+    if (conditions.stringEquals && conditions.stringEquals.length > 0) {
+      result.StringEquals = this.renderConditionParameters(conditions.stringEquals);
+    }
+    if (conditions.stringLike && conditions.stringLike.length > 0) {
+      result.StringLike = this.renderConditionParameters(conditions.stringLike);
+    }
+    if (conditions.stringNotEquals && conditions.stringNotEquals.length > 0) {
+      result.StringNotEquals = this.renderConditionParameters(conditions.stringNotEquals);
+    }
+    if (conditions.stringNotLike && conditions.stringNotLike.length > 0) {
+      result.StringNotLike = this.renderConditionParameters(conditions.stringNotLike);
+    }
+
+    return result;
+  }
+
+  /**
+   * Renders an array of condition parameters for CloudFormation.
+   * Automatically prefixes tag keys with 'aws:ResourceTag/'.
+   *
+   * Note: We output CloudFormation-format (PascalCase) directly.
+   */
+  private renderConditionParameters(
+    conditions?: BackupSelectionCondition[],
+  ): any[] | undefined {
+    if (!conditions || conditions.length === 0) {
+      return undefined;
+    }
+
+    return conditions.map((condition) => ({
+      ConditionKey: `aws:ResourceTag/${condition.key}`,
+      ConditionValue: condition.value,
+    }));
   }
 }
