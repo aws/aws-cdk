@@ -1,16 +1,16 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "19e1b8e2773d00e5d489c3080e6506807e9af3a58ba0567a8e4e5562221483e0": {
       "displayName": "BedrockInferenceProfilesTestDefaultTestDeployAssert4CC2EFAB Template",
       "source": {
         "path": "BedrockInferenceProfilesTestDefaultTestDeployAssert4CC2EFAB.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-4a623844": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "19e1b8e2773d00e5d489c3080e6506807e9af3a58ba0567a8e4e5562221483e0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
