@@ -4,12 +4,14 @@ import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-c
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
 import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
  * and LambdaDeploymentConfig deployment configurations.
  */
-export interface IBaseDeploymentConfig {
+export interface IBaseDeploymentConfig extends IDeploymentConfigRef {
   /**
    * The physical, human-readable name of the Deployment Configuration.
    * @attribute
@@ -143,29 +145,49 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
    */
   protected static fromDeploymentConfigName(scope: Construct, id: string, deploymentConfigName: string): IBaseDeploymentConfig {
     ignore(id);
-    const arn = Stack.of(scope).formatArn({
+    const stack = Stack.of(scope);
+    const arn = stack.formatArn({
       service: 'codedeploy',
       resource: 'deploymentconfig',
       resourceName: deploymentConfigName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-    return {
-      deploymentConfigName: deploymentConfigName,
-      deploymentConfigArn: arn,
-    };
+
+    class Import extends Resource implements IBaseDeploymentConfig {
+      public readonly deploymentConfigName = deploymentConfigName;
+      public readonly deploymentConfigArn = arn;
+      public get deploymentConfigRef(): DeploymentConfigReference {
+        return {
+          deploymentConfigName: this.deploymentConfigName,
+        };
+      }
+    }
+
+    return new Import(scope, `${id}:Imported`);
   }
 
-  /**
-   * The name of the deployment config
-   * @attribute
-   */
-  public readonly deploymentConfigName: string;
+  private readonly resource: CfnDeploymentConfig;
 
-  /**
-   * The arn of the deployment config
-   * @attribute
-   */
-  public readonly deploymentConfigArn: string;
+  @memoizedGetter
+  public get deploymentConfigName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get deploymentConfigArn(): string {
+    return this.getResourceArnAttribute(arnForDeploymentConfig(this.resource.ref), {
+      service: 'codedeploy',
+      resource: 'deploymentconfig',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  public get deploymentConfigRef(): DeploymentConfigReference {
+    return {
+      deploymentConfigName: this.deploymentConfigName,
+    };
+  }
 
   public constructor(scope: Construct, id: string, props?: BaseDeploymentConfigProps) {
     super(scope, id, {
@@ -191,7 +213,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       }
     }
 
-    const resource = new CfnDeploymentConfig(this, 'Resource', {
+    this.resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: this.physicalName,
       computePlatform: props?.computePlatform,
       trafficRoutingConfig: props?.trafficRouting?.bind(this),
@@ -201,14 +223,6 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
         firstZoneMonitorDurationInSeconds: props.zonalConfig.firstZoneMonitorDuration?.toSeconds(),
         minimumHealthyHostsPerZone: props.zonalConfig.minimumHealthyHostsPerZone?._json,
       } : undefined,
-    });
-
-    this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);
-    this.deploymentConfigArn = this.getResourceArnAttribute(arnForDeploymentConfig(resource.ref), {
-      service: 'codedeploy',
-      resource: 'deploymentconfig',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.node.addValidation({ validate: () => validateName('Deployment config', this.physicalName) });
@@ -223,3 +237,22 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
 }
 
 function ignore(_x: any) { return; }
+
+/**
+ * A DeploymentConfig that can specialize itself based on the target group it will be used for
+ *
+ * For example, this is used for AWS-managed deployment configs: these are already
+ * present in every region, but we need a region-specific ARN to reference them.
+ * Since we might use them in conjunction with cross-region DeploymentGroups, we
+ * need to specialize the account and region to the DeploymentGroup before
+ * using.
+ *
+ * A DeploymentGroup must call `bindEnvironment()` first if it detects this type,
+ * before reading the DeploymentConfig ARN.
+ */
+export interface IBindableDeploymentConfig extends IDeploymentConfigRef {
+  /**
+   * Bind the predefined deployment config to the environment of the given resource
+   */
+  bindEnvironment(deploymentGroup: IDeploymentGroupRef): IDeploymentConfigRef;
+}

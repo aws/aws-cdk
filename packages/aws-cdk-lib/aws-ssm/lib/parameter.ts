@@ -194,6 +194,9 @@ abstract class ParameterBase extends Resource implements IParameter, IEncryptedR
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -210,6 +213,9 @@ abstract class ParameterBase extends Resource implements IParameter, IEncryptedR
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     if (this.encryptionKey) {
       this.encryptionKey.grantEncrypt(grantee);
@@ -729,6 +735,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       value: props.stringValue,
     });
 
+    // Too fiddly to refactor
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
@@ -840,6 +848,9 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       type: ParameterType.STRING_LIST,
       value: Fn.join(',', props.stringListValue),
     });
+
+    // Too fiddly to refactor
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
