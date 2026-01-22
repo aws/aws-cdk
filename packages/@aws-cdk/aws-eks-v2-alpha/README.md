@@ -464,7 +464,6 @@ new eks.Cluster(this, 'HelloEKS', {
       enableWafv2: false
     }
   },
-  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
 });
 ```
 
