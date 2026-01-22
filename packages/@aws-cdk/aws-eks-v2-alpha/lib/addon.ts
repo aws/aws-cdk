@@ -1,10 +1,12 @@
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { ArnFormat, IResource, Resource, Stack, Fn } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
+import { ServiceAccount } from './service-account';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -57,6 +59,17 @@ export interface AddonProps {
    * @default - Use default configuration.
    */
   readonly configurationValues?: Record<string, any>;
+  // TODO: check default value.
+  /**
+   * How to resolve field value conflicts for an Amazon EKS add-on.
+   *
+   * @default - Use default configuration.
+   */
+  readonly resolveConflicts?: ResolveConflictsType;
+  // TODO: add TypeDoc
+  readonly podIdentityAssociations?: PodIdentityAssociation[];
+  // TODO: add TypeDoc
+  readonly serviceAccount?: ServiceAccount;
 }
 
 /**
@@ -72,6 +85,46 @@ export interface AddonAttributes {
    * The name of the Amazon EKS cluster the addon is associated with.
    */
   readonly clusterName: string;
+}
+
+/**
+ * EKS cluster IP family.
+ */
+export enum ResolveConflictsType {
+  /**
+   * If the self-managed version of the add-on is installed on your cluster,
+   * Amazon EKS doesn't change the value. Creation of the add-on might fail.
+   */
+  None = 'NONE',
+  /**
+   * If the self-managed version of the add-on is installed on your cluster
+   * and the Amazon EKS default value is different than the existing value,
+   * Amazon EKS changes the value to the Amazon EKS default value.
+   */
+  Overwrite = 'OVERWRITE',
+  /**
+   * This is similar to the NONE option.
+   * If the self-managed version of the add-on is installed on your cluster
+   * Amazon EKS doesn't change the add-on resource properties.
+   * Creation of the add-on might fail if conflicts are detected.
+   * This option works differently during the update operation.
+   */
+  Preserve = 'PRESERVE',
+}
+
+/**
+ * Represents the attributes of an addon for an Amazon EKS cluster.
+ */
+export interface PodIdentityAssociation {
+  /**
+   * The Role of the addon.
+   */
+  readonly addonRole: iam.Role;
+
+  /**
+   * The name of the Kubernetes service account inside the cluster to associate the IAM credentials with.
+   */
+  readonly serviceAccount: string;
 }
 
 /**
@@ -139,12 +192,22 @@ export class Addon extends Resource implements IAddon {
 
     this.clusterName = props.cluster.clusterName;
 
+    const podIdentityAssociations = props.podIdentityAssociations?.map(value => {
+      return {
+        roleArn: value.addonRole.roleArn,
+        serviceAccount: value.serviceAccount,
+      };
+    });
+
     this.resource = new CfnAddon(this, 'Resource', {
       addonName: props.addonName,
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
       configurationValues: this.stack.toJsonString(props.configurationValues),
+      resolveConflicts: props.resolveConflicts,
+      podIdentityAssociations: podIdentityAssociations,
+      serviceAccountRoleArn: props.serviceAccount?.role.roleArn,
     });
   }
 
