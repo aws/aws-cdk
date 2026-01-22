@@ -109,6 +109,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
+| [@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault](#aws-cdkaws-cloudfront-originsfunctionurlorigindualstackdefault) | Default Lambda Function URL origins to dual-stack IPv4/IPv6 | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -198,6 +199,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
     "@aws-cdk/aws-route53-patterns:useDistribution": true
@@ -2310,5 +2312,26 @@ of the deprecated `CloudFrontWebDistribution` construct.
 
 **Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
 
+
+### @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault
+
+*Default Lambda Function URL origins to dual-stack IPv4/IPv6*
+
+Flag type: New default behavior
+
+When enabled, Lambda Function URL origins in CloudFront distributions will default to dual-stack IPv4/IPv6 connectivity instead of IPv4-only.
+This aligns with Lambda Function URLs' native dual-stack support and provides better connectivity options.
+
+When disabled, maintains the current IPv4-only default behavior for backward compatibility.
+
+Users can still explicitly set ipAddressType to override the default behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.
 
 <!-- END details -->
