@@ -6,7 +6,7 @@ import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
 import { CfnApi, CfnApiProps, HttpApiHelper } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { Duration } from '../../../core';
+import { Annotations, Duration } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -365,6 +365,19 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
+    const effectiveAuthorizer = options.authorizer ?? this.defaultAuthorizer;
+
+    // Warn if no authorizer is configured for the route
+    if (!effectiveAuthorizer) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-apigatewayv2:noAuthorizerConfigured',
+        `Route '${options.path}' is configured without an authorizer. This route will be publicly accessible. ` +
+        'If this is an imported HttpApi, the authorizer configuration from the original API is not inherited. ' +
+        'To configure an authorizer, pass it via the `defaultAuthorizer` attribute when importing, or specify ' +
+        'an `authorizer` in the `addRoutes()` options.',
+      );
+    }
+
     return methods.map((method) => {
       const authorizationScopes = options.authorizationScopes ?? this.defaultAuthorizationScopes;
 
@@ -372,7 +385,7 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
         httpApi: this,
         routeKey: HttpRouteKey.with(options.path, method),
         integration: options.integration,
-        authorizer: options.authorizer ?? this.defaultAuthorizer,
+        authorizer: effectiveAuthorizer,
         authorizationScopes,
       });
     });
@@ -401,6 +414,11 @@ export interface HttpApiAttributes {
 
   /**
    * Default Authorizer applied to all routes in the gateway.
+   *
+   * Note: When importing an HttpApi, the authorizer configuration from the original API
+   * is not automatically inherited. If the original API has an authorizer configured,
+   * you must explicitly provide it here for new routes added via `addRoutes()` to use it.
+   * Otherwise, new routes will be publicly accessible.
    *
    * @default - no default authorizer
    */

@@ -4142,3 +4142,8 @@ changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
 # CloudFormation has always required SecurityGroups for ManagedInstancesCapacityProvider.
 # Making it required in TypeScript catches the error at compile time instead of deploy time.
 strengthened:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps
+
+# Adding addRoutes() method to IHttpApi interface to enable adding routes to imported HttpApis.
+# This is a minor breaking change that only affects users who have custom implementations of IHttpApi,
+# which is extremely rare in practice.
+strengthened:aws-cdk-lib.aws_apigatewayv2.IHttpApi

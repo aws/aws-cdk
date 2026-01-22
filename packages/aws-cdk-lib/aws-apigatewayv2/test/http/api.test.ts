@@ -1,4 +1,4 @@
-import { Match, Template } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import { Certificate } from '../../../aws-certificatemanager';
 import { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -802,6 +802,42 @@ describe('addRoutes() on imported HttpApi', () => {
       RouteKey: 'GET /pets',
       AuthorizationType: 'NONE',
     });
+  });
+
+  test('warns when adding routes without authorizer to imported HttpApi', () => {
+    const stack = new Stack();
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+    });
+
+    api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET],
+      integration: new DummyRouteIntegration(),
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/ImportedApi', Match.stringLikeRegexp(
+      '.*Route.*is configured without an authorizer.*publicly accessible.*',
+    ));
+  });
+
+  test('does not warn when adding routes with authorizer to imported HttpApi', () => {
+    const stack = new Stack();
+    const authorizer = new DummyAuthorizer();
+    const api = HttpApi.fromHttpApiAttributes(stack, 'ImportedApi', {
+      httpApiId: 'imported-api-id',
+      defaultAuthorizer: authorizer,
+    });
+
+    api.addRoutes({
+      path: '/pets',
+      methods: [HttpMethod.GET],
+      integration: new DummyRouteIntegration(),
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/ImportedApi', Match.stringLikeRegexp(
+      '.*Route.*is configured without an authorizer.*',
+    ));
   });
 
   test('can override default scopes when adding routes to imported HttpApi', () => {
