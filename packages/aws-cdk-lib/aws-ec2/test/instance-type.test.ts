@@ -1,18 +1,12 @@
 import { InstanceClass, InstanceSize, InstanceType } from '../lib';
 
 describe('InstanceType', () => {
-  test('mac2 m1 ultra', () => {
-    const instanceType = InstanceType.of(InstanceClass.MAC2_M1ULTRA, InstanceSize.METAL);
-    expect(instanceType.toString()).toEqual('mac2-m1ultra.metal');
-  });
-
-  test('c8a xlarge', () => {
-    const instanceType = InstanceType.of(InstanceClass.C8A, InstanceSize.XLARGE);
-    expect(instanceType.toString()).toEqual('c8a.xlarge');
-  });
-
-  test('compute8 amd xlarge', () => {
-    const instanceType = InstanceType.of(InstanceClass.COMPUTE8_AMD, InstanceSize.XLARGE);
-    expect(instanceType.toString()).toEqual('c8a.xlarge');
+  test.each([
+    { instanceClass: InstanceClass.MAC2_M1ULTRA, size: InstanceSize.METAL, expected: 'mac2-m1ultra.metal' },
+    { instanceClass: InstanceClass.C8A, size: InstanceSize.XLARGE, expected: 'c8a.xlarge' },
+    { instanceClass: InstanceClass.COMPUTE8_AMD, size: InstanceSize.XLARGE, expected: 'c8a.xlarge' },
+  ])('$expected instance type', (testData: { instanceClass: InstanceClass; size: InstanceSize; expected: string }) => {
+    const instanceType = InstanceType.of(testData.instanceClass, testData.size);
+    expect(instanceType.toString()).toEqual(testData.expected);
   });
 });
