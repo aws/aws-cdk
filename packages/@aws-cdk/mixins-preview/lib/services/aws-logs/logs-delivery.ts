@@ -210,7 +210,10 @@ export class S3LogsDelivery implements ILogsDelivery {
   }
 
   private findEncryptionKey(): CfnKey | undefined {
-    return this.kmsKey ? tryFindKmsKeyConstruct(this.kmsKey) : tryFindKmsKeyforBucket(this.bucket);
+    if (this.kmsKey) {
+      return tryFindKmsKeyConstruct(this.kmsKey);
+    }
+    return tryFindKmsKeyforBucket(this.bucket);
   }
 
   private addToEncryptionKeyPolicy(key: CfnKey) {
