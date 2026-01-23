@@ -703,6 +703,8 @@ export class Secret extends SecretBase {
       default: RemovalPolicy.DESTROY,
     });
 
+    // Implementation too finicky to move to getter
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
     this.secretArn = this.getResourceArnAttribute(resource.ref, {
       service: 'secretsmanager',
       resource: 'secret',

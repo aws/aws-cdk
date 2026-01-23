@@ -4,6 +4,7 @@ import { CfnDomainName, CfnDomainNameProps } from '.././index';
 import { IBucket } from '../../../aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
@@ -180,12 +181,12 @@ export class DomainName extends Resource implements IDomainName {
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
       public readonly name = attrs.name;
       public readonly domainNameRef: DomainNameReference = {
-        domainName: attrs.regionalDomainName,
+        domainName: attrs.name,
         domainNameArn: Stack.of(this).formatArn({
           service: 'apigateway',
           arnFormat: ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
           resource: 'domainnames',
-          resourceName: attrs.regionalDomainName,
+          resourceName: attrs.name,
         }),
       };
     }
@@ -193,10 +194,8 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   public readonly name: string;
-  public readonly regionalDomainName: string;
-  public readonly regionalHostedZoneId: string;
-  private readonly domainNameArn: string;
   private readonly domainNameConfigurations: CfnDomainName.DomainNameConfigurationProperty[] = [];
+  private readonly resource: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
@@ -218,11 +217,8 @@ export class DomainName extends Resource implements IDomainName {
       domainNameConfigurations: Lazy.any({ produce: () => this.domainNameConfigurations }),
       mutualTlsAuthentication: mtlsConfig,
     };
-    const resource = new CfnDomainName(this, 'Resource', domainNameProps);
-    this.name = resource.ref;
-    this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
-    this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
-    this.domainNameArn = Token.asString(resource.getAtt('DomainNameArn'));
+    this.resource = new CfnDomainName(this, 'Resource', domainNameProps);
+    this.name = this.resource.ref;
 
     if (props.certificate) {
       this.addEndpoint(props);
@@ -263,6 +259,21 @@ export class DomainName extends Resource implements IDomainName {
         throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
       }
     }
+  }
+
+  @memoizedGetter
+  public get regionalDomainName(): string {
+    return Token.asString(this.resource.getAtt('RegionalDomainName'));
+  }
+
+  @memoizedGetter
+  public get regionalHostedZoneId(): string {
+    return Token.asString(this.resource.getAtt('RegionalHostedZoneId'));
+  }
+
+  @memoizedGetter
+  private get domainNameArn(): string {
+    return Token.asString(this.resource.getAtt('DomainNameArn'));
   }
 
   public get domainNameRef(): DomainNameReference {

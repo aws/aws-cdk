@@ -19,7 +19,6 @@ if (!atmosphereRoleArn) {
 }
 
 deployIntegTests({ atmosphereRoleArn, endpoint, pool, batchSize }).catch((e) => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

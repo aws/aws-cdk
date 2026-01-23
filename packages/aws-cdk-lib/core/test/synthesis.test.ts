@@ -7,6 +7,7 @@ import { Template } from '../../assertions';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import * as cdk from '../lib';
+import { MetadataType } from '../lib/metadata-type';
 import { synthesize } from '../lib/private/synthesis';
 
 function createModernApp() {
@@ -48,6 +49,44 @@ describe('synthesis', () => {
     });
     const assembly = app.synth();
     expect(list(assembly.directory)).toEqual(['cdk.out', 'manifest.json']);
+  });
+
+  test('tree.json constructInfo does not contain metadata', () => {
+    // GIVEN
+    const app = createModernApp();
+
+    // enable analytics flags
+    app.node.setContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT, true);
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+
+    const stack = new cdk.Stack(app, 'Stack');
+    const resource = new class extends cdk.Resource {}(stack, 'MyResource');
+    resource.node.addMetadata(MetadataType.CONSTRUCT, { some: 'data' });
+
+    // WHEN
+    const session = app.synth();
+    const treeJson = readJson(session.directory, 'tree.json');
+
+    // THEN - verify no constructInfo in the tree contains a metadata field
+    const allConstructInfos: any[] = [];
+    collectConstructInfos(treeJson.tree, allConstructInfos);
+
+    for (const info of allConstructInfos) {
+      expect(info).not.toHaveProperty('metadata');
+      // constructInfo should only have fqn and version
+      expect(Object.keys(info).sort()).toEqual(['fqn', 'version']);
+    }
+
+    function collectConstructInfos(node: any, result: any[]) {
+      if (node.constructInfo) {
+        result.push(node.constructInfo);
+      }
+      if (node.children) {
+        for (const child of Object.values(node.children)) {
+          collectConstructInfos(child, result);
+        }
+      }
+    }
   });
 
   test('synthesis respects disabling logicalId metadata', () => {

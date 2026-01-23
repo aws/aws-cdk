@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, FeatureFlags, IResource, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -438,25 +439,46 @@ export class EventBus extends EventBusBase {
   }
 
   /**
+   * The CfnEventBus resource
+   */
+  private readonly _resource: CfnEventBus;
+
+  /**
    * The physical ID of this event bus resource
    */
-  public readonly eventBusName: string;
+  @memoizedGetter
+  public get eventBusName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * The ARN of the event bus, such as:
    * arn:aws:events:us-east-2:123456789012:event-bus/aws.partner/PartnerName/acct1/repo1.
    */
-  public readonly eventBusArn: string;
+  @memoizedGetter
+  public get eventBusArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'events',
+      resource: 'event-bus',
+      resourceName: this._resource.name,
+    });
+  }
 
   /**
    * The policy for the event bus in JSON form.
    */
-  public readonly eventBusPolicy: string;
+  @memoizedGetter
+  public get eventBusPolicy(): string {
+    return this._resource.attrPolicy;
+  }
 
   /**
    * The name of the partner event source
    */
-  public readonly eventSourceName?: string;
+  @memoizedGetter
+  public get eventSourceName(): string | undefined {
+    return this._resource.eventSourceName;
+  }
 
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
@@ -472,7 +494,7 @@ export class EventBus extends EventBusBase {
       throw new ValidationError(`description must be less than or equal to 512 characters, got ${props.description.length}`, this);
     }
 
-    const eventBus = new CfnEventBus(this, 'Resource', {
+    this._resource = new CfnEventBus(this, 'Resource', {
       name: this.physicalName,
       eventSourceName,
       deadLetterConfig: props?.deadLetterQueue ? {
@@ -481,12 +503,6 @@ export class EventBus extends EventBusBase {
       description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
       logConfig: props?.logConfig,
-    });
-
-    this.eventBusArn = this.getResourceArnAttribute(eventBus.attrArn, {
-      service: 'events',
-      resource: 'event-bus',
-      resourceName: eventBus.name,
     });
 
     /**
@@ -516,10 +532,6 @@ export class EventBus extends EventBusBase {
         },
       }));
     }
-
-    this.eventBusName = this.getResourceNameAttribute(eventBus.ref);
-    this.eventBusPolicy = eventBus.attrPolicy;
-    this.eventSourceName = eventBus.eventSourceName;
   }
 
   /**

@@ -334,6 +334,14 @@ export enum MetricType {
    * These metrics help you monitor the flow and status of events through your event source mapping.
    */
   EVENT_COUNT = 'EventCount',
+  /**
+   * Error Count metrics provide insights into invocation failures for your event source mapping.
+   */
+  ERRORCOUNT = 'ErrorCount',
+  /**
+   * Kafka-specific metrics for monitoring Apache Kafka and Amazon MSK event sources.
+   */
+  KAFKAMETRICS = 'KafkaMetrics',
 }
 
 /**

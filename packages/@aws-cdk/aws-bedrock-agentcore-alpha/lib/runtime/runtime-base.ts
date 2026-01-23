@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { IResource, Resource } from 'aws-cdk-lib';
+import { IResource, Resource, ResourceProps } from 'aws-cdk-lib';
 import {
   DimensionsMap,
   Metric,
@@ -219,8 +219,8 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    */
   protected _connections: ec2.Connections | undefined;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**

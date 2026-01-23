@@ -13,6 +13,7 @@
     "prefer-ref-interface:aws-cdk-lib.aws_s3.GrantReplicationPermissionProps.sourceDecryptionKey",
     "prefer-ref-interface:@aws-cdk/aws-msk-alpha.ClusterProps.securityGroups",
     "prefer-ref-interface:@aws-cdk/aws-msk-alpha.VpcConfig.vpc",
-    "prefer-ref-interface:@aws-cdk/aws-msk-alpha.VpcConfig.securityGroups"
+    "prefer-ref-interface:@aws-cdk/aws-msk-alpha.VpcConfig.securityGroups",
+    "interface-extends-ref:@aws-cdk/aws-msk-alpha.ICluster"
   ]
 }
