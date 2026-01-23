@@ -150,7 +150,7 @@ to other resources. For example:
 declare const myLambda: lambda.Function;
 
 const bucket = new s3.Bucket(this, 'MyBucket');
-bucket.grantReadWrite(myLambda);
+bucket.grants.readWrite(myLambda);
 ```
 
 Will give the Lambda's execution role permissions to read and write
@@ -226,7 +226,7 @@ class Consumer extends Stack {
     super(scope, id, props);
 
     const user = new iam.User(this, 'MyUser');
-    props.userBucket.grantReadWrite(user);
+    props.userBucket.grants.readWrite(user);
   }
 }
 
@@ -405,7 +405,7 @@ const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
 });
 ```
 
-When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
+When `blockPublicPolicy` is set to `true`, `bucket.grants.publicAccess()` throws an error.
 
 [block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
 
@@ -1019,7 +1019,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 
 // Grant permissions to the replication role.
 // This method is not required if you choose to use an auto-generated replication role or manually grant permissions.
-sourceBucket.grantReplicationPermission(replicationRole, {
+sourceBucket.grants.replicationPermission(replicationRole, {
   // Optional. Specify the KMS key to use for decrypting objects in the source bucket.
   sourceDecryptionKey: encryptionKey,
   destinations: [
