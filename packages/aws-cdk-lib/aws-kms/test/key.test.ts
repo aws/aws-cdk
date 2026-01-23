@@ -183,7 +183,7 @@ describe('key policies', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    key.grants.decrypt(user);
+    KeyGrants.fromKey(key).decrypt(user);
 
     // THEN
     // Key policy should be unmodified by the grant.
@@ -201,6 +201,31 @@ describe('key policies', () => {
       },
     });
 
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('decrypt with trustAccountIdentities false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    KeyGrants.fromKey(key, false).decrypt(user);
+
+    // THEN
+    // Only the principal's policy is modified by the grant.
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
