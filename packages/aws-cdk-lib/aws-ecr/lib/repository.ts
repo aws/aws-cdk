@@ -24,9 +24,11 @@ import {
   ValidationError,
   UnscopedValidationError,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
+import { IRepositoryRef, RepositoryReference } from '../../interfaces/generated/aws-ecr-interfaces.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -34,7 +36,7 @@ const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends IResource {
+export interface IRepository extends IResource, IRepositoryRef {
   /**
    * The name of the repository
    * @attribute
@@ -190,6 +192,16 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * The ARN of the repository
    */
   public abstract readonly repositoryArn: string;
+
+  /**
+   * A reference to this repository
+   */
+  public get repositoryRef(): RepositoryReference {
+    return {
+      repositoryName: this.repositoryName,
+      repositoryArn: this.repositoryArn,
+    };
+  }
 
   /**
    * Add a policy statement to the repository's resource policy
@@ -353,6 +365,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     const crossAccountPrincipal = this.unsafeCrossAccountResourcePolicyPrincipal(grantee);
@@ -396,6 +409,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to read the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
@@ -406,6 +420,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to use the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantPull(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...this.REPO_PULL_ACTIONS);
@@ -421,6 +436,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to use the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...this.REPO_PUSH_ACTIONS);
@@ -435,6 +451,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
+   * [disable-awslint:no-grants]
    */
   public grantPullPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee,
@@ -795,12 +812,24 @@ export class Repository extends RepositoryBase {
     }
   }
 
-  public readonly repositoryName: string;
-  public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
   private policyDocument?: iam.PolicyDocument;
   private readonly _resource: CfnRepository;
+
+  @memoizedGetter
+  public get repositoryName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
+  @memoizedGetter
+  public get repositoryArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
     super(scope, id, {
@@ -812,7 +841,7 @@ export class Repository extends RepositoryBase {
     Repository.validateRepositoryName(this.physicalName);
     this.validateTagMutability(props.imageTagMutability, props.imageTagMutabilityExclusionFilters);
 
-    const resource = new CfnRepository(this, 'Resource', {
+    this._resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
@@ -825,21 +854,13 @@ export class Repository extends RepositoryBase {
       encryptionConfiguration: this.parseEncryption(props),
       emptyOnDelete: props.emptyOnDelete,
     });
-    this._resource = resource;
 
-    resource.applyRemovalPolicy(props.removalPolicy);
+    this._resource.applyRemovalPolicy(props.removalPolicy);
 
     this.registryId = props.lifecycleRegistryId;
     if (props.lifecycleRules) {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
-
-    this.repositoryName = this.getResourceNameAttribute(resource.ref);
-    this.repositoryArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'ecr',
-      resource: 'repository',
-      resourceName: this.physicalName,
-    });
 
     if (props.emptyOnDelete && props.removalPolicy !== RemovalPolicy.DESTROY) {
       throw new ValidationError('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.', this);
@@ -1089,6 +1110,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
     rulePriority: rule.rulePriority,
     description: rule.description,
     selection: {
+
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       tagPatternList: rule.tagPatternList,

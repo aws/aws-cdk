@@ -1,4 +1,4 @@
-import { IResource, Resource } from 'aws-cdk-lib';
+import { IResource, Resource, ResourceProps } from 'aws-cdk-lib';
 import { DimensionsMap, Metric, MetricOptions, MetricProps, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -242,8 +242,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
   public abstract readonly createdAt?: string;
   public abstract readonly updatedAt?: string;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   // ------------------------------------------------------
@@ -251,6 +251,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
   // ------------------------------------------------------
   /**
    * Grants IAM actions to the IAM Principal
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant permissions to
    * @param actions The actions to grant
@@ -265,6 +267,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
 
   /**
    * Grants `Get` and `List` actions on the Gateway
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant read permissions to
    */
@@ -283,6 +287,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
   /**
    * Grants `Create`, `Update`, and `Delete` actions on the Gateway
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant manage permissions to
    */
   public grantManage(grantee: iam.IGrantable): iam.Grant {
@@ -291,6 +297,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
 
   /**
    * Grants permission to invoke this Gateway
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant invoke permissions to
    */

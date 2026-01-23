@@ -5,8 +5,10 @@ import { EnvironmentType } from './environment-type';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { Arn, ArnFormat, IResource, PhysicalName, Resource, Size, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IFleetRef, FleetReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 /**
  * Construction properties of a CodeBuild Fleet.
@@ -175,7 +177,7 @@ export interface ComputeConfiguration {
 /**
  * Represents a Fleet for a reserved capacity CodeBuild project.
  */
-export interface IFleet extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IFleet extends IResource, iam.IGrantable, ec2.IConnectable, IFleetRef {
   /**
    * The ARN of the fleet.
    * @attribute
@@ -230,6 +232,12 @@ export class Fleet extends Resource implements IFleet {
       public readonly fleetName = Arn.split(fleetArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split(':')[0];
       public readonly fleetArn = fleetArn;
 
+      public get fleetRef(): FleetReference {
+        return {
+          fleetArn: this.fleetArn,
+        };
+      }
+
       public get computeType(): FleetComputeType {
         throw new UnscopedValidationError('Cannot retrieve computeType property from an imported Fleet');
       }
@@ -250,12 +258,23 @@ export class Fleet extends Resource implements IFleet {
   /**
    * The ARN of the fleet.
    */
-  public readonly fleetArn: string;
+  @memoizedGetter
+  get fleetArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'codebuild',
+      resource: 'fleet',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+  }
 
   /**
    * The name of the fleet.
    */
-  public readonly fleetName: string;
+  @memoizedGetter
+  get fleetName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * The compute type of the fleet.
@@ -270,8 +289,15 @@ export class Fleet extends Resource implements IFleet {
    */
   public readonly environmentType: EnvironmentType;
 
+  public get fleetRef(): FleetReference {
+    return {
+      fleetArn: this.fleetArn,
+    };
+  }
+
   // Lazily created connections. Only created if `vpc` is provided in props.
   private _connections?: ec2.Connections;
+  private readonly resource: CfnFleet;
 
   /**
    * The network connections associated with this Fleet's security group(s) in
@@ -395,13 +421,7 @@ export class Fleet extends Resource implements IFleet {
       resource.node.addDependency(...props.vpc.node.findAll());
     }
 
-    this.fleetArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'codebuild',
-      resource: 'fleet',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-    });
-    this.fleetName = this.getResourceNameAttribute(resource.ref);
+    this.resource = resource;
     this.computeType = props.computeType;
     this.environmentType = props.environmentType;
   }
