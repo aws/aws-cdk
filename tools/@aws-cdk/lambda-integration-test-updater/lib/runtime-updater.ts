@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {Node, Project, SourceFile, ts} from 'ts-morph';
 import SyntaxKind = ts.SyntaxKind;
 
@@ -20,7 +21,13 @@ export class RuntimeIntegrationTestUpdater {
    * @param integTestFiles - An object mapping runtime families to their integration test file paths
    * @param runtimeSourceFilePath - Path to the Lambda runtime source file (defaults to aws-lambda/lib/runtime.ts)
    */
-  constructor(integTestFiles: {[key:string]: string} , runtimeSourceFilePath = __dirname + '../../../../../packages/aws-cdk-lib/aws-lambda/lib/runtime.ts') {
+  constructor(
+    integTestFiles: {[key:string]: string} , 
+    runtimeSourceFilePath = path.resolve(
+      __dirname,
+      '../../../../../packages/aws-cdk-lib/aws-lambda/lib/runtime.ts'
+    )
+  ) {
     this.integTestConfigs = integTestFiles;
     this.project = new Project();
     const runtimeSourceFile =  this.project.addSourceFileAtPath(runtimeSourceFilePath);
@@ -35,7 +42,7 @@ export class RuntimeIntegrationTestUpdater {
    * 3. Saves the changes back to disk
    */
   public async execute(): Promise<void> {
-    for (const [runtimeFamily, integTestFile] of Object.entries(this.integTestConfigs)) {
+    for (const [runtimeFamily, integTestFile] of Object.entries(this.integTestConfigs).sort()) {
       const integSourceFile = this.project.addSourceFileAtPath(integTestFile);
       await this.updateRuntimesList(integSourceFile, this.runtimesPerFamily[runtimeFamily] || []);
       integSourceFile.saveSync();
@@ -55,7 +62,7 @@ export class RuntimeIntegrationTestUpdater {
    * @returns An object mapping runtime families to arrays of runtime names
    */
   private getRuntimes(sourceFile: SourceFile): {[key: string]: string[]} {
-    const deprecatedRuntimesPerFamily: {[key: string]: string[]} = {};
+    const activeRuntimesPerFamily: {[key: string]: string[]} = {};
 
     sourceFile.getDescendantsOfKind(SyntaxKind.NewExpression).forEach(newExpr => {
       const className = newExpr.getExpression().getText();
@@ -73,11 +80,11 @@ export class RuntimeIntegrationTestUpdater {
             if (!jsDoc?.getTags().some(tag => tag.getTagName() === 'deprecated')) {
               const runtimeName = propertyDeclaration.getName();
               if (runtimeName) {
-                const deprecatedRuntimes = deprecatedRuntimesPerFamily[family];
-                if (deprecatedRuntimes) {
-                  deprecatedRuntimes.push(runtimeName);
+                const runtimesForFamily = activeRuntimesPerFamily[family];
+                if (runtimesForFamily) {
+                  runtimesForFamily.push(runtimeName);
                 } else {
-                  deprecatedRuntimesPerFamily[family] = [runtimeName];
+                  activeRuntimesPerFamily[family] = [runtimeName];
                 }
               }
             }
@@ -86,7 +93,12 @@ export class RuntimeIntegrationTestUpdater {
       }
     });
 
-    return deprecatedRuntimesPerFamily;
+    return Object.fromEntries(
+      Object.entries(activeRuntimesPerFamily).map(
+        ([family, runtimes]) => [family, runtimes.sort()]
+      )
+    );
+
   }
 
   /**
@@ -103,15 +115,15 @@ export class RuntimeIntegrationTestUpdater {
       if (varDecl.getName() === 'runtimes') {
         const initializer = varDecl.getInitializer();
         if (initializer && Node.isArrayLiteralExpression(initializer)) {
-          runtimes = runtimes.map(runtime => `Runtime.${runtime}`);
+          runtimes = [...runtimes].sort().map(runtime => `Runtime.${runtime}`);
 
           // Format runtimes array into groups of 6 per line to keep lines under max length and to follow linter rules
-          const formattedDeprecatedRuntimes = [];
+          const formattedRuntimes = [];
           for (let i = 0; i < runtimes.length; i += 6) {
-            formattedDeprecatedRuntimes.push(`  ${runtimes.slice(i, i + 6).join(', ')}`);
+            formattedRuntimes.push(`  ${runtimes.slice(i, i + 6).join(', ')}`);
           }
-          if(formattedDeprecatedRuntimes.length > 0){
-            initializer.replaceWithText(`[\n${formattedDeprecatedRuntimes.join(',\n')},\n]`);
+          if(formattedRuntimes.length > 0){
+            initializer.replaceWithText(`[\n${formattedRuntimes.join(',\n')},\n]`);
           }else{
             initializer.replaceWithText('[]');
           }
