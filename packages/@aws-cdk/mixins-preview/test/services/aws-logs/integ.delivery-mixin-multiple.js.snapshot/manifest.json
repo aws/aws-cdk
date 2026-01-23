@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "VendedLogsMixinTest.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a25147b5f6bdce0150146e35923f7fb589205e140868690ed347d0d44e57c036.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bbd486881c90ca3723af732547558fb3f2b630b20e449daf2eb18ad5dce3a4a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -94,6 +94,18 @@
             "data": "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Delivery2E928457"
           }
         ],
+        "/VendedLogsMixinTest/EventBus/Resource/CdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Dest": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870"
+          }
+        ],
+        "/VendedLogsMixinTest/EventBus/Resource/CdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Delivery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Delivery76F6DBB2"
+          }
+        ],
         "/VendedLogsMixinTest/DeliveryLogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -108,13 +120,27 @@
             "data": "DeliveryLogGroup2A53FD53"
           }
         ],
+        "/VendedLogsMixinTest/DeliveryBucketKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "enabled": true
+            }
+          }
+        ],
+        "/VendedLogsMixinTest/DeliveryBucketKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryBucketKey146CC85D"
+          }
+        ],
         "/VendedLogsMixinTest/DeliveryBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "removalPolicy": "destroy",
               "autoDeleteObjects": true,
-              "encryption": "S3_MANAGED"
+              "encryptionKey": "*"
             }
           }
         ],
@@ -572,16 +598,6 @@
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
-          },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
             "recommendedValue": true,
@@ -727,6 +743,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -738,12 +755,17 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }
