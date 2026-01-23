@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EcsClusterTest/DefaultTest": {
+      "stacks": [
+        "EcsEnhancedContainerInsightsTest"
+      ],
+      "assertionStack": "EcsClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsClusterTestDefaultTestDeployAssert1E3A9510"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
