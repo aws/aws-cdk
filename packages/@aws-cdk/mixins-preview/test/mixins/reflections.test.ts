@@ -354,39 +354,51 @@ describe('find KMSKey from Id', () => {
   describe('find in construct tree', () => {
     test('returns undefined when KMS key does not exist', () => {
       const bucket = new s3.Bucket(stack, 'Bucket');
-      expect(tryFindKmsKeyforBucket(bucket, 'non-existent-key-id')).toBeUndefined();
+      expect(tryFindKmsKeyforBucket(bucket)).toBeUndefined();
     });
 
     test('returns KMS Key if it exists', () => {
-      const kmsKey = new kms.CfnKey(stack, 'Key', {});
-      const bucket = new s3.Bucket(stack, 'Bucket');
-      expect(tryFindKmsKeyforBucket(bucket, kmsKey.attrKeyId)).toBe(kmsKey);
+      const kmsKey = new kms.Key(stack, 'Key', {});
+      const bucket = new s3.Bucket(stack, 'Bucket', {
+        encryptionKey: kmsKey,
+      });
+      expect(tryFindKmsKeyforBucket(bucket)).toBe(kmsKey.node.defaultChild);
     });
 
-    test('returns correct KMS key if there are multiple in a stack', () => {
-      const bucket = new s3.Bucket(stack, 'Bucket');
-      const kmsKey1 = new kms.CfnKey(stack, 'Key1', {});
-      new kms.CfnKey(stack, 'Key2', {});
-      expect(tryFindKmsKeyforBucket(bucket, kmsKey1.attrKeyId)).toBe(kmsKey1);
-    });
-
-    test('finds KMS key as child of bucket', () => {
-      const bucket = new s3.Bucket(stack, 'Bucket');
-      const kmsKey = new kms.CfnKey(bucket, 'Key', {});
-      expect(tryFindKmsKeyforBucket(bucket, kmsKey.attrKeyId)).toBe(kmsKey);
+    test('returns key associate with the bucket even if there are multiple keys', () => {
+      const kmsKey1 = new kms.Key(stack, 'Key1', {});
+      const bucket = new s3.Bucket(stack, 'Bucket', {
+        encryptionKey: kmsKey1,
+      });
+      new kms.Key(stack, 'Key2', {});
+      expect(tryFindKmsKeyforBucket(bucket)).toBe(kmsKey1.node.defaultChild);
     });
 
     test('finds KMS key in parent hierarchy', () => {
       const parent = new Construct(stack, 'Parent');
-      const kmsKey = new kms.CfnKey(parent, 'Key', {});
-      const bucket = new s3.Bucket(parent, 'Bucket');
-      expect(tryFindKmsKeyforBucket(bucket, kmsKey.attrKeyId)).toBe(kmsKey);
+      const kmsKey = new kms.Key(parent, 'Key', {});
+      const bucket = new s3.Bucket(parent, 'Bucket', {
+        encryptionKey: kmsKey,
+      });
+      expect(tryFindKmsKeyforBucket(bucket)).toBe(kmsKey.node.defaultChild);
     });
 
-    test('finds L2 KMS Key', () => {
-      const kmsKey = new kms.Key(stack, 'Key');
-      const bucket = new s3.Bucket(stack, 'Bucket');
-      expect(tryFindKmsKeyforBucket(bucket, kmsKey.keyId)).toBe(kmsKey.node.defaultChild);
+    test('finds L1 KMS Key', () => {
+      const kmsKey = new kms.CfnKey(stack, 'Key');
+      const bucket = new s3.CfnBucket(stack, 'Bucket', {
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [
+            {
+              bucketKeyEnabled: true,
+              serverSideEncryptionByDefault: {
+                kmsMasterKeyId: kmsKey.attrKeyId,
+                sseAlgorithm: 'aws:kms',
+              },
+            },
+          ],
+        },
+      });
+      expect(tryFindKmsKeyforBucket(bucket)).toBe(kmsKey);
     });
   });
 });

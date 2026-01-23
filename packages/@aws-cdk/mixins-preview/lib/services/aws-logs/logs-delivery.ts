@@ -4,7 +4,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { tryFindBucketConstruct, tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
+import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
 import { ConstructSelector, Mixins } from '../../core';
 import * as xray from '../aws-xray/policy';
 import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
@@ -117,7 +117,10 @@ export class S3LogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
 
-    this.findEncryptionKey();
+    const kmsKey = this.findEncryptionKey();
+    if (kmsKey) {
+      this.addToEncryptionKeyPolicy(kmsKey);
+    }
 
     const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
       destinationResourceArn: this.bucket.bucketRef.bucketArn,
@@ -206,23 +209,16 @@ export class S3LogsDelivery implements ILogsDelivery {
       .apply(new BucketPolicyStatementsMixin(statements));
   }
 
-  private findEncryptionKey() {
+  private findEncryptionKey(): CfnKey | undefined {
     let kmsKey: CfnKey | undefined;
 
     if (this.kmsKey) {
       kmsKey = tryFindKmsKeyConstruct(this.kmsKey);
     } else {
-      const l1Bucket = tryFindBucketConstruct(this.bucket);
-      const kmsMasterKeyId = l1Bucket && Array.isArray((l1Bucket.bucketEncryption as
-        s3.CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration) ?
-        (((l1Bucket.bucketEncryption as s3.CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as
-        s3.CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as
-        s3.CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
-        : undefined;
-      kmsKey = kmsMasterKeyId ? tryFindKmsKeyforBucket(this.bucket, kmsMasterKeyId) : undefined;
+      kmsKey = tryFindKmsKeyforBucket(this.bucket);
     }
 
-    kmsKey && this.addToEncryptionKeyPolicy(kmsKey);
+    return kmsKey;
   }
 
   private addToEncryptionKeyPolicy(key: CfnKey) {

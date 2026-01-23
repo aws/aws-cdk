@@ -99,11 +99,21 @@ export function tryFindDeliverySourceForResource(source: IConstruct, sourceArn: 
   );
 }
 
-export function tryFindKmsKeyforBucket(bucket: IBucketRef, keyId: string): CfnKey | undefined {
+export function tryFindKmsKeyforBucket(bucket: IBucketRef): CfnKey | undefined {
+  const cfnBucket = tryFindBucketConstruct(bucket);
+  const kmsMasterKeyId = cfnBucket && Array.isArray((cfnBucket.bucketEncryption as
+        CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration) ?
+    (((cfnBucket.bucketEncryption as CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as
+        CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as
+        CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
+    : undefined;
+  if (!kmsMasterKeyId) {
+    return undefined;
+  }
   return findClosestRelatedResource<IConstruct, CfnKey>(
     bucket,
     'AWS::KMS::Key',
-    (_, key) => key.ref === keyId || key.attrKeyId === keyId || key.attrArn === keyId,
+    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
   );
 }
 
