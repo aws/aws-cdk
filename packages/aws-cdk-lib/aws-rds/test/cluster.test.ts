@@ -5830,6 +5830,34 @@ test.each([
   });
 });
 
+test.each([
+  [cdk.RemovalPolicy.RETAIN, 'Retain'],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Delete'],
+  [cdk.RemovalPolicy.DESTROY, 'Delete'],
+])('if Cluster RemovalPolicy is \'%s\', auto-created ParameterGroup has DeletionPolicy \'%s\'', (clusterRemovalPolicy, parameterGroupValue) => {
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new DatabaseCluster(stack, 'Cluster', {
+    credentials: { username: 'admin' },
+    engine: DatabaseClusterEngine.AURORA_MYSQL,
+    parameters: {
+      innodb_lock_wait_timeout: '50',
+    },
+    instanceProps: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+    },
+    removalPolicy: clusterRemovalPolicy,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::RDS::DBClusterParameterGroup', {
+    DeletionPolicy: parameterGroupValue,
+    UpdateReplacePolicy: parameterGroupValue,
+  });
+});
+
 function testStack(app?: cdk.App, stackId?: string) {
   const stack = new cdk.Stack(app, stackId, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
