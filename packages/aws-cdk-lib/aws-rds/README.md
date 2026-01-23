@@ -889,7 +889,7 @@ declare const cluster: rds.DatabaseCluster;
 const secret = cluster.secret!;
 
 // Generate a MySQL connection string
-const connectionString = secret.connectionStringFromJson(
+const connectionString = secret.connectionStringFromJson!(
   'mysql://${username}:${password}@${host}:${port}/${dbname}'
 );
 
@@ -914,19 +914,19 @@ declare const cluster: rds.DatabaseCluster;
 const secret = cluster.secret!;
 
 // MySQL/MariaDB
-const mysqlUrl = secret.connectionStringFromJson(CONNECTION_STRING_TEMPLATES.MYSQL);
+const mysqlUrl = secret.connectionStringFromJson!(CONNECTION_STRING_TEMPLATES.MYSQL);
 // Result: mysql://${username}:${password}@${host}:${port}/${dbname}
 
 // PostgreSQL
-const postgresUrl = secret.connectionStringFromJson(CONNECTION_STRING_TEMPLATES.POSTGRES);
+const postgresUrl = secret.connectionStringFromJson!(CONNECTION_STRING_TEMPLATES.POSTGRES);
 // Result: postgresql://${username}:${password}@${host}:${port}/${dbname}
 
 // SQL Server
-const sqlServerUrl = secret.connectionStringFromJson(CONNECTION_STRING_TEMPLATES.SQLSERVER);
+const sqlServerUrl = secret.connectionStringFromJson!(CONNECTION_STRING_TEMPLATES.SQLSERVER);
 // Result: sqlserver://${host}:${port};database=${dbname};user=${username};password=${password}
 
 // Oracle
-const oracleUrl = secret.connectionStringFromJson(CONNECTION_STRING_TEMPLATES.ORACLE);
+const oracleUrl = secret.connectionStringFromJson!(CONNECTION_STRING_TEMPLATES.ORACLE);
 // Result: oracle://${username}:${password}@${host}:${port}/${dbname}
 ```
 
@@ -939,12 +939,12 @@ declare const cluster: rds.DatabaseCluster;
 const secret = cluster.secret!;
 
 // PostgreSQL with SSL and connection timeout
-const connectionString = secret.connectionStringFromJson(
+const connectionString = secret.connectionStringFromJson!(
   'postgresql://${username}:${password}@${host}:${port}/${dbname}?sslmode=require&connect_timeout=10'
 );
 
 // MySQL with SSL enforcement
-const mysqlConnectionString = secret.connectionStringFromJson(
+const mysqlConnectionString = secret.connectionStringFromJson!(
   'mysql://${username}:${password}@${host}:${port}/${dbname}?ssl-mode=REQUIRED'
 );
 ```
@@ -969,7 +969,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   cpu: 256,
 });
 
-const connectionString = cluster.secret!.connectionStringFromJson(
+const connectionString = cluster.secret!.connectionStringFromJson!(
   CONNECTION_STRING_TEMPLATES.MYSQL
 );
 
@@ -1001,12 +1001,12 @@ declare const cluster: rds.DatabaseCluster;
 const secret = cluster.secret!;
 
 // PostgreSQL with required SSL
-const secureConnection = secret.connectionStringFromJson(
+const secureConnection = secret.connectionStringFromJson!(
   'postgresql://${username}:${password}@${host}:${port}/${dbname}?sslmode=require'
 );
 
 // MySQL with required SSL
-const secureMysqlConnection = secret.connectionStringFromJson(
+const secureMysqlConnection = secret.connectionStringFromJson!(
   'mysql://${username}:${password}@${host}:${port}/${dbname}?ssl-mode=REQUIRED'
 );
 ```
