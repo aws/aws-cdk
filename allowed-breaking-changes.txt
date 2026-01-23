@@ -4147,3 +4147,12 @@ strengthened:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps
 # This is a minor breaking change that only affects users who have custom implementations of IHttpApi,
 # which is extremely rare in practice.
 strengthened:aws-cdk-lib.aws_apigatewayv2.IHttpApi
+
+# IEncryptedResource was too strongly typed for practical use.
+# We need to weaken it and align with other traits.
+# See: https://github.com/aws/aws-cdk/pull/36787
+incompatible-argument:aws-cdk-lib.aws_iam.GrantableResources.isEncryptedResource
+base-types:aws-cdk-lib.aws_iam.IEncryptedResource
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.applyRemovalPolicy
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.node
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
