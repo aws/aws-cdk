@@ -108,13 +108,13 @@ export enum ResolveConflictsType {
    * If the self-managed version of the add-on is installed on your cluster,
    * Amazon EKS doesn't change the value. Creation of the add-on might fail.
    */
-  None = 'NONE',
+  NONE = 'NONE',
   /**
    * If the self-managed version of the add-on is installed on your cluster
    * and the Amazon EKS default value is different than the existing value,
    * Amazon EKS changes the value to the Amazon EKS default value.
    */
-  Overwrite = 'OVERWRITE',
+  OVERWRITE = 'OVERWRITE',
   /**
    * This is similar to the NONE option.
    * If the self-managed version of the add-on is installed on your cluster
@@ -122,7 +122,7 @@ export enum ResolveConflictsType {
    * Creation of the add-on might fail if conflicts are detected.
    * This option works differently during the update operation.
    */
-  Preserve = 'PRESERVE',
+  PRESERVE = 'PRESERVE',
 }
 
 /**

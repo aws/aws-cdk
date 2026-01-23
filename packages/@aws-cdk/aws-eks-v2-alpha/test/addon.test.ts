@@ -95,6 +95,27 @@ describe('Addon', () => {
     });
   });
 
+  test('create a new Addon with namespace', () => {
+    // GIVEN
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithNamespace', {
+      addonName: 'test-addon',
+      cluster,
+      namespace: 'test-namespace',
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'ClusterEB0386A7',
+      },
+      // Namespace: 'test-namespace',
+    });
+  });
+
   test('creates an Addon from attributes', () => {
     // GIVEN
     const addonName = 'test-addon';
