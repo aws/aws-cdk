@@ -56,6 +56,12 @@
       "AWS_IAM"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/interceptor.ts": {
+    "InterceptionPoint": [
+      "REQUEST",
+      "RESPONSE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.ts": {
     "ApiKeyCredentialLocationType": [
       "HEADER",
@@ -107,6 +113,7 @@
       "SUMMARIZATION",
       "SEMANTIC",
       "USER_PREFERENCE",
+      "EPISODIC",
       "CUSTOM"
     ]
   },
@@ -418,7 +425,8 @@
       "valkey_8",
       "redis",
       "redis_7",
-      "memcached"
+      "memcached",
+      "memcached_1.6"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
@@ -2857,7 +2865,8 @@
     "AcceleratorType": [
       "gpu",
       "fpga",
-      "inference"
+      "inference",
+      "media"
     ],
     "AcceleratorManufacturer": [
       "amazon-web-services",
@@ -2878,7 +2887,14 @@
       "h100",
       "inferentia",
       "k520",
-      "t4g"
+      "t4g",
+      "l40s",
+      "l4",
+      "gaudi-hl-205",
+      "inferentia2",
+      "trainium",
+      "trainium2",
+      "u30"
     ],
     "BareMetal": [
       "included",
@@ -4115,7 +4131,9 @@
     ],
     "DeploymentStrategy": [
       "ROLLING",
-      "BLUE_GREEN"
+      "BLUE_GREEN",
+      "LINEAR",
+      "CANARY"
     ],
     "PropagatedTagSource": [
       "SERVICE",
@@ -4189,6 +4207,10 @@
     "PropagateManagedInstancesTags": [
       "CAPACITY_PROVIDER",
       "NONE"
+    ],
+    "CapacityOptionType": [
+      "ON_DEMAND",
+      "SPOT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
@@ -4845,7 +4867,8 @@
       "SM2",
       "ML_DSA_44",
       "ML_DSA_65",
-      "ML_DSA_87"
+      "ML_DSA_87",
+      "ECC_NIST_EDWARDS25519"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
@@ -4925,7 +4948,9 @@
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts": {
     "MetricType": [
-      "EventCount"
+      "EventCount",
+      "ErrorCount",
+      "KafkaMetrics"
     ],
     "StartingPosition": [
       "TRIM_HORIZON",
@@ -5179,7 +5204,8 @@
     ],
     "NetworkType": [
       "IPV4",
-      "DUAL"
+      "DUAL",
+      "IPV6"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts": {
@@ -6090,11 +6116,12 @@
       1
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-type.ts": {
     "MetadataType": [
       "aws:cdk:analytics:construct",
       "aws:cdk:analytics:method",
-      "aws:cdk:analytics:featureflag"
+      "aws:cdk:analytics:featureflag",
+      "aws:cdk:analytics:mixin"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-reference.ts": {
