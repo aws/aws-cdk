@@ -1,8 +1,12 @@
-import type { IConstruct } from 'constructs';
-import { CfnResource } from 'aws-cdk-lib/core';
-import { type IBucketRef, type CfnBucketPolicy, CfnBucket } from 'aws-cdk-lib/aws-s3';
-import { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
-import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import { Construct, Node, type IConstruct } from 'constructs';
+import * as cdk from 'aws-cdk-lib/core';
+import type { IBucketRef, CfnBucketPolicy, CfnBucket } from 'aws-cdk-lib/aws-s3';
+import type { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
+import { KeyGrants, type CfnKey, type IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { AddToResourcePolicyResult, GrantOnKeyResult, IEncryptedResource, IGrantable, IResourceWithPolicyV2, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { BucketPolicyStatementsMixin } from '../../services/aws-s3/bucket-policy';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { IMixin } from '../../core';
 
 /**
  * Finds the closest related resource in the construct tree.
@@ -13,7 +17,7 @@ import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
  * @param isConnected - Predicate to determine if a candidate is related to the primary
  * @returns The closest matching resource, or undefined if none found
  */
-function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extends CfnResource>(
+function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extends cdk.CfnResource>(
   primary: TPrimary,
   relatedCfnResourceType: string,
   isConnected: (primary: TPrimary, candidate: TRelated) => boolean,
@@ -23,7 +27,7 @@ function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extend
   const visited = new Set<IConstruct>();
 
   const isRelatedResource = (child: IConstruct): child is TRelated => {
-    return CfnResource.isCfnResource(child) && child.cfnResourceType === relatedCfnResourceType;
+    return cdk.CfnResource.isCfnResource(child) && child.cfnResourceType === relatedCfnResourceType;
   };
 
   const checkCandidate = (candidate: IConstruct, distance: number) => {
@@ -99,7 +103,19 @@ export function tryFindDeliverySourceForResource(source: IConstruct, sourceArn: 
   );
 }
 
-export function tryFindKmsKeyforBucket(bucket: IBucketRef, keyId: string): CfnKey | undefined {
+export function tryFindKmsKeyforBucket(bucket: IBucketRef): CfnKey | undefined {
+  const l1Bucket = tryFindBucketConstruct(bucket);
+  const keyId = l1Bucket && Array.isArray((l1Bucket.bucketEncryption as
+        CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration) ?
+    (((l1Bucket.bucketEncryption as CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as
+        CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as
+        CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
+    : undefined;
+
+  if (!keyId) {
+    return undefined;
+  }
+
   return findClosestRelatedResource<IConstruct, CfnKey>(
     bucket,
     'AWS::KMS::Key',
@@ -117,14 +133,14 @@ export function tryFindKmsKeyforBucket(bucket: IBucketRef, keyId: string): CfnKe
  * @param extractCfnId - Function to extract the identifying property from the CfnResource
  * @returns The L1 CfnResource if found, undefined otherwise
  */
-export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource>(
+export function findL1FromRef<TRef extends IConstruct, TCfn extends cdk.CfnResource>(
   ref: TRef,
   cfnResourceType: string,
   compareIdToCfnId: (cfn: TCfn, ref: TRef) => boolean,
 ): TCfn | undefined {
   // Helper to check if a CfnResource matches our criteria
   const isCfnMatch = (construct: IConstruct): construct is TCfn => {
-    return CfnResource.isCfnResource(construct) && construct.cfnResourceType === cfnResourceType;
+    return cdk.CfnResource.isCfnResource(construct) && construct.cfnResourceType === cfnResourceType;
   };
 
   // First check if ref itself is the L1 construct
@@ -159,4 +175,54 @@ export function tryFindBucketConstruct(bucket: IBucketRef): CfnBucket | undefine
     'AWS::S3::Bucket',
     (cfn, ref) => ref.bucketRef == cfn.bucketRef,
   );
+}
+
+class BucketReflection {
+  public static forBucket(bucket: IBucketRef) {
+    return new BucketReflection(bucket);
+  }
+
+  private constructor(private readonly bucket: IBucketRef) {}
+
+  @memoizedGetter(false)
+  public get policy(): CfnBucketPolicy | undefined {
+    return tryFindBucketPolicyForBucket(this.bucket);
+  }
+  
+  @memoizedGetter(false)
+  public get encryptionKey(): CfnKey | undefined {
+    return tryFindKmsKeyforBucket(this.bucket);
+  }
+}
+
+class CfnBucketTraits extends Construct implements IBucketRef, IResourceWithPolicyV2, IEncryptedResource {
+  private readonly reflection: BucketReflection;
+
+  constructor(private readonly wrapped: IBucketRef) {
+    super(wrapped, 'Traits');
+    this.reflection = BucketReflection.forBucket(wrapped);
+  }
+
+  get bucketRef() { return this.wrapped.bucketRef; }
+  get env() { return this.wrapped.env; }
+
+  @memoizedGetter(false)
+  private get grants(): KeyGrants | undefined {
+    return this.reflection.encryptionKey ? KeyGrants.fromKey(this.reflection.encryptionKey, false) : undefined;
+  }
+
+  grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    return {
+      grant: this.grants?.actions(grantee, ...actions),
+    };
+  }
+
+  addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (this.reflection.policy) {
+      this.reflection.policy?.with(new BucketPolicyStatementsMixin([statement]));
+      return { statementAdded: true, policyDependable: this.reflection.policy };
+    }
+
+    return { statementAdded: false };
+  }
 }

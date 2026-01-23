@@ -437,7 +437,7 @@ export interface GrantOnKeyResult {
  *
  * [awslint:interface-extends-ref]
  */
-export interface IEncryptedResource extends cdk.IResource {
+export interface IEncryptedResource extends IEnvironmentAware {
   /**
    * Gives permissions to a grantable entity to perform actions on the encryption key.
    */
@@ -468,7 +468,7 @@ export class GrantableResources {
   /**
    * Whether this resource holds data that can be encrypted using a KMS key.
    */
-  static isEncryptedResource(resource: IConstruct): resource is iam.IEncryptedResource {
+  static isEncryptedResource(resource: IEnvironmentAware): resource is iam.IEncryptedResource {
     return (resource as unknown as iam.IEncryptedResource).grantOnKey !== undefined;
   }
 }
