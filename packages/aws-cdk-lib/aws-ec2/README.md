@@ -2461,6 +2461,41 @@ const windowsUserData = ec2.UserData.forWindows({ persist: true });
 For a Linux instance, this can be accomplished by using a Multipart user data to configure cloud-config as detailed
 in: https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
 
+### EC2Launch v2 user data (Windows)
+
+For Windows instances using EC2Launch v2 (the default on Windows Server 2016 and later), you can generate
+YAML-formatted user data using `UserData.forWindowsV2()`. This provides access to EC2Launch v2's task-based
+configuration format:
+
+```ts
+const userData = ec2.UserData.forWindowsV2({
+  frequency: 'always',  // 'once' or 'always'
+  scriptType: 'powershell',  // 'powershell' or 'batch'
+  runAs: 'localSystem',  // 'localSystem' or 'admin'
+});
+userData.addCommands(
+  'Write-Host "Hello from EC2Launch v2!"',
+  'Install-WindowsFeature -Name Web-Server',
+);
+```
+
+This generates EC2Launch v2 YAML format instead of the legacy XML format:
+
+```yaml
+version: "1.1"
+tasks:
+- task: executeScript
+  inputs:
+  - frequency: always
+    type: powershell
+    runAs: localSystem
+    content: |-
+      Write-Host "Hello from EC2Launch v2!"
+      Install-WindowsFeature -Name Web-Server
+```
+
+For more information, see [EC2Launch v2 overview](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html).
+
 ### Multipart user data
 
 In addition, to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed

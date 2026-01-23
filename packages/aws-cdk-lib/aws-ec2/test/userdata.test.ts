@@ -763,3 +763,261 @@ describe('user data', () => {
     });
   });
 });
+
+describe('Windows V2 user data (EC2Launch v2)', () => {
+  test('can create Windows V2 user data with default options', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2();
+    userData.addCommands('command1', 'command2');
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toEqual([
+      'version: "1.1"',
+      'tasks:',
+      '- task: executeScript',
+      '  inputs:',
+      '  - frequency: always',
+      '    type: powershell',
+      '    runAs: localSystem',
+      '    content: |-',
+      '      command1',
+      '      command2',
+    ].join('\n'));
+  });
+
+  test('can create Windows V2 user data with custom version', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2({ version: '1.0' });
+    userData.addCommands('command1');
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain('version: "1.0"');
+  });
+
+  test('can create Windows V2 user data with frequency once', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2({ frequency: 'once' });
+    userData.addCommands('command1');
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain('frequency: once');
+  });
+
+  test('can create Windows V2 user data with batch script type', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2({ scriptType: 'batch' });
+    userData.addCommands('echo hello');
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain('type: batch');
+  });
+
+  test('can create Windows V2 user data with admin runAs', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2({ runAs: 'admin' });
+    userData.addCommands('command1');
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain('runAs: admin');
+  });
+
+  test('can create Windows V2 user data with all custom options', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2({
+      version: '1.0',
+      frequency: 'once',
+      scriptType: 'batch',
+      runAs: 'admin',
+    });
+    userData.addCommands('echo hello', 'echo world');
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toEqual([
+      'version: "1.0"',
+      'tasks:',
+      '- task: executeScript',
+      '  inputs:',
+      '  - frequency: once',
+      '    type: batch',
+      '    runAs: admin',
+      '    content: |-',
+      '      echo hello',
+      '      echo world',
+    ].join('\n'));
+  });
+
+  test('Windows V2 user data throws when adding on exit commands', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsV2();
+
+    // WHEN/THEN
+    expect(() => userData.addOnExitCommands('onexit1')).toThrow(/WindowsV2UserData.*does not support addOnExitCommands/);
+  });
+
+  test('can Windows V2 userdata download S3 files', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsV2();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
+    const bucket2 = Bucket.fromBucketName(stack, 'testBucket2', 'test2');
+
+    // WHEN
+    userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: 'filename.bat',
+    });
+    userData.addS3DownloadCommand({
+      bucket: bucket2,
+      bucketKey: 'filename2.bat',
+      localFile: 'c:\\test\\location\\otherScript.bat',
+    });
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain("New-Item -ItemType Directory -Force -Path (Split-Path -Path 'C:/temp/filename.bat')");
+    expect(rendered).toContain("Read-S3Object -BucketName 'test' -Key 'filename.bat' -File 'C:/temp/filename.bat' -ErrorAction Stop");
+    expect(rendered).toContain("New-Item -ItemType Directory -Force -Path (Split-Path -Path 'c:\\test\\location\\otherScript.bat')");
+    expect(rendered).toContain("Read-S3Object -BucketName 'test2' -Key 'filename2.bat' -File 'c:\\test\\location\\otherScript.bat' -ErrorAction Stop");
+  });
+
+  test('can Windows V2 userdata download S3 files with given region', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsV2();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
+
+    // WHEN
+    userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: 'filename.bat',
+      region: 'us-east-1',
+    });
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain("Read-S3Object -BucketName 'test' -Key 'filename.bat' -File 'C:/temp/filename.bat' -ErrorAction Stop -Region us-east-1");
+  });
+
+  test('can Windows V2 userdata execute files', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsV2();
+
+    // WHEN
+    userData.addExecuteFileCommand({
+      filePath: 'C:\\test\\filename.bat',
+    });
+    userData.addExecuteFileCommand({
+      filePath: 'C:\\test\\filename2.bat',
+      arguments: 'arg1 arg2 -arg $variable',
+    });
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain("& 'C:\\test\\filename.bat'");
+    expect(rendered).toContain('if (-not $?) { throw \'Failed to execute the file "C:\\test\\filename.bat"\' }');
+    expect(rendered).toContain("& 'C:\\test\\filename2.bat' arg1 arg2 -arg $variable");
+    expect(rendered).toContain('if (-not $?) { throw \'Failed to execute the file "C:\\test\\filename2.bat"\' }');
+  });
+
+  test('can create Windows V2 with Signal Command', () => {
+    // GIVEN
+    const stack = new Stack();
+    const resource = new ec2.Vpc(stack, 'RESOURCE');
+    const userData = ec2.UserData.forWindowsV2();
+    const logicalId = (resource.node.defaultChild as CfnResource).logicalId;
+
+    // WHEN
+    userData.addCommands('command1');
+    userData.addSignalOnExitCommand(resource);
+
+    // THEN
+    const rendered = userData.render();
+    expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552F');
+    expect(rendered).toContain('command1');
+    expect(rendered).toContain(`cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} --success true`);
+  });
+
+  test('Windows V2 user data renders empty script correctly', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2();
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toEqual([
+      'version: "1.1"',
+      'tasks:',
+      '- task: executeScript',
+      '  inputs:',
+      '  - frequency: always',
+      '    type: powershell',
+      '    runAs: localSystem',
+      '    content: |-',
+    ].join('\n'));
+  });
+
+  test('Windows V2 user data handles special characters in commands', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2();
+    userData.addCommands(
+      '$env:PATH = "C:\\Program Files\\MyApp;$env:PATH"',
+      'Write-Host "Hello, World!"',
+      'Get-Process | Where-Object { $_.CPU -gt 100 }',
+    );
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain('      $env:PATH = "C:\\Program Files\\MyApp;$env:PATH"');
+    expect(rendered).toContain('      Write-Host "Hello, World!"');
+    expect(rendered).toContain('      Get-Process | Where-Object { $_.CPU -gt 100 }');
+  });
+
+  test('Windows V2 user data handles multiline PowerShell commands', () => {
+    // GIVEN
+
+    // WHEN
+    const userData = ec2.UserData.forWindowsV2();
+    userData.addCommands(
+      'if ($true) {',
+      '    Write-Host "Condition is true"',
+      '}',
+    );
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toEqual([
+      'version: "1.1"',
+      'tasks:',
+      '- task: executeScript',
+      '  inputs:',
+      '  - frequency: always',
+      '    type: powershell',
+      '    runAs: localSystem',
+      '    content: |-',
+      '      if ($true) {',
+      '          Write-Host "Condition is true"',
+      '      }',
+    ].join('\n'));
+  });
+});
