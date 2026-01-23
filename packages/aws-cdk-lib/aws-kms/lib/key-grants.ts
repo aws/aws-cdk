@@ -7,7 +7,7 @@ import { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated
 
 interface KeyGrantsProps {
   readonly resource: IKeyRef;
-  readonly trustAccountIdentities: boolean;
+  readonly trustAccountIdentities?: boolean;
 }
 
 /**
@@ -17,17 +17,17 @@ export class KeyGrants {
   /**
    * Creates grants for an IKeyRef
    */
-  public static fromKey(resource: IKeyRef, trustAccountIdentities: boolean): KeyGrants {
+  public static fromKey(resource: IKeyRef, trustAccountIdentities?: boolean): KeyGrants {
     return new KeyGrants({ resource, trustAccountIdentities });
   }
 
   protected readonly resource: IKeyRef;
-  private readonly trustAccountIdentities: boolean;
+  private readonly trustAccountIdentities?: boolean;
   private readonly policyResource?: iam.IResourceWithPolicyV2;
 
   private constructor(props: KeyGrantsProps) {
     this.resource = props.resource;
-    this.trustAccountIdentities = props.trustAccountIdentities;
+    this.trustAccountIdentities = props.trustAccountIdentities ?? FeatureFlags.of(this.resource).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
     this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
   }
 

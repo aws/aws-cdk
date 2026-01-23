@@ -233,7 +233,7 @@ describe('key policies', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    KeyGrants.fromKey(key, false).decrypt(user);
+    KeyGrants.fromKey(key).decrypt(user);
 
     // THEN
     // Key policy should be unmodified by the grant.
