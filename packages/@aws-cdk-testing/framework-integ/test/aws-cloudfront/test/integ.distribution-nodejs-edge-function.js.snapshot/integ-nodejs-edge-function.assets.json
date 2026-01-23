@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "d909d61e7c5632a3a518620d3c4a3b041a92d95adc65b8ff76f3ae885e3e4ad1": {
+      "displayName": "integ-nodejs-edge-function/Custom::CrossRegionStringParameterReaderCustomResourceProvider Code",
+      "source": {
+        "path": "asset.d909d61e7c5632a3a518620d3c4a3b041a92d95adc65b8ff76f3ae885e3e4ad1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-eu-west-1-28fdf4b1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
+          "objectKey": "d909d61e7c5632a3a518620d3c4a3b041a92d95adc65b8ff76f3ae885e3e4ad1.zip",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
+        }
+      }
+    },
+    "1213e6db6dbaa59ee60336f0863cdae6bea1f14dfe7bbef0c38869e1b7e3051e": {
+      "displayName": "integ-nodejs-edge-function Template",
+      "source": {
+        "path": "integ-nodejs-edge-function.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-eu-west-1-632f5f8c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
+          "objectKey": "1213e6db6dbaa59ee60336f0863cdae6bea1f14dfe7bbef0c38869e1b7e3051e.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
