@@ -389,6 +389,13 @@ export enum KeySpec {
    * Valid usage: SIGN_VERIFY
    */
   ML_DSA_87 = 'ML_DSA_87',
+
+  /**
+   * NIST-standard Edwards25519 (ed25519) elliptic curve key pair.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_EDWARDS25519 = 'ECC_NIST_EDWARDS25519',
 }
 
 /**
