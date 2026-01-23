@@ -13,7 +13,11 @@ export interface HttpEventBridgeIntegrationProps {
    *
    * When not provided, a default mapping will be used that expects the
    * incoming request body to contain the fields `Detail`, `DetailType`, and
-   * `Source`. The `EventBusName` is automatically included from `eventBusRef`.
+   * `Source`.
+   *
+   * The `EventBusName` is automatically included from `eventBusRef` in all cases,
+   * even when a custom `parameterMapping` is provided (unless explicitly overridden).
+   * This ensures consistency and eliminates redundant configuration.
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html
@@ -74,13 +78,19 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
       }),
     );
 
+    // Ensure EventBusName is always included from eventBusRef, even if custom parameterMapping is provided
+    const parameterMapping = this.props.parameterMapping ?? this.createDefaultParameterMapping(options.scope);
+    if (!('EventBusName' in parameterMapping.mappings)) {
+      parameterMapping.custom('EventBusName', this.props.eventBusRef.eventBusName);
+    }
+
     return {
       payloadFormatVersion: apigwv2.PayloadFormatVersion.VERSION_1_0,
       type: apigwv2.HttpIntegrationType.AWS_PROXY,
       subtype: this.subtype,
       credentials: apigwv2.IntegrationCredentials.fromRole(invokeRole),
       connectionType: apigwv2.HttpConnectionType.INTERNET,
-      parameterMapping: this.props.parameterMapping ?? this.createDefaultParameterMapping(options.scope),
+      parameterMapping,
     };
   }
 
