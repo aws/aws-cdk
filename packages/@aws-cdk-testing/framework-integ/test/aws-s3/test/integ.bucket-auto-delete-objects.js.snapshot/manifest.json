@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "cdk-s3-bucket-auto-delete-objects.assets": {
       "type": "cdk:asset-manifest",
@@ -292,12 +292,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/cdk-s3-bucket-auto-delete-objects/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/cdk-s3-bucket-auto-delete-objects/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -873,5 +867,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

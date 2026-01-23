@@ -141,17 +141,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     return new Import(scope, id);
   }
 
-  /**
-   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
-   */
-  public readonly openIdConnectProviderArn: string;
-
-  public readonly openIdConnectProviderIssuer: string;
-
-  /**
-   * The thumbprints configured for this provider.
-   */
-  public readonly openIdConnectProviderthumbprints: string;
+  private readonly resource: CustomResource;
 
   /**
    * Defines an OpenID Connect provider.
@@ -167,7 +157,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     const rejectUnauthorized = FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) ?? false;
 
     const provider = this.getOrCreateProvider();
-    const resource = new CustomResource(this, 'Resource', {
+    this.resource = new CustomResource(this, 'Resource', {
       resourceType: RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
@@ -182,10 +172,24 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
         CodeHash: provider.codeHash,
       },
     });
+  }
 
-    this.openIdConnectProviderArn = Token.asString(resource.ref);
-    this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
-    this.openIdConnectProviderthumbprints = Token.asString(resource.getAtt('Thumbprints'));
+  /**
+   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   */
+  public get openIdConnectProviderArn(): string {
+    return Token.asString(this.resource.ref);
+  }
+
+  public get openIdConnectProviderIssuer(): string {
+    return Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
+  }
+
+  /**
+   * The thumbprints configured for this provider.
+   */
+  public get openIdConnectProviderthumbprints(): string {
+    return Token.asString(this.resource.getAtt('Thumbprints'));
   }
 
   public get oidcProviderRef(): OIDCProviderReference {

@@ -4,6 +4,7 @@ import { CfnScheduleGroup, IScheduleGroupRef, ScheduleGroupReference } from './s
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -339,7 +340,17 @@ export class ScheduleGroup extends ScheduleGroupBase {
   }
 
   public readonly scheduleGroupName: string;
-  public readonly scheduleGroupArn: string;
+
+  @memoizedGetter
+  public get scheduleGroupArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'scheduler',
+      resource: 'schedule-group',
+      resourceName: this.scheduleGroupName,
+    });
+  }
+
+  private readonly _resource: CfnScheduleGroup;
 
   public constructor(scope: Construct, id: string, props?: ScheduleGroupProps) {
     super(scope, id);
@@ -357,10 +368,6 @@ export class ScheduleGroup extends ScheduleGroupBase {
 
     resource.applyRemovalPolicy(props?.removalPolicy);
 
-    this.scheduleGroupArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'scheduler',
-      resource: 'schedule-group',
-      resourceName: this.scheduleGroupName,
-    });
+    this._resource = resource;
   }
 }

@@ -134,6 +134,24 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new EnableVersioning());
 ```
 
+**BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
+
+```typescript
+declare const bucket: s3.IBucketRef;
+
+const bucketPolicy = new s3.CfnBucketPolicy(scope, "BucketPolicy", {
+  bucket: bucket,
+  policyDocument: new iam.PolicyDocument(),
+});
+Mixins.of(bucketPolicy).apply(new BucketPolicyStatementsMixin([
+  new iam.PolicyStatement({
+    actions: ["s3:GetObject"],
+    resources: ["*"],
+    principals: [new iam.AnyPrincipal()],
+  }),
+]));
+```
+
 ### Logs Delivery
 
 Configures vended logs delivery for supported resources to various destinations:
