@@ -287,37 +287,37 @@ describe('function hash', () => {
       const stack = new Stack(app, 'TestStack');
 
       // Create two imported layers
-      const layer1 = lambda.LayerVersion.fromLayerVersionArn(
+      const importedLayer1 = lambda.LayerVersion.fromLayerVersionArn(
         stack, 'Layer1',
-        'arn:aws:lambda:us-east-1:123456789012:layer:my-layer-1:1'
+        'arn:aws:lambda:us-east-1:123456789012:layer:my-layer-1:1',
       );
 
-      const layer2 = lambda.LayerVersion.fromLayerVersionArn(
+      const importedLayer2 = lambda.LayerVersion.fromLayerVersionArn(
         stack, 'Layer2',
-        'arn:aws:lambda:us-east-1:123456789012:layer:my-layer-2:1'
+        'arn:aws:lambda:us-east-1:123456789012:layer:my-layer-2:1',
       );
 
-      // Function A with layer1
+      // Function A with importedLayer1
       const functionA = new lambda.Function(stack, 'FunctionA', {
         runtime: THE_RUNTIME,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {}'),
-        layers: [layer1],
+        layers: [importedLayer1],
       });
 
-      // Function B with layer2
+      // Function B with importedLayer2
       const functionB = new lambda.Function(stack, 'FunctionB', {
         runtime: THE_RUNTIME,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {}'),
-        layers: [layer2],
+        layers: [importedLayer2],
       });
 
       // Get the initial hash of functionA
       const initialHashA = calculateFunctionHash(functionA);
 
       // The hash should not change when we access functionB (which has a different layer)
-      // This verifies that functionA's hash only includes layer1, not layer2
+      // This verifies that functionA's hash only includes importedLayer1, not importedLayer2
       const hashAfterB = calculateFunctionHash(functionA);
 
       expect(initialHashA).toEqual(hashAfterB);

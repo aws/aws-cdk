@@ -114,36 +114,36 @@ function getFunctionLayers(fn: LambdaFunction, properties: any, stack: Stack): I
 
   // For each layer ARN in the function's Layers property, find the corresponding ILayerVersion
   const functionLayers: ILayerVersion[] = [];
-  
+
   for (const layerArnFromProps of layersProperty) {
     // Try to find a matching layer from fn._layers
     const matchingLayer = fn._layers.find(layer => {
       // Resolve both ARNs for comparison
       const resolvedPropArn = stack.resolve(layerArnFromProps);
       const resolvedLayerArn = stack.resolve(layer.layerVersionArn);
-      
+
       // If both are strings, compare directly
       if (typeof resolvedPropArn === 'string' && typeof resolvedLayerArn === 'string') {
         return resolvedPropArn === resolvedLayerArn;
       }
-      
+
       // If one or both are unresolved tokens, compare the string representations
       // This handles cases where both are Ref tokens or similar
-      const propArnStr = typeof resolvedPropArn === 'string' 
-        ? resolvedPropArn 
+      const propArnStr = typeof resolvedPropArn === 'string'
+        ? resolvedPropArn
         : JSON.stringify(resolvedPropArn);
       const layerArnStr = typeof resolvedLayerArn === 'string'
         ? resolvedLayerArn
         : JSON.stringify(resolvedLayerArn);
-      
+
       return propArnStr === layerArnStr;
     });
-    
+
     if (matchingLayer) {
       functionLayers.push(matchingLayer);
     }
   }
-  
+
   return functionLayers;
 }
 
