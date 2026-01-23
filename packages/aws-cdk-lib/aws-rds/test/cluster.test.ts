@@ -1080,7 +1080,7 @@ describe('cluster new api', () => {
 
       // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
-      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+      expect(stack.resolve(cluster.instanceEndpoints.map(e => ({ hostname: e.hostname, port: e.port, socketAddress: e.socketAddress })))).toEqual([{
         hostname: {
           'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
         },
@@ -1128,7 +1128,7 @@ describe('cluster new api', () => {
 
       // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
-      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+      expect(stack.resolve(cluster.instanceEndpoints.map(e => ({ hostname: e.hostname, port: e.port, socketAddress: e.socketAddress })))).toEqual([{
         hostname: {
           'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
         },
@@ -1818,7 +1818,8 @@ describe('cluster', () => {
     });
 
     expect(cluster.instanceEndpoints).toHaveLength(1);
-    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+    const ep = cluster.instanceEndpoints[0];
+    expect(stack.resolve({ hostname: ep.hostname, port: ep.port, socketAddress: ep.socketAddress })).toEqual({
       hostname: {
         'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
       },
@@ -4717,7 +4718,10 @@ describe('cluster', () => {
     });
 
     expect(cluster.instanceEndpoints).toHaveLength(2);
-    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+
+    const ep = cluster.instanceEndpoints[0];
+
+    expect(stack.resolve({ hostname: ep.hostname, port: ep.port, socketAddress: ep.socketAddress })).toEqual({
       hostname: {
         'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
       },

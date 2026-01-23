@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.236.0](https://github.com/aws/aws-cdk/compare/v2.235.1...v2.236.0) (2026-01-23)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#36721](https://github.com/aws/aws-cdk/issues/36721)) ([7a4a443](https://github.com/aws/aws-cdk/commit/7a4a44329d7b71a12ba566885aa5fd730c0c2475))
+* **ecs:** add capacityOptionType (Spot support) to ManagedInstancesCapacityProvider L2 construct ([#36497](https://github.com/aws/aws-cdk/issues/36497)) ([e8ad85b](https://github.com/aws/aws-cdk/commit/e8ad85b3122e8c84e19adf0ffdfd71d79ba090f9)), closes [#35648](https://github.com/aws/aws-cdk/issues/35648)
+* **ecs:** add built-in Linear and Canary deployments  ([#35981](https://github.com/aws/aws-cdk/issues/35981)) ([67ac5e7](https://github.com/aws/aws-cdk/commit/67ac5e7685e6eb8993e49aa010e43d8002998498)), closes [#35986](https://github.com/aws/aws-cdk/issues/35986) [#35987](https://github.com/aws/aws-cdk/issues/35987)
+* **logs:** add support for deletion protection configuration ([#36583](https://github.com/aws/aws-cdk/issues/36583)) ([c4d1389](https://github.com/aws/aws-cdk/commit/c4d13895339ef44ffc4cd6f86d80014a8d33a3f6)), closes [#36554](https://github.com/aws/aws-cdk/issues/36554) [#36554](https://github.com/aws/aws-cdk/issues/36554)
+
+
+### Bug Fixes
+
+* **apigatewayv2:** use custom domain name instead of regional domain name when importing domain name via fromDomainNameAttributes ([#36710](https://github.com/aws/aws-cdk/issues/36710)) ([fe6eb0b](https://github.com/aws/aws-cdk/commit/fe6eb0b9130953d5ff35bd05b643253f9b6c3247))
+* **batch:**  undeprecate useOptimalInstanceClasses   property ([#36353](https://github.com/aws/aws-cdk/issues/36353)) ([3485d53](https://github.com/aws/aws-cdk/commit/3485d5399b6cfebc3461247643d4866242311152)), closes [#36291](https://github.com/aws/aws-cdk/issues/36291) [#36291](https://github.com/aws/aws-cdk/issues/36291)
+* **core:** resources allocate unnecessary string tokens upon instantiation ([#36692](https://github.com/aws/aws-cdk/issues/36692)) ([59d4928](https://github.com/aws/aws-cdk/commit/59d49286f656a5341e907d298f30decbc8959bcf))
+* **core:** tree.json unintentionally includes telemetry metadata ([#36748](https://github.com/aws/aws-cdk/issues/36748)) ([87fd86b](https://github.com/aws/aws-cdk/commit/87fd86be736b24ab18ea2ee7a2c96b724a67c903))
+* **scheduler:** scheduleName returns undefined when imported from ARN ([#36400](https://github.com/aws/aws-cdk/issues/36400)) ([752bd9b](https://github.com/aws/aws-cdk/commit/752bd9b7c31d027be6918cd7c8ebddb4b3d29e77)), closes [#36361](https://github.com/aws/aws-cdk/issues/36361)
+* recent change to IAlarmAction breaks too many implementors ([#36695](https://github.com/aws/aws-cdk/issues/36695)) ([0c5b0db](https://github.com/aws/aws-cdk/commit/0c5b0dbb08bd1bc965067e1fbe7b2ec7e82e697b))
+
 ## [2.235.1](https://github.com/aws/aws-cdk/compare/v2.235.0...v2.235.1) (2026-01-19)
 
 

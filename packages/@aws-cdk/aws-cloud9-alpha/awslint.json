@@ -7,6 +7,7 @@
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
-    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups"
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+    "interface-extends-ref:@aws-cdk/aws-cloud9-alpha.IEc2Environment"
   ]
 }

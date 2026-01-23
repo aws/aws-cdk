@@ -544,7 +544,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   // ============================================
   //   Members for ILaunchTemplate interface
 
-  public readonly versionNumber: string;
   public readonly launchTemplateId?: string;
   public readonly launchTemplateName?: string;
 
@@ -619,6 +618,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    * TagManager for tagging support.
    */
   protected readonly tags: TagManager;
+
+  private resource?: CfnLaunchTemplate;
 
   // =============================================
 
@@ -848,18 +849,25 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       tagSpecifications: ltTagsToken,
     });
 
+    this.resource = resource;
+
+    this.resource = resource;
+
     if (this.role) {
-      resource.node.addDependency(this.role);
+      this.resource.node.addDependency(this.role);
     } else if (props.instanceProfile?.role) {
-      resource.node.addDependency(props.instanceProfile.role);
+      this.resource.node.addDependency(props.instanceProfile.role);
     }
 
     Tags.of(this).add(NAME_TAG, this.node.path);
 
-    this.defaultVersionNumber = resource.attrDefaultVersionNumber;
-    this.latestVersionNumber = resource.attrLatestVersionNumber;
-    this.launchTemplateId = resource.ref;
-    this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
+    this.defaultVersionNumber = this.resource.attrDefaultVersionNumber;
+    this.latestVersionNumber = this.resource.attrLatestVersionNumber;
+    this.launchTemplateId = this.resource.ref;
+  }
+
+  public get versionNumber(): string {
+    return Token.asString(this.resource!.getAtt('LatestVersionNumber'));
   }
 
   public get launchTemplateRef(): LaunchTemplateReference {

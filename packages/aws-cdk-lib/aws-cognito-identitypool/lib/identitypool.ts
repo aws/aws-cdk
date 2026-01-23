@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IUserPool, IUserPoolClient } from '../../aws-cognito';
+import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IdentityPoolReference, IIdentityPoolRef, IUserPool, IUserPoolClient } from '../../aws-cognito';
 import { Role, FederatedPrincipal, IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Cognito Identity Pool
  */
-export interface IIdentityPool extends IResource {
+export interface IIdentityPool extends IResource, IIdentityPoolRef {
   /**
    * The ID of the Identity Pool in the format REGION:GUID
    * @attribute
@@ -410,6 +410,10 @@ export class IdentityPool extends Resource implements IIdentityPool {
         });
         this.identityPoolName = this.physicalName;
       }
+
+      public get identityPoolRef(): IdentityPoolReference {
+        return { identityPoolId: this.identityPoolId };
+      }
     }
     return new ImportedIdentityPool();
   }
@@ -541,6 +545,10 @@ export class IdentityPool extends Resource implements IIdentityPool {
         'cognito-identity.amazonaws.com:amr': type,
       },
     }, 'sts:AssumeRoleWithWebIdentity');
+  }
+
+  public get identityPoolRef(): IdentityPoolReference {
+    return { identityPoolId: this.identityPoolId };
   }
 }
 

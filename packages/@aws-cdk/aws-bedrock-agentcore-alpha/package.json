@@ -81,7 +81,7 @@
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/aws-bedrock-alpha": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.193.4",
+    "@aws-cdk/integ-runner": "^2.193.5",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.14",
@@ -149,7 +149,15 @@
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.MemoryProps.executionRole",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.MemoryProps.kmsKey",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.AgentRuntimeAttributes.securityGroups",
-      "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeProps.executionRole"
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeProps.executionRole",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IBedrockAgentRuntime",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IBrowserCustom",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.ICodeInterpreterCustom",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IGateway",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IGatewayTarget",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IMcpGatewayTarget",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IMemory",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IRuntimeEndpoint"
     ]
   },
   "jsiiRosetta": {

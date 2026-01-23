@@ -68,7 +68,7 @@ export class PrecreatedRole extends Resource implements IRole {
   public readonly principalAccount?: string;
   public readonly roleArn: string;
   public readonly roleName: string;
-  public readonly stack: Stack;
+  private readonly _stack: Stack;
 
   private readonly policySynthesizer: PolicySynthesizer;
   private readonly policyStatements: string[] = [];
@@ -88,7 +88,7 @@ export class PrecreatedRole extends Resource implements IRole {
     this.principalAccount = this.role.principalAccount;
     this.roleArn = this.role.roleArn;
     this.roleName = this.role.roleName;
-    this.stack = this.role.stack;
+    this._stack = this.role.stack;
     const rolePath = props.rolePath ?? this.node.path;
 
     Dependable.implement(this, {
@@ -104,6 +104,10 @@ export class PrecreatedRole extends Resource implements IRole {
       assumeRolePolicy: Stack.of(this).resolve(props.assumeRolePolicy?.toJSON()?.Statement),
       missing: props.missing,
     });
+  }
+
+  public get stack() {
+    return this._stack;
   }
 
   public get roleRef(): RoleReference {

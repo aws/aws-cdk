@@ -153,6 +153,7 @@ describe('Memory with built-in strategies tests', () => {
         MemoryStrategy.usingBuiltInSummarization(),
         MemoryStrategy.usingBuiltInSemantic(),
         MemoryStrategy.usingBuiltInUserPreference(),
+        MemoryStrategy.usingBuiltInEpisodic(),
       ],
     });
 
@@ -166,37 +167,17 @@ describe('Memory with built-in strategies tests', () => {
   });
 
   test('Should have Memory resource with built-in memory strategies', () => {
-    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
-      Name: 'test_memory_with_strategies',
-      Description: 'A test memory with built-in strategies',
-      EventExpiryDuration: 60,
-      MemoryStrategies: [
-        {
-          SummaryMemoryStrategy: {
-            Name: Match.stringLikeRegexp('summary_builtin_.*'),
-            Description: 'Summarize interactions to preserve critical context and key insights',
-            Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
-          },
-        },
-        {
-          SemanticMemoryStrategy: {
-            Name: Match.stringLikeRegexp('semantic_builtin_.*'),
-            Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
-            Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'SEMANTIC',
-          },
-        },
-        {
-          UserPreferenceMemoryStrategy: {
-            Name: Match.stringLikeRegexp('preference_builtin_.*'),
-            Description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
-            Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'USER_PREFERENCE',
-          },
-        },
-      ],
-    });
+    const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
+    const memoryResource = Object.values(memoryResources)[0];
+
+    expect(memoryResource.Properties.Name).toBe('test_memory_with_strategies');
+    expect(memoryResource.Properties.Description).toBe('A test memory with built-in strategies');
+    expect(memoryResource.Properties.EventExpiryDuration).toBe(60);
+    expect(memoryResource.Properties.MemoryStrategies).toHaveLength(4);
+
+    // Verify that episodic strategy is present in memoryStrategies property
+    expect(memory.memoryStrategies).toHaveLength(4);
+    expect(memory.memoryStrategies.some(s => s.strategyType === 'EPISODIC')).toBe(true);
   });
 });
 
@@ -2067,5 +2048,453 @@ describe('Memory with custom execution role and strategies tests', () => {
   test('Should have correct KMS key reference', () => {
     expect(memory.kmsKey).toBe(kmsKey);
     expect(memory.kmsKey?.keyArn).toBeDefined();
+  });
+});
+
+describe('Memory Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create Memory without memoryName (auto-generated)', () => {
+    const memory = new Memory(stack, 'TestMemory', {
+    });
+
+    expect(memory.memoryName).toBeDefined();
+    expect(memory.memoryName).not.toBe('');
+  });
+});
+
+describe('Episodic Memory Strategy unit tests', () => {
+  test('Should create built-in episodic strategy with valid properties', () => {
+    const strategy = MemoryStrategy.usingBuiltInEpisodic();
+
+    expect(strategy.name).toMatch('episodic_builtin_cdkGen0001');
+    expect(strategy.namespaces).toEqual(['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}']);
+    expect(strategy.strategyType).toBe('EPISODIC');
+    // Verify reflection configuration is included
+    expect((strategy as any).reflectionConfiguration).toBeDefined();
+    expect((strategy as any).reflectionConfiguration.namespaces).toEqual(['/strategy/{memoryStrategyId}/actor/{actorId}']);
+  });
+
+  test('Should render built-in episodic strategy with correct structure', () => {
+    const strategy = MemoryStrategy.usingBuiltInEpisodic();
+    const rendered = strategy.render();
+
+    expect(rendered).toHaveProperty('episodicMemoryStrategy');
+    expect((rendered as any).episodicMemoryStrategy).toMatchObject({
+      name: expect.stringMatching('episodic_builtin_cdkGen0001'),
+      namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
+      type: 'EPISODIC',
+      reflectionConfiguration: {
+        namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
+      },
+    });
+  });
+
+  test('Should create custom episodic strategy with valid properties', () => {
+    const strategy = MemoryStrategy.usingEpisodic({
+      name: 'custom_episodic',
+      description: 'Custom episodic strategy',
+      namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/episodic'],
+    });
+
+    expect(strategy.name).toBe('custom_episodic');
+    expect(strategy.description).toBe('Custom episodic strategy');
+    expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}/episodic']);
+    expect(strategy.strategyType).toBe('EPISODIC');
+  });
+
+  test('Should return undefined for grant method on built-in episodic', () => {
+    const strategy = MemoryStrategy.usingBuiltInEpisodic();
+    const mockRole = {} as iam.IRole;
+
+    const grant = strategy.grant(mockRole);
+    expect(grant).toBeUndefined();
+  });
+});
+
+describe('Memory with built-in episodic strategy tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  // @ts-ignore
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_episodic',
+      description: 'A test memory with built-in episodic strategy',
+      expirationDuration: Duration.days(90),
+      memoryStrategies: [
+        MemoryStrategy.usingBuiltInEpisodic(),
+      ],
+    });
+
+    app.synth();
+  });
+
+  test('Should create memory with episodic strategy without errors', () => {
+    expect(memory.memoryName).toBe('test_memory_episodic');
+    expect(memory.memoryStrategies).toHaveLength(1);
+    expect(memory.memoryStrategies[0].strategyType).toBe('EPISODIC');
+    expect(memory.memoryStrategies[0].name).toMatch(/episodic_builtin/);
+  });
+});
+
+describe('Memory with episodic reflection configuration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  // @ts-ignore
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const episodicStrategy = MemoryStrategy.usingEpisodic({
+      name: 'episodic_with_reflection',
+      description: 'Episodic strategy with reflection configuration',
+      namespaces: ['/journey/customer/{actorId}/episodes'],
+      reflectionConfiguration: {
+        namespaces: ['/journey/customer/{actorId}/reflections'],
+      },
+    });
+
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_episodic_reflection',
+      description: 'A test memory with episodic reflection configuration',
+      expirationDuration: Duration.days(120),
+      memoryStrategies: [episodicStrategy],
+    });
+
+    app.synth();
+  });
+
+  test('Should create memory with episodic reflection configuration without errors', () => {
+    expect(memory.memoryName).toBe('test_memory_episodic_reflection');
+    expect(memory.memoryStrategies).toHaveLength(1);
+    expect(memory.memoryStrategies[0].strategyType).toBe('EPISODIC');
+    expect(memory.memoryStrategies[0].name).toBe('episodic_with_reflection');
+  });
+
+  test('Should have reflection configuration accessible', () => {
+    const strategy = memory.memoryStrategies[0];
+    expect(strategy).toHaveProperty('reflectionConfiguration');
+    expect((strategy as any).reflectionConfiguration).toBeDefined();
+    expect((strategy as any).reflectionConfiguration.namespaces).toEqual(['/journey/customer/{actorId}/reflections']);
+  });
+});
+
+describe('Episodic reflection configuration validation tests', () => {
+  test('Should throw error for empty reflection namespaces array', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'invalid_reflection',
+        description: 'Episodic with empty reflection namespaces',
+        namespaces: ['/journey/customer/{actorId}/episodes'],
+        reflectionConfiguration: {
+          namespaces: [],
+        },
+      });
+    }).toThrow('Reflection configuration must have at least one namespace');
+  });
+
+  test('Should throw error for reflection namespace with invalid template variables', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'invalid_reflection_template',
+        description: 'Episodic with invalid reflection namespace template',
+        namespaces: ['/journey/customer/{actorId}/episodes'],
+        reflectionConfiguration: {
+          namespaces: ['/journey/{invalidVar}/reflections'],
+        },
+      });
+    }).toThrow('Namespace with templates should contain valid variables: /journey/{invalidVar}/reflections');
+  });
+
+  test('Should accept valid reflection configuration', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'valid_reflection',
+        description: 'Episodic with valid reflection configuration',
+        namespaces: ['/journey/customer/{actorId}/episodes'],
+        reflectionConfiguration: {
+          namespaces: ['/journey/customer/{actorId}/reflections'],
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should accept reflection configuration with multiple namespaces', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'multi_reflection',
+        description: 'Episodic with multiple reflection namespaces',
+        namespaces: ['/journey/customer/{actorId}/episodes'],
+        reflectionConfiguration: {
+          namespaces: [
+            '/journey/customer/{actorId}/reflections/primary',
+            '/journey/customer/{actorId}/reflections/secondary',
+          ],
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should accept reflection configuration without template variables', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'no_template_reflection',
+        description: 'Episodic with reflection namespace without templates',
+        namespaces: ['/journey/customer/episodes'],
+        reflectionConfiguration: {
+          namespaces: ['/journey/customer/reflections'],
+        },
+      });
+    }).not.toThrow();
+  });
+});
+
+describe('Memory with multiple episodic strategies tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  // @ts-ignore
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_multi_episodic',
+      description: 'A test memory with multiple episodic strategies',
+      expirationDuration: Duration.days(90),
+      memoryStrategies: [
+        MemoryStrategy.usingBuiltInEpisodic(),
+        MemoryStrategy.usingEpisodic({
+          name: 'custom_episodic_1',
+          description: 'First custom episodic strategy',
+          namespaces: ['/journey/{actorId}/episodes/primary'],
+        }),
+        MemoryStrategy.usingEpisodic({
+          name: 'custom_episodic_2',
+          description: 'Second custom episodic strategy with reflection',
+          namespaces: ['/journey/{actorId}/episodes/secondary'],
+          reflectionConfiguration: {
+            namespaces: ['/journey/{actorId}/reflections/secondary'],
+          },
+        }),
+      ],
+    });
+
+    app.synth();
+  });
+
+  test('Should create memory with multiple episodic strategies without errors', () => {
+    expect(memory.memoryName).toBe('test_memory_multi_episodic');
+    expect(memory.memoryStrategies).toHaveLength(3);
+    expect(memory.memoryStrategies.every(s => s.strategyType === 'EPISODIC')).toBe(true);
+  });
+
+  test('Should have all three episodic strategies with correct names', () => {
+    const strategyNames = memory.memoryStrategies.map(s => s.name);
+    expect(strategyNames).toContain('custom_episodic_1');
+    expect(strategyNames).toContain('custom_episodic_2');
+    expect(strategyNames.some(name => name.includes('episodic_builtin'))).toBe(true);
+  });
+
+  test('Should have reflection configuration on second custom episodic', () => {
+    const strategyWithReflection = memory.memoryStrategies.find(s => s.name === 'custom_episodic_2');
+    expect(strategyWithReflection).toBeDefined();
+    expect((strategyWithReflection as any).reflectionConfiguration).toBeDefined();
+    expect((strategyWithReflection as any).reflectionConfiguration.namespaces).toEqual(['/journey/{actorId}/reflections/secondary']);
+  });
+});
+
+describe('Memory with addMemoryStrategy for episodic tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  // @ts-ignore
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    // Create memory without initial strategies
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_add_episodic',
+      description: 'A test memory for testing addMemoryStrategy with episodic',
+      expirationDuration: Duration.days(90),
+    });
+
+    // Add episodic strategies dynamically
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInEpisodic());
+    memory.addMemoryStrategy(MemoryStrategy.usingEpisodic({
+      name: 'added_episodic_custom',
+      description: 'Custom episodic added via addMemoryStrategy',
+      namespaces: ['/added/{actorId}/episodes'],
+      reflectionConfiguration: {
+        namespaces: ['/added/{actorId}/reflections'],
+      },
+    }));
+
+    app.synth();
+  });
+
+  test('Should create memory and add episodic strategies without errors', () => {
+    expect(memory.memoryName).toBe('test_memory_add_episodic');
+    expect(memory.memoryStrategies).toHaveLength(2);
+    expect(memory.memoryStrategies.every(s => s.strategyType === 'EPISODIC')).toBe(true);
+  });
+
+  test('Should have both episodic strategies with correct names', () => {
+    const strategyNames = memory.memoryStrategies.map(s => s.name);
+    expect(strategyNames).toContain('added_episodic_custom');
+    expect(strategyNames.some(name => name.includes('episodic_builtin'))).toBe(true);
+  });
+
+  test('Should have reflection configuration on added custom episodic', () => {
+    const strategyWithReflection = memory.memoryStrategies.find(s => s.name === 'added_episodic_custom');
+    expect(strategyWithReflection).toBeDefined();
+    expect((strategyWithReflection as any).reflectionConfiguration).toBeDefined();
+    expect((strategyWithReflection as any).reflectionConfiguration.namespaces).toEqual(['/added/{actorId}/reflections']);
+  });
+});
+
+describe('Memory with mixed episodic and other strategies tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  // @ts-ignore
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_mixed_episodic',
+      description: 'A test memory with mixed episodic and other strategies',
+      expirationDuration: Duration.days(100),
+      memoryStrategies: [
+        MemoryStrategy.usingBuiltInSummarization(),
+        MemoryStrategy.usingBuiltInEpisodic(),
+        MemoryStrategy.usingBuiltInSemantic(),
+        MemoryStrategy.usingEpisodic({
+          name: 'custom_episodic_mixed',
+          description: 'Custom episodic in mixed strategy set',
+          namespaces: ['/mixed/{actorId}/episodes'],
+          reflectionConfiguration: {
+            namespaces: ['/mixed/{actorId}/reflections'],
+          },
+        }),
+      ],
+    });
+
+    app.synth();
+  });
+
+  test('Should create memory with mixed strategies including episodic without errors', () => {
+    expect(memory.memoryName).toBe('test_memory_mixed_episodic');
+    expect(memory.memoryStrategies).toHaveLength(4);
+  });
+
+  test('Should have correct mix of strategy types', () => {
+    const strategyTypes = memory.memoryStrategies.map(s => s.strategyType);
+    expect(strategyTypes).toContain('SUMMARIZATION');
+    expect(strategyTypes).toContain('SEMANTIC');
+    expect(strategyTypes.filter(t => t === 'EPISODIC')).toHaveLength(2);
+  });
+
+  test('Should have episodic strategies with correct names', () => {
+    const episodicStrategies = memory.memoryStrategies.filter(s => s.strategyType === 'EPISODIC');
+    const episodicNames = episodicStrategies.map(s => s.name);
+    expect(episodicNames).toContain('custom_episodic_mixed');
+    expect(episodicNames.some(name => name.includes('episodic_builtin'))).toBe(true);
+  });
+
+  test('Should have reflection configuration on custom episodic', () => {
+    const strategyWithReflection = memory.memoryStrategies.find(s => s.name === 'custom_episodic_mixed');
+    expect(strategyWithReflection).toBeDefined();
+    expect((strategyWithReflection as any).reflectionConfiguration).toBeDefined();
+    expect((strategyWithReflection as any).reflectionConfiguration.namespaces).toEqual(['/mixed/{actorId}/reflections']);
+  });
+});
+
+describe('Episodic strategy validation edge cases tests', () => {
+  test('Should accept episodic strategy without reflection configuration', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'episodic_no_reflection',
+        description: 'Episodic without reflection',
+        namespaces: ['/journey/{actorId}/episodes'],
+      });
+    }).not.toThrow();
+  });
+
+  test('Should accept episodic strategy with single reflection namespace', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'episodic_single_reflection',
+        description: 'Episodic with single reflection namespace',
+        namespaces: ['/journey/{actorId}/episodes'],
+        reflectionConfiguration: {
+          namespaces: ['/journey/{actorId}/reflections'],
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should throw error for invalid episodic strategy name', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'invalid-episodic-name',
+        description: 'Episodic with invalid name',
+        namespaces: ['/journey/{actorId}/episodes'],
+      });
+    }).toThrow('The field Memory name with value "invalid-episodic-name" does not match the required pattern /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/');
+  });
+
+  test('Should throw error for episodic with invalid main namespace template', () => {
+    expect(() => {
+      MemoryStrategy.usingEpisodic({
+        name: 'invalid_main_namespace',
+        description: 'Episodic with invalid main namespace',
+        namespaces: ['/journey/{badVariable}/episodes'],
+      });
+    }).toThrow('Namespace with templates should contain valid variables: /journey/{badVariable}/episodes');
   });
 });

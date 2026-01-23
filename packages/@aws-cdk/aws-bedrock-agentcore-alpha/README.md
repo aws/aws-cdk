@@ -155,7 +155,7 @@ to production by simply updating the endpoint to point to the newer version.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `runtimeName` | `string` | Yes | The name of the agent runtime. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
+| `runtimeName` | `string` | No | The name of the agent runtime. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long. If not provided, a unique name will be auto-generated |
 | `agentRuntimeArtifact` | `AgentRuntimeArtifact` | Yes | The artifact configuration for the agent runtime containing the container configuration with ECR URI |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the agent runtime. If not provided, a role will be created automatically |
 | `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `RuntimeNetworkConfiguration.usingPublicNetwork()` |
@@ -171,7 +171,7 @@ to production by simply updating the endpoint to point to the newer version.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `endpointName` | `string` | Yes | The name of the runtime endpoint. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
+| `endpointName` | `string` | No | The name of the runtime endpoint. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long. If not provided, a unique name will be auto-generated |
 | `agentRuntimeId` | `string` | Yes | The Agent Runtime ID for this endpoint |
 | `agentRuntimeVersion` | `string` | Yes | The Agent Runtime version for this endpoint. Must be between 1 and 5 characters long.|
 | `description` | `string` | No | Optional description for the runtime endpoint |
@@ -748,7 +748,7 @@ For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, p
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `browserCustomName` | `string` | Yes | The name of the browser. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}` |
+| `browserCustomName` | `string` | No | The name of the browser. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}`. If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the browser. Can have up to 200 characters |
 | `networkConfiguration` | `BrowserNetworkConfiguration` | No | Network configuration for browser. Defaults to PUBLIC network mode |
 | `recordingConfig` | `RecordingConfig` | No | Recording configuration for browser. Defaults to no recording |
@@ -959,7 +959,7 @@ For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, p
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `codeInterpreterCustomName` | `string` | Yes | The name of the code interpreter. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}` |
+| `codeInterpreterCustomName` | `string` | No | The name of the code interpreter. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}`. If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the code interpreter. Can have up to 200 characters |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the code interpreter to access AWS services. A new role will be created if not provided |
 | `networkConfiguration` | `CodeInterpreterNetworkConfiguration` | No | Network configuration for code interpreter. Defaults to PUBLIC network mode |
@@ -1084,7 +1084,7 @@ The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateway
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `gatewayName` | `string` | Yes | The name of the gateway. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). Maximum 100 characters |
+| `gatewayName` | `string` | No | The name of the gateway. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). Maximum 100 characters. If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the gateway. Maximum 200 characters |
 | `protocolConfiguration` | `IGatewayProtocolConfig` | No | The protocol configuration for the gateway. Defaults to MCP protocol |
 | `authorizerConfiguration` | `IGatewayAuthorizerConfig` | No | The authorizer configuration for the gateway. Defaults to Cognito |
@@ -1307,7 +1307,7 @@ credential provider attached enabling you to securely access targets whether the
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `gatewayTargetName` | `string` | Yes | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen) |
+| `gatewayTargetName` | `string` | No | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
 | `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
@@ -1842,6 +1842,124 @@ const target = new agentcore.GatewayTarget(this, "AdvancedTarget", {
 
 This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`) handle all of this internally.
 
+### Gateway Interceptors
+
+Gateway interceptors allow you to run custom code during each gateway invocation to implement fine-grained access control, transform requests and responses, or implement custom authorization logic. A gateway can have at most one REQUEST interceptor and one RESPONSE interceptor.
+
+**Interceptor Types:**
+
+- **REQUEST interceptors**: Execute before the gateway calls the target. Useful for request validation, transformation, or custom authorization
+- **RESPONSE interceptors**: Execute after the target responds but before the gateway sends the response back. Useful for response transformation, filtering, or adding custom headers
+
+**Security Best Practices:**
+
+1. Keep `passRequestHeaders` disabled unless absolutely necessary (default: false)
+2. Implement idempotent Lambda functions (gateway may retry on failures)
+3. Restrict gateway execution role to specific Lambda functions
+4. Avoid logging sensitive information in your interceptor
+
+For more information, see the [Gateway Interceptors documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html).
+
+#### Adding Interceptors via Constructor
+
+```typescript fixture=default
+// Create Lambda functions for interceptors
+const requestInterceptorFn = new lambda.Function(this, "RequestInterceptor", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+def handler(event, context):
+    # Validate and transform request
+    return {
+        "interceptorOutputVersion": "1.0",
+        "mcp": {
+            "transformedGatewayRequest": event["mcp"]["gatewayRequest"]
+        }
+    }
+  `),
+});
+
+const responseInterceptorFn = new lambda.Function(this, "ResponseInterceptor", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+def handler(event, context):
+    # Filter or transform response
+    return {
+        "interceptorOutputVersion": "1.0",
+        "mcp": {
+            "transformedGatewayResponse": event["mcp"]["gatewayResponse"]
+        }
+    }
+  `),
+});
+
+// Create gateway with interceptors
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  interceptorConfigurations: [
+    agentcore.LambdaInterceptor.forRequest(requestInterceptorFn, {
+      passRequestHeaders: true  // Only if you need to inspect headers
+    }),
+    agentcore.LambdaInterceptor.forResponse(responseInterceptorFn)
+  ]
+});
+```
+
+**Automatic Permission Granting:**
+
+When you add a Lambda interceptor to a gateway (either via constructor or `addInterceptor()`), the gateway's IAM role automatically receives `lambda:InvokeFunction` permission on the Lambda function. This permission grant happens internally during the bind process - you do not need to manually configure these IAM permissions.
+
+#### Adding Interceptors Dynamically
+
+```typescript fixture=default
+// Create a gateway first
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Create Lambda functions for interceptors
+const requestInterceptorFn = new lambda.Function(this, "RequestInterceptor", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+def handler(event, context):
+    # Custom request validation logic
+    return {
+        "interceptorOutputVersion": "1.0",
+        "mcp": {
+            "transformedGatewayRequest": event["mcp"]["gatewayRequest"]
+        }
+    }
+  `),
+});
+
+const responseInterceptorFn = new lambda.Function(this, "ResponseInterceptor", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+def handler(event, context):
+    # Filter sensitive data from response
+    return {
+        "interceptorOutputVersion": "1.0",
+        "mcp": {
+            "transformedGatewayResponse": event["mcp"]["gatewayResponse"]
+        }
+    }
+  `),
+});
+
+gateway.addInterceptor(
+  agentcore.LambdaInterceptor.forRequest(requestInterceptorFn, {
+    passRequestHeaders: false  // Default, headers not passed for security
+  })
+);
+
+gateway.addInterceptor(
+  agentcore.LambdaInterceptor.forResponse(responseInterceptorFn)
+);
+```
+
 ### Gateway Target IAM Permissions
 
 The Gateway Target construct provides convenient methods for granting IAM permissions:
@@ -1901,7 +2019,7 @@ To write to long-term memory, you need to configure extraction strategies which 
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `memoryName` | `string` | Yes | The name of the memory |
+| `memoryName` | `string` | No | The name of the memory. If not provided, a unique name will be auto-generated |
 | `expirationDuration` | `Duration` | No | Short-term memory expiration in days (between 7 and 365). Default: 90 days |
 | `description` | `string` | No | Optional description for the memory. Default: no description. |
 | `kmsKey` | `IKey` | No | Custom KMS key to use for encryption. Default: Your data is encrypted with a key that AWS owns and manages for you |
@@ -1958,7 +2076,7 @@ You can use built-in extraction strategies for quick setup, or create custom ext
 
 ### Memory with Built-in Strategies
 
-The library provides three built-in LTM strategies. These are default strategies for organizing and extracting memory data,
+The library provides four built-in LTM strategies. These are default strategies for organizing and extracting memory data,
 each optimized for specific use cases.
 
 For example: An agent helps multiple users with cloud storage setup. From these conversations,
@@ -1985,6 +2103,14 @@ Extracted memory example: User needs clear guidance on cloud storage account con
    - Extracts user behavior patterns from raw conversations
    - Namespace: `/strategies/{memoryStrategyId}/actors/{actorId}`
 
+4. **Episodic Memory Strategy** (`MemoryStrategy.usingBuiltInEpisodic()`)
+Captures meaningful slices of user and system interactions, preserve them into compact records after summarizing.
+Extracted memory example: User first asked about pricing on Monday, then requested feature comparison on Tuesday, finally made purchase decision on Wednesday.
+
+   - Captures event sequences and temporal relationships
+   - Namespace: `/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}`
+   - Reflections: `/strategy/{memoryStrategyId}/actor/{actorId}` 
+
 ```typescript fixture=default
 // Create memory with built-in strategies
 const memory = new agentcore.Memory(this, "MyMemory", {
@@ -1995,6 +2121,7 @@ const memory = new agentcore.Memory(this, "MyMemory", {
     agentcore.MemoryStrategy.usingBuiltInSummarization(),
     agentcore.MemoryStrategy.usingBuiltInSemantic(),
     agentcore.MemoryStrategy.usingBuiltInUserPreference(),
+    agentcore.MemoryStrategy.usingBuiltInEpisodic(),
   ],
 });
 ```
@@ -2004,6 +2131,7 @@ The name generated for each built in memory strategy is as follows:
 - For Summarization: `summary_builtin_cdk001`
 - For Semantic:`semantic_builtin_cdk001>`
 - For User Preferences: `preference_builtin_cdk001`
+- For Episodic : `episodic_builtin_cdkGen0001`
 
 ### Memory with custom Strategies
 
@@ -2045,12 +2173,13 @@ You can customise the namespace, i.e. where the memories are stored by using the
 1. **Summarization Strategy** (`MemoryStrategy.usingSummarization(props)`)
 1. **Semantic Memory Strategy** (`MemoryStrategy.usingSemantic(props)`)
 1. **User Preference Strategy** (`MemoryStrategy.usingUserPreference(props)`)
+1. **Episodic Memory Strategy** (`MemoryStrategy.usingEpisodic(props)`)
 
 ```typescript fixture=default
-// Create memory with built-in strategies
+// Create memory with custom strategies
 const memory = new agentcore.Memory(this, "MyMemory", {
   memoryName: "my_memory",
-  description: "Memory with built-in strategies",
+  description: "Memory with custom strategies",
   expirationDuration: cdk.Duration.days(90),
   memoryStrategies: [
     agentcore.MemoryStrategy.usingUserPreference({
@@ -2060,6 +2189,13 @@ const memory = new agentcore.Memory(this, "MyMemory", {
     agentcore.MemoryStrategy.usingSemantic({
         name: "CustomerSupportSemantic",
         namespaces: ["support/customer/{actorId}/semantic"]
+    }),
+     agentcore.MemoryStrategy.usingEpisodic({
+        name: "customerJourneyEpisodic",
+        namespaces: ["/journey/customer/{actorId}/episodes"],
+        reflectionConfiguration: {
+            namespaces: ["/journey/customer/{actorId}/reflections"]
+        }
     }),
   ],
 });

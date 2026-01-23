@@ -4,6 +4,7 @@ import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-contai
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IJobQueueRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
@@ -84,8 +85,21 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   readonly container: IEcsContainerDefinition;
   public readonly propagateTags?: boolean;
 
-  public readonly jobDefinitionArn: string;
-  public readonly jobDefinitionName: string;
+  private readonly resource: CfnJobDefinition;
+
+  @memoizedGetter
+  public get jobDefinitionArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get jobDefinitionName(): string {
+    return EcsJobDefinition.getJobDefinitionName(this, this.jobDefinitionArn);
+  }
 
   constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);
@@ -95,7 +109,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     this.container = props.container;
     this.propagateTags = props?.propagateTags;
 
-    const resource = new CfnJobDefinition(this, 'Resource', {
+    this.resource = new CfnJobDefinition(this, 'Resource', {
       ...baseJobDefinitionProperties(this),
       type: 'container',
       jobDefinitionName: props.jobDefinitionName,
@@ -103,13 +117,6 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       platformCapabilities: this.renderPlatformCapabilities(),
       propagateTags: this.propagateTags,
     });
-
-    this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'batch',
-      resource: 'job-definition',
-      resourceName: this.physicalName,
-    });
-    this.jobDefinitionName = EcsJobDefinition.getJobDefinitionName(scope, this.jobDefinitionArn);
   }
 
   /**

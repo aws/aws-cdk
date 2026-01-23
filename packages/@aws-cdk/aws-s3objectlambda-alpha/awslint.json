@@ -11,6 +11,7 @@
     "prefer-ref-interface:aws-cdk-lib.aws_lambda.IDestination.bind.fn",
     "prefer-ref-interface:aws-cdk-lib.aws_lambda.IFunction.grantInvokeVersion.version",
     "prefer-ref-interface:aws-cdk-lib.aws_lambda.IVersion.grantInvokeVersion.version",
-    "prefer-ref-interface:aws-cdk-lib.aws_lambda.VersionWeight.version"
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.VersionWeight.version",
+    "interface-extends-ref:@aws-cdk/aws-s3objectlambda-alpha.IAccessPoint"
   ]
 }

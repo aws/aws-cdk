@@ -7,6 +7,7 @@ import { CfnActivity } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { ActivityReference, IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
@@ -72,17 +73,24 @@ export class Activity extends Resource implements IActivity {
   /**
    * @attribute
    */
-  public readonly activityArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly activityName: string;
-
-  /**
-   * @attribute
-   */
   public readonly encryptionConfiguration?: EncryptionConfiguration;
+
+  private readonly resource: CfnActivity;
+
+  @memoizedGetter
+  public get activityArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'states',
+      resource: 'activity',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  @memoizedGetter
+  public get activityName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
 
   public get activityRef(): ActivityReference {
     return {
@@ -123,13 +131,7 @@ export class Activity extends Resource implements IActivity {
       encryptionConfiguration: buildEncryptionConfiguration(props.encryptionConfiguration),
     });
 
-    this.activityArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'states',
-      resource: 'activity',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-    this.activityName = this.getResourceNameAttribute(resource.attrName);
+    this.resource = resource;
   }
 
   /**

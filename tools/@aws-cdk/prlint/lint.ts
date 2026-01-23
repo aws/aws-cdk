@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 import * as path from 'path';
 import { CODE_BUILD_WORKFLOW_FILE, CODECOV_CHECKS, Exemption } from './constants';
 import { CheckRun, GitHubFile, GitHubPr, Review, sumChanges, summarizeRunConclusions } from './github';

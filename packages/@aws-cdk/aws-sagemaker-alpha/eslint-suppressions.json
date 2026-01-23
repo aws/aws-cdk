@@ -4,11 +4,6 @@
       "count": 1
     }
   },
-  "lib/endpoint-config.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 13
-    }
-  },
   "lib/endpoint.ts": {
     "@cdklabs/no-throw-default-error": {
       "count": 5
