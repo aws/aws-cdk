@@ -804,7 +804,7 @@ describe('Windows V2 user data (EC2Launch v2)', () => {
     // GIVEN
 
     // WHEN
-    const userData = ec2.UserData.forWindowsV2({ frequency: 'once' });
+    const userData = ec2.UserData.forWindowsV2({ frequency: ec2.Ec2LaunchV2Frequency.ONCE });
     userData.addCommands('command1');
 
     // THEN
@@ -816,7 +816,7 @@ describe('Windows V2 user data (EC2Launch v2)', () => {
     // GIVEN
 
     // WHEN
-    const userData = ec2.UserData.forWindowsV2({ scriptType: 'batch' });
+    const userData = ec2.UserData.forWindowsV2({ scriptType: ec2.Ec2LaunchV2ScriptType.BATCH });
     userData.addCommands('echo hello');
 
     // THEN
@@ -828,7 +828,7 @@ describe('Windows V2 user data (EC2Launch v2)', () => {
     // GIVEN
 
     // WHEN
-    const userData = ec2.UserData.forWindowsV2({ runAs: 'admin' });
+    const userData = ec2.UserData.forWindowsV2({ runAs: ec2.Ec2LaunchV2RunAs.ADMIN });
     userData.addCommands('command1');
 
     // THEN
@@ -842,9 +842,9 @@ describe('Windows V2 user data (EC2Launch v2)', () => {
     // WHEN
     const userData = ec2.UserData.forWindowsV2({
       version: '1.0',
-      frequency: 'once',
-      scriptType: 'batch',
-      runAs: 'admin',
+      frequency: ec2.Ec2LaunchV2Frequency.ONCE,
+      scriptType: ec2.Ec2LaunchV2ScriptType.BATCH,
+      runAs: ec2.Ec2LaunchV2RunAs.ADMIN,
     });
     userData.addCommands('echo hello', 'echo world');
 

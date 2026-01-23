@@ -33,6 +33,57 @@ export interface WindowsUserDataOptions {
 }
 
 /**
+ * The frequency at which EC2Launch v2 scripts should run.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html
+ */
+export enum Ec2LaunchV2Frequency {
+  /**
+   * The script runs every time the instance starts.
+   */
+  ALWAYS = 'always',
+
+  /**
+   * The script runs only once, on the first boot.
+   */
+  ONCE = 'once',
+}
+
+/**
+ * The type of script to run in EC2Launch v2.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html
+ */
+export enum Ec2LaunchV2ScriptType {
+  /**
+   * PowerShell script.
+   */
+  POWERSHELL = 'powershell',
+
+  /**
+   * Batch script.
+   */
+  BATCH = 'batch',
+}
+
+/**
+ * The user context to run EC2Launch v2 scripts as.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html
+ */
+export enum Ec2LaunchV2RunAs {
+  /**
+   * Run as the SYSTEM account (highest privileges).
+   */
+  LOCAL_SYSTEM = 'localSystem',
+
+  /**
+   * Run as the Administrator account.
+   */
+  ADMIN = 'admin',
+}
+
+/**
  * Options when constructing UserData for Windows with EC2Launch v2
  *
  * EC2Launch v2 is the default launch agent for Windows Server 2016 and later AMIs.
@@ -52,29 +103,23 @@ export interface WindowsV2UserDataOptions {
   /**
    * The frequency at which the script should run.
    *
-   * - `always`: The script runs every time the instance starts.
-   * - `once`: The script runs only once, on the first boot.
-   *
-   * @default "always"
+   * @default Ec2LaunchV2Frequency.ALWAYS
    */
-  readonly frequency?: 'once' | 'always';
+  readonly frequency?: Ec2LaunchV2Frequency;
 
   /**
    * The type of script to run.
    *
-   * @default "powershell"
+   * @default Ec2LaunchV2ScriptType.POWERSHELL
    */
-  readonly scriptType?: 'powershell' | 'batch';
+  readonly scriptType?: Ec2LaunchV2ScriptType;
 
   /**
    * The user context to run the script as.
    *
-   * - `localSystem`: Run as the SYSTEM account (highest privileges).
-   * - `admin`: Run as the Administrator account.
-   *
-   * @default "localSystem"
+   * @default Ec2LaunchV2RunAs.LOCAL_SYSTEM
    */
-  readonly runAs?: 'localSystem' | 'admin';
+  readonly runAs?: Ec2LaunchV2RunAs;
 }
 
 /**
@@ -334,16 +379,16 @@ class WindowsUserData extends UserData {
 class WindowsV2UserData extends UserData {
   private readonly lines: string[] = [];
   private readonly version: string;
-  private readonly frequency: 'once' | 'always';
-  private readonly scriptType: 'powershell' | 'batch';
-  private readonly runAs: 'localSystem' | 'admin';
+  private readonly frequency: Ec2LaunchV2Frequency;
+  private readonly scriptType: Ec2LaunchV2ScriptType;
+  private readonly runAs: Ec2LaunchV2RunAs;
 
   constructor(props: WindowsV2UserDataOptions = {}) {
     super();
     this.version = props.version ?? '1.1';
-    this.frequency = props.frequency ?? 'always';
-    this.scriptType = props.scriptType ?? 'powershell';
-    this.runAs = props.runAs ?? 'localSystem';
+    this.frequency = props.frequency ?? Ec2LaunchV2Frequency.ALWAYS;
+    this.scriptType = props.scriptType ?? Ec2LaunchV2ScriptType.POWERSHELL;
+    this.runAs = props.runAs ?? Ec2LaunchV2RunAs.LOCAL_SYSTEM;
   }
 
   public addCommands(...commands: string[]) {

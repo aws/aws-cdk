@@ -2469,9 +2469,9 @@ configuration format:
 
 ```ts
 const userData = ec2.UserData.forWindowsV2({
-  frequency: 'always',  // 'once' or 'always'
-  scriptType: 'powershell',  // 'powershell' or 'batch'
-  runAs: 'localSystem',  // 'localSystem' or 'admin'
+  frequency: ec2.Ec2LaunchV2Frequency.ALWAYS,  // ONCE or ALWAYS
+  scriptType: ec2.Ec2LaunchV2ScriptType.POWERSHELL,  // POWERSHELL or BATCH
+  runAs: ec2.Ec2LaunchV2RunAs.LOCAL_SYSTEM,  // LOCAL_SYSTEM or ADMIN
 });
 userData.addCommands(
   'Write-Host "Hello from EC2Launch v2!"',
