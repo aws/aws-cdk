@@ -894,6 +894,8 @@ const connectionString = secret.connectionStringFromJson!(
 );
 
 // Use in ECS task definition
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
 declare const taskDefinition: ecs.TaskDefinition;
 taskDefinition.addContainer('app', {
   image: ecs.ContainerImage.fromRegistry('my-app'),
