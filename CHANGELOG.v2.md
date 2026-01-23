@@ -7,9 +7,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* **ecs:** add capacityOptionType (Spot support) to ManagedInstancesCapacityProvider L2 construct ([#36497](https://github.com/aws/aws-cdk/issues/36497)) ([e8ad85b](https://github.com/aws/aws-cdk/commit/e8ad85b3122e8c84e19adf0ffdfd71d79ba090f9)), closes [#35648](https://github.com/aws/aws-cdk/issues/35648)
-* **sagemaker:** add containerStartupHealthCheckTimeoutInSeconds support for EndpointConfig ([#35626](https://github.com/aws/aws-cdk/issues/35626)) ([47d707a](https://github.com/aws/aws-cdk/commit/47d707aac809fda8ec5302bf927380e8060d380a)), closes [#35566](https://github.com/aws/aws-cdk/issues/35566)
 * update L1 CloudFormation resource definitions ([#36721](https://github.com/aws/aws-cdk/issues/36721)) ([7a4a443](https://github.com/aws/aws-cdk/commit/7a4a44329d7b71a12ba566885aa5fd730c0c2475))
+* **ecs:** add capacityOptionType (Spot support) to ManagedInstancesCapacityProvider L2 construct ([#36497](https://github.com/aws/aws-cdk/issues/36497)) ([e8ad85b](https://github.com/aws/aws-cdk/commit/e8ad85b3122e8c84e19adf0ffdfd71d79ba090f9)), closes [#35648](https://github.com/aws/aws-cdk/issues/35648)
 * **ecs:** add built-in Linear and Canary deployments  ([#35981](https://github.com/aws/aws-cdk/issues/35981)) ([67ac5e7](https://github.com/aws/aws-cdk/commit/67ac5e7685e6eb8993e49aa010e43d8002998498)), closes [#35986](https://github.com/aws/aws-cdk/issues/35986) [#35987](https://github.com/aws/aws-cdk/issues/35987)
 * **logs:** add support for deletion protection configuration ([#36583](https://github.com/aws/aws-cdk/issues/36583)) ([c4d1389](https://github.com/aws/aws-cdk/commit/c4d13895339ef44ffc4cd6f86d80014a8d33a3f6)), closes [#36554](https://github.com/aws/aws-cdk/issues/36554) [#36554](https://github.com/aws/aws-cdk/issues/36554)
 
