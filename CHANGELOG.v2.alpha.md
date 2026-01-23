@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **bedrock-agentcore-alpha:** added gateway interceptors ([#36604](https://github.com/aws/aws-cdk/issues/36604)) ([ba8aa48](https://github.com/aws/aws-cdk/commit/ba8aa48a33b1e008194d6b6b13d10c41019f56b4))
 * **bedrock-agentcore-alpha:** make physical name properties optional for AgentCore resources ([#36354](https://github.com/aws/aws-cdk/issues/36354)) ([5137d81](https://github.com/aws/aws-cdk/commit/5137d811a92eb63f52d2bfa0713a660f5476839e)), closes [#36341](https://github.com/aws/aws-cdk/issues/36341)
 * **mixins-preview:** expose `BucketPolicyStatementsMixin` publicly ([#36771](https://github.com/aws/aws-cdk/issues/36771)) ([458156d](https://github.com/aws/aws-cdk/commit/458156dd43ced89c893687415d7c2a2fce141653))
-
+* **sagemaker:** add containerStartupHealthCheckTimeoutInSeconds support for EndpointConfig ([#35626](https://github.com/aws/aws-cdk/issues/35626)) ([47d707a](https://github.com/aws/aws-cdk/commit/47d707aac809fda8ec5302bf927380e8060d380a)), closes [#35566](https://github.com/aws/aws-cdk/issues/35566)
 
 ### Bug Fixes
 
