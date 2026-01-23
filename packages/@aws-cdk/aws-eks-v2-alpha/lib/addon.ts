@@ -6,7 +6,6 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { ServiceAccount } from './service-account';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -59,17 +58,31 @@ export interface AddonProps {
    * @default - Use default configuration.
    */
   readonly configurationValues?: Record<string, any>;
-  // TODO: check default value.
+  /**
+   * The namespace configuration for the addon.
+   * This specifies the Kubernetes namespace where the addon is installed.
+   *
+   * @default - Use addon's default namespace.
+   */
+  readonly namespace?: string;
+  /**
+   * An array of EKS Pod Identity associations owned by the add-on.
+   *
+   * @default - No Pod Identity associations.
+   */
+  readonly podIdentityAssociations?: PodIdentityAssociation[];
   /**
    * How to resolve field value conflicts for an Amazon EKS add-on.
    *
-   * @default - Use default configuration.
+   * @default - NONE (Conflicts are not resolved)
    */
   readonly resolveConflicts?: ResolveConflictsType;
-  // TODO: add TypeDoc
-  readonly podIdentityAssociations?: PodIdentityAssociation[];
-  // TODO: add TypeDoc
-  readonly serviceAccount?: ServiceAccount;
+  /**
+   * The IAM role to bind to the add-on's service account.
+   *
+   * @default - No role is bound to the add-on's service account.
+   */
+  readonly serviceAccountRole?: iam.IRole;
 }
 
 /**
@@ -205,9 +218,10 @@ export class Addon extends Resource implements IAddon {
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
       configurationValues: this.stack.toJsonString(props.configurationValues),
-      resolveConflicts: props.resolveConflicts,
+      namespaceConfig: props.namespace ? { namespace: props.namespace } : undefined,
       podIdentityAssociations: podIdentityAssociations,
-      serviceAccountRoleArn: props.serviceAccount?.role.roleArn,
+      resolveConflicts: props.resolveConflicts,
+      serviceAccountRoleArn: props.serviceAccountRole?.roleArn,
     });
   }
 
