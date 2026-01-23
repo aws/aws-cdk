@@ -1,4 +1,4 @@
-import { Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -210,20 +210,10 @@ export class S3LogsDelivery implements ILogsDelivery {
   }
 
   private findEncryptionKey(): CfnKey | undefined {
-    let kmsKey: CfnKey | undefined;
-
-    if (this.kmsKey) {
-      kmsKey = tryFindKmsKeyConstruct(this.kmsKey);
-    } else {
-      kmsKey = tryFindKmsKeyforBucket(this.bucket);
-    }
-
-    return kmsKey;
+    return this.kmsKey ? tryFindKmsKeyConstruct(this.kmsKey) : tryFindKmsKeyforBucket(this.bucket);
   }
 
   private addToEncryptionKeyPolicy(key: CfnKey) {
-    const stack = Stack.of(key);
-
     const existingKeyPolicy = key.keyPolicy;
     const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
     const sid = 'AWS CDK: Allow Logs Delivery to use the key';
@@ -241,10 +231,10 @@ export class S3LogsDelivery implements ILogsDelivery {
       resources: ['*'],
       conditions: {
         StringEquals: {
-          'aws:SourceAccount': [stack.account],
+          'aws:SourceAccount': [key.env.account],
         },
         ArnLike: {
-          'aws:SourceArn': [`arn:${stack.partition}:logs:${stack.region}:${stack.account}:${sourceArnPostfix}`],
+          'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${key.env.region}:${key.env.account}:${sourceArnPostfix}`],
         },
       },
     }));
