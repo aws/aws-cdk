@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDistributionConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -480,16 +481,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     return x !== null && typeof x === 'object' && DISTRIBUTION_CONFIGURATION_SYMBOL in x;
   }
 
-  /**
-   * The ARN of the distribution configuration
-   */
-  public readonly distributionConfigurationArn: string;
-
-  /**
-   * The name of the distribution configuration
-   */
-  public readonly distributionConfigurationName: string;
-
+  private readonly resource: CfnDistributionConfiguration;
   private readonly amiDistributionsByRegion: { [region: string]: AmiDistribution } = {};
   private readonly containerDistributionsByRegion: {
     [region: string]: ContainerDistribution;
@@ -518,15 +510,22 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     this.addAmiDistributions(...(props.amiDistributions ?? []));
     this.addContainerDistributions(...(props.containerDistributions ?? []));
 
-    const distributionConfiguration = new CfnDistributionConfiguration(this, 'Resource', {
+    this.resource = new CfnDistributionConfiguration(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
       distributions: cdk.Lazy.any({ produce: () => this.renderDistributions() }),
       tags: props.tags,
     });
+  }
 
-    this.distributionConfigurationName = this.getResourceNameAttribute(distributionConfiguration.attrName);
-    this.distributionConfigurationArn = this.getResourceArnAttribute(distributionConfiguration.attrArn, {
+  @memoizedGetter
+  public get distributionConfigurationName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get distributionConfigurationArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'distribution-configuration',
       resourceName: this.physicalName,
