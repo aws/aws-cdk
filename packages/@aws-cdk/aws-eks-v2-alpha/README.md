@@ -1161,6 +1161,7 @@ const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 
 ```ts
 declare const cluster: eks.Cluster;
+declare const role: iam.IRole;
 
 new eks.Addon(this, 'Addon', {
   cluster,
@@ -1171,6 +1172,14 @@ new eks.Addon(this, 'Addon', {
   configurationValues: {
     replicaCount: 2,
   },
+  namespace: 'kube-system',
+  podIdentityAssociations: [{
+    addonRole: role,
+    serviceAccount: 'coredns',
+  }],
+  resolveConflicts: eks.ResolveConflictsType.NONE,
+  // Add-ons support IAM via EKS Pod Identity or IRSA. While Pod Identity is recommended, please select and implement one.
+  // serviceAccountRole: role,
 });
 ```
 
