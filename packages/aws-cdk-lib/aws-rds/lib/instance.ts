@@ -1338,6 +1338,39 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
             }
           }
         }
+
+        // Validate throughput constraints for GP3 based on engine type
+        if (volumeStorageType === AdditionalStorageVolumeType.GP3 && volume.storageThroughput && !volume.storageThroughput.isUnresolved()) {
+          const throughputMiBps = volume.storageThroughput.toMebibytes();
+          if (engineType.startsWith('oracle-')) {
+            // Oracle GP3: minimum 500 MiB/s, maximum 4,000 MiB/s
+            if (throughputMiBps < 500 || throughputMiBps > 4000) {
+              throw new ValidationError(
+                `Storage throughput for Oracle with GP3 storage must be between 500 and 4,000 MiB/s for additional volume '${volumeName}'. Got: ${throughputMiBps} MiB/s.`,
+                this,
+              );
+            }
+          } else if (engineType.startsWith('sqlserver-')) {
+            // SQL Server GP3: minimum 125 MiB/s, maximum 1,000 MiB/s
+            if (throughputMiBps < 125 || throughputMiBps > 1000) {
+              throw new ValidationError(
+                `Storage throughput for SQL Server with GP3 storage must be between 125 and 1,000 MiB/s for additional volume '${volumeName}'. Got: ${throughputMiBps} MiB/s.`,
+                this,
+              );
+            }
+          }
+        }
+
+        // Validate IOPS constraints for IO2
+        if (volumeStorageType === AdditionalStorageVolumeType.IO2 && volume.iops && !Token.isUnresolved(volume.iops)) {
+          // IO2: minimum 1,000 IOPS, maximum 256,000 IOPS
+          if (volume.iops < 1000 || volume.iops > 256000) {
+            throw new ValidationError(
+              `IOPS for IO2 storage must be between 1,000 and 256,000 for additional volume '${volumeName}'. Got: ${volume.iops}.`,
+              this,
+            );
+          }
+        }
       }
     }
 
