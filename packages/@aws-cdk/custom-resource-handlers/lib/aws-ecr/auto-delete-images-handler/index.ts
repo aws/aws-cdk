@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { ECR, ImageIdentifier, ListImagesRequest } from '@aws-sdk/client-ecr';
 import { makeHandler } from '../../nodejs-entrypoint';
 

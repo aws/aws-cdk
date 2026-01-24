@@ -1,15 +1,17 @@
 import { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
-import { IComputeEnvironment } from './compute-environment-base';
+import { toISchedulingPolicy } from './private/ref-utils';
 import { ISchedulingPolicy } from './scheduling-policy';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef, JobQueueReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobQueue
  */
-export interface IJobQueue extends IResource {
+export interface IJobQueue extends IResource, IJobQueueRef {
   /**
    * The name of the job queue. It can be up to 128 letters long.
    * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)
@@ -65,7 +67,7 @@ export interface IJobQueue extends IResource {
    * Add a `ComputeEnvironment` to this Queue.
    * The Queue will prefer lower-order `ComputeEnvironment`s.
    */
-  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void;
+  addComputeEnvironment(computeEnvironment: IComputeEnvironmentRef, order: number): void;
 }
 
 /**
@@ -118,7 +120,7 @@ export interface JobQueueProps {
    *
    * @default - no scheduling policy
    */
-  readonly schedulingPolicy?: ISchedulingPolicy;
+  readonly schedulingPolicy?: ISchedulingPolicyRef;
 
   /**
    * The set of actions that AWS Batch perform on jobs that remain at the head of the job queue in
@@ -137,7 +139,7 @@ export interface OrderedComputeEnvironment {
   /**
    * The ComputeEnvironment to link to this JobQueue
    */
-  readonly computeEnvironment: IComputeEnvironment;
+  readonly computeEnvironment: IComputeEnvironmentRef;
 
   /**
    * The order associated with `computeEnvironment`
@@ -249,7 +251,13 @@ export class JobQueue extends Resource implements IJobQueue {
       public readonly jobQueueArn = jobQueueArn;
       public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-      public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
+      public get jobQueueRef(): JobQueueReference {
+        return {
+          jobQueueArn: this.jobQueueArn,
+        };
+      }
+
+      public addComputeEnvironment(_computeEnvironment: IComputeEnvironmentRef, _order: number): void {
         throw new ValidationError(`cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
       }
     }
@@ -260,10 +268,36 @@ export class JobQueue extends Resource implements IJobQueue {
   public readonly computeEnvironments: OrderedComputeEnvironment[];
   public readonly priority: number;
   public readonly enabled?: boolean;
-  public readonly schedulingPolicy?: ISchedulingPolicy;
+  private readonly _schedulingPolicy?: ISchedulingPolicyRef;
 
-  public readonly jobQueueArn: string;
-  public readonly jobQueueName: string;
+  private readonly resource: CfnJobQueue;
+
+  @memoizedGetter
+  public get jobQueueArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrJobQueueArn, {
+      service: 'batch',
+      resource: 'job-queue',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get jobQueueName(): string {
+    return Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+  }
+
+  /**
+   * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
+   */
+  public get schedulingPolicy(): ISchedulingPolicy | undefined {
+    return this._schedulingPolicy ? toISchedulingPolicy(this._schedulingPolicy) : undefined;
+  }
+
+  public get jobQueueRef(): JobQueueReference {
+    return {
+      jobQueueArn: this.jobQueueArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props?: JobQueueProps) {
     super(scope, id, {
@@ -275,13 +309,13 @@ export class JobQueue extends Resource implements IJobQueue {
     this.computeEnvironments = props?.computeEnvironments ?? [];
     this.priority = props?.priority ?? 1;
     this.enabled = props?.enabled;
-    this.schedulingPolicy = props?.schedulingPolicy;
+    this._schedulingPolicy = props?.schedulingPolicy;
 
-    const resource = new CfnJobQueue(this, 'Resource', {
+    this.resource = new CfnJobQueue(this, 'Resource', {
       computeEnvironmentOrder: Lazy.any({
         produce: () => this.computeEnvironments.map((ce) => {
           return {
-            computeEnvironment: ce.computeEnvironment.computeEnvironmentArn,
+            computeEnvironment: ce.computeEnvironment.computeEnvironmentRef.computeEnvironmentArn,
             order: ce.order,
           };
         }),
@@ -289,21 +323,14 @@ export class JobQueue extends Resource implements IJobQueue {
       priority: this.priority,
       jobQueueName: props?.jobQueueName,
       state: (this.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-      schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
+      schedulingPolicyArn: this._schedulingPolicy?.schedulingPolicyRef.schedulingPolicyArn,
       jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(props?.jobStateTimeLimitActions),
     });
-
-    this.jobQueueArn = this.getResourceArnAttribute(resource.attrJobQueueArn, {
-      service: 'batch',
-      resource: 'job-queue',
-      resourceName: this.physicalName,
-    });
-    this.jobQueueName = Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
   }
 
-  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void {
+  addComputeEnvironment(computeEnvironment: IComputeEnvironmentRef, order: number): void {
     this.computeEnvironments.push({
       computeEnvironment,
       order,

@@ -18,6 +18,8 @@ import {
   MultiRegionConsistency,
   ContributorInsightsSpecification,
   validateContributorInsights,
+  KeySchema,
+  parseKeySchema,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { AddToResourcePolicyResult, PolicyDocument, PolicyStatement } from '../../aws-iam';
@@ -36,6 +38,7 @@ import {
   Token,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -90,15 +93,65 @@ export interface ReplicaGlobalSecondaryIndexOptions extends IContributorInsights
 export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
   /**
    * Partition key attribute definition.
+   *
+   * If a single field forms the partition key, you can use this field.  Use the
+   * `partitionKeys` field if the partition key is a multi-attribute key (consists of
+   * multiple fields).
+   *
+   * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
    */
-  readonly partitionKey: Attribute;
+  readonly partitionKey?: Attribute;
 
   /**
    * Sort key attribute definition.
    *
+   * If a single field forms the sort key, you can use this field.  Use the
+   * `sortKeys` field if the sort key is a multi-attribute key (consists of multiple
+   * fields).
+   *
    * @default - no sort key
    */
   readonly sortKey?: Attribute;
+
+  /**
+   * Multi-attribute partition key
+   *
+   * If a single field forms the partition key, you can use either
+   * `partitionKey` or `partitionKeys` to specify the partition key. Exactly
+   * one of these must be specified.
+   *
+   * You must use `partitionKeys` field if the partition key is a multi-attribute key
+   * (consists of multiple fields).
+   *
+   * NOTE: although the name of this field makes it sound like it creates
+   * multiple keys, it does not. It defines a single key that consists of
+   * of multiple fields.
+   *
+   * The order of fields is not important.
+   *
+   * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
+   */
+  readonly partitionKeys?: Attribute[];
+
+  /**
+   * Multi-attribute sort key
+   *
+   * If a single field forms the sort key, you can use either
+   * `sortKey` or `sortKeys` to specify the sort key. At most one of these
+   * may be specified.
+   *
+   * You must use `sortKeys` field if the sort key is a multi-attribute key
+   * (consists of multiple fields).
+   *
+   * NOTE: although the name of this field makes it sound like it creates
+   * multiple keys, it does not. It defines a single key that consists of
+   * of multiple fields at the same time.
+   *
+   * NOTE: The order of fields is important!
+   *
+   * @default - no sort key
+   */
+  readonly sortKeys?: Attribute[];
 
   /**
    * The read capacity.
@@ -569,26 +622,6 @@ export class TableV2 extends TableBaseV2 {
     return new Import(tableArn, tableName, attrs.tableId, attrs.tableStreamArn);
   }
 
-  /**
-   * @attribute
-   */
-  public readonly tableArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableName: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableStreamArn?: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableId?: string;
-
   public readonly encryptionKey?: IKey;
 
   /**
@@ -605,6 +638,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly hasSortKey: boolean;
   private readonly tableOptions: TableOptionsV2;
   private readonly encryption?: TableEncryptionV2;
+  private readonly resource: CfnGlobalTable;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
@@ -625,6 +659,30 @@ export class TableV2 extends TableBaseV2 {
   private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
+
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get tableStreamArn(): string | undefined {
+    return this.resource.attrStreamArn;
+  }
+
+  @memoizedGetter
+  public get tableId(): string | undefined {
+    return this.resource.attrTableId;
+  }
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
@@ -670,7 +728,7 @@ export class TableV2 extends TableBaseV2 {
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
     this.resourcePolicy = props.resourcePolicy;
 
-    const resource = new CfnGlobalTable(this, 'Resource', {
+    this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
@@ -693,16 +751,7 @@ export class TableV2 extends TableBaseV2 {
         : undefined,
       warmThroughput: props.warmThroughput ?? undefined,
     });
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
-    });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
-    this.tableId = resource.attrTableId;
-    this.tableStreamArn = resource.attrStreamArn;
+    this.resource.applyRemovalPolicy(props.removalPolicy);
 
     props.replicas?.forEach(replica => this.addReplica(replica));
 
@@ -886,7 +935,7 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2): CfnGlobalTable.GlobalSecondaryIndexProperty {
-    const keySchema = this.configureIndexKeySchema(props.partitionKey, props.sortKey);
+    const keySchema = this.configureIndexKeySchema(parseKeySchema(props, this));
     const projection = this.configureIndexProjection(props);
 
     props.readCapacity && this.globalSecondaryIndexReadCapacitys.set(props.indexName, props.readCapacity);
@@ -911,7 +960,12 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureLocalSecondaryIndex(props: LocalSecondaryIndexProps): CfnGlobalTable.LocalSecondaryIndexProperty {
-    const keySchema = this.configureIndexKeySchema(this.partitionKey, props.sortKey);
+    const keySchema = this.configureIndexKeySchema(parseKeySchema({
+      ...props,
+      // The primary key is always the table PK, so copy that
+      partitionKey: this.partitionKey,
+      partitionKeys: undefined,
+    }, this));
     const projection = this.configureIndexProjection(props);
 
     return {
@@ -959,19 +1013,17 @@ export class TableV2 extends TableBaseV2 {
     return replicaGlobalSecondaryIndexes.length > 0 ? replicaGlobalSecondaryIndexes : undefined;
   }
 
-  private configureIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute) {
-    this.addAttributeDefinition(partitionKey);
-
-    const indexKeySchema: CfnGlobalTable.KeySchemaProperty[] = [
-      { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
-    ];
-
-    if (sortKey) {
-      this.addAttributeDefinition(sortKey);
-      indexKeySchema.push({ attributeName: sortKey.name, keyType: RANGE_KEY_TYPE });
+  private configureIndexKeySchema(keySchema: KeySchema) {
+    // Register as an attribute
+    for (const attr of [...keySchema.partitionKeys, ...keySchema.sortKeys]) {
+      this.addAttributeDefinition(attr);
     }
 
-    return indexKeySchema;
+    // Return rendered properties
+    return [
+      ...keySchema.partitionKeys.map((pk) => ({ attributeName: pk.name, keyType: HASH_KEY_TYPE })),
+      ...keySchema.sortKeys.map((sk) => ({ attributeName: sk.name, keyType: RANGE_KEY_TYPE })),
+    ];
   }
 
   private configureIndexProjection(props: SecondaryIndexProps): CfnGlobalTable.ProjectionProperty {
@@ -1010,23 +1062,11 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private renderGlobalIndexes() {
-    const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
-
-    for (const globalSecondaryIndex of this.globalSecondaryIndexes.values()) {
-      globalSecondaryIndexes.push(globalSecondaryIndex);
-    }
-
-    return globalSecondaryIndexes;
+    return Array.from(this.globalSecondaryIndexes.values());
   }
 
   private renderLocalIndexes() {
-    const localSecondaryIndexes: CfnGlobalTable.LocalSecondaryIndexProperty[] = [];
-
-    for (const localSecondaryIndex of this.localSecondaryIndexes.values()) {
-      localSecondaryIndexes.push(localSecondaryIndex);
-    }
-
-    return localSecondaryIndexes;
+    return Array.from(this.localSecondaryIndexes.values());
   }
 
   private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
@@ -1109,6 +1149,10 @@ export class TableV2 extends TableBaseV2 {
 
   private validateGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateIndexName(props.indexName);
+
+    // Calling this for its side effect of throwing an exception here. We will call it again later
+    // for its return value. Slightly wasteful but that's how the code was structured already.
+    parseKeySchema(props, this);
 
     if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
       throw new ValidationError(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`, this);

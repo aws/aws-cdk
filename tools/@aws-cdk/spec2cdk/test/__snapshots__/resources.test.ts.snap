@@ -2,7 +2,7 @@
 
 exports[`can generate interface types into a separate module 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import { IEnvironmentAware } from "aws-cdk-lib/interfaces";
+import { IEnvironmentAware } from "aws-cdk-lib/interfaces/environment-aware";
 import * as constructs from "constructs";
 
 /**
@@ -72,6 +72,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**
@@ -182,7 +189,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
 export type { IResourceRef, ResourceReference };"
 `;
 
-exports[`resource interface when primaryIdentifier is a property 1`] = `
+exports[`resource interface when cfnRefIdentifier is a property 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
@@ -223,6 +230,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**
@@ -377,11 +391,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
+   * Checks whether the given object is a CfnResource
    */
-  public readonly attrId: string;
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -396,13 +410,21 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   public get resourceRef(): ResourceReference {
     return {
       resourceId: this.ref
     };
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -519,18 +541,15 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
   }
 
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
+   * Checks whether the given object is a CfnSomething
    */
-  public readonly attrId: string;
+  public static isCfnSomething(x: any): x is CfnSomething {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnSomething.CFN_RESOURCE_TYPE_NAME));
+  }
 
-  /**
-   * The arn for something
-   *
-   * @cloudformationAttribute SomethingArn
-   */
-  public readonly attrSomethingArn: string;
+  public static arnForSomething(resource: ISomethingRef): string {
+    return resource.somethingRef.somethingArn;
+  }
 
   /**
    * Create a new \`AWS::Some::Something\`.
@@ -545,8 +564,6 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
       properties: props
     });
 
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
-    this.attrSomethingArn = cdk.Token.asString(this.getAtt("SomethingArn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get somethingRef(): SomethingReference {
@@ -554,6 +571,24 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
       somethingId: this.ref,
       somethingArn: this.attrSomethingArn
     };
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
+  }
+
+  /**
+   * The arn for something
+   *
+   * @cloudformationAttribute SomethingArn
+   */
+  public get attrSomethingArn(): string {
+    return cdk.Token.asString(this.getAtt("SomethingArn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -670,18 +705,15 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * The arn for the resource
-   *
-   * @cloudformationAttribute Arn
+   * Checks whether the given object is a CfnResource
    */
-  public readonly attrArn: string;
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
 
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  public readonly attrId: string;
+  public static arnForResource(resource: IResourceRef): string {
+    return resource.resourceRef.resourceArn;
+  }
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -696,8 +728,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrArn = cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   public get resourceRef(): ResourceReference {
@@ -705,6 +735,24 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       resourceId: this.ref,
       resourceArn: this.attrArn
     };
+  }
+
+  /**
+   * The arn for the resource
+   *
+   * @cloudformationAttribute Arn
+   */
+  public get attrArn(): string {
+    return cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -821,11 +869,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
+   * Checks whether the given object is a CfnResource
    */
-  public readonly attrId: string;
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
 
   /**
    * The arn for the resource.
@@ -845,7 +893,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
     this.arn = props.arn;
   }
 
@@ -853,6 +900,15 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return {
       resourceId: this.ref
     };
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -980,11 +1036,15 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * The arn of the resource
-   *
-   * @cloudformationAttribute Arn
+   * Checks whether the given object is a CfnResource
    */
-  public readonly attrArn: string;
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
+
+  public static arnForResource(resource: IResourceRef): string {
+    return resource.resourceRef.resourceArn;
+  }
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -999,13 +1059,21 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrArn = cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get resourceRef(): ResourceReference {
     return {
       resourceArn: this.ref
     };
+  }
+
+  /**
+   * The arn of the resource
+   *
+   * @cloudformationAttribute Arn
+   */
+  public get attrArn(): string {
+    return cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1122,18 +1190,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * Another identifier of the resource
-   *
-   * @cloudformationAttribute Another
+   * Checks whether the given object is a CfnResource
    */
-  public readonly attrAnother: string;
-
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  public readonly attrId: string;
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1148,8 +1209,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrAnother = cdk.Token.asString(this.getAtt("Another", cdk.ResolutionTypeHint.STRING));
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   public get resourceRef(): ResourceReference {
@@ -1157,6 +1216,24 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       resourceId: cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
       another: cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
     };
+  }
+
+  /**
+   * Another identifier of the resource
+   *
+   * @cloudformationAttribute Another
+   */
+  public get attrAnother(): string {
+    return cdk.Token.asString(this.getAtt("Another", cdk.ResolutionTypeHint.STRING));
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1273,6 +1350,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
+
+  /**
    * Creates a new IResourceRef from a resourceId
    */
   public static fromResourceId(scope: constructs.Construct, id: string, resourceId: string): IResourceRef {
@@ -1294,6 +1378,15 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       }
     }
     return new Import(scope, id, resourceId);
+  }
+
+  public static arnForResource(resource: IResourceRef): string {
+    return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${ResourceId}").interpolate({
+      Partition: cdk.Stack.of(resource).partition,
+      Region: resource.env.region,
+      Account: resource.env.account,
+      ResourceId: resource.resourceRef.resourceId
+    });
   }
 
   /**
@@ -1445,6 +1538,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**
@@ -1614,6 +1714,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**

@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnVirtualGateway } from './appmesh.generated';
+import { VirtualGatewayGrants } from './appmesh-grants.generated';
+import { CfnVirtualGateway, IVirtualGatewayRef, VirtualGatewayReference } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 import { IMesh, Mesh } from './mesh';
 import { renderTlsClientPolicy, renderMeshOwner } from './private/utils';
@@ -7,13 +8,14 @@ import { AccessLog, BackendDefaults } from './shared-interfaces';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface which all Virtual Gateway based classes must implement
  */
-export interface IVirtualGateway extends cdk.IResource {
+export interface IVirtualGateway extends cdk.IResource, IVirtualGatewayRef {
   /**
    * Name of the VirtualGateway
    *
@@ -40,6 +42,7 @@ export interface IVirtualGateway extends cdk.IResource {
 
   /**
    * Grants the given entity `appmesh:StreamAggregatedResources`.
+   * [disable-awslint:no-grants]
    */
   grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
@@ -104,6 +107,17 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   public abstract readonly mesh: IMesh;
 
   /**
+   * Collection of grant methods for a VirtualGateway
+   */
+  public readonly grants: VirtualGatewayGrants = VirtualGatewayGrants.fromVirtualGateway(this);
+
+  public get virtualGatewayRef(): VirtualGatewayReference {
+    return {
+      virtualGatewayArn: this.virtualGatewayArn,
+    };
+  }
+
+  /**
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   public addGatewayRoute(id: string, props: GatewayRouteBaseProps): GatewayRoute {
@@ -114,11 +128,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   }
 
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['appmesh:StreamAggregatedResources'],
-      resourceArns: [this.virtualGatewayArn],
-    });
+    return this.grants.streamAggregatedResources(identity);
   }
 }
 
@@ -167,12 +177,22 @@ export class VirtualGateway extends VirtualGatewayBase {
   /**
    * The name of the VirtualGateway
    */
-  public readonly virtualGatewayName: string;
+  @memoizedGetter
+  public get virtualGatewayName(): string {
+    return this.getResourceNameAttribute(this.resource.attrVirtualGatewayName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) for the VirtualGateway
    */
-  public readonly virtualGatewayArn: string;
+  @memoizedGetter
+  public get virtualGatewayArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualGateway`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The Mesh that the VirtualGateway belongs to
@@ -180,6 +200,7 @@ export class VirtualGateway extends VirtualGatewayBase {
   public readonly mesh: IMesh;
 
   protected readonly listeners = new Array<VirtualGatewayListenerConfig>();
+  private readonly resource: CfnVirtualGateway;
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
@@ -199,7 +220,7 @@ export class VirtualGateway extends VirtualGatewayBase {
 
     const accessLogging = props.accessLog?.bind(this);
 
-    const node = new CfnVirtualGateway(this, 'Resource', {
+    this.resource = new CfnVirtualGateway(this, 'Resource', {
       virtualGatewayName: this.physicalName,
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
@@ -216,13 +237,6 @@ export class VirtualGateway extends VirtualGatewayBase {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
       },
-    });
-
-    this.virtualGatewayName = this.getResourceNameAttribute(node.attrVirtualGatewayName);
-    this.virtualGatewayArn = this.getResourceArnAttribute(node.ref, {
-      service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualGateway`,
-      resourceName: this.physicalName,
     });
   }
 }

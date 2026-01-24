@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "3e1faf0a4efcaf8666130d319b1890c6583699f193db00bec5492a5031191587": {
+      "displayName": "L2BucketOtherEventsWithL2Rule Template",
+      "source": {
+        "path": "L2BucketOtherEventsWithL2Rule.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-8675ed82": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "3e1faf0a4efcaf8666130d319b1890c6583699f193db00bec5492a5031191587.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

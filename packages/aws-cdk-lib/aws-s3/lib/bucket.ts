@@ -1,5 +1,6 @@
 import { EOL } from 'os';
 import { Construct } from 'constructs';
+import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
@@ -9,6 +10,7 @@ import { BucketReference, CfnBucket, IBucketRef } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import {
   Annotations,
@@ -28,6 +30,7 @@ import {
   Tokenization,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -567,7 +570,7 @@ export interface GrantReplicationPermissionProps {
  *   Bucket.import(this, 'MyImportedBucket', ref);
  *
  */
-export abstract class BucketBase extends Resource implements IBucket {
+export abstract class BucketBase extends Resource implements IBucket, IEncryptedResource {
   public abstract readonly bucketArn: string;
   public abstract readonly bucketName: string;
   public abstract readonly bucketDomainName: string;
@@ -608,7 +611,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * Whether to disallow public access
    */
-  protected abstract disallowPublicAccess?: boolean;
+  public abstract disallowPublicAccess?: boolean;
 
   private notifications?: BucketNotifications;
 
@@ -618,10 +621,21 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   protected objectOwnership?: ObjectOwnership;
 
+  /**
+   * Collection of grant methods for a Bucket
+   */
+  public grants = BucketGrants.fromBucket(this);
+
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    return {
+      grant: this.encryptionKey?.grant(grantee, ...actions),
+    };
   }
 
   /**
@@ -841,20 +855,20 @@ export abstract class BucketBase extends Resource implements IBucket {
    * If encryption is used, permission to use the key to decrypt the contents
    * of the bucket will also be granted to the same principal.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantRead(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
-      this.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
+    return this.grants.read(identity, objectsKeyPattern);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
-    const grantedWriteActions = allowedActionPatterns.length > 0 ? allowedActionPatterns : this.writeActions;
-    return this.grant(identity, grantedWriteActions, perms.KEY_WRITE_ACTIONS,
-      this.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
+    return this.grants.write(identity, objectsKeyPattern, allowedActionPatterns);
   }
 
   /**
@@ -862,41 +876,41 @@ export abstract class BucketBase extends Resource implements IBucket {
    *
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS,
-      this.arnForObjects(objectsKeyPattern));
+    return this.grants.put(identity, objectsKeyPattern);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
-    return this.grant(identity, perms.BUCKET_PUT_ACL_ACTIONS, [],
-      this.arnForObjects(objectsKeyPattern));
+    return this.grants.putAcl(identity, objectsKeyPattern);
   }
 
   /**
    * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantDelete(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
-      this.arnForObjects(objectsKeyPattern));
+    return this.grants.delete(identity, objectsKeyPattern);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    const bucketActions = perms.BUCKET_READ_ACTIONS.concat(this.writeActions);
-    // we need unique permissions because some permissions are common between read and write key actions
-    const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
-
-    return this.grant(identity,
-      bucketActions,
-      keyActions,
-      this.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
+    return this.grants.readWrite(identity, objectsKeyPattern);
   }
 
   /**
@@ -906,51 +920,13 @@ export abstract class BucketBase extends Resource implements IBucket {
    * Note that when calling this function for source or destination buckets that support KMS encryption,
    * you need to specify the KMS key for encryption and the KMS key for decryption, respectively.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal to grant replication permission to.
    * @param props The properties of the replication source and destination buckets.
    */
   public grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): iam.Grant {
-    if (props.destinations.length === 0) {
-      throw new ValidationError('At least one destination bucket must be specified in the destinations array', this);
-    }
-
-    // add permissions to the role
-    // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-    let result = this.grant(identity, ['s3:GetReplicationConfiguration', 's3:ListBucket'], [], Lazy.string({ produce: () => this.bucketArn }));
-
-    const g1 = this.grant(
-      identity,
-      ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-      [],
-      Lazy.string({ produce: () => this.arnForObjects('*') }),
-    );
-    result = result.combine(g1);
-
-    const destinationBuckets = props.destinations.map(destination => destination.bucket);
-    if (destinationBuckets.length > 0) {
-      const g2 = iam.Grant.addToPrincipalOrResource({
-        grantee: identity,
-        actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-        resourceArns: destinationBuckets.map(bucket => Lazy.string({ produce: () => bucket.arnForObjects('*') })),
-        resource: this,
-      });
-      result = result.combine(g2);
-    }
-
-    props.destinations.forEach(destination => {
-      const g = destination.encryptionKey?.grantEncrypt(identity);
-      if (g !== undefined) {
-        result = result.combine(g);
-      }
-    });
-
-    // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
-    const g3 = this.encryptionKey?.grantDecrypt(identity);
-    if (g3 !== undefined) {
-      result = result.combine(g3);
-    }
-
-    return result;
+    return this.grants.replicationPermission(identity, props);
   }
 
   /**
@@ -975,22 +951,13 @@ export abstract class BucketBase extends Resource implements IBucket {
    * managed by CloudFormation, this method will have no effect, since it's
    * impossible to modify the policy of an existing bucket.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
    */
   public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]) {
-    if (this.disallowPublicAccess) {
-      throw new ValidationError("Cannot grant public access when 'blockPublicPolicy' is enabled", this);
-    }
-
-    allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
-
-    return iam.Grant.addToPrincipalOrResource({
-      actions: allowedActions,
-      resourceArns: [this.arnForObjects(keyPrefix)],
-      grantee: new iam.AnyPrincipal(),
-      resource: this,
-    });
+    return this.grants.publicAccess(keyPrefix, ...allowedActions);
   }
 
   /**
@@ -1107,19 +1074,6 @@ export abstract class BucketBase extends Resource implements IBucket {
     }
   }
 
-  private get writeActions(): string[] {
-    return [
-      ...perms.BUCKET_DELETE_ACTIONS,
-      ...this.putActions,
-    ];
-  }
-
-  private get putActions(): string[] {
-    return FeatureFlags.of(this).isEnabled(cxapi.S3_GRANT_WRITE_WITHOUT_ACL)
-      ? perms.BUCKET_PUT_ACTIONS
-      : perms.LEGACY_BUCKET_PUT_ACTIONS;
-  }
-
   private urlJoin(...components: string[]): string {
     return components.reduce((result, component) => {
       if (result.endsWith('/')) {
@@ -1130,27 +1084,6 @@ export abstract class BucketBase extends Resource implements IBucket {
       }
       return `${result}/${component}`;
     });
-  }
-
-  private grant(
-    grantee: iam.IGrantable,
-    bucketActions: string[],
-    keyActions: string[],
-    resourceArn: string, ...otherResourceArns: string[]) {
-    const resources = [resourceArn, ...otherResourceArns];
-
-    const ret = iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: bucketActions,
-      resourceArns: resources,
-      resource: this,
-    });
-
-    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
-      this.encryptionKey.grant(grantee, ...keyActions);
-    }
-
-    return ret;
   }
 
   public get bucketRef(): BucketReference {
@@ -2168,7 +2101,7 @@ export class Bucket extends BucketBase {
       public policy?: BucketPolicy = undefined;
       public replicationRoleArn?: string = undefined;
       protected autoCreatePolicy = false;
-      protected disallowPublicAccess = false;
+      public disallowPublicAccess = false;
       protected notificationsHandlerRole = attrs.notificationsHandlerRole;
 
       /**
@@ -2233,7 +2166,7 @@ export class Bucket extends BucketBase {
       public policy = undefined;
       public replicationRoleArn = undefined;
       protected autoCreatePolicy = true;
-      protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
+      public disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
         (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
 
       constructor() {
@@ -2305,8 +2238,20 @@ export class Bucket extends BucketBase {
     }
   }
 
-  public readonly bucketArn: string;
-  public readonly bucketName: string;
+  @memoizedGetter
+  public get bucketArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get bucketName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
   public readonly bucketWebsiteDomainName: string;
@@ -2319,7 +2264,7 @@ export class Bucket extends BucketBase {
 
   public replicationRoleArn?: string;
   protected autoCreatePolicy = true;
-  protected disallowPublicAccess?: boolean;
+  public disallowPublicAccess?: boolean;
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
@@ -2381,14 +2326,6 @@ export class Bucket extends BucketBase {
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.eventBridgeEnabled = props.eventBridgeEnabled;
-
-    this.bucketName = this.getResourceNameAttribute(resource.ref);
-    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
-      region: '',
-      account: '',
-      service: 's3',
-      resource: this.physicalName,
-    });
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;

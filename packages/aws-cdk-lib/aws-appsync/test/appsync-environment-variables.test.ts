@@ -188,7 +188,7 @@ describe('environment variables', () => {
 
   test('throws if length of key-value pairs for environment variables is greater than 50', () => {
     // WHEN
-    const vars = {};
+    const vars: Record<string, string> = {};
     for (let i = 0; i < 51; i++) {
       vars[`EnvKey${i}`] = `non-empty-${i}`;
     }

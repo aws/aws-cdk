@@ -237,6 +237,7 @@
     },
     "AgentRuntimeName": "endpoint_test_runtime",
     "Description": "Runtime for endpoint integration test",
+    "LifecycleConfiguration": {},
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },

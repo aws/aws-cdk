@@ -66,10 +66,10 @@ describe('cluster engine', () => {
   });
 
   test('supported log types', () => {
-    const mysqlLogTypes = ['error', 'general', 'slowquery', 'audit'];
+    const mysqlLogTypes = ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'];
     expect(DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }).supportedLogTypes).toEqual(mysqlLogTypes);
     expect(DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_12_3 }).supportedLogTypes).toEqual(mysqlLogTypes);
-    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }).supportedLogTypes).toEqual(['postgresql']);
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }).supportedLogTypes).toEqual(['postgresql', 'iam-db-auth-error', 'instance']);
   });
 
   test('AuroraMysqlEngineVersion.of() determines default combineImportAndExportRoles', () => {
@@ -229,8 +229,14 @@ describe('cluster engine', () => {
     const engine_ver_3_10_1 = DatabaseClusterEngine.auroraMysql({
       version: AuroraMysqlEngineVersion.VER_3_10_1,
     });
+    const engine_ver_3_10_2 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_10_2,
+    });
     const engine_ver_3_11_0 = DatabaseClusterEngine.auroraMysql({
       version: AuroraMysqlEngineVersion.VER_3_11_0,
+    });
+    const engine_ver_3_11_1 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_11_1,
     });
 
     // THEN
@@ -241,6 +247,8 @@ describe('cluster engine', () => {
     expect(engine_ver_3_09_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_10_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_10_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_10_2.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_11_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_11_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
   });
 });

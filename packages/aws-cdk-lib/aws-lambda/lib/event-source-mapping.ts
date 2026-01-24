@@ -105,6 +105,14 @@ export interface ProvisionedPollerConfig {
    * @default - 200
    */
   readonly maximumPollers?: number;
+  /**
+   * An optional identifier that groups multiple ESMs to share EPU capacity
+   * and reduce costs. ESMs with the same PollerGroupName share compute
+   * resources.
+   *
+   * @default - not set, dedicated compute resource per event source.
+   */
+  readonly pollerGroupName?: string;
 }
 
 export interface EventSourceMappingOptions {
@@ -326,6 +334,14 @@ export enum MetricType {
    * These metrics help you monitor the flow and status of events through your event source mapping.
    */
   EVENT_COUNT = 'EventCount',
+  /**
+   * Error Count metrics provide insights into invocation failures for your event source mapping.
+   */
+  ERRORCOUNT = 'ErrorCount',
+  /**
+   * Kafka-specific metrics for monitoring Apache Kafka and Amazon MSK event sources.
+   */
+  KAFKAMETRICS = 'KafkaMetrics',
 }
 
 /**

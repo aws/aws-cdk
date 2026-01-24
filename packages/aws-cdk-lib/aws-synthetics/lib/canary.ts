@@ -12,6 +12,7 @@ import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
@@ -410,19 +411,28 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    * The canary ID
    * @attribute
    */
-  public readonly canaryId: string;
+  @memoizedGetter
+  public get canaryId(): string {
+    return this.resource.attrId;
+  }
 
   /**
    * The state of the canary. For example, 'RUNNING', 'STOPPED', 'NOT STARTED', or 'ERROR'.
    * @attribute
    */
-  public readonly canaryState: string;
+  @memoizedGetter
+  public get canaryState(): string {
+    return this.resource.attrState;
+  }
 
   /**
    * The canary Name
    * @attribute
    */
-  public readonly canaryName: string;
+  @memoizedGetter
+  public get canaryName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * Bucket where data from each canary run is stored.
@@ -437,6 +447,10 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    */
   private readonly _connections?: ec2.Connections;
   private readonly _resource: CfnCanary;
+
+  private get resource(): CfnCanary {
+    return this._resource;
+  }
 
   public constructor(scope: Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
@@ -496,10 +510,6 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       resourcesToReplicateTags: props.resourcesToReplicateTags,
     });
     this._resource = resource;
-
-    this.canaryId = resource.attrId;
-    this.canaryState = resource.attrState;
-    this.canaryName = this.getResourceNameAttribute(resource.ref);
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
@@ -590,7 +600,6 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.', this);
     }
     return this._connections;

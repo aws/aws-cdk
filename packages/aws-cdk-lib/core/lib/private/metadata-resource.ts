@@ -1,6 +1,5 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { ConstructInfo, constructInfoFromStack } from './runtime-info';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnCondition } from '../cfn-condition';
@@ -12,6 +11,8 @@ import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { ConstructInfo } from './runtime-info';
+import { ConstructAnalytics, constructAnalyticsFromScope } from './stack-metadata';
 
 /**
  * Construct that will render the metadata resource
@@ -20,13 +21,12 @@ export class MetadataResource extends Construct {
   constructor(scope: Stack, id: string) {
     super(scope, id);
     const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
-    const enableAdditionalTelemtry = FeatureFlags.of(scope).isEnabled(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
     if (metadataServiceExists) {
-      const constructInfo = constructInfoFromStack(scope);
+      const constructAnalytics = filteredConstructAnalyticsFromStack(scope);
       const resource = new CfnResource(this, 'Default', {
         type: 'AWS::CDK::Metadata',
         properties: {
-          Analytics: Lazy.string({ produce: () => formatAnalytics(constructInfo, enableAdditionalTelemtry) }),
+          Analytics: Lazy.string({ produce: () => formatAnalytics(constructAnalytics) }),
         },
       });
 
@@ -42,6 +42,32 @@ export class MetadataResource extends Construct {
         resource.cfnOptions.condition = condition;
       }
     }
+  }
+}
+
+/**
+ * For a given stack, walks the tree and finds the runtime info for all constructs within the tree.
+ * Will remove certain telemetry data based on the ENABLE_ADDITIONAL_METADATA_COLLECTION feature flag.
+ */
+function filteredConstructAnalyticsFromStack(scope: Stack ) {
+  const includeAdditionalTelemetry = FeatureFlags.of(scope).isEnabled(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
+  const constructAnalytics = constructAnalyticsFromScope(scope);
+
+  // only include additional telemetry information if feature flag is enabled
+  // this is a safety net, the data should have never been collected before reaching this point
+  if (includeAdditionalTelemetry) {
+    return constructAnalytics;
+  }
+
+  // otherwise we filter it out now
+  return constructAnalytics.map(retainAlwaysReportedAnalytics);
+
+  function retainAlwaysReportedAnalytics(analytics: ConstructAnalytics): ConstructAnalytics {
+    return {
+      fqn: analytics.fqn,
+      version: analytics.version,
+      metadata: analytics.metadata,
+    };
   }
 }
 
@@ -81,16 +107,10 @@ class Trie extends Map<string, Trie> { }
  *
  * Exported/visible for ease of testing.
  */
-export function formatAnalytics(infos: ConstructInfo[], enableAdditionalTelemtry: boolean = false) {
+export function formatAnalytics(infos: ConstructAnalytics[]) {
   const trie = new Trie();
 
-  // only append additional telemetry information to prefix encoding and gzip compress
-  // if feature flag is enabled; otherwise keep the old behaviour.
-  if (enableAdditionalTelemtry) {
-    infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie, info.metadata));
-  } else {
-    infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
-  }
+  infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie, [info.metadata, info.additionalTelemetry].flatMap(a => a ?? [])));
 
   const plaintextEncodedConstructs = prefixEncodeTrie(trie);
   const compressedConstructsBuffer = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs));
@@ -112,18 +132,55 @@ export function formatAnalytics(infos: ConstructInfo[], enableAdditionalTelemtry
 }
 
 /**
+ * Takes an analytics string and converts it back into a readable format.
+ * Useful for debugging.
+ *
+ * @internal
+ */
+export function parseAnalytics(analyticsString: string): ConstructInfo[] {
+  const analyticsData = analyticsString.split(':');
+  if (analyticsData.length >= 3 && analyticsData[0] === 'v2' && analyticsData[1] === 'deflate64') {
+    const buffer = Buffer.from(analyticsData[2], 'base64');
+    const decompressedBuffer = zlib.gunzipSync(buffer);
+    const prefixEncodedList = decompressedBuffer.toString('utf8');
+    const trie = parsePrefixEncodedList(prefixEncodedList);
+    return trieToConstructInfos(trie);
+  } else {
+    throw new AssumptionError(`Invalid analytics string: ${analyticsString}`);
+  }
+}
+
+/**
+ * Converts a Trie back to a list of ConstructInfo objects.
+ */
+function trieToConstructInfos(trie: Trie): ConstructInfo[] {
+  const infos: ConstructInfo[] = [];
+  function traverse(node: Trie, path: string) {
+    if (node.size === 0) {
+      const [version, fqn] = path.split('!');
+      infos.push({ version, fqn });
+    }
+    for (const [key, value] of node.entries()) {
+      traverse(value, path + key);
+    }
+  }
+  traverse(trie, '');
+  return infos;
+}
+
+/**
  * Splits after non-alphanumeric characters (e.g., '.', '/') in the FQN
  * and insert each piece of the FQN in nested map (i.e., simple trie).
  */
-function insertFqnInTrie(fqn: string, trie: Trie, metadata?: Record<string, any>[]) {
+function insertFqnInTrie(fqn: string, trie: Trie, metadata?: unknown[]) {
   for (const fqnPart of fqn.replace(/[^a-z0-9]/gi, '$& ').split(' ')) {
     const nextLevelTreeRef = trie.get(fqnPart) ?? new Trie();
     trie.set(fqnPart, nextLevelTreeRef);
     trie = nextLevelTreeRef;
   }
 
-  // if 'metadata' is defined, add it to end of Trie
-  if (metadata) {
+  // if 'metadata' is defined and not empty, add it to end of Trie
+  if (metadata?.length) {
     trie.set(JSON.stringify(metadata), new Trie());
   }
   return trie;
@@ -161,6 +218,54 @@ function prefixEncodeTrie(trie: Trie) {
     }
   });
   return prefixEncoded;
+}
+
+/**
+ * Parses a prefix-encoded "trie-ish" structure.
+ * This is the inverse of `prefixEncodeTrie`.
+ *
+ * Example input:
+ * A{B{C,D},EF}
+ *
+ * Becomes:
+ * ABC,ABD,AEF
+ *
+ * Example trie:
+ * A --> B --> C
+ *  |     \--> D
+ *  \--> E --> F
+ */
+function parsePrefixEncodedList(data: string): Trie {
+  const trie = new Trie();
+  let i = 0;
+
+  function parse(currentTrie: Trie, prefix: string) {
+    let token = '';
+    while (i < data.length) {
+      const char = data[i];
+      if (char === '{') {
+        i++;
+        parse(currentTrie, prefix + token);
+        token = '';
+      } else if (char === '}' || char === ',') {
+        if (token) {
+          insertFqnInTrie(prefix + token, trie);
+        }
+        i++;
+        if (char === '}') return;
+        token = '';
+      } else {
+        token += char;
+        i++;
+      }
+    }
+    if (token) {
+      insertFqnInTrie(prefix + token, trie);
+    }
+  }
+
+  parse(trie, '');
+  return trie;
 }
 
 /**
