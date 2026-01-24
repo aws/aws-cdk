@@ -2579,8 +2579,8 @@ describe('instance', () => {
       }).toThrow("Storage throughput can only be specified with GP3 storage type for additional volume 'rdsdbdata2', got: 'io2'");
     });
 
-    // allocatedStorage valid boundary values
-    test.each([200, 65536])('accepts allocatedStorage %d GiB', (sizeGiB) => {
+    // Oracle allocatedStorage valid boundary values (min 200 GiB)
+    test.each([200, 65536])('accepts Oracle allocatedStorage %d GiB', (sizeGiB) => {
       expect(() => {
         new rds.DatabaseInstance(stack, 'Instance', {
           engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
@@ -2592,8 +2592,8 @@ describe('instance', () => {
       }).not.toThrow();
     });
 
-    // allocatedStorage invalid boundary values
-    test.each([199, 65537])('throws if allocatedStorage is %d GiB', (sizeGiB) => {
+    // Oracle allocatedStorage invalid boundary values
+    test.each([199, 65537])('throws if Oracle allocatedStorage is %d GiB', (sizeGiB) => {
       expect(() => {
         new rds.DatabaseInstance(stack, 'Instance', {
           engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
@@ -2603,6 +2603,32 @@ describe('instance', () => {
           ],
         });
       }).toThrow(`Allocated storage for additional volume 'rdsdbdata2' must be between 200 and 65,536 GiB, got: ${sizeGiB} GiB`);
+    });
+
+    // SQL Server allocatedStorage valid boundary values (min 20 GiB)
+    test.each([20, 65536])('accepts SQL Server allocatedStorage %d GiB', (sizeGiB) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
+          vpc,
+          additionalStorageVolumes: [
+            { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    // SQL Server allocatedStorage invalid boundary values
+    test.each([19, 65537])('throws if SQL Server allocatedStorage is %d GiB', (sizeGiB) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
+          vpc,
+          additionalStorageVolumes: [
+            { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
+          ],
+        });
+      }).toThrow(`Allocated storage for additional volume 'rdsdbdata2' must be between 20 and 65,536 GiB, got: ${sizeGiB} GiB`);
     });
 
     test('throws if GP3 throughput/IOPS ratio exceeds 0.25', () => {

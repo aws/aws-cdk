@@ -1818,12 +1818,14 @@ function validateAdditionalStorageVolumes(
       );
     }
 
-    // Validate allocatedStorage range (200 - 65536 GiB for additional volumes)
+    // Validate allocatedStorage range based on engine type
+    // Oracle: minimum 200 GiB, SQL Server: minimum 20 GiB (same as D: drive limit)
     if (!volume.allocatedStorage.isUnresolved()) {
       const allocatedStorageGiB = volume.allocatedStorage.toGibibytes();
-      if (allocatedStorageGiB < 200 || allocatedStorageGiB > 65536) {
+      const minStorage = engineType.startsWith('oracle-') ? 200 : 20;
+      if (allocatedStorageGiB < minStorage || allocatedStorageGiB > 65536) {
         throw new ValidationError(
-          `Allocated storage for additional volume '${volumeName}' must be between 200 and 65,536 GiB, got: ${allocatedStorageGiB} GiB`,
+          `Allocated storage for additional volume '${volumeName}' must be between ${minStorage} and 65,536 GiB, got: ${allocatedStorageGiB} GiB`,
           scope,
         );
       }
