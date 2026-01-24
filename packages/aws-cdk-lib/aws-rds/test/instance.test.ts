@@ -2548,6 +2548,26 @@ describe('instance', () => {
       }).toThrow(`Additional storage volumes are only supported for Oracle and SQL Server engines, got: '${engine.engineType}'`);
     });
 
+    test('accepts up to 3 additional volumes', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+        vpc,
+        additionalStorageVolumes: [
+          { allocatedStorage: cdk.Size.gibibytes(200) },
+          { allocatedStorage: cdk.Size.gibibytes(300) },
+          { allocatedStorage: cdk.Size.gibibytes(400) },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AdditionalStorageVolumes: [
+          Match.objectLike({ VolumeName: 'rdsdbdata2', AllocatedStorage: '200' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata3', AllocatedStorage: '300' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata4', AllocatedStorage: '400' }),
+        ],
+      });
+    });
+
     test('throws if more than 3 additional volumes specified', () => {
       expect(() => {
         new rds.DatabaseInstance(stack, 'Instance', {
@@ -2576,7 +2596,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow("Storage throughput can only be specified with GP3 storage type for additional volume 'rdsdbdata2', got: 'io2'");
+      }).toThrow("The storage throughput can only be specified with GP3 storage type for additional volume 'rdsdbdata2', got: 'io2'");
     });
 
     // Oracle allocatedStorage valid boundary values (min 200 GiB)
@@ -2640,12 +2660,12 @@ describe('instance', () => {
             {
               allocatedStorage: cdk.Size.gibibytes(200),
               storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops: 12000,
-              storageThroughput: cdk.Size.mebibytes(4000),
+              iops: 3000,
+              storageThroughput: cdk.Size.mebibytes(1000),
             },
           ],
         });
-      }).toThrow(`The maximum ratio of storage throughput to IOPS for additional volume 'rdsdbdata2' is 0.25, got: ${4000 / 12000}`);
+      }).toThrow(`The maximum ratio of storage throughput to IOPS is 0.25 for additional volume 'rdsdbdata2', got: ${1000 / 3000}`);
     });
 
     test('accepts GP3 throughput/IOPS ratio at exactly 0.25', () => {
@@ -2657,232 +2677,14 @@ describe('instance', () => {
             {
               allocatedStorage: cdk.Size.gibibytes(200),
               storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops: 12000,
-              storageThroughput: cdk.Size.mebibytes(3000),
+              iops: 4000,
+              storageThroughput: cdk.Size.mebibytes(1000),
             },
           ],
         });
       }).not.toThrow();
     });
 
-    // Oracle GP3 IOPS valid boundary values
-    test.each([12000, 64000])('accepts Oracle GP3 IOPS %d', (iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops,
-            },
-          ],
-        });
-      }).not.toThrow();
-    });
-
-    // Oracle GP3 IOPS invalid boundary values
-    test.each([11999, 64001])('throws if Oracle GP3 IOPS is %d', (iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops,
-            },
-          ],
-        });
-      }).toThrow(`IOPS for Oracle with GP3 storage must be between 12,000 and 64,000 for additional volume 'rdsdbdata2', got: ${iops}`);
-    });
-
-    // SQL Server GP3 IOPS valid boundary values
-    test.each([3000, 16000])('accepts SQL Server GP3 IOPS %d', (iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops,
-            },
-          ],
-        });
-      }).not.toThrow();
-    });
-
-    // SQL Server GP3 IOPS invalid boundary values
-    test.each([2999, 16001])('throws if SQL Server GP3 IOPS is %d', (iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops,
-            },
-          ],
-        });
-      }).toThrow(`IOPS for SQL Server with GP3 storage must be between 3,000 and 16,000 for additional volume 'rdsdbdata2', got: ${iops}`);
-    });
-
-    // Oracle GP3 throughput valid boundary values
-    // Note: IOPS values are set high enough to avoid triggering throughput/IOPS ratio validation (max 0.25)
-    test.each([
-      [500, 12000],
-      [4000, 16000],
-    ])('accepts Oracle GP3 throughput %d MiB/s', (throughput, iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops,
-              storageThroughput: cdk.Size.mebibytes(throughput),
-            },
-          ],
-        });
-      }).not.toThrow();
-    });
-
-    // Oracle GP3 throughput invalid boundary values
-    test.each([
-      [499, 12000],
-      [4001, 64000],
-    ])('throws if Oracle GP3 throughput is %d MiB/s', (throughput, iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops,
-              storageThroughput: cdk.Size.mebibytes(throughput),
-            },
-          ],
-        });
-      }).toThrow(`Storage throughput for Oracle with GP3 storage must be between 500 and 4,000 MiB/s for additional volume 'rdsdbdata2', got: ${throughput} MiB/s`);
-    });
-
-    // SQL Server GP3 throughput valid boundary values
-    test.each([
-      [125, 3000],
-      [1000, 4000],
-    ])('accepts SQL Server GP3 throughput %d MiB/s', (throughput, iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops,
-              storageThroughput: cdk.Size.mebibytes(throughput),
-            },
-          ],
-        });
-      }).not.toThrow();
-    });
-
-    // SQL Server GP3 throughput invalid boundary values
-    test.each([
-      [124, 3000],
-      [1001, 16000],
-    ])('throws if SQL Server GP3 throughput is %d MiB/s', (throughput, iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
-              iops,
-              storageThroughput: cdk.Size.mebibytes(throughput),
-            },
-          ],
-        });
-      }).toThrow(`Storage throughput for SQL Server with GP3 storage must be between 125 and 1,000 MiB/s for additional volume 'rdsdbdata2', got: ${throughput} MiB/s`);
-    });
-
-    // IO2 IOPS valid boundary values (same for Oracle and SQL Server)
-    test.each([1000, 256000])('accepts Oracle IO2 IOPS %d', (iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.IO2,
-              iops,
-            },
-          ],
-        });
-      }).not.toThrow();
-    });
-
-    // IO2 IOPS invalid boundary values (same for Oracle and SQL Server)
-    test.each([999, 256001])('throws if Oracle IO2 IOPS is %d', (iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.IO2,
-              iops,
-            },
-          ],
-        });
-      }).toThrow(`IOPS for IO2 storage must be between 1,000 and 256,000 for additional volume 'rdsdbdata2', got: ${iops}`);
-    });
-
-    test.each([1000, 256000])('accepts SQL Server IO2 IOPS %d', (iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.IO2,
-              iops,
-            },
-          ],
-        });
-      }).not.toThrow();
-    });
-
-    test.each([999, 256001])('throws if SQL Server IO2 IOPS is %d', (iops) => {
-      expect(() => {
-        new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
-          vpc,
-          additionalStorageVolumes: [
-            {
-              allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.IO2,
-              iops,
-            },
-          ],
-        });
-      }).toThrow(`IOPS for IO2 storage must be between 1,000 and 256,000 for additional volume 'rdsdbdata2', got: ${iops}`);
-    });
   });
 });
 

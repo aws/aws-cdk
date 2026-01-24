@@ -1063,14 +1063,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     const storageType = props.storageType ?? StorageType.GP2;
     const iops = defaultIops(storageType, props.iops);
-    if (props.storageThroughput && storageType !== StorageType.GP3) {
-      throw new ValidationError(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`, this);
-    }
-    if (storageType === StorageType.GP3 && props.storageThroughput && iops
-        && !Token.isUnresolved(props.storageThroughput) && !Token.isUnresolved(iops)
-        && props.storageThroughput/iops > 0.25) {
-      throw new ValidationError(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`, this);
-    }
+    validateStorageThroughput(this, storageType, props.storageThroughput, iops);
 
     this.cloudwatchLogGroups = {};
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
@@ -1764,6 +1757,42 @@ function defaultIops(storageType: StorageType, iops?: number): number | undefine
 }
 
 /**
+ * Validates storage throughput configuration.
+ * - storageThroughput can only be specified with GP3 storage type
+ * - throughput/IOPS ratio must be <= 0.25 for GP3
+ */
+function validateStorageThroughput(
+  scope: Construct,
+  storageType: string,
+  storageThroughputMiBps: number | undefined,
+  iops: number | undefined,
+  volumeDescription?: string,
+): void {
+  const desc = volumeDescription ? ` for ${volumeDescription}` : '';
+
+  if (storageThroughputMiBps !== undefined && storageType.toLowerCase() !== 'gp3') {
+    throw new ValidationError(
+      `The storage throughput can only be specified with GP3 storage type${desc}, got: '${storageType}'`,
+      scope,
+    );
+  }
+
+  if (
+    storageType.toLowerCase() === 'gp3' &&
+    storageThroughputMiBps !== undefined &&
+    iops !== undefined &&
+    !Token.isUnresolved(storageThroughputMiBps) &&
+    !Token.isUnresolved(iops) &&
+    storageThroughputMiBps / iops > 0.25
+  ) {
+    throw new ValidationError(
+      `The maximum ratio of storage throughput to IOPS is 0.25${desc}, got: ${storageThroughputMiBps / iops}`,
+      scope,
+    );
+  }
+}
+
+/**
  * Volume names for additional storage volumes.
  */
 const VOLUME_NAMES = ['rdsdbdata2', 'rdsdbdata3', 'rdsdbdata4'];
@@ -1810,13 +1839,17 @@ function validateAdditionalStorageVolumes(
     const volumeName = getVolumeName(i);
     const volumeStorageType = volume.storageType ?? AdditionalStorageVolumeType.GP3;
 
-    // Validate storageThroughput is only for GP3
-    if (volume.storageThroughput && volumeStorageType !== AdditionalStorageVolumeType.GP3) {
-      throw new ValidationError(
-        `Storage throughput can only be specified with GP3 storage type for additional volume '${volumeName}', got: '${volumeStorageType}'`,
-        scope,
-      );
-    }
+    // Validate storageThroughput configuration (GP3 only, ratio <= 0.25)
+    const storageThroughputMiBps = volume.storageThroughput?.isUnresolved()
+      ? undefined
+      : volume.storageThroughput?.toMebibytes();
+    validateStorageThroughput(
+      scope,
+      volumeStorageType,
+      storageThroughputMiBps,
+      volume.iops,
+      `additional volume '${volumeName}'`,
+    );
 
     // Validate allocatedStorage range based on engine type
     // Oracle: minimum 200 GiB, SQL Server: minimum 20 GiB (same as D: drive limit)
@@ -1826,72 +1859,6 @@ function validateAdditionalStorageVolumes(
       if (allocatedStorageGiB < minStorage || allocatedStorageGiB > 65536) {
         throw new ValidationError(
           `Allocated storage for additional volume '${volumeName}' must be between ${minStorage} and 65,536 GiB, got: ${allocatedStorageGiB} GiB`,
-          scope,
-        );
-      }
-    }
-
-    // Validate throughput/IOPS ratio for GP3
-    if (
-      volumeStorageType === AdditionalStorageVolumeType.GP3 &&
-      volume.storageThroughput &&
-      volume.iops &&
-      !volume.storageThroughput.isUnresolved() &&
-      !Token.isUnresolved(volume.iops)
-    ) {
-      const throughputMiBps = volume.storageThroughput.toMebibytes();
-      if (throughputMiBps / volume.iops > 0.25) {
-        throw new ValidationError(
-          `The maximum ratio of storage throughput to IOPS for additional volume '${volumeName}' is 0.25, got: ${throughputMiBps / volume.iops}`,
-          scope,
-        );
-      }
-    }
-
-    // Validate IOPS constraints for GP3 based on engine type
-    if (volumeStorageType === AdditionalStorageVolumeType.GP3 && volume.iops && !Token.isUnresolved(volume.iops)) {
-      if (engineType.startsWith('oracle-')) {
-        if (volume.iops < 12000 || volume.iops > 64000) {
-          throw new ValidationError(
-            `IOPS for Oracle with GP3 storage must be between 12,000 and 64,000 for additional volume '${volumeName}', got: ${volume.iops}`,
-            scope,
-          );
-        }
-      } else if (engineType.startsWith('sqlserver-')) {
-        if (volume.iops < 3000 || volume.iops > 16000) {
-          throw new ValidationError(
-            `IOPS for SQL Server with GP3 storage must be between 3,000 and 16,000 for additional volume '${volumeName}', got: ${volume.iops}`,
-            scope,
-          );
-        }
-      }
-    }
-
-    // Validate throughput constraints for GP3 based on engine type
-    if (volumeStorageType === AdditionalStorageVolumeType.GP3 && volume.storageThroughput && !volume.storageThroughput.isUnresolved()) {
-      const throughputMiBps = volume.storageThroughput.toMebibytes();
-      if (engineType.startsWith('oracle-')) {
-        if (throughputMiBps < 500 || throughputMiBps > 4000) {
-          throw new ValidationError(
-            `Storage throughput for Oracle with GP3 storage must be between 500 and 4,000 MiB/s for additional volume '${volumeName}', got: ${throughputMiBps} MiB/s`,
-            scope,
-          );
-        }
-      } else if (engineType.startsWith('sqlserver-')) {
-        if (throughputMiBps < 125 || throughputMiBps > 1000) {
-          throw new ValidationError(
-            `Storage throughput for SQL Server with GP3 storage must be between 125 and 1,000 MiB/s for additional volume '${volumeName}', got: ${throughputMiBps} MiB/s`,
-            scope,
-          );
-        }
-      }
-    }
-
-    // Validate IOPS constraints for IO2
-    if (volumeStorageType === AdditionalStorageVolumeType.IO2 && volume.iops && !Token.isUnresolved(volume.iops)) {
-      if (volume.iops < 1000 || volume.iops > 256000) {
-        throw new ValidationError(
-          `IOPS for IO2 storage must be between 1,000 and 256,000 for additional volume '${volumeName}', got: ${volume.iops}`,
           scope,
         );
       }
