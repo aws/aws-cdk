@@ -7,6 +7,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct, Node } from 'constructs';
@@ -976,14 +977,20 @@ export class Cluster extends ClusterBase {
   /**
    * The Name of the created EKS Cluster
    */
-  public readonly clusterName: string;
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * The AWS generated ARN for the Cluster resource
    *
    * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
    */
-  public readonly clusterArn: string;
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, clusterArnComponents(this.physicalName));
+  }
 
   /**
    * The endpoint URL for the Cluster
@@ -1076,7 +1083,7 @@ export class Cluster extends ClusterBase {
    */
   public readonly albController?: AlbController;
 
-  private readonly _clusterResource: CfnCluster;
+  private readonly resource: CfnCluster;
 
   private _neuronDevicePlugin?: KubernetesManifest;
 
@@ -1212,7 +1219,7 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
-    const resource = this._clusterResource = new CfnCluster(this, 'Resource', {
+    const resource = this.resource = new CfnCluster(this, 'Resource', {
       name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version.version,
@@ -1276,7 +1283,7 @@ export class Cluster extends ClusterBase {
 
       // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
-      this._clusterResource.node.addDependency(this.vpc);
+      this.resource.node.addDependency(this.vpc);
     }
 
     // we use an SSM parameter as a barrier because it's free and fast.
@@ -1289,10 +1296,7 @@ export class Cluster extends ClusterBase {
     });
 
     // add the cluster resource itself as a dependency of the barrier
-    this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
-
-    this.clusterName = this.getResourceNameAttribute(resource.ref);
-    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
+    this._kubectlReadyBarrier.node.addDependency(this.resource);
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
@@ -1325,6 +1329,9 @@ export class Cluster extends ClusterBase {
       // give the handler role admin access to the cluster
       // so it can deploy/query any resource.
       this._clusterAdminAccess = this.grantClusterAdmin('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn);
+
+      // Ensure kubectl is marked as ready only after admin access has been granted
+      this._kubectlReadyBarrier.node.addDependency(this._clusterAdminAccess);
     }
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
@@ -1543,7 +1550,7 @@ export class Cluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
-    return this._clusterResource.attrOpenIdConnectIssuerUrl;
+    return this.resource.attrOpenIdConnectIssuerUrl;
   }
 
   /**

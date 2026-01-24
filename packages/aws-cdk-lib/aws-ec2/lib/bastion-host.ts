@@ -10,7 +10,7 @@ import { ISecurityGroup } from './security-group';
 import { BlockDevice } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 import { IPrincipal, IRole, PolicyStatement } from '../../aws-iam';
-import { CfnOutput, FeatureFlags, Resource, Stack, UnscopedValidationError } from '../../core';
+import { CfnOutput, FeatureFlags, Resource, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
@@ -146,8 +146,6 @@ export class BastionHostLinux extends Resource implements IInstance {
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.BastionHostLinux';
 
-  public readonly stack: Stack;
-
   /**
    * Allows specify security group connections for the instance.
    */
@@ -202,7 +200,6 @@ export class BastionHostLinux extends Resource implements IInstance {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
-    this.stack = Stack.of(scope);
     const instanceType = props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO);
     this.instance = new Instance(this, 'Resource', {
       vpc: props.vpc,

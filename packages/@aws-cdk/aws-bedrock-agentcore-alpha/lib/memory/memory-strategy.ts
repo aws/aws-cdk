@@ -49,6 +49,10 @@ export enum MemoryStrategyType {
    */
   USER_PREFERENCE = 'USER_PREFERENCE',
   /**
+   * Episodic memory strategy - captures meaningful slices of user and system interactions
+   */
+  EPISODIC = 'EPISODIC',
+  /**
    * Customize memory processing through custom foundation model and prompt templates.
    */
   CUSTOM = 'CUSTOM',
@@ -155,6 +159,22 @@ export class MemoryStrategy {
     });
   }
   /**
+   * Default strategies for organizing and extracting memory data, each optimized for specific use cases.
+   * Captures meaningful slices of user and system interactions, preserve them into compact records after summarizing.
+   * Extracted memory example: User first asked about pricing on Monday, then requested feature comparison on Tuesday, finally made purchase decision on Wednesday.
+   * @returns A ManagedMemoryStrategy.
+   */
+  public static usingBuiltInEpisodic(): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.EPISODIC, {
+      name: 'episodic_builtin_cdkGen0001',
+      description: 'Captures meaningful slices of user and system interactions.',
+      namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
+      reflectionConfiguration: {
+        namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
+      },
+    });
+  }
+  /**
    * Creates a semantic memory strategy with custom configuration.
    * Distills general facts, concepts, and underlying meanings from raw conversational data, presenting the information in a context-independent format.
    * Extracted memory example: In-context learning = task-solving via examples, no training needed.
@@ -183,6 +203,16 @@ export class MemoryStrategy {
    */
   public static usingSummarization(config: ManagedStrategyProps): ManagedMemoryStrategy {
     return new ManagedMemoryStrategy(MemoryStrategyType.SUMMARIZATION, config);
+  }
+  /**
+   * Creates an episodic memory strategy with custom configuration.
+   * Captures meaningful slices of user and system interactions, preserve them into compact records after summarizing.
+   * Extracted memory example: User first asked about pricing on Monday, then requested feature comparison on Tuesday, finally made purchase decision on Wednesday.
+   * @param config - The configuration for the episodic memory strategy.
+   * @returns A ManagedMemoryStrategy.
+   */
+  public static usingEpisodic(config: ManagedStrategyProps): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.EPISODIC, config);
   }
   /**
    * Creates a self-managed memory strategy.

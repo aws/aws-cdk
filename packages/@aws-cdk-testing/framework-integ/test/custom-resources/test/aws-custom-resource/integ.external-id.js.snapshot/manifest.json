@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-custom-resource-external-id-test": {
       "type": "aws:cloudformation:stack",
@@ -66,12 +66,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-custom-resource-external-id-test/RoleWithExternalId/ImportRoleWithExternalId": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-custom-resource-external-id-test/RoleWithExternalId/Resource": [
@@ -250,12 +244,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-custom-resource-external-id-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-custom-resource-external-id-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -801,5 +789,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }
