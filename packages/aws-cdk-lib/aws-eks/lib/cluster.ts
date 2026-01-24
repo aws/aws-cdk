@@ -733,6 +733,10 @@ export interface ClusterOptions extends CommonClusterOptions {
    * is destroyed. You are responsible for managing the provider's lifecycle separately
    * and ensuring its issuer URL matches this cluster's OIDC issuer URL.
    *
+   * [disable-awslint:prefer-ref-interface] is needed because service accounts require
+   * the `openIdConnectProviderIssuer` property to configure IAM trust policies for IRSA,
+   * which is only available on the L2 `IOpenIdConnectProvider` interface, not on `IOIDCProviderRef`.
+   *
    * @default - A provider is automatically created when first accessed.
    */
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
