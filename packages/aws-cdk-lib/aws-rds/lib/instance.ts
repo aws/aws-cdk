@@ -1791,7 +1791,7 @@ function validateAdditionalStorageVolumes(
   const supportsAdditionalVolumes = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
   if (!supportsAdditionalVolumes) {
     throw new ValidationError(
-      `Additional storage volumes are only supported for Oracle and SQL Server engines. Got: '${engineType}'`,
+      `Additional storage volumes are only supported for Oracle and SQL Server engines, got: '${engineType}'`,
       scope,
     );
   }
@@ -1799,7 +1799,7 @@ function validateAdditionalStorageVolumes(
   // Validate max 3 additional volumes
   if (volumes.length > 3) {
     throw new ValidationError(
-      `A maximum of 3 additional storage volumes can be specified. Got: ${volumes.length}`,
+      `A maximum of 3 additional storage volumes can be specified, got: ${volumes.length}`,
       scope,
     );
   }
@@ -1813,7 +1813,7 @@ function validateAdditionalStorageVolumes(
     // Validate storageThroughput is only for GP3
     if (volume.storageThroughput && volumeStorageType !== AdditionalStorageVolumeType.GP3) {
       throw new ValidationError(
-        `Storage throughput can only be specified with GP3 storage type for additional volume '${volumeName}'. Got: '${volumeStorageType}'.`,
+        `Storage throughput can only be specified with GP3 storage type for additional volume '${volumeName}', got: '${volumeStorageType}'`,
         scope,
       );
     }
@@ -1823,7 +1823,7 @@ function validateAdditionalStorageVolumes(
       const allocatedStorageGiB = volume.allocatedStorage.toGibibytes();
       if (allocatedStorageGiB < 200 || allocatedStorageGiB > 65536) {
         throw new ValidationError(
-          `Allocated storage for additional volume '${volumeName}' must be between 200 and 65,536 GiB. Got: ${allocatedStorageGiB} GiB.`,
+          `Allocated storage for additional volume '${volumeName}' must be between 200 and 65,536 GiB, got: ${allocatedStorageGiB} GiB`,
           scope,
         );
       }
@@ -1840,7 +1840,7 @@ function validateAdditionalStorageVolumes(
       const throughputMiBps = volume.storageThroughput.toMebibytes();
       if (throughputMiBps / volume.iops > 0.25) {
         throw new ValidationError(
-          `The maximum ratio of storage throughput to IOPS for additional volume '${volumeName}' is 0.25. Got ${throughputMiBps / volume.iops}.`,
+          `The maximum ratio of storage throughput to IOPS for additional volume '${volumeName}' is 0.25, got: ${throughputMiBps / volume.iops}`,
           scope,
         );
       }
@@ -1851,14 +1851,14 @@ function validateAdditionalStorageVolumes(
       if (engineType.startsWith('oracle-')) {
         if (volume.iops < 12000 || volume.iops > 64000) {
           throw new ValidationError(
-            `IOPS for Oracle with GP3 storage must be between 12,000 and 64,000 for additional volume '${volumeName}'. Got: ${volume.iops}.`,
+            `IOPS for Oracle with GP3 storage must be between 12,000 and 64,000 for additional volume '${volumeName}', got: ${volume.iops}`,
             scope,
           );
         }
       } else if (engineType.startsWith('sqlserver-')) {
         if (volume.iops < 3000 || volume.iops > 16000) {
           throw new ValidationError(
-            `IOPS for SQL Server with GP3 storage must be between 3,000 and 16,000 for additional volume '${volumeName}'. Got: ${volume.iops}.`,
+            `IOPS for SQL Server with GP3 storage must be between 3,000 and 16,000 for additional volume '${volumeName}', got: ${volume.iops}`,
             scope,
           );
         }
@@ -1871,14 +1871,14 @@ function validateAdditionalStorageVolumes(
       if (engineType.startsWith('oracle-')) {
         if (throughputMiBps < 500 || throughputMiBps > 4000) {
           throw new ValidationError(
-            `Storage throughput for Oracle with GP3 storage must be between 500 and 4,000 MiB/s for additional volume '${volumeName}'. Got: ${throughputMiBps} MiB/s.`,
+            `Storage throughput for Oracle with GP3 storage must be between 500 and 4,000 MiB/s for additional volume '${volumeName}', got: ${throughputMiBps} MiB/s`,
             scope,
           );
         }
       } else if (engineType.startsWith('sqlserver-')) {
         if (throughputMiBps < 125 || throughputMiBps > 1000) {
           throw new ValidationError(
-            `Storage throughput for SQL Server with GP3 storage must be between 125 and 1,000 MiB/s for additional volume '${volumeName}'. Got: ${throughputMiBps} MiB/s.`,
+            `Storage throughput for SQL Server with GP3 storage must be between 125 and 1,000 MiB/s for additional volume '${volumeName}', got: ${throughputMiBps} MiB/s`,
             scope,
           );
         }
@@ -1889,7 +1889,7 @@ function validateAdditionalStorageVolumes(
     if (volumeStorageType === AdditionalStorageVolumeType.IO2 && volume.iops && !Token.isUnresolved(volume.iops)) {
       if (volume.iops < 1000 || volume.iops > 256000) {
         throw new ValidationError(
-          `IOPS for IO2 storage must be between 1,000 and 256,000 for additional volume '${volumeName}'. Got: ${volume.iops}.`,
+          `IOPS for IO2 storage must be between 1,000 and 256,000 for additional volume '${volumeName}', got: ${volume.iops}`,
           scope,
         );
       }

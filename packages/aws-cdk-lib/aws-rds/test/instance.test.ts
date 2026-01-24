@@ -2545,7 +2545,7 @@ describe('instance', () => {
             { allocatedStorage: cdk.Size.gibibytes(200) },
           ],
         });
-      }).toThrow(/Additional storage volumes are only supported for Oracle and SQL Server/);
+      }).toThrow(`Additional storage volumes are only supported for Oracle and SQL Server engines, got: '${engine.engineType}'`);
     });
 
     test('throws if more than 3 additional volumes specified', () => {
@@ -2560,7 +2560,7 @@ describe('instance', () => {
             { allocatedStorage: cdk.Size.gibibytes(200) },
           ],
         });
-      }).toThrow(/A maximum of 3 additional storage volumes can be specified/);
+      }).toThrow('A maximum of 3 additional storage volumes can be specified, got: 4');
     });
 
     test('throws if storageThroughput specified for IO2', () => {
@@ -2576,7 +2576,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(/Storage throughput can only be specified with GP3 storage type/);
+      }).toThrow("Storage throughput can only be specified with GP3 storage type for additional volume 'rdsdbdata2', got: 'io2'");
     });
 
     // allocatedStorage valid boundary values
@@ -2602,7 +2602,7 @@ describe('instance', () => {
             { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
           ],
         });
-      }).toThrow(/must be between 200 and 65,536 GiB/);
+      }).toThrow(`Allocated storage for additional volume 'rdsdbdata2' must be between 200 and 65,536 GiB, got: ${sizeGiB} GiB`);
     });
 
     test('throws if GP3 throughput/IOPS ratio exceeds 0.25', () => {
@@ -2619,7 +2619,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(/maximum ratio of storage throughput to IOPS.*is 0.25/);
+      }).toThrow(`The maximum ratio of storage throughput to IOPS for additional volume 'rdsdbdata2' is 0.25, got: ${4000 / 12000}`);
     });
 
     test('accepts GP3 throughput/IOPS ratio at exactly 0.25', () => {
@@ -2670,7 +2670,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(/IOPS for Oracle with GP3 storage must be between 12,000 and 64,000/);
+      }).toThrow(`IOPS for Oracle with GP3 storage must be between 12,000 and 64,000 for additional volume 'rdsdbdata2', got: ${iops}`);
     });
 
     // SQL Server GP3 IOPS valid boundary values
@@ -2704,7 +2704,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(/IOPS for SQL Server with GP3 storage must be between 3,000 and 16,000/);
+      }).toThrow(`IOPS for SQL Server with GP3 storage must be between 3,000 and 16,000 for additional volume 'rdsdbdata2', got: ${iops}`);
     });
 
     // Oracle GP3 throughput valid boundary values
@@ -2747,7 +2747,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(/Storage throughput for Oracle with GP3 storage must be between 500 and 4,000 MiB\/s/);
+      }).toThrow(`Storage throughput for Oracle with GP3 storage must be between 500 and 4,000 MiB/s for additional volume 'rdsdbdata2', got: ${throughput} MiB/s`);
     });
 
     // SQL Server GP3 throughput valid boundary values
@@ -2789,7 +2789,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(/Storage throughput for SQL Server with GP3 storage must be between 125 and 1,000 MiB\/s/);
+      }).toThrow(`Storage throughput for SQL Server with GP3 storage must be between 125 and 1,000 MiB/s for additional volume 'rdsdbdata2', got: ${throughput} MiB/s`);
     });
 
     // IO2 IOPS valid boundary values (same for Oracle and SQL Server)
@@ -2823,7 +2823,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(/IOPS for IO2 storage must be between 1,000 and 256,000/);
+      }).toThrow(`IOPS for IO2 storage must be between 1,000 and 256,000 for additional volume 'rdsdbdata2', got: ${iops}`);
     });
 
     test.each([1000, 256000])('accepts SQL Server IO2 IOPS %d', (iops) => {
@@ -2855,7 +2855,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(/IOPS for IO2 storage must be between 1,000 and 256,000/);
+      }).toThrow(`IOPS for IO2 storage must be between 1,000 and 256,000 for additional volume 'rdsdbdata2', got: ${iops}`);
     });
   });
 });
