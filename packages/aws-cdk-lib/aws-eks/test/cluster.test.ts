@@ -2356,6 +2356,166 @@ describe('cluster', () => {
         },
       });
     });
+
+    test('user-provided openIdConnectProvider is used instead of creating a new one', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // Create a pre-existing OIDC provider
+      const existingProvider = new iam.OpenIdConnectProvider(stack, 'ExistingOidcProvider', {
+        url: 'https://oidc.eks.us-east-1.amazonaws.com/id/EXAMPLED539D4633E53DE1B71EXAMPLE',
+        clientIds: ['sts.amazonaws.com'],
+      });
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        openIdConnectProvider: existingProvider,
+      });
+
+      // THEN
+      expect(cluster.openIdConnectProvider).toBe(existingProvider);
+
+      // Verify that no additional OpenIdConnectProvider was created by the cluster
+      // There should be exactly 1 OpenIdConnectProvider (the one we created)
+      Template.fromStack(stack).resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 1);
+    });
+
+    test('user-provided openIdConnectProvider from ARN is used', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // Import an existing OIDC provider by ARN
+      const importedProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+        stack,
+        'ImportedOidcProvider',
+        'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/EXAMPLED539D4633E53DE1B71EXAMPLE',
+      );
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        openIdConnectProvider: importedProvider,
+      });
+
+      // THEN
+      expect(cluster.openIdConnectProvider).toBe(importedProvider);
+
+      // Verify that no OpenIdConnectProvider was created by the cluster
+      Template.fromStack(stack).resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
+    });
+
+    test('user-provided openIdConnectProvider emits warning annotation', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // Create a pre-existing OIDC provider
+      const existingProvider = new iam.OpenIdConnectProvider(stack, 'ExistingOidcProvider', {
+        url: 'https://oidc.eks.us-east-1.amazonaws.com/id/EXAMPLED539D4633E53DE1B71EXAMPLE',
+        clientIds: ['sts.amazonaws.com'],
+      });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        openIdConnectProvider: existingProvider,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster', Match.stringLikeRegexp('.*userSuppliedOidcProvider.*'));
+    });
+
+    test('cluster without user-provided openIdConnectProvider does not emit warning', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN - no warning should be present
+      const annotations = Annotations.fromStack(stack);
+      expect(() => {
+        annotations.hasWarning('/Stack/Cluster', Match.stringLikeRegexp('.*userSuppliedOidcProvider.*'));
+      }).toThrow();
+    });
+
+    test('service account can be created with user-provided openIdConnectProvider', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // Create a pre-existing OIDC provider
+      const existingProvider = new iam.OpenIdConnectProvider(stack, 'ExistingOidcProvider', {
+        url: 'https://oidc.eks.us-east-1.amazonaws.com/id/EXAMPLED539D4633E53DE1B71EXAMPLE',
+        clientIds: ['sts.amazonaws.com'],
+      });
+
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        openIdConnectProvider: existingProvider,
+      });
+
+      // WHEN
+      const sa = cluster.addServiceAccount('MyServiceAccount');
+
+      // THEN
+      expect(sa).toBeDefined();
+      expect(cluster.openIdConnectProvider).toBe(existingProvider);
+
+      // Verify the service account role trusts the user-provided OIDC provider
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [{
+            Action: 'sts:AssumeRoleWithWebIdentity',
+            Effect: 'Allow',
+            Principal: {
+              Federated: {
+                Ref: Match.stringLikeRegexp('ExistingOidcProvider.*'),
+              },
+            },
+          }],
+        },
+      });
+    });
+
+    test('snapshot test: cluster without openIdConnectProvider property remains unchanged', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN - verify CloudFormation template structure
+      const template = Template.fromStack(stack);
+
+      // Should have the cluster resource
+      template.resourceCountIs('Custom::AWSCDK-EKS-Cluster', 1);
+
+      // Should NOT have an OIDC provider yet (lazy initialization)
+      template.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
+    });
+
     test('inf1 instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
