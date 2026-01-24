@@ -627,6 +627,8 @@ When importing existing secrets from AWS Secrets Manager for use with ECS, you m
 
 **Correct approach:**
 ```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
 // Get the complete ARN from AWS CLI:
 // aws secretsmanager describe-secret --secret-id my-secret-name --query ARN --output text
 
