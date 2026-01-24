@@ -218,15 +218,14 @@ export class ServiceAccount extends Construct implements IPrincipal {
           ...props.labels,
         },
         annotations: {
+          // Add role-arn first if applicable, then spread user annotations
+          ...(props.identityType !== IdentityType.NONE && this.role !== undefined
+            ? { 'eks.amazonaws.com/role-arn': this.role.roleArn }
+            : {}),
           ...props.annotations,
         },
       },
     };
-
-    // Only add role ARN annotation if identity type is not NONE
-    if (props.identityType !== IdentityType.NONE && this.role !== undefined) {
-      manifest.metadata.annotations['eks.amazonaws.com/role-arn'] = this.role.roleArn;
-    }
 
     new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
       cluster,
