@@ -4,7 +4,7 @@ import * as dynamodb from '../../aws-dynamodb';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as rds from '../../aws-rds';
-import { RemovalPolicy, Stack } from '../../core';
+import { Lazy, RemovalPolicy, Stack } from '../../core';
 import { BackupPlan, BackupResource, BackupSelection } from '../lib';
 
 let stack: Stack;
@@ -936,10 +936,8 @@ test('conditions can be used together with fromTag (both ListOfTags and Conditio
   });
 });
 
-
 test('throws error when condition key contains a token', () => {
   // GIVEN - Use Lazy.string to create a token for the key
-  const { Lazy } = require('../../core');
   const dynamicKey = Lazy.string({ produce: () => 'dynamic-key' });
 
   // WHEN/THEN
@@ -960,7 +958,6 @@ test('throws error when condition key contains a token', () => {
 
 test('allows token values in conditions (only keys must be static)', () => {
   // GIVEN - Use Lazy.string to create a token for the value
-  const { Lazy } = require('../../core');
   const dynamicValue = Lazy.string({ produce: () => 'dynamic-value' });
 
   // WHEN
