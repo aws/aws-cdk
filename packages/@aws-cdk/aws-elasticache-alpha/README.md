@@ -397,7 +397,7 @@ declare const role: iam.Role;
  
 // grant "elasticache:Connect" action permissions to role
 user.grantConnect(role);
-serverlessCache.grantConnect(role);
+serverlessCache.grants.connect(role);
 ```
 
 ### Import an existing user and user group
