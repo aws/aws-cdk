@@ -1,4 +1,3 @@
-/* eslint-disable jest/expect-expect */
 import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
@@ -10,7 +9,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, TLSSecurityPolicy } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, NodeType, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -189,6 +188,77 @@ each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engin
 
   const resources = Template.fromStack(stack).toJSON().Resources;
   expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
+});
+
+each([testedOpenSearchVersions]).test('uses key ARN for cross-account KMS keys', (engineVersion) => {
+  // Create a cross-account KMS key using fromKeyArn
+  const crossAccountKey = kms.Key.fromKeyArn(
+    stack,
+    'CrossAccountKey',
+    'arn:aws:kms:us-east-1:999999999999:key/12345678-1234-1234-1234-123456789012',
+  );
+
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    encryptionAtRest: {
+      kmsKey: crossAccountKey,
+    },
+  });
+
+  // Verify that the KMS key ID in the CloudFormation template is the full ARN
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    EncryptionAtRestOptions: {
+      Enabled: true,
+      KmsKeyId: 'arn:aws:kms:us-east-1:999999999999:key/12345678-1234-1234-1234-123456789012',
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('uses key ARN for cross-region KMS keys', (engineVersion) => {
+  // Create a cross-region KMS key using fromKeyArn
+  const crossRegionKey = kms.Key.fromKeyArn(
+    stack,
+    'CrossRegionKey',
+    'arn:aws:kms:us-west-2:1234:key/12345678-1234-1234-1234-123456789012',
+  );
+
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    encryptionAtRest: {
+      kmsKey: crossRegionKey,
+    },
+  });
+
+  // Verify that the KMS key ID in the CloudFormation template is the full ARN
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    EncryptionAtRestOptions: {
+      Enabled: true,
+      KmsKeyId: 'arn:aws:kms:us-west-2:1234:key/12345678-1234-1234-1234-123456789012',
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('uses key ID for same-account same-region KMS keys', (engineVersion) => {
+  // Create a same-account, same-region KMS key
+  const key = new kms.Key(stack, 'Key');
+
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    encryptionAtRest: {
+      kmsKey: key,
+    },
+  });
+
+  // Verify that the KMS key ID in the CloudFormation template uses keyId (not ARN)
+  // This maintains backward compatibility - keyId returns a Ref to the key
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    EncryptionAtRestOptions: {
+      Enabled: true,
+      KmsKeyId: {
+        Ref: 'Key961B73FD',
+      },
+    },
+  });
 });
 
 each([
@@ -2759,7 +2829,7 @@ function testMetric(
 
 each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOptions', (engineVersion) => {
   const coordinatorConfig: NodeOptions = {
-    nodeType: 'coordinator',
+    nodeType: NodeType.COORDINATOR,
     nodeConfig: {
       enabled: true,
       type: 'm5.large.search',
@@ -2767,7 +2837,7 @@ each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOp
     },
   };
 
-  const domain = new Domain(stack, 'Domain', {
+  new Domain(stack, 'Domain', {
     version: engineVersion,
     capacity: {
       nodeOptions: [coordinatorConfig],
@@ -2794,7 +2864,7 @@ each(testedOpenSearchVersions).test('throws when coordinator node instance type 
       version: engineVersion,
       capacity: {
         nodeOptions: [{
-          nodeType: 'coordinator' as const,
+          nodeType: NodeType.COORDINATOR,
           nodeConfig: {
             enabled: true,
             type: 'm5.large',
@@ -2811,7 +2881,7 @@ each(testedOpenSearchVersions).test('throws when coordinator node count is less 
       version: engineVersion,
       capacity: {
         nodeOptions: [{
-          nodeType: 'coordinator' as const,
+          nodeType: NodeType.COORDINATOR,
           nodeConfig: {
             enabled: true,
             count: 0,
@@ -2824,11 +2894,11 @@ each(testedOpenSearchVersions).test('throws when coordinator node count is less 
 });
 
 each(testedOpenSearchVersions).test('can disable coordinator nodes', (engineVersion) => {
-  const domain = new Domain(stack, 'Domain', {
+  new Domain(stack, 'Domain', {
     version: engineVersion,
     capacity: {
       nodeOptions: [{
-        nodeType: 'coordinator' as const,
+        nodeType: NodeType.COORDINATOR,
         nodeConfig: {
           enabled: false,
         },

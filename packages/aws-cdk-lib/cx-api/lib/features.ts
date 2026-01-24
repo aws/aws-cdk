@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { FlagInfo, FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
@@ -80,6 +81,7 @@ export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@
 export const ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER = '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener';
 export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
+export const ROUTE53_PATTERNS_USE_DISTRIBUTION = '@aws-cdk/aws-route53-patterns:useDistribution';
 export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
@@ -129,8 +131,6 @@ export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:b
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const SIGNER_PROFILE_NAME_PASSED_TO_CFN = '@aws-cdk/aws-signer:signingProfileNamePassedToCfn';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
-export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
-export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
@@ -158,10 +158,10 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When enabled, the \`signingProfileName\` property is passed to the L1 \`CfnSigningProfile\` construct,
       which ensures that the AWS Signer profile is created with the specified name.
-      
+
       When disabled, the \`signingProfileName\` is not passed to CloudFormation, maintaining backward
       compatibility with existing deployments where CloudFormation auto-generated profile names.
-      
+
       This feature flag is needed because enabling it can cause existing signing profiles to be
       replaced during deployment if a \`signingProfileName\` was specified but not previously used
       in the CloudFormation template.`,
@@ -1257,42 +1257,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Configure stack-level tags using `new Stack(..., { tags: { ... } })`.',
   },
-  [Enable_IMDS_Blocking_Deprecated_Feature]: {
-    type: FlagType.Temporary,
-    summary: 'When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated ' +
-      'commands will be added to UserData to block container accessing IMDS. ' +
-      '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
-    detailsMd: `
-    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
-    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
-    guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
-    `,
-    introducedIn: { v2: '2.175.0' },
-    recommendedValue: false,
-    compatibilityWithOldBehaviorMd: 'Set this flag to false in order to continue using old and outdated commands. ' +
-      'However, it is **not** recommended.',
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [Disable_ECS_IMDS_Blocking]: {
-    type: FlagType.Temporary,
-    summary: 'When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false.' +
-      ' **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**',
-    detailsMd: `
-    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-    accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
-    IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-
-    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
-    `,
-    introducedIn: { v2: '2.175.0' },
-    recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'It is strongly recommended to set this flag to true. However, if necessary, set ' +
-      'this flag to false to continue using the old implementation.',
-  },
 
   //////////////////////////////////////////////////////////////////////
   [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: {
@@ -1783,6 +1747,19 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.221.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
+    detailsMd: `
+      Enable this feature flag to use the new \`Distribution\` resource instead
+      of the deprecated \`CloudFrontWebDistribution\` construct.
+      `,
+    introducedIn: { v2: '2.233.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
+  },
 };
 
 export const CURRENT_MV = 'v2';
@@ -1828,7 +1805,7 @@ export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
     // This should never happen, if this error is thrown it's a bug
-    // eslint-disable-next-line @cdklabs/no-throw-default-error
+
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;

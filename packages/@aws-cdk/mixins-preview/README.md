@@ -134,6 +134,24 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new EnableVersioning());
 ```
 
+**BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
+
+```typescript
+declare const bucket: s3.IBucketRef;
+
+const bucketPolicy = new s3.CfnBucketPolicy(scope, "BucketPolicy", {
+  bucket: bucket,
+  policyDocument: new iam.PolicyDocument(),
+});
+Mixins.of(bucketPolicy).apply(new BucketPolicyStatementsMixin([
+  new iam.PolicyStatement({
+    actions: ["s3:GetObject"],
+    resources: ["*"],
+    principals: [new iam.AnyPrincipal()],
+  }),
+]));
+```
+
 ### Logs Delivery
 
 Configures vended logs delivery for supported resources to various destinations:
@@ -236,7 +254,7 @@ declare const fn: lambda.Function;
 
 new events.Rule(scope, 'Rule', {
   eventPattern: bucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [new targets.LambdaFunction(fn)]
 });
@@ -248,7 +266,7 @@ const cfnBucketEvents = BucketEvents.fromBucket(cfnBucket);
 new events.CfnRule(scope, 'CfnRule', {
   state: 'ENABLED',
   eventPattern: cfnBucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [{ arn: fn.functionArn, id: 'L1' }]
 });
@@ -273,13 +291,14 @@ const pattern = bucketEvents.objectCreatedPattern();
 
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
 
 declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 const pattern = bucketEvents.objectCreatedPattern({
   eventMetadata: {
-    region: ['us-east-1', 'us-west-2'],
+    region: events.Match.prefix('us-'),
     version: ['0']
   }
 });

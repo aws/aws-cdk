@@ -1,44 +1,41 @@
 import { Stack } from 'aws-cdk-lib';
-import { Bucket, BucketPolicy, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { Bucket, BucketEncryption, BucketPolicy, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { CfnDeliverySource, LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../../lib/services/aws-logs';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
 describe('S3 Delivery', () => {
   let source: Bucket;
-  let deliverySource: CfnDeliverySource;
   let stack: Stack;
+  const logType = 'ACCESS_LOGS';
 
   beforeEach(() => {
     stack = new Stack();
     source = new Bucket(stack, 'SourceBucket');
-    deliverySource = new CfnDeliverySource(stack, 'S3DeliverySource', {
-      name: 's3-delivery-s3',
-      resourceArn: source.bucketArn,
-      logType: 'ACCESS_LOGS',
-    });
   });
 
   test('creates an S3 delivery destination and delivery connection', () => {
     const bucket = new Bucket(stack, 'Destination');
 
     const s3Logs = new S3LogsDelivery(bucket);
-    s3Logs.bind(source, deliverySource, source.bucketArn);
+    s3Logs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkS3DeliverySourceBucketDestinationDest500948E7',
+          'SourceBucketCdkS3AccessLogsDeliverySourceBucketDestinationDestBA63D329',
           'Arn',
         ],
       },
       DeliverySourceName: {
-        Ref: 'S3DeliverySource',
+        Ref: 'SourceBucketCDKSourceACCESSLOGSSourceBucket3DC18173',
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
@@ -49,7 +46,14 @@ describe('S3 Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-s3-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-s3-access-logs-dest-.*'),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: logType,
+      ResourceArn: {
+        'Fn::GetAtt': ['SourceBucketDDD2130A', 'Arn'],
+      },
+      Name: Match.stringLikeRegexp('cdk-accesslogs-source-.*'),
     });
 
     // Validate that DeliveryDestination depends on the S3 bucket policy
@@ -63,25 +67,46 @@ describe('S3 Delivery', () => {
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(bucketPolicyLogicalId);
   });
 
+  test('creates delivery source as child of source resource', () => {
+    const bucket = new Bucket(stack, 'Destination');
+    const s3Logs = new S3LogsDelivery(bucket);
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    const deliverySources = Template.fromStack(stack).findResources('AWS::Logs::DeliverySource');
+    const sourceLogicalId = Object.keys(deliverySources)[0];
+    expect(sourceLogicalId).toMatch(/^SourceBucket/);
+  });
+
+  test('reuses delivery source when binding same source multiple times', () => {
+    const bucket1 = new Bucket(stack, 'Destination1');
+    const bucket2 = new Bucket(stack, 'Destination2');
+
+    const s3Logs1 = new S3LogsDelivery(bucket1);
+    s3Logs1.bind(source, logType, source.bucketArn);
+
+    const s3Logs2 = new S3LogsDelivery(bucket2);
+    s3Logs2.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
+  });
+
   test('able to make multiple delivery destinations and multiple deliveries that use the same bucket', () => {
     const bucket = new Bucket(stack, 'Destination');
 
     const s3Logs = new S3LogsDelivery(bucket);
-    s3Logs.bind(source, deliverySource, source.bucketArn);
+    s3Logs.bind(source, logType, source.bucketArn);
 
     const source1 = new Bucket(stack, 'SourceBucket1');
-    const deliverySource1 = new CfnDeliverySource(stack, 'S3DeliverySource1', {
-      name: 's3-delivery-s3-1',
-      resourceArn: source1.bucketArn,
-      logType: 'ACCESS_LOGS',
-    });
 
     const s3Logs1 = new S3LogsDelivery(bucket, {
       permissionsVersion: S3LogsDeliveryPermissionsVersion.V2,
     });
-    s3Logs1.bind(source1, deliverySource1, source1.bucketArn);
+    s3Logs1.bind(source1, logType, source1.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
   });
@@ -91,7 +116,7 @@ describe('S3 Delivery', () => {
     const s3Logs = new S3LogsDelivery(bucket, {
       permissionsVersion: S3LogsDeliveryPermissionsVersion.V1,
     });
-    s3Logs.bind(source, deliverySource, source.bucketArn);
+    s3Logs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
@@ -209,7 +234,7 @@ describe('S3 Delivery', () => {
     const s3Logs = new S3LogsDelivery(bucket, {
       permissionsVersion: S3LogsDeliveryPermissionsVersion.V2,
     });
-    s3Logs.bind(source, deliverySource, source.bucketArn);
+    s3Logs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
@@ -293,7 +318,7 @@ describe('S3 Delivery', () => {
     });
 
     const s3Logs = new S3LogsDelivery(bucket);
-    s3Logs.bind(source, deliverySource, source.bucketArn);
+    s3Logs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
   });
@@ -314,7 +339,7 @@ describe('S3 Delivery', () => {
     });
 
     const s3Logs = new S3LogsDelivery(bucket);
-    s3Logs.bind(source, deliverySource, source.bucketArn);
+    s3Logs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
@@ -420,21 +445,157 @@ describe('S3 Delivery', () => {
     },
     );
   });
+
+  test('adds KMS key policy when bucket is encrypted with KMS key and KMS key is passed in to S3LogsDelivery', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket = new Bucket(stack, 'Destination', {
+      encryptionKey: key,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket, { kmsKey: key });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('adds KMS key policy when bucket is encrypted with KMS key and KMS key is not passed in to S3LogsDelivery', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket = new Bucket(stack, 'Destination', {
+      encryptionKey: key,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket);
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('KMS key policy is not duplicated when multiple buckets use the same key for encryption', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket1 = new Bucket(stack, 'Destination1', {
+      encryptionKey: key,
+    });
+
+    const bucket2 = new Bucket(stack, 'Destination2', {
+      encryptionKey: key,
+    });
+
+    const s3Logs1 = new S3LogsDelivery(bucket1, { kmsKey: key });
+    const s3Logs2 = new S3LogsDelivery(bucket2);
+    s3Logs1.bind(source, logType, source.bucketArn);
+    s3Logs2.bind(source, logType, source.bucketArn);
+
+    const template = Template.fromStack(stack);
+    const keyResource = template.findResources('AWS::KMS::Key');
+    const keyPolicy = Object.values(keyResource)[0].Properties.KeyPolicy;
+    const logsDeliveryStatements = keyPolicy.Statement.filter((stmt: any) =>
+      stmt.Sid === 'AWS CDK: Allow Logs Delivery to use the key',
+    );
+
+    expect(logsDeliveryStatements).toHaveLength(1);
+  });
+
+  test('does not add KMS key policy when bucket is encrypted using AWS managed keys', () => {
+    const bucket = new Bucket(stack, 'Destination', {
+      encryption: BucketEncryption.KMS_MANAGED,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket);
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+            },
+          },
+        ],
+      },
+    });
+  });
 });
 
 describe('Cloudwatch Logs Delivery', () => {
   let stack: Stack;
   let source: Bucket;
-  let deliverySource: CfnDeliverySource;
+  const logType = 'ACCESS_LOGS';
 
   beforeEach(() => {
     stack = new Stack();
     source = new Bucket(stack, 'SourceBucket');
-    deliverySource = new CfnDeliverySource(stack, 'CWLDeliverySource', {
-      name: 's3-delivery-cwl',
-      resourceArn: source.bucketArn,
-      logType: 'ACCESS_LOGS',
-    });
   });
 
   test('creates a Cloudwatch Delivery Destination when given a log group', () => {
@@ -444,18 +605,19 @@ describe('Cloudwatch Logs Delivery', () => {
     });
 
     const cwlLogs = new LogGroupLogsDelivery(logGroup);
-    cwlLogs.bind(source, deliverySource, source.bucketArn);
+    cwlLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkLogGroupDeliverySourceBucketLogGroupDeliveryDestCC8D47E3',
+          'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupDeliveryDest89BD1E86',
           'Arn',
         ],
       },
       DeliverySourceName: {
-        Ref: 'CWLDeliverySource',
+        Ref: 'SourceBucketCDKSourceACCESSLOGSSourceBucket3DC18173',
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
@@ -466,7 +628,14 @@ describe('Cloudwatch Logs Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-cwl-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-cwl-access-logs-dest-.*'),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: logType,
+      ResourceArn: {
+        'Fn::GetAtt': ['SourceBucketDDD2130A', 'Arn'],
+      },
+      Name: Match.stringLikeRegexp('cdk-accesslogs-source-.*'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
@@ -501,7 +670,7 @@ describe('Cloudwatch Logs Delivery', () => {
           ],
         ],
       },
-      PolicyName: 'SourceBucketCdkLogGroupDeliverySourceBucketLogGroupDeliveryDAEA34A7',
+      PolicyName: 'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupDelivery72DADCC3',
     });
 
     // Validate that DeliveryDestination depends on the Cloudwatch resource policy
@@ -529,7 +698,7 @@ describe('Cloudwatch Logs Delivery', () => {
     }));
 
     const cwlLogs = new LogGroupLogsDelivery(logGroup);
-    cwlLogs.bind(source, deliverySource, source.bucketArn);
+    cwlLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 2);
   });
@@ -545,7 +714,7 @@ describe('Cloudwatch Logs Delivery', () => {
     });
 
     const cwlLogs = new LogGroupLogsDelivery(logGroup);
-    cwlLogs.bind(source, deliverySource, source.bucketArn);
+    cwlLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
   });
@@ -562,10 +731,10 @@ describe('Cloudwatch Logs Delivery', () => {
     });
 
     const cwlLogs1 = new LogGroupLogsDelivery(logGroup1);
-    cwlLogs1.bind(source, deliverySource, source.bucketArn);
+    cwlLogs1.bind(source, logType, source.bucketArn);
 
     const cwlLogs2 = new LogGroupLogsDelivery(logGroup2);
-    cwlLogs2.bind(source, deliverySource, source.bucketArn);
+    cwlLogs2.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
   });
@@ -593,7 +762,7 @@ describe('Cloudwatch Logs Delivery', () => {
     }));
 
     const cwlLogs = new LogGroupLogsDelivery(logGroup);
-    cwlLogs.bind(source, deliverySource, source.bucketArn);
+    cwlLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
     Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::ResourcePolicy', 1);
@@ -606,19 +775,15 @@ describe('Cloudwatch Logs Delivery', () => {
     });
 
     const source2 = new Bucket(stack, 'SourceBucket2');
-    const deliverySource2 = new CfnDeliverySource(stack, 'CWLDeliverySource2', {
-      name: 's3-delivery-cwl-2',
-      resourceArn: source2.bucketArn,
-      logType: 'ACCESS_LOGS',
-    });
 
     const cwlLogs1 = new LogGroupLogsDelivery(logGroup);
-    cwlLogs1.bind(source, deliverySource, source.bucketArn);
+    cwlLogs1.bind(source, logType, source.bucketArn);
 
     const cwlLogs2 = new LogGroupLogsDelivery(logGroup);
-    cwlLogs2.bind(source2, deliverySource2, source2.bucketArn);
+    cwlLogs2.bind(source2, logType, source2.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
   });
@@ -627,16 +792,11 @@ describe('Cloudwatch Logs Delivery', () => {
 describe('Firehose Stream Delivery', () => {
   let stack: Stack;
   let source: Bucket;
-  let deliverySource: CfnDeliverySource;
+  const logType = 'ACCESS_LOGS';
 
   beforeEach(() => {
     stack = new Stack();
     source = new Bucket(stack, 'SourceBucket');
-    deliverySource = new CfnDeliverySource(stack, 'FHDeliverySource', {
-      name: 's3-delivery-fh',
-      resourceArn: source.bucketArn,
-      logType: 'ACCESS_LOGS',
-    });
   });
 
   test('creates a Firehose Delivery Destination and a Delivery connection when given a delivery stream', () => {
@@ -660,18 +820,19 @@ describe('Firehose Stream Delivery', () => {
     });
 
     const fhLogs = new FirehoseLogsDelivery(stream);
-    fhLogs.bind(source, deliverySource, source.bucketArn);
+    fhLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkFirehoseDeliverySourceBucketFirehoseDestB16933AF',
+          'SourceBucketCdkFirehoseAccessLogsDeliverySourceBucketFirehoseDestACDAE1B5',
           'Arn',
         ],
       },
       DeliverySourceName: {
-        Ref: 'FHDeliverySource',
+        Ref: 'SourceBucketCDKSourceACCESSLOGSSourceBucket3DC18173',
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
@@ -682,7 +843,14 @@ describe('Firehose Stream Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-fh-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-fh-access-logs-dest-.*'),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: logType,
+      ResourceArn: {
+        'Fn::GetAtt': ['SourceBucketDDD2130A', 'Arn'],
+      },
+      Name: Match.stringLikeRegexp('cdk-accesslogs-source-.*'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -714,18 +882,13 @@ describe('Firehose Stream Delivery', () => {
     });
 
     const source2 = new Bucket(stack, 'SourceBucket2');
-    const deliverySource2 = new CfnDeliverySource(stack, 'FHDeliverySource2', {
-      name: 's3-delivery-fh-2',
-      resourceArn: source.bucketArn,
-      logType: 'ACCESS_LOGS',
-    });
-
     const fhLogs1 = new FirehoseLogsDelivery(stream);
-    fhLogs1.bind(source, deliverySource, 'noop');
+    fhLogs1.bind(source, logType, source.bucketArn);
 
     const fhLogs2 = new FirehoseLogsDelivery(stream);
-    fhLogs2.bind(source2, deliverySource2, 'noop');
+    fhLogs2.bind(source2, logType, source2.bucketArn);
 
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
   });
@@ -734,42 +897,41 @@ describe('Firehose Stream Delivery', () => {
 describe('XRay Delivery', () => {
   let stack: Stack;
   let source: Bucket;
-  let deliverySource: CfnDeliverySource;
+  const logType = 'TRACES';
   beforeEach(() => {
     stack = new Stack();
     source = new Bucket(stack, 'SourceBucket');
-    deliverySource = new CfnDeliverySource(stack, 'XRayDeliverySource', {
-      name: 's3-delivery-xray',
-      resourceArn: source.bucketArn,
-      logType: 'TRACES',
-    });
   });
 
   test('creates an XRay Delivery Destination and Delivery', () => {
     const xrayLogs = new XRayLogsDelivery();
-    xrayLogs.bind(source, deliverySource, source.bucketArn);
+    xrayLogs.bind(source, logType, source.bucketArn);
 
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'XRAY',
-      Name: Match.stringLikeRegexp('cdk-xray-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-xray-traces-dest-.*'),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: logType,
+      ResourceArn: {
+        'Fn::GetAtt': ['SourceBucketDDD2130A', 'Arn'],
+      },
+      Name: Match.stringLikeRegexp('cdk-traces-source-.*'),
     });
   });
 
   test('when multiple XRay Delivery destinations are created on one stack, only create one XRay resource policy', () => {
     const xrayLogs = new XRayLogsDelivery();
-    xrayLogs.bind(source, deliverySource, source.bucketArn);
+    xrayLogs.bind(source, logType, source.bucketArn);
 
     const source2 = new Bucket(stack, 'SourceBucket2');
-    const deliverySource2 = new CfnDeliverySource(stack, 'XRayDeliverySource2', {
-      name: 's3-delivery-xray',
-      resourceArn: source2.bucketArn,
-      logType: 'TRACES',
-    });
 
     const xrayLogs2 = new XRayLogsDelivery();
-    xrayLogs2.bind(source2, deliverySource2, source2.bucketArn);
+    xrayLogs2.bind(source2, logType, source2.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
   });
@@ -778,17 +940,12 @@ describe('XRay Delivery', () => {
     const stack2 = new Stack();
 
     const xrayLogs = new XRayLogsDelivery();
-    xrayLogs.bind(source, deliverySource, source.bucketArn);
+    xrayLogs.bind(source, logType, source.bucketArn);
 
     const source2 = new Bucket(stack2, 'SourceBucket2');
-    const deliverySource2 = new CfnDeliverySource(stack2, 'XRayDeliverySource2', {
-      name: 's3-delivery-xray',
-      resourceArn: source2.bucketArn,
-      logType: 'TRACES',
-    });
 
     const xrayLogs2 = new XRayLogsDelivery();
-    xrayLogs2.bind(source2, deliverySource2, source2.bucketArn);
+    xrayLogs2.bind(source2, logType, source2.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
@@ -800,7 +957,7 @@ describe('XRay Delivery', () => {
 
   test('creates an XRay delivery policy with correct permissions', () => {
     const xrayLogs = new XRayLogsDelivery();
-    xrayLogs.bind(source, deliverySource, source.bucketArn);
+    xrayLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
@@ -836,11 +993,11 @@ describe('XRay Delivery', () => {
 
   test('XRay Delivery resource policy gets updated with multiple log delivery sources', () => {
     const xrayLogs = new XRayLogsDelivery();
-    xrayLogs.bind(source, deliverySource, source.bucketArn);
+    xrayLogs.bind(source, logType, source.bucketArn);
 
     const source1 = new Bucket(stack, 'SourceBucket1');
     const xrayLogs2 = new XRayLogsDelivery();
-    xrayLogs2.bind(source1, deliverySource, source1.bucketArn);
+    xrayLogs2.bind(source1, logType, source1.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
       PolicyDocument: {

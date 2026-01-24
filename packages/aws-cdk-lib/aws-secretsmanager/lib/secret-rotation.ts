@@ -3,7 +3,7 @@ import { ISecret } from './secret';
 import * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import * as serverless from '../../aws-sam';
-import { Duration, Names, Stack, Token, CfnMapping, Aws, RemovalPolicy, ValidationError, UnscopedValidationError } from '../../core';
+import { Duration, Names, Stack, CfnMapping, Aws, RemovalPolicy, ValidationError, UnscopedValidationError } from '../../core';
 
 /**
  * Options for a SecretRotationApplication
@@ -345,7 +345,7 @@ export class SecretRotation extends Construct {
     // serverless application. This is needed because it's the application
     // that creates the Lambda permission to invoke the function.
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html
-    const rotationLambda = lambda.Function.fromFunctionArn(this, 'RotationLambda', Token.asString(application.getAtt('Outputs.RotationLambdaARN')));
+    const rotationLambda = lambda.Function.fromFunctionArn(this, 'RotationLambda', application.getAtt('Outputs.RotationLambdaARN').toString());
 
     props.secret.addRotationSchedule('RotationSchedule', {
       rotationLambda,

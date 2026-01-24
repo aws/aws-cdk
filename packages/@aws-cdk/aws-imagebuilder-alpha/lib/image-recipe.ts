@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImageRecipe } from 'aws-cdk-lib/aws-imagebuilder';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -184,6 +185,7 @@ abstract class ImageRecipeBase extends cdk.Resource implements IImageRecipe {
 
   /**
    * Grant custom actions to the given grantee for the image recipe
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -199,6 +201,7 @@ abstract class ImageRecipeBase extends cdk.Resource implements IImageRecipe {
 
   /**
    * Grant read permissions to the given grantee for the image recipe
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -301,22 +304,8 @@ export class ImageRecipe extends ImageRecipeBase {
     return x !== null && typeof x === 'object' && IMAGE_RECIPE_SYMBOL in x;
   }
 
-  /**
-   * The ARN of the image recipe
-   */
-  public readonly imageRecipeArn: string;
-
-  /**
-   * The name of the image recipe
-   */
-  public readonly imageRecipeName: string;
-
-  /**
-   * The version of the image recipe
-   */
-  public readonly imageRecipeVersion: string;
-
   private readonly blockDevices: ec2.BlockDevice[] = [];
+  private resource: CfnImageRecipe;
 
   public constructor(scope: Construct, id: string, props: ImageRecipeProps) {
     super(scope, id, {
@@ -355,7 +344,7 @@ export class ImageRecipe extends ImageRecipeBase {
     );
 
     const imageRecipeVersion = props.imageRecipeVersion ?? DEFAULT_RECIPE_VERSION;
-    const imageRecipe = new CfnImageRecipe(this, 'Resource', {
+    this.resource = new CfnImageRecipe(this, 'Resource', {
       name: this.physicalName,
       version: imageRecipeVersion,
       description: props.description,
@@ -367,14 +356,25 @@ export class ImageRecipe extends ImageRecipeBase {
       tags: props.tags,
       ...(components?.length && { components }),
     });
+  }
 
-    this.imageRecipeName = this.getResourceNameAttribute(imageRecipe.attrName);
-    this.imageRecipeArn = this.getResourceArnAttribute(imageRecipe.attrArn, {
+  @memoizedGetter
+  public get imageRecipeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get imageRecipeArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'image-recipe',
-      resourceName: `${this.physicalName}/${imageRecipeVersion}`,
+      resourceName: `${this.physicalName}/${this.resource.version}`,
     });
-    this.imageRecipeVersion = imageRecipe.getAtt('Version').toString();
+  }
+
+  @memoizedGetter
+  public get imageRecipeVersion(): string {
+    return this.resource.getAtt('Version').toString();
   }
 
   /**

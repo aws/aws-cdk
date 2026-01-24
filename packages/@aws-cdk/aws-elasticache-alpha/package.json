@@ -50,6 +50,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
+    "gen": "gen-cdk",
     "build": "cdk-build",
     "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "lint": "cdk-lint",
@@ -85,7 +86,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.192.2",
+    "@aws-cdk/integ-runner": "^2.193.5",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
@@ -113,6 +114,29 @@
     "exclude": [
       "naming/package-matches-directory",
       "assert/assert-dependency"
+    ]
+  },
+  "awslint": {
+    "exclude": [
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.securityGroups",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.subnets",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.userGroup",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.IUserGroup.addUser.user",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheAttributes.vpc",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.vpc",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.securityGroups",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.ServerlessCacheProps.userGroup",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupBase.addUser._user",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupAttributes.users",
+      "prefer-ref-interface:@aws-cdk/aws-elasticache-alpha.UserGroupProps.users",
+      "interface-extends-ref:@aws-cdk/aws-elasticache-alpha.IUser",
+      "interface-extends-ref:@aws-cdk/aws-elasticache-alpha.IUserGroup"
     ]
   }
 }
