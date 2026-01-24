@@ -424,7 +424,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
   /**
    * Validates that restricted access entry types cannot have access policies attached.
-   * 
+   *
    * @param accessPolicies - The access policies to validate
    * @param accessEntryType - The access entry type to check
    * @throws {ValidationError} If a restricted access entry type has access policies
