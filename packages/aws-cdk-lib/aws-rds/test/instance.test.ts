@@ -2480,7 +2480,7 @@ describe('instance', () => {
   });
 
   describe('additionalStorageVolumes', () => {
-    test('can specify additional storage volumes for Oracle', () => {
+    test('can specify additional storage volumes with all properties', () => {
       new rds.DatabaseInstance(stack, 'Instance', {
         engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
         vpc,
@@ -2490,6 +2490,7 @@ describe('instance', () => {
             storageType: rds.AdditionalStorageVolumeType.GP3,
             iops: 12000,
             storageThroughput: cdk.Size.mebibytes(500),
+            maxAllocatedStorage: cdk.Size.gibibytes(1000),
           },
         ],
       });
@@ -2502,15 +2503,16 @@ describe('instance', () => {
             StorageType: 'gp3',
             Iops: 12000,
             StorageThroughput: 500,
+            MaxAllocatedStorage: 1000,
           },
         ],
       });
     });
 
     test.each([
-      ['Oracle', rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 })],
-      ['SQL Server', rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 })],
-    ])('auto-generates volumeNames for multiple %s volumes', (_engineName, engine) => {
+      rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+      rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
+    ])('auto-generates volumeNames for multiple volumes', (engine) => {
       new rds.DatabaseInstance(stack, 'Instance', {
         engine,
         vpc,
@@ -2530,32 +2532,14 @@ describe('instance', () => {
       });
     });
 
-    test('supports maxAllocatedStorage for autoscaling', () => {
-      new rds.DatabaseInstance(stack, 'Instance', {
-        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
-        vpc,
-        additionalStorageVolumes: [
-          {
-            allocatedStorage: cdk.Size.gibibytes(200),
-            maxAllocatedStorage: cdk.Size.gibibytes(1000),
-          },
-        ],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-        AdditionalStorageVolumes: [
-          Match.objectLike({
-            AllocatedStorage: '200',
-            MaxAllocatedStorage: 1000,
-          }),
-        ],
-      });
-    });
-
-    test('throws if additional storage volumes specified for MySQL engine', () => {
+    test.each([
+      rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0 }),
+      rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16 }),
+      rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    ])('throws if additional storage volumes specified for unsupported engine', (engine) => {
       expect(() => {
         new rds.DatabaseInstance(stack, 'Instance', {
-          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0 }),
+          engine,
           vpc,
           additionalStorageVolumes: [
             { allocatedStorage: cdk.Size.gibibytes(200) },
