@@ -4,11 +4,10 @@ import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generat
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import { Annotations, FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
-import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION } from '../../cx-api';
+import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
@@ -119,65 +118,38 @@ abstract class AliasBase extends Resource implements IAlias {
     return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return this.aliasTargetKey.grant(grantee, ...actions);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantDecrypt(grantee);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncrypt(grantee);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncryptDecrypt(grantee);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   public grantSign(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantSign(grantee);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   public grantVerify(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantVerify(grantee);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantSignVerify(grantee);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantGenerateMac(grantee);
   }
 
-  /**
-   * [disable-awslint:no-grants]
-   */
   grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantVerifyMac(grantee);
   }
@@ -239,26 +211,22 @@ export class Alias extends AliasBase {
    * They will only modify the principal policy, not the key resource policy.
    * Without the feature flag `grant*` methods will be a no-op.
    *
-   * If the `@aws-cdk/aws-kms:aliasFromAliasNameValidation` feature flag is set to `true`,
-   * the alias name will be validated and automatically prefixed with "alias/" if not already present.
+   * The alias name will be validated and automatically prefixed with "alias/" if not already present.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param aliasName The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias').
+   * @param aliasName The name of the KMS Alias (e.g., 'my-alias', 'alias/my-alias', 'alias/aws/s3').
    */
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
-    // Validate and normalize aliasName when feature flag is enabled
-    if (FeatureFlags.of(scope).isEnabled(KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION)) {
-      // Detect potential double-prefix from legacy workarounds
-      if (!Token.isUnresolved(aliasName) && aliasName.startsWith('alias/alias/')) {
-        Annotations.of(scope).addWarningV2(
-          '@aws-cdk/aws-kms:aliasDoublePrefix',
-          `Alias name "${aliasName}" has a double "alias/" prefix. ` +
-          'If you previously added the prefix manually as a workaround, please remove it.',
-        );
-      }
-      aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope);
+    // Detect potential double-prefix from legacy workarounds
+    if (!Token.isUnresolved(aliasName) && aliasName.startsWith('alias/alias/')) {
+      Annotations.of(scope).addWarningV2(
+        '@aws-cdk/aws-kms:aliasDoublePrefix',
+        `Alias name "${aliasName}" has a double "alias/" prefix. ` +
+        'If you previously added the prefix manually as a workaround, please remove it.',
+      );
     }
+    aliasName = Alias.validateAndNormalizeAliasName(aliasName, scope);
 
     class Import extends Resource implements IAlias {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
@@ -353,22 +321,6 @@ export class Alias extends AliasBase {
    * @returns The normalized alias name
    */
   private static validateAndNormalizeAliasName(aliasName: string, scope: Construct, emitTokenWarnings: boolean = true): string {
-  private readonly resource: CfnAlias;
-
-  public readonly aliasTargetKey: IKey;
-
-  @memoizedGetter
-  public get aliasName(): string {
-    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
-      return this.getResourceNameAttribute(this.resource.ref);
-    } else {
-      return this.getResourceNameAttribute(this.resource.aliasName);
-    }
-  }
-
-  constructor(scope: Construct, id: string, props: AliasProps) {
-    let aliasName = props.aliasName;
-
     if (!Token.isUnresolved(aliasName)) {
       // Fully concrete string - validate everything
       if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
@@ -420,8 +372,17 @@ export class Alias extends AliasBase {
     return aliasName;
   }
 
-  public readonly aliasName: string;
+  private readonly resource: CfnAlias;
   public readonly aliasTargetKey: IKey;
+
+  @memoizedGetter
+  public get aliasName(): string {
+    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
+      return this.getResourceNameAttribute(this.resource.ref);
+    } else {
+      return this.getResourceNameAttribute(this.resource.aliasName);
+    }
+  }
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     let aliasName = props.aliasName;

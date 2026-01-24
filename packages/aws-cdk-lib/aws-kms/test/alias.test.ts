@@ -3,7 +3,7 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
 import { App, Arn, Aws, CfnOutput, Stack } from '../../core';
-import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION } from '../../cx-api';
+import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 
@@ -924,97 +924,49 @@ test('Alias keyRef should reference the Alias, not the underlying key', () => {
   expect(alias.keyRef.keyArn).toEqual(alias.aliasArn);
 });
 
-describe('fromAliasName with KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION feature flag', () => {
-  test('adds alias/ prefix when feature flag is enabled and prefix is missing', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+describe('fromAliasName validation and normalization', () => {
+  test('adds alias/ prefix when prefix is missing', () => {
+    const stack = new Stack();
 
     const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'myAlias');
 
     expect(myAlias.aliasName).toEqual('alias/myAlias');
   });
 
-  test('does not double-prefix when feature flag is enabled and alias/ prefix exists', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('does not double-prefix when alias/ prefix exists', () => {
+    const stack = new Stack();
 
     const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
     expect(myAlias.aliasName).toEqual('alias/myAlias');
   });
 
-  test('does not add alias/ prefix when feature flag is disabled (backwards compatible)', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: false,
-      },
-    });
-    const stack = new Stack(app, 'Test');
-
-    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'myAlias');
-
-    expect(myAlias.aliasName).toEqual('myAlias');
-  });
-
-  test('throws error for empty alias name after prefix when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('throws error for empty alias name after prefix', () => {
+    const stack = new Stack();
 
     expect(() => Alias.fromAliasName(stack, 'MyAlias', '')).toThrow(/Alias must include a value after "alias\/"/);
   });
 
-  test('throws error for alias/aws/ prefix when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('throws error for alias/aws/ prefix (reserved)', () => {
+    const stack = new Stack();
 
     expect(() => Alias.fromAliasName(stack, 'MyAlias', 'alias/aws/myAlias')).toThrow(/Alias cannot start with alias\/aws\//);
   });
 
-  test('throws error for aws/ prefix (which becomes alias/aws/) when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('throws error for aws/ prefix (which becomes alias/aws/)', () => {
+    const stack = new Stack();
 
     expect(() => Alias.fromAliasName(stack, 'MyAlias', 'aws/myAlias')).toThrow(/Alias cannot start with alias\/aws\//);
   });
 
-  test('throws error for invalid characters when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('throws error for invalid characters', () => {
+    const stack = new Stack();
 
     expect(() => Alias.fromAliasName(stack, 'MyAlias', 'my alias!')).toThrow(/Alias name must be between 1 and 256 characters in a-zA-Z0-9:\/_-/);
   });
 
-  test('keyArn is correctly formatted with normalized alias name when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('keyArn is correctly formatted with normalized alias name', () => {
+    const stack = new Stack();
 
     const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'myAlias');
 
@@ -1038,13 +990,8 @@ describe('fromAliasName with KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION feature flag',
     });
   });
 
-  test('handles partial token strings with concrete prefix when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('handles partial token strings with concrete prefix', () => {
+    const stack = new Stack();
 
     const myAlias = Alias.fromAliasName(stack, 'MyAlias', `myAlias${Aws.ACCOUNT_ID}`);
 
@@ -1060,13 +1007,8 @@ describe('fromAliasName with KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION feature flag',
     });
   });
 
-  test('handles partial token strings with alias/ prefix already present when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('handles partial token strings with alias/ prefix already present', () => {
+    const stack = new Stack();
 
     const myAlias = Alias.fromAliasName(stack, 'MyAlias', `alias/myAlias${Aws.ACCOUNT_ID}`);
 
@@ -1082,34 +1024,20 @@ describe('fromAliasName with KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION feature flag',
     });
   });
 
-  test('throws error for partial token strings with invalid characters in concrete portion when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('throws error for partial token strings with invalid characters in concrete portion', () => {
+    const stack = new Stack();
 
     expect(() => Alias.fromAliasName(stack, 'MyAlias', `my*Alias${Aws.ACCOUNT_ID}`)).toThrow(/Alias name must be between 1 and 256 characters in a-zA-Z0-9:\/_-/);
   });
 
-  test('throws error for partial token strings with alias/aws/ prefix in concrete portion when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
-    const stack = new Stack(app, 'Test');
+  test('throws error for partial token strings with alias/aws/ prefix in concrete portion', () => {
+    const stack = new Stack();
 
     expect(() => Alias.fromAliasName(stack, 'MyAlias', `alias/aws/myAlias${Aws.ACCOUNT_ID}`)).toThrow(/Alias cannot start with alias\/aws\//);
   });
 
-  test('adds synthesis-time warning for fully unresolved tokens when feature flag is enabled', () => {
-    const app = new App({
-      context: {
-        [KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION]: true,
-      },
-    });
+  test('adds synthesis-time warning for fully unresolved tokens', () => {
+    const app = new App();
     const stack = new Stack(app, 'Test');
 
     // Fully unresolved token (starts with token)
@@ -1117,7 +1045,7 @@ describe('fromAliasName with KMS_ALIAS_FROM_ALIAS_NAME_VALIDATION feature flag',
 
     const assembly = app.synth();
     const messages = assembly.getStackArtifact(stack.artifactId).messages;
-    
+
     expect(messages).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
