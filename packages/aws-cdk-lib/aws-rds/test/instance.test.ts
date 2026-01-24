@@ -2480,7 +2480,7 @@ describe('instance', () => {
   });
 
   describe('additionalStorageVolumes', () => {
-    test('can specify additional storage volumes for Oracle', () => {
+    test('can specify additional storage volumes with all properties', () => {
       new rds.DatabaseInstance(stack, 'Instance', {
         engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
         vpc,
@@ -2490,6 +2490,7 @@ describe('instance', () => {
             storageType: rds.AdditionalStorageVolumeType.GP3,
             iops: 12000,
             storageThroughput: cdk.Size.mebibytes(500),
+            maxAllocatedStorage: cdk.Size.gibibytes(1000),
           },
         ],
       });
@@ -2502,15 +2503,16 @@ describe('instance', () => {
             StorageType: 'gp3',
             Iops: 12000,
             StorageThroughput: 500,
+            MaxAllocatedStorage: 1000,
           },
         ],
       });
     });
 
     test.each([
-      ['Oracle', rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 })],
-      ['SQL Server', rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 })],
-    ])('auto-generates volumeNames for multiple %s volumes', (_engineName, engine) => {
+      rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+      rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
+    ])('auto-generates volumeNames for multiple volumes', (engine) => {
       new rds.DatabaseInstance(stack, 'Instance', {
         engine,
         vpc,
@@ -2526,28 +2528,6 @@ describe('instance', () => {
           Match.objectLike({ VolumeName: 'rdsdbdata2', AllocatedStorage: '200' }),
           Match.objectLike({ VolumeName: 'rdsdbdata3', AllocatedStorage: '300' }),
           Match.objectLike({ VolumeName: 'rdsdbdata4', AllocatedStorage: '400' }),
-        ],
-      });
-    });
-
-    test('supports maxAllocatedStorage for autoscaling', () => {
-      new rds.DatabaseInstance(stack, 'Instance', {
-        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
-        vpc,
-        additionalStorageVolumes: [
-          {
-            allocatedStorage: cdk.Size.gibibytes(200),
-            maxAllocatedStorage: cdk.Size.gibibytes(1000),
-          },
-        ],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-        AdditionalStorageVolumes: [
-          Match.objectLike({
-            AllocatedStorage: '200',
-            MaxAllocatedStorage: 1000,
-          }),
         ],
       });
     });
