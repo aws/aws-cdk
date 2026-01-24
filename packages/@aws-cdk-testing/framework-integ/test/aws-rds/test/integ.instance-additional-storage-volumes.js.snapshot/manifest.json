@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/289bb917c7b8857e6dea0c0a4d4f6cb7825fe75a05faa8ec5be9f4eaf1798d25.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b81ebe56112817d4a38d68befc804fe7db4d6e15d7ad12bc81fdd8ab8b4a414.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -220,37 +220,37 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/SubnetGroup": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/SubnetGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/SubnetGroup/Default": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceSubnetGroupF2CBA54F"
+            "data": "OracleInstanceSubnetGroup28186537"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/SecurityGroup": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/SecurityGroup/Resource": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceSecurityGroupB4E5FA83"
+            "data": "OracleInstanceSecurityGroup210AF097"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/Secret": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -260,28 +260,92 @@
             "data": "*"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/Secret/Resource": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceSecret478E0A47"
+            "data": "OracleInstanceSecretBC3FBEEE"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/Secret/Attachment": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/Secret/Attachment/Resource": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceSecretAttachment83BEE581"
+            "data": "OracleInstanceSecretAttachment10D9EA24"
           }
         ],
-        "/integ-rds-instance-additional-storage-volumes/Instance/Resource": [
+        "/integ-rds-instance-additional-storage-volumes/OracleInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87"
+            "data": "OracleInstanceE2C0359D"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/SubnetGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerInstanceSubnetGroup4FD2E9F6"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerInstanceSecurityGroupCCEC58D4"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerInstanceSecret724AFABD"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerInstanceSecretAttachment8C3D8491"
+          }
+        ],
+        "/integ-rds-instance-additional-storage-volumes/SqlServerInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerInstanceBCE7A1D3"
           }
         ],
         "/integ-rds-instance-additional-storage-volumes/BootstrapVersion": [
