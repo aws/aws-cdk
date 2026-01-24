@@ -4126,9 +4126,28 @@ removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketIntegration.integrationRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketRoute.routeRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
 
+# Had to revert these
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.Ec2Action.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.LambdaAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SnsAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmIncidentAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch.IAlarmAction.bind
+
 # This type must needs be weakened
 changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
 
 # CloudFormation has always required SecurityGroups for ManagedInstancesCapacityProvider.
 # Making it required in TypeScript catches the error at compile time instead of deploy time.
 strengthened:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps
+
+# IEncryptedResource was too strongly typed for practical use.
+# We need to weaken it and align with other traits.
+# See: https://github.com/aws/aws-cdk/pull/36787
+incompatible-argument:aws-cdk-lib.aws_iam.GrantableResources.isEncryptedResource
+base-types:aws-cdk-lib.aws_iam.IEncryptedResource
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.applyRemovalPolicy
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.node
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
