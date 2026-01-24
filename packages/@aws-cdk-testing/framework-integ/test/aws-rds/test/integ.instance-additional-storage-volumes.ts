@@ -16,9 +16,6 @@ const stack = new Stack(app, 'integ-rds-instance-additional-storage-volumes');
 
 const vpc = new Vpc(stack, 'Vpc', { natGateways: 0 });
 
-// Additional storage volumes require instance types with at least 64 GiB memory
-// r5.2xlarge has 64 GiB memory
-
 // Oracle instance
 new DatabaseInstance(stack, 'OracleInstance', {
   engine: DatabaseInstanceEngine.oracleSe2({ version: OracleEngineVersion.VER_19 }),

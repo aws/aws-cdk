@@ -1901,6 +1901,7 @@ function renderAdditionalStorageVolumes(
     return {
       volumeName: getVolumeName(index),
       storageType: volume.storageType ?? AdditionalStorageVolumeType.GP3,
+      // allocatedStorage must be string type in CFN
       allocatedStorage: Token.isUnresolved(allocatedStorageGiB)
         ? Tokenization.stringifyNumber(allocatedStorageGiB)
         : allocatedStorageGiB.toString(),
