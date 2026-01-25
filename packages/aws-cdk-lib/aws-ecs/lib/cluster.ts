@@ -485,30 +485,45 @@ export class Cluster extends Resource implements ICluster {
       throw new ValidationError('Can only add default namespace once.', this);
     }
 
-    const namespaceType = options.type !== undefined
-      ? options.type
-      : cloudmap.NamespaceType.DNS_PRIVATE;
+    // Validate mutually exclusive options
+    if (options.namespace && options.name) {
+      throw new ValidationError('Cannot specify both "namespace" and "name". Use "namespace" to use an existing namespace, or "name" to create a new one.', this);
+    }
+    if (!options.namespace && !options.name) {
+      throw new ValidationError('Must specify either "namespace" or "name".', this);
+    }
 
-    let sdNamespace;
-    switch (namespaceType) {
-      case cloudmap.NamespaceType.DNS_PRIVATE:
-        sdNamespace = new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-          name: options.name,
-          vpc: this.vpc,
-        });
-        break;
-      case cloudmap.NamespaceType.DNS_PUBLIC:
-        sdNamespace = new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-          name: options.name,
-        });
-        break;
-      case cloudmap.NamespaceType.HTTP:
-        sdNamespace = new cloudmap.HttpNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-          name: options.name,
-        });
-        break;
-      default:
-        throw new ValidationError(`Namespace type ${namespaceType} is not supported.`, this);
+    let sdNamespace: cloudmap.INamespace;
+
+    if (options.namespace) {
+      // Use existing namespace
+      sdNamespace = options.namespace;
+    } else {
+      // Create new namespace
+      const namespaceType = options.type !== undefined
+        ? options.type
+        : cloudmap.NamespaceType.DNS_PRIVATE;
+
+      switch (namespaceType) {
+        case cloudmap.NamespaceType.DNS_PRIVATE:
+          sdNamespace = new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+            name: options.name!,
+            vpc: options.vpc ?? this.vpc,
+          });
+          break;
+        case cloudmap.NamespaceType.DNS_PUBLIC:
+          sdNamespace = new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+            name: options.name!,
+          });
+          break;
+        case cloudmap.NamespaceType.HTTP:
+          sdNamespace = new cloudmap.HttpNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+            name: options.name!,
+          });
+          break;
+        default:
+          throw new ValidationError(`Namespace type ${namespaceType} is not supported.`, this);
+      }
     }
 
     this._defaultCloudMapNamespace = sdNamespace;
@@ -1182,8 +1197,18 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
 export interface CloudMapNamespaceOptions {
   /**
    * The name of the namespace, such as example.com.
+   *
+   * @default - Required if `namespace` is not provided
    */
-  readonly name: string;
+  readonly name?: string;
+
+  /**
+   * An existing Cloud Map namespace to use as the default.
+   * When provided, `name`, `type`, and `vpc` are ignored.
+   *
+   * @default - A new namespace will be created
+   */
+  readonly namespace?: cloudmap.INamespace;
 
   /**
    * The type of CloudMap Namespace to create.
