@@ -1836,8 +1836,8 @@ function validateAdditionalStorageVolumes(
   // Validate each volume
   for (let i = 0; i < volumes.length; i++) {
     const volume = volumes[i];
-    const volumeName = getVolumeName(i);
     const volumeStorageType = volume.storageType ?? AdditionalStorageVolumeType.GP3;
+    const volumeDesc = `additionalStorageVolumes[${i}]`;
 
     // Validate storageThroughput configuration (GP3 only, ratio <= 0.25)
     const storageThroughputMiBps = volume.storageThroughput?.isUnresolved()
@@ -1848,7 +1848,7 @@ function validateAdditionalStorageVolumes(
       volumeStorageType,
       storageThroughputMiBps,
       volume.iops,
-      `additional volume '${volumeName}'`,
+      volumeDesc,
     );
 
     // Validate allocatedStorage range based on engine type
@@ -1858,7 +1858,7 @@ function validateAdditionalStorageVolumes(
       const minStorage = engineType.startsWith('oracle-') ? 200 : 20;
       if (allocatedStorageGiB < minStorage || allocatedStorageGiB > 65536) {
         throw new ValidationError(
-          `Allocated storage for additional volume '${volumeName}' must be between ${minStorage} and 65,536 GiB, got: ${allocatedStorageGiB} GiB`,
+          `Allocated storage for ${volumeDesc} must be between ${minStorage} and 65,536 GiB, got: ${allocatedStorageGiB} GiB`,
           scope,
         );
       }

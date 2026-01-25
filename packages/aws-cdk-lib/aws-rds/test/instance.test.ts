@@ -2596,7 +2596,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow("The storage throughput can only be specified with GP3 storage type for additional volume 'rdsdbdata2', got: 'io2'");
+      }).toThrow("The storage throughput can only be specified with GP3 storage type for additionalStorageVolumes[0], got: 'io2'");
     });
 
     // Oracle allocatedStorage valid boundary values (min 200 GiB)
@@ -2622,7 +2622,7 @@ describe('instance', () => {
             { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
           ],
         });
-      }).toThrow(`Allocated storage for additional volume 'rdsdbdata2' must be between 200 and 65,536 GiB, got: ${sizeGiB} GiB`);
+      }).toThrow(`Allocated storage for additionalStorageVolumes[0] must be between 200 and 65,536 GiB, got: ${sizeGiB} GiB`);
     });
 
     // SQL Server allocatedStorage valid boundary values (min 20 GiB)
@@ -2648,7 +2648,7 @@ describe('instance', () => {
             { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
           ],
         });
-      }).toThrow(`Allocated storage for additional volume 'rdsdbdata2' must be between 20 and 65,536 GiB, got: ${sizeGiB} GiB`);
+      }).toThrow(`Allocated storage for additionalStorageVolumes[0] must be between 20 and 65,536 GiB, got: ${sizeGiB} GiB`);
     });
 
     test('throws if GP3 throughput/IOPS ratio exceeds 0.25', () => {
@@ -2665,7 +2665,7 @@ describe('instance', () => {
             },
           ],
         });
-      }).toThrow(`The maximum ratio of storage throughput to IOPS is 0.25 for additional volume 'rdsdbdata2', got: ${1000 / 3000}`);
+      }).toThrow(`The maximum ratio of storage throughput to IOPS is 0.25 for additionalStorageVolumes[0], got: ${1000 / 3000}`);
     });
 
     test('accepts GP3 throughput/IOPS ratio at exactly 0.25', () => {
