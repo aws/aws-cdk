@@ -458,16 +458,6 @@ export enum NetworkType {
 }
 
 /**
- * Storage types supported for additional storage volumes.
- */
-export enum AdditionalStorageVolumeType {
-  /** General Purpose SSD (gp3) */
-  GP3 = 'gp3',
-  /** Provisioned IOPS SSD (io2) */
-  IO2 = 'io2',
-}
-
-/**
  * Configuration for an additional storage volume.
  *
  * Additional storage volumes are supported for RDS for Oracle and RDS for SQL Server only.
@@ -475,17 +465,9 @@ export enum AdditionalStorageVolumeType {
  * For SQL Server, these are automatically mapped to drive letters H:\, I:\, J:\ respectively.
  *
  * Requirements:
- * - Instance types must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge)
- * - Primary storage must be at least 200 GiB
  * - Only gp3 and io2 storage types are supported
- *
- * GP3 Storage Limits (differs by engine):
- * - Oracle: 12,000-64,000 IOPS, 500-4,000 MiB/s throughput
- * - SQL Server: 3,000-16,000 IOPS, 125-1,000 MiB/s throughput
- *
- * IO2 Block Express Limits (differs by engine):
- * - Oracle (200+ GiB): 1,000-256,000 IOPS, up to 16,000 MiB/s throughput
- * - SQL Server: 1,000-256,000 IOPS, up to 4,000 MiB/s throughput
+ * - Oracle: Instance types must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge)
+ * - Oracle: Primary storage must be at least 200 GiB
  *
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html
@@ -494,16 +476,18 @@ export interface AdditionalStorageVolume {
   /**
    * The storage type for the additional storage volume.
    *
-   * Only gp3 and io2 are supported for additional volumes.
+   * Only GP3 and IO2 are supported for additional volumes.
+   * Other storage types will result in a validation error.
    *
-   * @default AdditionalStorageVolumeType.GP3
+   * @default StorageType.GP3
    */
-  readonly storageType?: AdditionalStorageVolumeType;
+  readonly storageType?: StorageType;
 
   /**
    * The amount of storage to allocate.
    *
-   * The minimum is 200 GiB. The maximum is 65,536 GiB (64 TiB).
+   * Minimum: Oracle 200 GiB, SQL Server 20 GiB.
+   * Maximum: 65,536 GiB (64 TiB).
    *
    * @example Size.gibibytes(200)
    */
@@ -512,16 +496,14 @@ export interface AdditionalStorageVolume {
   /**
    * The number of I/O operations per second (IOPS) to provision.
    *
-   * GP3 IOPS ranges:
-   * - Oracle: 12,000-64,000 IOPS
-   * - SQL Server: 3,000-16,000 IOPS
+   * For gp3 storage type:
+   * - Oracle: 12,000 IOPS baseline (minimum storage is 200 GiB, which exceeds the striping threshold)
+   * - SQL Server: 3,000 IOPS baseline (no striping threshold for SQL Server)
    *
-   * IO2 IOPS ranges (must be explicitly provisioned):
-   * - Oracle: 1,000-256,000 IOPS
-   * - SQL Server: 1,000-256,000 IOPS
+   * For io2 storage type:
+   * - Default is 1,000 IOPS if not specified.
    *
-   * @default - For GP3: baseline IOPS (Oracle: 12,000, SQL Server: 3,000).
-   * For IO2: IOPS must be explicitly specified (no baseline).
+   * @default - For gp3: baseline IOPS provided by AWS. For io2: 1,000 IOPS.
    */
   readonly iops?: number;
 
@@ -529,8 +511,6 @@ export interface AdditionalStorageVolume {
    * The upper limit to which RDS can automatically scale storage.
    *
    * @default - no autoscaling
-   *
-   * @example Size.gibibytes(1000)
    */
   readonly maxAllocatedStorage?: Size;
 
@@ -539,13 +519,9 @@ export interface AdditionalStorageVolume {
    *
    * Only applicable for gp3 storage type.
    *
-   * GP3 throughput ranges:
-   * - Oracle: 500-4,000 MiB/s
-   * - SQL Server: 125-1,000 MiB/s
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage
    *
-   * @default - baseline throughput for gp3 (Oracle: 500 MiB/s, SQL Server: 125 MiB/s)
-   *
-   * @example Size.mebibytes(500)
+   * @default - For Oracle: 500 MiB/s. For SQL Server: 125 MiB/s.
    */
   readonly storageThroughput?: Size;
 }
@@ -973,8 +949,8 @@ export interface DatabaseInstanceNewProps {
    * Additional storage volumes are only supported for RDS for Oracle and RDS for SQL Server.
    * You can add up to 3 additional volumes.
    *
-   * Note: Additional storage volumes require instance types with at least 64 GiB of memory
-   * (e.g., r5.2xlarge, r6i.2xlarge). Burstable instance types (t2, t3) are not supported.
+   * Note: For Oracle, additional storage volumes require instance types with at least 64 GiB of memory
+   * (e.g., r5.2xlarge, r6i.2xlarge). Burstable instance types (t2, t3) are not supported for Oracle.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html
    *
@@ -1836,8 +1812,16 @@ function validateAdditionalStorageVolumes(
   // Validate each volume
   for (let i = 0; i < volumes.length; i++) {
     const volume = volumes[i];
-    const volumeStorageType = volume.storageType ?? AdditionalStorageVolumeType.GP3;
+    const volumeStorageType = volume.storageType ?? StorageType.GP3;
     const volumeDesc = `additionalStorageVolumes[${i}]`;
+
+    // Validate storage type (only GP3 and IO2 are supported)
+    if (volumeStorageType !== StorageType.GP3 && volumeStorageType !== StorageType.IO2) {
+      throw new ValidationError(
+        `Only GP3 and IO2 storage types are supported for additional storage volumes, got '${volumeStorageType}' for ${volumeDesc}`,
+        scope,
+      );
+    }
 
     // Validate storageThroughput configuration (GP3 only, ratio <= 0.25)
     const storageThroughputMiBps = volume.storageThroughput?.isUnresolved()
@@ -1878,14 +1862,15 @@ function renderAdditionalStorageVolumes(
 
   return volumes.map((volume, index) => {
     const allocatedStorageGiB = volume.allocatedStorage.toGibibytes();
+    const storageType = volume.storageType ?? StorageType.GP3;
     return {
       volumeName: getVolumeName(index),
-      storageType: volume.storageType ?? AdditionalStorageVolumeType.GP3,
+      storageType,
       // allocatedStorage must be string type in CFN
       allocatedStorage: Token.isUnresolved(allocatedStorageGiB)
         ? Tokenization.stringifyNumber(allocatedStorageGiB)
         : allocatedStorageGiB.toString(),
-      iops: volume.iops,
+      iops: defaultIops(storageType, volume.iops),
       maxAllocatedStorage: volume.maxAllocatedStorage?.toGibibytes(),
       storageThroughput: volume.storageThroughput?.toMebibytes(),
     };
