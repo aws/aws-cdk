@@ -1141,7 +1141,6 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
       applyImmediately: props.applyImmediately,
       engineLifecycleSupport: props.engineLifecycleSupport,
-      // additionalStorageVolumes is rendered in DatabaseInstanceSource with engine type
     };
   }
 
