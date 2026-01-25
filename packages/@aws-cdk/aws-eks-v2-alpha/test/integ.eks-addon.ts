@@ -1,6 +1,6 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
-import { App, Stack, Fn } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from '../lib';
@@ -29,7 +29,7 @@ class EksClusterStack extends Stack {
 
     // test for additional Addon parameters(namespace, podIdentityAssociations, resolveConflicts)
     const testRole = new iam.Role(this, 'TestRole', {
-      assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com').withSessionTags(),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEBSCSIDriverPolicy'),
       ],
@@ -39,9 +39,6 @@ class EksClusterStack extends Stack {
       addonName: 'aws-ebs-csi-driver',
       cluster,
       preserveOnDelete: true,
-      configurationValues: {
-        replicaCount: 2,
-      },
       namespace: 'kube-system',
       podIdentityAssociations: [{
         addonRole: testRole,
@@ -50,25 +47,20 @@ class EksClusterStack extends Stack {
       resolveConflicts: eks.ResolveConflictsType.NONE,
     });
 
-    // test for additional Addon parameters
-    const irsaRole = new iam.Role(this, 'IrsaTestRole', {
-      assumedBy: new iam.FederatedPrincipal(
-        cluster.openIdConnectProvider.openIdConnectProviderArn,
-        {
-          StringEquals: Fn.toJsonString({
-            [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: 'system:serviceaccount:kube-system:snapshot-controller',
-          }),
-        },
-        'sts:AssumeRoleWithWebIdentity',
-      ),
+    // test for additional Addon parameters(serviceAccountRole)
+    const irsaServiceAccount = new eks.ServiceAccount(this, 'ServiceAccount', {
+      cluster: cluster,
+      name: 'efs-csi-controller-sa',
+      identityType: eks.IdentityType.IRSA,
+      namespace: 'kube-system',
     });
-    irsaRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEBSCSIDriverPolicy'),
+    irsaServiceAccount.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEFSCSIDriverPolicy'),
     );
     new eks.Addon(this, 'AddonServiceAccountRole', {
-      addonName: 'aws-snapshot-controller',
+      addonName: 'aws-efs-csi-driver',
       cluster,
-      serviceAccountRole: irsaRole,
+      serviceAccountRole: irsaServiceAccount.role,
     });
   }
 }
