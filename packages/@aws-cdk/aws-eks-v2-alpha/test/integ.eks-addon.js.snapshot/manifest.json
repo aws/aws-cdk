@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "EksClusterWithAddonStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c14da4fc991ced8194f74cbf8bc018b10571d80b418063e21d19827b64f69592.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b11f8d4af066c0316257d9f68cac7133d5830c04c345a2e3771f83fd50eb220.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -396,12 +396,6 @@
             }
           }
         ],
-        "/EksClusterWithAddonStack/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EksClusterWithAddonStack/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -440,12 +434,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/EksClusterWithAddonStack/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterWithAddonStack/Cluster/ClusternodePoolRole/Resource": [
@@ -585,12 +573,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/EksClusterWithAddonStack/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterWithAddonStack/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -755,12 +737,6 @@
             }
           }
         ],
-        "/EksClusterWithAddonStack/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EksClusterWithAddonStack/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -869,6 +845,40 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AddonF8C56F86"
+          }
+        ],
+        "/EksClusterWithAddonStack/TestRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EksClusterWithAddonStack/TestRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRole6C9272DF"
+          }
+        ],
+        "/EksClusterWithAddonStack/AddonPodIdentityAssociation": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterWithAddonStack/AddonPodIdentityAssociation/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddonPodIdentityAssociationB5DD097E"
           }
         ],
         "/EksClusterWithAddonStack/BootstrapVersion": [
@@ -1432,5 +1442,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

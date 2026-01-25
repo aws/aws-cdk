@@ -27,7 +27,7 @@ class EksClusterStack extends Stack {
       },
     });
 
-    // test for additional Addon parameters(namespace, podIdentityAssociations, resolveConflicts)
+    // test for additional Addon parameters(namespace, podIdentityAssociations, resolveConflicts, serviceAccountRole)
     const testRole = new iam.Role(this, 'TestRole', {
       assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com').withSessionTags(),
       managedPolicies: [
@@ -44,23 +44,9 @@ class EksClusterStack extends Stack {
         addonRole: testRole,
         serviceAccount: 'ebs-csi-controller-sa',
       }],
+      // Prioritize Pod Identity.
+      serviceAccountRole: testRole,
       resolveConflicts: eks.ResolveConflictsType.NONE,
-    });
-
-    // test for additional Addon parameters(serviceAccountRole)
-    const irsaServiceAccount = new eks.ServiceAccount(this, 'ServiceAccount', {
-      cluster: cluster,
-      name: 'efs-csi-controller-sa',
-      identityType: eks.IdentityType.IRSA,
-      namespace: 'kube-system',
-    });
-    irsaServiceAccount.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEFSCSIDriverPolicy'),
-    );
-    new eks.Addon(this, 'AddonServiceAccountRole', {
-      addonName: 'aws-efs-csi-driver',
-      cluster,
-      serviceAccountRole: irsaServiceAccount.role,
     });
   }
 }

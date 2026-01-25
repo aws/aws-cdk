@@ -946,7 +946,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1183,6 +1183,71 @@
     },
     "ConfigurationValues": "{\"replicaCount\":2}",
     "PreserveOnDelete": true
+   }
+  },
+  "TestRole6C9272DF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sts:AssumeRole",
+        "sts:TagSession"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "pods.eks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AddonPodIdentityAssociationB5DD097E": {
+   "Type": "AWS::EKS::Addon",
+   "Properties": {
+    "AddonName": "aws-ebs-csi-driver",
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "NamespaceConfig": {
+     "Namespace": "kube-system"
+    },
+    "PodIdentityAssociations": [
+     {
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "TestRole6C9272DF",
+        "Arn"
+       ]
+      },
+      "ServiceAccount": "ebs-csi-controller-sa"
+     }
+    ],
+    "PreserveOnDelete": true,
+    "ResolveConflicts": "NONE",
+    "ServiceAccountRoleArn": {
+     "Fn::GetAtt": [
+      "TestRole6C9272DF",
+      "Arn"
+     ]
+    }
    }
   }
  },
