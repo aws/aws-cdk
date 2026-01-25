@@ -871,4 +871,52 @@ describe('forceNewDeployment', () => {
       },
     });
   });
+
+  test('should throw error when nonce is empty string', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        forceNewDeployment: {
+          enabled: true,
+          nonce: '',
+        },
+      });
+    }).toThrow(/forceNewDeployment.nonce must be between 1 and 255 characters/);
+  });
+
+  test('should throw error when nonce exceeds 255 characters', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        forceNewDeployment: {
+          enabled: true,
+          nonce: 'a'.repeat(256),
+        },
+      });
+    }).toThrow(/forceNewDeployment.nonce must be between 1 and 255 characters/);
+  });
+
+  test('should accept nonce with exactly 255 characters', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: 'a'.repeat(255),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'a'.repeat(255),
+      },
+    });
+  });
 });

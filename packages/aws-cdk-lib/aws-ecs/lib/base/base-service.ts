@@ -100,7 +100,7 @@ export interface ForceNewDeployment {
    * By default, deployments aren't forced. You can use this option to start
    * a new deployment with no service definition changes. For example, you can
    * update a service's tasks to use a newer Docker image with the same
-   * image/tag combination (my_image:latest) or to roll Fargate tasks onto
+   * image/tag combination (`my_image:latest`) or to roll Fargate tasks onto
    * a newer platform version.
    *
    * @default true
@@ -531,7 +531,7 @@ export interface BaseServiceOptions {
    * By default, deployments aren't forced. You can use this option to start
    * a new deployment with no service definition changes. For example, you can
    * update a service's tasks to use a newer Docker image with the same
-   * image/tag combination (my_image:latest) or to roll Fargate tasks onto
+   * image/tag combination (`my_image:latest`) or to roll Fargate tasks onto
    * a newer platform version.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-forcenewdeployment.html
@@ -894,6 +894,13 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {
       throw new ValidationError('Deployment alarms requires the ECS deployment controller.', this);
+    }
+
+    if (props.forceNewDeployment?.nonce !== undefined) {
+      const nonceLength = props.forceNewDeployment.nonce.length;
+      if (nonceLength < 1 || nonceLength > 255) {
+        throw new ValidationError(`forceNewDeployment.nonce must be between 1 and 255 characters, got ${nonceLength}`, this);
+      }
     }
 
     if (
