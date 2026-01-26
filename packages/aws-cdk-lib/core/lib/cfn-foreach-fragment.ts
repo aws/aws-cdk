@@ -9,16 +9,38 @@ import { Stack } from './stack';
 export type ForEachSection = 'Resources' | 'Outputs' | 'Conditions';
 
 /**
+ * Properties for CfnForEachFragment.
+ *
+ * @internal
+ */
+export interface CfnForEachFragmentProps {
+  /**
+   * The CloudFormation template section.
+   */
+  readonly section: ForEachSection;
+
+  /**
+   * The Fn::ForEach fragment to inject.
+   */
+  readonly fragment: IResolvable;
+}
+
+/**
  * A fragment that injects Fn::ForEach into a CloudFormation template section.
+ *
+ * This is an internal construct used by ForEachResource, ForEachOutput, and ForEachCondition.
+ *
+ * @internal
  */
 export class CfnForEachFragment extends CfnElement {
   private readonly section: ForEachSection;
   private readonly fragment: IResolvable;
 
-  constructor(scope: Construct, id: string, section: ForEachSection, fragment: IResolvable) {
+  /** @internal */
+  constructor(scope: Construct, id: string, props: CfnForEachFragmentProps) {
     super(scope, id);
-    this.section = section;
-    this.fragment = fragment;
+    this.section = props.section;
+    this.fragment = props.fragment;
     Stack.of(this).addTransform('AWS::LanguageExtensions');
   }
 

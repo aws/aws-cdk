@@ -421,13 +421,16 @@ export class Fn {
   }
 
   /**
-   * The `Fn::ForEach` intrinsic function. Requires AWS::LanguageExtensions transform.
+   * The `Fn::ForEach` intrinsic function for deploy-time loops.
    *
-   * @param uniqueLoopName Unique identifier for this loop (alphanumeric only)
-   * @param collection Array of values to iterate over
-   * @param outputKey Template for output keys, use ${loopName} as placeholder
-   * @param outputValue Template for output values
-   * @returns an IResolvable representing the ForEach intrinsic
+   * Requires the AWS::LanguageExtensions transform.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-foreach.html
+   * @param uniqueLoopName unique identifier for this loop (alphanumeric only)
+   * @param collection array of values to iterate over
+   * @param outputKey template for output keys, use ${loopName} as placeholder
+   * @param outputValue template for output values
+   * @returns a token representing the Fn::ForEach intrinsic
    */
   public static forEach(
     uniqueLoopName: string,
@@ -436,17 +439,16 @@ export class Fn {
     outputValue: any,
   ): IResolvable {
     if (!/^[A-Za-z0-9]+$/.test(uniqueLoopName)) {
-      throw new UnscopedValidationError(`ForEach loop name must be alphanumeric, got: ${uniqueLoopName}`);
+      throw new UnscopedValidationError(`forEach loop name must be alphanumeric, got '${uniqueLoopName}'`);
     }
     return new FnForEach(uniqueLoopName, collection, outputKey, outputValue);
   }
 
   /**
    * Reference the current loop variable in Fn::ForEach.
-   * Returns ${loopName} for use in templates.
    *
-   * @param loopName The loop variable name
-   * @returns The loop variable placeholder string
+   * @param loopName the loop variable name
+   * @returns the loop variable placeholder string (${loopName})
    */
   public static forEachRef(loopName: string): string {
     return `\${${loopName}}`;
