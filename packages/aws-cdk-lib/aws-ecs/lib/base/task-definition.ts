@@ -1408,14 +1408,17 @@ export function isEc2Compatible(compatibility: Compatibility): boolean {
   return [Compatibility.EC2,
     Compatibility.EC2_AND_FARGATE,
     Compatibility.EC2_AND_MANAGED_INSTANCES,
-    Compatibility.MANAGED_INSTANCES].includes(compatibility);
+    Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES].includes(compatibility);
 }
 
 /**
  * Return true if the given task definition can be run on a Fargate cluster
  */
 export function isFargateCompatible(compatibility: Compatibility): boolean {
-  return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE, Compatibility.FARGATE_AND_MANAGED_INSTANCES].includes(compatibility);
+  return [Compatibility.FARGATE,
+    Compatibility.EC2_AND_FARGATE,
+    Compatibility.FARGATE_AND_MANAGED_INSTANCES,
+    Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES].includes(compatibility);
 }
 
 /**
@@ -1433,6 +1436,7 @@ export function isManagedInstancesCompatible(compatibility: Compatibility): bool
     Compatibility.MANAGED_INSTANCES,
     Compatibility.EC2_AND_MANAGED_INSTANCES,
     Compatibility.FARGATE_AND_MANAGED_INSTANCES,
+    Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES,
   ].includes(compatibility);
 }
 
