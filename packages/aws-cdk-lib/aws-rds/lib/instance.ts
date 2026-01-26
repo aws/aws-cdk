@@ -949,8 +949,7 @@ export interface DatabaseInstanceNewProps {
    * Additional storage volumes are only supported for RDS for Oracle and RDS for SQL Server.
    * You can add up to 3 additional volumes.
    *
-   * Note: For Oracle, additional storage volumes require instance types with at least 64 GiB of memory
-   * (e.g., r5.2xlarge, r6i.2xlarge). Burstable instance types (t2, t3) are not supported for Oracle.
+   * For Oracle, additional storage volumes require instance types with at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge).
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html
    *
