@@ -1,6 +1,5 @@
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
 import { Resource, IResource, Aws, Lazy, ValidationError, Token } from 'aws-cdk-lib/core';
-import { Resource, IResource, Aws, Lazy } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -411,7 +410,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
   /**
    * Validates that restricted access entry types cannot have access policies attached.
-   * 
+   *
    * @param accessPolicies - The access policies to validate
    * @param accessEntryType - The access entry type to check
    * @throws {ValidationError} If a restricted access entry type has access policies
