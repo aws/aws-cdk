@@ -1,8 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { App, Intrinsic, Lazy, Stack, Token } from '../../core';
-import type { SecurityGroupProps } from '../lib';
-import { Peer, Port, SecurityGroup, Vpc } from '../lib';
+import { EgressRuleConfig, IngressRuleConfig, Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from '../lib';
 
 const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securityGroupDisableInlineRules';
 
@@ -1065,3 +1064,89 @@ function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined |
     });
   });
 }
+
+describe('Peer rule config type safety', () => {
+  test('Peer.ipv4 returns typed IngressRuleConfig with cidrIp', () => {
+    const peer = Peer.ipv4('10.0.0.0/16');
+    const config: IngressRuleConfig = peer.toIngressRuleConfig();
+    expect(config.cidrIp).toBe('10.0.0.0/16');
+    expect(config.cidrIpv6).toBeUndefined();
+    expect(config.sourcePrefixListId).toBeUndefined();
+    expect(config.sourceSecurityGroupId).toBeUndefined();
+  });
+
+  test('Peer.ipv4 returns typed EgressRuleConfig with cidrIp', () => {
+    const peer = Peer.ipv4('10.0.0.0/16');
+    const config: EgressRuleConfig = peer.toEgressRuleConfig();
+    expect(config.cidrIp).toBe('10.0.0.0/16');
+    expect(config.cidrIpv6).toBeUndefined();
+    expect(config.destinationPrefixListId).toBeUndefined();
+    expect(config.destinationSecurityGroupId).toBeUndefined();
+  });
+
+  test('Peer.ipv6 returns typed IngressRuleConfig with cidrIpv6', () => {
+    const peer = Peer.ipv6('::0/0');
+    const config: IngressRuleConfig = peer.toIngressRuleConfig();
+    expect(config.cidrIpv6).toBe('::0/0');
+    expect(config.cidrIp).toBeUndefined();
+  });
+
+  test('Peer.ipv6 returns typed EgressRuleConfig with cidrIpv6', () => {
+    const peer = Peer.ipv6('::0/0');
+    const config: EgressRuleConfig = peer.toEgressRuleConfig();
+    expect(config.cidrIpv6).toBe('::0/0');
+    expect(config.cidrIp).toBeUndefined();
+  });
+
+  test('Peer.prefixList returns typed IngressRuleConfig with sourcePrefixListId', () => {
+    const peer = Peer.prefixList('pl-12345');
+    const config: IngressRuleConfig = peer.toIngressRuleConfig();
+    expect(config.sourcePrefixListId).toBe('pl-12345');
+    expect(config.cidrIp).toBeUndefined();
+  });
+
+  test('Peer.prefixList returns typed EgressRuleConfig with destinationPrefixListId', () => {
+    const peer = Peer.prefixList('pl-12345');
+    const config: EgressRuleConfig = peer.toEgressRuleConfig();
+    expect(config.destinationPrefixListId).toBe('pl-12345');
+    expect(config.cidrIp).toBeUndefined();
+  });
+
+  test('Peer.securityGroupId returns typed IngressRuleConfig with sourceSecurityGroupId', () => {
+    const peer = Peer.securityGroupId('sg-123456789');
+    const config: IngressRuleConfig = peer.toIngressRuleConfig();
+    expect(config.sourceSecurityGroupId).toBe('sg-123456789');
+    expect(config.sourceSecurityGroupOwnerId).toBeUndefined();
+  });
+
+  test('Peer.securityGroupId with owner returns typed IngressRuleConfig with sourceSecurityGroupOwnerId', () => {
+    const peer = Peer.securityGroupId('sg-123456789', '123456789012');
+    const config: IngressRuleConfig = peer.toIngressRuleConfig();
+    expect(config.sourceSecurityGroupId).toBe('sg-123456789');
+    expect(config.sourceSecurityGroupOwnerId).toBe('123456789012');
+  });
+
+  test('Peer.securityGroupId returns typed EgressRuleConfig with destinationSecurityGroupId', () => {
+    const peer = Peer.securityGroupId('sg-123456789');
+    const config: EgressRuleConfig = peer.toEgressRuleConfig();
+    expect(config.destinationSecurityGroupId).toBe('sg-123456789');
+  });
+
+  test('SecurityGroup returns typed IngressRuleConfig', () => {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+    const config: IngressRuleConfig = sg.toIngressRuleConfig();
+    expect(config.sourceSecurityGroupId).toBeDefined();
+  });
+
+  test('SecurityGroup returns typed EgressRuleConfig', () => {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+    const config: EgressRuleConfig = sg.toEgressRuleConfig();
+    expect(config.destinationSecurityGroupId).toBeDefined();
+  });
+});
