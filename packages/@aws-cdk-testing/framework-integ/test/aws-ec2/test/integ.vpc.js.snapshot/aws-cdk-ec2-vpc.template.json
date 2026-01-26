@@ -402,8 +402,8 @@
       "IpProtocol": "-1"
      },
      {
-      "CidrIpv6": "::/0",
-      "Description": "Allow HTTPS to any IPv6",
+      "CidrIpv6": "2001:db8::/32",
+      "Description": "Allow HTTPS to specific IPv6 CIDR",
       "FromPort": 443,
       "IpProtocol": "tcp",
       "ToPort": 443
@@ -465,13 +465,6 @@
       "FromPort": 443,
       "IpProtocol": "tcp",
       "ToPort": 443
-     },
-     {
-      "CidrIpv6": "::/0",
-      "Description": "Allow HTTP from any IPv6",
-      "FromPort": 80,
-      "IpProtocol": "tcp",
-      "ToPort": 80
      }
     ],
     "VpcId": {
