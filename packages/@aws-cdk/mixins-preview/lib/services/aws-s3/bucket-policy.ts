@@ -2,14 +2,13 @@ import type { IConstruct } from 'constructs/lib/construct';
 import { Mixin } from '../../core';
 import type { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { PolicyDocument } from 'aws-cdk-lib/aws-iam';
-import type { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
-import { makeIsCfnResource } from './utils';
+import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 
 /**
  * Adds statements to a bucket policy
  * @mixin true
  */
-export class BucketPolicyStatementsMixins extends Mixin {
+export class BucketPolicyStatementsMixin extends Mixin {
   private readonly statements: PolicyStatement[];
 
   public constructor(statements: PolicyStatement[]) {
@@ -18,7 +17,7 @@ export class BucketPolicyStatementsMixins extends Mixin {
   }
 
   public supports(construct: IConstruct): construct is CfnBucketPolicy {
-    return makeIsCfnResource('AWS::S3::BucketPolicy')(construct);
+    return CfnBucketPolicy.isCfnBucketPolicy(construct);
   }
 
   public applyTo(policy: IConstruct): IConstruct {
