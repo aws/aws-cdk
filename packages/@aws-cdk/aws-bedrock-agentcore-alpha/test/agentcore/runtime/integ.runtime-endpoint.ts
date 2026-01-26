@@ -84,5 +84,3 @@ if (endpoint.targetVersion) {
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeEndpointTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -188,7 +188,6 @@ describe('addMethodMetadata & addConstructMetadata', () => {
   it('addMethodMetadata should trigger addWarningV2 when addMetadata throws an error', () => {
     // Mock addMetadata to throw an error
     jest.spyOn(metadata, 'addMetadata').mockImplementation(() => {
-      // eslint-disable-next-line @cdklabs/no-throw-default-error
       throw new Error('Test Error');
     });
 
@@ -196,7 +195,7 @@ describe('addMethodMetadata & addConstructMetadata', () => {
     metadata.addMethodMetadata(mockScope, 'testMethod', { key: 'value' });
 
     // Assert
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     expect(Annotations.of).toHaveBeenCalledWith(mockScope);
     expect(mockAnnotations.addWarningV2).toHaveBeenCalledWith(
       '@aws-cdk/core:addMethodMetadataFailed',
@@ -207,7 +206,6 @@ describe('addMethodMetadata & addConstructMetadata', () => {
   it('addConstructMetadata should trigger addWarningV2 when addMetadata throws an error', () => {
     // Mock addMetadata to throw an error
     jest.spyOn(metadata, 'addMetadata').mockImplementation(() => {
-      // eslint-disable-next-line @cdklabs/no-throw-default-error
       throw new Error('Test Error');
     });
 
@@ -215,7 +213,7 @@ describe('addMethodMetadata & addConstructMetadata', () => {
     metadata.addConstructMetadata(mockScope, { key: 'value' });
 
     // Assert
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     expect(Annotations.of).toHaveBeenCalledWith(mockScope);
     expect(mockAnnotations.addWarningV2).toHaveBeenCalledWith(
       '@aws-cdk/core:addConstructMetadataFailed',

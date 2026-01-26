@@ -3,6 +3,7 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImage } from 'aws-cdk-lib/aws-imagebuilder';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -271,6 +272,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
   /**
    * Grant custom actions to the given grantee for the image
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal
    * @param actions The list of actions
    */
@@ -284,6 +287,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */
@@ -302,6 +307,8 @@ abstract class ImageBase extends cdk.Resource implements IImage {
 
   /**
    * Grant read permissions to the given grantee for the image
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -395,28 +402,6 @@ export class Image extends ImageBase {
   }
 
   /**
-   * The ARN of the image
-   */
-  public readonly imageArn: string;
-
-  /**
-   * The name of the image
-   */
-  public readonly imageName: string;
-
-  /**
-   * The version of the image
-   */
-  public readonly imageVersion: string;
-
-  /**
-   * The AMI ID of the EC2 AMI, or URI for the container
-   *
-   * @attribute
-   */
-  public readonly imageId: string;
-
-  /**
    * The infrastructure configuration used for the image build
    */
   public readonly infrastructureConfiguration: IInfrastructureConfiguration;
@@ -427,6 +412,7 @@ export class Image extends ImageBase {
   public readonly executionRole?: iam.IRole;
 
   private readonly props: ImageProps;
+  private resource: CfnImage;
 
   public constructor(scope: Construct, id: string, props: ImageProps) {
     super(scope, id);
@@ -449,24 +435,14 @@ export class Image extends ImageBase {
       },
     );
 
-    const [image, recipe] = this.createImageFromRecipe(props);
-
-    this.imageName = this.getResourceNameAttribute(image.attrName);
-    this.imageArn = image.attrArn;
-
-    if (recipe._isImageRecipe()) {
-      this.imageId = image.attrImageId;
-      this.imageVersion = recipe.imageRecipeVersion;
-    } else if (recipe._isContainerRecipe()) {
-      this.imageId = image.attrImageUri;
-      this.imageVersion = recipe.containerRecipeVersion;
-    } else {
-      throw new cdk.ValidationError('recipe must either be an image recipe or container recipe', this);
-    }
+    const [image, _] = this.createImageFromRecipe(props);
+    this.resource = image;
   }
 
   /**
    * Grants the default permissions for building an image to the provided execution role.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The execution role used for the image build.
    */
@@ -482,6 +458,45 @@ export class Image extends ImageBase {
         scope: this,
       }),
     );
+  }
+
+  @memoizedGetter
+  public get imageName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get imageArn(): string {
+    return this.resource.attrArn;
+  }
+
+  @memoizedGetter
+  public get imageVersion(): string {
+    const recipe = this.props.recipe;
+    if (recipe._isImageRecipe()) {
+      return recipe.imageRecipeVersion;
+    } else if (recipe._isContainerRecipe()) {
+      return recipe.containerRecipeVersion;
+    } else {
+      throw new cdk.ValidationError('recipe must either be an image recipe or container recipe', this);
+    }
+  }
+
+  /**
+   * The AMI ID of the EC2 AMI, or URI for the container
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get imageId(): string {
+    const recipe = this.props.recipe;
+    if (recipe._isImageRecipe()) {
+      return this.resource.attrImageId;
+    } else if (recipe._isContainerRecipe()) {
+      return this.resource.attrImageUri;
+    } else {
+      throw new cdk.ValidationError('recipe must either be an image recipe or container recipe', this);
+    }
   }
 
   /**

@@ -30,6 +30,7 @@ import {
   Tokenization,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -854,6 +855,8 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * If encryption is used, permission to use the key to decrypt the contents
    * of the bucket will also be granted to the same principal.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
@@ -861,6 +864,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
     return this.grants.read(identity, objectsKeyPattern);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
     return this.grants.write(identity, objectsKeyPattern, allowedActionPatterns);
   }
@@ -870,6 +876,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
@@ -877,6 +886,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
     return this.grants.put(identity, objectsKeyPattern);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
     return this.grants.putAcl(identity, objectsKeyPattern);
   }
@@ -885,6 +897,8 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
@@ -892,6 +906,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
     return this.grants.delete(identity, objectsKeyPattern);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grants.readWrite(identity, objectsKeyPattern);
   }
@@ -902,6 +919,8 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    * Note that when calling this function for source or destination buckets that support KMS encryption,
    * you need to specify the KMS key for encryption and the KMS key for decryption, respectively.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal to grant replication permission to.
    * @param props The properties of the replication source and destination buckets.
@@ -931,6 +950,8 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * Note that if this `IBucket` refers to an existing bucket, possibly not
    * managed by CloudFormation, this method will have no effect, since it's
    * impossible to modify the policy of an existing bucket.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
@@ -2217,8 +2238,20 @@ export class Bucket extends BucketBase {
     }
   }
 
-  public readonly bucketArn: string;
-  public readonly bucketName: string;
+  @memoizedGetter
+  public get bucketArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get bucketName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
   public readonly bucketWebsiteDomainName: string;
@@ -2293,14 +2326,6 @@ export class Bucket extends BucketBase {
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.eventBridgeEnabled = props.eventBridgeEnabled;
-
-    this.bucketName = this.getResourceNameAttribute(resource.ref);
-    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
-      region: '',
-      account: '',
-      service: 's3',
-      resource: this.physicalName,
-    });
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
