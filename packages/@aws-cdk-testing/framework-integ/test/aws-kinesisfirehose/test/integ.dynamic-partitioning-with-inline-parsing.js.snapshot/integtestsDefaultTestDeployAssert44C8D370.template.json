@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallfirehoseputRecord72731597076a1b5093085983c6135fea": {
+  "AwsApiCallfirehoseputRecord60673d4719588fff6a24968749f2a080": {
    "Type": "Custom::DeployAssert@SdkCallfirehoseputRecord",
    "Properties": {
     "ServiceToken": {
@@ -24,10 +24,10 @@
        ]
       ]
      },
-     "Record": "{\"Data\":\"{\\\"foo\\\":\\\"recordA\\\",\\\"bar\\\":{\\\"baz\\\":\\\"Partition1\\\",\\\"blah\\\":\\\"blah\\\"},\\\"data\\\":\\\"data1\\\"}{\\\"foo\\\":\\\"recordB\\\",\\\"bar\\\":{\\\"baz\\\":\\\"Partition2\\\",\\\"blah\\\":\\\"quux\\\"},\\\"data\\\":\\\"data2\\\"}\"}"
+     "Record": "{\"Data\":\"{\\\"foo\\\":\\\"recordA\\\",\\\"bar\\\":{\\\"baz\\\":\\\"Partition1\\\",\\\"blah\\\":\\\"blah\\\"},\\\"data\\\":\\\"data1\\\"}{\\\"foo\\\":\\\"recordB\\\",\\\"bar\\\":{\\\"baz\\\":\\\"Partition2\\\",\\\"blah\\\":\\\"quux\\\"},\\\"data\\\":\\\"data2\\\"}{\\\"data\\\":\\\"data3\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1761882394479"
+    "salt": "1769415652789"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -102,6 +102,24 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -117,7 +135,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -161,7 +179,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1761882394480"
+    "salt": "1769415652791"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -346,6 +364,25 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -361,7 +398,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -403,7 +440,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -447,7 +484,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1761882394482"
+    "salt": "1769415652799"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -568,6 +605,160 @@
    "DependsOn": [
     "AwsApiCalls3listObjectsV2e2fd0826e232cbe7105b6226241eb853WaitForRoleA3F2CB7E"
    ]
+  },
+  "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac": {
+   "Type": "Custom::DeployAssert@SdkCalls3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "s3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitFor7E814A87"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-firehose-dynamic-partitioning-inline:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"error-output/\"",
+     "MaxKeys": "1"
+    },
+    "flattenResponse": "false",
+    "salt": "1769415652801"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForIsCompleteProviderInvoke8F64259F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForRoleC778EFD9",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForTimeoutProviderInvoke42EA8D72": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForRoleC778EFD9",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForRoleC778EFD9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitFor7E814A87": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":20,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForRoleC778EFD9",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForRoleC778EFD9"
+   ]
   }
  },
  "Outputs": {
@@ -583,6 +774,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCalls3listObjectsV2e2fd0826e232cbe7105b6226241eb853",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac",
      "assertion"
     ]
    }

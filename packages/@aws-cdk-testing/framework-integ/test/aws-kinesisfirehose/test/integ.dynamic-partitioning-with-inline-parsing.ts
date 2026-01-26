@@ -35,6 +35,7 @@ const integTest = new integ.IntegTest(app, 'integ-tests', {
 const records = [
   '{"foo":"recordA","bar":{"baz":"Partition1","blah":"blah"},"data":"data1"}',
   '{"foo":"recordB","bar":{"baz":"Partition2","blah":"quux"},"data":"data2"}',
+  '{"data":"data3"}',
 ];
 
 integTest.assertions.awsApiCall('firehose', 'putRecord', {
@@ -47,6 +48,7 @@ integTest.assertions.awsApiCall('firehose', 'putRecord', {
 [
   'key1=recordA/key2=PARTITION1/',
   'key1=recordB/key2=PARTITION2/',
+  'error-output/metadata-extraction-failed/',
 ].forEach((prefix) => {
   const s3ApiCall = integTest.assertions.awsApiCall('s3', 'listObjectsV2', {
     Bucket: bucket.bucketName,
