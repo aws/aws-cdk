@@ -421,6 +421,38 @@ export class Fn {
   }
 
   /**
+   * The `Fn::ForEach` intrinsic function. Requires AWS::LanguageExtensions transform.
+   *
+   * @param uniqueLoopName Unique identifier for this loop (alphanumeric only)
+   * @param collection Array of values to iterate over
+   * @param outputKey Template for output keys, use ${loopName} as placeholder
+   * @param outputValue Template for output values
+   * @returns an IResolvable representing the ForEach intrinsic
+   */
+  public static forEach(
+    uniqueLoopName: string,
+    collection: string[] | IResolvable,
+    outputKey: string,
+    outputValue: any,
+  ): IResolvable {
+    if (!/^[A-Za-z0-9]+$/.test(uniqueLoopName)) {
+      throw new UnscopedValidationError(`ForEach loop name must be alphanumeric, got: ${uniqueLoopName}`);
+    }
+    return new FnForEach(uniqueLoopName, collection, outputKey, outputValue);
+  }
+
+  /**
+   * Reference the current loop variable in Fn::ForEach.
+   * Returns ${loopName} for use in templates.
+   *
+   * @param loopName The loop variable name
+   * @returns The loop variable placeholder string
+   */
+  public static forEachRef(loopName: string): string {
+    return `\${${loopName}}`;
+  }
+
+  /**
    * The `Fn::ToJsonString` intrinsic function converts an object or array to its
    * corresponding JSON string.
    *
@@ -968,4 +1000,38 @@ function range(n: number): number[] {
     ret.push(i);
   }
   return ret;
+}
+
+/**
+ * The `Fn::ForEach` intrinsic function for deploy-time loops.
+ */
+class FnForEach implements IResolvable {
+  public readonly creationStack: string[];
+
+  constructor(
+    private readonly loopName: string,
+    private readonly collection: string[] | IResolvable,
+    private readonly outputKey: string,
+    private readonly outputValue: any,
+  ) {
+    this.creationStack = captureStackTrace();
+  }
+
+  public resolve(context: IResolveContext): any {
+    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    return {
+      [`Fn::ForEach::${this.loopName}`]: [
+        this.collection,
+        { [this.outputKey]: this.outputValue },
+      ],
+    };
+  }
+
+  public toString(): string {
+    return Token.asString(this, { displayHint: 'Fn::ForEach' });
+  }
+
+  public toJSON(): string {
+    return '<Fn::ForEach>';
+  }
 }
