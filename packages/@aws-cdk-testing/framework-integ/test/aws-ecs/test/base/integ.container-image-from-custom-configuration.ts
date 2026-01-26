@@ -36,5 +36,3 @@ taskDefinition.addContainer('CustomImageWithoutCredentials', {
 new integ.IntegTest(app, 'aws-ecs-integ-custom-container-image-test', {
   testCases: [stack],
 });
-
-app.synth();
