@@ -82,7 +82,7 @@ export function createBufferingHints(
   }
 
   const intervalInSeconds = interval?.toSeconds() ?? 300;
-  cdk.withResolved(intervalInSeconds, () => {
+  if (!cdk.Token.isUnresolved(intervalInSeconds)) {
     if (intervalInSeconds > 900) {
       throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds, got ${intervalInSeconds} seconds.`, scope);
     }
@@ -91,11 +91,11 @@ export function createBufferingHints(
       // The message is: "BufferingHints.IntervalInSeconds must be at least 60 seconds when Dynamic Partitioning is enabled."
       throw new cdk.ValidationError(`When dynamic partitioning is enabled, buffering interval must be at least 60 seconds, got ${intervalInSeconds} seconds.`, scope);
     }
-  });
+  }
 
   const defaultSizeInMBs = (dataFormatConversionEnabled || dynamicPartitioningEnabled) ? 128 : 5;
   const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
-  cdk.withResolved(sizeInMBs, () => {
+  if (!cdk.Token.isUnresolved(sizeInMBs)) {
     if (sizeInMBs > 128) {
       throw new cdk.ValidationError(`Buffering size must be at most 128 MiBs, got ${sizeInMBs} MiBs.`, scope);
     }
@@ -107,7 +107,7 @@ export function createBufferingHints(
     if (sizeInMBs < 1) {
       throw new cdk.ValidationError(`Buffering size must be at least 1 MiB, got ${sizeInMBs} MiBs.`, scope);
     }
-  });
+  }
 
   return { intervalInSeconds, sizeInMBs };
 }
