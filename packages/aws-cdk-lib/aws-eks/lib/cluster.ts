@@ -2330,7 +2330,13 @@ export class Cluster extends ClusterBase {
   }
 
   private validateRemoteNetworkConfig(props: ClusterProps) {
-    if (!props.remoteNodeNetworks) { return;}
+    if (!props.remoteNodeNetworks) {
+      if (props.remotePodNetworks) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterRemotePodNetworksWithoutNodeNetworks', 'remotePodNetworks is specified without remoteNodeNetworks. remotePodNetworks will be ignored.');
+      }
+      // Nothing to validate
+      return;
+    }
     // validate that no two CIDRs overlap within the same remote node network
     props.remoteNodeNetworks.forEach((network, index) => {
       const { cidrs } = network;

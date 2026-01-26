@@ -1670,8 +1670,13 @@ export class Cluster extends ClusterBase {
   }
 
   private validateRemoteNetworkConfig(props: ClusterProps) {
-    if (!props.remoteNodeNetworks && props.remotePodNetworks) { throw new ValidationError('remotePodNetworks cannot be specified without remoteNodeNetworks also being specified', this); }
-    if (!props.remoteNodeNetworks) return;
+    if (!props.remoteNodeNetworks) {
+      if (props.remotePodNetworks) {
+        throw new ValidationError('remotePodNetworks cannot be specified without remoteNodeNetworks also being specified', this);
+      }
+      // Nothing to validate
+      return;
+    }
 
     // validate that no two CIDRs overlap within the same remote node network
     props.remoteNodeNetworks.forEach((network, index) => {
