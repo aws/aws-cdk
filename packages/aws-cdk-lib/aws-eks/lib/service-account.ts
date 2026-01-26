@@ -91,40 +91,6 @@ export interface ServiceAccountOptions {
   readonly overwriteServiceAccount?: boolean;
 }
 
-export interface ServiceAccountOptions {
-  /**
-   * The name of the service account.
-   *
-   * The name of a ServiceAccount object must be a valid DNS subdomain name.
-   * https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-   * @default - If no name is given, it will use the id of the resource.
-   */
-  readonly name?: string;
-
-  /**
-   * The namespace of the service account.
-   *
-   * All namespace names must be valid RFC 1123 DNS labels.
-   * https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#namespaces-and-dns
-   * @default "default"
-   */
-  readonly namespace?: string;
-
-  /**
-   * Additional annotations of the service account.
-   *
-   * @default - no additional annotations
-   */
-  readonly annotations?: {[key:string]: string};
-
-  /**
-   * Additional labels of the service account.
-   *
-   * @default - no additional labels
-   */
-  readonly labels?: {[key:string]: string};
-}
-
 /**
  * Properties for defining service accounts
  */
