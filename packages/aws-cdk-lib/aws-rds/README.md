@@ -733,13 +733,13 @@ new rds.DatabaseInstance(this, 'OracleInstance', {
   additionalStorageVolumes: [
     {
       allocatedStorage: Size.gibibytes(200),
-      storageType: rds.AdditionalStorageVolumeType.GP3,
+      storageType: rds.StorageType.GP3,
       iops: 12000,
       storageThroughput: Size.mebibytes(500),
     },
     {
       allocatedStorage: Size.gibibytes(300),
-      storageType: rds.AdditionalStorageVolumeType.IO2,
+      storageType: rds.StorageType.IO2,
       iops: 20000,
     },
   ],
@@ -755,13 +755,13 @@ new rds.DatabaseInstance(this, 'SqlServerInstance', {
   additionalStorageVolumes: [
     {
       allocatedStorage: Size.gibibytes(200),
-      storageType: rds.AdditionalStorageVolumeType.GP3,
+      storageType: rds.StorageType.GP3,
       iops: 3000,
       storageThroughput: Size.mebibytes(125),
     },
     {
       allocatedStorage: Size.gibibytes(300),
-      storageType: rds.AdditionalStorageVolumeType.IO2,
+      storageType: rds.StorageType.IO2,
       iops: 5000,
     },
   ],
@@ -771,21 +771,21 @@ new rds.DatabaseInstance(this, 'SqlServerInstance', {
 **Requirements and Constraints:**
 
 - **Supported engines**: Oracle and SQL Server only
-- **Instance types**: Must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge). Burstable instance types (t2, t3) are not supported.
-- **Primary storage**: Must be at least 200 GiB
-- **Storage types**: Only `gp3` and `io2` are supported for additional volumes
-- **GP3 IOPS** (baseline IOPS when not specified):
-  - Oracle: 12,000 - 64,000 IOPS (baseline: 12,000)
-  - SQL Server: 3,000 - 16,000 IOPS (baseline: 3,000)
-- **GP3 Throughput** (baseline throughput when not specified):
-  - Oracle: 500 - 4,000 MiB/s (baseline: 500 MiB/s)
-  - SQL Server: 125 - 1,000 MiB/s (baseline: 125 MiB/s)
-- **IO2 IOPS** (must be explicitly specified, no baseline):
-  - Oracle: 1,000 - 256,000 IOPS
-  - SQL Server: 1,000 - 256,000 IOPS
-- **IO2 Throughput**:
-  - Oracle: up to 16,000 MiB/s (for 200+ GiB)
-  - SQL Server: up to 4,000 MiB/s
+- **Storage types**: Only `GP3` and `IO2` are supported for additional volumes
+- **Oracle requirements**:
+  - Instance types must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge)
+  - Burstable instance types (t2, t3) are not supported
+  - Primary storage must be at least 200 GiB
+  - Additional volume storage: 200 - 65,536 GiB
+- **SQL Server requirements**:
+  - Additional volume storage: 20 - 65,536 GiB
+- **GP3 IOPS** (baseline IOPS provided by AWS, no explicit value set by CDK):
+  - Oracle: 12,000 IOPS baseline (storage >= 200 GiB exceeds striping threshold)
+  - SQL Server: 3,000 IOPS baseline (no volume striping support)
+- **GP3 Throughput** (baseline throughput provided by AWS):
+  - Oracle: 500 MiB/s baseline (storage >= 200 GiB exceeds striping threshold)
+  - SQL Server: 125 MiB/s baseline (no volume striping support)
+- **IO2 IOPS**: Default is 1,000 IOPS if not specified
 - **Maximum throughput/IOPS ratio** (GP3 only): 0.25
 
 For more information, see [Adding storage volumes](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html) and [Amazon RDS DB instance storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html).

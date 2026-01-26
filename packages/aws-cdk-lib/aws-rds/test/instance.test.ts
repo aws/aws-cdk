@@ -2487,7 +2487,7 @@ describe('instance', () => {
         additionalStorageVolumes: [
           {
             allocatedStorage: cdk.Size.gibibytes(200),
-            storageType: rds.AdditionalStorageVolumeType.GP3,
+            storageType: rds.StorageType.GP3,
             iops: 12000,
             storageThroughput: cdk.Size.mebibytes(500),
             maxAllocatedStorage: cdk.Size.gibibytes(1000),
@@ -2591,7 +2591,7 @@ describe('instance', () => {
           additionalStorageVolumes: [
             {
               allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.IO2,
+              storageType: rds.StorageType.IO2,
               storageThroughput: cdk.Size.mebibytes(125),
             },
           ],
@@ -2659,7 +2659,7 @@ describe('instance', () => {
           additionalStorageVolumes: [
             {
               allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
+              storageType: rds.StorageType.GP3,
               iops: 3000,
               storageThroughput: cdk.Size.mebibytes(1000),
             },
@@ -2676,13 +2676,80 @@ describe('instance', () => {
           additionalStorageVolumes: [
             {
               allocatedStorage: cdk.Size.gibibytes(200),
-              storageType: rds.AdditionalStorageVolumeType.GP3,
+              storageType: rds.StorageType.GP3,
               iops: 4000,
               storageThroughput: cdk.Size.mebibytes(1000),
             },
           ],
         });
       }).not.toThrow();
+    });
+
+    test.each([
+      rds.StorageType.GP2,
+      rds.StorageType.IO1,
+      rds.StorageType.STANDARD,
+    ])('throws if unsupported storage type %s is specified', (storageType) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            {
+              allocatedStorage: cdk.Size.gibibytes(200),
+              storageType,
+            },
+          ],
+        });
+      }).toThrow(`Only GP3 and IO2 storage types are supported for additional storage volumes, got '${storageType}' for additionalStorageVolumes[0]`);
+    });
+
+    test('IO2 storage type uses default IOPS of 1000', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+        vpc,
+        additionalStorageVolumes: [
+          {
+            allocatedStorage: cdk.Size.gibibytes(200),
+            storageType: rds.StorageType.IO2,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AdditionalStorageVolumes: [
+          {
+            VolumeName: 'rdsdbdata2',
+            AllocatedStorage: '200',
+            StorageType: 'io2',
+            Iops: 1000,
+          },
+        ],
+      });
+    });
+
+    test('GP3 storage type does not set default IOPS', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+        vpc,
+        additionalStorageVolumes: [
+          {
+            allocatedStorage: cdk.Size.gibibytes(200),
+            storageType: rds.StorageType.GP3,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AdditionalStorageVolumes: [
+          {
+            VolumeName: 'rdsdbdata2',
+            AllocatedStorage: '200',
+            StorageType: 'gp3',
+            Iops: Match.absent(),
+          },
+        ],
+      });
     });
 
   });

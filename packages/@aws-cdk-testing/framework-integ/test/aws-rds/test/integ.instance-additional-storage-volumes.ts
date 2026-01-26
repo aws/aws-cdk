@@ -2,7 +2,6 @@ import { InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from 'aws-
 import { App, RemovalPolicies, RemovalPolicy, Size, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import {
-  AdditionalStorageVolumeType,
   DatabaseInstance,
   DatabaseInstanceEngine,
   LicenseModel,
@@ -30,7 +29,7 @@ new DatabaseInstance(stack, 'OracleInstance', {
   additionalStorageVolumes: [
     {
       allocatedStorage: Size.gibibytes(200),
-      storageType: AdditionalStorageVolumeType.GP3,
+      storageType: StorageType.GP3,
       iops: 12000,
       storageThroughput: Size.mebibytes(500),
     },
@@ -51,7 +50,7 @@ new DatabaseInstance(stack, 'SqlServerInstance', {
   additionalStorageVolumes: [
     {
       allocatedStorage: Size.gibibytes(200),
-      storageType: AdditionalStorageVolumeType.GP3,
+      storageType: StorageType.GP3,
       iops: 3000,
       storageThroughput: Size.mebibytes(125),
     },
