@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "03bcd611024d4c4935cdf3a3380db4afa503490c4ef053ebecdd86024acf5a2a": {
+      "source": {
+        "path": "integ-ec2-instance-c8a.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "03bcd611024d4c4935cdf3a3380db4afa503490c4ef053ebecdd86024acf5a2a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
