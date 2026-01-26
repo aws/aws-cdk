@@ -379,6 +379,66 @@ describe('service account', () => {
       // should not create OpenIdConnectProvider
       t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
     });
+
+    test('with targetRole', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const targetRole = new iam.Role(stack, 'TargetRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        targetRole,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      // should have pod identity association with target role ARN
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        ClusterName: { Ref: 'ClusterEB0386A7' },
+        Namespace: 'default',
+        RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
+        ServiceAccount: 'stackmyserviceaccount58b9529e',
+        TargetRoleArn: { 'Fn::GetAtt': ['TargetRole7662179D', 'Arn'] },
+      });
+    });
+
+    test('targetRole validation - throws error with IRSA identity type', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const targetRole = new iam.Role(stack, 'TargetRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN & THEN
+      expect(() => new eks.ServiceAccount(cluster, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.IRSA,
+        targetRole,
+      })).toThrow('targetRole can only be used with POD_IDENTITY identity type');
+    });
+
+    test('targetRole validation - accepts valid role with service role path', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const serviceRole = iam.Role.fromRoleArn(stack, 'ServiceRole', 'arn:aws:iam::123456789012:role/service-role/MyServiceRole');
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        targetRole: serviceRole,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        TargetRoleArn: 'arn:aws:iam::123456789012:role/service-role/MyServiceRole',
+      });
+    });
   });
   describe('Service Account with eks.IdentityType.IRSA', () => {
     test('default', () => {
