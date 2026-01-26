@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "20.0.0",
   "testCases": {
     "integ.vpc": {
       "stacks": [
@@ -10,6 +10,5 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false,
-  "minimumCliVersion": "2.1101.0"
+  "enableLookups": false
 }

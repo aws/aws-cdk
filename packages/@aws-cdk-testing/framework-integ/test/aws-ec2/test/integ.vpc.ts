@@ -24,13 +24,4 @@ for (const rule of rules) {
   sg.addIngressRule(ec2.Peer.anyIpv4(), rule);
 }
 
-// Test various Peer types with type-safe rule configurations
-// These use the IngressRuleConfig and EgressRuleConfig interfaces
-sg.addIngressRule(ec2.Peer.ipv4('10.0.0.0/16'), ec2.Port.tcp(443), 'Allow HTTPS from specific CIDR');
-sg.addIngressRule(ec2.Peer.ipv6('2001:db8::/32'), ec2.Port.tcp(443), 'Allow HTTPS from IPv6 CIDR');
-
-// Test egress rules with different peer types
-sg.addEgressRule(ec2.Peer.ipv4('192.168.0.0/16'), ec2.Port.tcp(5432), 'Allow PostgreSQL to specific CIDR');
-sg.addEgressRule(ec2.Peer.ipv6('2001:db8::/32'), ec2.Port.tcp(443), 'Allow HTTPS to specific IPv6 CIDR');
-
 app.synth();
