@@ -153,11 +153,17 @@ class LogsHelper extends ClassType {
             type: CDK_INTERFACES.IBucketRef,
           });
 
+          toS3.addParameter({
+            name: 'props',
+            type: MIXINS_LOGS_DELIVERY.S3LogsDestinationProps,
+            optional: true,
+          });
+
           const permissions = this.log.permissionsVersion === 'V2' ? MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V2 : MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V1;
           toS3.addBody(stmt.block(
             stmt.ret(
               mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
-                expr.object({ permissionsVersion: permissions }))),
+                expr.object({ permissionsVersion: permissions, kmsKey: expr.directCode('(props && props.encryptionKey) ? props.encryptionKey : undefined') }))),
             ),
           ));
           break;
