@@ -261,23 +261,6 @@ export interface AlbControllerHelmChartOptions {
 }
 
 /**
- * Service account options that can be set for AlbController
- */
-export interface AlbControllerServiceAccountOptions {
-
-  /**
-   * Overwrite any existing resources.
-   *
-   * If this is set, we will use `kubectl apply` instead of `kubectl create`
-   * when the resource is created. Otherwise, if there is already a resource
-   * in the cluster with the same name, the operation will fail.
-   *
-   * @default false
-   */
-  readonly overwrite?: boolean;
-}
-
-/**
  * Options for `AlbController`.
  */
 export interface AlbControllerOptions {
@@ -316,13 +299,6 @@ export interface AlbControllerOptions {
    * @default - no additional helm chart values
    */
   readonly additionalHelmChartValues?: AlbControllerHelmChartOptions;
-
-  /**
-   * Additional service account values for the ALB controller
-   *
-   * @default - no additional service account values
-   */
-  readonly additionalServiceAccountValues?: AlbControllerServiceAccountOptions;
 
   /**
    * Overwrite any existing ALB controller service account.
