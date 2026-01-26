@@ -218,10 +218,10 @@ export class ServiceAccount extends Construct implements IPrincipal {
     // and since this stack inherintely depends on the cluster stack, we will have a circular dependency.
 
     // Prepare annotations - only include role-arn if identity type is not NONE
-    const annotations: { [key: string]: string } = { ...props.annotations };
-    if (identityType !== IdentityType.NONE && this.role) {
-      annotations['eks.amazonaws.com/role-arn'] = this.role.roleArn;
-    }
+    // Maintain original order: role-arn first, then user annotations spread on top
+    const annotations: { [key: string]: string } = identityType !== IdentityType.NONE && this.role
+      ? { 'eks.amazonaws.com/role-arn': this.role.roleArn, ...props.annotations }
+      : { ...props.annotations };
 
     new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
       cluster,
