@@ -1,28 +1,43 @@
 import { Construct } from 'constructs';
-import { CfnForEachFragment } from './cfn-foreach-fragment';
 import { Fn } from './cfn-fn';
+import { CfnForEachFragment } from './cfn-foreach-fragment';
 import { CfnResource } from './cfn-resource';
-import { IResolvable } from './resolvable';
+import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
+import { IResolvable } from './resolvable';
 import { Stack } from './stack';
+
+const FOR_EACH_RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.ForEachResource');
 
 /**
  * Properties for ForEachResource.
  */
 export interface ForEachResourceProps {
-  /** Unique identifier for this loop (alphanumeric only) */
+  /**
+   * Unique identifier for this loop (alphanumeric only).
+   */
   readonly loopName: string;
 
-  /** Values to iterate over */
-  readonly collection: string[] | IResolvable;
+  /**
+   * Values to iterate over.
+   */
+  readonly collection: string[];
 
-  /** CloudFormation resource type (e.g., 'AWS::S3::Bucket') */
+  /**
+   * CloudFormation resource type (e.g., 'AWS::S3::Bucket').
+   */
   readonly resourceType: string;
 
-  /** Logical ID template - use ${loopName} as placeholder */
+  /**
+   * Logical ID template - use ${loopName} as placeholder.
+   */
   readonly logicalIdTemplate: string;
 
-  /** Resource properties - use Fn.forEachRef() for loop variable */
+  /**
+   * Resource properties - use Fn.forEachRef() for loop variable.
+   *
+   * @default - no properties
+   */
   readonly properties?: Record<string, any>;
 }
 
@@ -38,29 +53,54 @@ class VirtualCfnResource extends CfnResource {
 
 /**
  * Creates multiple CloudFormation resources using Fn::ForEach.
+ *
+ * This construct allows you to create multiple resources of the same type
+ * by iterating over a collection of values at deploy time.
+ *
+ * @example
+ * new ForEachResource(this, 'Buckets', {
+ *   loopName: 'Env',
+ *   collection: ['dev', 'prod'],
+ *   resourceType: 'AWS::S3::Bucket',
+ *   logicalIdTemplate: 'Bucket${Env}',
+ *   properties: { BucketName: Fn.sub('my-bucket-${Env}') },
+ * });
  */
 export class ForEachResource extends Construct {
-  /** Virtual CfnResource representing the template. Aspects can modify this. */
+  /**
+   * Checks if the given construct is a ForEachResource.
+   */
+  public static isForEachResource(x: any): x is ForEachResource {
+    return x !== null && typeof x === 'object' && FOR_EACH_RESOURCE_SYMBOL in x;
+  }
+
+  /**
+   * Virtual CfnResource representing the template. Aspects can modify this.
+   */
   public readonly templateResource: CfnResource;
 
-  /** The logical ID template with loop variable placeholder */
+  /**
+   * The logical ID template with loop variable placeholder.
+   */
   public readonly logicalIdTemplate: string;
 
   private readonly loopName: string;
-  private readonly collection: string[] | IResolvable;
+  private readonly collection: string[];
   private readonly resourceType: string;
 
   constructor(scope: Construct, id: string, props: ForEachResourceProps) {
     super(scope, id);
 
     if (!/^[A-Za-z0-9]+$/.test(props.loopName)) {
-      throw new Error(`ForEach loop name must be alphanumeric, got: ${props.loopName}`);
+      throw new UnscopedValidationError(`forEach loop name must be alphanumeric, got '${props.loopName}'`);
     }
 
     this.loopName = props.loopName;
     this.collection = props.collection;
     this.resourceType = props.resourceType;
     this.logicalIdTemplate = props.logicalIdTemplate;
+
+    Object.defineProperty(this, FOR_EACH_RESOURCE_SYMBOL, { value: true });
 
     Stack.of(this).addTransform('AWS::LanguageExtensions');
 
@@ -70,26 +110,46 @@ export class ForEachResource extends Construct {
     });
 
     const lazyFragment = Lazy.any({ produce: () => this.buildForEachStructure() });
-    new CfnForEachFragment(this, 'Fragment', 'Resources', lazyFragment);
+    new CfnForEachFragment(this, 'Fragment', { section: 'Resources', fragment: lazyFragment });
   }
 
-  /** Reference to resources created by this loop (Ref). */
-  public ref(): IResolvable {
+  /**
+   * Reference to resources created by this loop (Ref).
+   *
+   * @returns a token representing the Ref to the templated resource
+   */
+  public ref(): string {
     return Fn.ref(this.logicalIdTemplate);
   }
 
-  /** Get attribute of resources created by this loop. */
+  /**
+   * Get attribute of resources created by this loop.
+   *
+   * @param attributeName the name of the attribute
+   * @returns a token representing the attribute value
+   */
   public getAtt(attributeName: string): IResolvable {
     return Fn.getAtt(this.logicalIdTemplate, attributeName);
   }
 
-  /** Get Ref to a specific resource by collection value. */
-  public refFor(collectionValue: string): IResolvable {
+  /**
+   * Get Ref to a specific resource by collection value.
+   *
+   * @param collectionValue the value from the collection
+   * @returns a token representing the Ref to the specific resource
+   */
+  public refFor(collectionValue: string): string {
     const logicalId = this.logicalIdTemplate.replace(`\${${this.loopName}}`, collectionValue);
     return Fn.ref(logicalId);
   }
 
-  /** Get attribute of a specific resource by collection value. */
+  /**
+   * Get attribute of a specific resource by collection value.
+   *
+   * @param collectionValue the value from the collection
+   * @param attributeName the name of the attribute
+   * @returns a token representing the attribute value
+   */
   public getAttFor(collectionValue: string, attributeName: string): IResolvable {
     const logicalId = this.logicalIdTemplate.replace(`\${${this.loopName}}`, collectionValue);
     return Fn.getAtt(logicalId, attributeName);
@@ -113,9 +173,6 @@ export class ForEachResource extends Construct {
     }
     if (options.updatePolicy) {
       resourceDef.UpdatePolicy = options.updatePolicy;
-    }
-    if (options.dependsOn && options.dependsOn.length > 0) {
-      resourceDef.DependsOn = options.dependsOn.map(d => d.logicalId);
     }
 
     return {

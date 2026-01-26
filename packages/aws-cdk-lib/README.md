@@ -1132,6 +1132,61 @@ cfnBucket.cfnOptions.condition = isProd;
 
 [cfn-intrinsics]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 
+### Fn::ForEach
+
+The `Fn::ForEach` intrinsic function allows you to create multiple resources,
+outputs, or conditions by iterating over a collection at deploy time. This
+requires the `AWS::LanguageExtensions` transform, which is automatically added
+when using these constructs.
+
+```ts
+// Create multiple S3 buckets for different environments
+const buckets = new ForEachResource(this, 'Buckets', {
+  loopName: 'Env',
+  collection: ['dev', 'staging', 'prod'],
+  resourceType: 'AWS::S3::Bucket',
+  logicalIdTemplate: 'Bucket${Env}',
+  properties: {
+    Tags: [{ Key: 'Environment', Value: Fn.forEachRef('Env') }],
+  },
+});
+
+// Reference the templated resource
+buckets.ref();           // Ref to Bucket${Env}
+buckets.getAtt('Arn');   // Arn of Bucket${Env}
+
+// Reference a specific resource
+buckets.refFor('prod');  // Ref to Bucketprod
+```
+
+You can also create outputs and conditions using ForEach:
+
+```ts
+// Create outputs for each environment
+new ForEachOutput(this, 'BucketArns', {
+  loopName: 'Env',
+  collection: ['dev', 'prod'],
+  outputKeyTemplate: 'BucketArn${Env}',
+  value: buckets.getAtt('Arn'),
+});
+
+// Create conditions for each environment
+new ForEachCondition(this, 'EnvConditions', {
+  loopName: 'Env',
+  collection: ['dev', 'prod'],
+  conditionKeyTemplate: 'Is${Env}',
+  expression: Fn.conditionEquals(Fn.ref('Environment'), Fn.forEachRef('Env')),
+});
+```
+
+For lower-level access, use `Fn.forEach()` directly:
+
+```ts
+const result = Fn.forEach('Item', ['a', 'b', 'c'], 'Resource${Item}', {
+  Type: 'AWS::S3::Bucket',
+});
+```
+
 ### Mappings
 
 CloudFormation [mappings][cfn-mappings] are created and queried using the
