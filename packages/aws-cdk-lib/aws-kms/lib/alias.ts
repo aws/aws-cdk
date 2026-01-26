@@ -4,6 +4,7 @@ import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generat
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
@@ -321,8 +322,18 @@ export class Alias extends AliasBase {
     return new Import(scope, id);
   }
 
-  public readonly aliasName: string;
+  private readonly resource: CfnAlias;
+
   public readonly aliasTargetKey: IKey;
+
+  @memoizedGetter
+  public get aliasName(): string {
+    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
+      return this.getResourceNameAttribute(this.resource.ref);
+    } else {
+      return this.getResourceNameAttribute(this.resource.aliasName);
+    }
+  }
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     let aliasName = props.aliasName;
@@ -367,19 +378,13 @@ export class Alias extends AliasBase {
 
     this.aliasTargetKey = props.targetKey;
 
-    const resource = new CfnAlias(this, 'Resource', {
+    this.resource = new CfnAlias(this, 'Resource', {
       aliasName: this.physicalName,
       targetKeyId: this.aliasTargetKey.keyArn,
     });
 
-    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
-      this.aliasName = this.getResourceNameAttribute(resource.ref);
-    } else {
-      this.aliasName = this.getResourceNameAttribute(resource.aliasName);
-    }
-
     if (props.removalPolicy) {
-      resource.applyRemovalPolicy(props.removalPolicy);
+      this.resource.applyRemovalPolicy(props.removalPolicy);
     }
   }
 

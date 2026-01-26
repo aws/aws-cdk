@@ -18,6 +18,7 @@ import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -1424,8 +1425,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
   }
 
-  public readonly domainArn: string;
-  public readonly domainName: string;
+  @memoizedGetter
+  public get domainArn(): string {
+    return this.getResourceArnAttribute(this.domain.attrArn, {
+      service: 'es',
+      resource: 'domain',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get domainName(): string {
+    return this.getResourceNameAttribute(this.domain.ref);
+  }
+
   public readonly domainId: string;
   public readonly domainEndpoint: string;
 
@@ -1682,6 +1695,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ec2.InstanceClass.IM4GN,
       ec2.InstanceClass.R7GD,
       ec2.InstanceClass.R8GD,
+      'oi2', // OpenSearch-specific instance type with local NVMe storage
     ];
 
     const supportInstanceStorageInstanceType = [
@@ -1718,8 +1732,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new ValidationError(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`, this);
     }
 
-    // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
+    // Only R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD and OI2 support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
+    // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
       throw new ValidationError(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`, this);
     }
@@ -2108,17 +2123,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
     }
 
-    this.domainName = this.getResourceNameAttribute(this.domain.ref);
-
     this.domainId = this.domain.getAtt('Id').toString();
 
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
-
-    this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
-      service: 'es',
-      resource: 'domain',
-      resourceName: this.physicalName,
-    });
 
     if (props.customEndpoint?.hostedZone) {
       new route53.CnameRecord(this, 'CnameRecord', {

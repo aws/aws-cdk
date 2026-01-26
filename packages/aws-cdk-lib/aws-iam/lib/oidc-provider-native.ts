@@ -145,26 +145,7 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     return new Import(scope, id);
   }
 
-  /**
-   * The Amazon Resource Name (ARN) of the Native IAM OpenID Connect provider.
-   *
-   * @attribute
-   */
-  public readonly oidcProviderArn: string;
-
-  /**
-   * The issuer for the Native OIDC Provider
-   *
-   * @attribute
-   */
-  public readonly oidcProviderIssuer: string;
-
-  /**
-   * The thumbprints configured for this provider.
-   *
-   * @attribute
-   */
-  public readonly oidcProviderThumbprints: string;
+  private readonly resource: CfnOIDCProvider;
 
   /**
    * Defines a Native OpenID Connect provider.
@@ -219,19 +200,41 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
       throw new ValidationError('All thumbprints must be in hexadecimal format', scope);
     }
 
-    const resource = new CfnOIDCProvider(this, 'Resource', {
+    this.resource = new CfnOIDCProvider(this, 'Resource', {
       url: props.url,
       clientIdList: props.clientIds,
       thumbprintList: props.thumbprints,
     });
+  }
 
-    this.oidcProviderArn = Token.asString(resource.ref);
-    this.oidcProviderIssuer = Arn.extractResourceName(
+  /**
+   * The Amazon Resource Name (ARN) of the Native IAM OpenID Connect provider.
+   *
+   * @attribute
+   */
+  public get oidcProviderArn(): string {
+    return Token.asString(this.resource.ref);
+  }
+
+  /**
+   * The issuer for the Native OIDC Provider
+   *
+   * @attribute
+   */
+  public get oidcProviderIssuer(): string {
+    return Arn.extractResourceName(
       this.oidcProviderArn,
       'oidc-provider',
     );
+  }
 
-    this.oidcProviderThumbprints = Token.asString(props.thumbprints);
+  /**
+   * The thumbprints configured for this provider.
+   *
+   * @attribute
+   */
+  public get oidcProviderThumbprints(): string {
+    return Token.asString(this.resource.thumbprintList);
   }
 
   public get oidcProviderRef(): OIDCProviderReference {
