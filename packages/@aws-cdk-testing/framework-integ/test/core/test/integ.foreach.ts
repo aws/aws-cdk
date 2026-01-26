@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { ForEachResource, ForEachOutput, Fn } from 'aws-cdk-lib';
+import { ForEachResource, ForEachOutput, Fn, Token } from 'aws-cdk-lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'ForEachIntegStack');
@@ -21,7 +21,7 @@ new ForEachOutput(stack, 'BucketArns', {
   loopName: 'Env',
   collection: ['dev', 'staging'],
   outputKeyTemplate: 'BucketArn${Env}',
-  value: buckets.getAtt('Arn'),
+  value: Token.asString(buckets.getAtt('Arn')),
   description: 'ARN of the bucket',
 });
 
