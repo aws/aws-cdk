@@ -1165,5 +1165,16 @@ describe('S3 destination', () => {
         },
       });
     });
+
+    it('throws when the JQ query is empty', () => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          dynamicPartitioning: { enabled: true },
+          processors: [
+            firehose.MetadataExtractionProcessor.jq16({}),
+          ],
+        });
+      }).toThrow('The query for MetadataExtractionProcessor should not be empty.');
+    });
   });
 });

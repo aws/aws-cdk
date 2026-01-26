@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ValidationError } from '../../../core';
+import { UnscopedValidationError } from '../../../core';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
@@ -51,7 +51,10 @@ export class MetadataExtractionProcessor implements IDataProcessor {
    * @param query A map of partition key to jq expression.
    */
   public static jq16(query: Record<string, string>): MetadataExtractionProcessor {
-    // Extraction query for JQ 1.6 is not a JSON.
+    if (Object.keys(query).length === 0) {
+      throw new UnscopedValidationError('The query for MetadataExtractionProcessor should not be empty.');
+    }
+    // Extraction query for JQ 1.6 is not a JSON, but a JQ expression.
     // For example:
     // {
     //    "customer_id": .customer_id,
@@ -69,11 +72,7 @@ export class MetadataExtractionProcessor implements IDataProcessor {
 
   constructor(private readonly options: MetadataExtractionProcessorOptions) {}
 
-  bind(scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
-    if (Object.keys(this.options.metadataExtractionQuery).length === 0) {
-      throw new ValidationError('metadataExtractionQuery is empty', scope);
-    }
-
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
     const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [
       { parameterName: 'MetadataExtractionQuery', parameterValue: this.options.metadataExtractionQuery },
       { parameterName: 'JsonParsingEngine', parameterValue: this.options.jsonParsingEngine.parsingEngine },
