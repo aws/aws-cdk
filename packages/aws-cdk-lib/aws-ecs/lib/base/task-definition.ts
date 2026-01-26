@@ -1406,9 +1406,9 @@ export interface ITaskDefinitionExtension {
  */
 export function isEc2Compatible(compatibility: Compatibility): boolean {
   return [Compatibility.EC2,
-    Compatibility.EC2_AND_FARGATE,
-    Compatibility.EC2_AND_MANAGED_INSTANCES,
-    Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES].includes(compatibility);
+  Compatibility.EC2_AND_FARGATE,
+  Compatibility.EC2_AND_MANAGED_INSTANCES,
+  ].includes(compatibility);
 }
 
 /**
@@ -1416,9 +1416,9 @@ export function isEc2Compatible(compatibility: Compatibility): boolean {
  */
 export function isFargateCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.FARGATE,
-    Compatibility.EC2_AND_FARGATE,
-    Compatibility.FARGATE_AND_MANAGED_INSTANCES,
-    Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES].includes(compatibility);
+  Compatibility.EC2_AND_FARGATE,
+  Compatibility.FARGATE_AND_MANAGED_INSTANCES,
+  ].includes(compatibility);
 }
 
 /**
