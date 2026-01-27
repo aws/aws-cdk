@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { Alias } from './alias';
+import { KeyGrants } from './key-grants';
 import { KeyLookupOptions } from './key-lookup';
 import { CfnKey, IKeyRef, KeyReference } from './kms.generated';
 import * as perms from './private/perms';
@@ -138,6 +139,8 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
+  public abstract readonly grants: KeyGrants;
+
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
@@ -192,37 +195,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    // KMS verifies whether the principals included in its key policy actually exist.
-    // This is a problem if the stack the grantee is part of depends on the key stack
-    // (as it won't exist before the key policy is attempted to be created).
-    // In that case, make the account the resource policy principal
-    const granteeStackDependsOnKeyStack = this.granteeStackDependsOnKeyStack(grantee);
-    const principal = granteeStackDependsOnKeyStack
-      ? new iam.AccountPrincipal(granteeStackDependsOnKeyStack)
-      : grantee.grantPrincipal;
-
-    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
-    const crossRegionAccess = this.isGranteeFromAnotherRegion(grantee);
-    const crossEnvironment = crossAccountAccess || crossRegionAccess;
-    const grantOptions: iam.GrantWithResourceOptions = {
-      grantee,
-      actions,
-      resource: this,
-      resourceArns: [this.keyArn],
-      resourceSelfArns: crossEnvironment ? undefined : ['*'],
-    };
-    if (this.trustAccountIdentities && !crossEnvironment) {
-      return iam.Grant.addToPrincipalOrResource(grantOptions);
-    } else {
-      return iam.Grant.addToPrincipalAndResource({
-        ...grantOptions,
-        // if the key is used in a cross-environment matter,
-        // we can't access the Key ARN (they don't have physical names),
-        // so fall back to using '*'. ToDo we need to make this better... somehow
-        resourceArns: crossEnvironment ? ['*'] : [this.keyArn],
-        resourcePolicyPrincipal: principal,
-      });
-    }
+    return this.grants.actions(grantee, ...actions);
   }
 
   /**
@@ -231,7 +204,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
+    return this.grants.decrypt(grantee);
   }
 
   /**
@@ -240,7 +213,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
+    return this.grants.encrypt(grantee);
   }
 
   /**
@@ -249,7 +222,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
+    return this.grants.encryptDecrypt(grantee);
   }
 
   /**
@@ -258,7 +231,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantSign(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.SIGN_ACTIONS);
+    return this.grants.sign(grantee);
   }
 
   /**
@@ -267,7 +240,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantVerify(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+    return this.grants.verify(grantee);
   }
 
   /**
@@ -276,7 +249,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
+    return this.grants.signVerify(grantee);
   }
 
   /**
@@ -285,7 +258,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
+    return this.grants.generateMac(grantee);
   }
 
   /**
@@ -294,63 +267,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
-  }
-
-  /**
-   * Checks whether the grantee belongs to a stack that will be deployed
-   * after the stack containing this key.
-   *
-   * @param grantee the grantee to give permissions to
-   * @returns the account ID of the grantee stack if its stack does depend on this stack,
-   *   undefined otherwise
-   */
-  private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
-    const grantPrincipal = grantee.grantPrincipal;
-    // this logic should only apply to newly created
-    // (= not imported) resources
-    if (!iam.principalIsOwnedResource(grantPrincipal)) {
-      return undefined;
-    }
-    const keyStack = Stack.of(this);
-    const granteeStack = Stack.of(grantPrincipal);
-    if (keyStack === granteeStack) {
-      return undefined;
-    }
-
-    return granteeStack.dependencies.includes(keyStack)
-      ? granteeStack.account
-      : undefined;
-  }
-
-  private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee.grantPrincipal);
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
-      // if two compared stacks have the same region, this should return 'false' since it's from the
-      // same region; if two stacks have different region, then compare env.region
-      return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
-    }
-    return bucketStack.region !== identityStack.region;
-  }
-
-  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee.grantPrincipal);
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
-      // if two compared stacks have the same region, this should return 'false' since it's from the
-      // same region; if two stacks have different region, then compare env.account
-      return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
-    }
-    return bucketStack.account !== identityStack.account;
+    return this.grants.verifyMac(grantee);
   }
 }
 
@@ -684,6 +601,7 @@ export class Key extends KeyBase {
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
+      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
 
       constructor(keyId: string, props: ResourceProps = {}) {
         super(scope, id, props);
@@ -748,6 +666,7 @@ export class Key extends KeyBase {
       public readonly keyId = cfnKey.ref;
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
+      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
     }(cfnKey, id);
   }
 
@@ -785,6 +704,7 @@ export class Key extends KeyBase {
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
+      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
 
       constructor(keyId: string, keyArn: string) {
         super(scope, id);
@@ -828,6 +748,11 @@ export class Key extends KeyBase {
   protected readonly policy?: iam.PolicyDocument;
   protected readonly trustAccountIdentities: boolean;
   private readonly enableKeyRotation?: boolean;
+
+  /**
+   * Collection of grant methods for a Key
+   */
+  public readonly grants: KeyGrants;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
@@ -958,6 +883,8 @@ export class Key extends KeyBase {
     this.keyArn = resource.attrArn;
     this.keyId = resource.ref;
     resource.applyRemovalPolicy(props.removalPolicy);
+
+    this.grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
 
     (props.admins ?? []).forEach((p) => this.grantAdmin(p));
 
