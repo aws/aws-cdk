@@ -975,8 +975,8 @@ export class Key extends KeyBase {
  */
 export class CfnKeyWithPolicy implements IKeyRef, IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
-  public keyRef: KeyReference;
-  public node: Node;
+  public readonly keyRef: KeyReference;
+  public readonly node: Node;
   private policyDocument?: iam.PolicyDocument;
 
   constructor(private readonly key: CfnKey) {
