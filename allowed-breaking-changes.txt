@@ -4151,3 +4151,9 @@ base-types:aws-cdk-lib.aws_iam.IEncryptedResource
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.applyRemovalPolicy
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.node
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
+
+# ServiceAccount.role is now optional to support IdentityType.NONE
+# which creates a ServiceAccount without an IAM role for workloads
+# that only need Kubernetes-level permissions.
+# See: https://github.com/aws/aws-cdk/issues/35892
+changed-type:aws-cdk-lib.aws_eks.ServiceAccount.role
