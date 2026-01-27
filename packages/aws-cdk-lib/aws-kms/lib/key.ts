@@ -991,7 +991,7 @@ export class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
   }
 }
 
-export class CfnKeyTraits implements IKeyRef, IResourceWithPolicyV2 {
+export class KeyTraits implements IKeyRef, IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
   public readonly keyRef: KeyReference;
   public readonly node: Node;
