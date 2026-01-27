@@ -20,10 +20,11 @@ export class CfnThingApplicationLogs {
   /**
    * Send logs to an S3 Bucket
    */
-  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
+  public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: logsDelivery.IS3LogsDestinationProps): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
-        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
+        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
+        kmsKey: (props && props.encryptionKey) ? props.encryptionKey : undefined
       }));
     }
   }
@@ -58,10 +59,11 @@ export class CfnThingAccessLogs {
   /**
    * Send logs to an S3 Bucket
    */
-  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
+  public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: logsDelivery.IS3LogsDestinationProps): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
-        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
+        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
+        kmsKey: (props && props.encryptionKey) ? props.encryptionKey : undefined
       }));
     }
   }
