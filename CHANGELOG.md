@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## Unreleased
+
+### Features
+
+* **iam:** add feature flag to validate PolicyStatement SID is alphanumeric ([#34819](https://github.com/aws/aws-cdk/issues/34819))
+  - New feature flag `@aws-cdk/aws-iam:policyStatementValidateSid` enforces IAM SID validation
+  - SIDs must be alphanumeric (A-Z, a-z, 0-9) per AWS IAM requirements
+  - Validation occurs at synthesis time when flag is enabled
+  - Fixed invalid SIDs in aws-ecs cluster.ts to be alphanumeric
+
 ## [1.158.0](https://github.com/aws/aws-cdk/compare/v1.157.0...v1.158.0) (2022-05-27)
 
 
