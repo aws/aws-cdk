@@ -498,9 +498,9 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     // Managed Instances validations
     if (this.isManagedInstancesCompatible) {
-      // Managed Instances only support awsvpc network mode
-      if (this.networkMode !== NetworkMode.AWS_VPC) {
-        throw new ValidationError(`Managed Instances tasks can only have AwsVpc network mode, got: ${this.networkMode}`, this);
+      // Managed Instances only support awsvpc or host network mode
+      if (this.networkMode !== NetworkMode.AWS_VPC && this.networkMode !== NetworkMode.HOST) {
+        throw new ValidationError(`Managed Instances tasks can only have AwsVpc or Host network mode, got: ${this.networkMode}`, this);
       }
 
       // Managed Instances don't support inference accelerators
@@ -1405,9 +1405,10 @@ export interface ITaskDefinitionExtension {
  * Return true if the given task definition can be run on an EC2 cluster
  */
 export function isEc2Compatible(compatibility: Compatibility): boolean {
-  return [Compatibility.EC2,
-  Compatibility.EC2_AND_FARGATE,
-  Compatibility.EC2_AND_MANAGED_INSTANCES,
+  return [
+    Compatibility.EC2,
+    Compatibility.EC2_AND_FARGATE,
+    Compatibility.EC2_AND_MANAGED_INSTANCES,
   ].includes(compatibility);
 }
 
@@ -1415,9 +1416,10 @@ export function isEc2Compatible(compatibility: Compatibility): boolean {
  * Return true if the given task definition can be run on a Fargate cluster
  */
 export function isFargateCompatible(compatibility: Compatibility): boolean {
-  return [Compatibility.FARGATE,
-  Compatibility.EC2_AND_FARGATE,
-  Compatibility.FARGATE_AND_MANAGED_INSTANCES,
+  return [
+    Compatibility.FARGATE,
+    Compatibility.EC2_AND_FARGATE,
+    Compatibility.FARGATE_AND_MANAGED_INSTANCES,
   ].includes(compatibility);
 }
 
@@ -1436,7 +1438,6 @@ export function isManagedInstancesCompatible(compatibility: Compatibility): bool
     Compatibility.MANAGED_INSTANCES,
     Compatibility.EC2_AND_MANAGED_INSTANCES,
     Compatibility.FARGATE_AND_MANAGED_INSTANCES,
-    Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES,
   ].includes(compatibility);
 }
 
