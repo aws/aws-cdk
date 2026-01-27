@@ -233,9 +233,11 @@ fileSystem.connections.allowDefaultPortFrom(instance);
 
 Example for a Lambda function:
 
-```ts fixture=with-filesystem-instance
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const fileSystem: efs.FileSystem;
 declare const fn: lambda.Function;
-declare const accessPoint: efs.AccessPoint;
 
 // Grant read access to the Lambda execution role
 fileSystem.grantRead(fn);
