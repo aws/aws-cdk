@@ -4151,3 +4151,11 @@ base-types:aws-cdk-lib.aws_iam.IEncryptedResource
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.applyRemovalPolicy
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.node
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
+
+# These enum values were added in an automatically-generated commit
+# https://github.com/aws/aws-cdk-private/commit/b3c858b48cfe5628667935726acafe5c06db468a
+# but the correct values are ERROR_COUNT and KAFKA_METRICS
+# The enum has not been publically released yet, so it's safe to fix these
+# before launch by removing the incorrect values
+removed:aws-cdk-lib.aws_lambda.MetricType.ERRORCOUNT
+removed:aws-cdk-lib.aws_lambda.MetricType.KAFKAMETRICS
