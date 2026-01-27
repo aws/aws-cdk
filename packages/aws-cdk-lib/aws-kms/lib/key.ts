@@ -964,12 +964,25 @@ export class Key extends KeyBase {
   }
 }
 
-export class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
+/**
+ * Wrapper for a low-level `CfnKey` that implements `IKeyRef` and `IResourceWithPolicyV2`.
+ *
+ * This adapter exposes the key reference traits of the underlying `CfnKey` (such as
+ * `env`, `node`, and `keyRef`) and provides a way to modify the key's resource policy.
+ *
+ * This class is intended for use when code needs an `IKeyRef` that can also accept
+ * resource-policy modifications for a `CfnKey`.
+ */
+export class CfnKeyWithPolicy implements IKeyRef, IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
+  public keyRef: KeyReference;
+  public node: Node;
   private policyDocument?: iam.PolicyDocument;
 
   constructor(private readonly key: CfnKey) {
     this.env = key.env;
+    this.keyRef = key.keyRef;
+    this.node = key.node;
   }
 
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
@@ -991,6 +1004,15 @@ export class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
   }
 }
 
+/**
+ * Adapter that exposes key reference traits and optional resource-policy behavior for an `IKeyRef`.
+ *
+ * This class:
+ * - Implements `IKeyRef` so it can be used wherever a key reference is required.
+ * - Implements `IResourceWithPolicyV2` and forwards policy-modification requests to the
+ *   underlying resource only if that resource supports policy modification.
+ *
+ */
 export class KeyTraits implements IKeyRef, IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
   public readonly keyRef: KeyReference;
