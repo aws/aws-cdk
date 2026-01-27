@@ -166,3 +166,45 @@ test('correct helm chart version is set for selected alb controller version', ()
     },
   });
 });
+
+test.each([
+  { setting: 'enableWaf', value: false },
+  { setting: 'enableWafv2', value: false },
+  { setting: 'enableWaf', value: true },
+  { setting: 'enableWafv2', value: true },
+])('custom WAF settings - $setting', ({ setting, value }) => {
+  // GIVEN
+  const { stack } = testFixture();
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
+  });
+
+  // WHEN
+  new AlbController(stack, 'AlbController', {
+    cluster,
+    version: AlbControllerVersion.V2_4_1,
+    additionalHelmChartValues: {
+      [setting]: value,
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties(HelmChart.RESOURCE_TYPE, {
+    Values: {
+      'Fn::Join': [
+        '',
+        [
+          '{"clusterName":"',
+          { Ref: 'ClusterEB0386A7' },
+          '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
+          { Ref: 'ClusterDefaultVpcFA9F2722' },
+          `","image":{"repository":"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller","tag":"v2.4.1"},"${setting}":${value}}`,
+        ],
+      ],
+    },
+  });
+});
