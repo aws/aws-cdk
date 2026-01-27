@@ -1,3 +1,4 @@
+import { CfnKeyTraits } from './key';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
 import { IGrantable } from '../../aws-iam';
@@ -26,7 +27,7 @@ export class KeyGrants {
   private readonly policyResource?: iam.IResourceWithPolicyV2;
 
   private constructor(props: KeyGrantsProps) {
-    this.resource = props.resource;
+    this.resource = new CfnKeyTraits(props.resource);
     this.trustAccountIdentities = props.trustAccountIdentities ?? FeatureFlags.of(this.resource).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
     this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
   }

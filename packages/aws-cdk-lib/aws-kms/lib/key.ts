@@ -1,10 +1,16 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { Alias } from './alias';
 import { KeyGrants } from './key-grants';
 import { KeyLookupOptions } from './key-lookup';
 import { CfnKey, IKeyRef, KeyReference } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
+import {
+  AddToResourcePolicyResult,
+  GrantableResources,
+  IResourceWithPolicyV2,
+  PolicyStatement,
+} from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   Arn,
@@ -15,7 +21,7 @@ import {
   IResource,
   Lazy,
   RemovalPolicy,
-  Resource,
+  Resource, ResourceEnvironment,
   ResourceProps,
   Stack,
   Token,
@@ -955,5 +961,54 @@ export class Key extends KeyBase {
       actions,
       principals: [new iam.AccountRootPrincipal()],
     }));
+  }
+}
+
+export class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  private policyDocument?: iam.PolicyDocument;
+
+  constructor(private readonly key: CfnKey) {
+    this.env = key.env;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    const key = this.key;
+
+    if (!key.keyPolicy) {
+      key.keyPolicy = {
+        Statement: [],
+      };
+    }
+
+    if (!this.policyDocument) {
+      this.policyDocument = iam.PolicyDocument.fromJson(key.keyPolicy);
+      key.keyPolicy = Lazy.any({ produce: () => this.policyDocument!.toJSON() });
+    }
+
+    this.policyDocument.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policyDocument };
+  }
+}
+
+export class CfnKeyTraits implements IKeyRef, IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  public readonly keyRef: KeyReference;
+  public readonly node: Node;
+  private readonly resourceWithPolicy?: IResourceWithPolicyV2;
+
+  constructor(private readonly ref: IKeyRef) {
+    this.keyRef = ref.keyRef;
+    this.env = ref.env;
+    this.node = ref.node;
+    this.resourceWithPolicy = GrantableResources.isResourceWithPolicy(this.ref)
+      ? this.ref
+      : CfnKey.isCfnKey(this.ref) ? new CfnKeyWithPolicy(this.ref) : undefined;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    return this.resourceWithPolicy
+      ? this.resourceWithPolicy.addToResourcePolicy(statement)
+      : { statementAdded: false };
   }
 }
