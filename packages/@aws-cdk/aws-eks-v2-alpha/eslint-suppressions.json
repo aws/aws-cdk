@@ -1,15 +1,5 @@
 {
-  "lib/alb-controller.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 1
-    }
-  },
-  "lib/cluster.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 20
-    }
-  },
-  "lib/fargate-profile.ts": {
+	"lib/fargate-profile.ts": {
     "@cdklabs/no-throw-default-error": {
       "count": 2
     }

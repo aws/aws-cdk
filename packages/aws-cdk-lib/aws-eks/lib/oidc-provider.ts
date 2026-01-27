@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
+import { RemovalPolicy } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -18,7 +19,19 @@ export interface OpenIdConnectProviderProps {
    * aws eks describe-cluster --name %cluster_name% --query "cluster.identity.oidc.issuer" --output text
    */
   readonly url: string;
+
+  /**
+   * The removal policy to apply to the OpenID Connect Provider.
+   *
+   * @default - RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
+
+/**
+ * Initialization properties for `OidcProviderNative`.
+ */
+export interface OidcProviderNativeProps extends OpenIdConnectProviderProps {}
 
 /**
  * IAM OIDC identity providers are entities in IAM that describe an external
@@ -32,6 +45,8 @@ export interface OpenIdConnectProviderProps {
  *
  * @see http://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
+ *
+ * **For new projects, it is recommended to use `OidcProviderNative` instead which creates the OIDC provider using the native CloudFormation resource (AWS::IAM::OIDCProvider).**
  *
  * @resource AWS::CloudFormation::CustomResource
  */
@@ -52,7 +67,49 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
     super(scope, id, {
       url: props.url,
       clientIds,
+      removalPolicy: props.removalPolicy,
     });
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+  }
+}
+
+/**
+ * IAM OIDC identity providers are entities in IAM that describe an external
+ * identity provider (IdP) service that supports the OpenID Connect (OIDC)
+ * standard, such as Google or Salesforce. You use an IAM OIDC identity provider
+ * when you want to establish trust between an OIDC-compatible IdP and your AWS
+ * account.
+ *
+ * This implementation uses the native CloudFormation resource and has default
+ * values for thumbprints and clientIds props that will be compatible with the eks cluster.
+ *
+ * @see http://openid.net/connect
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
+ *
+ * @resource AWS::IAM::OIDCProvider
+ */
+@propertyInjectable
+export class OidcProviderNative extends iam.OidcProviderNative {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.OidcProviderNative';
+
+  /**
+   * Defines a native OpenID Connect provider.
+   * @param scope The definition scope
+   * @param id Construct ID
+   * @param props Initialization properties
+   */
+  public constructor(scope: Construct, id: string, props: OidcProviderNativeProps) {
+    const clientIds = ['sts.amazonaws.com'];
+
+    super(scope, id, {
+      url: props.url,
+      clientIds,
+      removalPolicy: props.removalPolicy,
+    });
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
   }

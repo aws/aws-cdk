@@ -8,7 +8,7 @@ import { ServiceAccount } from './service-account';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Aws, Duration, Names, Stack } from 'aws-cdk-lib/core';
+import { Aws, Duration, Names, Stack, ValidationError } from 'aws-cdk-lib/core';
 
 /**
  * Controller version.
@@ -329,7 +329,7 @@ export class AlbController extends Construct {
     });
 
     if (props.version.custom && !props.policy) {
-      throw new Error("'albControllerOptions.policy' is required when using a custom controller version");
+      throw new ValidationError("'albControllerOptions.policy' is required when using a custom controller version", this);
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions
