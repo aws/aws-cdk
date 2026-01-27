@@ -640,7 +640,8 @@ const importedSecret = secretsmanager.Secret.fromSecretCompleteArn(
 
 // This works with ECS
 const container = taskDefinition.addContainer('MyContainer', {
-  // ... other props
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryLimitMiB: 512,
   secrets: {
     MY_SECRET: ecs.Secret.fromSecretsManager(importedSecret),
   },
