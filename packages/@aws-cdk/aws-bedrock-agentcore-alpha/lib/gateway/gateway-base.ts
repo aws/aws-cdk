@@ -1,4 +1,5 @@
 import { IResource, Resource, ResourceProps } from 'aws-cdk-lib';
+import { IGatewayRef, GatewayReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { DimensionsMap, Metric, MetricOptions, MetricProps, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -226,7 +227,7 @@ export interface IGateway extends IResource {
  *                                Base Class
  *****************************************************************************/
 
-export abstract class GatewayBase extends Resource implements IGateway {
+export abstract class GatewayBase extends Resource implements IGateway, IGatewayRef {
   public abstract readonly gatewayArn: string;
   public abstract readonly gatewayId: string;
   public abstract readonly name: string;
@@ -241,6 +242,16 @@ export abstract class GatewayBase extends Resource implements IGateway {
   public abstract readonly statusReason?: string[];
   public abstract readonly createdAt?: string;
   public abstract readonly updatedAt?: string;
+
+  /**
+   * A reference to a Gateway resource.
+   */
+  public get gatewayRef(): GatewayReference {
+    return {
+      gatewayIdentifier: this.gatewayId,
+      gatewayArn: this.gatewayArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
@@ -260,7 +271,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.gatewayArn],
+      resourceArns: [this.gatewayRef.gatewayArn],
       actions: actions,
     });
   }
@@ -323,7 +334,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.gatewayArn },
+      dimensionsMap: { ...dimensions, Resource: this.gatewayRef.gatewayArn },
       ...props,
     };
     return this.configureMetric(metricProps);

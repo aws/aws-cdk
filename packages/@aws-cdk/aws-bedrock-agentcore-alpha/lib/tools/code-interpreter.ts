@@ -9,6 +9,7 @@ import {
   ValidationError,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
+import { ICodeInterpreterCustomRef, CodeInterpreterCustomReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
   DimensionsMap,
   Metric,
@@ -167,7 +168,7 @@ export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.I
  * Abstract base class for a Code Interpreter.
  * Contains methods and attributes valid for Code Interpreters either created with CDK or imported.
  */
-export abstract class CodeInterpreterCustomBase extends Resource implements ICodeInterpreterCustom {
+export abstract class CodeInterpreterCustomBase extends Resource implements ICodeInterpreterCustom, ICodeInterpreterCustomRef {
   public abstract readonly codeInterpreterArn: string;
   public abstract readonly codeInterpreterId: string;
   public abstract readonly status?: string;
@@ -178,6 +179,16 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    * The principal to grant permissions to
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * A reference to a CodeInterpreterCustom resource.
+   */
+  public get codeInterpreterCustomRef(): CodeInterpreterCustomReference {
+    return {
+      codeInterpreterId: this.codeInterpreterId,
+      codeInterpreterArn: this.codeInterpreterArn,
+    };
+  }
 
   /**
    * An accessor for the Connections object that will fail if this Browser does not have a VPC
@@ -212,7 +223,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.codeInterpreterArn],
+      resourceArns: [this.codeInterpreterCustomRef.codeInterpreterArn],
       actions: actions,
     });
   }
@@ -290,7 +301,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.codeInterpreterArn },
+      dimensionsMap: { ...dimensions, Resource: this.codeInterpreterCustomRef.codeInterpreterArn },
       ...props,
     };
     return this.configureMetric(metricProps);

@@ -11,6 +11,7 @@ import {
   Names,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
+import { IBrowserCustomRef, BrowserCustomReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
   DimensionsMap,
   Metric,
@@ -203,7 +204,7 @@ export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnecta
  * Abstract base class for a Browser.
  * Contains methods and attributes valid for Browsers either created with CDK or imported.
  */
-export abstract class BrowserCustomBase extends Resource implements IBrowserCustom {
+export abstract class BrowserCustomBase extends Resource implements IBrowserCustom, IBrowserCustomRef {
   public abstract readonly browserArn: string;
   public abstract readonly browserId: string;
   public abstract readonly lastUpdatedAt?: string;
@@ -214,6 +215,17 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    * The principal to grant permissions to
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * A reference to a BrowserCustom resource.
+   */
+  public get browserCustomRef(): BrowserCustomReference {
+    return {
+      browserId: this.browserId,
+      browserArn: this.browserArn,
+    };
+  }
+
   /**
    * An accessor for the Connections object that will fail if this Browser does not have a VPC
    * configured.
@@ -247,7 +259,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.browserArn],
+      resourceArns: [this.browserCustomRef.browserArn],
       actions: actions,
     });
   }
@@ -310,7 +322,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.browserArn },
+      dimensionsMap: { ...dimensions, Resource: this.browserCustomRef.browserArn },
       ...props,
     };
     return this.configureMetric(metricProps);

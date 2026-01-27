@@ -13,7 +13,7 @@
 
 import { Arn, ArnFormat, Duration, IResource, Lazy, Resource, ResourceProps, Token, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import { CfnMemory, CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CfnMemory, CfnMemoryProps, IMemoryRef, MemoryReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
   DimensionsMap,
   Metric,
@@ -187,7 +187,7 @@ export interface IMemory extends IResource, iam.IGrantable {
  * Abstract base class for a Memory.
  * Contains methods and attributes valid for Memories either created with CDK or imported.
  */
-export abstract class MemoryBase extends Resource implements IMemory {
+export abstract class MemoryBase extends Resource implements IMemory, IMemoryRef {
   public abstract readonly memoryArn: string;
   public abstract readonly memoryId: string;
   public abstract readonly status?: string;
@@ -199,6 +199,15 @@ export abstract class MemoryBase extends Resource implements IMemory {
    * The principal to grant permissions to
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * A reference to a Memory resource.
+   */
+  public get memoryRef(): MemoryReference {
+    return {
+      memoryArn: this.memoryArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
@@ -216,7 +225,7 @@ export abstract class MemoryBase extends Resource implements IMemory {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.memoryArn],
+      resourceArns: [this.memoryRef.memoryArn],
       scope: this,
     });
   }
@@ -380,7 +389,7 @@ export abstract class MemoryBase extends Resource implements IMemory {
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.memoryArn },
+      dimensionsMap: { ...dimensions, Resource: this.memoryRef.memoryArn },
       ...props,
     };
     return this.configureMetric(metricProps);
