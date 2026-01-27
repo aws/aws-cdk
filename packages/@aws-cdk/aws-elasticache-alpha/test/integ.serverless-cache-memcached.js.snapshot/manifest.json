@@ -1,526 +1,396 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "aws-cdk-bedrock-agentcore-memory-1.assets": {
+    "aws-cdk-serverless-cache-memcached.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-bedrock-agentcore-memory-1.assets.json",
+        "file": "aws-cdk-serverless-cache-memcached.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-bedrock-agentcore-memory-1": {
+    "aws-cdk-serverless-cache-memcached": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/us-east-1",
       "properties": {
-        "templateFile": "aws-cdk-bedrock-agentcore-memory-1.template.json",
+        "templateFile": "aws-cdk-serverless-cache-memcached.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/945e8462128beb5e693a3dbfc85f3f5018406ff6743e954b8a3c491e76f0368a.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/12e9f96557ebf9a085d9b0f1992c29a0d595fe396599cbe78293f6d8a30b385a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-bedrock-agentcore-memory-1.assets"
+          "aws-cdk-serverless-cache-memcached.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
-        "aws-cdk-bedrock-agentcore-memory-1.assets"
+        "aws-cdk-serverless-cache-memcached.assets"
       ],
       "metadata": {
-        "/aws-cdk-bedrock-agentcore-memory-1/Memory": [
+        "/aws-cdk-serverless-cache-memcached/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/Memory/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/Memory/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/Memory/ServiceRole/Resource": [
+        "/aws-cdk-serverless-cache-memcached/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryServiceRoleC95D1642"
+            "data": "VPCB9E5F0B4"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/Memory/Memory": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Memory3232ACAB"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MyEncryptionKey": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MyEncryptionKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyEncryptionKeyD795679F"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
             }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
+            "data": {}
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
+              "addNatGateway": [
                 "*"
               ]
             }
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/Resource": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryWithBuiltinStrategiesServiceRole9D3D59C7"
+            "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachToRole": [
+              "addNatGateway": [
                 "*"
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryWithBuiltinStrategiesServiceRoleDefaultPolicy99037030"
+            "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/Memory": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryWithBuiltinStrategiesMemory25697FD7"
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet2/RouteTableAssociation": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
             }
           },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MemoryWithCustomStrategiesServiceRole8BB48B33"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MemoryWithCustomStrategiesServiceRoleDefaultPolicyB8522B1A"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/Memory": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MemoryWithCustomStrategiesMemoryFBD56D7A"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Resource": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryBucket34BAD4CD"
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Policy": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "bucket": "*"
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Policy/Resource": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryBucketPolicyE2E00A35"
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/AutoDeleteObjectsCustomResource": [
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/aws-cdk-serverless-cache-memcached/VPC/RestrictDefaultSecurityGroupCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/aws-cdk-serverless-cache-memcached/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryBucketAutoDeleteObjectsCustomResource24E6631C"
+            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+        "/aws-cdk-serverless-cache-memcached/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/aws-cdk-serverless-cache-memcached/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/aws-cdk-serverless-cache-memcached/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryTopic": [
+        "/aws-cdk-serverless-cache-memcached/Cache": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryTopic/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MemoryTopic5EB6DDE2"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole": [
+        "/aws-cdk-serverless-cache-memcached/Cache/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
+              "description": "*",
+              "vpc": "*"
             }
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/Resource": [
+        "/aws-cdk-serverless-cache-memcached/Cache/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryWithSelfManagedStrategyServiceRole9A484437"
+            "data": "CacheSecurityGroup79A9F160"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-serverless-cache-memcached/Cache/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryWithSelfManagedStrategyServiceRoleDefaultPolicy8649CA0E"
+            "data": "Cache18F6EE16"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/Memory": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MemoryWithSelfManagedStrategyMemory927C030F"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-memory-1/BootstrapVersion": [
+        "/aws-cdk-serverless-cache-memcached/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-memory-1/CheckBootstrapVersion": [
+        "/aws-cdk-serverless-cache-memcached/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-bedrock-agentcore-memory-1"
+      "displayName": "aws-cdk-serverless-cache-memcached"
     },
-    "BedrockAgentCoreMemoryDefaultTestDeployAssertCD60C6DC.assets": {
+    "awscdkserverlesscachememcachedintegDefaultTestDeployAssert34CED61A.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "BedrockAgentCoreMemoryDefaultTestDeployAssertCD60C6DC.assets.json",
+        "file": "awscdkserverlesscachememcachedintegDefaultTestDeployAssert34CED61A.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "BedrockAgentCoreMemoryDefaultTestDeployAssertCD60C6DC": {
+    "awscdkserverlesscachememcachedintegDefaultTestDeployAssert34CED61A": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "BedrockAgentCoreMemoryDefaultTestDeployAssertCD60C6DC.template.json",
+        "templateFile": "awscdkserverlesscachememcachedintegDefaultTestDeployAssert34CED61A.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -529,7 +399,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "BedrockAgentCoreMemoryDefaultTestDeployAssertCD60C6DC.assets"
+          "awscdkserverlesscachememcachedintegDefaultTestDeployAssert34CED61A.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -538,23 +408,23 @@
         }
       },
       "dependencies": [
-        "BedrockAgentCoreMemoryDefaultTestDeployAssertCD60C6DC.assets"
+        "awscdkserverlesscachememcachedintegDefaultTestDeployAssert34CED61A.assets"
       ],
       "metadata": {
-        "/BedrockAgentCoreMemory/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-serverless-cache-memcached-integ/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/BedrockAgentCoreMemory/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-serverless-cache-memcached-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "BedrockAgentCoreMemory/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-serverless-cache-memcached-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -1053,10 +923,14 @@
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1031.2"
+  "minimumCliVersion": "2.1033.0"
 }

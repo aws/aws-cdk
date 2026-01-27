@@ -10,6 +10,7 @@ import { Construct } from 'constructs';
 // Internal imports
 import { GatewayBase, GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayAuthorizer, IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
+import { IInterceptor, InterceptorBindConfig, InterceptionPoint } from './interceptor';
 import { ICredentialProviderConfig } from './outbound-auth/credential-provider';
 import { GATEWAY_ASSUME_ROLE, GATEWAY_KMS_KEY_PERMS } from './perms';
 import { IGatewayProtocolConfig, McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
@@ -218,6 +219,20 @@ export interface GatewayProps {
    * @default - No tags
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Interceptor configurations for the gateway
+   *
+   * Interceptors allow you to run custom code during each gateway invocation:
+   * - REQUEST interceptors execute before the gateway calls the target
+   * - RESPONSE interceptors execute after the target responds
+   *
+   * A gateway can have at most one REQUEST interceptor and one RESPONSE interceptor.
+   *
+   * @default - No interceptors
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html
+   */
+  readonly interceptorConfigurations?: IInterceptor[];
 }
 
 /**
@@ -395,6 +410,18 @@ export class Gateway extends GatewayBase {
   public userPoolClient?: cognito.IUserPoolClient;
 
   /**
+   * The REQUEST interceptor configuration
+   * @internal
+   */
+  private requestInterceptorConfig?: InterceptorBindConfig;
+
+  /**
+   * The RESPONSE interceptor configuration
+   * @internal
+   */
+  private responseInterceptorConfig?: InterceptorBindConfig;
+
+  /**
    * The Cognito User Pool Domain created for the gateway (if using default Cognito authorizer)
    */
   public userPoolDomain?: cognito.IUserPoolDomain;
@@ -461,6 +488,11 @@ export class Gateway extends GatewayBase {
 
     this.tags = props.tags ?? {};
 
+    // Initialize interceptors from props
+    if (props.interceptorConfigurations) {
+      this.validateAndInitializeInterceptors(props.interceptorConfigurations);
+    }
+
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
@@ -469,6 +501,9 @@ export class Gateway extends GatewayBase {
       authorizerType: this.authorizerConfiguration.authorizerType,
       description: this.description,
       exceptionLevel: this.exceptionLevel,
+      interceptorConfigurations: Lazy.any({
+        produce: () => this.renderInterceptorConfigurations(),
+      }),
       kmsKeyArn: this.kmsKey?.keyArn,
       name: this.name,
       protocolConfiguration: this.protocolConfiguration._render(),
@@ -800,5 +835,81 @@ export class Gateway extends GatewayBase {
       searchType: McpGatewaySearchType.SEMANTIC,
       instructions: 'Default gateway to connect to external MCP tools',
     });
+  }
+
+  /**
+   * Add an interceptor to this gateway
+   *
+   * Interceptors allow you to run custom code at specific points in the gateway request/response flow:
+   * - REQUEST interceptors execute before the gateway calls the target
+   * - RESPONSE interceptors execute after the target responds
+   *
+   * A gateway can have at most one REQUEST interceptor and one RESPONSE interceptor.
+   * @param interceptor The interceptor to add (use LambdaInterceptor factory methods)
+   * @throws Error if an interceptor of the same type already exists
+   */
+  @MethodMetadata()
+  public addInterceptor(interceptor: IInterceptor): void {
+    const interceptionPoint = interceptor.interceptionPoint;
+
+    if (interceptionPoint === InterceptionPoint.REQUEST) {
+      if (this.requestInterceptorConfig) {
+        throw new ValidationError(
+          'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
+        );
+      }
+      this.requestInterceptorConfig = interceptor.bind(this, this);
+    } else if (interceptionPoint === InterceptionPoint.RESPONSE) {
+      if (this.responseInterceptorConfig) {
+        throw new ValidationError(
+          'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
+        );
+      }
+      this.responseInterceptorConfig = interceptor.bind(this, this);
+    }
+  }
+
+  /**
+   * Validates and initializes interceptors from the provided configurations
+   * @internal
+   */
+  private validateAndInitializeInterceptors(interceptors: IInterceptor[]): void {
+    const requestCount = interceptors.filter(i => i.interceptionPoint === InterceptionPoint.REQUEST).length;
+    const responseCount = interceptors.filter(i => i.interceptionPoint === InterceptionPoint.RESPONSE).length;
+
+    if (requestCount > 1) {
+      throw new ValidationError(
+        `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
+      );
+    }
+
+    if (responseCount > 1) {
+      throw new ValidationError(
+        `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
+      );
+    }
+
+    for (const interceptor of interceptors) {
+      this.addInterceptor(interceptor);
+    }
+  }
+
+  /**
+   * Renders the interceptor configurations for CloudFormation
+   * Returns undefined if no interceptors are configured
+   * @internal
+   */
+  private renderInterceptorConfigurations(): any[] | undefined {
+    const configs: any[] = [];
+
+    if (this.requestInterceptorConfig) {
+      configs.push(this.requestInterceptorConfig.configuration);
+    }
+
+    if (this.responseInterceptorConfig) {
+      configs.push(this.responseInterceptorConfig.configuration);
+    }
+
+    return configs.length > 0 ? configs : undefined;
   }
 }

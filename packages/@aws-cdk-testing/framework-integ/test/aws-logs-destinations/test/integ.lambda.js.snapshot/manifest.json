@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "lambda-logssubscription-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -95,12 +95,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/lambda-logssubscription-integ/MyFunction/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/lambda-logssubscription-integ/MyFunction/ServiceRole/Resource": [
@@ -387,12 +381,6 @@
             }
           }
         ],
-        "/lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -443,7 +431,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aee5fe9ca781799fef562c9a951ebc13099de6413634bd3b8657ee34a2132614.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/22146bdd6c222973fc01b2b43cf2054e2bb321e484f8d3803bd691b479a2e41b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1023,5 +1011,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }
