@@ -57,8 +57,48 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "RequestInterceptorBE1C44C8",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ResponseInterceptor986DF12E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "TestFunction22AD90FC",
           "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RequestInterceptorBE1C44C8",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ResponseInterceptor986DF12E",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
          ]
         },
         {
@@ -249,7 +289,45 @@
      }
     },
     "AuthorizerType": "CUSTOM_JWT",
-    "Description": "Comprehensive integration test gateway with all target types",
+    "Description": "Comprehensive integration test gateway with targets and interceptors",
+    "InterceptorConfigurations": [
+     {
+      "InputConfiguration": {
+       "PassRequestHeaders": false
+      },
+      "InterceptionPoints": [
+       "REQUEST"
+      ],
+      "Interceptor": {
+       "Lambda": {
+        "Arn": {
+         "Fn::GetAtt": [
+          "RequestInterceptorBE1C44C8",
+          "Arn"
+         ]
+        }
+       }
+      }
+     },
+     {
+      "InputConfiguration": {
+       "PassRequestHeaders": false
+      },
+      "InterceptionPoints": [
+       "RESPONSE"
+      ],
+      "Interceptor": {
+       "Lambda": {
+        "Arn": {
+         "Fn::GetAtt": [
+          "ResponseInterceptor986DF12E",
+          "Arn"
+         ]
+        }
+       }
+      }
+     }
+    ],
     "Name": "integ-test-gateway",
     "ProtocolConfiguration": {
      "Mcp": {
@@ -357,6 +435,148 @@
     }
    }
   },
+  "RequestInterceptorServiceRoleD8815DF9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "RequestInterceptorBE1C44C8": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\ndef handler(event, context):\n    \"\"\"\n    REQUEST interceptor - executes before gateway calls the target.\n    Validates and transforms the request before it reaches the target.\n    \"\"\"\n    import json\n    print(f\"Request Interceptor invoked with event: {json.dumps(event)}\")\n    \n    # Return the request unchanged (pass-through interceptor for testing)\n    return {\n        \"interceptorOutputVersion\": \"1.0\",\n        \"mcp\": {\n            \"transformedGatewayRequest\": event.get(\"mcp\", {}).get(\"gatewayRequest\", {})\n        }\n    }\n  "
+    },
+    "Description": "REQUEST interceptor for Gateway integration test",
+    "FunctionName": "integ-test-gateway-request-interceptor",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "RequestInterceptorServiceRoleD8815DF9",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "RequestInterceptorServiceRoleD8815DF9"
+   ]
+  },
+  "RequestInterceptorLogGroup72E7DA80": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "RequestInterceptorBE1C44C8"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ResponseInterceptorServiceRoleDC649E6F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ResponseInterceptor986DF12E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\ndef handler(event, context):\n    \"\"\"\n    RESPONSE interceptor - executes after target responds.\n    Can transform, filter, or add custom headers to the response.\n    \"\"\"\n    import json\n    print(f\"Response Interceptor invoked with event: {json.dumps(event)}\")\n    \n    # Return the response unchanged (pass-through interceptor for testing)\n    return {\n        \"interceptorOutputVersion\": \"1.0\",\n        \"mcp\": {\n            \"transformedGatewayResponse\": event.get(\"mcp\", {}).get(\"gatewayResponse\", {})\n        }\n    }\n  "
+    },
+    "Description": "RESPONSE interceptor for Gateway integration test",
+    "FunctionName": "integ-test-gateway-response-interceptor",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ResponseInterceptorServiceRoleDC649E6F",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "ResponseInterceptorServiceRoleDC649E6F"
+   ]
+  },
+  "ResponseInterceptorLogGroup1A3F0648": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ResponseInterceptor986DF12E"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "TestFunctionServiceRole6ABD93C7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -454,6 +674,24 @@
     "Fn::GetAtt": [
      "TestGatewaySmithyTarget2C1ACC84",
      "TargetId"
+    ]
+   }
+  },
+  "RequestInterceptorArn": {
+   "Description": "ARN of the REQUEST interceptor Lambda function",
+   "Value": {
+    "Fn::GetAtt": [
+     "RequestInterceptorBE1C44C8",
+     "Arn"
+    ]
+   }
+  },
+  "ResponseInterceptorArn": {
+   "Description": "ARN of the RESPONSE interceptor Lambda function",
+   "Value": {
+    "Fn::GetAtt": [
+     "ResponseInterceptor986DF12E",
+     "Arn"
     ]
    }
   }
