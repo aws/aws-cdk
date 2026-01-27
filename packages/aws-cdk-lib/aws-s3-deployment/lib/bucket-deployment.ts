@@ -29,9 +29,10 @@ export interface ContentEncodingMapping {
   /**
    * File pattern to match (glob pattern).
    *
-   * @example '*.br' - matches all files ending with .br
-   * @example '*.gz' - matches all files ending with .gz
-   * @example 'assets/*.br' - matches .br files in assets directory
+   * Examples:
+   * - `'*.br'` - matches all files ending with .br
+   * - `'*.gz'` - matches all files ending with .gz
+   * - `'assets/*.br'` - matches .br files in assets directory
    */
   readonly include: string;
 
