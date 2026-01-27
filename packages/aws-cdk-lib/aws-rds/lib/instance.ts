@@ -488,8 +488,6 @@ export interface AdditionalStorageVolume {
    *
    * Minimum: Oracle 200 GiB, SQL Server 20 GiB.
    * Maximum: 65,536 GiB (64 TiB).
-   *
-   * @example Size.gibibytes(200)
    */
   readonly allocatedStorage: Size;
 

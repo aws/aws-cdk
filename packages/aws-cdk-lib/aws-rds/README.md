@@ -720,6 +720,8 @@ Volume names are automatically assigned based on the array index: `rdsdbdata2`, 
 For SQL Server, these are automatically mapped to drive letters `H:\`, `I:\`, `J:\` respectively.
 
 ```ts
+import { Size } from 'aws-cdk-lib/core';
+
 declare const vpc: ec2.Vpc;
 
 // Oracle example
