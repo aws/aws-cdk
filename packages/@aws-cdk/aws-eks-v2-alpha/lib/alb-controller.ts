@@ -270,6 +270,16 @@ export interface AlbControllerOptions {
    * @default - Corresponds to the predefined version.
    */
   readonly policy?: any;
+
+  /**
+   * Additional helm chart values for ALB controller
+   *
+   * For available options, see:
+   * https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml
+   *
+   * @default - no additional helm chart values
+   */
+  readonly additionalHelmChartValues?: {[key: string]: any};
 }
 
 /**
@@ -312,7 +322,11 @@ export class AlbController extends Construct {
     super(scope, id);
 
     const namespace = 'kube-system';
-    const serviceAccount = new ServiceAccount(this, 'alb-sa', { namespace, name: 'aws-load-balancer-controller', cluster: props.cluster });
+    const serviceAccount = new ServiceAccount(this, 'alb-sa', {
+      namespace,
+      name: 'aws-load-balancer-controller',
+      cluster: props.cluster,
+    });
 
     if (props.version.custom && !props.policy) {
       throw new ValidationError("'albControllerOptions.policy' is required when using a custom controller version", this);
@@ -352,6 +366,7 @@ export class AlbController extends Construct {
           repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
           tag: props.version.version,
         },
+        ...props.additionalHelmChartValues,
       },
     });
 
