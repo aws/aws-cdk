@@ -373,6 +373,8 @@
     "./aws-msk/mixins": "./lib/services/aws-msk/mixins.js",
     "./aws-mwaa": "./lib/services/aws-mwaa/index.js",
     "./aws-mwaa/mixins": "./lib/services/aws-mwaa/mixins.js",
+    "./aws-mwaaserverless": "./lib/services/aws-mwaaserverless/index.js",
+    "./aws-mwaaserverless/mixins": "./lib/services/aws-mwaaserverless/mixins.js",
     "./aws-neptune": "./lib/services/aws-neptune/index.js",
     "./aws-neptune/mixins": "./lib/services/aws-neptune/mixins.js",
     "./aws-neptunegraph": "./lib/services/aws-neptunegraph/index.js",
