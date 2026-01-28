@@ -1333,7 +1333,7 @@ export class Cluster extends ClusterBase {
       } : {}),
       tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
-      ...(props.bootstrapSelfManagedAddons !== undefined && { bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons }),
+      bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
