@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnOIDCProvider, IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
-import { Arn, IResource, Resource, Token, ValidationError } from '../../core';
+import { Arn, IResource, RemovalPolicy, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -22,6 +22,20 @@ export interface IOidcProvider extends IResource, IOIDCProviderRef {
    * @attribute
    */
   readonly oidcProviderIssuer: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   *
+   * @deprecated Use `oidcProviderArn` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
+   */
+  readonly openIdConnectProviderArn: string;
+
+  /**
+   * The issuer for OIDC Provider
+   *
+   * @deprecated Use `oidcProviderIssuer` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
+   */
+  readonly openIdConnectProviderIssuer: string;
 }
 
 /**
@@ -94,6 +108,13 @@ export interface OidcProviderNativeProps {
    * of idenity provider server cerctificate
    */
   readonly thumbprints?: string[];
+
+  /**
+   * The removal policy to apply to the OpenID Connect Provider.
+   *
+   * @default - RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -135,6 +156,26 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
       public readonly oidcProviderArn = oidcProviderArn;
       public readonly oidcProviderIssuer = resourceName;
 
+      /**
+       * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+       * This is an alias for oidcProviderArn to maintain compatibility with IOpenIdConnectProvider.
+       *
+       * @deprecated Use `oidcProviderArn` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
+       */
+      public get openIdConnectProviderArn(): string {
+        return this.oidcProviderArn;
+      }
+
+      /**
+       * The issuer for OIDC Provider.
+       * This is an alias for oidcProviderIssuer to maintain compatibility with IOpenIdConnectProvider.
+       *
+       * @deprecated Use `oidcProviderIssuer` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
+       */
+      public get openIdConnectProviderIssuer(): string {
+        return this.oidcProviderIssuer;
+      }
+
       public get oidcProviderRef(): OIDCProviderReference {
         return {
           oidcProviderArn: this.oidcProviderArn,
@@ -145,26 +186,25 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     return new Import(scope, id);
   }
 
-  /**
-   * The Amazon Resource Name (ARN) of the Native IAM OpenID Connect provider.
-   *
-   * @attribute
-   */
-  public readonly oidcProviderArn: string;
+  private readonly resource: CfnOIDCProvider;
 
   /**
-   * The issuer for the Native OIDC Provider
+   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    *
-   * @attribute
+   * @deprecated Use `oidcProviderArn` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
    */
-  public readonly oidcProviderIssuer: string;
+  public get openIdConnectProviderArn(): string {
+    return this.oidcProviderArn;
+  }
 
   /**
-   * The thumbprints configured for this provider.
+   * The issuer for OIDC Provider.
    *
-   * @attribute
+   * @deprecated use `oidcProviderIssuer` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
    */
-  public readonly oidcProviderThumbprints: string;
+  public get openIdConnectProviderIssuer(): string {
+    return this.oidcProviderIssuer;
+  }
 
   /**
    * Defines a Native OpenID Connect provider.
@@ -183,15 +223,17 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    if (!props.url.startsWith('https://')) {
-      throw new ValidationError(
-        'The URL of the identity provider must start with https://', scope,
-      );
-    }
+    if (!Token.isUnresolved(props.url)) {
+      if (!props.url.startsWith('https://')) {
+        throw new ValidationError(
+          'The URL of the identity provider must start with https://', scope,
+        );
+      }
 
-    // maximum length of url is 255 characters
-    if (props.url.length > 255) {
-      throw new ValidationError('The maximum length allowed for url is 255 characters', scope);
+      // maximum length of url is 255 characters
+      if (props.url.length > 255) {
+        throw new ValidationError('The maximum length allowed for url is 255 characters', scope);
+      }
     }
 
     // clientids cannot be more than 100
@@ -200,7 +242,7 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     }
 
     // clientId max length is 255
-    if (props.clientIds?.some((clientId) => clientId.length > 255)) {
+    if (props.clientIds?.some((clientId) => !Token.isUnresolved(clientId) && clientId.length > 255)) {
       throw new ValidationError('The maximum length of a client ID is 255 characters', scope);
     }
 
@@ -210,28 +252,54 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     }
 
     // thumbprint length is 40
-    if (props.thumbprints?.some((thumbprint) => thumbprint.length !== 40)) {
+    if (props.thumbprints?.some((thumbprint) => !Token.isUnresolved(thumbprint) && thumbprint.length !== 40)) {
       throw new ValidationError('The length of a thumbprint must be 40 characters', scope);
     }
 
     // thumbprint must be hex
-    if (props.thumbprints?.some((thumbprint) => !/^[0-9a-fA-F]+$/.test(thumbprint))) {
+    if (props.thumbprints?.some((thumbprint) => !Token.isUnresolved(thumbprint) && !/^[0-9a-fA-F]+$/.test(thumbprint))) {
       throw new ValidationError('All thumbprints must be in hexadecimal format', scope);
     }
 
-    const resource = new CfnOIDCProvider(this, 'Resource', {
+    this.resource = new CfnOIDCProvider(this, 'Resource', {
       url: props.url,
       clientIdList: props.clientIds,
       thumbprintList: props.thumbprints,
     });
 
-    this.oidcProviderArn = Token.asString(resource.ref);
-    this.oidcProviderIssuer = Arn.extractResourceName(
+    if (props.removalPolicy) {
+      this.resource.applyRemovalPolicy(props.removalPolicy);
+    }
+  }
+
+  /**
+   * The Amazon Resource Name (ARN) of the Native IAM OpenID Connect provider.
+   *
+   * @attribute
+   */
+  public get oidcProviderArn(): string {
+    return Token.asString(this.resource.ref);
+  }
+
+  /**
+   * The issuer for the Native OIDC Provider
+   *
+   * @attribute
+   */
+  public get oidcProviderIssuer(): string {
+    return Arn.extractResourceName(
       this.oidcProviderArn,
       'oidc-provider',
     );
+  }
 
-    this.oidcProviderThumbprints = Token.asString(props.thumbprints);
+  /**
+   * The thumbprints configured for this provider.
+   *
+   * @attribute
+   */
+  public get oidcProviderThumbprints(): string {
+    return Token.asString(this.resource.thumbprintList);
   }
 
   public get oidcProviderRef(): OIDCProviderReference {

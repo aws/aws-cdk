@@ -8,6 +8,7 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFr
 import { AttachedPolicies } from './private/util';
 import { IUser } from './user';
 import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -187,10 +188,29 @@ export class Group extends GroupBase {
     return Group.fromGroupArn(scope, id, groupArn);
   }
 
-  public readonly groupName: string;
-  public readonly groupArn: string;
+  /**
+   * The CfnGroup resource
+   */
+  private readonly _resource: CfnGroup;
+
+  @memoizedGetter
+  public get groupName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
+  @memoizedGetter
+  public get groupArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'group',
+      // Removes leading slash from path
+      resourceName: `${this._path ? this._path.substr(this._path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
+    });
+  }
 
   private readonly managedPolicies: IManagedPolicy[] = [];
+  private readonly _path?: string;
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
     super(scope, id, {
@@ -200,20 +220,12 @@ export class Group extends GroupBase {
     addConstructMetadata(this, props);
 
     this.managedPolicies.push(...props.managedPolicies || []);
+    this._path = props.path;
 
-    const group = new CfnGroup(this, 'Resource', {
+    this._resource = new CfnGroup(this, 'Resource', {
       groupName: this.physicalName,
       managedPolicyArns: Lazy.list({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
-    });
-
-    this.groupName = this.getResourceNameAttribute(group.ref);
-    this.groupArn = this.getResourceArnAttribute(group.attrArn, {
-      region: '', // IAM is global in each partition
-      service: 'iam',
-      resource: 'group',
-      // Removes leading slash from path
-      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
 
     this.managedPoliciesExceededWarning();

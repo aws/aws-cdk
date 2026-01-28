@@ -16,7 +16,7 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { IKubectlProvider, KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { OpenIdConnectProvider } from './oidc-provider';
+import { OpenIdConnectProvider, OidcProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -27,9 +27,11 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies } from '../../core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies, FeatureFlags } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from '../../cx-api';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1414,17 +1416,15 @@ export class Cluster extends ClusterBase {
    */
   public readonly vpc: ec2.IVpc;
 
-  /**
-   * The Name of the created EKS Cluster
-   */
-  public readonly clusterName: string;
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(this._clusterResource.ref);
+  }
 
-  /**
-   * The AWS generated ARN for the Cluster resource
-   *
-   * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
-   */
-  public readonly clusterArn: string;
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.getResourceArnAttribute(this._clusterResource.attrArn, clusterArnComponents(this.physicalName));
+  }
 
   /**
    * The endpoint URL for the Cluster
@@ -1838,9 +1838,6 @@ export class Cluster extends ClusterBase {
     // add the cluster resource itself as a dependency of the barrier
     this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
 
-    this.clusterName = this.getResourceNameAttribute(resource.ref);
-    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
-
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
@@ -2108,12 +2105,19 @@ export class Cluster extends ClusterBase {
    * to link this cluster to AWS IAM.
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
+   *
    */
-  public get openIdConnectProvider() {
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.clusterOpenIdConnectIssuerUrl,
-      });
+      if (FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)) {
+        this._openIdConnectProvider = new OidcProviderNative(this, 'OidcProviderNative', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+        });
+      } else {
+        this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+        });
+      }
     }
 
     return this._openIdConnectProvider;
