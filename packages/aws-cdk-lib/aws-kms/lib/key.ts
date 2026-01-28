@@ -1,4 +1,4 @@
-import { Construct, Node } from 'constructs';
+import { Construct, IConstruct, Node } from 'constructs';
 import { Alias } from './alias';
 import { KeyGrants } from './key-grants';
 import { KeyLookupOptions } from './key-lookup';
@@ -973,7 +973,7 @@ export class Key extends KeyBase {
  * This class is intended for use when code needs an `IKeyRef` that can also accept
  * resource-policy modifications for a `CfnKey`.
  */
-export class CfnKeyWithPolicy implements IKeyRef, IResourceWithPolicyV2 {
+export class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
   public readonly keyRef: KeyReference;
   public readonly node: Node;
@@ -1033,4 +1033,29 @@ export class KeyTraits implements IKeyRef, IResourceWithPolicyV2 {
       ? this.resourceWithPolicy.addToResourcePolicy(statement)
       : { statementAdded: false };
   }
+
+  /**
+   * This is a no-op implementation to allow mixins to be applied to KeyRefs.
+   */
+  with(..._mixin: IMixin[]): IConstruct {
+    return this;
+  }
+}
+
+/**
+ * A mixin is a reusable piece of functionality that can be applied to constructs
+ * to add behavior, properties, or modify existing functionality without inheritance.
+ *
+ * Copied from aws-cdk-lib/core/lib/mixins.ts to avoid circular dependency.
+ */
+export interface IMixin {
+  /**
+   * Determines whether this mixin can be applied to the given construct.
+   */
+  supports(construct: IConstruct): boolean;
+
+  /**
+   * Applies the mixin functionality to the target construct.
+   */
+  applyTo(construct: IConstruct): IConstruct;
 }
