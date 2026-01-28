@@ -1206,6 +1206,8 @@ export interface CloudMapNamespaceOptions {
    * An existing Cloud Map namespace to use as the default.
    * When provided, `name`, `type`, and `vpc` are ignored.
    *
+   * [disable-awslint:prefer-ref-interface]
+   *
    * @default - A new namespace will be created
    */
   readonly namespace?: cloudmap.INamespace;
