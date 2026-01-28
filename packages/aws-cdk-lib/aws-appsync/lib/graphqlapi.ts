@@ -3,7 +3,6 @@ import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNam
 import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
-import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, IRoleRef } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
@@ -12,6 +11,7 @@ import { Annotations, CfnResource, Duration, Expiration, FeatureFlags, IResolvab
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Interface to specify default or additional authorization(s)
@@ -313,7 +313,7 @@ export interface DomainOptions {
   /**
    * The certificate to use with the domain name.
    */
-  readonly certificate: ICertificate;
+  readonly certificate: ICertificateRef;
 
   /**
    * The actual domain name. For example, `api.example.com`.
@@ -763,7 +763,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (props.domainName) {
       this.domainNameResource = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
-        certificateArn: props.domainName.certificate.certificateArn,
+        certificateArn: props.domainName.certificate.certificateRef.certificateId,
         description: `domain for ${this.name} at ${this.graphqlUrl}`,
       });
       const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {

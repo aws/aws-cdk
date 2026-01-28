@@ -4,6 +4,7 @@ import { CfnWorkflow } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -157,21 +158,6 @@ export interface WorkflowAttributes {
    * @default x.x.x
    */
   readonly workflowVersion?: string;
-}
-
-/**
- * Properties for an EC2 Image Builder AWS-managed workflow
- */
-export interface AwsManagedWorkflowAttributes {
-  /**
-   * The name of the AWS-managed workflow
-   */
-  readonly workflowName: string;
-
-  /**
-   * The type of the AWS-managed workflow
-   */
-  readonly workflowType: WorkflowType;
 }
 
 /**
@@ -444,6 +430,7 @@ export abstract class S3WorkflowData extends WorkflowData {
 
   /**
    * Grant put permissions to the given grantee for the workflow data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -453,6 +440,7 @@ export abstract class S3WorkflowData extends WorkflowData {
 
   /**
    * Grant read permissions to the given grantee for the workflow data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -572,104 +560,6 @@ export interface WorkflowConfiguration {
 }
 
 /**
- * Helper class for working with AWS-managed workflows
- */
-export class AwsManagedWorkflow {
-  /**
-   * Imports the build-container AWS-managed workflow
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   */
-  public static buildContainer(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'build-container',
-      workflowType: WorkflowType.BUILD,
-    });
-  }
-
-  /**
-   * Imports the build-image AWS-managed workflow
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   */
-  public static buildImage(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'build-image',
-      workflowType: WorkflowType.BUILD,
-    });
-  }
-
-  /**
-   * Imports the distribute-container AWS-managed workflow
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   */
-  public static distributeContainer(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'distribute-container',
-      workflowType: WorkflowType.DISTRIBUTION,
-    });
-  }
-
-  /**
-   * Imports the test-container AWS-managed workflow
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   */
-  public static testContainer(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'test-container',
-      workflowType: WorkflowType.TEST,
-    });
-  }
-
-  /**
-   * Imports the test-image AWS-managed workflow
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   */
-  public static testImage(scope: Construct, id: string): IWorkflow {
-    return this.fromAwsManagedWorkflowAttributes(scope, id, {
-      workflowName: 'test-image',
-      workflowType: WorkflowType.TEST,
-    });
-  }
-
-  /**
-   * Imports an AWS-managed workflow from its attributes
-   *
-   * @param scope The construct scope
-   * @param id Identifier of the construct
-   * @param attrs The attributes of the AWS-managed workflow
-   */
-  public static fromAwsManagedWorkflowAttributes(
-    scope: Construct,
-    id: string,
-    attrs: AwsManagedWorkflowAttributes,
-  ): IWorkflow {
-    if (cdk.Token.isUnresolved(attrs.workflowType)) {
-      throw new cdk.ValidationError('workflowType cannot be a token', scope);
-    }
-
-    return Workflow.fromWorkflowArn(
-      scope,
-      id,
-      cdk.Stack.of(scope).formatArn({
-        service: 'imagebuilder',
-        account: 'aws',
-        resource: 'workflow',
-        resourceName: `${attrs.workflowType.toLowerCase()}/${attrs.workflowName}/${LATEST_VERSION}`,
-      }),
-    );
-  }
-}
-
-/**
  * A new or imported Workflow
  */
 abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
@@ -695,6 +585,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * Grant custom actions to the given grantee for the workflow
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -710,6 +601,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * Grant read permissions to the given grantee for the workflow
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -822,16 +714,6 @@ export class Workflow extends WorkflowBase {
   }
 
   /**
-   * The ARN of the workflow
-   */
-  public readonly workflowArn: string;
-
-  /**
-   * The name of the workflow
-   */
-  public readonly workflowName: string;
-
-  /**
    * The type of the workflow
    */
   public readonly workflowType: string;
@@ -840,6 +722,8 @@ export class Workflow extends WorkflowBase {
    * The version of the workflow
    */
   public readonly workflowVersion: string;
+
+  private resource: CfnWorkflow;
 
   public constructor(scope: Construct, id: string, props: WorkflowProps) {
     super(scope, id, {
@@ -862,7 +746,7 @@ export class Workflow extends WorkflowBase {
     this.validateWorkflowName();
 
     const workflowVersion = props.workflowVersion ?? '1.0.0';
-    const workflow = new CfnWorkflow(this, 'Resource', {
+    this.resource = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,
       version: workflowVersion,
       type: props.workflowType,
@@ -873,10 +757,18 @@ export class Workflow extends WorkflowBase {
       ...props.data.render(),
     });
 
-    this.workflowName = this.getResourceNameAttribute(workflow.getAtt('Name').toString());
-    this.workflowArn = workflow.attrArn;
     this.workflowVersion = workflowVersion;
     this.workflowType = props.workflowType;
+  }
+
+  @memoizedGetter
+  public get workflowName(): string {
+    return this.getResourceNameAttribute(this.resource.getAtt('Name').toString());
+  }
+
+  @memoizedGetter
+  public get workflowArn(): string {
+    return this.resource.attrArn;
   }
 
   private validateWorkflowName() {

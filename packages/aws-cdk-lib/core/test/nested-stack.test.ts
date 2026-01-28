@@ -6,6 +6,7 @@ import * as cxapi from '../../cx-api';
 import {
   Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
 } from '../lib';
+import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {
@@ -196,21 +197,27 @@ describe('nested-stack', () => {
 });
 
 class MyResource extends Resource {
-  public readonly arn: string;
-  public readonly name: string;
+  private readonly res: CfnResource;
 
   constructor(scope: Construct, id: string, physicalName?: string) {
     super(scope, id, { physicalName });
 
-    const res = new CfnResource(this, 'Resource', {
+    this.res = new CfnResource(this, 'Resource', {
       type: 'My::Resource',
       properties: {
         resourceName: this.physicalName,
       },
     });
+  }
 
-    this.name = this.getResourceNameAttribute(res.ref.toString());
-    this.arn = this.getResourceArnAttribute(res.getAtt('Arn').toString(), {
+  @memoizedGetter
+  public get name(): string {
+    return this.getResourceNameAttribute(this.res.ref.toString());
+  }
+
+  @memoizedGetter
+  public get arn(): string {
+    return this.getResourceArnAttribute(this.res.getAtt('Arn').toString(), {
       region: '',
       account: '',
       resource: 'my-resource',

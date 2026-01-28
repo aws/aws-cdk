@@ -3,6 +3,7 @@ import { CfnDeploymentStrategy } from './appconfig.generated';
 import { Resource, IResource, Stack, ArnFormat, Names, Duration, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IDeploymentStrategyRef, DeploymentStrategyReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
 /**
  * Properties for DeploymentStrategy.
@@ -41,6 +42,12 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.DeploymentStrategy';
 
+  public get deploymentStrategyRef(): DeploymentStrategyReference {
+    return {
+      deploymentStrategyId: this.deploymentStrategyId,
+    };
+  }
+
   /**
    * Imports a deployment strategy into the CDK using its Amazon Resource Name (ARN).
    *
@@ -58,6 +65,12 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     class Import extends Resource implements IDeploymentStrategy {
       public readonly deploymentStrategyId = deploymentStrategyId!;
       public readonly deploymentStrategyArn = deploymentStrategyArn;
+
+      public get deploymentStrategyRef(): DeploymentStrategyReference {
+        return {
+          deploymentStrategyId: this.deploymentStrategyId,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -83,6 +96,12 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     class Import extends Resource implements IDeploymentStrategy {
       public readonly deploymentStrategyId = deploymentStrategyId.id;
       public readonly deploymentStrategyArn = deploymentStrategyArn;
+
+      public get deploymentStrategyRef(): DeploymentStrategyReference {
+        return {
+          deploymentStrategyId: this.deploymentStrategyId,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -363,7 +382,7 @@ export abstract class RolloutStrategy {
   public abstract readonly finalBakeTime?: Duration;
 }
 
-export interface IDeploymentStrategy extends IResource {
+export interface IDeploymentStrategy extends IResource, IDeploymentStrategyRef {
   /**
    * The name of the deployment strategy.
    */

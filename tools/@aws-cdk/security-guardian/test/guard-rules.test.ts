@@ -46,22 +46,22 @@ describe('Guard Rules Validation', () => {
     });
   });
 
-  describe('Guard Hooks Rules (NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS)', () => {
-    test('should allow root principals in KMS keys but block in other resources', async () => {
-      // Process existing templates that contain KMS keys with root principals
+  describe('Resource Policy Rules (RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS)', () => {
+    test('should detect root principals without conditions in resource policies', async () => {
+      // Process existing templates that contain resource policies with root principals
       preprocessTemplates(templatesDir, outputDir);
       
-      // Run validation with guard-hooks rule
+      // Run validation with resource-policies rule
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'guard-hooks/guardhooks-no-root-principals-except-kms-secrets.guard'),
-        path.join(outputDir, 'guard-hooks-test.xml'),
-        'Guard Hooks',
+        path.join(rulesDir, 'resource-policies/resource-policy-root-principal-needs-conditions.guard'),
+        path.join(outputDir, 'resource-policy-test.xml'),
+        'Resource Policy',
         new Map(),
         true
       );
       
-      // Should detect violations in non-KMS resources (validation should fail)
+      // Should detect root principals without conditions (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
     });
@@ -86,28 +86,81 @@ describe('Guard Rules Validation', () => {
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
     });
-  });
 
-  describe('S3 Rules', () => {
-    test('S3_ENCRYPTION_ENABLED - should validate S3 buckets in existing templates', async () => {
-      // Process existing templates that contain S3 buckets
-      preprocessTemplates(templatesDir, outputDir);
-      
-      // Run validation with S3 rules
-      const success = await runCfnGuardValidation(
-        outputDir,
-        path.join(rulesDir, 's3'),
-        path.join(outputDir, 's3-test.xml'),
-        'S3',
-        new Map(),
-        true
-      );
-      
-      // Should detect S3 violations (validation should fail)
-      expect(typeof success).toBe('boolean');
-      expect(success).toBe(false);
+    describe('IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY', () => {
+      const worldAccessibleTemplate = path.join(templatesDir, 'world-accessible-trust-policy.template.json');
+      const compliantIntrinsicTemplate = path.join(templatesDir, 'compliant-intrinsic-trust-policy.template.json');
+
+      test('Static: should detect Principal: "*" in trust policies', async () => {
+        // Run validation directly on static template (no preprocessing)
+        const success = await runCfnGuardValidation(
+          worldAccessibleTemplate,
+          path.join(rulesDir, 'iam/iam-no-world-accessible-trust-policy.guard'),
+          path.join(outputDir, 'world-accessible-static-test.xml'),
+          'World Accessible Static',
+          new Map(),
+          true
+        );
+        
+        // Should detect world-accessible trust policies (validation should fail)
+        expect(success).toBe(false);
+      });
+
+      test('Resolved: should detect Principal: "*" after intrinsic resolution', async () => {
+        // Process templates to resolve intrinsic functions
+        preprocessTemplates(templatesDir, outputDir);
+        
+        // Run validation on resolved template
+        const success = await runCfnGuardValidation(
+          path.join(outputDir, 'world-accessible-trust-policy.template.json'),
+          path.join(rulesDir, 'iam/iam-no-world-accessible-trust-policy.guard'),
+          path.join(outputDir, 'world-accessible-resolved-test.xml'),
+          'World Accessible Resolved',
+          new Map(),
+          true
+        );
+        
+        // Should detect world-accessible trust policies (validation should fail)
+        expect(success).toBe(false);
+      });
+
+      test('Static: should not flag intrinsic functions as world-accessible', async () => {
+        // Run validation on static template with intrinsic functions
+        const success = await runCfnGuardValidation(
+          compliantIntrinsicTemplate,
+          path.join(rulesDir, 'iam/iam-no-world-accessible-trust-policy.guard'),
+          path.join(outputDir, 'compliant-intrinsic-static-test.xml'),
+          'Compliant Intrinsic Static',
+          new Map(),
+          true
+        );
+        
+        // Should pass - intrinsic functions are not "*"
+        expect(success).toBe(true);
+      });
+
+      test('Resolved: should pass when intrinsic functions resolve to valid ARNs', async () => {
+        // Process templates to resolve intrinsic functions
+        // Fn::GetAtt resolves to "arn:aws:iam::123456789012:role/OtherRole"
+        // Fn::Sub resolves to "arn:aws:iam::123456789012:root"
+        preprocessTemplates(templatesDir, outputDir);
+        
+        // Run validation on resolved template
+        const success = await runCfnGuardValidation(
+          path.join(outputDir, 'compliant-intrinsic-trust-policy.template.json'),
+          path.join(rulesDir, 'iam/iam-no-world-accessible-trust-policy.guard'),
+          path.join(outputDir, 'compliant-intrinsic-resolved-test.xml'),
+          'Compliant Intrinsic Resolved',
+          new Map(),
+          true
+        );
+        
+        // Should pass - resolved values are valid ARNs, not "*"
+        expect(success).toBe(true);
+      });
     });
   });
+
 
   describe('Template Processing', () => {
     test('should successfully process all existing templates', () => {
@@ -131,22 +184,22 @@ describe('Guard Rules Validation', () => {
     });
   });
 
-  describe('CodePipeline Cross-Account Rules', () => {
-    test('CODEPIPELINE_CROSS_ACCOUNT_ROLE_TRUST_SCOPE - should detect overly broad cross-account trust policies', async () => {
-      // Process existing templates that may contain CodePipeline cross-account roles
+  describe('IAM Role Root Principal Conditions Rules', () => {
+    test('IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS - should detect root principals without restrictive conditions', async () => {
+      // Process existing templates that may contain IAM roles with root principals
       preprocessTemplates(templatesDir, outputDir);
       
-      // Run validation with CodePipeline rules
+      // Run validation with IAM root principal rule
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'codepipeline/codepipeline-cross-account-role-trust-scope.guard'),
-        path.join(outputDir, 'codepipeline-test.xml'),
-        'CodePipeline',
+        path.join(rulesDir, 'iam/iam-role-root-principal-needs-conditions.guard'),
+        path.join(outputDir, 'root-principal-test.xml'),
+        'Root Principal',
         new Map(),
         true
       );
       
-      // Should detect CodePipeline violations (validation should fail)
+      // Should detect root principals without conditions (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
     });
@@ -171,21 +224,6 @@ describe('Guard Rules Validation', () => {
       expect(success).toBe(true);
     });
 
-    test('should pass validation with compliant S3 bucket', async () => {
-      // Run validation with S3 rules on compliant template
-      const success = await runCfnGuardValidation(
-        compliantTemplate,
-        path.join(rulesDir, 's3/s3-encryption-enabled.guard'),
-        path.join(outputDir, 'compliant-s3-test.xml'),
-        'Compliant S3',
-        new Map(),
-        true
-      );
-      
-      // Should pass validation (encryption enabled)
-      expect(typeof success).toBe('boolean');
-      expect(success).toBe(true);
-    });
 
     test('should pass validation with compliant EBS volume', async () => {
       // Run validation with EC2 rules on compliant template

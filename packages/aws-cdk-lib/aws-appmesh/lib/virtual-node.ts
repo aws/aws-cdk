@@ -8,6 +8,7 @@ import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -125,10 +126,12 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   public get virtualNodeRef(): VirtualNodeReference {
     return {
       virtualNodeArn: this.virtualNodeArn,
-      virtualNodeId: this.virtualNodeName,
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
     return this.grants.streamAggregatedResources(identity);
   }
@@ -140,6 +143,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
  * Any inbound traffic that your virtual node expects should be specified as a
  * listener. Any outbound traffic that your virtual node expects to reach
  * should be specified as a backend.
+ * [disable-awslint:no-grants]
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
@@ -180,12 +184,22 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * The name of the VirtualNode
    */
-  public readonly virtualNodeName: string;
+  @memoizedGetter
+  public get virtualNodeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrVirtualNodeName);
+  }
 
   /**
    * The Amazon Resource Name belonging to the VirtualNode
    */
-  public readonly virtualNodeArn: string;
+  @memoizedGetter
+  public get virtualNodeArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualNode`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The Mesh which the VirtualNode belongs to
@@ -196,6 +210,7 @@ export class VirtualNode extends VirtualNodeBase {
 
   private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   private readonly listeners = new Array<VirtualNodeListenerConfig>();
+  private readonly resource: CfnVirtualNode;
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
@@ -211,7 +226,7 @@ export class VirtualNode extends VirtualNodeBase {
     props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
 
-    const node = new CfnVirtualNode(this, 'Resource', {
+    this.resource = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
@@ -230,13 +245,6 @@ export class VirtualNode extends VirtualNodeBase {
           accessLog: accessLogging.virtualNodeAccessLog,
         } : undefined,
       },
-    });
-
-    this.virtualNodeName = this.getResourceNameAttribute(node.attrVirtualNodeName);
-    this.virtualNodeArn = this.getResourceArnAttribute(node.ref, {
-      service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualNode`,
-      resourceName: this.physicalName,
     });
   }
 

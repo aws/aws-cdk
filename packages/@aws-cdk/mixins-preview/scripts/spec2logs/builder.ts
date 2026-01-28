@@ -1,4 +1,4 @@
-import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Resource, Service, SpecDatabase, VendedLogs } from '@aws-cdk/service-spec-types';
 import { naming, util } from '@aws-cdk/spec2cdk';
 import { CDK_CORE, CDK_INTERFACES, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import type { Method } from '@cdklabs/typewriter';
@@ -93,10 +93,10 @@ class LogsDelivery {
   ) {
     this.scope = scope;
 
-    for (const logType of this.resource.vendedLogs?.logTypes || []) {
+    for (const log of this.resource.vendedLogs || []) {
       const logClass = new LogsHelper(this.scope,
-        `${naming.classNameFromResource(this.resource)}${logType.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join('')}`,
-        this.resource, logType,
+        `${naming.classNameFromResource(this.resource)}${log.logType.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join('')}`,
+        this.resource, log,
       );
       this.helpers.push(logClass);
     }
@@ -113,118 +113,120 @@ class LogsDelivery {
 }
 
 class LogsHelper extends ClassType {
-  private readonly resource: Resource;
-  private readonly logType: string;
+  private readonly log: VendedLogs;
 
   constructor(
     scope: Module,
     name: string,
     resource: Resource,
-    logType: string,
+    log: VendedLogs,
   ) {
     super(scope, {
       export: true,
       name: name,
       docs: {
-        summary: `Builder for ${naming.classNameFromResource(resource)}LogsMixin to generate ${logType} for ${naming.classNameFromResource(resource)}`,
+        summary: `Builder for ${naming.classNameFromResource(resource)}LogsMixin to generate ${log.logType} for ${naming.classNameFromResource(resource)}`,
         stability: Stability.External,
         docTags: {
           cloudformationResource: resource.cloudFormationType,
-          logType: logType,
+          logType: log.logType,
         },
       },
     });
-    this.resource = resource;
-    this.logType = logType;
+    this.log = log;
   }
 
   public build(mixin: LogsMixin) {
-    for (const dest of this.resource.vendedLogs!.destinations) {
-      if ((dest === 'XRAY' && this.logType === 'TRACES') || (dest !== 'XRAY' && this.logType !== 'TRACES')) {
-        switch (dest) {
-          case 'S3':
-            const toS3 = this.addMethod({
-              name: `to${dest}`,
-              returnType: mixin.type,
-              docs: {
-                summary: 'Send logs to an S3 Bucket',
-              },
-            });
+    for (const dest of this.log.destinations) {
+      switch (dest.destinationType) {
+        case 'S3':
+          const toS3 = this.addMethod({
+            name: `to${dest.destinationType}`,
+            returnType: mixin.type,
+            docs: {
+              summary: 'Send logs to an S3 Bucket',
+            },
+          });
 
-            const paramS3 = toS3.addParameter({
-              name: 'bucket',
-              type: CDK_INTERFACES.IBucketRef,
-            });
+          const paramS3 = toS3.addParameter({
+            name: 'bucket',
+            type: CDK_INTERFACES.IBucketRef,
+          });
 
-            const permissions = this.resource.vendedLogs!.permissionsVersion === 'V2' ? MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V2 : MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V1;
-            toS3.addBody(stmt.block(
-              stmt.ret(
-                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
-                  expr.object({ permissionsVersion: permissions }))),
-              ),
-            ));
-            break;
-          case 'CWL':
-            const toCWL = this.addMethod({
-              name: 'toLogGroup',
-              returnType: mixin.type,
-              docs: {
-                summary: 'Send logs to a CloudWatch Log Group',
-              },
-            });
+          toS3.addParameter({
+            name: 'props',
+            type: MIXINS_LOGS_DELIVERY.S3LogsDestinationProps,
+            optional: true,
+          });
 
-            const paramCWL = toCWL.addParameter({
-              name: 'logGroup',
-              type: CDK_INTERFACES.ILogGroupRef,
-            });
+          const permissions = this.log.permissionsVersion === 'V2' ? MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V2 : MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V1;
+          toS3.addBody(stmt.block(
+            stmt.ret(
+              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
+                expr.object({ permissionsVersion: permissions, kmsKey: expr.directCode('(props && props.encryptionKey) ? props.encryptionKey : undefined') }))),
+            ),
+          ));
+          break;
+        case 'CWL':
+          const toCWL = this.addMethod({
+            name: 'toLogGroup',
+            returnType: mixin.type,
+            docs: {
+              summary: 'Send logs to a CloudWatch Log Group',
+            },
+          });
 
-            toCWL.addBody(stmt.block(
-              stmt.ret(
-                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL)),
-              ),
-            ));
-            break;
-          case 'FH':
-            const toFH = this.addMethod({
-              name: 'toFirehose',
-              returnType: mixin.type,
-              docs: {
-                summary: 'Send logs to a Firehose Delivery Stream',
-              },
-            });
+          const paramCWL = toCWL.addParameter({
+            name: 'logGroup',
+            type: CDK_INTERFACES.ILogGroupRef,
+          });
 
-            const paramFH = toFH.addParameter({
-              name: 'deliveryStream',
-              type: CDK_INTERFACES.IDeliveryStreamRef,
-            });
+          toCWL.addBody(stmt.block(
+            stmt.ret(
+              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL)),
+            ),
+          ));
+          break;
+        case 'FH':
+          const toFH = this.addMethod({
+            name: 'toFirehose',
+            returnType: mixin.type,
+            docs: {
+              summary: 'Send logs to a Firehose Delivery Stream',
+            },
+          });
 
-            toFH.addBody(stmt.block(
-              stmt.ret(
-                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH)),
-              ),
-            ));
-            break;
-          default:
-            const toXRAY = this.addMethod({
-              name: 'toXRay',
-              returnType: mixin.type,
-              docs: {
-                summary: 'Send traces to X-Ray',
-              },
-            });
+          const paramFH = toFH.addParameter({
+            name: 'deliveryStream',
+            type: CDK_INTERFACES.IDeliveryStreamRef,
+          });
 
-            toXRAY.addBody(stmt.block(
-              stmt.ret(
-                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery)),
-              ),
-            ));
-            break;
-        }
+          toFH.addBody(stmt.block(
+            stmt.ret(
+              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH)),
+            ),
+          ));
+          break;
+        default:
+          const toXRAY = this.addMethod({
+            name: 'toXRay',
+            returnType: mixin.type,
+            docs: {
+              summary: 'Send traces to X-Ray',
+            },
+          });
+
+          toXRAY.addBody(stmt.block(
+            stmt.ret(
+              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery)),
+            ),
+          ));
+          break;
       }
     }
 
     mixin.addProperty({
-      name: this.logType,
+      name: this.log.logType,
       type: this.type,
       static: true,
       immutable: true,

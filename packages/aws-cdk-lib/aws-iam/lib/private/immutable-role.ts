@@ -33,7 +33,7 @@ export class ImmutableRole extends Resource implements IRole {
   public readonly principalAccount: string | undefined;
   public readonly roleArn: string;
   public readonly roleName: string;
-  public readonly stack: IRole['stack'];
+  private readonly _stack: IRole['stack'];
 
   constructor(scope: Construct, id: string, private readonly role: IRole, private readonly addGrantsToResources: boolean) {
     super(scope, id, {
@@ -47,7 +47,7 @@ export class ImmutableRole extends Resource implements IRole {
     this.principalAccount = this.role.principalAccount;
     this.roleArn = this.role.roleArn;
     this.roleName = this.role.roleName;
-    this.stack = this.role.stack;
+    this._stack = this.role.stack;
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, role);
@@ -57,6 +57,10 @@ export class ImmutableRole extends Resource implements IRole {
       dependencyRoots: [role],
     });
     this.node.defaultChild = role.node.defaultChild;
+  }
+
+  public get stack() {
+    return this._stack;
   }
 
   public get roleRef(): RoleReference {
