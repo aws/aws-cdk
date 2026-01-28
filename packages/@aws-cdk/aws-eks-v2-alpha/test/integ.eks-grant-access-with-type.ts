@@ -9,14 +9,18 @@ import * as eks from '../lib';
 /**
  * Integration test for AccessEntry with different access entry types.
  *
- * Tests the new AccessEntryType enum values (EC2, HYBRID_LINUX, HYPERPOD_LINUX)
- * and the optional accessEntryType parameter in grantAccess method.
+ * Tests the AccessEntryType enum values that work on standard EKS clusters:
+ * - STANDARD: Standard access entry type that supports access policies
+ * - EC2_LINUX: For self-managed EC2 Linux nodes
+ *
+ * Note: The following types require special cluster configurations and cannot be tested here:
+ * - EC2: Requires EKS Auto Mode cluster
+ * - HYBRID_LINUX: Requires hybrid nodes-enabled cluster with RemoteNetworkConfig
+ * - HYPERPOD_LINUX: Requires SageMaker HyperPod cluster
  *
  * Important AWS EKS API Constraint:
  * - Access entries with type EC2, HYBRID_LINUX, or HYPERPOD_LINUX cannot have access policies attached
  * - Only STANDARD type access entries support access policies
- * - Use AccessEntry construct directly for non-STANDARD types
- * - Use grantAccess method for STANDARD types with policies
  */
 class EksGrantAccessWithType extends Stack {
   constructor(scope: App, id: string) {
@@ -38,46 +42,20 @@ class EksGrantAccessWithType extends Stack {
       },
     });
 
-    // Test 1: AccessEntry with EC2 type (for EKS Auto Mode)
-    // Note: EC2 type access entries cannot have access policies attached per AWS EKS API
-    const ec2Role = new iam.Role(this, 'EC2Role', {
+    // Test 1: AccessEntry with EC2_LINUX type (for self-managed EC2 Linux nodes)
+    // Note: EC2_LINUX type access entries can have access policies attached
+    const ec2LinuxRole = new iam.Role(this, 'EC2LinuxRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
-    new eks.AccessEntry(this, 'EC2Access', {
+    new eks.AccessEntry(this, 'EC2LinuxAccess', {
       cluster,
-      principal: ec2Role.roleArn,
-      accessPolicies: [], // Empty array - EC2 type cannot have policies
-      accessEntryType: eks.AccessEntryType.EC2,
+      principal: ec2LinuxRole.roleArn,
+      accessPolicies: [],
+      accessEntryType: eks.AccessEntryType.EC2_LINUX,
     });
 
-    // Test 2: AccessEntry with HYBRID_LINUX type
-    // Note: HYBRID_LINUX type access entries cannot have access policies attached per AWS EKS API
-    const hybridRole = new iam.Role(this, 'HybridRole', {
-      assumedBy: new iam.ServicePrincipal('ssm.amazonaws.com'),
-    });
-
-    new eks.AccessEntry(this, 'HybridAccess', {
-      cluster,
-      principal: hybridRole.roleArn,
-      accessPolicies: [], // Empty array - HYBRID_LINUX type cannot have policies
-      accessEntryType: eks.AccessEntryType.HYBRID_LINUX,
-    });
-
-    // Test 3: AccessEntry with HYPERPOD_LINUX type
-    // Note: HYPERPOD_LINUX type access entries cannot have access policies attached per AWS EKS API
-    const hyperpodRole = new iam.Role(this, 'HyperpodRole', {
-      assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-    });
-
-    new eks.AccessEntry(this, 'HyperpodAccess', {
-      cluster,
-      principal: hyperpodRole.roleArn,
-      accessPolicies: [], // Empty array - HYPERPOD_LINUX type cannot have policies
-      accessEntryType: eks.AccessEntryType.HYPERPOD_LINUX,
-    });
-
-    // Test 4: grantAccess with STANDARD type and access policies
+    // Test 2: grantAccess with STANDARD type and access policies
     const standardRole = new iam.Role(this, 'StandardRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -93,7 +71,7 @@ class EksGrantAccessWithType extends Stack {
       { accessEntryType: eks.AccessEntryType.STANDARD },
     );
 
-    // Test 5: grantAccess without type (backward compatibility - defaults to STANDARD)
+    // Test 3: grantAccess without type (backward compatibility - defaults to STANDARD)
     const defaultRole = new iam.Role(this, 'DefaultRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });

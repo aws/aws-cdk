@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-eks-grant-access-with-type.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/578a91142e05366f47a133e05eca26065a8a506a0607cc23f1a488357df28b50.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ed8092b6b2c76e33d431779e60981821c94601bd82295a181c8607d4b3439bc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,11 +37,7 @@
         "/aws-cdk-eks-grant-access-with-type/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "maxAzs": "*",
-              "natGateways": "*",
-              "restrictDefaultSecurityGroup": false
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Vpc/Resource": [
@@ -53,37 +49,19 @@
         "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {}
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1/Subnet": [
@@ -125,29 +103,15 @@
         "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {}
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet2/Subnet": [
@@ -177,29 +141,15 @@
         "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {}
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet1/Subnet": [
@@ -229,29 +179,15 @@
         "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {}
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet2/Subnet": [
@@ -323,22 +259,6 @@
         "/aws-cdk-eks-grant-access-with-type/Cluster/Role": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
@@ -351,10 +271,7 @@
         "/aws-cdk-eks-grant-access-with-type/Cluster/ControlPlaneSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "description": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Cluster/ControlPlaneSecurityGroup/Resource": [
@@ -378,127 +295,48 @@
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "timeout": "*",
-              "description": "*",
-              "memorySize": "*",
-              "environment": "*",
-              "role": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*",
-              "vpc": "*",
-              "securityGroups": [
-                "*"
-              ],
-              "vpcSubnets": {
-                "subnets": [
-                  "*",
-                  "*"
-                ]
-              }
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLayers": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLayers": [
-                "*"
-              ]
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
@@ -515,27 +353,15 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
@@ -559,7 +385,7 @@
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {}
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/AwsCliLayer/Resource": [
@@ -571,102 +397,36 @@
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "description": "*",
-              "runtime": "*",
-              "handler": "*",
-              "timeout": "*",
-              "loggingFormat": "JSON",
-              "applicationLogLevelV2": "FATAL",
-              "logGroup": "*",
-              "vpc": "*",
-              "vpcSubnets": {
-                "subnets": [
-                  "*",
-                  "*"
-                ]
-              },
-              "securityGroups": [
-                "*"
-              ],
-              "role": "*",
-              "functionName": "*",
-              "environmentEncryption": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
@@ -683,27 +443,15 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -721,33 +469,19 @@
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
@@ -792,123 +526,31 @@
             "data": "ClusterDefaultAccess6B9909F9"
           }
         ],
-        "/aws-cdk-eks-grant-access-with-type/EC2Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/EC2Role/ImportEC2Role": [
+        "/aws-cdk-eks-grant-access-with-type/EC2LinuxRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-grant-access-with-type/EC2Role/Resource": [
+        "/aws-cdk-eks-grant-access-with-type/EC2LinuxRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EC2RoleF978FC1C"
+            "data": "EC2LinuxRole26CDA54E"
           }
         ],
-        "/aws-cdk-eks-grant-access-with-type/EC2Access": [
+        "/aws-cdk-eks-grant-access-with-type/EC2LinuxAccess": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-grant-access-with-type/EC2Access/Resource": [
+        "/aws-cdk-eks-grant-access-with-type/EC2LinuxAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EC2Access19C43F79"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HybridRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HybridRole/ImportHybridRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HybridRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HybridRoleCAD55037"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HybridAccess": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HybridAccess/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HybridAccessF5978A74"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HyperpodRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HyperpodRole/ImportHyperpodRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HyperpodRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HyperpodRole9655BF42"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HyperpodAccess": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/HyperpodAccess/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HyperpodAccess28E68EEF"
+            "data": "EC2LinuxAccessF6DE78BF"
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/StandardRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/StandardRole/ImportStandardRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -921,17 +563,6 @@
           }
         ],
         "/aws-cdk-eks-grant-access-with-type/DefaultRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/DefaultRole/ImportDefaultRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1480,6 +1111,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1491,6 +1123,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -1502,5 +1135,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

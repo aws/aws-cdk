@@ -540,6 +540,7 @@
     "Value": "aws:cdk:eks:kubectl-ready"
    },
    "DependsOn": [
+    "ClusterClusterAdminRoleAccessF2BFF759",
     "ClusterEB0386A7"
    ]
   },
@@ -724,7 +725,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4c0f7bf9173df1c120604820692548150b09e29f6fba95f38b11caa17c9696bb.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1019,7 +1020,7 @@
     }
    }
   },
-  "EC2RoleF978FC1C": {
+  "EC2LinuxRole26CDA54E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1036,7 +1037,7 @@
     }
    }
   },
-  "EC2Access19C43F79": {
+  "EC2LinuxAccessF6DE78BF": {
    "Type": "AWS::EKS::AccessEntry",
    "Properties": {
     "AccessPolicies": [],
@@ -1045,77 +1046,11 @@
     },
     "PrincipalArn": {
      "Fn::GetAtt": [
-      "EC2RoleF978FC1C",
+      "EC2LinuxRole26CDA54E",
       "Arn"
      ]
     },
-    "Type": "EC2"
-   }
-  },
-  "HybridRoleCAD55037": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ssm.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "HybridAccessF5978A74": {
-   "Type": "AWS::EKS::AccessEntry",
-   "Properties": {
-    "AccessPolicies": [],
-    "ClusterName": {
-     "Ref": "ClusterEB0386A7"
-    },
-    "PrincipalArn": {
-     "Fn::GetAtt": [
-      "HybridRoleCAD55037",
-      "Arn"
-     ]
-    },
-    "Type": "HYBRID_LINUX"
-   }
-  },
-  "HyperpodRole9655BF42": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "sagemaker.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "HyperpodAccess28E68EEF": {
-   "Type": "AWS::EKS::AccessEntry",
-   "Properties": {
-    "AccessPolicies": [],
-    "ClusterName": {
-     "Ref": "ClusterEB0386A7"
-    },
-    "PrincipalArn": {
-     "Fn::GetAtt": [
-      "HyperpodRole9655BF42",
-      "Arn"
-     ]
-    },
-    "Type": "HYPERPOD_LINUX"
+    "Type": "EC2_LINUX"
    }
   },
   "StandardRoleB40A8A59": {
