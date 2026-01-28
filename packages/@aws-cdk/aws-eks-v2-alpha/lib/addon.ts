@@ -132,7 +132,7 @@ export interface PodIdentityAssociation {
   /**
    * The Role of the addon.
    */
-  readonly addonRole: iam.Role;
+  readonly addonRole: iam.IRole;
 
   /**
    * The name of the Kubernetes service account inside the cluster to associate the IAM credentials with.
