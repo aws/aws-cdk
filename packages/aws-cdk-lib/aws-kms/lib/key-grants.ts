@@ -34,10 +34,11 @@ export class KeyGrants {
   private readonly policyResource?: iam.IResourceWithPolicyV2;
 
   private constructor(props: KeyGrantsProps) {
-    // @ts-ignore - KeyTraits intentionally omits 'with' method from IKeyRef
-    this.resource = new KeyTraits(props.resource);
+    this.resource = props.resource;
     this.trustAccountIdentities = props.trustAccountIdentities ?? FeatureFlags.of(this.resource).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
-    this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
+    this.policyResource = GrantableResources.isResourceWithPolicy(this.resource)
+      ? this.resource
+      : CfnKey.isCfnKey(this.resource) ? new CfnKeyWithPolicy(this.resource) : undefined;
   }
 
   /**
@@ -181,29 +182,6 @@ export class KeyGrants {
       return keyStack.account !== identityStack.account && this.resource.env.account !== identityStack.account;
     }
     return keyStack.account !== identityStack.account;
-  }
-}
-
-// @ts-ignore - KeyTraits intentionally omits 'with' method from IKeyRef
-class KeyTraits implements IKeyRef, IResourceWithPolicyV2 {
-  public readonly env: ResourceEnvironment;
-  public readonly keyRef: KeyReference;
-  public readonly node: Node;
-  private readonly resourceWithPolicy?: IResourceWithPolicyV2;
-
-  constructor(private readonly ref: IKeyRef) {
-    this.keyRef = ref.keyRef;
-    this.env = ref.env;
-    this.node = ref.node;
-    this.resourceWithPolicy = GrantableResources.isResourceWithPolicy(this.ref)
-      ? this.ref
-      : CfnKey.isCfnKey(this.ref) ? new CfnKeyWithPolicy(this.ref) : undefined;
-  }
-
-  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-    return this.resourceWithPolicy
-      ? this.resourceWithPolicy.addToResourcePolicy(statement)
-      : { statementAdded: false };
   }
 }
 
