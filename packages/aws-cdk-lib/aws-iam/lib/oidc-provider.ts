@@ -167,7 +167,6 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     const provider = this.getOrCreateProvider();
     this.resource = new CustomResource(this, 'Resource', {
       resourceType: RESOURCE_TYPE,
-      removalPolicy: props.removalPolicy,
       serviceToken: provider.serviceToken,
       properties: {
         ClientIDList: props.clientIds,

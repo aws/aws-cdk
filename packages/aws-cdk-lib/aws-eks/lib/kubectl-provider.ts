@@ -82,7 +82,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
    * @param scope Construct
    * @param cluster k8s cluster
    */
-  public static getOrCreate(scope: Construct, cluster: ICluster, removalPolicy?: RemovalPolicy): IKubectlProvider {
+  public static getOrCreate(scope: Construct, cluster: ICluster): IKubectlProvider {
     // if this is an "owned" cluster, it has a provider associated with it
     if (cluster instanceof Cluster) {
       return cluster._attachKubectlResourceScope(scope);
@@ -100,10 +100,6 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     let provider = stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
       provider = new KubectlProvider(stack, uid, { cluster });
-    }
-
-    if (removalPolicy) {
-      RemovalPolicies.of(provider).apply(removalPolicy);
     }
 
     return provider;

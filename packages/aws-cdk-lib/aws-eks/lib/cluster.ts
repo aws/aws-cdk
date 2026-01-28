@@ -2182,7 +2182,7 @@ export class Cluster extends ClusterBase {
    * associated service account.
    *
    */
-  public get eksPodIdentityAgent(): IAddon {
+  public get eksPodIdentityAgent(): IAddon | undefined {
     if (!this._eksPodIdentityAgent) {
       this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
         cluster: this,

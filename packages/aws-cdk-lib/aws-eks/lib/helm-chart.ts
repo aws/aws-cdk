@@ -148,7 +148,7 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = KubectlProvider.getOrCreate(this, props.cluster, props.removalPolicy);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {

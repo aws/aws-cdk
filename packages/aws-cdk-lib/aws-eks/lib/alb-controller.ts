@@ -8,8 +8,8 @@ import { ServiceAccount } from './service-account';
 import * as iam from '../../aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Aws, Duration, Names, RemovalPolicy, RemovalPolicies, Stack, ValidationError } from '../../core';
+
+import { Aws, Duration, Names, RemovalPolicy, Stack, ValidationError } from '../../core';
 
 /**
  * Controller version.
@@ -302,7 +302,6 @@ export interface AlbControllerOptions {
   readonly additionalHelmChartValues?: AlbControllerHelmChartOptions;
 
   /**
-<<<<<<< HEAD
    * Overwrite any existing ALB controller service account.
    *
    * If this is set, we will use `kubectl apply` instead of `kubectl create`
@@ -373,6 +372,7 @@ export class AlbController extends Construct {
       name: 'aws-load-balancer-controller',
       cluster: props.cluster,
       overwriteServiceAccount: props.overwriteServiceAccount,
+      removalPolicy: props.removalPolicy,
     });
 
     if (props.version.custom && !props.policy) {
@@ -414,11 +414,8 @@ export class AlbController extends Construct {
         },
         ...props.additionalHelmChartValues, // additional helm chart options for ALB controller chart
       },
+      removalPolicy: props.removalPolicy,
     });
-
-    if (props.removalPolicy) {
-      RemovalPolicies.of(this).apply(props.removalPolicy);
-    }
 
     // the controller relies on permissions deployed using these resources.
     chart.node.addDependency(serviceAccount);
