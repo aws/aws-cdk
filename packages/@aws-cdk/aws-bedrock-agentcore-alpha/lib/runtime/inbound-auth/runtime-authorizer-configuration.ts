@@ -14,7 +14,7 @@
 import { Token } from 'aws-cdk-lib';
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { ValidationError } from './validation-helpers';
+import { ValidationError } from '../validation-helpers';
 
 /**
  * Abstract base class for runtime authorizer configurations.
