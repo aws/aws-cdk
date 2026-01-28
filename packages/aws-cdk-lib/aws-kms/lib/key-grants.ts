@@ -34,6 +34,7 @@ export class KeyGrants {
   private readonly policyResource?: iam.IResourceWithPolicyV2;
 
   private constructor(props: KeyGrantsProps) {
+    // @ts-ignore - KeyTraits intentionally omits 'with' method from IKeyRef
     this.resource = new KeyTraits(props.resource);
     this.trustAccountIdentities = props.trustAccountIdentities ?? FeatureFlags.of(this.resource).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
     this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
@@ -183,6 +184,7 @@ export class KeyGrants {
   }
 }
 
+// @ts-ignore - KeyTraits intentionally omits 'with' method from IKeyRef
 class KeyTraits implements IKeyRef, IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
   public readonly keyRef: KeyReference;

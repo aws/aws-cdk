@@ -413,6 +413,60 @@ describe('key policies', () => {
     });
   });
 
+  test('grant multiple permissions to an L1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.CfnKey(stack, 'Key', {
+      keyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    const principal = new ServicePrincipal('ec2.amazonaws.com');
+
+    // WHEN
+    let keyGrants = KeyGrants.fromKey(key);
+    keyGrants.encrypt(principal);
+    keyGrants.decrypt(principal);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          // This is the pre-existing statement
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+          // and these are the new statement added by the grants, to the resource policy
+          // instead of the principal policy, because the principal is a service principal.
+          {
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+            Resource: '*',
+          },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('sign', () => {
     // GIVEN
     const stack = new cdk.Stack();
