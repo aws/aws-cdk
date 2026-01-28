@@ -787,7 +787,7 @@ CloudFormation type (e.g. **string**, **string[]**) _[awslint:attribute-type]_.
   them or manipulate them), they can be used interchangeably.
 
 If needed, you can query whether an object includes unresolved tokens by using
-the **Token.unresolved(x)** method.
+the **Token.isUnresolved(x)** method.
 
 To ensure users are aware that the value returned by attribute properties should
 be treated as an opaque token, the JSDoc “@returns” annotation should begin with
@@ -962,7 +962,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   attribute to another. For example, given a name, it would need to render the
   ARN of the resource. Therefore, if **from\<Attribute\>** methods expect to be
   able to parse their input, they must verify that the input (e.g. ARN, name)
-  doesn't have unresolved tokens (using **Token.unresolved**). Preferably, they
+  doesn't have unresolved tokens (using **Token.isUnresolved**). Preferably, they
   can use **Stack.parseArn** to achieve this purpose.
 
 If a resource has an ARN attribute, it should implement at least a **fromFooArn**
