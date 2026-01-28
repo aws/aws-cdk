@@ -2788,5 +2788,123 @@ describe('cluster', () => {
         });
       }).toThrow('remotePodNetworks cannot be specified without remoteNodeNetworks also being specified');
     });
+
+    test('skips validation for unresolved tokens in remote node networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedCidr = cdk.Fn.importValue('NodeCidr');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedCidr, '10.0.0.0/16'],
+          },
+        ],
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+        RemoteNetworkConfig: {
+          RemoteNodeNetworks: [
+            {
+              Cidrs: [unresolvedCidr, '10.0.0.0/16'],
+            },
+          ],
+        },
+      });
+    });
+
+    test('skips validation for unresolved tokens in remote pod networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedNodeCidr = cdk.Fn.importValue('NodeCidr');
+      const unresolvedPodCidr = cdk.Fn.importValue('PodCidr');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedNodeCidr],
+          },
+        ],
+        remotePodNetworks: [
+          {
+            cidrs: [unresolvedPodCidr, '192.168.0.0/16'],
+          },
+        ],
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+        RemoteNetworkConfig: {
+          RemoteNodeNetworks: [
+            {
+              Cidrs: [unresolvedNodeCidr],
+            },
+          ],
+          RemotePodNetworks: [
+            {
+              Cidrs: [unresolvedPodCidr, '192.168.0.0/16'],
+            },
+          ],
+        },
+      });
+    });
+
+    test('validates resolved CIDRs even when tokens are present', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedCidr = cdk.Fn.importValue('NodeCidr');
+      const overlappingCidr = '172.16.0.0/12';
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: [unresolvedCidr, overlappingCidr, overlappingCidr],
+            },
+          ],
+        });
+      }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
+    });
+
+    test('skips cross-network validation when all CIDRs are tokens', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedNodeCidr1 = cdk.Fn.importValue('NodeCidr1');
+      const unresolvedNodeCidr2 = cdk.Fn.importValue('NodeCidr2');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedNodeCidr1],
+          },
+          {
+            cidrs: [unresolvedNodeCidr2],
+          },
+        ],
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+        RemoteNetworkConfig: {
+          RemoteNodeNetworks: [
+            {
+              Cidrs: [unresolvedNodeCidr1],
+            },
+            {
+              Cidrs: [unresolvedNodeCidr2],
+            },
+          ],
+        },
+      });
+    });
   });
 });
