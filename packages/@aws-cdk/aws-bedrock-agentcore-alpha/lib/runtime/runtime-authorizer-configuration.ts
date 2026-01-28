@@ -38,17 +38,19 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param discoveryUrl The OIDC discovery URL (must end with /.well-known/openid-configuration)
    * @param allowedClients Optional array of allowed client IDs
    * @param allowedAudience Optional array of allowed audiences
+   * @param allowedScopes Optional array of allowed scopes
    * @returns RuntimeAuthorizerConfiguration for JWT authentication
    */
   public static usingJWT(
     discoveryUrl: string,
     allowedClients?: string[],
     allowedAudience?: string[],
+    allowedScopes?: string[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('JWT discovery URL must end with /.well-known/openid-configuration');
     }
-    return new JwtAuthorizerConfiguration(discoveryUrl, allowedClients, allowedAudience);
+    return new JwtAuthorizerConfiguration(discoveryUrl, allowedClients, allowedAudience, allowedScopes);
   }
 
   /**
@@ -58,14 +60,16 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param userPool The Cognito User Pool
    * @param userPoolClients The Cognito User Pool App Clients
    * @param allowedAudience Optional array of allowed audiences
+   * @param allowedScopes Optional array of allowed scopes
    * @returns RuntimeAuthorizerConfiguration for Cognito authentication
    */
   public static usingCognito(
     userPool: IUserPool,
     userPoolClients: IUserPoolClient[],
     allowedAudience?: string[],
+    allowedScopes?: string[],
   ): RuntimeAuthorizerConfiguration {
-    return new CognitoAuthorizerConfiguration(userPool, userPoolClients, allowedAudience);
+    return new CognitoAuthorizerConfiguration(userPool, userPoolClients, allowedAudience, allowedScopes);
   }
 
   /**
@@ -75,17 +79,19 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param discoveryUrl The OIDC discovery URL (must end with /.well-known/openid-configuration)
    * @param clientId OAuth client ID
    * @param allowedAudience Optional array of allowed audiences
+   * @param allowedScopes Optional array of allowed scopes
    * @returns RuntimeAuthorizerConfiguration for OAuth authentication
    */
   public static usingOAuth(
     discoveryUrl: string,
     clientId: string,
     allowedAudience?: string[],
+    allowedScopes?: string[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
     }
-    return new OAuthAuthorizerConfiguration(discoveryUrl, clientId, allowedAudience);
+    return new OAuthAuthorizerConfiguration(discoveryUrl, clientId, allowedAudience, allowedScopes);
   }
 
   /**
@@ -113,6 +119,7 @@ class JwtAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly discoveryUrl: string,
     private readonly allowedClients?: string[],
     private readonly allowedAudience?: string[],
+    private readonly allowedScopes?: string[],
   ) {
     super();
   }
@@ -123,6 +130,7 @@ class JwtAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
         discoveryUrl: this.discoveryUrl,
         allowedClients: this.allowedClients,
         allowedAudience: this.allowedAudience,
+        allowedScopes: this.allowedScopes,
       },
     };
   }
@@ -136,6 +144,7 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly userPool: IUserPool,
     private readonly userPoolClients: IUserPoolClient[],
     private readonly allowedAudience?: string[],
+    private readonly allowedScopes?: string[],
   ) {
     super();
   }
@@ -149,6 +158,7 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
         discoveryUrl: discoveryUrl,
         allowedClients: this.userPoolClients.map(client => client.userPoolClientId),
         allowedAudience: this.allowedAudience,
+        allowedScopes: this.allowedScopes,
       },
     };
   }
@@ -162,6 +172,7 @@ class OAuthAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly discoveryUrl: string,
     private readonly clientId: string,
     private readonly allowedAudience?: string[],
+    private readonly allowedScopes?: string[],
   ) {
     super();
   }
@@ -173,6 +184,7 @@ class OAuthAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
         discoveryUrl: this.discoveryUrl,
         allowedClients: [this.clientId],
         allowedAudience: this.allowedAudience,
+        allowedScopes: this.allowedScopes,
       },
     };
   }

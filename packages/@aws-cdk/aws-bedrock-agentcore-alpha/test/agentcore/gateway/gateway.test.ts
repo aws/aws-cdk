@@ -150,6 +150,34 @@ describe('Gateway Core Tests', () => {
     });
   });
 
+  test('Should create Gateway with custom JWT authorizer including allowedScopes', () => {
+    new Gateway(stack, 'TestGatewayWithScopes', {
+      gatewayName: 'test-gateway-scopes',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+        allowedAudience: ['my-app'],
+        allowedClients: ['client-123'],
+        allowedScopes: ['read', 'write'],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayResource = Object.values(resources)[0];
+
+    expect(gatewayResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = gatewayResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedAudience).toEqual(['my-app']);
+      expect(jwtConfig.AllowedClients).toEqual(['client-123']);
+      expect(jwtConfig.AllowedScopes).toEqual(['read', 'write']);
+    }
+  });
+
   test('Should create Gateway with KMS encryption', () => {
     const key = new kms.Key(stack, 'TestKey');
 
@@ -1024,6 +1052,7 @@ describe('Authorizer Configuration Tests', () => {
       discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
       allowedAudience: ['app1', 'app2', 'app3'],
       allowedClients: ['client1', 'client2'],
+      allowedScopes: ['read', 'write', 'admin'],
     });
 
     // Just verify the authorizer is created with correct type
@@ -1065,6 +1094,60 @@ describe('Authorizer Configuration Tests', () => {
     });
 
     expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create custom JWT authorizer with only allowedScopes', () => {
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      allowedScopes: ['read', 'write'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create Cognito authorizer with allowedScopes', () => {
+    const userPool = new cdk.aws_cognito.UserPool(stack, 'TestUserPool', {
+      userPoolName: 'test-pool',
+    });
+
+    const client1 = userPool.addClient('Client1');
+
+    const authorizer = GatewayAuthorizer.usingCognito({
+      userPool: userPool,
+      allowedClients: [client1],
+      allowedAudiences: ['cognito-audience'],
+      allowedScopes: ['read', 'write'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should render Gateway with custom JWT authorizer including allowedScopes in CloudFormation', () => {
+    new Gateway(stack, 'TestGatewayRenderScopes', {
+      gatewayName: 'test-gateway-render-scopes',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://oauth.provider.com/.well-known/openid-configuration',
+        allowedAudience: ['aud1', 'aud2'],
+        allowedClients: ['client-456'],
+        allowedScopes: ['openid', 'profile', 'email'],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayResource = Object.values(resources)[0];
+
+    expect(gatewayResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = gatewayResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://oauth.provider.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedAudience).toEqual(['aud1', 'aud2']);
+      expect(jwtConfig.AllowedClients).toEqual(['client-456']);
+      expect(jwtConfig.AllowedScopes).toEqual(['openid', 'profile', 'email']);
+    }
   });
 });
 

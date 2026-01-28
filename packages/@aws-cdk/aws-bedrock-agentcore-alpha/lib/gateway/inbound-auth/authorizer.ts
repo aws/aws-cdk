@@ -58,6 +58,12 @@ export interface CustomJwtConfiguration {
    * @default - No client ID validation
    */
   readonly allowedClients?: string[];
+
+  /**
+   * Represents individual scopes that are validated in the incoming JWT token validation process.
+   * @default - No scope validation
+   */
+  readonly allowedScopes?: string[];
 }
 
 /**
@@ -68,11 +74,13 @@ export class CustomJwtAuthorizer implements IGatewayAuthorizerConfig {
   private readonly discoveryUrl: string;
   private readonly allowedAudience?: string[];
   private readonly allowedClients?: string[];
+  private readonly allowedScopes?: string[];
 
   constructor(config: CustomJwtConfiguration) {
     this.discoveryUrl = config.discoveryUrl;
     this.allowedAudience = config.allowedAudience;
     this.allowedClients = config.allowedClients;
+    this.allowedScopes = config.allowedScopes;
   }
 
   /**
@@ -84,6 +92,7 @@ export class CustomJwtAuthorizer implements IGatewayAuthorizerConfig {
         discoveryUrl: this.discoveryUrl,
         ...(this.allowedAudience && { allowedAudience: this.allowedAudience }),
         ...(this.allowedClients && { allowedClients: this.allowedClients }),
+        ...(this.allowedScopes && { allowedScopes: this.allowedScopes }),
       },
     };
   }
@@ -129,6 +138,11 @@ export interface CognitoAuthorizerProps {
    * @default - No audience validation
    */
   readonly allowedAudiences?: string[];
+  /**
+   * The allowed scopes for JWT validation
+   * @default - No scope validation
+   */
+  readonly allowedScopes?: string[];
 }
 /**
  * Factory class for creating Gateway Authorizers
@@ -147,9 +161,9 @@ export abstract class GatewayAuthorizer {
    * @returns IGatewayAuthorizerConfig configured for custom JWT
    */
   public static usingCustomJwt(configuration: CustomJwtConfiguration): IGatewayAuthorizerConfig {
-    // At least one of allowedAudience or allowedClients must be defined for CUSTOM_JWT authorizer
-    if (!configuration.allowedAudience && !configuration.allowedClients) {
-      throw new ValidationError('At least one of allowedAudience or allowedClients must be defined for CUSTOM_JWT authorizer');
+    // At least one of allowedAudience, allowedClients, or allowedScopes must be defined for CUSTOM_JWT authorizer
+    if (!configuration.allowedAudience && !configuration.allowedClients && !configuration.allowedScopes) {
+      throw new ValidationError('At least one of allowedAudience, allowedClients, or allowedScopes must be defined for CUSTOM_JWT authorizer');
     }
     return new CustomJwtAuthorizer(configuration);
   }
@@ -166,6 +180,7 @@ export abstract class GatewayAuthorizer {
       discoveryUrl: discoveryUrl,
       allowedClients: props.allowedClients?.flatMap((client) => client.userPoolClientId),
       allowedAudience: props.allowedAudiences,
+      allowedScopes: props.allowedScopes,
     });
   }
 }

@@ -278,6 +278,7 @@ describe('Runtime with authorizer configuration tests', () => {
         'https://auth.example.com/.well-known/openid-configuration',
         ['client1', 'client2'],
         ['audience1'],
+        ['scope1', 'scope2'],
       ),
     });
 
@@ -317,11 +318,13 @@ describe('Runtime with authorizer configuration tests', () => {
       expect(jwtConfig).toHaveProperty('DiscoveryUrl');
       expect(jwtConfig).toHaveProperty('AllowedClients');
       expect(jwtConfig).toHaveProperty('AllowedAudience');
+      expect(jwtConfig).toHaveProperty('AllowedScopes');
 
       // Verify the values
       expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
       expect(jwtConfig.AllowedClients).toEqual(['client1', 'client2']);
       expect(jwtConfig.AllowedAudience).toEqual(['audience1']);
+      expect(jwtConfig.AllowedScopes).toEqual(['scope1', 'scope2']);
     } else {
       // L1 construct might not be handling the authorizer configuration properly
       // This is acceptable as the configuration is still passed to the construct
@@ -367,6 +370,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
         userPool,
         [userPoolClient, anotherUserPoolClient],
+        ['cognito-audience'],
+        ['read', 'write'],
       ),
     });
 
@@ -396,6 +401,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       const jwtConfig = authConfig.CustomJWTAuthorizer;
       expect(jwtConfig).toHaveProperty('DiscoveryUrl');
       expect(jwtConfig).toHaveProperty('AllowedClients');
+      expect(jwtConfig).toHaveProperty('AllowedAudience');
+      expect(jwtConfig).toHaveProperty('AllowedScopes');
 
       // Verify the Cognito discovery URL is correctly formatted
       // The URL now uses a token for the region (Ref: AWS::Region)
@@ -411,6 +418,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       });
       expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyUserPoolClient01266CD6' });
       expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyAnotherUserPoolClient4444CD16' });
+      expect(jwtConfig.AllowedAudience).toEqual(['cognito-audience']);
+      expect(jwtConfig.AllowedScopes).toEqual(['read', 'write']);
     } else {
       // L1 construct might not be handling the authorizer configuration properly
       // This is acceptable as the configuration is still passed to the construct
@@ -879,6 +888,7 @@ describe('Runtime with OAuth authorizer tests', () => {
         'https://oauth.provider.com/.well-known/openid-configuration',
         'oauth-client-456',
         ['aud1', 'aud2'],
+        ['openid', 'profile'],
       ),
     });
 
@@ -898,6 +908,7 @@ describe('Runtime with OAuth authorizer tests', () => {
       expect(jwtConfig.DiscoveryUrl).toBe('https://oauth.provider.com/.well-known/openid-configuration');
       expect(jwtConfig.AllowedClients).toEqual(['oauth-client-456']);
       expect(jwtConfig.AllowedAudience).toEqual(['aud1', 'aud2']);
+      expect(jwtConfig.AllowedScopes).toEqual(['openid', 'profile']);
     }
   });
 
@@ -957,6 +968,71 @@ describe('Runtime with JWT authorizer tests', () => {
 
     // Verify the runtime was created
     expect(runtime.agentRuntimeName).toBe('test_runtime_jwt');
+  });
+
+  test('Should create runtime with JWT authorizer including allowedScopes', () => {
+    new Runtime(stack, 'test-runtime-scopes', {
+      runtimeName: 'test_runtime_jwt_scopes',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingJWT(
+        'https://auth.example.com/.well-known/openid-configuration',
+        ['client1'],
+        ['audience1'],
+        ['read', 'write', 'admin'],
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Verify the JWT configuration with scopes is properly rendered
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedClients).toEqual(['client1']);
+      expect(jwtConfig.AllowedAudience).toEqual(['audience1']);
+      expect(jwtConfig.AllowedScopes).toEqual(['read', 'write', 'admin']);
+    }
+  });
+
+  test('Should create runtime with JWT authorizer without allowedScopes (optional parameter)', () => {
+    new Runtime(stack, 'test-runtime-no-scopes', {
+      runtimeName: 'test_runtime_jwt_no_scopes',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingJWT(
+        'https://auth.example.com/.well-known/openid-configuration',
+        ['client1'],
+        ['audience1'],
+        // allowedScopes not provided - should work fine
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Verify the JWT configuration without scopes is properly rendered
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedClients).toEqual(['client1']);
+      expect(jwtConfig.AllowedAudience).toEqual(['audience1']);
+      // AllowedScopes should be undefined when not provided
+      expect(jwtConfig.AllowedScopes).toBeUndefined();
+    }
   });
 });
 

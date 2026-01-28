@@ -475,6 +475,8 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
     userPool, // User Pool (required)
     [userPoolClient, anotherUserPoolClient], // User Pool Clients
+    ["audience1"], // Allowed Audiences (optional)
+    ["read", "write"], // Allowed Scopes (optional)
   ),
 });
 ```
@@ -495,10 +497,18 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingJWT(
     "https://example.com/.well-known/openid-configuration",  // Discovery URL (required)
     ["client1", "client2"],  // Allowed Client IDs (optional)
-    ["audience1"]           // Allowed Audiences (optional)
+    ["audience1"],           // Allowed Audiences (optional)
+    ["read", "write"]        // Allowed Scopes (optional)
   ),
 });
 ```
+
+You can configure:
+
+- Discovery URL: Enter the Discovery URL from your identity provider (e.g. Okta, Cognito, etc.), typically found in that provider's documentation. This allows your Agent or Tool to fetch login, downstream resource token, and verification settings.
+- Allowed audiences: This is used to validate that the audiences specified for the OAuth token matches or are a subset of the audiences specified in the AgentCore Runtime.
+- Allowed clients: This is used to validate that the public identifier of the client, as specified in the authorization token, is allowed to access the AgentCore Runtime.
+- Allowed scopes: Allow access only if the token contains at least one of the required scopes configured here
 
 **Note**: The discovery URL must end with `/.well-known/openid-configuration`.
 
@@ -516,8 +526,10 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingOAuth(
-    "https://github.com/.well-known/openid-configuration",  
-    "oauth_client_123",  
+    "https://github.com/.well-known/openid-configuration",  // Discovery URL (required)
+    "oauth_client_123",  // OAuth Client ID (required)
+    ["audience1"],       // Allowed Audiences (optional)
+    ["openid", "profile"] // Allowed Scopes (optional)
   ),
 });
 ```
@@ -1139,6 +1151,7 @@ You need to specify an OAuth discovery server and client IDs/audiences when you 
 - At least one of the below options depending on the chosen identity provider.
 - Allowed audiences — List of allowed audiences for JWT tokens
 - Allowed clients — List of allowed client identifiers
+- Allowed scopes — List of allowed scopes for JWT tokens
 
 ```typescript fixture=default
 const gateway = new agentcore.Gateway(this, "MyGateway", {
@@ -1147,6 +1160,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
 });
 ```
@@ -1225,6 +1239,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
   kmsKey: encryptionKey,
   exceptionLevel: agentcore.GatewayExceptionLevel.DEBUG,
@@ -1255,6 +1270,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
   role: executionRole,
 });
@@ -1278,6 +1294,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
 });
 
