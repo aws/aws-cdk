@@ -86,6 +86,17 @@ export class KeyGrants {
   }
 
   /**
+   * Grant admins permissions using this key to the given principal
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   *
+   */
+  public admin(grantee: iam.IGrantable): iam.Grant {
+    return this.actions(grantee, ...perms.ADMIN_ACTIONS);
+  }
+
+  /**
    * Grant decryption permissions using this key to the given principal
    *
    */

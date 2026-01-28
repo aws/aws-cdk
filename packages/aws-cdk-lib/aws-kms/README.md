@@ -117,7 +117,7 @@ const myKeyLookup = kms.Key.fromLookup(this, 'MyKeyLookup', {
 const role = new iam.Role(this, 'MyRole', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
-myKeyLookup.grants.encryptDecrypt(role);
+myKeyLookup.grantEncryptDecrypt(role);
 ```
 
 Note that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not have
