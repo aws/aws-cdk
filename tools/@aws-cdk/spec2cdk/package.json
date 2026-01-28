@@ -33,7 +33,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-cdk/aws-service-spec": "^0.1.144",
-    "@aws-cdk/service-spec-importers": "^0.0.105",
+    "@aws-cdk/service-spec-importers": "^0.0.106",
     "@aws-cdk/service-spec-types": "^0.0.210",
     "@cdklabs/tskb": "^0.0.4",
     "@cdklabs/typewriter": "^0.0.15",
