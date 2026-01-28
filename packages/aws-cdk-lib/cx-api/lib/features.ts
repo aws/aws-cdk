@@ -147,6 +147,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const VPC_ORIGIN_REGION_AWARE_NAME = '@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
 
@@ -429,6 +430,26 @@ export const FLAGS: Record<string, FlagInfo> = {
       The security policy can also be configured explicitly using the \`minimumProtocolVersion\` property.`,
     introducedIn: { v1: '1.117.0', v2: '2.0.0' },
     unconfiguredBehavesLike: { v2: true },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [VPC_ORIGIN_REGION_AWARE_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'Enable region-aware naming for VPC Origins to prevent name collisions across regions',
+    detailsMd: `
+      When enabled, VPC Origin names will include the region suffix when the stack environment is resolved,
+      ensuring unique names across regions for multi-region deployments. This prevents the error
+      "Another vpc origin with the same name already exists within the aws account" when deploying
+      identical stacks to different regions.
+      
+      When disabled, VPC Origins use region-agnostic names, maintaining backward compatibility but
+      potentially causing name collisions in multi-region deployments.
+      
+      This feature flag is needed because enabling it will cause existing VPC Origins to be replaced
+      in stacks with resolved environments due to the name change.`,
+    introducedIn: { v2: 'V2NEXT' },
+    unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
   },
 

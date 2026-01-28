@@ -104,6 +104,8 @@ Flags come in three types:
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
+| [@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName](#aws-cdkaws-cloudfrontvpcoriginregionawarename) | Enable region-aware naming for VPC Origins to prevent name collisions across regions | V2NEXT | fix |
+| [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | V2NEXT | new default |
 | [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
 | [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | 2.221.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
@@ -124,6 +126,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
     "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [
       "aws",
@@ -2213,6 +2216,30 @@ in the CloudFormation template.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.212.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-cloudfront:vpcOriginRegionAwareName
+
+*Enable region-aware naming for VPC Origins to prevent name collisions across regions*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, VPC Origin names will include the region suffix when the stack environment is resolved,
+ensuring unique names across regions for multi-region deployments. This prevents the error
+"Another vpc origin with the same name already exists within the aws account" when deploying
+identical stacks to different regions.
+
+When disabled, VPC Origins use region-agnostic names, maintaining backward compatibility but
+potentially causing name collisions in multi-region deployments.
+
+This feature flag is needed because enabling it will cause existing VPC Origins to be replaced
+in stacks with resolved environments due to the name change.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener
