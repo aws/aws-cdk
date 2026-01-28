@@ -164,6 +164,23 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 });
 ```
 
+For GPU workloads, you can use `ECS_AL2023_NVIDIA` to run workloads on Amazon Linux 2023 with NVIDIA GPU support:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myGpuComputeEnv', {
+  vpc,
+  images: [
+    {
+      imageType: batch.EcsMachineImageType.ECS_AL2023_NVIDIA,
+    },
+  ],
+});
+```
+
+*Note*: `ECS_AL2023` and `ECS_AL2023_NVIDIA` do not support A1 instances (Graviton 1), as Amazon Linux 2023 requires Graviton 2 or later.
+
 #### Allocation Strategies
 
 | Allocation Strategy           | Optimized for              | Downsides                     |
