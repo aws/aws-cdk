@@ -1,9 +1,11 @@
 import { Construct } from 'constructs';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
+import * as iam from '../../aws-iam';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import { IReceiptRuleSetRef, ReceiptRuleSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
@@ -49,6 +51,18 @@ export interface ReceiptRuleSetProps {
    * @default false
    */
   readonly dropSpam?: boolean;
+
+  /**
+   * Whether to set this receipt rule set as the active rule set.
+   *
+   * Only one receipt rule set can be active at a time. Setting this to `true`
+   * will activate this rule set and deactivate any other active rule set.
+   *
+   * When the stack is deleted, the rule set will be deactivated before deletion.
+   *
+   * @default false
+   */
+  readonly active?: boolean;
 }
 
 /**
@@ -123,6 +137,10 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
 
     this.receiptRuleSetName = resource.ref;
 
+    if (props.active) {
+      this.createActiveRuleSetCustomResource(resource);
+    }
+
     if (props) {
       if (props.dropSpam) {
         this.addDropSpamRule();
@@ -131,5 +149,45 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
       const rules = props.rules || [];
       rules.forEach((ruleOption, idx) => this.addRule(`Rule${idx}`, ruleOption));
     }
+  }
+
+  /**
+   * Creates an AwsCustomResource to set this receipt rule set as active.
+   * The custom resource calls SetActiveReceiptRuleSet API on create/update
+   * and deactivates the rule set on delete.
+   */
+  private createActiveRuleSetCustomResource(ruleSetResource: CfnReceiptRuleSet): void {
+    const setActiveCall = {
+      service: 'SES',
+      action: 'setActiveReceiptRuleSet',
+      parameters: {
+        RuleSetName: this.receiptRuleSetName,
+      },
+      physicalResourceId: PhysicalResourceId.of(`${this.receiptRuleSetName}-SetActive`),
+    };
+
+    const customResource = new AwsCustomResource(this, 'SetActive', {
+      onCreate: setActiveCall,
+      onUpdate: setActiveCall,
+      onDelete: {
+        service: 'SES',
+        action: 'setActiveReceiptRuleSet',
+        // Empty parameters to deactivate (no RuleSetName means deactivate)
+        parameters: {},
+        physicalResourceId: PhysicalResourceId.of(`${this.receiptRuleSetName}-SetActive`),
+      },
+      policy: AwsCustomResourcePolicy.fromStatements([
+        new iam.PolicyStatement({
+          actions: ['ses:SetActiveReceiptRuleSet'],
+          // Resource must be '*' because SetActiveReceiptRuleSet is an account-level
+          // operation that doesn't support resource-level permissions
+          resources: ['*'],
+        }),
+      ]),
+      installLatestAwsSdk: false,
+    });
+
+    // Ensure the rule set is created before we try to activate it
+    customResource.node.addDependency(ruleSetResource);
   }
 }

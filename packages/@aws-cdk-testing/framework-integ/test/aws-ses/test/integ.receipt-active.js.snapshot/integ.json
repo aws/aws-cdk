@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-ses-receipt-active-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ses-receipt-active"
+      ],
+      "diffAssets": true,
+      "assertionStack": "cdk-ses-receipt-active-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdksesreceiptactiveintegDefaultTestDeployAssert91E6034C"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

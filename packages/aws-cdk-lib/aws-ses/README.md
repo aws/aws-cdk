@@ -79,6 +79,21 @@ new ses.ReceiptRuleSet(this, 'RuleSet', {
 
 This will add a rule at the top of the rule set with a Lambda action that stops processing messages that have at least one spam indicator. See [Lambda Function Examples](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html).
 
+### Activating a receipt rule set
+
+Only one receipt rule set can be active at a time. To set a receipt rule set as active, use the `active` property:
+
+```ts
+new ses.ReceiptRuleSet(this, 'RuleSet', {
+  receiptRuleSetName: 'MyRuleSet',
+  active: true,
+});
+```
+
+When `active` is set to `true`, the receipt rule set will be activated upon deployment. When the stack is deleted, the rule set will be deactivated before deletion.
+
+> **Note:** If you have multiple stacks that each try to activate different receipt rule sets, the last one deployed will be the active one, as only one receipt rule set can be active at a time per AWS account/region.
+
 
 ### Receipt filter
 
