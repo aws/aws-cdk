@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "0a9329bc9c3be6f696a711f374a8972f993e5f7df168ca47a533dd8cf87510cc": {
+      "displayName": "ApplicationSignalsStack2 Template",
+      "source": {
+        "path": "ApplicationSignalsStack2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5c64f95d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0a9329bc9c3be6f696a711f374a8972f993e5f7df168ca47a533dd8cf87510cc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
