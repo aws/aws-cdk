@@ -300,7 +300,8 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
+      + (this.hwType === AmiHardwareType.NEURON && this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'inf/' : '')
+      + (this.hwType === AmiHardwareType.NEURON && this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'neuron/' : '')
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props.cachedInContext ?? false;
