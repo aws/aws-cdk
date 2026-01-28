@@ -6,6 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
+import { RuntimeAuthorizerConfiguration } from './inbound-auth/runtime-authorizer-configuration';
 import {
   RUNTIME_LOGS_GROUP_ACTIONS,
   RUNTIME_LOGS_DESCRIBE_ACTIONS,
@@ -16,7 +17,7 @@ import {
   RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
 } from './perms';
 import { AgentRuntimeArtifact } from './runtime-artifact';
-import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configuration';
+
 import { RuntimeBase, IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
 import { LifecycleConfiguration, ProtocolType, RequestHeaderConfiguration } from './types';
