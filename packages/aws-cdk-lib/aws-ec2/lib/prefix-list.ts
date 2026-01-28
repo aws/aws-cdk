@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Connections } from './connections';
 import { CfnPrefixList, IPrefixListRef, PrefixListReference } from './ec2.generated';
-import { IPeer } from './peer';
+import { EgressRuleConfig, IngressRuleConfig, IPeer } from './peer';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, IResource, Lazy, Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -101,14 +101,14 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
   /**
    * Produce the ingress rule JSON for the given connection
    */
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return { sourcePrefixListId: this.prefixListId };
   }
 
   /**
    * Produce the egress rule JSON for the given connection
    */
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { destinationPrefixListId: this.prefixListId };
   }
 }
