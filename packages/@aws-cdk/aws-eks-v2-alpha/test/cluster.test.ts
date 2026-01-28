@@ -1782,6 +1782,55 @@ describe('cluster', () => {
     });
   });
 
+  test('kubectl provider uses the explicitly provided security group for the handler lambda', ()=> {
+    const { stack, vpc } = testFixture();
+
+    const kubectlSecurityGroup = new ec2.SecurityGroup(stack, 'KubectlSecurityGroup', {
+      vpc: vpc,
+      description: 'for kubectl handler',
+    });
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        securityGroup: kubectlSecurityGroup,
+        privateSubnets: vpc.privateSubnets,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['KubectlSecurityGroupF060FCAE', 'GroupId'] }],
+      },
+    });
+  });
+
+  test('kubectl provider uses the cluster security group for the handler lambda when no SG is provided', () => {
+    const { stack, vpc } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        privateSubnets: vpc.privateSubnets,
+        environment: {
+          Foo: 'Bar',
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['Cluster192CD0375', 'ClusterSecurityGroupId'] }],
+      },
+    });
+  });
+
   test('kubectl provider passes environment to lambda', () => {
     const { stack } = testFixture();
 
