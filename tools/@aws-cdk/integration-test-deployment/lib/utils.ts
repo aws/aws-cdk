@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 import { spawn } from 'child_process';
 
 export const gitDiff = async (): Promise<string> => {

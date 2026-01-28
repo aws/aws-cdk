@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "CrossAccountStepFunctionStack.assets": {
       "type": "cdk:asset-manifest",
@@ -54,12 +54,6 @@
             }
           }
         ],
-        "/CrossAccountStepFunctionStack/CrossAccountStateMachine/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CrossAccountStepFunctionStack/CrossAccountStateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -106,12 +100,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/CrossAccountStepFunctionStack/CrossAccountRole/ImportCrossAccountRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/CrossAccountStepFunctionStack/CrossAccountRole/Resource": [
@@ -208,12 +196,6 @@
             }
           }
         ],
-        "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/ImportCdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -296,7 +278,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/31884157a9889932f23b137d38b1573007f36fdc3e86118eb94b37694fcfe6c0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/868da4c2fcaf5c7faab809aad6e0d0bd7c51f162dc33fe836db899ffe944b863.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -397,7 +379,10 @@
         "/CdkPipelineStepFunctionsActionStack/BucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentAwsCliLayerB018DCE1"
+            "data": "BucketDeploymentAwsCliLayerB018DCE1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/BucketDeployment/CustomResourceHandler": [
@@ -509,54 +494,58 @@
         ],
         "/CdkPipelineStepFunctionsActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/CdkPipelineStepFunctionsActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
@@ -788,12 +777,6 @@
             }
           }
         ],
-        "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -941,12 +924,6 @@
             }
           }
         ],
-        "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Source/Source/CodePipelineActionRole/ImportCodePipelineActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Source/Source/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1062,12 +1039,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Build/BuildAction/CodePipelineActionRole/ImportCodePipelineActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Build/BuildAction/CodePipelineActionRole/Resource": [
@@ -1192,12 +1163,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/CdkPipelineStepFunctionsActionStack/BuildProject/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/BuildProject/Role/Resource": [
@@ -1818,6 +1783,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1829,6 +1795,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -1840,5 +1807,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

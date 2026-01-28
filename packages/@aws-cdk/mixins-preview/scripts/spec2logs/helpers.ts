@@ -7,6 +7,7 @@ class MixinsLogsDelivery extends ExternalModule {
   public readonly XRayLogsDelivery = Type.fromName(this, 'XRayLogsDelivery');
   public readonly ILogsDelivery = Type.fromName(this, 'ILogsDelivery');
   public readonly S3LogsDeliveryPermissionsVersion = $T(Type.fromName(this, 'S3LogsDeliveryPermissionsVersion'));
+  public readonly S3LogsDestinationProps = Type.fromName(this, 'IS3LogsDestinationProps');
 }
 
 export const MIXINS_LOGS_DELIVERY = new MixinsLogsDelivery('@aws-cdk/mixins-preview/services/aws-logs');
