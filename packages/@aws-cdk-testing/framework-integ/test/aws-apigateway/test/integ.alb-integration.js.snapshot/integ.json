@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AlbIntegrationInteg/DefaultTest": {
+      "stacks": [
+        "AlbIntegrationTestStack"
+      ],
+      "assertionStack": "AlbIntegrationInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbIntegrationIntegDefaultTestDeployAssert7B33A2E6"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
