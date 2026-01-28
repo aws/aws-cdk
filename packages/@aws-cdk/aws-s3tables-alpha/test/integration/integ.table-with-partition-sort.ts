@@ -33,40 +33,49 @@ class TableWithPartitionSortStack extends core.Stack {
         icebergSchema: {
           schemaFieldList: [
             {
-              name: 'id',
-              type: 'int',
-              required: true,
               id: 1,
-            },
-            {
-              name: 'timestamp',
-              type: 'timestamp',
+              name: 'day',
+              type: 'date',
               required: true,
-              id: 2,
             },
             {
-              name: 'data',
+              id: 2,
+              name: 'person_name',
               type: 'string',
+              required: true,
+            },
+            {
               id: 3,
+              name: 'classes_taken',
+              type: 'int',
+              required: false,
             },
           ],
         },
+        // Partition by day
         icebergPartitionSpec: {
           specId: 0,
           fields: [
             {
-              sourceId: 2,
-              transform: 'day',
-              name: 'timestamp_day',
+              sourceId: 1, // References 'day' field (id: 1)
+              transform: 'identity', // Keep as-is (it's already a date)
+              name: 'day_partition',
               fieldId: 1000,
             },
           ],
         },
+        // Sort by day ascending, then by person_name
         icebergSortOrder: {
           orderId: 1,
           fields: [
             {
-              sourceId: 1,
+              sourceId: 1, // Sort by 'day' first
+              transform: 'identity',
+              direction: 'asc',
+              nullOrder: 'nulls-last',
+            },
+            {
+              sourceId: 2, // Then by 'person_name'
               transform: 'identity',
               direction: 'asc',
               nullOrder: 'nulls-first',
@@ -75,7 +84,7 @@ class TableWithPartitionSortStack extends core.Stack {
         },
         tableProperties: {
           'write.format.default': 'parquet',
-          'write.parquet.compression-codec': 'snappy',
+          'write.parquet.compression-codec': 'zstd',
         },
       },
       removalPolicy: core.RemovalPolicy.DESTROY,
@@ -103,6 +112,17 @@ listTables.expect(ExpectedResult.objectLike({
       name: 'partition_sort_table',
     },
   ],
+}));
+
+// Assert table metadata location exists and contains partition spec, sort order
+const getMetadataLocation = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'GetTableMetadataLocationCommand', {
+  tableBucketARN: partitionSortTest.tableBucket.tableBucketArn,
+  namespace: partitionSortTest.namespace.namespaceName,
+  name: 'partition_sort_table',
+});
+
+getMetadataLocation.expect(ExpectedResult.objectLike({
+  metadataLocation: ExpectedResult.stringLikeRegexp('s3://.*'),
 }));
 
 app.synth();
