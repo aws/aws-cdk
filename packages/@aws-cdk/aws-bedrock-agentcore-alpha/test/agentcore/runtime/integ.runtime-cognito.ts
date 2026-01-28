@@ -27,12 +27,25 @@ const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, 'testArtifact'),
 );
 
+const allowedScopes = ['read', 'write'];
+const allowedAudience = ['audience1'];
+const customClaims = [
+  agentcore.CustomClaim.withStringValue('department', 'engineering'),
+  agentcore.CustomClaim.withStringArrayValue('roles', ['admin', 'user'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+];
+
 // Create a single runtime (similar to the working strands example)
 const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
   runtimeName: 'integ_test_runtime_cognito',
   agentRuntimeArtifact: runtimeArtifact,
   networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
-  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(userPool, [userPoolClient, anotherUserPoolClient]),
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
+    userPool,
+    [userPoolClient, anotherUserPoolClient],
+    allowedAudience,
+    allowedScopes,
+    customClaims,
+  ),
 });
 
 // Output runtime and endpoint information for verification

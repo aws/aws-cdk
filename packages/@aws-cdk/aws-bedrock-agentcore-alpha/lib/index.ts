@@ -14,6 +14,7 @@ export * from './runtime/perms';
 export * from './runtime/types';
 export * from './runtime/runtime-base';
 export * from './runtime/runtime-artifact';
+export * from './runtime/inbound-auth/custom-claim';
 export * from './runtime/inbound-auth/runtime-authorizer-configuration';
 export * from './runtime/runtime-endpoint-base';
 export * from './runtime/runtime-endpoint';
