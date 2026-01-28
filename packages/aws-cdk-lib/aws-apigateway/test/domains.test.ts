@@ -72,13 +72,14 @@ describe('domains', () => {
     new apigw.DomainName(stack, 'my-domain', {
       domainName: 'old.example.com',
       certificate: cert,
-      securityPolicy: apigw.SecurityPolicy.TLS_1_0,
+      securityPolicy: apigw.SecurityPolicy.TLS_1_2,
     });
 
     new apigw.DomainName(stack, 'your-domain', {
       domainName: 'new.example.com',
       certificate: cert,
-      securityPolicy: apigw.SecurityPolicy.TLS_1_2,
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
     });
 
     new apigw.DomainName(stack, 'default-domain', {
@@ -91,14 +92,14 @@ describe('domains', () => {
       'DomainName': 'old.example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
-      'SecurityPolicy': 'TLS_1_0',
+      'SecurityPolicy': 'TLS_1_2',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'new.example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
-      'SecurityPolicy': 'TLS_1_2',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_1_3_2025_09',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
