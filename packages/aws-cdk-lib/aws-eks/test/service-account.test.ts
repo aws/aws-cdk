@@ -368,6 +368,9 @@ describe('service account', () => {
     Template.fromStack(stack).hasResource('AWS::IAM::Role', {
       DeletionPolicy: 'Retain',
     });
+    Template.fromStack(stack).hasResource('Custom::AWSCDKCfnJson', {
+      DeletionPolicy: 'Retain',
+    });
   });
 
   test('supports custom removal policy with POD_IDENTITY', () => {

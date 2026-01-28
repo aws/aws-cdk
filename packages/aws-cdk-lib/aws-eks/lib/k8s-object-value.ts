@@ -76,7 +76,7 @@ export class KubernetesObjectValue extends Construct {
   constructor(scope: Construct, id: string, props: KubernetesObjectValueProps) {
     super(scope, id);
 
-    const provider = KubectlProvider.getOrCreate(this, props.cluster, props.removalPolicy);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     this._resource = new CustomResource(this, 'Resource', {
       resourceType: KubernetesObjectValue.RESOURCE_TYPE,

@@ -1,7 +1,7 @@
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
+import { IResource, Resource, Annotations, withResolved, FeatureFlags, RemovalPolicy, RemovalPolicies } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -372,6 +372,20 @@ export interface NodegroupOptions {
    * @default false
    */
   readonly enableNodeAutoRepair?: boolean;
+
+  /**
+   * The removal policy applied to the managed node group resources.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -567,6 +581,10 @@ export class Nodegroup extends Resource implements INodegroup {
       if (this.cluster.albController) {
         Node.of(this.cluster.albController).addDependency(this);
       }
+    }
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
     }
   }
 

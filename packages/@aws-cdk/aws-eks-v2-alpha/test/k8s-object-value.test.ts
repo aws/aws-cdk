@@ -1,5 +1,8 @@
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as cdk from 'aws-cdk-lib/core';
 import { App, Stack, Duration } from 'aws-cdk-lib/core';
+import { testFixtureCluster } from './util';
 import * as eks from '../lib';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';
 
@@ -97,5 +100,25 @@ describe('k8s object value', () => {
     });
 
     expect(stack.resolve(attribute.value)).toEqual({ 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
+  });
+
+  test('applies removal policy to kubernetes object value and kubectl provider', () => {
+    const { stack, cluster } = testFixtureCluster();
+
+    new eks.KubernetesObjectValue(stack, 'ObjectValue', {
+      cluster,
+      objectType: 'service',
+      objectName: 'test-service',
+      jsonPath: '.spec.type',
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResource('Custom::AWSCDK-EKS-KubernetesObjectValue', {
+      DeletionPolicy: 'Retain',
+    });
+    template.hasResource('AWS::Lambda::Function', {
+      DeletionPolicy: 'Retain',
+    });
   });
 });

@@ -1693,4 +1693,18 @@ describe('isGpuInstanceType', () => {
       expect(isGpuInstanceType(instanceType)).toBe(true);
     });
   });
+
+  test('applies removal policy', () => {
+    const { stack } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::EKS::Nodegroup', {
+      DeletionPolicy: 'Retain',
+    });
+  });
 });

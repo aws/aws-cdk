@@ -1,5 +1,5 @@
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
-import { Resource, IResource, Aws, Lazy } from 'aws-cdk-lib/core';
+import { Resource, IResource, Aws, Lazy, RemovalPolicy } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -286,6 +286,19 @@ export interface AccessEntryProps {
    * The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
    */
   readonly principal: string;
+  /**
+   * The removal policy applied to the access entry.
+   *
+   * The removal policy controls what happens to the resources if they stop being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -344,6 +357,10 @@ export class AccessEntry extends Resource implements IAccessEntry {
         })),
       }),
     });
+
+    if (props.removalPolicy) {
+      this.resource.applyRemovalPolicy(props.removalPolicy);
+    }
   }
 
   @memoizedGetter
