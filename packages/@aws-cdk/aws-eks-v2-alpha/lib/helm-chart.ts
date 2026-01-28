@@ -201,7 +201,6 @@ export class HelmChart extends Construct {
 
     if (props.removalPolicy) {
       RemovalPolicies.of(this).apply(props.removalPolicy);
-      RemovalPolicies.of(provider).apply(props.removalPolicy);
     }
   }
 }
