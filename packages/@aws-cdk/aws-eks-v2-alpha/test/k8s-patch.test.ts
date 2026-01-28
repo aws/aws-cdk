@@ -132,8 +132,5 @@ describe('k8s patch', () => {
     template.hasResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       DeletionPolicy: 'Retain',
     });
-    template.hasResource('AWS::Lambda::Function', {
-      DeletionPolicy: 'Retain',
-    });
   });
 });

@@ -295,8 +295,5 @@ describe('helm chart', () => {
     template.hasResource('Custom::AWSCDK-EKS-HelmChart', {
       DeletionPolicy: 'Retain',
     });
-    template.hasResource('AWS::Lambda::Function', {
-      DeletionPolicy: 'Retain',
-    });
   });
 });

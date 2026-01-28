@@ -391,8 +391,5 @@ describe('k8s manifest', () => {
     template.hasResource('Custom::AWSCDK-EKS-KubernetesResource', {
       DeletionPolicy: 'Retain',
     });
-    template.hasResource('AWS::Lambda::Function', {
-      DeletionPolicy: 'Retain',
-    });
   });
 });

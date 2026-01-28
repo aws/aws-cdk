@@ -2962,9 +2962,12 @@ describe('cluster', () => {
       template.hasResource('AWS::Lambda::Function', {
         DeletionPolicy: 'Retain',
       });
+      template.hasResource('AWS::IAM::Role', {
+        DeletionPolicy: 'Retain',
+      });
     });
 
-    test('applies removal policy to OIDC provider and its children', () => {
+    test('applies removal policy to OIDC provider', () => {
       const { stack } = testFixture();
       const cluster = new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,

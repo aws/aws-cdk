@@ -1905,7 +1905,7 @@ export class Cluster extends ClusterBase {
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
 
-    this._kubectlResourceProvider = this.defineKubectlProvider();
+    this._kubectlResourceProvider = this.defineKubectlProvider(props.removalPolicy);
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
@@ -2269,7 +2269,7 @@ export class Cluster extends ClusterBase {
     }
   }
 
-  private defineKubectlProvider() {
+  private defineKubectlProvider(removalPolicy?: RemovalPolicy) {
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
 
     // since we can't have the provider connect to multiple networks, and we
@@ -2279,7 +2279,7 @@ export class Cluster extends ClusterBase {
       throw new ValidationError('Only a single EKS cluster can be defined within a CloudFormation stack', this);
     }
 
-    return new KubectlProvider(this.stack, uid, { cluster: this });
+    return new KubectlProvider(this.stack, uid, { cluster: this, removalPolicy });
   }
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
