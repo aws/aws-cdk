@@ -39,7 +39,7 @@ export enum McpTargetType {
  * Represents a target that hosts tools for the gateway.
  * Targets can be Lambda functions, OpenAPI schemas, or Smithy models.
  */
-export interface IGatewayTarget extends IResource {
+export interface IGatewayTarget extends IResource, IGatewayTargetRef {
   /**
    * The ARN of the gateway target resource
    * @attribute
@@ -139,7 +139,7 @@ export interface IMcpGatewayTarget extends IGatewayTarget {
  * Provides common functionality for all gateway target types including
  * permission management and property definitions.
  */
-export abstract class GatewayTargetBase extends Resource implements IGatewayTarget, IGatewayTargetRef {
+export abstract class GatewayTargetBase extends Resource implements IGatewayTarget {
   public abstract readonly targetArn: string;
   public abstract readonly targetId: string;
   public abstract readonly name: string;

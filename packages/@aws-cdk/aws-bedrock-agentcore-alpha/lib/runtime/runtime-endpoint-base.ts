@@ -22,7 +22,7 @@ import { Construct } from 'constructs';
 /**
  * Interface for Runtime Endpoint resources
  */
-export interface IRuntimeEndpoint extends IResource {
+export interface IRuntimeEndpoint extends IResource, IRuntimeEndpointRef {
   /**
    * The ARN of the runtime endpoint resource
    * @attribute
@@ -78,7 +78,7 @@ export interface IRuntimeEndpoint extends IResource {
 /**
  * Base class for Runtime Endpoint
  */
-export abstract class RuntimeEndpointBase extends Resource implements IRuntimeEndpoint, IRuntimeEndpointRef {
+export abstract class RuntimeEndpointBase extends Resource implements IRuntimeEndpoint {
   public abstract readonly agentRuntimeEndpointArn: string;
   public abstract readonly endpointName: string;
   public abstract readonly agentRuntimeArn: string;

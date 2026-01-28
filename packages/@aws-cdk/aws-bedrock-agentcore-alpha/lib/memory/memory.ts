@@ -75,7 +75,7 @@ const MEMORY_EXPIRATION_DAYS_MAX = 365;
 /**
  * Interface for Memory resources
  */
-export interface IMemory extends IResource, iam.IGrantable {
+export interface IMemory extends IResource, iam.IGrantable, IMemoryRef {
   /**
    * The ARN of the memory resource
    * @attribute
@@ -187,7 +187,7 @@ export interface IMemory extends IResource, iam.IGrantable {
  * Abstract base class for a Memory.
  * Contains methods and attributes valid for Memories either created with CDK or imported.
  */
-export abstract class MemoryBase extends Resource implements IMemory, IMemoryRef {
+export abstract class MemoryBase extends Resource implements IMemory {
   public abstract readonly memoryArn: string;
   public abstract readonly memoryId: string;
   public abstract readonly status?: string;

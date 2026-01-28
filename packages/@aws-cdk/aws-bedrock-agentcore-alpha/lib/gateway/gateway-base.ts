@@ -30,7 +30,7 @@ export enum GatewayExceptionLevel {
 /**
  * Interface for Gateway resources
  */
-export interface IGateway extends IResource {
+export interface IGateway extends IResource, IGatewayRef {
   /**
    * The ARN of the gateway resource
    * @attribute
@@ -227,7 +227,7 @@ export interface IGateway extends IResource {
  *                                Base Class
  *****************************************************************************/
 
-export abstract class GatewayBase extends Resource implements IGateway, IGatewayRef {
+export abstract class GatewayBase extends Resource implements IGateway {
   public abstract readonly gatewayArn: string;
   public abstract readonly gatewayId: string;
   public abstract readonly name: string;

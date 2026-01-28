@@ -33,7 +33,7 @@ import { ValidationError } from './validation-helpers';
 /**
  * Interface for Agent Runtime resources
  */
-export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable, IRuntimeRef {
   /**
    * The ARN of the agent runtime resource
    * - Format `arn:${Partition}:bedrock-agentcore:${Region}:${Account}:runtime/${RuntimeId}`
@@ -190,7 +190,7 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.ICo
 /**
  * Base class for Agent Runtime
  */
-export abstract class RuntimeBase extends Resource implements IBedrockAgentRuntime, IRuntimeRef {
+export abstract class RuntimeBase extends Resource implements IBedrockAgentRuntime {
   // Abstract properties
   public abstract readonly agentRuntimeArn: string;
   public abstract readonly agentRuntimeId: string;

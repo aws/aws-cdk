@@ -84,7 +84,7 @@ export enum BrowserSigning {
 /**
  * Interface for Browser resources
  */
-export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnectable, IBrowserCustomRef {
   /**
    * The ARN of the browser resource
    * @attribute
@@ -204,7 +204,7 @@ export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnecta
  * Abstract base class for a Browser.
  * Contains methods and attributes valid for Browsers either created with CDK or imported.
  */
-export abstract class BrowserCustomBase extends Resource implements IBrowserCustom, IBrowserCustomRef {
+export abstract class BrowserCustomBase extends Resource implements IBrowserCustom {
   public abstract readonly browserArn: string;
   public abstract readonly browserId: string;
   public abstract readonly lastUpdatedAt?: string;

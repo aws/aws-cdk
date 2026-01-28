@@ -61,7 +61,7 @@ const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
 /**
  * Interface for CodeInterpreterCustom resources
  */
-export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable, ICodeInterpreterCustomRef {
   /**
    * The ARN of the code interpreter resource
    * @attribute
@@ -168,7 +168,7 @@ export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.I
  * Abstract base class for a Code Interpreter.
  * Contains methods and attributes valid for Code Interpreters either created with CDK or imported.
  */
-export abstract class CodeInterpreterCustomBase extends Resource implements ICodeInterpreterCustom, ICodeInterpreterCustomRef {
+export abstract class CodeInterpreterCustomBase extends Resource implements ICodeInterpreterCustom {
   public abstract readonly codeInterpreterArn: string;
   public abstract readonly codeInterpreterId: string;
   public abstract readonly status?: string;
