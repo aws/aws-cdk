@@ -28,6 +28,7 @@ Pipe targets are the end point of an EventBridge Pipe. The following targets are
 * `targets.ApiDestinationTarget`: [Send event source to an EventBridge API destination](#amazon-eventbridge-api-destination)
 * `targets.ApiGatewayTarget`: [Send event source to an API Gateway REST API](#amazon-api-gateway-rest-api)
 * `targets.CloudWatchLogsTarget`: [Send event source to a CloudWatch Logs log group](#amazon-cloudwatch-logs-log-group)
+* `targets.EcsTaskTarget`: [Start an ECS task](#amazon-ecs-task)
 * `targets.EventBridgeTarget`: [Send event source to an EventBridge event bus](#amazon-eventbridge-event-bus)
 * `targets.FirehoseTarget`: [Send event source to an Amazon Data Firehose delivery stream](#amazon-data-firehose-delivery-stream)
 * `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
@@ -145,6 +146,73 @@ const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup, {
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
     target: logGroupTarget,
+});
+```
+
+### Amazon ECS Task
+
+An ECS task can be used as a target for a pipe.
+The ECS task will be started with the (enriched/filtered) source payload.
+
+All Amazon ECS `runTask` parameters are configured explicitly through `EcsTaskTarget`. As with all pipe parameters, these parameters can be dynamic when using a JSON path to your incoming event payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const ecsTarget = new targets.EcsTaskTarget(cluster, {
+  taskDefinition,
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SqsSource(sourceQueue),
+  target: ecsTarget,
+});
+```
+
+You can specify the launch type, subnets, and security groups for the task:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const securityGroup: ec2.ISecurityGroup;
+
+const ecsTarget = new targets.EcsTaskTarget(cluster, {
+  taskDefinition,
+  compute: targets.EcsTaskTargetCompute.ec2LaunchType(),
+  securityGroups: [securityGroup],
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SqsSource(sourceQueue),
+  target: ecsTarget,
+});
+```
+
+You can also override container settings. This example uses the AWS CLI container image and passes the message body as a command argument:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const ecsTarget = new targets.EcsTaskTarget(cluster, {
+  taskDefinition,
+  containerOverrides: [
+    {
+      containerName: 'myContainer',
+      memory: cdk.Size.gibibytes(1),
+      command: ['sns', 'publish', '--topic-arn', 'arn:aws:sns:us-east-1:123456789012:my-topic', '--message', '$.body'],
+    },
+  ],
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SqsSource(sourceQueue),
+  target: ecsTarget,
 });
 ```
 
