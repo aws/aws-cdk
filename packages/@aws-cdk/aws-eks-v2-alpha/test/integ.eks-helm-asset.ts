@@ -92,7 +92,7 @@ class EksClusterStack extends Stack {
     // adding the dependency ensures that the namespace is created before the service account
     sa.node.addDependency(rdsChart);
 
-    sa.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess'));
+    sa.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess'));
 
     this.cluster.addHelmChart('test-atomic-installation', {
       chart: 'ec2-chart',
@@ -110,7 +110,7 @@ class EksClusterStack extends Stack {
           create: false,
           annotations: {
             // implicit dependency on the service account
-            'eks.amazonaws.com/role-arn': sa.role.roleArn,
+            'eks.amazonaws.com/role-arn': sa.role?.roleArn,
           },
         },
       },

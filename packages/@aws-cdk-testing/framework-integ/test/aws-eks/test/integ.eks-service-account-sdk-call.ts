@@ -29,6 +29,7 @@ const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docke
 });
 
 // just need one nat gateway to simplify the test
+// restrictDefaultSecurityGroup: false allows the pod to communicate with the S3 endpoint
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -39,6 +40,7 @@ const cluster = new eks.Cluster(stack, 'Cluster', {
 const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
 
 const serviceAccount = cluster.addServiceAccount('my-service-account');
+// Create a cdk8s reference to the CDK-managed service account for use in Kubernetes manifests
 const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(stack, 'kplus-sa', serviceAccount.serviceAccountName);
 new kplus.Deployment(chart, 'Deployment', {
   containers: [{
@@ -47,6 +49,7 @@ new kplus.Deployment(chart, 'Deployment', {
       BUCKET_NAME: kplus.EnvValue.fromValue(bucketName),
       REGION: kplus.EnvValue.fromValue(stack.region),
     },
+    // Run as non-root user for security best practices in the test pod
     securityContext: {
       user: 1000,
     },
@@ -57,12 +60,33 @@ new kplus.Deployment(chart, 'Deployment', {
 
 cluster.addCdk8sChart('sdk-call', chart).node.addDependency(serviceAccount);
 
-serviceAccount.role.addToPrincipalPolicy(
+serviceAccount.role!.addToPrincipalPolicy(
   new iam.PolicyStatement({
     actions: ['s3:CreateBucket'],
     resources: [`arn:aws:s3:::${bucketName}`],
   }),
 );
+
+// Test ServiceAccount with IdentityType.NONE
+const noAuthServiceAccount = cluster.addServiceAccount('no-auth-service-account', {
+  identityType: eks.IdentityType.NONE,
+});
+
+// Verify that IdentityType.NONE does not create an IAM role
+if (noAuthServiceAccount.role !== undefined) {
+  throw new Error('Expected noAuthServiceAccount.role to be undefined for IdentityType.NONE');
+}
+
+// Verify that addToPrincipalPolicy has no effect for IdentityType.NONE
+const result = noAuthServiceAccount.addToPrincipalPolicy(
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: ['*'],
+  }),
+);
+if (result.statementAdded !== false) {
+  throw new Error('Expected addToPrincipalPolicy to return statementAdded: false for IdentityType.NONE');
+}
 
 // this custom resource will check that the bucket exists
 // the bucket will be deleted when the custom resource is deleted

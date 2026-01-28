@@ -327,4 +327,145 @@ describe('service account', () => {
       t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 0);
     });
   });
+
+  describe('Service Account with eks.IdentityType.NONE', () => {
+    test('should not create IAM role or AWS resources', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // WHEN
+      const serviceAccount = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.NONE,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      // Verify that no ServiceAccount-specific IAM role is created
+      // The cluster itself creates roles, but ServiceAccount should not create additional ones
+      const roles = t.findResources('AWS::IAM::Role');
+      const serviceAccountRoles = Object.keys(roles).filter(key =>
+        key.includes('MyServiceAccount') && key.includes('Role'),
+      );
+      expect(serviceAccountRoles).toHaveLength(0);
+      // should not create OpenIdConnectProvider
+      t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
+      // should not have pod identity association
+      t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 0);
+      // should not have eks pod identity agent addon
+      t.resourcePropertiesCountIs('AWS::EKS::Addon', {
+        AddonName: 'eks-pod-identity-agent',
+      }, 0);
+
+      // ServiceAccount should have undefined role
+      expect(serviceAccount.role).toBeUndefined();
+
+      // Should create Kubernetes ServiceAccount manifest without role-arn annotation
+      const manifests = t.findResources(eks.KubernetesManifest.RESOURCE_TYPE);
+      const serviceAccountManifests = Object.values(manifests).filter((manifest: any) =>
+        manifest.Properties.Manifest &&
+        (typeof manifest.Properties.Manifest === 'string'
+          ? manifest.Properties.Manifest.includes('"kind":"ServiceAccount"')
+          : JSON.stringify(manifest.Properties.Manifest).includes('"kind":"ServiceAccount"')),
+      );
+      expect(serviceAccountManifests).toHaveLength(1);
+
+      // Verify the manifest doesn't contain role-arn annotation
+      const manifestContent = serviceAccountManifests[0] as any;
+      const manifestStr = typeof manifestContent.Properties.Manifest === 'string'
+        ? manifestContent.Properties.Manifest
+        : JSON.stringify(manifestContent.Properties.Manifest);
+      expect(manifestStr).not.toContain('eks.amazonaws.com/role-arn');
+    });
+
+    test('should handle addToPrincipalPolicy gracefully', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // WHEN
+      const serviceAccount = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.NONE,
+      });
+
+      // THEN
+      // Adding policy should return false since there's no role
+      const result = serviceAccount.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+      expect(result.statementAdded).toBe(false);
+    });
+
+    test('should work with custom annotations and labels', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.NONE,
+        annotations: {
+          'custom.annotation/key': 'custom-value',
+        },
+        labels: {
+          'custom.label/key': 'custom-value',
+        },
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      // Should include custom annotations and labels but not role-arn
+      const manifests = t.findResources(eks.KubernetesManifest.RESOURCE_TYPE);
+      const serviceAccountManifests = Object.values(manifests).filter((manifest: any) =>
+        manifest.Properties.Manifest &&
+        (typeof manifest.Properties.Manifest === 'string'
+          ? manifest.Properties.Manifest.includes('"kind":"ServiceAccount"')
+          : JSON.stringify(manifest.Properties.Manifest).includes('"kind":"ServiceAccount"')),
+      );
+      expect(serviceAccountManifests).toHaveLength(1);
+
+      const manifestContent = serviceAccountManifests[0] as any;
+      const manifestStr = typeof manifestContent.Properties.Manifest === 'string'
+        ? manifestContent.Properties.Manifest
+        : JSON.stringify(manifestContent.Properties.Manifest);
+
+      // Should contain custom annotations and labels
+      expect(manifestStr).toContain('custom.annotation/key":"custom-value');
+      expect(manifestStr).toContain('custom.label/key":"custom-value');
+      // Should not contain role-arn annotation
+      expect(manifestStr).not.toContain('eks.amazonaws.com/role-arn');
+    });
+
+    test('should work with Fargate cluster', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const fargateCluster = new eks.FargateCluster(stack, 'FargateCluster', {
+        version: eks.KubernetesVersion.V1_25,
+        kubectlLayer: new KubectlV31Layer(stack, 'FargateKubectlLayer'),
+      });
+
+      // WHEN & THEN
+      // Should not throw error when using NONE identity type with Fargate
+      expect(() => fargateCluster.addServiceAccount('MyServiceAccount', {
+        identityType: eks.IdentityType.NONE,
+      })).not.toThrow();
+    });
+  });
 });
