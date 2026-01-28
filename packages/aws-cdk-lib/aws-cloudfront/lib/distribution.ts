@@ -295,6 +295,31 @@ export interface DistributionProps {
    * @default false
    */
   readonly publishAdditionalMetrics?: boolean;
+
+  /**
+   * Is the distribution being created a regular distribution or a multi-tenant distribution.
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront-readme.html#cloudfront-saas-manager-resources
+   *
+   * @default DIRECT
+   */
+  readonly connectionMode?: ConnectionMode;
+
+  /**
+   * Configuration for a distribution tenant.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-cloudfront-distribution-tenantconfig.html
+   *
+   * @default - No special tenant configurations (undefined).
+   */
+  readonly tenantConfig?: TenantConfigProps;
+}
+
+/**
+ * Config properties for tenants associated with the distribution
+ */
+export interface TenantConfigProps extends CfnDistribution.TenantConfigProperty {
+
 }
 
 /**
@@ -372,6 +397,8 @@ export class Distribution extends Resource implements IDistribution {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.validateMultiTenantConfig(props);
+
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
@@ -421,13 +448,15 @@ export class Distribution extends Resource implements IDistribution {
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: this.httpVersion,
-        ipv6Enabled: props.enableIpv6 ?? true,
+        ipv6Enabled: props.enableIpv6 ?? (props.connectionMode !== ConnectionMode.TENANT_ONLY ? true : undefined),
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
         webAclId: Lazy.string({ produce: () => this.webAclId }),
+        connectionMode: props.connectionMode,
+        tenantConfig: props.tenantConfig ?? undefined,
       },
     });
 
@@ -884,6 +913,28 @@ export class Distribution extends Resource implements IDistribution {
       throw new ValidationError(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
     }
   }
+
+  private validateMultiTenantConfig(props: DistributionProps) {
+    if (props.connectionMode !== ConnectionMode.TENANT_ONLY) {
+      if (props.tenantConfig) {
+        throw new ValidationError('tenantConfig is not supported for direct distributions', this);
+      }
+    } else {
+      const validations = [
+        { condition: props.domainNames, message: 'domainNames may not be configured for multi-tenant distributions' },
+        { condition: props.enableIpv6, message: 'enableIpv6 field is not supported for multi-tenant distributions, please use a connection group to configure IPV6 options' },
+        { condition: props.priceClass, message: 'priceClass may not be configured for multi-tenant distributions' },
+        { condition: props.sslSupportMethod && props.sslSupportMethod == SSLMethod.VIP, message: 'invalid SSL Method' },
+        { condition: props.defaultBehavior.smoothStreaming, message: 'smoothStreaming not supported by multi-tenant distributions' },
+      ];
+
+      validations.forEach(({ condition, message }) => {
+        if (condition) {
+          throw new ValidationError(message, this);
+        }
+      });
+    }
+  }
 }
 
 /** Maximum HTTP version to support */
@@ -909,6 +960,16 @@ export enum PriceClass {
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
   PRICE_CLASS_ALL = 'PriceClass_All',
+}
+
+/**
+ * The distribution type being created
+ */
+export enum ConnectionMode {
+  /** For creating a multi-tenant distribution */
+  TENANT_ONLY = 'tenant-only',
+  /** For creating a regular direct distribution */
+  DIRECT = 'direct',
 }
 
 /**

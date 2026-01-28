@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "integ-mt-distribution-with-webacl/DefaultTest": {
+      "stacks": [
+        "integ-distribution-tenant-mode-validation"
+      ],
+      "assertionStack": "integ-mt-distribution-with-webacl/DefaultTest/DeployAssert",
+      "assertionStackName": "integmtdistributionwithwebaclDefaultTestDeployAssert7B348585"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
