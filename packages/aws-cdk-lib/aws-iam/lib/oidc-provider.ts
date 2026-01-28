@@ -179,6 +179,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
         // thus updating the thumbprint if necessary.
         CodeHash: provider.codeHash,
       },
+      removalPolicy: props.removalPolicy,
     });
   }
 
