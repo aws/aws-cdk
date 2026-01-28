@@ -2,7 +2,10 @@ import { Template } from '../../assertions';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { ENABLE_PARTITION_LITERALS } from '../../cx-api';
 import * as sns from '../lib';
 import { TopicGrants } from '../lib/sns-grants.generated';
 
@@ -972,6 +975,763 @@ describe('Topic', () => {
           fifoThroughputScope: sns.FifoThroughputScope.MESSAGE_GROUP,
         }),
       ).toThrow('`fifoThroughputScope` can only be set for FIFO SNS topics.');
+    });
+
+    test('specify dataProtectionPolicy', () => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS, sns.DataIdentifier.CREDIT_CARD_NUMBER],
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Name': 'data-protection-policy-cdk',
+          'Description': 'cdk generated data protection policy',
+          'Version': '2021-06-01',
+        },
+      });
+
+      // Verify the policy structure exists
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      expect(topicResource.Properties.DataProtectionPolicy).toBeDefined();
+      expect(topicResource.Properties.DataProtectionPolicy.Statement).toHaveLength(2);
+      expect(topicResource.Properties.DataProtectionPolicy.Statement[0].Sid).toBe('audit-statement-cdk');
+      expect(topicResource.Properties.DataProtectionPolicy.Statement[1].Sid).toBe('redact-statement-cdk');
+      expect(topicResource.Properties.DataProtectionPolicy.Statement[0].Principal).toEqual(['*']);
+      expect(topicResource.Properties.DataProtectionPolicy.Statement[0].Operation.Audit.SampleRate).toBe(99);
+    });
+
+    test.each([
+      [
+        'default name and description',
+        {},
+        'data-protection-policy-cdk',
+        'cdk generated data protection policy',
+      ],
+      [
+        'custom name only',
+        { name: 'MyCustomPolicy' },
+        'MyCustomPolicy',
+        'cdk generated data protection policy',
+      ],
+      [
+        'custom description only',
+        { description: 'My custom description' },
+        'data-protection-policy-cdk',
+        'My custom description',
+      ],
+      [
+        'custom name and description',
+        { name: 'MyCustomPolicy', description: 'My custom data protection policy' },
+        'MyCustomPolicy',
+        'My custom data protection policy',
+      ],
+    ])('DataProtectionPolicy with %s', (_, props, expectedName, expectedDescription) => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+        ...props,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Name': expectedName,
+          'Description': expectedDescription,
+          'Version': '2021-06-01',
+        },
+      });
+    });
+
+    test('dataProtectionPolicy with custom data identifier', () => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [
+          sns.DataIdentifier.EMAIL_ADDRESS,
+          new sns.CustomDataIdentifier('MyCustomId', '[0-9]{3}-[0-9]{2}-[0-9]{4}'),
+        ],
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Configuration': {
+            'CustomDataIdentifier': [
+              {
+                'Name': 'MyCustomId',
+                'Regex': '[0-9]{3}-[0-9]{2}-[0-9]{4}',
+              },
+            ],
+          },
+        },
+      });
+
+      // Verify the custom identifier is included
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const statements = topicResource.Properties.DataProtectionPolicy.Statement;
+
+      expect(statements[0].DataIdentifier).toContain('MyCustomId');
+    });
+  });
+
+  describe('DataProtectionPolicy', () => {
+    test('throw error when identifiers is empty', () => {
+      expect(
+        () => new sns.DataProtectionPolicy({
+          identifiers: [],
+        }),
+      ).toThrow('DataIdentifier cannot be empty');
+    });
+
+    test.each([
+      ['DataIdentifier', sns.DataIdentifier.EMAIL_ADDRESS, 'EmailAddress'],
+      ['DataIdentifier with different type', sns.DataIdentifier.CREDIT_CARD_NUMBER, 'CreditCardNumber'],
+      ['DataIdentifier with factory method', sns.DataIdentifier.socialSecurityNumber('US'), 'Ssn-US'],
+    ])('%s toString method', (_, identifier, expected) => {
+      expect(identifier.toString()).toBe(expected);
+    });
+
+    test.each([
+      ['simple pattern', 'MyCustomId', '[0-9]{3}-[0-9]{2}-[0-9]{4}', 'MyCustomId: [0-9]{3}-[0-9]{2}-[0-9]{4}'],
+      ['email pattern', 'EmailPattern', '[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}', 'EmailPattern: [A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}'],
+      ['special chars', 'Special-Chars_123', 'ACCT-[A-Z]{3}-[0-9]{6}', 'Special-Chars_123: ACCT-[A-Z]{3}-[0-9]{6}'],
+    ])('CustomDataIdentifier toString - %s', (_, name, regex, expected) => {
+      const customId = new sns.CustomDataIdentifier(name, regex);
+      expect(customId.toString()).toBe(expected);
+    });
+
+    test('DataProtectionPolicy with only custom identifiers', () => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [
+          new sns.CustomDataIdentifier('SSN', '[0-9]{3}-[0-9]{2}-[0-9]{4}'),
+          new sns.CustomDataIdentifier('CustomId', 'CUSTOM-[A-Z]{3}-[0-9]{4}'),
+        ],
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Configuration': {
+            'CustomDataIdentifier': [
+              {
+                'Name': 'SSN',
+                'Regex': '[0-9]{3}-[0-9]{2}-[0-9]{4}',
+              },
+              {
+                'Name': 'CustomId',
+                'Regex': 'CUSTOM-[A-Z]{3}-[0-9]{4}',
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test.each([
+      [
+        'managed identifiers only',
+        [sns.DataIdentifier.EMAIL_ADDRESS, sns.DataIdentifier.CREDIT_CARD_NUMBER],
+        ['arn:aws:dataprotection::aws:data-identifier/EmailAddress', 'arn:aws:dataprotection::aws:data-identifier/CreditCardNumber'],
+        undefined,
+      ],
+      [
+        'custom identifiers only',
+        [new sns.CustomDataIdentifier('SSN', '[0-9]{3}-[0-9]{2}-[0-9]{4}')],
+        ['SSN'],
+        [{ 'Name': 'SSN', 'Regex': '[0-9]{3}-[0-9]{2}-[0-9]{4}' }],
+      ],
+      [
+        'mixed identifiers',
+        [
+          sns.DataIdentifier.EMAIL_ADDRESS,
+          new sns.CustomDataIdentifier('CustomId', 'CUSTOM-[A-Z]{3}'),
+        ],
+        ['arn:aws:dataprotection::aws:data-identifier/EmailAddress', 'CustomId'],
+        [{ 'Name': 'CustomId', 'Regex': 'CUSTOM-[A-Z]{3}' }],
+      ],
+      [
+        'multiple factory method identifiers',
+        [sns.DataIdentifier.socialSecurityNumber('US'), sns.DataIdentifier.phoneNumber('US'), sns.DataIdentifier.driversLicense('US')],
+        ['arn:aws:dataprotection::aws:data-identifier/Ssn-US', 'arn:aws:dataprotection::aws:data-identifier/PhoneNumber-US', 'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US'],
+        undefined,
+      ],
+    ])('DataProtectionPolicy with %s', (_, identifiers, expectedDataIdentifiers, expectedCustomConfig) => {
+      // Use a stack with a known region and enable partition literals feature flag
+      const app = new cdk.App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
+      const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1', account: '123456789012' } });
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify all identifiers are included in the audit statement
+      expect(policy.Statement[0].DataIdentifier).toEqual(
+        expect.arrayContaining(expectedDataIdentifiers),
+      );
+
+      // Verify custom identifiers configuration if expected
+      if (expectedCustomConfig) {
+        expect(policy.Configuration.CustomDataIdentifier).toEqual(expectedCustomConfig);
+      } else {
+        // When no custom identifiers, it should be an empty array or undefined
+        expect(policy.Configuration?.CustomDataIdentifier || []).toEqual([]);
+      }
+    });
+
+    test.each([
+      ['empty name', '', 'regex'],
+      ['empty regex', 'name', ''],
+    ])('DataProtectionPolicy validates custom identifier - %s', (_, name, regex) => {
+      expect(() => new sns.CustomDataIdentifier(name, regex)).toThrow();
+    });
+
+    test('DataProtectionPolicy with maximum identifiers', () => {
+      const stack = new cdk.Stack();
+      const identifiers = [
+        sns.DataIdentifier.EMAIL_ADDRESS,
+        sns.DataIdentifier.CREDIT_CARD_NUMBER,
+        sns.DataIdentifier.socialSecurityNumber('US'),
+        sns.DataIdentifier.phoneNumber('US'),
+        sns.DataIdentifier.ADDRESS,
+        sns.DataIdentifier.AWS_SECRET_KEY,
+        sns.DataIdentifier.bankAccountNumber('US'),
+        sns.DataIdentifier.driversLicense('US'),
+        new sns.CustomDataIdentifier('Custom1', 'regex1'),
+        new sns.CustomDataIdentifier('Custom2', 'regex2'),
+      ];
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Configuration': {
+            'CustomDataIdentifier': [
+              { 'Name': 'Custom1', 'Regex': 'regex1' },
+              { 'Name': 'Custom2', 'Regex': 'regex2' },
+            ],
+          },
+        },
+      });
+    });
+
+    test('DataProtectionPolicy with special characters in custom identifier', () => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [
+          new sns.CustomDataIdentifier('Special-Chars_123', '[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}'),
+        ],
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Configuration': {
+            'CustomDataIdentifier': [
+              {
+                'Name': 'Special-Chars_123',
+                'Regex': '[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}',
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test('accepts IDataProtectionPolicy interface', () => {
+      const stack = new cdk.Stack();
+
+      // Test that we can pass any implementation of IDataProtectionPolicy
+      const customPolicy: sns.IDataProtectionPolicy = {
+        _bind: () => ({
+          name: 'custom-policy',
+          description: 'Custom implementation for testing',
+          version: '2021-06-01',
+          statement: [
+            {
+              Sid: 'audit-statement-cdk',
+              DataIdentifier: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
+              DataDirection: 'Inbound',
+              Principal: ['*'],
+              Operation: {
+                Audit: {
+                  SampleRate: 99,
+                  FindingsDestination: {},
+                },
+              },
+            },
+          ],
+          configuration: { CustomDataIdentifier: [] },
+        }),
+      };
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy: customPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Name': 'custom-policy',
+          'Description': 'Custom implementation for testing',
+          'Version': '2021-06-01',
+        },
+      });
+    });
+
+    test('DataProtectionPolicy static type check method', () => {
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+      });
+
+      expect(sns.DataProtectionPolicy.isDataProtectionPolicy(dataProtectionPolicy)).toBe(true);
+      expect(sns.DataProtectionPolicy.isDataProtectionPolicy({})).toBe(false);
+      expect(sns.DataProtectionPolicy.isDataProtectionPolicy(null)).toBe(false);
+      expect(sns.DataProtectionPolicy.isDataProtectionPolicy(undefined)).toBe(false);
+    });
+
+    test('DataProtectionPolicy generates correct CloudFormation structure', () => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        name: 'TestPolicy',
+        description: 'Test description',
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      expect(policy.Name).toBe('TestPolicy');
+      expect(policy.Description).toBe('Test description');
+      expect(policy.Version).toBe('2021-06-01');
+      expect(policy.Statement).toHaveLength(2);
+      expect(policy.Statement[0].Sid).toBe('audit-statement-cdk');
+      expect(policy.Statement[1].Sid).toBe('redact-statement-cdk');
+    });
+
+    test('DataProtectionPolicy works with imported topic', () => {
+      const stack = new cdk.Stack();
+      const importedTopic = sns.Topic.fromTopicArn(stack, 'ImportedTopic', 'arn:aws:sns:us-east-1:123456789012:my-topic');
+
+      // Should not throw when accessing properties of imported topic with data protection policy
+      expect(importedTopic.topicArn).toBe('arn:aws:sns:us-east-1:123456789012:my-topic');
+      expect(importedTopic.topicName).toBe('my-topic');
+    });
+
+    test.each([
+      ['standard topic', false, {}],
+      ['FIFO topic', true, { 'FifoTopic': true }],
+    ])('DataProtectionPolicy with %s', (_, fifo, expectedProps) => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        fifo,
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Name': 'data-protection-policy-cdk',
+        },
+        ...expectedProps,
+      });
+    });
+
+    test('DataProtectionPolicy with CloudWatch Logs audit destination', () => {
+      const stack = new cdk.Stack();
+      const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
+        logGroupName: '/aws/vendedlogs/audit-log-group',
+      });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+        logGroupAuditDestination: logGroup,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify CloudWatch Logs audit destination is configured
+      expect(policy.Statement[0].Operation.Audit.FindingsDestination.CloudWatchLogs).toEqual({
+        LogGroup: { Ref: 'AuditLogGroup6D13791A' },
+      });
+    });
+
+    test('DataProtectionPolicy with S3 audit destination', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'AuditBucket', {
+        bucketName: 'audit-bucket',
+      });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.CREDIT_CARD_NUMBER],
+        s3BucketAuditDestination: bucket,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify S3 audit destination is configured
+      expect(policy.Statement[0].Operation.Audit.FindingsDestination.S3).toEqual({
+        Bucket: { Ref: 'AuditBucketB01E0AE8' },
+      });
+    });
+
+    test('DataProtectionPolicy with Firehose audit destination', () => {
+      const stack = new cdk.Stack();
+      const deliveryStreamName = 'audit-delivery-stream';
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.socialSecurityNumber('US')],
+        deliveryStreamNameAuditDestination: deliveryStreamName,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify Firehose audit destination is configured
+      expect(policy.Statement[0].Operation.Audit.FindingsDestination.Firehose).toEqual({
+        DeliveryStream: deliveryStreamName,
+      });
+    });
+
+    test('DataProtectionPolicy with multiple audit destinations', () => {
+      const stack = new cdk.Stack();
+      const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
+        logGroupName: '/aws/vendedlogs/audit-log-group',
+      });
+      const bucket = new s3.Bucket(stack, 'AuditBucket', {
+        bucketName: 'audit-bucket',
+      });
+      const deliveryStreamName = 'audit-delivery-stream';
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS, sns.DataIdentifier.phoneNumber('US')],
+        logGroupAuditDestination: logGroup,
+        s3BucketAuditDestination: bucket,
+        deliveryStreamNameAuditDestination: deliveryStreamName,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify all audit destinations are configured
+      const findingsDestination = policy.Statement[0].Operation.Audit.FindingsDestination;
+      expect(findingsDestination.CloudWatchLogs).toEqual({
+        LogGroup: { Ref: 'AuditLogGroup6D13791A' },
+      });
+      expect(findingsDestination.S3).toEqual({
+        Bucket: { Ref: 'AuditBucketB01E0AE8' },
+      });
+      expect(findingsDestination.Firehose).toEqual({
+        DeliveryStream: deliveryStreamName,
+      });
+    });
+
+    test('DataProtectionPolicy with no audit destinations has empty FindingsDestination', () => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify FindingsDestination is empty when no destinations specified
+      expect(policy.Statement[0].Operation.Audit.FindingsDestination).toEqual({});
+    });
+
+    test('DataProtectionPolicy validates CloudWatch log group name prefix', () => {
+      const stack = new cdk.Stack();
+
+      // Create a log group with an invalid name (doesn't start with /aws/sns/)
+      const invalidLogGroup = new logs.LogGroup(stack, 'InvalidLogGroup', {
+        logGroupName: 'invalid-log-group-name',
+      });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+        logGroupAuditDestination: invalidLogGroup,
+      });
+
+      expect(() => {
+        new sns.Topic(stack, 'MyTopic', {
+          dataProtectionPolicy,
+        });
+      }).toThrow("CloudWatch log group for SNS data protection policy audit destination must start with '/aws/vendedlogs/', got: invalid-log-group-name");
+    });
+
+    test('CustomDataIdentifier validates input parameters', () => {
+      // Test empty name validation
+      expect(() => new sns.CustomDataIdentifier('', 'valid-regex')).toThrow('Custom data identifier name cannot be empty');
+
+      // Test whitespace-only name validation
+      expect(() => new sns.CustomDataIdentifier('   ', 'valid-regex')).toThrow('Custom data identifier name cannot be empty');
+
+      // Test empty regex validation
+      expect(() => new sns.CustomDataIdentifier('ValidName', '')).toThrow('Custom data identifier regex cannot be empty');
+
+      // Test whitespace-only regex validation
+      expect(() => new sns.CustomDataIdentifier('ValidName', '   ')).toThrow('Custom data identifier regex cannot be empty');
+    });
+
+    test('DataIdentifier factory methods validate country codes', () => {
+      // Test valid country codes
+      expect(sns.DataIdentifier.driversLicense('US').name).toBe('DriversLicense-US');
+      expect(sns.DataIdentifier.phoneNumber('GB').name).toBe('PhoneNumber-GB');
+      expect(sns.DataIdentifier.bankAccountNumber('DE').name).toBe('BankAccountNumber-DE');
+      expect(sns.DataIdentifier.socialSecurityNumber('US').name).toBe('Ssn-US');
+      expect(sns.DataIdentifier.taxId('FR').name).toBe('TaxId-FR');
+      expect(sns.DataIdentifier.nationalId('IT').name).toBe('NationalIdentificationNumber-IT');
+      expect(sns.DataIdentifier.passportNumber('CA').name).toBe('PassportNumber-CA');
+
+      // Test invalid country codes
+      expect(() => sns.DataIdentifier.driversLicense('XX')).toThrow('DriversLicense not supported for country: XX');
+      expect(() => sns.DataIdentifier.phoneNumber('XX')).toThrow('PhoneNumber not supported for country: XX');
+      expect(() => sns.DataIdentifier.bankAccountNumber('XX')).toThrow('BankAccountNumber not supported for country: XX');
+      expect(() => sns.DataIdentifier.socialSecurityNumber('XX')).toThrow('Social Security Number not supported for country: XX');
+      expect(() => sns.DataIdentifier.taxId('XX')).toThrow('TaxId not supported for country: XX');
+      expect(() => sns.DataIdentifier.nationalId('XX')).toThrow('NationalIdentificationNumber not supported for country: XX');
+      expect(() => sns.DataIdentifier.passportNumber('XX')).toThrow('PassportNumber not supported for country: XX');
+
+      // Test case insensitive
+      expect(sns.DataIdentifier.driversLicense('us').name).toBe('DriversLicense-US');
+      expect(sns.DataIdentifier.phoneNumber('gb').name).toBe('PhoneNumber-GB');
+    });
+
+    test('DataIdentifier managed method validates input', () => {
+      // Test valid managed identifiers
+      expect(sns.DataIdentifier.managed('NhsNumber-GB').name).toBe('NhsNumber-GB');
+      expect(sns.DataIdentifier.managed('ElectoralRollNumber-GB').name).toBe('ElectoralRollNumber-GB');
+
+      // Test empty identifier name
+      expect(() => sns.DataIdentifier.managed('')).toThrow('AWS managed data identifier name cannot be empty');
+      expect(() => sns.DataIdentifier.managed('   ')).toThrow('AWS managed data identifier name cannot be empty');
+
+      // Test whitespace trimming
+      expect(sns.DataIdentifier.managed('  NhsNumber-GB  ').name).toBe('NhsNumber-GB');
+    });
+
+    test('DataProtectionPolicy comprehensive integration test', () => {
+      // Use a stack with a known region and enable partition literals feature flag
+      const app = new cdk.App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
+      const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1', account: '123456789012' } });
+      const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
+        logGroupName: '/aws/vendedlogs/sns-audit',
+      });
+      const bucket = new s3.Bucket(stack, 'AuditBucket');
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        name: 'ComprehensiveTestPolicy',
+        description: 'Integration test with all features',
+        identifiers: [
+          // Managed identifiers
+          sns.DataIdentifier.EMAIL_ADDRESS,
+          sns.DataIdentifier.CREDIT_CARD_NUMBER,
+          sns.DataIdentifier.socialSecurityNumber('US'),
+          sns.DataIdentifier.phoneNumber('US'),
+          // Custom identifiers
+          new sns.CustomDataIdentifier('EmployeeId', 'EMP-[0-9]{6}'),
+          new sns.CustomDataIdentifier('ProjectCode', 'PROJ-[A-Z]{3}-[0-9]{4}'),
+        ],
+        logGroupAuditDestination: logGroup,
+        s3BucketAuditDestination: bucket,
+        deliveryStreamNameAuditDestination: 'comprehensive-audit-stream',
+      });
+
+      new sns.Topic(stack, 'ComprehensiveTopic', {
+        topicName: 'comprehensive-data-protection-topic',
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+
+      // Verify topic has all expected properties
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'TopicName': 'comprehensive-data-protection-topic',
+        'DataProtectionPolicy': {
+          'Name': 'ComprehensiveTestPolicy',
+          'Description': 'Integration test with all features',
+          'Version': '2021-06-01',
+        },
+      });
+
+      // Verify detailed policy structure
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Check identifiers include both managed and custom
+      const auditStatement = policy.Statement[0];
+      expect(auditStatement.DataIdentifier).toEqual(
+        expect.arrayContaining([
+          'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+          'arn:aws:dataprotection::aws:data-identifier/CreditCardNumber',
+          'arn:aws:dataprotection::aws:data-identifier/Ssn-US',
+          'arn:aws:dataprotection::aws:data-identifier/PhoneNumber-US',
+          'EmployeeId',
+          'ProjectCode',
+        ]),
+      );
+
+      // Check custom identifiers configuration
+      expect(policy.Configuration.CustomDataIdentifier).toEqual([
+        { Name: 'EmployeeId', Regex: 'EMP-[0-9]{6}' },
+        { Name: 'ProjectCode', Regex: 'PROJ-[A-Z]{3}-[0-9]{4}' },
+      ]);
+
+      // Check all audit destinations
+      const findingsDestination = auditStatement.Operation.Audit.FindingsDestination;
+      expect(findingsDestination.CloudWatchLogs.LogGroup).toEqual({ Ref: 'AuditLogGroup6D13791A' });
+      expect(findingsDestination.S3.Bucket).toEqual({ Ref: expect.stringMatching(/AuditBucket/) });
+      expect(findingsDestination.Firehose.DeliveryStream).toBe('comprehensive-audit-stream');
+    });
+
+    test('DataProtectionPolicy supports GovCloud partition', () => {
+      // Use a stack in GovCloud region with partition literals enabled
+      const app = new cdk.App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
+      const stack = new cdk.Stack(app, 'GovCloudStack', { env: { region: 'us-gov-west-1', account: '123456789012' } });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+      });
+
+      new sns.Topic(stack, 'GovCloudTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify the ARN uses the GovCloud partition
+      expect(policy.Statement[0].DataIdentifier).toContain(
+        'arn:aws-us-gov:dataprotection::aws:data-identifier/EmailAddress',
+      );
+    });
+
+    test('DataProtectionPolicy supports China partition', () => {
+      // Use a stack in China region with partition literals enabled
+      const app = new cdk.App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
+      const stack = new cdk.Stack(app, 'ChinaStack', { env: { region: 'cn-north-1', account: '123456789012' } });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
+      });
+
+      new sns.Topic(stack, 'ChinaTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify the ARN uses the China partition
+      expect(policy.Statement[0].DataIdentifier).toContain(
+        'arn:aws-cn:dataprotection::aws:data-identifier/EmailAddress',
+      );
+    });
+
+    test('CustomDataIdentifier rejects managed identifier names', () => {
+      // Test collision with static identifiers
+      expect(() => new sns.CustomDataIdentifier('EmailAddress', 'test')).toThrow(
+        "Custom data identifier name 'EmailAddress' conflicts with a managed data identifier",
+      );
+      expect(() => new sns.CustomDataIdentifier('CreditCardNumber', 'test')).toThrow(
+        "Custom data identifier name 'CreditCardNumber' conflicts with a managed data identifier",
+      );
+
+      // Test collision with regional identifier patterns
+      expect(() => new sns.CustomDataIdentifier('DriversLicense-US', 'test')).toThrow(
+        "Custom data identifier name 'DriversLicense-US' conflicts with a managed data identifier pattern",
+      );
+      expect(() => new sns.CustomDataIdentifier('Ssn-US', 'test')).toThrow(
+        "Custom data identifier name 'Ssn-US' conflicts with a managed data identifier pattern",
+      );
+
+      // Verify valid custom names are still allowed
+      expect(() => new sns.CustomDataIdentifier('MyCustomId', 'test')).not.toThrow();
+      expect(() => new sns.CustomDataIdentifier('EmployeeNumber', 'EMP-[0-9]+')).not.toThrow();
     });
   });
 });
