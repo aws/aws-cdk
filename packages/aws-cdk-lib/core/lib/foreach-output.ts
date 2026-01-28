@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Fn } from './cfn-fn';
 import { CfnForEachFragment } from './cfn-foreach-fragment';
+import { IResolvable } from './resolvable';
 import { Stack } from './stack';
 
 const FOR_EACH_OUTPUT_SYMBOL = Symbol.for('@aws-cdk/core.ForEachOutput');
@@ -27,7 +28,7 @@ export interface ForEachOutputProps {
   /**
    * Output value.
    */
-  readonly value: string;
+  readonly value: string | IResolvable;
 
   /**
    * Optional description.
