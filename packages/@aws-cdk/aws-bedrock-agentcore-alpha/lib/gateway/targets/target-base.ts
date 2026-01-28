@@ -1,4 +1,5 @@
 import { Resource, IResource } from 'aws-cdk-lib';
+import { IGatewayTargetRef, GatewayTargetReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IGateway } from '../gateway-base';
 import { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
@@ -38,7 +39,7 @@ export enum McpTargetType {
  * Represents a target that hosts tools for the gateway.
  * Targets can be Lambda functions, OpenAPI schemas, or Smithy models.
  */
-export interface IGatewayTarget extends IResource {
+export interface IGatewayTarget extends IResource, IGatewayTargetRef {
   /**
    * The ARN of the gateway target resource
    * @attribute
@@ -150,6 +151,16 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
   public abstract readonly createdAt?: string;
   public abstract readonly updatedAt?: string;
   public abstract readonly targetProtocolType: GatewayTargetProtocolType;
+
+  /**
+   * A reference to a GatewayTarget resource.
+   */
+  public get gatewayTargetRef(): GatewayTargetReference {
+    return {
+      gatewayIdentifier: this.gateway.gatewayRef.gatewayIdentifier,
+      targetId: this.targetId,
+    };
+  }
 
   /**
    * Grants IAM actions to the IAM Principal
