@@ -79,39 +79,17 @@ export interface ServiceAccountOptions {
    * @default IdentityType.IRSA
    */
   readonly identityType?: IdentityType;
-}
-export interface ServiceAccountOptions {
-  /**
-   * The name of the service account.
-   *
-   * The name of a ServiceAccount object must be a valid DNS subdomain name.
-   * https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-   * @default - If no name is given, it will use the id of the resource.
-   */
-  readonly name?: string;
 
   /**
-   * The namespace of the service account.
+   * Overwrite existing service account.
    *
-   * All namespace names must be valid RFC 1123 DNS labels.
-   * https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#namespaces-and-dns
-   * @default "default"
-   */
-  readonly namespace?: string;
-
-  /**
-   * Additional annotations of the service account.
+   * If this is set, we will use `kubectl apply` instead of `kubectl create`
+   * when the service account is created. Otherwise, if there is already a service account
+   * in the cluster with the same name, the operation will fail.
    *
-   * @default - no additional annotations
+   * @default false
    */
-  readonly annotations?: {[key:string]: string};
-
-  /**
-   * Additional labels of the service account.
-   *
-   * @default - no additional labels
-   */
-  readonly labels?: {[key:string]: string};
+  readonly overwriteServiceAccount?: boolean;
 }
 
 /**
@@ -226,6 +204,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     // and since this stack inherintely depends on the cluster stack, we will have a circular dependency.
     new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
       cluster,
+      overwrite: props.overwriteServiceAccount,
       manifest: [{
         apiVersion: 'v1',
         kind: 'ServiceAccount',

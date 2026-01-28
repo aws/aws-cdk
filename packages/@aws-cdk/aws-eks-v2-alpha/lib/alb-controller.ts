@@ -280,6 +280,17 @@ export interface AlbControllerOptions {
    * @default - no additional helm chart values
    */
   readonly additionalHelmChartValues?: {[key: string]: any};
+
+  /**
+   * Overwrite any existing ALB controller service account.
+   *
+   * If this is set, we will use `kubectl apply` instead of `kubectl create`
+   * when the ALB controller service account is created. Otherwise, if there is already a service account
+   * named 'aws-load-balancer-controller' in the kube-system namespace, the operation will fail.
+   *
+   * @default false
+   */
+  readonly overwriteServiceAccount?: boolean;
 }
 
 /**
@@ -326,6 +337,7 @@ export class AlbController extends Construct {
       namespace,
       name: 'aws-load-balancer-controller',
       cluster: props.cluster,
+      overwriteServiceAccount: props.overwriteServiceAccount,
     });
 
     if (props.version.custom && !props.policy) {
