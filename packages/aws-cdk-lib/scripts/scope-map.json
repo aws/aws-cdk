@@ -1250,6 +1250,13 @@
       }
     ]
   },
+  "aws-mwaaserverless": {
+    "scopes": [
+      {
+        "namespace": "AWS::MWAAServerless"
+      }
+    ]
+  },
   "aws-neptune": {
     "scopes": [
       {
