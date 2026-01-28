@@ -665,5 +665,67 @@ describe('capacity provider', () => {
         });
       }).toThrow('maxExecutionEnvironments must be between 0 and 15000, but was 15001');
     });
+
+    test('works with imported capacity provider by ARN', () => {
+      // GIVEN
+      const importedCapacityProvider = lambda.CapacityProvider.fromCapacityProviderArn(
+        stack,
+        'ImportedCapacityProvider',
+        'arn:aws:lambda:us-east-1:123456789012:capacity-provider:my-imported-cp',
+      );
+      const func = new lambda.Function(stack, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      });
+
+      // WHEN
+      importedCapacityProvider.addFunction(func);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        CapacityProviderConfig: {
+          LambdaManagedInstancesCapacityProviderConfig: {
+            CapacityProviderArn: 'arn:aws:lambda:us-east-1:123456789012:capacity-provider:my-imported-cp',
+          },
+        },
+      });
+    });
+
+    test('works with imported capacity provider by name', () => {
+      // GIVEN
+      const importedCapacityProvider = lambda.CapacityProvider.fromCapacityProviderName(
+        stack,
+        'ImportedCapacityProvider',
+        'my-imported-cp',
+      );
+      const func = new lambda.Function(stack, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      });
+
+      // WHEN
+      importedCapacityProvider.addFunction(func);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        CapacityProviderConfig: {
+          LambdaManagedInstancesCapacityProviderConfig: {
+            CapacityProviderArn: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':lambda:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':capacity-provider:my-imported-cp',
+              ]],
+            },
+          },
+        },
+      });
+    });
   });
 });
