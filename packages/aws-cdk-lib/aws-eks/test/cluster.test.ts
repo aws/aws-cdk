@@ -4052,7 +4052,7 @@ describe('cluster', () => {
           remoteNetworkConfig: {
             remoteNodeNetworks: [
               {
-                cidrs: [{ 'Fn::ImportValue': 'NodeCidr' }, '10.0.0.0/16'],
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr' }), '10.0.0.0/16'],
               },
             ],
           },
@@ -4088,12 +4088,12 @@ describe('cluster', () => {
           remoteNetworkConfig: {
             remoteNodeNetworks: [
               {
-                cidrs: [{ 'Fn::ImportValue': 'NodeCidr' }],
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr' })],
               },
             ],
             remotePodNetworks: [
               {
-                cidrs: [{ 'Fn::ImportValue': 'PodCidr' }, '192.168.0.0/16'],
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'PodCidr' }), '192.168.0.0/16'],
               },
             ],
           },
@@ -4147,10 +4147,10 @@ describe('cluster', () => {
           remoteNetworkConfig: {
             remoteNodeNetworks: [
               {
-                cidrs: [{ 'Fn::ImportValue': 'NodeCidr1' }],
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr1' })],
               },
               {
-                cidrs: [{ 'Fn::ImportValue': 'NodeCidr2' }],
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr2' })],
               },
             ],
           },

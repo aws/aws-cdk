@@ -2809,7 +2809,7 @@ describe('cluster', () => {
         RemoteNetworkConfig: {
           RemoteNodeNetworks: [
             {
-              Cidrs: [unresolvedCidr, '10.0.0.0/16'],
+              Cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr' }), '10.0.0.0/16'],
             },
           ],
         },
@@ -2842,12 +2842,12 @@ describe('cluster', () => {
         RemoteNetworkConfig: {
           RemoteNodeNetworks: [
             {
-              Cidrs: [unresolvedNodeCidr],
+              Cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr' })],
             },
           ],
           RemotePodNetworks: [
             {
-              Cidrs: [unresolvedPodCidr, '192.168.0.0/16'],
+              Cidrs: [Match.objectLike({ 'Fn::ImportValue': 'PodCidr' }), '192.168.0.0/16'],
             },
           ],
         },
@@ -2897,10 +2897,10 @@ describe('cluster', () => {
         RemoteNetworkConfig: {
           RemoteNodeNetworks: [
             {
-              Cidrs: [unresolvedNodeCidr1],
+              Cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr1' })],
             },
             {
-              Cidrs: [unresolvedNodeCidr2],
+              Cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr2' })],
             },
           ],
         },
