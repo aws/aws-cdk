@@ -793,6 +793,16 @@ export enum InstanceClass {
   C7A = 'c7a',
 
   /**
+   * Compute optimized instances based on 5th generation AMD EPYC (formerly code named Turin), 8th generation
+   */
+  COMPUTE8_AMD = 'compute8-amd',
+
+  /**
+   * Compute optimized instances based on 5th generation AMD EPYC (formerly code named Turin), 8th generation
+   */
+  C8A = 'c8a',
+
+  /**
    * Storage-optimized instances, 2nd generation
    */
   STORAGE2 = 'storage2',
@@ -1971,6 +1981,8 @@ export class InstanceType {
       [InstanceClass.C7I_FLEX]: 'c7i-flex',
       [InstanceClass.COMPUTE7_AMD]: 'c7a',
       [InstanceClass.C7A]: 'c7a',
+      [InstanceClass.COMPUTE8_AMD]: 'c8a',
+      [InstanceClass.C8A]: 'c8a',
       [InstanceClass.COMPUTE8_GRAVITON4]: 'c8g',
       [InstanceClass.C8G]: 'c8g',
       [InstanceClass.COMPUTE8_GRAVITON4_NVME_DRIVE]: 'c8gd',
