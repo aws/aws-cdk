@@ -1,5 +1,5 @@
 import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
-import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
@@ -220,13 +220,7 @@ export class S3LogsDelivery implements ILogsDelivery {
     const existingKeyPolicy = key.keyPolicy;
     const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
     const sid = 'AWS CDK: Allow Logs Delivery to use the key';
-    // Check if a statement with this SID already exists
-    const hasDuplicateSid = existingKeyPolicy.statements.some((stmt: PolicyStatement) => stmt.sid === sid);
-    if (hasDuplicateSid) {
-      return;
-    }
-
-    existingKeyPolicy.addStatements(new PolicyStatement({
+    const keyStatement = new PolicyStatement({
       sid,
       effect: Effect.ALLOW,
       principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
@@ -240,7 +234,20 @@ export class S3LogsDelivery implements ILogsDelivery {
           'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${key.env.region}:${key.env.account}:${sourceArnPostfix}`],
         },
       },
-    }));
+    });
+    if (!existingKeyPolicy) {
+      key.keyPolicy = new PolicyDocument({
+        statements: [keyStatement],
+      });
+      return;
+    }
+    // Check if a statement with this SID already exists
+    const hasDuplicateSid = existingKeyPolicy.statements.some((stmt: PolicyStatement) => stmt.sid === sid);
+    if (hasDuplicateSid) {
+      return;
+    }
+
+    existingKeyPolicy.addStatements(keyStatement);
   }
 }
 
