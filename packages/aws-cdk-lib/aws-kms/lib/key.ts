@@ -1,16 +1,10 @@
-import { Construct, IConstruct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { Alias } from './alias';
 import { KeyGrants } from './key-grants';
 import { KeyLookupOptions } from './key-lookup';
 import { CfnKey, IKeyRef, KeyReference } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
-import {
-  AddToResourcePolicyResult,
-  GrantableResources,
-  IResourceWithPolicyV2,
-  PolicyStatement,
-} from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   Arn,
@@ -21,7 +15,7 @@ import {
   IResource,
   Lazy,
   RemovalPolicy,
-  Resource, ResourceEnvironment,
+  Resource,
   ResourceProps,
   Stack,
   Token,
@@ -962,100 +956,4 @@ export class Key extends KeyBase {
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
-}
-
-/**
- * Wrapper for a low-level `CfnKey` that implements `IKeyRef` and `IResourceWithPolicyV2`.
- *
- * This adapter exposes the key reference traits of the underlying `CfnKey` (such as
- * `env`, `node`, and `keyRef`) and provides a way to modify the key's resource policy.
- *
- * This class is intended for use when code needs an `IKeyRef` that can also accept
- * resource-policy modifications for a `CfnKey`.
- */
-export class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
-  public readonly env: ResourceEnvironment;
-  public readonly keyRef: KeyReference;
-  public readonly node: Node;
-  private policyDocument?: iam.PolicyDocument;
-
-  constructor(private readonly key: CfnKey) {
-    this.env = key.env;
-    this.keyRef = key.keyRef;
-    this.node = key.node;
-  }
-
-  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-    const key = this.key;
-
-    if (!key.keyPolicy) {
-      key.keyPolicy = {
-        Statement: [],
-      };
-    }
-
-    if (!this.policyDocument) {
-      this.policyDocument = iam.PolicyDocument.fromJson(key.keyPolicy);
-      key.keyPolicy = Lazy.any({ produce: () => this.policyDocument!.toJSON() });
-    }
-
-    this.policyDocument.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.policyDocument };
-  }
-}
-
-/**
- * Adapter that exposes key reference traits and optional resource-policy behavior for an `IKeyRef`.
- *
- * This class:
- * - Implements `IKeyRef` so it can be used wherever a key reference is required.
- * - Implements `IResourceWithPolicyV2` and forwards policy-modification requests to the
- *   underlying resource only if that resource supports policy modification.
- *
- */
-export class KeyTraits implements IKeyRef, IResourceWithPolicyV2 {
-  public readonly env: ResourceEnvironment;
-  public readonly keyRef: KeyReference;
-  public readonly node: Node;
-  private readonly resourceWithPolicy?: IResourceWithPolicyV2;
-
-  constructor(private readonly ref: IKeyRef) {
-    this.keyRef = ref.keyRef;
-    this.env = ref.env;
-    this.node = ref.node;
-    this.resourceWithPolicy = GrantableResources.isResourceWithPolicy(this.ref)
-      ? this.ref
-      : CfnKey.isCfnKey(this.ref) ? new CfnKeyWithPolicy(this.ref) : undefined;
-  }
-
-  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-    return this.resourceWithPolicy
-      ? this.resourceWithPolicy.addToResourcePolicy(statement)
-      : { statementAdded: false };
-  }
-
-  /**
-   * This is a no-op implementation to allow mixins to be applied to KeyRefs.
-   */
-  with(..._mixin: IMixin[]): IConstruct {
-    return this;
-  }
-}
-
-/**
- * A mixin is a reusable piece of functionality that can be applied to constructs
- * to add behavior, properties, or modify existing functionality without inheritance.
- *
- * Copied from aws-cdk-lib/core/lib/mixins.ts to avoid circular dependency.
- */
-export interface IMixin {
-  /**
-   * Determines whether this mixin can be applied to the given construct.
-   */
-  supports(construct: IConstruct): boolean;
-
-  /**
-   * Applies the mixin functionality to the target construct.
-   */
-  applyTo(construct: IConstruct): IConstruct;
 }
