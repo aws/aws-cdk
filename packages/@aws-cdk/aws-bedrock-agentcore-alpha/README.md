@@ -471,9 +471,9 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(re
 
 // Optional: Create custom claims for additional validation
 const customClaims = [
-  agentcore.CustomClaim.withStringValue('department', 'engineering'),
-  agentcore.CustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
-  agentcore.CustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+  agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.RuntimeCustomClaimOperator.CONTAINS),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.RuntimeCustomClaimOperator.CONTAINS_ANY),
 ];
 
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
@@ -532,7 +532,7 @@ You can configure:
 
 ##### Custom Claims Validation
 
-Custom claims allow you to validate additional fields in JWT tokens beyond the standard audience, client, and scope validations. You can create custom claims using the `CustomClaim` class:
+Custom claims allow you to validate additional fields in JWT tokens beyond the standard audience, client, and scope validations. You can create custom claims using the `RuntimeCustomClaim` class:
 
 ```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
@@ -542,20 +542,20 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(re
 
 // String claim - validates that the claim exactly equals the specified value
 // Uses EQUALS operator automatically
-const departmentClaim = agentcore.CustomClaim.withStringValue('department', 'engineering');
+const departmentClaim = agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering');
 
 // String array claim with CONTAINS operator (default)
 // Validates that the claim array contains a specific string value
 // IMPORTANT: CONTAINS requires exactly one value in the array parameter
-const rolesClaim = agentcore.CustomClaim.withStringArrayValue('roles', ['admin']);
+const rolesClaim = agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin']);
 
 // String array claim with CONTAINS_ANY operator
 // Validates that the claim array contains at least one of the specified values
 // Use this when you want to check for multiple possible values
-const permissionsClaim = agentcore.CustomClaim.withStringArrayValue(
+const permissionsClaim = agentcore.RuntimeCustomClaim.withStringArrayValue(
   'permissions',
   ['read', 'write'],
-  agentcore.CustomClaimOperator.CONTAINS_ANY
+  agentcore.RuntimeCustomClaimOperator.CONTAINS_ANY
 );
 
 // Use custom claims in authorizer configuration
@@ -581,8 +581,8 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 
 **Example Use Cases**:
 
-- Use `CONTAINS` when you need to verify a user has a specific role: `CustomClaim.withStringArrayValue('roles', ['admin'])`
-- Use `CONTAINS_ANY` when you need to verify a user has any of several permissions: `CustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY)`
+- Use `CONTAINS` when you need to verify a user has a specific role: `RuntimeCustomClaim.withStringArrayValue('roles', ['admin'])`
+- Use `CONTAINS_ANY` when you need to verify a user has any of several permissions: `RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], RuntimeCustomClaimOperator.CONTAINS_ANY)`
 
 #### OAuth Authentication
 
@@ -1217,7 +1217,7 @@ your AgentCore gateway. By default, if not provided, the construct will create a
 **JSON Web Token (JWT)** – A secure and compact token used for authorization. After creating the JWT, you specify it as the authorization
 configuration when you create the gateway. You can create a JWT with any of the identity providers at Provider setup and configuration.
 
-You can configure a custom authorization provider using the `inboundAuthorizer` property with `GatewayAuthorizer.usingCustomJwt()`.
+You can configure a custom authorization provider using the `authorizerConfiguration` property with `GatewayAuthorizer.usingCustomJwt()`.
 You need to specify an OAuth discovery server and client IDs/audiences when you create the gateway. You can specify the following:
 
 - Discovery Url — String that must match the pattern ^.+/\.well-known/openid-configuration$ for OpenID Connect discovery URLs
@@ -1225,8 +1225,17 @@ You need to specify an OAuth discovery server and client IDs/audiences when you 
 - Allowed audiences — List of allowed audiences for JWT tokens
 - Allowed clients — List of allowed client identifiers
 - Allowed scopes — List of allowed scopes for JWT tokens
+- Custom claims — Optional custom claim validations (see Custom Claims Validation section below)
 
 ```typescript fixture=default
+
+// Optional: Create custom claims (import GatewayCustomClaim, GatewayCustomClaimOperator from gateway inbound-auth)
+const customClaims = [
+  agentcore.GatewayCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.GatewayCustomClaimOperator.CONTAINS),
+  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.GatewayCustomClaimOperator.CONTAINS_ANY),
+];
+
 const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
   authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
@@ -1234,6 +1243,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
     allowedScopes: ["read", "write"],
+    customClaims: customClaims, // Optional custom claims
   }),
 });
 ```
@@ -1273,6 +1283,31 @@ const userPoolClient = gateway.userPoolClient;
 const tokenEndpointUrl = gateway.tokenEndpointUrl;
 const oauthScopes = gateway.oauthScopes;
 // oauthScopes are in the format: ['{resourceServerId}/read', '{resourceServerId}/write']
+```
+
+**Using Cognito User Pool Explicitly with Custom Claims** – You can also use an existing Cognito User Pool with custom claims:
+
+```typescript fixture=default
+declare const userPool: cognito.UserPool;
+declare const userPoolClient: cognito.UserPoolClient;
+
+// Optional: Create custom claims (import GatewayCustomClaim, GatewayCustomClaimOperator from gateway inbound-auth)
+const customClaims = [
+  agentcore.GatewayCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.GatewayCustomClaimOperator.CONTAINS),
+  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.GatewayCustomClaimOperator.CONTAINS_ANY),
+];
+
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCognito({
+    userPool: userPool,
+    allowedClients: [userPoolClient],
+    allowedAudiences: ["audience1"],
+    allowedScopes: ["read", "write"],
+    customClaims: customClaims, // Optional custom claims
+  }),
+});
 ```
 
 To authenticate with the gateway, request an access token using the client credentials flow and use it to call Gateway endpoints. For more information about the token endpoint, see [The token issuer endpoint](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html).

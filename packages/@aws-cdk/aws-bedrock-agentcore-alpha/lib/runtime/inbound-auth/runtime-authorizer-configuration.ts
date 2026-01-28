@@ -15,7 +15,7 @@ import { Token } from 'aws-cdk-lib';
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { ValidationError } from '../validation-helpers';
-import { CustomClaim } from './custom-claim';
+import { RuntimeCustomClaim } from './custom-claim';
 
 /**
  * Abstract base class for runtime authorizer configurations.
@@ -48,7 +48,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     allowedClients?: string[],
     allowedAudience?: string[],
     allowedScopes?: string[],
-    customClaims?: CustomClaim[],
+    customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('JWT discovery URL must end with /.well-known/openid-configuration');
@@ -72,7 +72,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     userPoolClients: IUserPoolClient[],
     allowedAudience?: string[],
     allowedScopes?: string[],
-    customClaims?: CustomClaim[],
+    customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     return new CognitoAuthorizerConfiguration(userPool, userPoolClients, allowedAudience, allowedScopes, customClaims);
   }
@@ -93,7 +93,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     clientId: string,
     allowedAudience?: string[],
     allowedScopes?: string[],
-    customClaims?: CustomClaim[],
+    customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
@@ -127,7 +127,7 @@ class JwtAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly allowedClients?: string[],
     private readonly allowedAudience?: string[],
     private readonly allowedScopes?: string[],
-    private readonly customClaims?: CustomClaim[],
+    private readonly customClaims?: RuntimeCustomClaim[],
   ) {
     super();
   }
@@ -154,7 +154,7 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly userPoolClients: IUserPoolClient[],
     private readonly allowedAudience?: string[],
     private readonly allowedScopes?: string[],
-    private readonly customClaims?: CustomClaim[],
+    private readonly customClaims?: RuntimeCustomClaim[],
   ) {
     super();
   }
@@ -184,7 +184,7 @@ class OAuthAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly clientId: string,
     private readonly allowedAudience?: string[],
     private readonly allowedScopes?: string[],
-    private readonly customClaims?: CustomClaim[],
+    private readonly customClaims?: RuntimeCustomClaim[],
   ) {
     super();
   }

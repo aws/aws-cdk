@@ -30,8 +30,8 @@ const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
 const allowedScopes = ['read', 'write'];
 const allowedAudience = ['audience1'];
 const customClaims = [
-  agentcore.CustomClaim.withStringValue('department', 'engineering'),
-  agentcore.CustomClaim.withStringArrayValue('roles', ['admin', 'user'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+  agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], agentcore.RuntimeCustomClaimOperator.CONTAINS_ANY),
 ];
 
 // Create a single runtime (similar to the working strands example)

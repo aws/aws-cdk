@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { ValidationError } from '../validation-helpers';
 
 /**
@@ -26,9 +26,9 @@ enum CustomClaimValueType {
 }
 
 /**
- * Custom claim match operator for Runtime JWT authorizers.
+ * Custom claim match operator for Gateway JWT authorizers.
  */
-export enum RuntimeCustomClaimOperator {
+export enum GatewayCustomClaimOperator {
   /** Equals operator - used for STRING type claims */
   EQUALS = 'EQUALS',
   /** Contains operator - used for STRING_ARRAY type claims. Checks if the claim array contains a specific string value. */
@@ -38,21 +38,21 @@ export enum RuntimeCustomClaimOperator {
 }
 
 /**
- * Represents a custom claim validation configuration for Runtime JWT authorizers.
+ * Represents a custom claim validation configuration for Gateway JWT authorizers.
  * Custom claims allow you to validate additional fields in JWT tokens beyond
  * the standard audience, client, and scope validations.
  */
-export class RuntimeCustomClaim {
+export class GatewayCustomClaim {
   /**
    * Create a custom claim with a string value.
    * String claims must use the EQUALS operator.
    *
    * @param name The name of the claim in the JWT token
    * @param value The string value to match (must exactly equal)
-   * @returns A RuntimeCustomClaim configured for string validation
+   * @returns A GatewayCustomClaim configured for string validation
    */
-  public static withStringValue(name: string, value: string): RuntimeCustomClaim {
-    return new RuntimeCustomClaim(name, CustomClaimValueType.STRING, RuntimeCustomClaimOperator.EQUALS, value);
+  public static withStringValue(name: string, value: string): GatewayCustomClaim {
+    return new GatewayCustomClaim(name, CustomClaimValueType.STRING, GatewayCustomClaimOperator.EQUALS, value);
   }
 
   /**
@@ -62,26 +62,26 @@ export class RuntimeCustomClaim {
    * @param name The name of the claim in the JWT token
    * @param values The array of string values to match. For CONTAINS operator, must contain exactly one value.
    * @param operator The match operator (defaults to CONTAINS)
-   * @returns A RuntimeCustomClaim configured for string array validation
+   * @returns A GatewayCustomClaim configured for string array validation
    */
   public static withStringArrayValue(
     name: string,
     values: string[],
-    operator: RuntimeCustomClaimOperator = RuntimeCustomClaimOperator.CONTAINS,
-  ): RuntimeCustomClaim {
+    operator: GatewayCustomClaimOperator = GatewayCustomClaimOperator.CONTAINS,
+  ): GatewayCustomClaim {
     // Validate operator is valid for STRING_ARRAY type
-    if (operator !== RuntimeCustomClaimOperator.CONTAINS && operator !== RuntimeCustomClaimOperator.CONTAINS_ANY) {
+    if (operator !== GatewayCustomClaimOperator.CONTAINS && operator !== GatewayCustomClaimOperator.CONTAINS_ANY) {
       throw new ValidationError(
         `Custom claim '${name}': STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators, got ${operator}`,
       );
     }
-    return new RuntimeCustomClaim(name, CustomClaimValueType.STRING_ARRAY, operator, values);
+    return new GatewayCustomClaim(name, CustomClaimValueType.STRING_ARRAY, operator, values);
   }
 
   private constructor(
     private readonly name: string,
     private readonly valueType: CustomClaimValueType,
-    private readonly operator: RuntimeCustomClaimOperator,
+    private readonly operator: GatewayCustomClaimOperator,
     private readonly value: string | string[],
   ) {
     // Validate that value matches the valueType
@@ -97,9 +97,9 @@ export class RuntimeCustomClaim {
    * Render the custom claim as a CloudFormation property
    * @internal
    */
-  public _render(): CfnRuntime.CustomClaimValidationTypeProperty {
+  public _render(): CfnGateway.CustomClaimValidationTypeProperty {
     // Build the claim match value based on operator and value type
-    let claimMatchValue: CfnRuntime.ClaimMatchValueTypeProperty;
+    let claimMatchValue: CfnGateway.ClaimMatchValueTypeProperty;
     if (this.valueType === CustomClaimValueType.STRING) {
       // STRING type always uses matchValueString with EQUALS operator
       claimMatchValue = {
@@ -107,7 +107,7 @@ export class RuntimeCustomClaim {
       };
     } else {
       // STRING_ARRAY type: CONTAINS uses matchValueString, CONTAINS_ANY uses matchValueStringList
-      if (this.operator === RuntimeCustomClaimOperator.CONTAINS) {
+      if (this.operator === GatewayCustomClaimOperator.CONTAINS) {
         // CONTAINS requires a single string value (check if claim array contains this string)
         const values = this.value as string[];
         if (values.length !== 1) {

@@ -10,7 +10,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
-import { CustomClaim, CustomClaimOperator } from '../../../lib/runtime/inbound-auth/custom-claim';
+import { RuntimeCustomClaim, RuntimeCustomClaimOperator } from '../../../lib/runtime/inbound-auth/custom-claim';
 import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/inbound-auth/runtime-authorizer-configuration';
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
@@ -1060,8 +1060,8 @@ describe('Runtime with Custom Claims tests', () => {
   });
 
   test('Should render authorizer configuration with custom claims', () => {
-    const stringClaim = CustomClaim.withStringValue('department', 'engineering');
-    const arrayClaim = CustomClaim.withStringArrayValue('roles', ['admin']);
+    const stringClaim = RuntimeCustomClaim.withStringValue('department', 'engineering');
+    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin']);
 
     new Runtime(stack, 'test-runtime-render-custom-claims', {
       runtimeName: 'test_runtime_render_custom_claims',
@@ -1106,8 +1106,8 @@ describe('Runtime with Custom Claims tests', () => {
     }
   });
 
-  test('Should create CustomClaim with string array value (default CONTAINS)', () => {
-    const claim = CustomClaim.withStringArrayValue('roles', ['admin']);
+  test('Should create RuntimeCustomClaim with string array value (default CONTAINS)', () => {
+    const claim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin']);
     const rendered = claim._render();
 
     expect(rendered.inboundTokenClaimName).toBe('roles');
@@ -1118,8 +1118,8 @@ describe('Runtime with Custom Claims tests', () => {
     expect(matchValue.claimMatchValue.matchValueStringList).toBeUndefined();
   });
 
-  test('Should create CustomClaim with string array value (CONTAINS_ANY)', () => {
-    const claim = CustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
+  test('Should create RuntimeCustomClaim with string array value (CONTAINS_ANY)', () => {
+    const claim = RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], RuntimeCustomClaimOperator.CONTAINS_ANY);
     const rendered = claim._render();
 
     expect(rendered.inboundTokenClaimName).toBe('permissions');
@@ -1131,20 +1131,20 @@ describe('Runtime with Custom Claims tests', () => {
 
   test('Should throw error for invalid operator with string array', () => {
     expect(() => {
-      CustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.EQUALS);
+      RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], RuntimeCustomClaimOperator.EQUALS);
     }).toThrow('STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators');
   });
 
   test('Should throw error when CONTAINS operator is used with multiple values', () => {
-    const claim = CustomClaim.withStringArrayValue('roles', ['admin', 'user'], CustomClaimOperator.CONTAINS);
+    const claim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], RuntimeCustomClaimOperator.CONTAINS);
     expect(() => {
       claim._render();
     }).toThrow('CONTAINS operator requires exactly one value, got 2 values');
   });
 
   test('Should create runtime with JWT authorizer and custom claims', () => {
-    const stringClaim = CustomClaim.withStringValue('department', 'engineering');
-    const arrayClaim = CustomClaim.withStringArrayValue('roles', ['admin', 'user'], CustomClaimOperator.CONTAINS_ANY);
+    const stringClaim = RuntimeCustomClaim.withStringValue('department', 'engineering');
+    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], RuntimeCustomClaimOperator.CONTAINS_ANY);
 
     new Runtime(stack, 'test-runtime-custom-claims', {
       runtimeName: 'test_runtime_custom_claims',
@@ -1195,8 +1195,8 @@ describe('Runtime with Custom Claims tests', () => {
     });
     const userPoolClient = userPool.addClient('TestClient');
 
-    const stringClaim = CustomClaim.withStringValue('team', 'backend');
-    const arrayClaim = CustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
+    const stringClaim = RuntimeCustomClaim.withStringValue('team', 'backend');
+    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], RuntimeCustomClaimOperator.CONTAINS_ANY);
 
     new Runtime(stack, 'test-runtime-cognito-claims', {
       runtimeName: 'test_runtime_cognito_claims',
@@ -1228,7 +1228,7 @@ describe('Runtime with Custom Claims tests', () => {
   });
 
   test('Should create runtime with OAuth authorizer and custom claims', () => {
-    const stringClaim = CustomClaim.withStringValue('org', 'acme');
+    const stringClaim = RuntimeCustomClaim.withStringValue('org', 'acme');
 
     new Runtime(stack, 'test-runtime-oauth-claims', {
       runtimeName: 'test_runtime_oauth_claims',

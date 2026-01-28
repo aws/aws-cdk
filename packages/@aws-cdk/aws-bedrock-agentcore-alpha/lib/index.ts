@@ -38,6 +38,7 @@ export * from './gateway/protocol';
 // Gateway - Inbound Auth
 // ===================================
 export * from './gateway/inbound-auth/authorizer';
+export * from './gateway/inbound-auth/custom-claim';
 
 // ===================================
 // Gateway - Outbound Auth
