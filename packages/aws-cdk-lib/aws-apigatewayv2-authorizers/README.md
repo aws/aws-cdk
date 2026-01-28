@@ -167,6 +167,7 @@ Lambda authorizers use a Lambda function to control access to your HTTP API. Whe
 
 Lambda authorizers depending on their response, fall into either two types - Simple or IAM. You can learn about differences [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.payload-format-response).
 
+If the Lambda function is in another account, you need to provide an IAM role to the authorizer that has permission to invoke the Lambda function.
 
 ```ts
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
