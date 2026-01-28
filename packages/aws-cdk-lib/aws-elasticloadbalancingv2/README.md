@@ -200,6 +200,52 @@ ingress rules then set `open: false` and use the listener's `connections` object
 
 **Note**: The `path` parameter must start with a `/`.
 
+### Transforms
+
+Application Load Balancers support transforms to modify incoming requests before routing them to targets.
+This allows you to offload request modification logic to the load balancer itself.
+
+Two types of transforms are supported:
+
+- **Host Header Rewrite**: Modify the host header using regular expressions
+- **URL Rewrite**: Modify the request URL (path and query string) using regular expressions
+
+Transforms can only be used together with listener rules (requiring both `priority` and `conditions`).
+Each rule can have at most one host header rewrite transform and one URL rewrite transform.
+
+```ts
+declare const listener: elbv2.ApplicationListener;
+
+listener.addAction('RewriteAction', {
+  priority: 10,
+  conditions: [
+    elbv2.ListenerCondition.pathPatterns(['/api/*']),
+  ],
+  action: elbv2.ListenerAction.fixedResponse(200, {
+    contentType: 'text/plain',
+    messageBody: 'Transformed request',
+  }),
+  transforms: [
+    // Rewrite URL path
+    elbv2.ListenerTransform.urlRewrite([
+      {
+        regex: '/api/(.+)',
+        replace: '/v2/api/$1',
+      },
+    ]),
+    // Rewrite host header
+    elbv2.ListenerTransform.hostHeaderRewrite([
+      {
+        regex: '(.*)\\.example\\.com',
+        replace: '$1.internal.example.com',
+      },
+    ]),
+  ],
+});
+```
+
+For more information, see [Transforms for listener rules](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-transforms.html) in the AWS documentation.
+
 ### Application Load Balancer attributes
 
 You can modify attributes of Application Load Balancers:
