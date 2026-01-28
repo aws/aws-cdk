@@ -1,19 +1,19 @@
 {
   "version": "49.0.0",
   "artifacts": {
-    "aws-eks-oidc-provider-test.assets": {
+    "aws-cdk-eks-v2-alpha-oidc-provider-test.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-eks-oidc-provider-test.assets.json",
+        "file": "aws-cdk-eks-v2-alpha-oidc-provider-test.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-eks-oidc-provider-test": {
+    "aws-cdk-eks-v2-alpha-oidc-provider-test": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-eks-oidc-provider-test.template.json",
+        "templateFile": "aws-cdk-eks-v2-alpha-oidc-provider-test.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-eks-oidc-provider-test.assets"
+          "aws-cdk-eks-v2-alpha-oidc-provider-test.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "aws-eks-oidc-provider-test.assets"
+        "aws-cdk-eks-v2-alpha-oidc-provider-test.assets"
       ],
       "metadata": {
-        "/aws-eks-oidc-provider-test/NoClientsNoThumbprint": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/NoClientsNoThumbprint": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -44,7 +44,7 @@
             "data": "*"
           }
         ],
-        "/aws-eks-oidc-provider-test/NoClientsNoThumbprint/Resource": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/NoClientsNoThumbprint/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -54,58 +54,508 @@
             "data": "*"
           }
         ],
-        "/aws-eks-oidc-provider-test/NoClientsNoThumbprint/Resource/Default": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/NoClientsNoThumbprint/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NoClientsNoThumbprint8BF1533F"
           }
         ],
-        "/aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
           }
         ],
-        "/aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
           }
         ],
-        "/aws-eks-oidc-provider-test/BootstrapVersion": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcFA9F2722"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet1Subnet3BFE1BDA"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet1RouteTable1DCCDD98"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet1RouteTableAssociationAFBE6789"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet1DefaultRouteCF22EF6E"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet1EIP498E2BD2"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet2SubnetC4E9A966"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet2RouteTable6F1F5F47"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet2RouteTableAssociationA8539C50"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet2DefaultRoute1FA8621E"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet2EIP265F4810"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPrivateSubnet1RouteTable7844020C"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPrivateSubnet1RouteTableAssociationF8A67D95"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPrivateSubnet1DefaultRouteD624C8BD"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPrivateSubnet2RouteTable1F9A5298"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPrivateSubnet2RouteTableAssociationE1240DF2"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcPrivateSubnet2DefaultRouteAB55737C"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcIGW756BE43E"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcVPCGWC1D00388"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/DefaultVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultVpcRestrictDefaultSecurityGroupCustomResource59F333B7"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterRoleFA261979"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/ControlPlaneSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/ControlPlaneSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterControlPlaneSecurityGroupD274242C"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/ClusternodePoolRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/ClusternodePoolRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusternodePoolRole69276141"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Cluster/KubectlReadyBarrier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlReadyBarrier200052AF"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/OidcProviderNative": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/OidcProviderNative/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OidcProviderNative8DF822B2"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-eks-oidc-provider-test/CheckBootstrapVersion": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider-test/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-eks-oidc-provider-test"
+      "displayName": "aws-cdk-eks-v2-alpha-oidc-provider-test"
     },
-    "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9.assets": {
+    "awscdkeksv2alphaoidcproviderDefaultTestDeployAssertDE0838AE.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9.assets.json",
+        "file": "awscdkeksv2alphaoidcproviderDefaultTestDeployAssertDE0838AE.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9": {
+    "awscdkeksv2alphaoidcproviderDefaultTestDeployAssertDE0838AE": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9.template.json",
+        "templateFile": "awscdkeksv2alphaoidcproviderDefaultTestDeployAssertDE0838AE.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -114,7 +564,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9.assets"
+          "awscdkeksv2alphaoidcproviderDefaultTestDeployAssertDE0838AE.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -123,23 +573,23 @@
         }
       },
       "dependencies": [
-        "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9.assets"
+        "awscdkeksv2alphaoidcproviderDefaultTestDeployAssertDE0838AE.assets"
       ],
       "metadata": {
-        "/aws-cdk-eks-oidc-provider/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-eks-oidc-provider/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-eks-v2-alpha-oidc-provider/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-eks-oidc-provider/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-eks-v2-alpha-oidc-provider/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -437,6 +887,10 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
+          },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS clusters will use the native OIDC provider resource  AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource."
           },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
