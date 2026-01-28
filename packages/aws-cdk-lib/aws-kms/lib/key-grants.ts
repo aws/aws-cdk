@@ -1,7 +1,14 @@
+import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
-import { IGrantable } from '../../aws-iam';
-import { FeatureFlags, Stack } from '../../core';
+import {
+  AddToResourcePolicyResult,
+  GrantableResources,
+  IGrantable,
+  IResourceWithPolicyV2,
+  PolicyStatement,
+} from '../../aws-iam';
+import { FeatureFlags, Lazy, ResourceEnvironment, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
 
@@ -28,7 +35,9 @@ export class KeyGrants {
   private constructor(props: KeyGrantsProps) {
     this.resource = props.resource;
     this.trustAccountIdentities = props.trustAccountIdentities ?? FeatureFlags.of(this.resource).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
-    this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
+    this.policyResource = GrantableResources.isResourceWithPolicy(this.resource)
+      ? this.resource
+      : CfnKey.isCfnKey(this.resource) ? new CfnKeyWithPolicy(this.resource) : undefined;
   }
 
   /**
@@ -74,6 +83,17 @@ export class KeyGrants {
         });
       }
     }
+  }
+
+  /**
+   * Grant admins permissions using this key to the given principal
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   *
+   */
+  public admin(grantee: iam.IGrantable): iam.Grant {
+    return this.actions(grantee, ...perms.ADMIN_ACTIONS);
   }
 
   /**
@@ -172,5 +192,32 @@ export class KeyGrants {
       return keyStack.account !== identityStack.account && this.resource.env.account !== identityStack.account;
     }
     return keyStack.account !== identityStack.account;
+  }
+}
+
+class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  private policyDocument?: iam.PolicyDocument;
+
+  constructor(private readonly key: CfnKey) {
+    this.env = key.env;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    const key = this.key;
+
+    if (!key.keyPolicy) {
+      key.keyPolicy = {
+        Statement: [],
+      };
+    }
+
+    if (!this.policyDocument) {
+      this.policyDocument = iam.PolicyDocument.fromJson(key.keyPolicy);
+      key.keyPolicy = Lazy.any({ produce: () => this.policyDocument!.toJSON() });
+    }
+
+    this.policyDocument.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policyDocument };
   }
 }
