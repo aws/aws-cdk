@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
-import { Arn, CustomResource, FeatureFlags, IResource, Resource, Token } from '../../core';
+import { Arn, CustomResource, FeatureFlags, IResource, RemovalPolicy, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
@@ -81,6 +81,13 @@ export interface OpenIdConnectProviderProps {
    * provider's server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
    */
   readonly thumbprints?: string[];
+
+  /**
+   * The removal policy to apply to the OpenID Connect Provider
+   *
+   * @default - RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -159,6 +166,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     const provider = this.getOrCreateProvider();
     this.resource = new CustomResource(this, 'Resource', {
       resourceType: RESOURCE_TYPE,
+      removalPolicy: props.removalPolicy,
       serviceToken: provider.serviceToken,
       properties: {
         ClientIDList: props.clientIds,
