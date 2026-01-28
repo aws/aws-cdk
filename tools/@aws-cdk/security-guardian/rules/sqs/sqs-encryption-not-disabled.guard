@@ -1,0 +1,42 @@
+#
+#####################################
+##          SQS GUARD RULES         ##
+#####################################
+# Rule: SQS_ENCRYPTION_NOT_DISABLED
+# Service: Amazon Simple Queue Service (SQS)
+# Coverage: Encryption at Rest
+#
+# Since October 2022, AWS encrypts all SQS queues by default with SSE-SQS.
+# See: https://aws.amazon.com/blogs/compute/announcing-server-side-encryption-with-amazon-simple-queue-service-managed-encryption-keys-sse-sqs-by-default/
+#
+# This rule flags queues where encryption is EXPLICITLY DISABLED by setting
+# SqsManagedSseEnabled to false. It does NOT flag queues where the property
+# is missing (since AWS defaults to encrypted).
+#
+# Note: There are legitimate use cases for disabling encryption (e.g., anonymous
+# requests), so this rule can be suppressed when needed.
+# See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-sqs-sse-queue.html
+
+let sqs_queues = Resources.*[
+  Type == 'AWS::SQS::Queue'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "SQS_ENCRYPTION_NOT_DISABLED"
+]
+
+# SQS queues should not have encryption explicitly disabled
+# Only flags when SqsManagedSseEnabled is explicitly set to false
+# Does NOT flag when the property is missing (AWS defaults to encrypted)
+rule SQS_ENCRYPTION_NOT_DISABLED when %sqs_queues !empty {
+    %sqs_queues {
+        when Properties.SqsManagedSseEnabled exists {
+            Properties.SqsManagedSseEnabled != false <<
+                SQS queue has encryption explicitly disabled (SqsManagedSseEnabled: false).
+                Since October 2022, AWS encrypts all SQS queues by default.
+                Remove SqsManagedSseEnabled: false to use default SSE-SQS encryption,
+                or set KmsMasterKeyId to use KMS encryption.
+                If disabling encryption is intentional (e.g., for anonymous requests),
+                suppress this rule using Metadata.guard.SuppressedRules.
+            >>
+        }
+    }
+}
