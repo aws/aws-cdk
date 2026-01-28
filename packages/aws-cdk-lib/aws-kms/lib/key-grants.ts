@@ -1,4 +1,3 @@
-import { Node } from 'constructs';
 import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
@@ -11,7 +10,7 @@ import {
 } from '../../aws-iam';
 import { FeatureFlags, Lazy, ResourceEnvironment, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
-import { IKeyRef, KeyReference } from '../../interfaces/generated/aws-kms-interfaces.generated';
+import { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
 
 interface KeyGrantsProps {
   readonly resource: IKeyRef;
@@ -187,14 +186,10 @@ export class KeyGrants {
 
 class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
-  public readonly keyRef: KeyReference;
-  public readonly node: Node;
   private policyDocument?: iam.PolicyDocument;
 
   constructor(private readonly key: CfnKey) {
     this.env = key.env;
-    this.keyRef = key.keyRef;
-    this.node = key.node;
   }
 
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
