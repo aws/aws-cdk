@@ -4047,13 +4047,15 @@ describe('cluster', () => {
       });
 
       // THEN - no error thrown
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
-        RemoteNetworkConfig: {
-          RemoteNodeNetworks: [
-            {
-              Cidrs: [unresolvedCidr, '10.0.0.0/16'],
-            },
-          ],
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [{ 'Fn::ImportValue': 'NodeCidr' }, '10.0.0.0/16'],
+              },
+            ],
+          },
         },
       });
     });
@@ -4081,18 +4083,20 @@ describe('cluster', () => {
       });
 
       // THEN - no error thrown
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
-        RemoteNetworkConfig: {
-          RemoteNodeNetworks: [
-            {
-              Cidrs: [unresolvedNodeCidr],
-            },
-          ],
-          RemotePodNetworks: [
-            {
-              Cidrs: [unresolvedPodCidr, '192.168.0.0/16'],
-            },
-          ],
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [{ 'Fn::ImportValue': 'NodeCidr' }],
+              },
+            ],
+            remotePodNetworks: [
+              {
+                cidrs: [{ 'Fn::ImportValue': 'PodCidr' }, '192.168.0.0/16'],
+              },
+            ],
+          },
         },
       });
     });
@@ -4138,16 +4142,18 @@ describe('cluster', () => {
       });
 
       // THEN - no error thrown
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
-        RemoteNetworkConfig: {
-          RemoteNodeNetworks: [
-            {
-              Cidrs: [unresolvedNodeCidr1],
-            },
-            {
-              Cidrs: [unresolvedNodeCidr2],
-            },
-          ],
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [{ 'Fn::ImportValue': 'NodeCidr1' }],
+              },
+              {
+                cidrs: [{ 'Fn::ImportValue': 'NodeCidr2' }],
+              },
+            ],
+          },
         },
       });
     });
