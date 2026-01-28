@@ -2,6 +2,8 @@
   "exclude": [
     "no-grants:@aws-cdk/aws-bedrock-alpha.CrossRegionInferenceProfile.grantProfileUsage",
     "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.Agent.addGuardrail.guardrail",
+    "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentAliasAttributes.agent",
+    "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentAliasProps.agent",
     "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentProps.existingRole",
     "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentProps.guardrail",
     "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentProps.kmsKey",
@@ -9,6 +11,7 @@
     "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.GuardrailProps.kmsKey",
     "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptAttributes.kmsKey",
     "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptProps.kmsKey",
+    "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptVersionProps.prompt",
     "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IAgent",
     "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IAgentAlias",
     "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IGuardrail",
