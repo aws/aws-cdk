@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { Cluster } from './cluster';
 import * as iam from '../../aws-iam';
-import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws, ValidationError } from '../../core';
+import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws, ValidationError, RemovalPolicy, RemovalPolicies } from '../../core';
 import { KubectlFunction } from '../../custom-resource-handlers/dist/aws-eks/kubectl-provider.generated';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
@@ -16,6 +16,20 @@ export interface KubectlProviderProps {
    * The cluster to control.
    */
   readonly cluster: ICluster;
+
+  /**
+   * The removal policy applied to the custom resource that provides kubectl.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -68,7 +82,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
    * @param scope Construct
    * @param cluster k8s cluster
    */
-  public static getOrCreate(scope: Construct, cluster: ICluster) {
+  public static getOrCreate(scope: Construct, cluster: ICluster, removalPolicy?: RemovalPolicy): IKubectlProvider {
     // if this is an "owned" cluster, it has a provider associated with it
     if (cluster instanceof Cluster) {
       return cluster._attachKubectlResourceScope(scope);
@@ -86,6 +100,10 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     let provider = stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
       provider = new KubectlProvider(stack, uid, { cluster });
+    }
+
+    if (removalPolicy) {
+      RemovalPolicies.of(provider).apply(removalPolicy);
     }
 
     return provider;
@@ -198,6 +216,10 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
       securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
     });
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
 
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;

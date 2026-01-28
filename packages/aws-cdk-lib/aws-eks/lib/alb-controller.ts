@@ -8,8 +8,8 @@ import { ServiceAccount } from './service-account';
 import * as iam from '../../aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-
-import { Aws, Duration, Names, Stack, ValidationError } from '../../core';
+// eslint-disable-next-line
+import { Aws, Duration, Names, RemovalPolicy, RemovalPolicies, Stack, ValidationError } from '../../core';
 
 /**
  * Controller version.
@@ -302,6 +302,7 @@ export interface AlbControllerOptions {
   readonly additionalHelmChartValues?: AlbControllerHelmChartOptions;
 
   /**
+<<<<<<< HEAD
    * Overwrite any existing ALB controller service account.
    *
    * If this is set, we will use `kubectl apply` instead of `kubectl create`
@@ -311,6 +312,20 @@ export interface AlbControllerOptions {
    * @default false
    */
   readonly overwriteServiceAccount?: boolean;
+
+  /**
+   * The removal policy applied to the ALB controller resources.
+   *
+   * The removal policy controls what happens to the resources if they stop being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -400,6 +415,10 @@ export class AlbController extends Construct {
         ...props.additionalHelmChartValues, // additional helm chart options for ALB controller chart
       },
     });
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
 
     // the controller relies on permissions deployed using these resources.
     chart.node.addDependency(serviceAccount);

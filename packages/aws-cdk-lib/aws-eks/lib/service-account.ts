@@ -7,7 +7,7 @@ import {
   OpenIdConnectPrincipal, PolicyStatement, Role,
   ServicePrincipal,
 } from '../../aws-iam';
-import { CfnJson, Names } from '../../core';
+import { CfnJson, Names, RemovalPolicy, RemovalPolicies } from '../../core';
 
 /**
  * Enum representing the different identity types that can be used for a Kubernetes service account.
@@ -79,6 +79,20 @@ export interface ServiceAccountOptions {
    * @default IdentityType.IRSA
    */
   readonly identityType?: IdentityType;
+
+  /**
+   * The removal policy applied to the service account resources.
+   *
+   * The removal policy controls what happens to the resources if they stop being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * Overwrite existing service account.
@@ -224,6 +238,10 @@ export class ServiceAccount extends Construct implements IPrincipal {
         },
       }],
     });
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**

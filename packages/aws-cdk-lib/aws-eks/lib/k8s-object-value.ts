@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
-import { CustomResource, Token, Duration } from '../../core';
+import { CustomResource, Duration, RemovalPolicy, Token } from '../../core';
 
 /**
  * Properties for KubernetesObjectValue.
@@ -45,6 +45,20 @@ export interface KubernetesObjectValueProps {
    */
   readonly timeout?: Duration;
 
+  /**
+   * The removal policy applied to the custom resource that manages the Kubernetes object value.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
+
 }
 
 /**
@@ -62,11 +76,12 @@ export class KubernetesObjectValue extends Construct {
   constructor(scope: Construct, id: string, props: KubernetesObjectValueProps) {
     super(scope, id);
 
-    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster, props.removalPolicy);
 
     this._resource = new CustomResource(this, 'Resource', {
       resourceType: KubernetesObjectValue.RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
+      removalPolicy: props.removalPolicy,
       properties: {
         ClusterName: props.cluster.clusterName,
         RoleArn: provider.roleArn,

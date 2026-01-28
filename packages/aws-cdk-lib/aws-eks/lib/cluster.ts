@@ -1680,6 +1680,8 @@ export class Cluster extends ClusterBase {
 
   private readonly _kubectlResourceProvider: KubectlProvider;
 
+  private readonly _removalPolicy?: RemovalPolicy;
+
   /**
    * Initiates an EKS Cluster with the supplied arguments
    *
@@ -1751,6 +1753,7 @@ export class Cluster extends ClusterBase {
     this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
     this.onEventLayer = props.onEventLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
+    this._removalPolicy = props.removalPolicy;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
@@ -2157,10 +2160,12 @@ export class Cluster extends ClusterBase {
       if (FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)) {
         this._openIdConnectProvider = new OidcProviderNative(this, 'OidcProviderNative', {
           url: this.clusterOpenIdConnectIssuerUrl,
+          removalPolicy: this._removalPolicy,
         });
       } else {
         this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
           url: this.clusterOpenIdConnectIssuerUrl,
+          removalPolicy: this._removalPolicy,
         });
       }
     }
@@ -2177,11 +2182,12 @@ export class Cluster extends ClusterBase {
    * associated service account.
    *
    */
-  public get eksPodIdentityAgent(): IAddon | undefined {
+  public get eksPodIdentityAgent(): IAddon {
     if (!this._eksPodIdentityAgent) {
       this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
         cluster: this,
         addonName: 'eks-pod-identity-agent',
+        removalPolicy: this._removalPolicy,
       });
     }
 
