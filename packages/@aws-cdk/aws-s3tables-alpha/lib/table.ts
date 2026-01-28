@@ -278,6 +278,198 @@ export enum Status {
 }
 
 /**
+ * Partition field definition for Iceberg table.
+ * 
+ * Defines a single partition column. Multiple partition fields can be combined
+ * in an IcebergPartitionSpec to create multi-level partitioning.
+ * 
+ * @example
+ * ```ts
+ * // Partition by day from a timestamp field
+ * const table = new Table(stack, 'MyTable', {
+ *   tableName: 'my_table',
+ *   namespace: myNamespace,
+ *   openTableFormat: OpenTableFormat.ICEBERG,
+ *   icebergMetadata: {
+ *     icebergSchema: {
+ *       schemaFieldList: [
+ *         { id: 1, name: 'event_id', type: 'string' },
+ *         { id: 2, name: 'event_time', type: 'timestamp' },
+ *         { id: 3, name: 'category', type: 'string' },
+ *       ],
+ *     },
+ *     icebergPartitionSpec: {
+ *       fields: [
+ *         { 
+ *           sourceId: 2,           // References event_time field (id: 2)
+ *           transform: 'day',       // Partition by day
+ *           name: 'event_day',      // Name for partition column
+ *         },
+ *       ],
+ *     },
+ *   },
+ * });
+ * ```
+ */
+export interface IcebergPartitionField {
+  /**
+   * The source field ID from the schema.
+   */
+  readonly sourceId: number;
+
+  /**
+   * The partition transform function (e.g., 'identity', 'day', 'hour', 'bucket', 'truncate').
+   */
+  readonly transform: string;
+
+  /**
+   * The name of the partition field.
+   */
+  readonly name: string;
+
+  /**
+   * The unique identifier for the partition field.
+   *
+   * @default - Auto-assigned starting from 1000
+   */
+  readonly fieldId?: number;
+}
+
+/**
+ * Partition specification for Iceberg table.
+ * 
+ * Contains the complete partitioning configuration for a table, including all partition fields.
+ * Use this to define multi-level partitioning (e.g., partition by date, then by region).
+ * 
+ * @example
+ * ```ts
+ * // Partition by date and category
+ * const table = new Table(stack, 'MyTable', {
+ *   tableName: 'my_table',
+ *   namespace: myNamespace,
+ *   openTableFormat: OpenTableFormat.ICEBERG,
+ *   icebergMetadata: {
+ *     icebergSchema: {
+ *       schemaFieldList: [
+ *         { id: 1, name: 'date', type: 'date' },
+ *         { id: 2, name: 'user_id', type: 'string' },
+ *         { id: 3, name: 'category', type: 'string' },
+ *       ],
+ *     },
+ *     icebergPartitionSpec: {
+ *       specId: 0,
+ *       fields: [
+ *         {
+ *           sourceId: 1,        // References date field
+ *           transform: 'day',
+ *           name: 'date_partition',
+ *           fieldId: 1000,
+ *         },
+ *         {
+ *           sourceId: 3,        // References category field
+ *           transform: 'identity',
+ *           name: 'category_partition',
+ *           fieldId: 1001,
+ *         },
+ *       ],
+ *     },
+ *   },
+ * });
+ * ```
+ */
+export interface IcebergPartitionSpec {
+  /**
+   * The unique identifier for the partition specification.
+   *
+   * @default 0
+   */
+  readonly specId?: number;
+
+  /**
+   * The list of partition fields.
+   */
+  readonly fields: IcebergPartitionField[];
+}
+
+/**
+ * Sort field definition for Iceberg table.
+ */
+export interface IcebergSortField {
+  /**
+   * The source field ID from the schema.
+   */
+  readonly sourceId: number;
+
+  /**
+   * The sort transform function (e.g., 'identity', 'bucket', 'truncate').
+   */
+  readonly transform: string;
+
+  /**
+   * The sort direction.
+   */
+  readonly direction: 'asc' | 'desc';
+
+  /**
+   * The null ordering.
+   */
+  readonly nullOrder: 'nulls-first' | 'nulls-last';
+}
+
+/**
+ * Sort order specification for Iceberg table.
+ * 
+ * @example
+ * ```ts
+ * // Sort by timestamp descending, then by user_id ascending
+ * const table = new Table(stack, 'MyTable', {
+ *   tableName: 'my_table',
+ *   namespace: myNamespace,
+ *   openTableFormat: OpenTableFormat.ICEBERG,
+ *   icebergMetadata: {
+ *     icebergSchema: {
+ *       schemaFieldList: [
+ *         { id: 1, name: 'event_id', type: 'string' },
+ *         { id: 2, name: 'timestamp', type: 'timestamp' },
+ *         { id: 3, name: 'user_id', type: 'string' },
+ *       ],
+ *     },
+ *     icebergSortOrder: {
+ *       orderId: 1,
+ *       fields: [
+ *         {
+ *           sourceId: 2,              // timestamp field
+ *           transform: 'identity',
+ *           direction: 'desc',
+ *           nullOrder: 'nulls-last',
+ *         },
+ *         {
+ *           sourceId: 3,              // user_id field
+ *           transform: 'identity',
+ *           direction: 'asc',
+ *           nullOrder: 'nulls-first',
+ *         },
+ *       ],
+ *     },
+ *   },
+ * });
+ * ```
+ */
+export interface IcebergSortOrder {
+  /**
+   * The unique identifier for the sort order.
+   *
+   * @default 1
+   */
+  readonly orderId?: number;
+
+  /**
+   * The list of sort fields.
+   */
+  readonly fields: IcebergSortField[];
+}
+
+/**
  * Contains details about the metadata for an Iceberg table.
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
  */
@@ -288,6 +480,27 @@ export interface IcebergMetadataProperty {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html#cfn-s3tables-table-icebergmetadata-icebergschema
    */
   readonly icebergSchema: IcebergSchemaProperty;
+
+  /**
+   * The partition specification for the Iceberg table.
+   *
+   * @default - No partition specification
+   */
+  readonly icebergPartitionSpec?: IcebergPartitionSpec;
+
+  /**
+   * The sort order for the Iceberg table.
+   *
+   * @default - No sort order
+   */
+  readonly icebergSortOrder?: IcebergSortOrder;
+
+  /**
+   * Custom properties for the Iceberg table.
+   *
+   * @default - No custom properties
+   */
+  readonly tableProperties?: { [key: string]: string };
 }
 
 /**
@@ -304,6 +517,13 @@ export interface IcebergSchemaProperty {
  * Contains details about a schema field.
  */
 export interface SchemaFieldProperty {
+  /**
+   * The unique identifier for the field.
+   *
+   * @default - Auto-assigned by S3 Tables
+   */
+  readonly id?: number;
+
   /**
    * The name of the field.
    */
@@ -512,10 +732,60 @@ export class Table extends TableBase {
       tableBucketArn: props.namespace.tableBucket.tableBucketArn,
       namespace: props.namespace.namespaceName,
       compaction: props.compaction,
-      icebergMetadata: props.icebergMetadata,
+      // TEMPORARY: Only pass icebergSchema to L1 construct as it doesn't yet support
+      // the new properties (icebergPartitionSpec, icebergSortOrder, tableProperties).
+      // These are added via escape hatches below.
+      // TODO: Once L1 construct is updated with new schema:
+      //   1. Change this to: icebergMetadata: props.icebergMetadata,
+      //   2. Remove all the escape hatch code (addPropertyOverride calls) below
+      icebergMetadata: props.icebergMetadata ? {
+        icebergSchema: props.icebergMetadata.icebergSchema,
+      } : undefined,
       snapshotManagement: props.snapshotManagement,
       withoutMetadata: props.withoutMetadata ? 'Yes' : undefined,
     });
+
+    // Use escape hatches for new properties not yet in L1
+    if (props.icebergMetadata) {
+      if (props.icebergMetadata.icebergSchema?.schemaFieldList) {
+        // Add Id field to schema fields
+        const schemaFieldsWithId = props.icebergMetadata.icebergSchema.schemaFieldList.map(f => ({
+          Id: f.id,
+          Name: f.name,
+          Type: f.type,
+          Required: f.required,
+        }));
+        this._resource.addPropertyOverride('IcebergMetadata.IcebergSchema.SchemaFieldList', schemaFieldsWithId);
+      }
+
+      if (props.icebergMetadata.icebergPartitionSpec) {
+        this._resource.addPropertyOverride('IcebergMetadata.IcebergPartitionSpec', {
+          SpecId: props.icebergMetadata.icebergPartitionSpec.specId,
+          Fields: props.icebergMetadata.icebergPartitionSpec.fields.map(f => ({
+            SourceId: f.sourceId,
+            Transform: f.transform,
+            Name: f.name,
+            FieldId: f.fieldId,
+          })),
+        });
+      }
+
+      if (props.icebergMetadata.icebergSortOrder) {
+        this._resource.addPropertyOverride('IcebergMetadata.IcebergSortOrder', {
+          OrderId: props.icebergMetadata.icebergSortOrder.orderId,
+          Fields: props.icebergMetadata.icebergSortOrder.fields.map(f => ({
+            SourceId: f.sourceId,
+            Transform: f.transform,
+            Direction: f.direction,
+            NullOrder: f.nullOrder,
+          })),
+        });
+      }
+
+      if (props.icebergMetadata.tableProperties) {
+        this._resource.addPropertyOverride('IcebergMetadata.TableProperties', props.icebergMetadata.tableProperties);
+      }
+    }
 
     this.namespace = props.namespace;
     this.tableName = props.tableName;
