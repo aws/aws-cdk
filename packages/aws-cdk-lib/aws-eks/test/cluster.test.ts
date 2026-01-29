@@ -11,6 +11,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
+import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
@@ -2158,6 +2159,285 @@ describe('cluster', () => {
               ],
               Effect: 'Allow',
               Resource: '*',
+            },
+            {
+              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 'iam:CreateServiceLinkedRole',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
+    test('if cluster name is a CloudFormation parameter, the creation role policy uses specific ARNs with parameter reference', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const clusterNameParam = new cdk.CfnParameter(stack, 'ClusterName', {
+        type: 'String',
+        default: 'MyEKSCluster',
+      });
+
+      // WHEN
+      new eks.Cluster(stack, 'MyCluster', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        clusterName: clusterNameParam.valueAsString,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'iam:PassRole',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyClusterRoleBA20FE72',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'eks:CreateCluster',
+                'eks:DescribeCluster',
+                'eks:DescribeUpdate',
+                'eks:DeleteCluster',
+                'eks:UpdateClusterVersion',
+                'eks:UpdateClusterConfig',
+                'eks:CreateFargateProfile',
+                'eks:TagResource',
+                'eks:UntagResource',
+              ],
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':eks:us-east-1:',
+                      { Ref: 'AWS::AccountId' },
+                      ':cluster/',
+                      { Ref: 'ClusterName' },
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':eks:us-east-1:',
+                      { Ref: 'AWS::AccountId' },
+                      ':cluster/',
+                      { Ref: 'ClusterName' },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              Action: [
+                'eks:DescribeFargateProfile',
+                'eks:DeleteFargateProfile',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':eks:us-east-1:',
+                    { Ref: 'AWS::AccountId' },
+                    ':fargateprofile/',
+                    { Ref: 'ClusterName' },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 'iam:CreateServiceLinkedRole',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
+    test('if cluster name uses complex tokens (Fn.sub with SSM parameters), the creation role policy uses specific ARNs with proper token references', () => {
+      // GIVEN
+      const { stack } = testFixture();
+
+      // Create SSM parameter reference (simulates real-world Service Catalog scenario)
+      const ssmParam = ssm.StringParameter.fromStringParameterName(
+        stack, 'ClusterParam', '/eks/cluster/suffix',
+      );
+
+      // Create hybrid cluster name using Fn.sub (this was causing [object Object] in ARNs)
+      const hybridClusterName = cdk.Fn.sub('eks-${param}', {
+        param: ssmParam.stringValue,
+      });
+
+      // WHEN
+      new eks.Cluster(stack, 'MyCluster', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        clusterName: hybridClusterName,
+      });
+
+      // THEN - Should generate proper CloudFormation intrinsic functions, not [object Object]
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'iam:PassRole',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyClusterRoleBA20FE72',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'eks:CreateCluster',
+                'eks:DescribeCluster',
+                'eks:DescribeUpdate',
+                'eks:DeleteCluster',
+                'eks:UpdateClusterVersion',
+                'eks:UpdateClusterConfig',
+                'eks:CreateFargateProfile',
+                'eks:TagResource',
+                'eks:UntagResource',
+              ],
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':eks:us-east-1:',
+                      { Ref: 'AWS::AccountId' },
+                      ':cluster/',
+                      {
+                        'Fn::Sub': [
+                          'eks-${param}',
+                          {
+                            param: {
+                              Ref: 'ClusterParamParameter',
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':eks:us-east-1:',
+                      { Ref: 'AWS::AccountId' },
+                      ':cluster/',
+                      {
+                        'Fn::Sub': [
+                          'eks-${param}',
+                          {
+                            param: {
+                              Ref: 'ClusterParamParameter',
+                            },
+                          },
+                        ],
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              Action: [
+                'eks:DescribeFargateProfile',
+                'eks:DeleteFargateProfile',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':eks:us-east-1:',
+                    { Ref: 'AWS::AccountId' },
+                    ':fargateprofile/',
+                    {
+                      'Fn::Sub': [
+                        'eks-${param}',
+                        {
+                          param: {
+                            Ref: 'ClusterParamParameter',
+                          },
+                        },
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
             },
             {
               Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],

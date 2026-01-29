@@ -159,17 +159,33 @@ export class ClusterResource extends Construct {
     // physical name.
     const resourceArns = Lazy.list({
       produce: () => {
-        const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
-        return stack.resolve(props.name)
-          ? [arn, `${arn}/*`] // see https://github.com/aws/aws-cdk/issues/6060
-          : ['*'];
+        // Use stack.resolve to determine if we should use specific ARNs or wildcards,
+        // but don't use the resolved value for ARN construction to avoid [object Object] issue
+        const resolvedName = stack.resolve(props.name);
+        if (!resolvedName) {
+          return ['*'];
+        }
+        // Pass props.name directly to formatArn to handle tokens properly
+        const arn = stack.formatArn(clusterArnComponents(props.name));
+        return [arn, `${arn}/*`]; // see https://github.com/aws/aws-cdk/issues/6060
       },
     });
 
     const fargateProfileResourceArn = Lazy.string({
-      produce: () => stack.resolve(props.name)
-        ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
-        : '*',
+      produce: () => {
+        // Use stack.resolve to determine if we should use specific ARNs or wildcards,
+        // but don't use the resolved value for ARN construction to avoid [object Object] issue
+        const resolvedName = stack.resolve(props.name);
+        if (!resolvedName) {
+          return '*';
+        }
+        // Pass props.name directly to formatArn to handle tokens properly
+        return stack.formatArn({
+          service: 'eks',
+          resource: 'fargateprofile',
+          resourceName: `${props.name}/*`,
+        });
+      },
     });
 
     creationRole.addToPolicy(new iam.PolicyStatement({
