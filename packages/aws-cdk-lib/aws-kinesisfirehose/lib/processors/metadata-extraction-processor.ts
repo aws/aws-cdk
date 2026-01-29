@@ -81,7 +81,7 @@ export class MetadataExtractionProcessor implements IDataProcessor {
       throw new ValidationError('MetadataExtractionProcessor needs dynamic partitioning.', scope);
     }
 
-    const re = /!\{partitionKeyFromQuery:(.+?)\}/g;
+    const re = /!\{partitionKeyFromQuery:(.[^}]*)\}/g;
     const usedKeys = new Set<string>();
     let match;
     while (match = re.exec(options.prefix ?? '')) {

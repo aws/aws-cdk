@@ -146,10 +146,10 @@ export function createProcessingConfig(
     if (!withLambda && !withInline) {
       throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify ether LambdaFunctionProcessor, MetadataExtractionProcessor, or both.', scope);
     }
-    if (withLambda && !withInline && !/!\{partitionKeyFromLambda:.+?\}/.test(options.prefix)) {
+    if (withLambda && !withInline && !options.prefix.includes('!{partitionKeyFromLambda:')) {
       throw new cdk.ValidationError('When dynamic partitioning is enabled and the only LambdaFunctionProcessor is specified, you must specify at least one instance of !{partitionKeyFromLambda:keyID}.', scope);
     }
-    if (!withLambda && options.prefix?.includes('!{partitionKeyFromLambda:')) {
+    if (!withLambda && options.prefix.includes('!{partitionKeyFromLambda:')) {
       throw new cdk.ValidationError('The dataOutputPrefix cannot contain !{partitionKeyFromLambda:keyID} when LambdaFunctionProcessor is not specified.', scope);
     }
     // !{partitionKeyFromQuery} is validated in MetadataExtractionProcessor.bind().
