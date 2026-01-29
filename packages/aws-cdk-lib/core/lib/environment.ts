@@ -1,5 +1,8 @@
 /**
  * The deployment environment for a stack.
+ *
+ * This is an input type: it is used to specify a deployment environment when
+ * instantiating `Stack` or `Stage`.
  */
 export interface Environment {
   /**
@@ -34,5 +37,5 @@ export interface Environment {
 // For backwards compatibility with TypeScript users
 // (Note that `import { ... } from '...'; export { ... }` behaves differently in jsii
 // than `export { ... } from '...'`, and we need the former).
-import { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
-export type { IEnvironmentAware, ResourceEnvironment };
+import { IEnvironmentAware } from '../../interfaces/environment-aware';
+export type { IEnvironmentAware };

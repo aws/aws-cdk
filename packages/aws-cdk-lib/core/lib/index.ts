@@ -1,5 +1,6 @@
 export * from './aspect';
 export * from './tag-aspect';
+export * from './resource-environment';
 
 export * from './token';
 export * from './resolvable';

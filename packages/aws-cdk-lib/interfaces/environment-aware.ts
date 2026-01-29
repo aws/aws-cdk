@@ -1,3 +1,4 @@
+import { ResourceEnvironment as CoreResourceEnvironment } from '../core/lib/resource-environment';
 /**
  * Used to indicate that a particular construct has an resource environment
  */
@@ -19,25 +20,10 @@ export interface IEnvironmentAware {
 /**
  * Represents the environment a given resource lives in.
  *
+ * This extends the old definition of `ResourceEnvironment` for backwards
+ * compatibility with Java bindings generated from old CDK library versions.
+ *
  * Used as the return value for the `IEnvironmentAware.env` property.
  */
-export interface ResourceEnvironment {
-  /**
-   * The AWS Account ID that this resource belongs to.
-   *
-   * Since this can be a Token (for example, when the account is
-   * CloudFormation's `AWS::AccountId` intrinsic), make sure to use
-   * `Token.compareStrings()` instead of comparing the values with direct
-   * string equality.
-   */
-  readonly account: string;
-
-  /**
-   * The AWS Region that this resource belongs to.
-   *
-   * Since this can be a Token (for example, when the region is CloudFormation's
-   * `AWS::Region` intrinsic), make sure to use `Token.compareStrings()` instead
-   * of comparing the values with direct string equality.
-   */
-  readonly region: string;
+export interface ResourceEnvironment extends CoreResourceEnvironment {
 }
