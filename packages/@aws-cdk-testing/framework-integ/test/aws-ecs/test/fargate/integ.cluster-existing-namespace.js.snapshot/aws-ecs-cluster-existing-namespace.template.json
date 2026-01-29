@@ -13,9 +13,6 @@
       "Value": "aws-ecs-cluster-existing-namespace/Vpc"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/Resource"
    }
   },
   "VpcPublicSubnet1Subnet5C2D37C4": {
@@ -48,9 +45,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet1/Subnet"
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
@@ -65,9 +59,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet1/RouteTable"
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -79,9 +70,6 @@
     "SubnetId": {
      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet1/RouteTableAssociation"
    }
   },
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
@@ -97,10 +85,7 @@
    },
    "DependsOn": [
     "VpcVPCGWBF912B6E"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet1/DefaultRoute"
-   }
+   ]
   },
   "VpcPublicSubnet1EIPD7E02669": {
    "Type": "AWS::EC2::EIP",
@@ -112,9 +97,6 @@
       "Value": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet1"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet1/EIP"
    }
   },
   "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -139,10 +121,7 @@
    "DependsOn": [
     "VpcPublicSubnet1DefaultRoute3DA9E72A",
     "VpcPublicSubnet1RouteTableAssociation97140677"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet1/NATGateway"
-   }
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -174,9 +153,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet2/Subnet"
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
@@ -191,9 +167,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet2/RouteTable"
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -205,9 +178,6 @@
     "SubnetId": {
      "Ref": "VpcPublicSubnet2Subnet691E08A3"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet2/RouteTableAssociation"
    }
   },
   "VpcPublicSubnet2DefaultRoute97F91067": {
@@ -223,10 +193,7 @@
    },
    "DependsOn": [
     "VpcVPCGWBF912B6E"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet2/DefaultRoute"
-   }
+   ]
   },
   "VpcPublicSubnet2EIP3C605A87": {
    "Type": "AWS::EC2::EIP",
@@ -238,9 +205,6 @@
       "Value": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet2"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet2/EIP"
    }
   },
   "VpcPublicSubnet2NATGateway9182C01D": {
@@ -265,10 +229,7 @@
    "DependsOn": [
     "VpcPublicSubnet2DefaultRoute97F91067",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PublicSubnet2/NATGateway"
-   }
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -300,9 +261,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PrivateSubnet1/Subnet"
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
@@ -317,9 +275,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PrivateSubnet1/RouteTable"
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -331,9 +286,6 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet1Subnet536B997A"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PrivateSubnet1/RouteTableAssociation"
    }
   },
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
@@ -346,9 +298,6 @@
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PrivateSubnet1/DefaultRoute"
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
@@ -381,9 +330,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PrivateSubnet2/Subnet"
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
@@ -398,9 +344,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PrivateSubnet2/RouteTable"
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -412,9 +355,6 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PrivateSubnet2/RouteTableAssociation"
    }
   },
   "VpcPrivateSubnet2DefaultRoute060D2087": {
@@ -427,9 +367,6 @@
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/PrivateSubnet2/DefaultRoute"
    }
   },
   "VpcIGWD7BA715C": {
@@ -441,9 +378,6 @@
       "Value": "aws-ecs-cluster-existing-namespace/Vpc"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/IGW"
    }
   },
   "VpcVPCGWBF912B6E": {
@@ -455,9 +389,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Vpc/VPCGW"
    }
   },
   "ExistingNamespaceE824D60B": {
@@ -467,9 +398,6 @@
     "Vpc": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/ExistingNamespace/Resource"
    }
   },
   "EcsCluster97242B84": {
@@ -483,9 +411,6 @@
       ]
      }
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/EcsCluster/Resource"
    }
   },
   "TaskDefTaskRole1EDB4A67": {
@@ -503,9 +428,6 @@
      ],
      "Version": "2012-10-17"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/TaskDef/TaskRole/Resource"
    }
   },
   "TaskDef54694570": {
@@ -557,18 +479,12 @@
       "Arn"
      ]
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/TaskDef/Resource"
    }
   },
   "TaskDefcontainerLogGroupAB21CBAF": {
    "Type": "AWS::Logs::LogGroup",
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/TaskDef/container/LogGroup/Resource"
-   }
+   "DeletionPolicy": "Retain"
   },
   "TaskDefExecutionRoleB4775C97": {
    "Type": "AWS::IAM::Role",
@@ -585,9 +501,6 @@
      ],
      "Version": "2012-10-17"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/TaskDef/ExecutionRole/Resource"
    }
   },
   "TaskDefExecutionRoleDefaultPolicy0DBB737A": {
@@ -601,25 +514,20 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "TaskDefcontainerLogGroupAB21CBAF",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ServiceLogGroupB910EE76",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ServiceLogGroupB910EE76",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TaskDefcontainerLogGroupAB21CBAF",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -630,9 +538,6 @@
       "Ref": "TaskDefExecutionRoleB4775C97"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/TaskDef/ExecutionRole/DefaultPolicy/Resource"
    }
   },
   "ServiceD69D759B": {
@@ -706,10 +611,7 @@
    },
    "DependsOn": [
     "TaskDefTaskRole1EDB4A67"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Service/Service"
-   }
+   ]
   },
   "ServiceLogGroupB910EE76": {
    "Type": "AWS::Logs::LogGroup",
@@ -717,10 +619,7 @@
     "TaskDefTaskRole1EDB4A67"
    ],
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Service/LogGroup/Resource"
-   }
+   "DeletionPolicy": "Retain"
   },
   "ServiceSecurityGroupC96ED6A7": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -739,285 +638,6 @@
    },
    "DependsOn": [
     "TaskDefTaskRole1EDB4A67"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/Service/SecurityGroup/Resource"
-   }
-  },
-  "CDKMetadata": {
-   "Type": "AWS::CDK::Metadata",
-   "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzMy0TPUM1DMKs7M1C0qzSvJzE3VC4LQAGxeZXAkAAAA"
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-cluster-existing-namespace/CDKMetadata/Default"
-   },
-   "Condition": "CDKMetadataAvailable"
-  }
- },
- "Conditions": {
-  "CDKMetadataAvailable": {
-   "Fn::Or": [
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "af-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-3"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-south-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-3"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-4"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ca-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ca-west-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "cn-north-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "cn-northwest-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-central-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-north-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-south-2"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-3"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "il-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "me-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "me-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "sa-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-east-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-west-1"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "us-west-2"
-     ]
-    }
    ]
   }
  },

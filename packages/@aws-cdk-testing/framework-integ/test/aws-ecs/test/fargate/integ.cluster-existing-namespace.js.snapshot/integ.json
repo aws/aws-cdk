@@ -5,9 +5,6 @@
       "stacks": [
         "aws-ecs-cluster-existing-namespace"
       ],
-      "allowDestroy": [
-        "AWS::CDK::Metadata"
-      ],
       "assertionStack": "ClusterExistingNamespace/DefaultTest/DeployAssert",
       "assertionStackName": "ClusterExistingNamespaceDefaultTestDeployAssertC44466B7"
     }

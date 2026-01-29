@@ -71,6 +71,7 @@ class ExistingNamespaceStack extends cdk.Stack {
 }
 
 const app = new cdk.App({
+  analyticsReporting: false,
   postCliContext: {
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
   },
