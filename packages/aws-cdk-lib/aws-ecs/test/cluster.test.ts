@@ -5091,7 +5091,7 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });
 
-test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
+test('does not throw and sets a proper capacity provider name when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'ecscp');
@@ -5120,7 +5120,7 @@ test('throws when ASG Capacity Provider with no capacityProviderName but stack n
   });
 });
 
-test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with ECS (case-insensitive)', () => {
+test('does not throw and sets a proper capacity provider name when ASG Capacity Provider with no capacityProviderName but stack name starting with ECS (case-insensitive)', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'EcsCp');
