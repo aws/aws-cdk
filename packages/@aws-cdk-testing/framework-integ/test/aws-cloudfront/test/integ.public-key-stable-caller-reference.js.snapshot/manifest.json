@@ -1,0 +1,144 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "PublicKeyStableCallerReferenceStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PublicKeyStableCallerReferenceStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PublicKeyStableCallerReferenceStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "PublicKeyStableCallerReferenceStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/114c232dd94de31a2ba1b7f9dc5f03520739104099fe4b7be33aff69d0fbc971.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PublicKeyStableCallerReferenceStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "PublicKeyStableCallerReferenceStack.assets"
+      ],
+      "metadata": {
+        "/PublicKeyStableCallerReferenceStack/PublicKeyWithStableRef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/PublicKeyStableCallerReferenceStack/PublicKeyWithStableRef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicKeyWithStableRef5A6F8ED6"
+          }
+        ],
+        "/PublicKeyStableCallerReferenceStack/KeyGroupWithStableRef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "items": [
+                "*"
+              ],
+              "keyGroupName": "*",
+              "comment": "*"
+            }
+          }
+        ],
+        "/PublicKeyStableCallerReferenceStack/KeyGroupWithStableRef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KeyGroupWithStableRef3EDABE47"
+          }
+        ],
+        "/PublicKeyStableCallerReferenceStack/PublicKeyId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicKeyId"
+          }
+        ],
+        "/PublicKeyStableCallerReferenceStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PublicKeyStableCallerReferenceStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PublicKeyStableCallerReferenceStack"
+    },
+    "PublicKeyStableCallerReferenceTestDefaultTestDeployAssert83A9524E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PublicKeyStableCallerReferenceTestDefaultTestDeployAssert83A9524E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PublicKeyStableCallerReferenceTestDefaultTestDeployAssert83A9524E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PublicKeyStableCallerReferenceTestDefaultTestDeployAssert83A9524E.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PublicKeyStableCallerReferenceTestDefaultTestDeployAssert83A9524E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "PublicKeyStableCallerReferenceTestDefaultTestDeployAssert83A9524E.assets"
+      ],
+      "metadata": {
+        "/PublicKeyStableCallerReferenceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PublicKeyStableCallerReferenceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PublicKeyStableCallerReferenceTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

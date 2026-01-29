@@ -1,0 +1,21 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "114c232dd94de31a2ba1b7f9dc5f03520739104099fe4b7be33aff69d0fbc971": {
+      "displayName": "PublicKeyStableCallerReferenceStack Template",
+      "source": {
+        "path": "PublicKeyStableCallerReferenceStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "114c232dd94de31a2ba1b7f9dc5f03520739104099fe4b7be33aff69d0fbc971.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
