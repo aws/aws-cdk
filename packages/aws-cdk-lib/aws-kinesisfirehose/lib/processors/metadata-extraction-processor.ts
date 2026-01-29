@@ -74,14 +74,14 @@ export class MetadataExtractionProcessor implements IDataProcessor {
 
   readonly props: DataProcessorProps = {};
 
-  constructor(private readonly options: MetadataExtractionProcessorOptions, private readonly keys: readonly string[]) {}
+  constructor(private readonly options: MetadataExtractionProcessorOptions, private readonly keys: string[]) {}
 
   bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
     if (!options.dynamicPartitioningEnabled) {
       throw new ValidationError('MetadataExtractionProcessor needs dynamic partitioning.', scope);
     }
 
-    const re = /!\{partitionKeyFromQuery:(.[^}]*)\}/g;
+    const re = /!\{partitionKeyFromQuery:([^{}]+)\}/g;
     const usedKeys = new Set<string>();
     let match;
     while (match = re.exec(options.prefix ?? '')) {

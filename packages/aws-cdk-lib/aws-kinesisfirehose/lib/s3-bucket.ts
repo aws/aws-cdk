@@ -218,7 +218,7 @@ function validateOutputPrefix(prefix?: string, errorOutputPrefix?: string) {
 }
 
 function validateOutputPrefixExpression(prefix: string, prop: string) {
-  if (/!\{(?!(?:firehose|timestamp|partitionKeyFrom(?:Lambda|Query)):.+?\})/.test(prefix)) {
+  if (/!\{(?!(?:firehose|timestamp|partitionKeyFrom(?:Lambda|Query)):[^{}]+\})/.test(prefix)) {
     throw new cdk.UnscopedValidationError(`The expression must be of the form !{namespace:value} and include a valid namespace at ${prop}.`);
   }
 }
