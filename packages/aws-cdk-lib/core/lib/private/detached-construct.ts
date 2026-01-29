@@ -1,5 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
-import type { ResourceEnvironment } from '../environment';
+import { ResourceEnvironment } from '../../../interfaces/environment-aware';
 import { UnscopedValidationError } from '../errors';
 
 const CONSTRUCT_SYM = Symbol.for('constructs.Construct');

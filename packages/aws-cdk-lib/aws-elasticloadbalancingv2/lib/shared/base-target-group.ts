@@ -4,7 +4,7 @@ import { Attributes, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import { aws_elasticloadbalancingv2, ResourceEnvironment } from '../../../interfaces';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -249,7 +249,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * The environment this resource belongs to
    */
-  public get env(): cdk.ResourceEnvironment {
+  public get env(): ResourceEnvironment {
     return cdk.Stack.of(this).env;
   }
 

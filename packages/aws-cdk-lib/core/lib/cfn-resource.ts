@@ -15,7 +15,7 @@ import { FeatureFlags } from './feature-flags';
 import { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
 import { AssumptionError, ValidationError } from './errors';
-import { ResourceEnvironment } from './environment';
+import { ResourceEnvironment } from '../../interfaces/environment-aware';
 
 export interface CfnResourceProps {
   /**

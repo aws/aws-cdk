@@ -11,7 +11,7 @@ import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
-import { Environment, ResourceEnvironment } from './environment';
+import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary, PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
@@ -1887,4 +1887,5 @@ import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-con
 import { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, ValidationError } from './errors';
+import { ResourceEnvironment } from '../../interfaces/environment-aware';
 /* eslint-enable import/order */
