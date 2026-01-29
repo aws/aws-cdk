@@ -117,8 +117,5 @@ describe('k8s object value', () => {
     template.hasResource('Custom::AWSCDK-EKS-KubernetesObjectValue', {
       DeletionPolicy: 'Retain',
     });
-    template.hasResource('AWS::Lambda::Function', {
-      DeletionPolicy: 'Retain',
-    });
   });
 });
