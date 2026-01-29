@@ -1,4 +1,5 @@
 import { IParameterGroup } from './parameter-group';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, URL_SAFE_PASSWORD_EXCLUDE_CHARS } from './private/util';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
@@ -175,6 +176,20 @@ export interface CredentialsBaseOptions {
    * @default - Secret is not replicated
    */
   readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Whether to generate a URL parser-compatible password by excluding characters that can cause issues in URL parsers.
+   *
+   * When enabled, the generated password will exclude the caret (^) character in addition to the default
+   * exclusion set. This specifically addresses compatibility issues with URL parsers like Go's net/url
+   * that fail when parsing URLs containing caret characters in the userinfo section.
+   *
+   * Note: The default exclusion set already excludes most URL-problematic characters (%, #, ?, &, @, /, etc.).
+   * This option adds the caret (^) character which is specifically problematic for certain URL parsers.
+   *
+   * @default false
+   */
+  readonly urlSafePassword?: boolean;
 }
 
 /**
@@ -315,6 +330,21 @@ export abstract class Credentials {
    * @default - Secret is not replicated
    */
   public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Whether to generate a URL parser-compatible password by excluding characters that can cause issues in URL parsers.
+   * Only used if `password` has not been set.
+   *
+   * When enabled, the generated password will exclude the caret (^) character in addition to the default
+   * exclusion set. This specifically addresses compatibility issues with URL parsers like Go's net/url
+   * that fail when parsing URLs containing caret characters in the userinfo section.
+   *
+   * Note: The default exclusion set already excludes most URL-problematic characters (%, #, ?, &, @, /, etc.).
+   * This option adds the caret (^) character which is specifically problematic for certain URL parsers.
+   *
+   * @default false
+   */
+  public abstract readonly urlSafePassword?: boolean;
 }
 
 /**
@@ -341,6 +371,20 @@ export interface SnapshotCredentialsFromGeneratedPasswordOptions {
    * @default - Secret is not replicated
    */
   readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Whether to generate a URL parser-compatible password by excluding characters that can cause issues in URL parsers.
+   *
+   * When enabled, the generated password will exclude the caret (^) character in addition to the default
+   * exclusion set. This specifically addresses compatibility issues with URL parsers like Go's net/url
+   * that fail when parsing URLs containing caret characters in the userinfo section.
+   *
+   * Note: The default exclusion set already excludes most URL-problematic characters (%, #, ?, &, @, /, etc.).
+   * This option adds the caret (^) character which is specifically problematic for certain URL parsers.
+   *
+   * @default false
+   */
+  readonly urlSafePassword?: boolean;
 }
 
 /**
@@ -354,8 +398,12 @@ export abstract class SnapshotCredentials {
    * Note - The username must match the existing master username of the snapshot.
    */
   public static fromGeneratedSecret(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
+    const excludeCharacters = options.excludeCharacters ??
+      (options.urlSafePassword ? URL_SAFE_PASSWORD_EXCLUDE_CHARS : DEFAULT_PASSWORD_EXCLUDE_CHARS);
+
     return {
       ...options,
+      excludeCharacters,
       generatePassword: true,
       replaceOnPasswordCriteriaChanges: true,
       username,
@@ -464,6 +512,21 @@ export abstract class SnapshotCredentials {
    * @default - Secret is not replicated
    */
   public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Whether to generate a URL parser-compatible password by excluding characters that can cause issues in URL parsers.
+   * Only used if `generatePassword` is true.
+   *
+   * When enabled, the generated password will exclude the caret (^) character in addition to the default
+   * exclusion set. This specifically addresses compatibility issues with URL parsers like Go's net/url
+   * that fail when parsing URLs containing caret characters in the userinfo section.
+   *
+   * Note: The default exclusion set already excludes most URL-problematic characters (%, #, ?, &, @, /, etc.).
+   * This option adds the caret (^) character which is specifically problematic for certain URL parsers.
+   *
+   * @default false
+   */
+  public abstract readonly urlSafePassword?: boolean;
 }
 
 /**

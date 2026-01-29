@@ -4802,6 +4802,31 @@ describe('cluster', () => {
     });
   });
 
+  test('fromGeneratedSecret with urlSafePassword', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin', {
+        urlSafePassword: true,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        ExcludeCharacters: ' %+~`#$&*()|[]{}:;<>?!\'/@"\\^',
+        GenerateStringKey: 'password',
+        PasswordLength: 30,
+        SecretStringTemplate: '{"username":"admin"}',
+      },
+    });
+  });
+
   test('throws if generating a new password without a username', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');

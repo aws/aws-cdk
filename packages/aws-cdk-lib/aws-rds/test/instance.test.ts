@@ -524,6 +524,26 @@ describe('instance', () => {
       });
     });
 
+    test('fromGeneratedSecret with urlSafePassword', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
+          urlSafePassword: true,
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        GenerateSecretString: {
+          ExcludeCharacters: ' %+~`#$&*()|[]{}:;<>?!\'/@"\\^',
+          GenerateStringKey: 'password',
+          PasswordLength: 30,
+          SecretStringTemplate: '{"username":"admin"}',
+        },
+      });
+    });
+
     test('throws if generating a new password without a username', () => {
       expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',

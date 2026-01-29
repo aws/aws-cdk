@@ -95,6 +95,7 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
         secretName: renderedCredentials.secretName,
         encryptionKey: renderedCredentials.encryptionKey,
         excludeCharacters: renderedCredentials.excludeCharacters,
+        urlSafePassword: renderedCredentials.urlSafePassword,
         // if username must be referenced as a string we can safely replace the
         // secret when customization options are changed without risking a replacement
         replaceOnPasswordCriteriaChanges: credentials?.usernameAsString,
@@ -125,6 +126,7 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
         username: renderedCredentials.username,
         encryptionKey: renderedCredentials.encryptionKey,
         excludeCharacters: renderedCredentials.excludeCharacters,
+        urlSafePassword: renderedCredentials.urlSafePassword,
         replaceOnPasswordCriteriaChanges: renderedCredentials.replaceOnPasswordCriteriaChanges,
         replicaRegions: renderedCredentials.replicaRegions,
       }),
@@ -169,3 +171,11 @@ export function applyDefaultRotationOptions(options: CommonRotationUserOptions, 
     ...options,
   };
 }
+/**
+ * URL-safe password exclusion characters for database users.
+ * Extends the default exclusion set with characters that cause issues in URL parsers,
+ * particularly the caret (^) character which causes failures in Go's net/url parser.
+ *
+ * This constant is private to the RDS module.
+ */
+export const URL_SAFE_PASSWORD_EXCLUDE_CHARS = DEFAULT_PASSWORD_EXCLUDE_CHARS + '^';
