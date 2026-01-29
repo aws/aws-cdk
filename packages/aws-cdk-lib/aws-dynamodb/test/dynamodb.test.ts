@@ -27,6 +27,7 @@ import {
   InputFormat,
   ApproximateCreationDateTimePrecision,
   ContributorInsightsMode,
+  TableGrants,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -2717,6 +2718,64 @@ describe('grants', () => {
           Ref: 'user2C2B57AE',
         },
       ],
+    });
+  });
+
+  test('grant read data to service principal (L2)', () => {
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    TableGrants.fromTable(table).readData(new iam.ServicePrincipal('lambda.amazonaws.com'));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: [{
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: '*',
+          }],
+        },
+      },
+    });
+  });
+
+  test('grant read data to service principal (L1)', () => {
+    const stack = new Stack();
+    const table = new CfnTable(stack, 'Table', {
+      keySchema: [{ attributeName: 'id', keyType: AttributeType.STRING }],
+    });
+
+    TableGrants.fromTable(table).readData(new iam.ServicePrincipal('lambda.amazonaws.com'));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: [{
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: '*',
+          }],
+        },
+      },
     });
   });
 });
