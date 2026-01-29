@@ -577,6 +577,42 @@ describe('KafkaEventSource', () => {
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
 
+    test('MetricsConfig validation - empty metrics array', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN & THEN
+      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        metricsConfig: {
+          metrics: [],
+        },
+      }))).toThrow(/MetricsConfig must contain at least one metric type/);
+    });
+
+    test('MetricsConfig validation - valid metrics array', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN & THEN - should not throw
+      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        metricsConfig: {
+          metrics: [lambda.MetricType.EVENT_COUNT],
+        },
+      }))).not.toThrow();
+    });
+
     test('Setting startingPositionTimestamp for kafka event source ', () => {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -1401,6 +1437,46 @@ describe('KafkaEventSource', () => {
             maximumPollers: 1,
           },
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    });
+
+    test('MetricsConfig validation - empty metrics array', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const bootstrapServers = ['kafka-broker:9092'];
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const kafkaTopic = 'some-topic';
+
+      // WHEN & THEN
+      expect(() => testLambdaFunction.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        secret,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        metricsConfig: {
+          metrics: [],
+        },
+      }))).toThrow(/MetricsConfig must contain at least one metric type/);
+    });
+
+    test('MetricsConfig validation - valid metrics array', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const bootstrapServers = ['kafka-broker:9092'];
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const kafkaTopic = 'some-topic';
+
+      // WHEN & THEN - should not throw
+      expect(() => testLambdaFunction.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        secret,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        metricsConfig: {
+          metrics: [lambda.MetricType.EVENT_COUNT, lambda.MetricType.ERROR_COUNT],
+        },
+      }))).not.toThrow();
     });
 
     test('Setting startingPositionTimestamp for kafka event source ', () => {
@@ -3320,6 +3396,174 @@ describe('template synthesis with various configurations', () => {
           Destination: 'kafka://self-managed-failure-topic',
         },
       },
+    });
+  });
+
+  describe('LogLevel', () => {
+    test('LogLevel with INFO log level for ManagedKafkaEventSource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        logLevel: lambda.EventSourceMappingLogLevel.INFO,
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+        LoggingConfig: {
+          SystemLogLevel: 'INFO',
+        },
+      });
+    });
+
+    test('MetricsConfig validation - empty metrics array for ManagedKafkaEventSource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN & THEN
+      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        metricsConfig: {
+          metrics: [],
+        },
+      }))).toThrow(/MetricsConfig must contain at least one metric type/);
+    });
+
+    test('MetricsConfig validation - empty metrics array for SelfManagedKafkaEventSource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      // WHEN & THEN
+      expect(() => fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        topic: kafkaTopic,
+        secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        metricsConfig: {
+          metrics: [],
+        },
+      }))).toThrow(/MetricsConfig must contain at least one metric type/);
+    });
+
+    test('MetricsConfig works with existing configurations', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        batchSize: 50,
+        maxBatchingWindow: cdk.Duration.seconds(5),
+        metricsConfig: {
+          metrics: [lambda.MetricType.EVENT_COUNT, lambda.MetricType.KAFKA_METRICS],
+        },
+        filters: [
+          lambda.FilterCriteria.filter({
+            stringEquals: lambda.FilterRule.isEqual('test'),
+          }),
+        ],
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 50,
+        MaximumBatchingWindowInSeconds: 5,
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+        MetricsConfig: {
+          Metrics: ['EventCount', 'KafkaMetrics'],
+        },
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"stringEquals":["test"]}',
+            },
+          ],
+        },
+        SourceAccessConfigurations: [
+          {
+            Type: 'SASL_SCRAM_512_AUTH',
+            URI: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ],
+      });
+    });
+
+    test('MetricsConfig is optional and does not break existing functionality', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN - Create event source without MetricsConfig
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      }));
+
+      // THEN - Should work without MetricsConfig property
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+      });
+
+      // Verify MetricsConfig is not present when not specified
+      const template = Template.fromStack(stack);
+      const templateJson = template.toJSON();
+      const eventSourceMappingResource = Object.values(templateJson.Resources).find(
+        (resource: any) => resource.Type === 'AWS::Lambda::EventSourceMapping',
+      ) as any;
+
+      expect(eventSourceMappingResource.Properties.MetricsConfig).toBeUndefined();
     });
   });
 });
