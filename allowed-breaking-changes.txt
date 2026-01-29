@@ -4151,3 +4151,9 @@ base-types:aws-cdk-lib.aws_iam.IEncryptedResource
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.applyRemovalPolicy
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.node
 removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
+
+# These enum keys were auto-generated without underscores (ERRORCOUNT, KAFKAMETRICS).
+# The correct keys are ERROR_COUNT and KAFKA_METRICS. Safe to remove as these enums
+# were not usable without the feature implementation.
+removed:aws-cdk-lib.aws_lambda.MetricType.ERRORCOUNT
+removed:aws-cdk-lib.aws_lambda.MetricType.KAFKAMETRICS
