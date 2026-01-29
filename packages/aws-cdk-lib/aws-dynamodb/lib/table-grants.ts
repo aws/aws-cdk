@@ -55,7 +55,9 @@ export class TableGrants {
     return new TableGrants({
       table,
       encryptedResource: (iam.GrantableResources.isEncryptedResource(table) ? table : undefined),
-      policyResource: (iam.GrantableResources.isResourceWithPolicy(table) ? table : undefined),
+      policyResource: GrantableResources.isResourceWithPolicy(table)
+        ? table
+        : CfnTable.isCfnTable(table) ? new CfnTableWithPolicy(table) : undefined,
     });
   }
 
@@ -67,9 +69,7 @@ export class TableGrants {
   constructor(props: TableGrantsProps) {
     this.table = props.table;
     this.encryptedResource = props.encryptedResource;
-    this.policyResource = GrantableResources.isResourceWithPolicy(this.table)
-      ? this.table
-      : CfnTable.isCfnTable(this.table) ? new CfnTableWithPolicy(this.table) : undefined;
+    this.policyResource = props.policyResource;
 
     const stack = Stack.of(this.table);
 
