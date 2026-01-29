@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "NestedStackParameterBugFixIntegTest/DefaultTest": {
+      "stacks": [
+        "BugReproductionStack"
+      ],
+      "assertionStack": "NestedStackParameterBugFixIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NestedStackParameterBugFixIntegTestDefaultTestDeployAssert7F9CCDFD"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
