@@ -13,13 +13,16 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
+import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Configures the capacity of the cluster such as the instance type and the
@@ -191,7 +194,7 @@ export interface LoggingOptions {
    *
    * @default - a new log group is created if slow search logging is enabled
    */
-  readonly slowSearchLogGroup?: logs.ILogGroup;
+  readonly slowSearchLogGroup?: logs.ILogGroupRef;
 
   /**
    * Specify if slow index logging should be set up.
@@ -207,7 +210,7 @@ export interface LoggingOptions {
    *
    * @default - a new log group is created if slow index logging is enabled
    */
-  readonly slowIndexLogGroup?: logs.ILogGroup;
+  readonly slowIndexLogGroup?: logs.ILogGroupRef;
 
   /**
    * Specify if Amazon OpenSearch Service application logging should be set up.
@@ -223,7 +226,7 @@ export interface LoggingOptions {
    *
    * @default - a new log group is created if app logging is enabled
    */
-  readonly appLogGroup?: logs.ILogGroup;
+  readonly appLogGroup?: logs.ILogGroupRef;
 
   /**
    * Specify if Amazon OpenSearch Service audit logging should be set up.
@@ -238,7 +241,7 @@ export interface LoggingOptions {
    *
    * @default - a new log group is created if audit logging is enabled
    */
-  readonly auditLogGroup?: logs.ILogGroup;
+  readonly auditLogGroup?: logs.ILogGroupRef;
 }
 
 /**
@@ -411,7 +414,7 @@ export interface CustomEndpointOptions {
    * The certificate to use
    * @default - create a new one
    */
-  readonly certificate?: acm.ICertificate;
+  readonly certificate?: ICertificateRef;
 
   /**
    * The hosted zone in Route53 to create the CNAME record in
@@ -1003,6 +1006,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
@@ -1012,6 +1017,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
@@ -1023,6 +1030,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read/write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
@@ -1032,6 +1041,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1049,6 +1060,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param index The index to grant permissions for
    * @param identity The principal
    */
@@ -1064,6 +1077,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1081,6 +1096,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -1096,6 +1113,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -1110,6 +1129,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param path The path to grant permissions for
    * @param identity The principal
@@ -1404,8 +1425,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
   }
 
-  public readonly domainArn: string;
-  public readonly domainName: string;
+  @memoizedGetter
+  public get domainArn(): string {
+    return this.getResourceArnAttribute(this.domain.attrArn, {
+      service: 'es',
+      resource: 'domain',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get domainName(): string {
+    return this.getResourceNameAttribute(this.domain.ref);
+  }
+
   public readonly domainId: string;
   public readonly domainEndpoint: string;
 
@@ -1414,33 +1447,46 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    *
    * @attribute
    */
-  public readonly slowSearchLogGroup?: logs.ILogGroup;
+  public get slowSearchLogGroup(): logs.ILogGroup | undefined {
+    return this._slowSearchLogGroup ? toILogGroup(this._slowSearchLogGroup) : undefined;
+  }
 
   /**
    * Log group that slow indices are logged to.
    *
    * @attribute
    */
-  public readonly slowIndexLogGroup?: logs.ILogGroup;
+  public get slowIndexLogGroup(): logs.ILogGroup | undefined {
+    return this._slowIndexLogGroup ? toILogGroup(this._slowIndexLogGroup) : undefined;
+  }
 
   /**
    * Log group that application logs are logged to.
    *
    * @attribute
    */
-  public readonly appLogGroup?: logs.ILogGroup;
+  public get appLogGroup(): logs.ILogGroup | undefined {
+    return this._appLogGroup ? toILogGroup(this._appLogGroup) : undefined;
+  }
 
   /**
    * Log group that audit logs are logged to.
    *
    * @attribute
    */
-  public readonly auditLogGroup?: logs.ILogGroup;
+  public get auditLogGroup(): logs.ILogGroup | undefined {
+    return this._auditLogGroup ? toILogGroup(this._auditLogGroup) : undefined;
+  }
 
   /**
    * Master user password if fine grained access control is configured.
    */
   public readonly masterUserPassword?: cdk.SecretValue;
+
+  private readonly _slowSearchLogGroup?: logs.ILogGroupRef;
+  private readonly _slowIndexLogGroup?: logs.ILogGroupRef;
+  private readonly _appLogGroup?: logs.ILogGroupRef;
+  private readonly _auditLogGroup?: logs.ILogGroupRef;
 
   private readonly domain: CfnDomain;
 
@@ -1649,6 +1695,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ec2.InstanceClass.IM4GN,
       ec2.InstanceClass.R7GD,
       ec2.InstanceClass.R8GD,
+      'oi2', // OpenSearch-specific instance type with local NVMe storage
     ];
 
     const supportInstanceStorageInstanceType = [
@@ -1685,8 +1732,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new ValidationError(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`, this);
     }
 
-    // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
+    // Only R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD and OI2 support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
+    // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
       throw new ValidationError(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`, this);
     }
@@ -1803,19 +1851,19 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     // Setup logging
-    const logGroups: logs.ILogGroup[] = [];
+    const logGroups: logs.ILogGroupRef[] = [];
     const logPublishing: Record<string, any> = {};
 
     if (props.logging?.slowSearchLogEnabled) {
-      this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
+      this._slowSearchLogGroup = props.logging.slowSearchLogGroup ??
         new logs.LogGroup(this, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
-      logGroups.push(this.slowSearchLogGroup);
+      logGroups.push(this._slowSearchLogGroup);
       logPublishing.SEARCH_SLOW_LOGS = {
         enabled: true,
-        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+        cloudWatchLogsLogGroupArn: this._slowSearchLogGroup.logGroupRef.logGroupArn,
       };
     } else if (props.logging?.slowSearchLogEnabled === false) {
       logPublishing.SEARCH_SLOW_LOGS = {
@@ -1824,15 +1872,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (props.logging?.slowIndexLogEnabled) {
-      this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
+      this._slowIndexLogGroup = props.logging.slowIndexLogGroup ??
         new logs.LogGroup(this, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
-      logGroups.push(this.slowIndexLogGroup);
+      logGroups.push(this._slowIndexLogGroup);
       logPublishing.INDEX_SLOW_LOGS = {
         enabled: true,
-        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+        cloudWatchLogsLogGroupArn: this._slowIndexLogGroup.logGroupRef.logGroupArn,
       };
     } else if (props.logging?.slowIndexLogEnabled === false) {
       logPublishing.INDEX_SLOW_LOGS = {
@@ -1841,15 +1889,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (props.logging?.appLogEnabled) {
-      this.appLogGroup = props.logging.appLogGroup ??
+      this._appLogGroup = props.logging.appLogGroup ??
         new logs.LogGroup(this, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
-      logGroups.push(this.appLogGroup);
+      logGroups.push(this._appLogGroup);
       logPublishing.ES_APPLICATION_LOGS = {
         enabled: true,
-        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+        cloudWatchLogsLogGroupArn: this._appLogGroup.logGroupRef.logGroupArn,
       };
     } else if (props.logging?.appLogEnabled === false) {
       logPublishing.ES_APPLICATION_LOGS = {
@@ -1858,15 +1906,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (props.logging?.auditLogEnabled) {
-      this.auditLogGroup = props.logging.auditLogGroup ??
+      this._auditLogGroup = props.logging.auditLogGroup ??
         new logs.LogGroup(this, 'AuditLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
-      logGroups.push(this.auditLogGroup);
+      logGroups.push(this._auditLogGroup);
       logPublishing.AUDIT_LOGS = {
         enabled: true,
-        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+        cloudWatchLogsLogGroupArn: this._auditLogGroup?.logGroupRef.logGroupArn,
       };
     } else if (props.logging?.auditLogEnabled === false) {
       logPublishing.AUDIT_LOGS = {
@@ -1879,7 +1927,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       const logPolicyStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: logGroups.map((lg) => lg.logGroupArn),
+        resources: logGroups.map((lg) => lg.logGroupRef.logGroupArn),
         principals: [new iam.ServicePrincipal('es.amazonaws.com')],
       });
 
@@ -1892,7 +1940,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       });
     }
 
-    let customEndpointCertificate: acm.ICertificate | undefined;
+    let customEndpointCertificate: ICertificateRef | undefined;
     if (props.customEndpoint) {
       if (props.customEndpoint.certificate) {
         customEndpointCertificate = props.customEndpoint.certificate;
@@ -1985,8 +2033,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
-        kmsKeyId: encryptionAtRestEnabled
-          ? props.encryptionAtRest?.kmsKey?.keyRef.keyId
+        kmsKeyId: encryptionAtRestEnabled && props.encryptionAtRest?.kmsKey
+          ? this.selectKmsKeyIdentifier(props.encryptionAtRest.kmsKey)
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
@@ -2007,7 +2055,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         ...props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
-          customEndpointCertificateArn: customEndpointCertificate!.certificateArn,
+          customEndpointCertificateArn: customEndpointCertificate!.certificateRef.certificateId,
         },
       },
       advancedSecurityOptions: advancedSecurityEnabled
@@ -2075,17 +2123,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
     }
 
-    this.domainName = this.getResourceNameAttribute(this.domain.ref);
-
     this.domainId = this.domain.getAtt('Id').toString();
 
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
-
-    this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
-      service: 'es',
-      resource: 'domain',
-      resourceName: this.physicalName,
-    });
 
     if (props.customEndpoint?.hostedZone) {
       new route53.CnameRecord(this, 'CnameRecord', {
@@ -2194,6 +2234,38 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
       }
     }
+  }
+
+  /**
+   * Selects the appropriate KMS key identifier (keyId or keyArn) based on whether
+   * the key is from the same account and region as the domain.
+   *
+   * For cross-account or cross-region KMS keys, OpenSearch requires the full ARN.
+   * For same-account, same-region keys, keyId is sufficient.
+   */
+  private selectKmsKeyIdentifier(key: kms.IKeyRef): string {
+    const stack = cdk.Stack.of(this);
+
+    const keyAccount = key.env.account;
+    const keyRegion = key.env.region;
+    const stackAccount = stack.account;
+    const stackRegion = stack.region;
+
+    // If either account or region is different (and not a token), use ARN
+    // Tokens are unresolved values that will be determined at deploy time
+    const isCrossAccount = !cdk.Token.isUnresolved(keyAccount) &&
+                          !cdk.Token.isUnresolved(stackAccount) &&
+                          keyAccount !== stackAccount;
+    const isCrossRegion = !cdk.Token.isUnresolved(keyRegion) &&
+                         !cdk.Token.isUnresolved(stackRegion) &&
+                         keyRegion !== stackRegion;
+
+    if (isCrossAccount || isCrossRegion) {
+      return key.keyRef.keyArn;
+    }
+
+    // For same-account, same-region keys, use keyId (maintains backward compatibility)
+    return key.keyRef.keyId;
   }
 }
 

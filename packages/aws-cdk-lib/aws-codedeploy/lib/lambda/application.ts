@@ -1,7 +1,9 @@
 import { Construct } from 'constructs';
 import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
+import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { ApplicationReference, IApplicationRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
@@ -15,7 +17,7 @@ import { arnForApplication, validateName } from '../private/utils';
  * or one defined in a different CDK Stack,
  * use the `LambdaApplication#fromLambdaApplicationName` method.
  */
-export interface ILambdaApplication extends IResource {
+export interface ILambdaApplication extends IResource, IApplicationRef {
   /** @attribute */
   readonly applicationArn: string;
 
@@ -60,6 +62,11 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
     class Import extends Resource implements ILambdaApplication {
       public applicationArn = arnForApplication(Stack.of(scope), lambdaApplicationName);
       public applicationName = lambdaApplicationName;
+      public get applicationRef(): ApplicationReference {
+        return {
+          applicationName: this.applicationName,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -77,11 +84,36 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
     return new class extends Resource implements ILambdaApplication {
       public applicationArn = lambdaApplicationArn;
       public applicationName = Arn.split(lambdaApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
+      public get applicationRef(): ApplicationReference {
+        return {
+          applicationName: this.applicationName,
+        };
+      }
     }(scope, id, { environmentFromArn: lambdaApplicationArn });
   }
 
-  public readonly applicationArn: string;
-  public readonly applicationName: string;
+  private readonly resource: CfnApplication;
+
+  @memoizedGetter
+  public get applicationArn(): string {
+    return this.getResourceArnAttribute(arnForApplication(Stack.of(this), this.resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  @memoizedGetter
+  public get applicationName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  public get applicationRef(): ApplicationReference {
+    return {
+      applicationName: this.applicationName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: LambdaApplicationProps = {}) {
     super(scope, id, {
@@ -90,17 +122,9 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const resource = new CfnApplication(this, 'Resource', {
+    this.resource = new CfnApplication(this, 'Resource', {
       applicationName: this.physicalName,
       computePlatform: 'Lambda',
-    });
-
-    this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(this), resource.ref), {
-      service: 'codedeploy',
-      resource: 'application',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });

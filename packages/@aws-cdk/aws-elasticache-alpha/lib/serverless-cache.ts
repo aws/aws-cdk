@@ -335,6 +335,7 @@ export class ServerlessCache extends ServerlessCacheBase {
               defaultPort = ec2.Port.tcp(6379);
               break;
             case CacheEngine.MEMCACHED_LATEST:
+            case CacheEngine.MEMCACHED_1_6:
               // Document showing the default port
               // https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/set-up.html#elasticache-install-grant-access-VPN
               defaultPort = ec2.Port.tcp(11211);
@@ -417,7 +418,9 @@ export class ServerlessCache extends ServerlessCacheBase {
     addConstructMetadata(this, props);
 
     this.engine = props.engine ?? CacheEngine.VALKEY_LATEST;
-    this.serverlessCacheName = props.serverlessCacheName ?? Lazy.string({ produce: () => Names.uniqueId(this) });
+    this.serverlessCacheName = props.serverlessCacheName ?? Lazy.string({
+      produce: () => Names.uniqueResourceName(this, { maxLength: 40 }),
+    });
     this.kmsKey = props.kmsKey;
     this.vpc = props.vpc;
     this.userGroup = props.userGroup;
