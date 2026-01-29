@@ -1,4 +1,5 @@
 import { Template } from 'aws-cdk-lib/assertions';
+import * as cdk from 'aws-cdk-lib/core';
 import { App, Stack } from 'aws-cdk-lib/core';
 import {
   AccessEntry, AccessEntryProps, AccessEntryType,
@@ -132,5 +133,18 @@ describe('AccessEntry', () => {
     expect(importedAccessEntry.accessEntryArn).toEqual(importedAccessEntryArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
+  });
+
+  test('applies removal policy', () => {
+    new AccessEntry(stack, 'AccessEntry', {
+      cluster,
+      principal: 'arn:aws:iam::123456789012:role/TestRole',
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      accessPolicies: [],
+    });
+
+    Template.fromStack(stack).hasResource('AWS::EKS::AccessEntry', {
+      DeletionPolicy: 'Retain',
+    });
   });
 });

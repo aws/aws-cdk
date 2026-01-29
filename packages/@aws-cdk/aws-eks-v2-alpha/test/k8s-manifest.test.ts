@@ -1,8 +1,10 @@
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib/core';
 import { CfnResource, Stack } from 'aws-cdk-lib/core';
 import { testFixtureNoVpc, testFixtureCluster } from './util';
+import * as eks from '../lib';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart, KubectlProvider } from '../lib';
 
 const CLUSTER_VERSION = KubernetesVersion.V1_33;
@@ -373,6 +375,21 @@ describe('k8s manifest', () => {
       expect(m1.PruneLabel).toBeFalsy();
       expect(m2.PruneLabel).toBeFalsy();
       expect(m3.PruneLabel).toEqual('aws.cdk.eks/prune-c8971972440c5bb3661e468e4cb8069f7ee549414c');
+    });
+  });
+
+  test('applies removal policy to kubernetes manifest and kubectl provider', () => {
+    const { stack, cluster } = testFixtureCluster();
+
+    new eks.KubernetesManifest(stack, 'Manifest', {
+      cluster,
+      manifest: [{ apiVersion: 'v1', kind: 'ConfigMap' }],
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResource('Custom::AWSCDK-EKS-KubernetesResource', {
+      DeletionPolicy: 'Retain',
     });
   });
 });
