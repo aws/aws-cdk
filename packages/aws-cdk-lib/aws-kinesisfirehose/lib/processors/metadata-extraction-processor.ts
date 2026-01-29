@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { UnscopedValidationError } from '../../../core';
+import { UnscopedValidationError, ValidationError } from '../../../core';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
@@ -51,8 +51,11 @@ export class MetadataExtractionProcessor implements IDataProcessor {
    * @param query A map of partition key to jq expression.
    */
   public static jq16(query: Record<string, string>): MetadataExtractionProcessor {
-    if (Object.keys(query).length === 0) {
+    const keys = Object.keys(query);
+    if (keys.length === 0) {
       throw new UnscopedValidationError('The query for MetadataExtractionProcessor should not be empty.');
+    } else if (keys.length > 50) {
+      throw new UnscopedValidationError('The query for MetadataExtractionProcessor cannot exceed the limit of 50 keys.');
     }
     // Extraction query for JQ 1.6 is not a JSON, but a JQ expression.
     // For example:
@@ -61,18 +64,33 @@ export class MetadataExtractionProcessor implements IDataProcessor {
     //    "device": .type.device,
     //    "year": .event_timestamp|strftime("%Y")
     // }
-    const jqQuery = Object.entries(query).map(([key, expression]) => `${JSON.stringify(key)}:${expression}`);
-    return new this({
+    const jqQuery = keys.map((key) => `${JSON.stringify(key)}:${query[key]}`);
+    const options = {
       jsonParsingEngine: JsonParsingEngine.JQ_1_6,
       metadataExtractionQuery: `{${jqQuery.join(',')}}`,
-    });
+    };
+    return new MetadataExtractionProcessor(options, keys);
   }
 
   readonly props: DataProcessorProps = {};
 
-  constructor(private readonly options: MetadataExtractionProcessorOptions) {}
+  constructor(private readonly options: MetadataExtractionProcessorOptions, private readonly keys: readonly string[]) {}
 
-  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+  bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
+    if (!options.dynamicPartitioningEnabled) {
+      throw new ValidationError('MetadataExtractionProcessor needs dynamic partitioning.', scope);
+    }
+
+    const re = /!\{partitionKeyFromQuery:(.+?)\}/g;
+    const usedKeys = new Set<string>();
+    let match;
+    while (match = re.exec(options.prefix ?? '')) {
+      usedKeys.add(match[1]);
+    }
+    if (!(this.keys.length === usedKeys.size && this.keys.every((key) => usedKeys.has(key)))) {
+      throw new ValidationError('When dynamic partitioning via inline parsing is enabled, you must use all specified dynamic partitioning key values for partitioning your data source.', scope);
+    }
+
     const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [
       { parameterName: 'MetadataExtractionQuery', parameterValue: this.options.metadataExtractionQuery },
       { parameterName: 'JsonParsingEngine', parameterValue: this.options.jsonParsingEngine.parsingEngine },

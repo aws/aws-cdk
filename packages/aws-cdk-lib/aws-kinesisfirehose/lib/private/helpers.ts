@@ -5,10 +5,10 @@ import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { undefinedIfAllValuesAreEmpty } from '../../../core/lib/util';
-import { DestinationS3BackupProps } from '../common';
+import { CommonDestinationProps, DestinationS3BackupProps } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { ILoggingConfig } from '../logging-config';
-import { IDataProcessor } from '../processor';
+import { DataProcessorBindOptions, IDataProcessor } from '../processor';
 import { DynamicPartitioningProps } from '../s3-bucket';
 
 export interface DestinationLoggingProps {
@@ -124,17 +124,38 @@ export function createEncryptionConfig(
 
 export function createProcessingConfig(
   scope: Construct,
-  role: iam.IRole,
-  dataProcessors?: IDataProcessor[],
+  props: CommonDestinationProps,
+  options: DataProcessorBindOptions,
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-  if (!dataProcessors?.length) return undefined;
-
-  const processors = dataProcessors.map((dp) => renderDataProcessor(dp, scope, role));
+  if (props.processor && props.processors) {
+    throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+  }
+  const processorsFromProps = props.processor ? [props.processor] : props.processors;
+  const processors = (processorsFromProps ?? []).map((dp) => renderDataProcessor(dp, scope, options));
   const processorTypes = new Set(processors.map((p) => p.type));
 
   if (processorTypes.has('CloudWatchLogProcessing') && !processorTypes.has('Decompression')) {
     throw new cdk.ValidationError('CloudWatchLogProcessor can only be enabled with DecompressionProcessor', scope);
   }
+  if (options.dynamicPartitioningEnabled) {
+    const withLambda = processorTypes.has('Lambda');
+    const withInline = processorTypes.has('MetadataExtraction');
+    if (!options.prefix) {
+      throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify dataOutputPrefix.', scope);
+    }
+    if (!withLambda && !withInline) {
+      throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify ether LambdaFunctionProcessor, MetadataExtractionProcessor, or both.', scope);
+    }
+    if (withLambda && !withInline && !/!\{partitionKeyFromLambda:.+?\}/.test(options.prefix)) {
+      throw new cdk.ValidationError('When dynamic partitioning is enabled and the only LambdaFunctionProcessor is specified, you must specify at least one instance of !{partitionKeyFromLambda:keyID}.', scope);
+    }
+    if (!withLambda && options.prefix?.includes('!{partitionKeyFromLambda:')) {
+      throw new cdk.ValidationError('The dataOutputPrefix cannot contain !{partitionKeyFromLambda:keyID} when LambdaFunctionProcessor is not specified.', scope);
+    }
+    // !{partitionKeyFromQuery} is validated in MetadataExtractionProcessor.bind().
+  }
+
+  if (processors.length === 0) return undefined;
 
   return {
     enabled: true,
@@ -145,9 +166,9 @@ export function createProcessingConfig(
 function renderDataProcessor(
   processor: IDataProcessor,
   scope: Construct,
-  role: iam.IRole,
+  options: DataProcessorBindOptions,
 ): CfnDeliveryStream.ProcessorProperty {
-  const processorConfig = processor.bind(scope, { role });
+  const processorConfig = processor.bind(scope, options);
 
   if (processorConfig.parameters) {
     return {
@@ -156,7 +177,7 @@ function renderDataProcessor(
     };
   }
 
-  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+  const parameters = [{ parameterName: 'RoleArn', parameterValue: options.role.roleArn }];
   parameters.push(processorConfig.processorIdentifier);
   if (processor.props.bufferInterval) {
     parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });

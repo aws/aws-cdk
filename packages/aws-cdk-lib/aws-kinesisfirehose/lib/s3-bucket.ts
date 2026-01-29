@@ -114,6 +114,11 @@ export class S3Bucket implements IDestination {
     if (this.props.dataFormatConversion && this.props.compression) {
       throw new cdk.UnscopedValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
     }
+
+    validateOutputPrefix(this.props.dataOutputPrefix, this.props.errorOutputPrefix);
+    if (!this.props.dynamicPartitioning?.enabled && this.props.dataOutputPrefix?.includes('!{partitionKeyFrom')) {
+      throw new cdk.UnscopedValidationError('When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither partitionKeyFromLambda nor partitionKeyFromQuery.');
+    }
   }
 
   bind(scope: Construct, _options: DestinationBindOptions): DestinationConfig {
@@ -129,10 +134,11 @@ export class S3Bucket implements IDestination {
       streamId: 'S3Destination',
     }) ?? {};
 
-    if (this.props.processor && this.props.processors) {
-      throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
-    }
-    const dataProcessors = this.props.processor ? [this.props.processor] : this.props.processors;
+    const processingConfiguration = createProcessingConfig(scope, this.props, {
+      role,
+      dynamicPartitioningEnabled: this.props.dynamicPartitioning?.enabled,
+      prefix: this.props.dataOutputPrefix,
+    });
 
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
 
@@ -158,7 +164,7 @@ export class S3Bucket implements IDestination {
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: createProcessingConfig(scope, role, dataProcessors),
+        processingConfiguration: processingConfiguration,
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
@@ -182,5 +188,37 @@ export class S3Bucket implements IDestination {
     return this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL
       ? 'Enabled'
       : undefined;
+  }
+}
+
+/**
+ * Validates output prefixes
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#prefix-rules
+ */
+function validateOutputPrefix(prefix?: string, errorOutputPrefix?: string) {
+  // The sequence !{ can only appear in !{namespace:value} expressions.
+  if (prefix) validateOutputPrefixExpression(prefix, 'dataOutputPrefix');
+  if (errorOutputPrefix) validateOutputPrefixExpression(errorOutputPrefix, 'errorOutputPrefix');
+  // ErrorOutputPrefix can be null only if Prefix contains no expressions.
+  if (prefix?.includes('!{') && !errorOutputPrefix) {
+    throw new cdk.UnscopedValidationError('Specify the errorOutputPrefix in order to use expressions in the dataOutputPrefix.');
+  }
+  // If you specify an expression for ErrorOutputPrefix, you must include at least one instance of !{firehose:error-output-type}.
+  if (errorOutputPrefix?.includes('!{') && !errorOutputPrefix.includes('!{firehose:error-output-type}')) {
+    throw new cdk.UnscopedValidationError('The errorOutputPrefix expression must include at least one instance of !{firehose:error-output-type}.');
+  }
+  // Prefix can't contain !{firehose:error-output-type}.
+  if (prefix?.includes('!{firehose:error-output-type}')) {
+    throw new cdk.UnscopedValidationError('The dataOutputPrefix cannot contain !{firehose:error-output-type}.');
+  }
+  // You cannot use partitionKeyFromLambda and partitionKeyFromQuery namespaces when creating ErrorOutputPrefix expressions.
+  if (errorOutputPrefix?.includes('!{partitionKeyFrom')) {
+    throw new cdk.UnscopedValidationError('You cannot use partitionKeyFromLambda and partitionKeyFromQuery namespaces in errorOutputPreix.');
+  }
+}
+
+function validateOutputPrefixExpression(prefix: string, prop: string) {
+  if (/!\{(?!(?:firehose|timestamp|partitionKeyFrom(?:Lambda|Query)):.+?\})/.test(prefix)) {
+    throw new cdk.UnscopedValidationError(`The expression must be of the form !{namespace:value} and include a valid namespace at ${prop}.`);
   }
 }
