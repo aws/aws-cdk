@@ -194,6 +194,7 @@ export class Stage implements IStage {
       roleArn: action.role ? action.role.roleArn : undefined,
       region: action.region,
       namespace: action.namespace,
+      environmentVariables: action.environmentVariables?.length ? action.environmentVariables.map(envVar => envVar._render()) : undefined,
     };
   }
 
