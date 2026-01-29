@@ -100,13 +100,28 @@ export class SqsDestination implements IEventDestination {
   constructor(queue: sqs.IQueue) {
     this.extensionUri = queue.queueArn;
     this.type = SourceType.SQS;
-    const policy = new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      resources: [this.extensionUri],
-      actions: ['sqs:SendMessage'],
-    });
+
+    const statements: iam.PolicyStatement[] = [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        resources: [this.extensionUri],
+        actions: ['sqs:SendMessage'],
+      }),
+    ];
+
+    // Add KMS permissions if queue is encrypted with customer-managed key
+    if (queue.encryptionMasterKey) {
+      statements.push(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          resources: [queue.encryptionMasterKey.keyArn],
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        }),
+      );
+    }
+
     this.policyDocument = new iam.PolicyDocument({
-      statements: [policy],
+      statements,
     });
   }
 }

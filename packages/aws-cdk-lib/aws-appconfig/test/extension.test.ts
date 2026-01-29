@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import { EventBus } from '../../aws-events';
 import { Effect, Role, ServicePrincipal } from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Topic } from '../../aws-sns';
 import { Queue } from '../../aws-sqs';
@@ -325,6 +326,78 @@ describe('extension', () => {
           PolicyName: 'AllowAppConfigInvokeExtensionEventSourcePolicy',
         },
       ],
+    });
+  });
+
+  test('extension with encrypted SQS queue', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'MyKey');
+    const queue = new Queue(stack, 'MyQueue', {
+      encryptionMasterKey: key,
+    });
+    Object.defineProperty(queue, 'queueArn', {
+      value: 'arn:sqs:us-east-1:123456789012:my-encrypted-queue',
+    });
+
+    new Extension(stack, 'MyExtension', {
+      actions: [
+        new Action({
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_COMPLETE],
+          eventDestination: new SqsDestination(queue),
+        }),
+      ],
+    });
+
+    // Verify SQS permissions
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Policies: [{
+        PolicyDocument: {
+          Statement: [
+            {
+              Effect: Effect.ALLOW,
+              Resource: 'arn:sqs:us-east-1:123456789012:my-encrypted-queue',
+              Action: 'sqs:SendMessage',
+            },
+            {
+              Effect: Effect.ALLOW,
+              Resource: { 'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'] },
+              Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            },
+          ],
+        },
+        PolicyName: 'AllowAppConfigInvokeExtensionEventSourcePolicy',
+      }],
+    });
+  });
+
+  test('extension with unencrypted SQS queue (regression)', () => {
+    const stack = new cdk.Stack();
+    const queue = new Queue(stack, 'MyQueue');
+    Object.defineProperty(queue, 'queueArn', {
+      value: 'arn:sqs:us-east-1:123456789012:my-unencrypted-queue',
+    });
+
+    new Extension(stack, 'MyExtension', {
+      actions: [
+        new Action({
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_COMPLETE],
+          eventDestination: new SqsDestination(queue),
+        }),
+      ],
+    });
+
+    // Verify only SQS permissions (no KMS)
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Policies: [{
+        PolicyDocument: {
+          Statement: [{
+            Effect: Effect.ALLOW,
+            Resource: 'arn:sqs:us-east-1:123456789012:my-unencrypted-queue',
+            Action: 'sqs:SendMessage',
+          }],
+        },
+        PolicyName: 'AllowAppConfigInvokeExtensionEventSourcePolicy',
+      }],
     });
   });
 
