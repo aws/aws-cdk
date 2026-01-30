@@ -212,4 +212,90 @@ describe('main function', () => {
       );
     });
   });
+
+  describe('input validation', () => {
+    it('should throw on invalid GITHUB_REPOSITORY format (no slash)', async () => {
+      await expect(main({
+        ...baseConfig,
+        githubToken: 'test-token',
+        githubRepository: 'invalid-repo-format',
+        prNumber: '123',
+      })).rejects.toThrow('Invalid GITHUB_REPOSITORY format: "invalid-repo-format". Expected format: owner/repo');
+    });
+
+    it('should throw on invalid GITHUB_REPOSITORY format (too many slashes)', async () => {
+      await expect(main({
+        ...baseConfig,
+        githubToken: 'test-token',
+        githubRepository: 'aws/aws-cdk/extra',
+        prNumber: '123',
+      })).rejects.toThrow('Invalid GITHUB_REPOSITORY format: "aws/aws-cdk/extra". Expected format: owner/repo');
+    });
+
+    it('should throw on invalid GITHUB_REPOSITORY format (empty owner)', async () => {
+      await expect(main({
+        ...baseConfig,
+        githubToken: 'test-token',
+        githubRepository: '/aws-cdk',
+        prNumber: '123',
+      })).rejects.toThrow('Invalid GITHUB_REPOSITORY format: "/aws-cdk". Expected format: owner/repo');
+    });
+
+    it('should throw on invalid GITHUB_REPOSITORY format (empty repo)', async () => {
+      await expect(main({
+        ...baseConfig,
+        githubToken: 'test-token',
+        githubRepository: 'aws/',
+        prNumber: '123',
+      })).rejects.toThrow('Invalid GITHUB_REPOSITORY format: "aws/". Expected format: owner/repo');
+    });
+
+    it('should throw on invalid PR number (non-numeric)', async () => {
+      await expect(main({
+        ...baseConfig,
+        githubToken: 'test-token',
+        githubRepository: 'aws/aws-cdk',
+        prNumber: 'not-a-number',
+      })).rejects.toThrow('Invalid PR number: "not-a-number". Expected a positive integer.');
+    });
+
+    it('should throw on invalid PR number (zero)', async () => {
+      await expect(main({
+        ...baseConfig,
+        githubToken: 'test-token',
+        githubRepository: 'aws/aws-cdk',
+        prNumber: '0',
+      })).rejects.toThrow('Invalid PR number: "0". Expected a positive integer.');
+    });
+
+    it('should throw on invalid PR number (negative)', async () => {
+      await expect(main({
+        ...baseConfig,
+        githubToken: 'test-token',
+        githubRepository: 'aws/aws-cdk',
+        prNumber: '-5',
+      })).rejects.toThrow('Invalid PR number: "-5". Expected a positive integer.');
+    });
+
+    it('should accept valid repository and PR number', async () => {
+      (preflight.shouldRunIntegTests as jest.Mock).mockResolvedValue({
+        shouldRun: true,
+        reason: 'Test',
+      });
+
+      await main({
+        ...baseConfig,
+        githubToken: 'test-token',
+        githubRepository: 'aws/aws-cdk',
+        prNumber: '12345',
+      });
+
+      expect(preflight.shouldRunIntegTests).toHaveBeenCalledWith({
+        githubToken: 'test-token',
+        owner: 'aws',
+        repo: 'aws-cdk',
+        prNumber: 12345,
+      });
+    });
+  });
 });

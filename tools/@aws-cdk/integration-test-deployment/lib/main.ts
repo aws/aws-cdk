@@ -20,14 +20,26 @@ export async function main(config: MainConfig): Promise<void> {
 
   // Run preflight check if GitHub context is available
   if (githubToken && githubRepository && prNumber) {
-    const [owner, repo] = githubRepository.split('/');
-    console.log(`Running preflight check for PR #${prNumber}...`);
+    // Validate repository format
+    const repoParts = githubRepository.split('/');
+    if (repoParts.length !== 2 || !repoParts[0] || !repoParts[1]) {
+      throw new Error(`Invalid GITHUB_REPOSITORY format: "${githubRepository}". Expected format: owner/repo`);
+    }
+    const [owner, repo] = repoParts;
+
+    // Validate PR number
+    const parsedPrNumber = parseInt(prNumber, 10);
+    if (isNaN(parsedPrNumber) || parsedPrNumber <= 0) {
+      throw new Error(`Invalid PR number: "${prNumber}". Expected a positive integer.`);
+    }
+
+    console.log(`Running preflight check for PR #${parsedPrNumber}...`);
 
     const preflight = await shouldRunIntegTests({
       githubToken,
       owner,
       repo,
-      prNumber: parseInt(prNumber, 10),
+      prNumber: parsedPrNumber,
     });
 
     console.log(`Preflight result: ${preflight.reason}`);

@@ -37,8 +37,18 @@ async function isCdkTeamMember(githubToken: string, username: string): Promise<b
     return membership.state === 'active';
   }
 
-  // 404 means not a member, other errors we'll treat as not a member
-  return false;
+  // 404 means not a member
+  if (response.status === 404) {
+    return false;
+  }
+
+  // Authentication/authorization failures should not silently bypass security checks
+  if (response.status === 401 || response.status === 403) {
+    throw new Error(`GitHub authentication/authorization failed when checking team membership for ${username}. Status: ${response.status}. Verify the token has the required permissions.`);
+  }
+
+  // Other errors should also fail explicitly to avoid silent security bypass
+  throw new Error(`Failed to verify team membership for ${username}. GitHub API returned status: ${response.status}`);
 }
 
 /**

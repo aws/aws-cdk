@@ -261,5 +261,80 @@ describe('shouldRunIntegTests', () => {
         'Failed to fetch PR reviews: 500 Internal Server Error',
       );
     });
+
+    it('should throw on 401 authentication error during team membership check', async () => {
+      // Mock PR details (no label)
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ labels: [] }),
+      });
+
+      // Mock reviews
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ([
+          { state: 'APPROVED', user: { login: 'some-user' } },
+        ]),
+      });
+
+      // Mock team membership check - 401 unauthorized
+      mockFetch.mockResolvedValueOnce({
+        status: 401,
+      });
+
+      await expect(shouldRunIntegTests(defaultProps)).rejects.toThrow(
+        'GitHub authentication/authorization failed when checking team membership for some-user. Status: 401',
+      );
+    });
+
+    it('should throw on 403 forbidden error during team membership check', async () => {
+      // Mock PR details (no label)
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ labels: [] }),
+      });
+
+      // Mock reviews
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ([
+          { state: 'APPROVED', user: { login: 'some-user' } },
+        ]),
+      });
+
+      // Mock team membership check - 403 forbidden
+      mockFetch.mockResolvedValueOnce({
+        status: 403,
+      });
+
+      await expect(shouldRunIntegTests(defaultProps)).rejects.toThrow(
+        'GitHub authentication/authorization failed when checking team membership for some-user. Status: 403',
+      );
+    });
+
+    it('should throw on unexpected status codes during team membership check', async () => {
+      // Mock PR details (no label)
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ labels: [] }),
+      });
+
+      // Mock reviews
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ([
+          { state: 'APPROVED', user: { login: 'some-user' } },
+        ]),
+      });
+
+      // Mock team membership check - 500 server error
+      mockFetch.mockResolvedValueOnce({
+        status: 500,
+      });
+
+      await expect(shouldRunIntegTests(defaultProps)).rejects.toThrow(
+        'Failed to verify team membership for some-user. GitHub API returned status: 500',
+      );
+    });
   });
 });
