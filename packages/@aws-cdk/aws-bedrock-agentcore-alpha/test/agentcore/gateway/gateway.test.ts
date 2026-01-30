@@ -11,6 +11,7 @@
  *  and limitations under the License.
  */
 
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -2645,5 +2646,39 @@ describe('Gateway Interceptor Tests', () => {
     expect(lambdaInvokeStatement.Effect).toBe('Allow');
     expect(Array.isArray(lambdaInvokeStatement.Resource)).toBe(true);
     expect(lambdaInvokeStatement.Resource.length).toBe(2);
+  });
+});
+
+describe('Multiple Schema Binding Tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should bind multiple ApiSchemas from local assets in the same scope without collision', () => {
+    const schema1 = ApiSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'openapi', 'user-api.json'));
+    const schema2 = ApiSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'openapi', 'pet-api.json'));
+
+    // Both schemas should bind successfully without throwing 'Construct with id already exists' error
+    expect(() => {
+      schema1.bind(stack);
+      schema2.bind(stack);
+    }).not.toThrow();
+  });
+
+  test('Should bind multiple ToolSchemas from local assets in the same scope without collision', () => {
+    const schema1 = ToolSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'tool', 'schema1.json'));
+    const schema2 = ToolSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'tool', 'schema2.json'));
+
+    // Both schemas should bind successfully without throwing 'Construct with id already exists' error
+    expect(() => {
+      schema1.bind(stack);
+      schema2.bind(stack);
+    }).not.toThrow();
   });
 });
