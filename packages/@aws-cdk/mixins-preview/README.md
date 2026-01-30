@@ -54,7 +54,7 @@ For convenience, you can use the `.with()` method for a more fluent syntax:
 import '@aws-cdk/mixins-preview/with';
 
 const bucket = new s3.CfnBucket(scope, "MyBucket")
-  .with(new EnableVersioning())
+  .with(new BucketVersioning())
   .with(new AutoDeleteObjects());
 ```
 
@@ -127,11 +127,11 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new AutoDeleteObjects());
 ```
 
-**EnableVersioning**: Enables versioning on S3 buckets
+**BucketVersioning**: Enables versioning on S3 buckets
 
 ```typescript
 const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new EnableVersioning());
+Mixins.of(bucket).apply(new BucketVersioning());
 ```
 
 **BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
@@ -231,7 +231,8 @@ Mixins.of(scope)
 
 // Strict application that requires all constructs to match
 Mixins.of(scope)
-  .mustApply(new EncryptionAtRest()); // Throws if no constructs support the mixin
+  .requireAll() // Throws if no constructs support the mixin
+  .apply(new EncryptionAtRest());
 ```
 
 ---
