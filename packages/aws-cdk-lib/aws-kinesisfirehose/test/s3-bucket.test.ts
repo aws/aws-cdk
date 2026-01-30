@@ -1390,5 +1390,26 @@ describe('S3 destination', () => {
         });
       }).toThrow('The dataOutputPrefix cannot contain !{partitionKeyFromLambda:keyID} when LambdaFunctionProcessor is not specified.');
     });
+
+    it('throws when dataOutputPrefix contains partitionKeyFromQuery without inline parsing', () => {
+      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          new firehose.LambdaFunctionProcessor(lambdaFunction),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/!{partitionKeyFromLambda:bar}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('The dataOutputPrefix cannot contain !{partitionKeyFromQuery:keyID} when MetadataExtractionProcessor is not specified.');
+    });
   });
 });

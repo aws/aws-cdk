@@ -152,7 +152,9 @@ export function createProcessingConfig(
     if (!withLambda && options.prefix.includes('!{partitionKeyFromLambda:')) {
       throw new cdk.ValidationError('The dataOutputPrefix cannot contain !{partitionKeyFromLambda:keyID} when LambdaFunctionProcessor is not specified.', scope);
     }
-    // !{partitionKeyFromQuery} is validated in MetadataExtractionProcessor.bind().
+    if (!withInline && options.prefix.includes('!{partitionKeyFromQuery:')) {
+      throw new cdk.ValidationError('The dataOutputPrefix cannot contain !{partitionKeyFromQuery:keyID} when MetadataExtractionProcessor is not specified.', scope);
+    }
   }
 
   if (processors.length === 0) return undefined;
