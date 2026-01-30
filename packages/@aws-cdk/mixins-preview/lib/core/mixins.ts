@@ -30,7 +30,7 @@ export interface IMixin {
   /**
    * Applies the mixin functionality to the target construct.
    */
-  applyTo(construct: IConstruct): IConstruct;
+  applyTo(construct: IConstruct): void;
 }
 
 /**
@@ -55,5 +55,5 @@ export abstract class Mixin implements IMixin {
     return true;
   }
 
-  abstract applyTo(construct: IConstruct): IConstruct;
+  abstract applyTo(construct: IConstruct): void;
 }

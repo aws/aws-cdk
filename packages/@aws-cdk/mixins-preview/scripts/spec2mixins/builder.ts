@@ -211,11 +211,12 @@ class L1PropsMixin extends ClassType {
   }
 
   private makeSupportsMethod(): Method {
-    const resClass = Type.fromName(this.constructLibModule, naming.classNameFromResource(this.resource));
+    const resourceClassName = naming.classNameFromResource(this.resource);
+    const resourceClass = Type.fromName(this.constructLibModule, resourceClassName);
 
     const method = this.addMethod({
       name: 'supports',
-      returnType: Type.ambient(`construct is service.${resClass.symbol}`),
+      returnType: Type.ambient(`construct is service.${resourceClass.symbol}`),
       docs: {
         summary: 'Check if this mixin supports the given construct',
       },
@@ -231,7 +232,7 @@ class L1PropsMixin extends ClassType {
         expr.binOp(
           CallableProxy.fromName('CfnResource.isCfnResource', CDK_CORE).invoke(construct),
           '&&',
-          expr.eq(expr.get(construct, 'cfnResourceType'), expr.lit(this.resource.cloudFormationType)),
+          $T(resourceClass)[`is${resourceClassName}`](construct),
         ),
       ),
     );
@@ -242,7 +243,7 @@ class L1PropsMixin extends ClassType {
   private makeApplyToMethod(supports: Method) {
     const method = this.addMethod({
       name: 'applyTo',
-      returnType: CONSTRUCTS.IConstruct,
+      returnType: Type.VOID,
       docs: {
         summary: 'Apply the mixin properties to the construct',
       },
@@ -274,7 +275,6 @@ class L1PropsMixin extends ClassType {
               ),
           ),
         ),
-      stmt.ret(construct),
     );
   }
 }
