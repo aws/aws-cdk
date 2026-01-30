@@ -1794,6 +1794,31 @@ def handler(event, context):
 mcpTarget.grantSync(syncFunction);
 ```
 
+- API Gateway Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const api = new apigateway.RestApi(this, 'MyApi', {
+  restApiName: 'my-api',
+});
+
+// Basic example with only required fields - uses IAM authentication by default
+const apiGatewayTarget = gateway.addApiGatewayTarget("MyApiGatewayTarget", {
+  restApi: api,
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET],
+      },
+    ],
+  },
+});
+```
+
 #### Using static factory methods
 
 Create Gateway target using static convienence method.
@@ -1912,6 +1937,38 @@ const mcpTarget = agentcore.GatewayTarget.forMcpServer(this, "MyMcpServer", {
 });
 ```
 
+- API Gateway Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const api = new apigateway.RestApi(this, 'MyApi', {
+  restApiName: 'my-api',
+});
+
+// Create a gateway target using the static factory method
+const apiGatewayTarget = agentcore.GatewayTarget.forApiGateway(this, "MyApiGatewayTarget", {
+  gatewayTargetName: "my-api-gateway-target",
+  description: "Target for API Gateway REST API integration",
+  gateway: gateway,
+  restApi: api,
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
+      },
+    ],
+  },
+  metadataConfiguration: {
+    allowedRequestHeaders: ["X-User-Id"],
+    allowedQueryParameters: ["limit"],
+  },
+});
+```
+
 ### Advanced Usage: Direct Configuration for gateway target
 
 For advanced use cases where you need full control over the target configuration, you can create configurations manually using the static factory methods and use the GatewayTarget constructor directly.
@@ -1923,6 +1980,7 @@ Each target type has a corresponding configuration class with a static `create()
 - **Lambda**: `LambdaTargetConfiguration.create(lambdaFunction, toolSchema)`
 - **OpenAPI**: `OpenApiTargetConfiguration.create(apiSchema, validateSchema?)`
 - **Smithy**: `SmithyTargetConfiguration.create(smithyModel)`
+- **API Gateway**: `ApiGatewayTargetConfiguration.create(props)`
 
 #### Example: Lambda Target with Custom Configuration
 
