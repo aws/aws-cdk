@@ -467,6 +467,18 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+To overwrite an existing ALB controller service account, use the `overwriteServiceAccount` property:
+
+```ts
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_34,
+  albController: {
+    version: eks.AlbControllerVersion.V2_8_2,
+    overwriteServiceAccount: true,
+  },
+});
+```
+
 The `albController` requires `defaultCapacity` or at least one nodegroup. If there's no `defaultCapacity` or available
 nodegroup for the cluster, the `albController` deployment would fail.
 
