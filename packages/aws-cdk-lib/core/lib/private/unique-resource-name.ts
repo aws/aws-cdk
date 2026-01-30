@@ -33,6 +33,15 @@ interface MakeUniqueResourceNameOptions {
    * @default - none
    */
   readonly prefix?: string;
+
+  /**
+   * An optional discriminator string to differentiate multiple unique names
+   * generated from the same construct. The discriminator is included in the
+   * hash calculation but not in the human-readable portion.
+   *
+   * @default - none
+   */
+  readonly discriminator?: string;
 }
 
 /**
@@ -67,7 +76,8 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
   // top-level resources will simply use the `name` as-is if the name is also short enough
   // in order to support transparent migration of cloudformation templates to the CDK without the
   // need to rename all resources.
-  if (components.length === 1) {
+  // However, if a discriminator is provided, we need to add a hash to ensure uniqueness.
+  if (components.length === 1 && !options.discriminator) {
     const topLevelResource = prefix + removeNonAllowedSpecialCharacters(components[0], separator, options.allowedSpecialCharacters);
 
     if (topLevelResource.length <= maxLength) {
@@ -76,7 +86,8 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
   }
 
   // Calculate the hash from the full path, included unresolved tokens so the hash value is always unique
-  const hash = pathHash(components);
+  // Include discriminator in hash if provided to differentiate multiple names from same construct
+  const hash = pathHash(components, options.discriminator);
   const human = prefix + removeDupes(components)
     .filter(pathElement => pathElement !== HIDDEN_FROM_HUMAN_ID)
     .map(pathElement => removeNonAllowedSpecialCharacters(pathElement, separator, options.allowedSpecialCharacters))
@@ -92,9 +103,13 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
  * Take a hash of the given path.
  *
  * The hash is limited in size.
+ * If a discriminator is provided, it is included in the hash calculation to produce
+ * different hashes for the same path with different discriminators.
  */
-function pathHash(path: string[]): string {
-  const md5 = md5hash(path.join(PATH_SEP));
+function pathHash(path: string[], discriminator?: string): string {
+  const pathString = path.join(PATH_SEP);
+  const hashInput = discriminator ? `${pathString}${PATH_SEP}${discriminator}` : pathString;
+  const md5 = md5hash(hashInput);
   return md5.slice(0, HASH_LEN).toUpperCase();
 }
 
