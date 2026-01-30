@@ -11,12 +11,15 @@ const ALLOWED_FQN_PREFIXES: ReadonlyArray<string> = [
 ];
 
 export function addMetadata(construct: IConstruct, mixin: IMixin) {
+  let reportedValue = '*';
   const fqn = Object.getPrototypeOf(mixin).constructor[JSII_RUNTIME_SYMBOL]?.fqn;
-  if (fqn) {
-    if (ALLOWED_FQN_PREFIXES.find(prefix => fqn.startsWith(prefix))) {
-      construct.node.addMetadata(MIXIN_METADATA_KEY, { mixin: fqn });
-    } else {
-      construct.node.addMetadata(MIXIN_METADATA_KEY, { mixin: '*' });
-    }
+  if (fqn && ALLOWED_FQN_PREFIXES.find(prefix => fqn.startsWith(prefix))) {
+    reportedValue = fqn;
   }
+  construct.node.addMetadata(MIXIN_METADATA_KEY, { mixin: reportedValue });
+}
+
+export function applyMixin(construct: IConstruct, mixin: IMixin) {
+  addMetadata(construct, mixin);
+  mixin.applyTo(construct);
 }
