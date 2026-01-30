@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-firehose-dynamic-partitioning-inline.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fea2179fb9ac311389cbb847dd5226121b6363f80167afc7fc97d1b1d9995ae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/71f86cf23cc7b464985162b3fbb512794d8a201bdb657336db7b52c23e55c8b4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -97,7 +97,8 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "destination": "*"
+              "destination": "*",
+              "encryption": "*"
             }
           }
         ],
@@ -142,12 +143,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-firehose-dynamic-partitioning-inline/DeliveryStream/S3 Destination Role/ImportS3 Destination Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-firehose-dynamic-partitioning-inline/DeliveryStream/S3 Destination Role/Resource": [
@@ -282,7 +277,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a68110f49feff8a37efc8f50e85cda818f83debadb82b4a6f15a22dc6a7b5500.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb0b44db2f12d42d1afdc77a4c575e14c66c97504da836cbc642ee2e36a99ad7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -447,7 +442,7 @@
             "data": "AssertionResultsAwsApiCalls3listObjectsV2e2fd0826e232cbe7105b6226241eb853"
           }
         ],
-        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac/Default": [
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -461,40 +456,40 @@
             "data": "*"
           }
         ],
-        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac/Default/Default": [
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac"
+            "data": "AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a"
           }
         ],
-        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac/WaitFor/IsCompleteProvider/Invoke": [
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForIsCompleteProviderInvoke8F64259F"
+            "data": "AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6aWaitForIsCompleteProviderInvoke5D2C213A"
           }
         ],
-        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac/WaitFor/TimeoutProvider/Invoke": [
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForTimeoutProviderInvoke42EA8D72"
+            "data": "AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6aWaitForTimeoutProviderInvoke3554142E"
           }
         ],
-        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac/WaitFor/Role": [
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitForRoleC778EFD9"
+            "data": "AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6aWaitForRole39F5BCF3"
           }
         ],
-        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac/WaitFor/Resource": [
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074acWaitFor7E814A87"
+            "data": "AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6aWaitForBEBBAEB0"
           }
         ],
-        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac/AssertionResults": [
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCalls3listObjectsV269d53ac4b95da10baec253e7e8f074ac"
+            "data": "AssertionResultsAwsApiCalls3listObjectsV20e29e63c1a30fae6ce47acbd060a2e6a"
           }
         ],
         "/integ-tests/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -809,6 +804,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1010,5 +1009,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

@@ -26,6 +26,7 @@ const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
     dataOutputPrefix: 'key1=!{partitionKeyFromQuery:key1}/key2=!{partitionKeyFromQuery:key2}/',
     errorOutputPrefix: 'error-output/!{firehose:error-output-type}/',
   }),
+  encryption: firehose.StreamEncryption.awsOwnedKey(),
 });
 
 const integTest = new integ.IntegTest(app, 'integ-tests', {

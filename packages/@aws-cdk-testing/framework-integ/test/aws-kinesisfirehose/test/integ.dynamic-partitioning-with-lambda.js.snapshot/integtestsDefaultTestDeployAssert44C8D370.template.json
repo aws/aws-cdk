@@ -27,7 +27,7 @@
      "Record": "{\"Data\":\"{\\\"foo\\\":\\\"recordA\\\",\\\"bar\\\":{\\\"baz\\\":\\\"Partition1\\\",\\\"blah\\\":\\\"blah\\\"},\\\"data\\\":\\\"data1\\\"}{\\\"foo\\\":\\\"recordB\\\",\\\"bar\\\":{\\\"baz\\\":\\\"Partition2\\\",\\\"blah\\\":\\\"quux\\\"},\\\"data\\\":\\\"data2\\\"}{\\\"data\\\":\\\"data3\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1769420481072"
+    "salt": "1769746205951"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -179,7 +179,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1769420481073"
+    "salt": "1769746205952"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -484,7 +484,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1769420481075"
+    "salt": "1769746205956"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -638,7 +638,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1769420481076"
+    "salt": "1769746205957"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
