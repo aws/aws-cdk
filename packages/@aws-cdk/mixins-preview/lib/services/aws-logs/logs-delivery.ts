@@ -1,14 +1,13 @@
-import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
-import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Names, Stack } from 'aws-cdk-lib/core';
+import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
-import { ConstructSelector, Mixins } from '../../core';
+import { tryFindDeliverySourceForResource } from '../../mixins/private/reflections';
 import * as xray from '../aws-xray/policy';
-import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
-import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import { IKeyRef } from 'aws-cdk-lib/aws-kms';
+import { CloudwatchDeliveryDestination, FirehoseDelvieryDestination, S3DeliveryDestination } from './logs-destination';
 
 /**
  * The individual elements of a logs delivery integration.
@@ -111,29 +110,20 @@ export class S3LogsDelivery implements ILogsDelivery {
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const container = new Construct(scope, deliveryId('S3', logType, scope, this.bucket));
 
-    const bucketPolicy = this.getOrCreateBucketPolicy(container);
-    this.grantLogsDelivery(bucketPolicy);
-
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
 
-    const kmsKey = this.findEncryptionKey();
-    if (kmsKey) {
-      this.addToEncryptionKeyPolicy(kmsKey);
-    }
-
-    const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
-      destinationResourceArn: this.bucket.bucketRef.bucketArn,
-      name: deliveryDestName('s3', logType, container),
-      deliveryDestinationType: 'S3',
+    const deliveryDestination = new S3DeliveryDestination(container, 'Dest', {
+      bucket: this.bucket, 
+      permissionsVersion: this.permissions, 
+      encryptionKey: this.kmsKey,
+      destinationid: logType.split('_').map(word => word.toLowerCase()).join('-'),
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.attrArn,
       deliverySourceName: deliverySourceRef.deliverySourceName,
     });
-
-    deliveryDestination.node.addDependency(bucketPolicy);
 
     delivery.node.addDependency(deliverySource);
     delivery.node.addDependency(deliveryDestination);
@@ -143,111 +133,6 @@ export class S3LogsDelivery implements ILogsDelivery {
       deliveryDestination,
       delivery,
     };
-  }
-
-  /**
-   * Gets or creates a bucket policy for the S3 destination Bucket.
-   * @param scope - The construct scope
-   * @returns The bucket policy
-   */
-  private getOrCreateBucketPolicy(scope: IConstruct): s3.CfnBucketPolicy {
-    const existingPolicy = tryFindBucketPolicyForBucket(this.bucket);
-
-    return existingPolicy ?? new s3.CfnBucketPolicy(scope, 'BucketPolicy', {
-      bucket: this.bucket.bucketRef.bucketName,
-      policyDocument: { // needed to create an empty policy document, otherwise a validation error is thrown
-        Version: '2012-10-17',
-        Statement: [],
-      },
-    });
-  }
-
-  /**
-   * Grants permissions for log delivery to the bucket policy.
-   * @param policy - The bucket policy
-   */
-  private grantLogsDelivery(policy: s3.CfnBucketPolicy): void {
-    const stack = Stack.of(policy);
-
-    // always required permissions
-    const statements = [
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-        actions: ['s3:PutObject'],
-        resources: [`${this.bucket.bucketRef.bucketArn}/AWSLogs/${stack.account}/*`],
-        conditions: {
-          StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control',
-            'aws:SourceAccount': stack.account,
-          },
-          ArnLike: {
-            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
-          },
-        },
-      }),
-    ];
-
-    if (this.permissions == 'V1') {
-      statements.push(new PolicyStatement({
-        effect: Effect.ALLOW,
-        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-        actions: ['s3:GetBucketAcl', 's3:ListBucket'],
-        resources: [this.bucket.bucketRef.bucketArn],
-        conditions: {
-          StringEquals: {
-            'aws:SourceAccount': stack.account,
-          },
-          ArnLike: {
-            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
-          },
-        },
-      }));
-    }
-
-    Mixins.of(policy, ConstructSelector.onlyItself())
-      .apply(new BucketPolicyStatementsMixin(statements));
-  }
-
-  private findEncryptionKey(): CfnKey | undefined {
-    if (this.kmsKey) {
-      return tryFindKmsKeyConstruct(this.kmsKey);
-    }
-    return tryFindKmsKeyforBucket(this.bucket);
-  }
-
-  private addToEncryptionKeyPolicy(key: CfnKey) {
-    const existingKeyPolicy = key.keyPolicy;
-    const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
-    const sid = 'AWS CDK: Allow Logs Delivery to use the key';
-    const keyStatement = new PolicyStatement({
-      sid,
-      effect: Effect.ALLOW,
-      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-      actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
-      resources: ['*'],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': [key.env.account],
-        },
-        ArnLike: {
-          'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${key.env.region}:${key.env.account}:${sourceArnPostfix}`],
-        },
-      },
-    });
-    if (!existingKeyPolicy) {
-      key.keyPolicy = new PolicyDocument({
-        statements: [keyStatement],
-      });
-      return;
-    }
-    // Check if a statement with this SID already exists
-    const hasDuplicateSid = existingKeyPolicy.statements.some((stmt: PolicyStatement) => stmt.sid === sid);
-    if (hasDuplicateSid) {
-      return;
-    }
-
-    existingKeyPolicy.addStatements(keyStatement);
   }
 }
 
@@ -271,16 +156,11 @@ export class FirehoseLogsDelivery implements ILogsDelivery {
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const container = new Construct(scope, deliveryId('Firehose', logType, scope, this.deliveryStream));
 
-    // Firehose uses a service-linked role to deliver logs
-    // This tag marks the destination stream as an allowed destination for the service-linked role
-    Tags.of(this.deliveryStream).add('LogDeliveryEnabled', 'true');
-
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
 
-    const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
-      destinationResourceArn: this.deliveryStream.deliveryStreamRef.deliveryStreamArn,
-      name: deliveryDestName('fh', logType, container),
-      deliveryDestinationType: 'FH',
+    const deliveryDestination = new FirehoseDelvieryDestination(container, 'Dest', {
+      deliveryStream: this.deliveryStream,
+      destinationid: logType.split('_').map(word => word.toLowerCase()).join('-'),
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
@@ -322,13 +202,9 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
 
-    const logGroupPolicy = this.getOrCreateLogsResourcePolicy(container);
-    this.grantLogsDelivery(logGroupPolicy);
-
-    const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
-      destinationResourceArn: this.logGroup.logGroupRef.logGroupArn,
-      name: deliveryDestName('cwl', logType, container),
-      deliveryDestinationType: 'CWL',
+    const deliveryDestination= new CloudwatchDeliveryDestination(container, 'Dest', {
+      logGroup: this.logGroup,
+      destinationid: logType.split('_').map(word => word.toLowerCase()).join('-'),
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
@@ -339,53 +215,11 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
     delivery.node.addDependency(deliverySource);
     delivery.node.addDependency(deliveryDestination);
 
-    deliveryDestination.node.addDependency(logGroupPolicy);
-
     return {
       deliverySource,
       deliveryDestination,
       delivery,
     };
-  }
-
-  /**
-   * Gets or creates a singleton Logs Resource Policy.
-   * @param scope - The construct scope
-   * @returns The resource policy
-   */
-  private getOrCreateLogsResourcePolicy(scope: IConstruct): logs.ResourcePolicy {
-    const stack = Stack.of(scope);
-    const policyId = 'CdkLogGroupLogsDeliveryPolicy';
-
-    // Singleton policy per stack
-    const existingPolicy = stack.node.tryFindChild(policyId) as logs.ResourcePolicy;
-
-    return existingPolicy ?? new logs.ResourcePolicy(stack, policyId, {
-      resourcePolicyName: Names.uniqueResourceName(scope, { maxLength: 255 }),
-    });
-  }
-
-  /**
-   * Grants permissions for log delivery to the resource policy.
-   * @param policy - The resource policy
-   */
-  private grantLogsDelivery(policy: logs.ResourcePolicy): void {
-    const stack = Stack.of(policy);
-
-    policy.document.addStatements(new PolicyStatement({
-      effect: Effect.ALLOW,
-      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-      actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-      resources: [`${this.logGroup.logGroupRef.logGroupArn}:log-stream:*`],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': stack.account,
-        },
-        ArnLike: {
-          'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
-        },
-      },
-    }));
   }
 }
 
