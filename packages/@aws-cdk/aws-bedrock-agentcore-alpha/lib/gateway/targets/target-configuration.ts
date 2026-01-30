@@ -1,12 +1,14 @@
 import * as fs from 'fs';
+import * as cdk from 'aws-cdk-lib';
 import { Token } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { IGateway } from '../gateway-base';
+import { validateOpenApiSchema, validateFieldPattern, validateStringField, ValidationError } from '../validation-helpers';
 import { ApiSchema, AssetApiSchema } from './schema/api-schema';
 import { ToolSchema } from './schema/tool-schema';
 import { McpTargetType } from './target-base';
-import { validateOpenApiSchema, validateFieldPattern, ValidationError } from '../validation-helpers';
 
 /******************************************************************************
  *                          Interface
@@ -402,6 +404,447 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
         'MCP server endpoint contains characters that should be URL-encoded. ' +
         'Please ensure the URL is properly encoded before passing to the construct.',
       );
+    }
+  }
+}
+
+/******************************************************************************
+ *                     API Gateway Target Configuration
+ *****************************************************************************/
+
+/**
+ * HTTP methods supported by API Gateway
+ */
+export enum ApiGatewayHttpMethod {
+  /** GET method */
+  GET = 'GET',
+  /** POST method */
+  POST = 'POST',
+  /** PUT method */
+  PUT = 'PUT',
+  /** DELETE method */
+  DELETE = 'DELETE',
+  /** PATCH method */
+  PATCH = 'PATCH',
+  /** HEAD method */
+  HEAD = 'HEAD',
+  /** OPTIONS method */
+  OPTIONS = 'OPTIONS',
+}
+
+/**
+ * Configuration for filtering API Gateway tools
+ *
+ * Tool filters allow you to select REST API operations using path and method combinations.
+ * Each filter supports two path matching strategies:
+ * - **Explicit paths**: Matches a single specific path, such as `/pets/{petId}`
+ * - **Wildcard paths**: Matches all paths starting with the specified prefix, such as `/pets/*`
+ */
+export interface ApiGatewayToolFilter {
+  /**
+   * The resource path to filter
+   * Can be an explicit path (e.g., `/pets/{petId}`) or a wildcard path (e.g., `/pets/*`)
+   * Must start with a forward slash
+   */
+  readonly filterPath: string;
+
+  /**
+   * List of HTTP methods to include for this path
+   * Each filter specifies both a path and a list of HTTP methods
+   * Multiple filters can overlap and duplicates are automatically de-duplicated
+   */
+  readonly methods: ApiGatewayHttpMethod[];
+}
+
+/**
+ * Configuration for overriding API Gateway tool metadata
+ *
+ * Tool overrides allow you to customize the tool name or description for specific operations
+ * after filtering. Each override must specify an explicit path and a single HTTP method.
+ * The override must match an operation that exists in your API and must correspond to one
+ * of the operations resolved by your filters.
+ */
+export interface ApiGatewayToolOverride {
+  /**
+   * The explicit resource path (no wildcards)
+   * Must match an operation that exists in your API
+   */
+  readonly path: string;
+
+  /**
+   * The HTTP method for this override
+   * Must be a single method (no wildcards)
+   */
+  readonly method: ApiGatewayHttpMethod;
+
+  /**
+   * The custom tool name
+   * If not provided, the operationId from the OpenAPI definition will be used
+   */
+  readonly name: string;
+
+  /**
+   * Optional custom description for the tool
+   */
+  readonly description?: string;
+}
+
+/**
+ * Configuration for passing metadata (headers and query parameters) to the API Gateway target
+ */
+export interface MetadataConfiguration {
+  /**
+   * List of query parameter names to pass through to the target
+   * Maximum 20 parameter names
+   * @default - No query parameters are passed through
+   */
+  readonly allowedQueryParameters?: string[];
+
+  /**
+   * List of request header names to pass through to the target
+   * Maximum 20 header names
+   * @default - No request headers are passed through
+   */
+  readonly allowedRequestHeaders?: string[];
+
+  /**
+   * List of response header names to pass through from the target
+   * Maximum 20 header names
+   * @default - No response headers are passed through
+   */
+  readonly allowedResponseHeaders?: string[];
+}
+
+/**
+ * Configuration for API Gateway tools
+ *
+ * The API Gateway tool configuration defines which operations from your REST API
+ * are exposed as tools. It requires a list of tool filters to select operations
+ * to expose, and optionally accepts tool overrides to customize tool metadata.
+ */
+export interface ApiGatewayToolConfiguration {
+  /**
+   * List of tool filters to select operations
+   * At least one filter is required
+   */
+  readonly toolFilters: ApiGatewayToolFilter[];
+
+  /**
+   * Optional list of tool overrides to customize tool metadata
+   * Each override must correspond to an operation selected by the filters
+   */
+  readonly toolOverrides?: ApiGatewayToolOverride[];
+}
+
+/**
+ * Properties for creating an API Gateway target configuration
+ */
+export interface ApiGatewayTargetConfigurationProps {
+  /**
+   * The ID of the REST API
+   * Must be in the same account and region as the gateway
+   */
+  readonly restApiId: string;
+
+  /**
+   * The stage name of the REST API
+   * The stage must be deployed
+   */
+  readonly stage: string;
+
+  /**
+   * Tool configuration defining which operations to expose
+   */
+  readonly apiGatewayToolConfiguration: ApiGatewayToolConfiguration;
+
+  /**
+   * Metadata configuration for passing headers and query parameters
+   * Allows you to pass additional context through headers and query parameters
+   * @default - No metadata configuration
+   */
+  readonly metadataConfiguration?: MetadataConfiguration;
+}
+
+/**
+ * Configuration for API Gateway-based MCP targets
+ *
+ * This configuration connects your gateway to an Amazon API Gateway REST API stage.
+ * The gateway translates incoming MCP requests into HTTP requests to your REST API
+ * and handles response formatting.
+ *
+ * Key considerations:
+ * - API must be in the same account and region as the gateway
+ * - Only REST APIs are supported (no HTTP or WebSocket APIs)
+ * - API must use a public endpoint type
+ * - Methods with both AWS_IAM authorization and API key requirements are not supported
+ * - Proxy resources (e.g., `/pets/{proxy+}`) are not supported
+ */
+export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
+  /**
+   * Create an API Gateway target configuration
+   *
+   * @param props The configuration properties
+   * @returns A new ApiGatewayTargetConfiguration instance
+   */
+  public static create(props: ApiGatewayTargetConfigurationProps): ApiGatewayTargetConfiguration {
+    return new ApiGatewayTargetConfiguration(props);
+  }
+
+  public readonly targetType = McpTargetType.API_GATEWAY;
+
+  /**
+   * The ID of the REST API
+   */
+  public readonly restApiId: string;
+
+  /**
+   * The stage name of the REST API
+   */
+  public readonly stage: string;
+
+  /**
+   * Tool configuration for the API Gateway target
+   */
+  public readonly apiGatewayToolConfiguration: ApiGatewayToolConfiguration;
+
+  /**
+   * Metadata configuration for the API Gateway target
+   */
+  public readonly metadataConfiguration?: MetadataConfiguration;
+
+  constructor(props: ApiGatewayTargetConfigurationProps) {
+    super();
+    this.restApiId = props.restApiId;
+    this.stage = props.stage;
+    this.apiGatewayToolConfiguration = props.apiGatewayToolConfiguration;
+    this.metadataConfiguration = props.metadataConfiguration;
+
+    this.validateConfiguration();
+  }
+
+  /**
+   * Binds this configuration to a construct scope
+   * Sets up necessary permissions for the gateway to access the API Gateway
+   *
+   * @param _scope The construct scope
+   * @param gateway The gateway that will use this target
+   */
+  public bind(_scope: Construct, gateway: IGateway): TargetConfigurationConfig {
+    // Grant permission to export the API definition
+    // The gateway needs to call GetExport to retrieve the OpenAPI definition
+    gateway.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['apigateway:GET'],
+        resources: [
+          `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}::/restapis/${this.restApiId}/stages/${this.stage}/exports/*`,
+          `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}::/restapis/${this.restApiId}`,
+        ],
+      }),
+    );
+
+    // Grant permission to invoke the API Gateway REST API
+    // This is required for IAM-based outbound authorization
+    // The gateway role needs this permission to make API calls to the REST API endpoints
+    gateway.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['execute-api:Invoke'],
+        resources: [
+          `arn:${cdk.Aws.PARTITION}:execute-api:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:${this.restApiId}/${this.stage}/*/*`,
+        ],
+      }),
+    );
+
+    return { bound: true };
+  }
+
+  /**
+   * Renders the MCP-specific configuration
+   */
+  protected renderMcpConfiguration(): any {
+    return {
+      apiGateway: {
+        restApiId: this.restApiId,
+        stage: this.stage,
+        apiGatewayToolConfiguration: {
+          toolFilters: this.apiGatewayToolConfiguration.toolFilters.map(filter => ({
+            filterPath: filter.filterPath,
+            methods: filter.methods,
+          })),
+          ...(this.apiGatewayToolConfiguration.toolOverrides && {
+            toolOverrides: this.apiGatewayToolConfiguration.toolOverrides.map(override => ({
+              path: override.path,
+              method: override.method,
+              name: override.name,
+              ...(override.description && { description: override.description }),
+            })),
+          }),
+        },
+      },
+    };
+  }
+
+  /**
+   * Validates the configuration
+   * @internal
+   */
+  private validateConfiguration(): void {
+    // Validate REST API ID
+    if (Token.isUnresolved(this.restApiId)) {
+      return;
+    }
+
+    const restApiIdErrors = validateStringField({
+      value: this.restApiId,
+      fieldName: 'REST API ID',
+      minLength: 1,
+      maxLength: 256,
+    });
+
+    if (restApiIdErrors.length > 0) {
+      throw new ValidationError(restApiIdErrors.join('\n'));
+    }
+
+    // Validate stage name
+    if (Token.isUnresolved(this.stage)) {
+      return;
+    }
+
+    const stageErrors = validateStringField({
+      value: this.stage,
+      fieldName: 'Stage name',
+      minLength: 1,
+      maxLength: 128,
+    });
+
+    if (stageErrors.length > 0) {
+      throw new ValidationError(stageErrors.join('\n'));
+    }
+
+    // Validate tool filters
+    if (!this.apiGatewayToolConfiguration.toolFilters || this.apiGatewayToolConfiguration.toolFilters.length === 0) {
+      throw new ValidationError('At least one tool filter is required for API Gateway target configuration');
+    }
+
+    // Validate each tool filter
+    for (const filter of this.apiGatewayToolConfiguration.toolFilters) {
+      this.validateToolFilter(filter);
+    }
+
+    // Validate tool overrides if provided
+    if (this.apiGatewayToolConfiguration.toolOverrides) {
+      for (const override of this.apiGatewayToolConfiguration.toolOverrides) {
+        this.validateToolOverride(override);
+      }
+    }
+
+    // Validate metadata configuration if provided
+    if (this.metadataConfiguration) {
+      this.validateMetadataConfiguration(this.metadataConfiguration);
+    }
+  }
+
+  /**
+   * Validates metadata configuration
+   * @internal
+   */
+  private validateMetadataConfiguration(config: MetadataConfiguration): void {
+    if (config.allowedQueryParameters && config.allowedQueryParameters.length > 20) {
+      throw new ValidationError('allowedQueryParameters cannot exceed 20 items');
+    }
+    if (config.allowedRequestHeaders && config.allowedRequestHeaders.length > 20) {
+      throw new ValidationError('allowedRequestHeaders cannot exceed 20 items');
+    }
+    if (config.allowedResponseHeaders && config.allowedResponseHeaders.length > 20) {
+      throw new ValidationError('allowedResponseHeaders cannot exceed 20 items');
+    }
+  }
+
+  /**
+   * Validates a tool filter
+   * @internal
+   */
+  private validateToolFilter(filter: ApiGatewayToolFilter): void {
+    if (Token.isUnresolved(filter.filterPath)) {
+      return;
+    }
+
+    // Validate filter path
+    const pathErrors = validateFieldPattern(
+      filter.filterPath,
+      'Filter path',
+      /^\/[\w\-{}/*]*$/,
+      'Filter path must start with a forward slash and contain only alphanumeric characters, hyphens, underscores, curly braces, forward slashes, and asterisks',
+    );
+
+    if (pathErrors.length > 0) {
+      throw new ValidationError(pathErrors.join('\n'));
+    }
+
+    // Validate methods
+    if (!filter.methods || filter.methods.length === 0) {
+      throw new ValidationError(`At least one HTTP method is required for filter path: ${filter.filterPath}`);
+    }
+  }
+
+  /**
+   * Validates a tool override
+   * @internal
+   */
+  private validateToolOverride(override: ApiGatewayToolOverride): void {
+    if (Token.isUnresolved(override.path)) {
+      return;
+    }
+
+    // Validate that override path is explicit (no wildcards)
+    if (override.path.includes('*')) {
+      throw new ValidationError(
+        `Tool override path cannot contain wildcards. Path: ${override.path}. ` +
+        'Tool overrides must specify an explicit path that matches an existing operation in your API.',
+      );
+    }
+
+    // Validate override path format
+    const pathErrors = validateFieldPattern(
+      override.path,
+      'Override path',
+      /^\/[\w\-{}/]*$/,
+      'Override path must start with a forward slash and contain only alphanumeric characters, hyphens, underscores, curly braces, and forward slashes',
+    );
+
+    if (pathErrors.length > 0) {
+      throw new ValidationError(pathErrors.join('\n'));
+    }
+
+    // Validate override name
+    if (Token.isUnresolved(override.name)) {
+      return;
+    }
+
+    const nameErrors = validateStringField({
+      value: override.name,
+      fieldName: 'Override tool name',
+      minLength: 1,
+      maxLength: 64,
+    });
+
+    if (nameErrors.length > 0) {
+      throw new ValidationError(nameErrors.join('\n'));
+    }
+
+    // Validate override description if provided
+    if (override.description && !Token.isUnresolved(override.description)) {
+      const descErrors = validateStringField({
+        value: override.description,
+        fieldName: 'Override description',
+        minLength: 1,
+        maxLength: 200,
+      });
+
+      if (descErrors.length > 0) {
+        throw new ValidationError(descErrors.join('\n'));
+      }
     }
   }
 }

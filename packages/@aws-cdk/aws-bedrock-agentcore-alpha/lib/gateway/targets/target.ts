@@ -10,7 +10,7 @@ import { GATEWAY_SYNC_PERMS } from '../perms';
 import { ApiSchema } from './schema/api-schema';
 import { ToolSchema } from './schema/tool-schema';
 import { GatewayTargetBase, GatewayTargetProtocolType, IGatewayTarget, IMcpGatewayTarget, McpTargetType } from './target-base';
-import { ITargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
+import { ApiGatewayTargetConfiguration, ApiGatewayToolConfiguration, ITargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, MetadataConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import { GatewayCredentialProvider, ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern, ValidationError } from '../validation-helpers';
 
@@ -166,6 +166,47 @@ export interface GatewayTargetMcpServerProps extends GatewayTargetCommonProps {
    * Credential providers for authentication
    */
   readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+}
+
+/**
+ * Properties for creating an API Gateway-based Gateway Target
+ */
+export interface GatewayTargetApiGatewayProps extends GatewayTargetCommonProps {
+  /**
+   * The gateway this target belongs to
+   */
+  readonly gateway: IGateway;
+
+  /**
+   * The ID of the REST API
+   * Must be in the same account and region as the gateway
+   */
+  readonly restApiId: string;
+
+  /**
+   * The stage name of the REST API
+   * The stage must be deployed
+   */
+  readonly stage: string;
+
+  /**
+   * Tool configuration defining which operations to expose
+   */
+  readonly apiGatewayToolConfiguration: ApiGatewayToolConfiguration;
+
+  /**
+   * Credential providers for authentication
+   * API Gateway targets support IAM and API key authentication
+   * @default - Empty array (service handles IAM automatically)
+   */
+  readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
+
+  /**
+   * Metadata configuration for passing headers and query parameters
+   * Allows you to pass additional context through headers and query parameters
+   * @default - No metadata configuration
+   */
+  readonly metadataConfiguration?: MetadataConfiguration;
 }
 
 /**
@@ -361,6 +402,35 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   }
 
   /**
+   * Create an API Gateway-based MCP target
+   * Convenience method for creating a target that connects to an API Gateway REST API
+   *
+   * @param scope The construct scope
+   * @param id The construct id
+   * @param props The properties for the API Gateway target
+   * @returns A new GatewayTarget instance
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html
+   */
+  public static forApiGateway(
+    scope: Construct,
+    id: string,
+    props: GatewayTargetApiGatewayProps,
+  ): GatewayTarget {
+    return new GatewayTarget(scope, id, {
+      gateway: props.gateway,
+      gatewayTargetName: props.gatewayTargetName,
+      description: props.description,
+      credentialProviderConfigurations: props.credentialProviderConfigurations,
+      targetConfiguration: ApiGatewayTargetConfiguration.create({
+        restApiId: props.restApiId,
+        stage: props.stage,
+        apiGatewayToolConfiguration: props.apiGatewayToolConfiguration,
+        metadataConfiguration: props.metadataConfiguration,
+      }),
+    });
+  }
+
+  /**
    * The ARN of the gateway target
    * @attribute
    */
@@ -475,6 +545,16 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       targetConfiguration: Lazy.any({
         produce: () => this.targetConfiguration._render(),
       }),
+
+      // Add metadata configuration for API Gateway targets
+      metadataConfiguration: this.targetType === McpTargetType.API_GATEWAY &&
+        (this.targetConfiguration as ApiGatewayTargetConfiguration).metadataConfiguration
+        ? {
+          allowedQueryParameters: (this.targetConfiguration as ApiGatewayTargetConfiguration).metadataConfiguration!.allowedQueryParameters,
+          allowedRequestHeaders: (this.targetConfiguration as ApiGatewayTargetConfiguration).metadataConfiguration!.allowedRequestHeaders,
+          allowedResponseHeaders: (this.targetConfiguration as ApiGatewayTargetConfiguration).metadataConfiguration!.allowedResponseHeaders,
+        }
+        : undefined,
     };
 
     this.targetResource = new bedrockagentcore.CfnGatewayTarget(
@@ -522,7 +602,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    *
    * - Lambda & Smithy: Default to IAM role if not provided
    * - MCP Server: Return undefined if not provided (service handles NoAuth)
-   * - OpenAPI: Return as-is (must be explicitly provided)
+   * - OpenAPI & API Gateway: Return as-is (must be explicitly provided, service handles automatically)
    *
    * @param providedCredentials The credentials from props
    * @returns The credential configurations to use, or undefined
@@ -545,6 +625,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
         return undefined;
 
       case McpTargetType.OPENAPI_SCHEMA:
+      case McpTargetType.API_GATEWAY:
         // No default - must be explicitly provided, service handles automatically
         return undefined;
 

@@ -1669,6 +1669,205 @@ def handler(event, context):
 mcpTarget.grantSync(syncFunction);
 ```
 
+- API Gateway Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Basic example with only required fields - uses IAM authentication by default
+const apiGatewayTarget = gateway.addApiGatewayTarget("MyApiGatewayTarget", {
+  restApiId: "abc123xyz",
+  stage: "prod",
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET],
+      },
+    ],
+  },
+});
+```
+
+**API Gateway Target - Key Considerations:**
+
+When using an API Gateway REST API stage as a target, note the following:
+- **Same Account/Region**: API must be in the same account and region as the gateway
+- **REST APIs Only**: HTTP APIs and WebSocket APIs are not supported
+- **Public Endpoints**: API must use a public endpoint type. For VPC resources, use public endpoint with API Gateway private integration
+- **No Proxy Resources**: Paths like `/pets/{proxy+}` are not supported
+- **Auth Limitations**: Methods with both AWS_IAM authorization and API key requirements are not supported
+
+**Supported Outbound Authorization for API Gateway Targets:**
+
+API Gateway targets support three authentication modes:
+
+1. **IAM Authentication (Default)** - Gateway role signs requests with SigV4
+2. **API Key Authentication** - Uses AgentCore-managed API keys
+3. **No Authentication** - For publicly accessible APIs
+
+**Examples of All Three Authentication Options:**
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Option 1: IAM Authentication (default)
+// The L2 construct automatically grants apigateway:GET and execute-api:Invoke permissions
+const iamTarget = gateway.addApiGatewayTarget("IamAuthTarget", {
+  restApiId: "abc123xyz",
+  stage: "prod",
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
+      },
+    ],
+  },
+  // No credentialProviderConfigurations = defaults to IAM
+});
+
+// Option 2: API Key Authentication
+// First, create the API key provider via Console or AWS API (outside CDK)
+// This returns providerArn and secretArn
+const apiKeyTarget = gateway.addApiGatewayTarget("ApiKeyAuthTarget", {
+  restApiId: "xyz789abc",
+  stage: "prod",
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/orders/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET],
+      },
+    ],
+  },
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.fromApiKeyIdentityArn({
+      providerArn: "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/apikeycredentialprovider/my-key",
+      secretArn: "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-key-secret",
+      credentialLocation: agentcore.ApiKeyCredentialLocation.header({
+        credentialParameterName: "X-API-Key",
+        credentialPrefix: "ApiKey ",
+      }),
+    }),
+  ],
+});
+
+// Option 3: No Authentication
+// For publicly accessible APIs that don't require authentication
+const noAuthTarget = gateway.addApiGatewayTarget("NoAuthTarget", {
+  restApiId: "public123",
+  stage: "prod",
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/public/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET],
+      },
+    ],
+  },
+  credentialProviderConfigurations: [],  // Empty array = No authentication
+});
+```
+
+**Passing Headers and Query Parameters with MetadataConfiguration:**
+
+Use `metadataConfiguration` to pass additional context through headers and query parameters:
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const target = gateway.addApiGatewayTarget("WithMetadata", {
+  restApiId: "abc123xyz",
+  stage: "prod",
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/api/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
+      },
+    ],
+  },
+  metadataConfiguration: {
+    allowedQueryParameters: ['userId', 'sessionId'],
+    allowedRequestHeaders: ['X-User-Context', 'X-Correlation-ID'],
+    allowedResponseHeaders: ['X-Request-ID', 'X-Response-Time'],
+  },
+});
+```
+
+**IAM Permissions:**
+
+The L2 construct **automatically** handles the following permissions:
+
+✅ **Automatically Granted:**
+- `apigateway:GET` - For retrieving the OpenAPI schema from API Gateway
+- `execute-api:Invoke` - For invoking the API Gateway REST API (when using IAM or no authentication)
+
+⚠️ **User Must Configure:**
+- **API Gateway Resource Policy** - Must allow `bedrock-agentcore.amazonaws.com` to invoke the API
+
+**Example API Gateway Resource Policy:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+      },
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:execute-api:region:account:api-id/stage/*/*",
+      "Condition": {
+        "ArnEquals": {
+          "aws:SourceArn": "arn:aws:bedrock-agentcore:region:account:gateway/gateway-id"
+        }
+      }
+    }
+  ]
+}
+```
+
+**Tool Filters and Overrides:**
+
+Tool filters support two path matching strategies:
+- **Explicit paths**: Match a specific path like `/pets/{petId}`
+- **Wildcard paths**: Match all paths with a prefix like `/pets/*`
+
+Example wildcard filter:
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+gateway.addApiGatewayTarget("WildcardExample", {
+  restApiId: "abc123",
+  stage: "prod",
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",  // Matches /pets/{petId}, /pets/{petId}/photos, etc.
+        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
+      },
+    ],
+  },
+});
+```
+
+Tool overrides customize tool names and descriptions. They must:
+- Use explicit paths (no wildcards)
+- Match an operation selected by the filters
+- Provide a custom name (required if operationId is missing)
+
+For more information, see [API Gateway Target Documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html).
+
 #### Using static factory methods
 
 Create Gateway target using static convienence method.
