@@ -134,12 +134,6 @@ export class S3Bucket implements IDestination {
       streamId: 'S3Destination',
     }) ?? {};
 
-    const processingConfiguration = createProcessingConfig(scope, this.props, {
-      role,
-      dynamicPartitioningEnabled: this.props.dynamicPartitioning?.enabled,
-      prefix: this.props.dataOutputPrefix,
-    });
-
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
 
     const fileExtension = this.props.fileExtension;
@@ -164,7 +158,11 @@ export class S3Bucket implements IDestination {
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: processingConfiguration,
+        processingConfiguration: createProcessingConfig(scope, this.props, {
+          role,
+          dynamicPartitioningEnabled: this.props.dynamicPartitioning?.enabled,
+          prefix: this.props.dataOutputPrefix,
+        }),
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
