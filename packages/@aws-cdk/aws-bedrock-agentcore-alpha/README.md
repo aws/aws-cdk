@@ -472,8 +472,8 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(re
 // Optional: Create custom claims for additional validation
 const customClaims = [
   agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering'),
-  agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.RuntimeCustomClaimOperator.CONTAINS),
-  agentcore.RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.RuntimeCustomClaimOperator.CONTAINS_ANY),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
 ];
 
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
@@ -555,7 +555,7 @@ const rolesClaim = agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['
 const permissionsClaim = agentcore.RuntimeCustomClaim.withStringArrayValue(
   'permissions',
   ['read', 'write'],
-  agentcore.RuntimeCustomClaimOperator.CONTAINS_ANY
+  agentcore.CustomClaimOperator.CONTAINS_ANY
 );
 
 // Use custom claims in authorizer configuration
@@ -582,7 +582,7 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 **Example Use Cases**:
 
 - Use `CONTAINS` when you need to verify a user has a specific role: `RuntimeCustomClaim.withStringArrayValue('roles', ['admin'])`
-- Use `CONTAINS_ANY` when you need to verify a user has any of several permissions: `RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], RuntimeCustomClaimOperator.CONTAINS_ANY)`
+- Use `CONTAINS_ANY` when you need to verify a user has any of several permissions: `RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY)`
 
 #### OAuth Authentication
 
@@ -1229,11 +1229,11 @@ You need to specify an OAuth discovery server and client IDs/audiences when you 
 
 ```typescript fixture=default
 
-// Optional: Create custom claims (import GatewayCustomClaim, GatewayCustomClaimOperator from gateway inbound-auth)
+// Optional: Create custom claims (CustomClaimOperator and GatewayCustomClaim from agentcore)
 const customClaims = [
   agentcore.GatewayCustomClaim.withStringValue('department', 'engineering'),
-  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.GatewayCustomClaimOperator.CONTAINS),
-  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.GatewayCustomClaimOperator.CONTAINS_ANY),
+  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
 ];
 
 const gateway = new agentcore.Gateway(this, "MyGateway", {
@@ -1291,11 +1291,11 @@ const oauthScopes = gateway.oauthScopes;
 declare const userPool: cognito.UserPool;
 declare const userPoolClient: cognito.UserPoolClient;
 
-// Optional: Create custom claims (import GatewayCustomClaim, GatewayCustomClaimOperator from gateway inbound-auth)
+// Optional: Create custom claims (CustomClaimOperator and GatewayCustomClaim from agentcore)
 const customClaims = [
   agentcore.GatewayCustomClaim.withStringValue('department', 'engineering'),
-  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.GatewayCustomClaimOperator.CONTAINS),
-  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.GatewayCustomClaimOperator.CONTAINS_ANY),
+  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
 ];
 
 const gateway = new agentcore.Gateway(this, "MyGateway", {

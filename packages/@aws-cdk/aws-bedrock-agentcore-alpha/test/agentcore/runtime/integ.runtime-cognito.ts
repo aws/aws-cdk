@@ -31,7 +31,7 @@ const allowedScopes = ['read', 'write'];
 const allowedAudience = ['audience1'];
 const customClaims = [
   agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering'),
-  agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], agentcore.RuntimeCustomClaimOperator.CONTAINS_ANY),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], agentcore.CustomClaimOperator.CONTAINS_ANY),
 ];
 
 // Create a single runtime (similar to the working strands example)

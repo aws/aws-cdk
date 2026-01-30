@@ -11,31 +11,10 @@
  *  and limitations under the License.
  */
 
+import { Token } from 'aws-cdk-lib';
 import { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CustomClaimOperator, CustomClaimValueType } from '../../common/types';
 import { ValidationError } from '../validation-helpers';
-
-/**
- * Custom claim value type
- * @internal
- */
-enum CustomClaimValueType {
-  /** String value type */
-  STRING = 'STRING',
-  /** String array value type */
-  STRING_ARRAY = 'STRING_ARRAY',
-}
-
-/**
- * Custom claim match operator for Gateway JWT authorizers.
- */
-export enum GatewayCustomClaimOperator {
-  /** Equals operator - used for STRING type claims */
-  EQUALS = 'EQUALS',
-  /** Contains operator - used for STRING_ARRAY type claims. Checks if the claim array contains a specific string value. */
-  CONTAINS = 'CONTAINS',
-  /** ContainsAny operator - used for STRING_ARRAY type claims. Checks if the claim array contains any of the provided string values. */
-  CONTAINS_ANY = 'CONTAINS_ANY',
-}
 
 /**
  * Represents a custom claim validation configuration for Gateway JWT authorizers.
@@ -52,7 +31,7 @@ export class GatewayCustomClaim {
    * @returns A GatewayCustomClaim configured for string validation
    */
   public static withStringValue(name: string, value: string): GatewayCustomClaim {
-    return new GatewayCustomClaim(name, CustomClaimValueType.STRING, GatewayCustomClaimOperator.EQUALS, value);
+    return new GatewayCustomClaim(name, CustomClaimValueType.STRING, CustomClaimOperator.EQUALS, value);
   }
 
   /**
@@ -67,10 +46,10 @@ export class GatewayCustomClaim {
   public static withStringArrayValue(
     name: string,
     values: string[],
-    operator: GatewayCustomClaimOperator = GatewayCustomClaimOperator.CONTAINS,
+    operator: CustomClaimOperator = CustomClaimOperator.CONTAINS,
   ): GatewayCustomClaim {
     // Validate operator is valid for STRING_ARRAY type
-    if (operator !== GatewayCustomClaimOperator.CONTAINS && operator !== GatewayCustomClaimOperator.CONTAINS_ANY) {
+    if (operator !== CustomClaimOperator.CONTAINS && operator !== CustomClaimOperator.CONTAINS_ANY) {
       throw new ValidationError(
         `Custom claim '${name}': STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators, got ${operator}`,
       );
@@ -81,9 +60,12 @@ export class GatewayCustomClaim {
   private constructor(
     private readonly name: string,
     private readonly valueType: CustomClaimValueType,
-    private readonly operator: GatewayCustomClaimOperator,
+    private readonly operator: CustomClaimOperator,
     private readonly value: string | string[],
   ) {
+    if (Token.isUnresolved(value)) {
+      return;
+    }
     // Validate that value matches the valueType
     if (valueType === CustomClaimValueType.STRING && typeof value !== 'string') {
       throw new ValidationError(`Custom claim '${name}': STRING type requires a string value, got ${typeof value}`);
@@ -107,10 +89,10 @@ export class GatewayCustomClaim {
       };
     } else {
       // STRING_ARRAY type: CONTAINS uses matchValueString, CONTAINS_ANY uses matchValueStringList
-      if (this.operator === GatewayCustomClaimOperator.CONTAINS) {
+      if (this.operator === CustomClaimOperator.CONTAINS) {
         // CONTAINS requires a single string value (check if claim array contains this string)
         const values = this.value as string[];
-        if (values.length !== 1) {
+        if (!Token.isUnresolved(values[0]) && values.length !== 1) {
           throw new ValidationError(
             `Custom claim '${this.name}': CONTAINS operator requires exactly one value, got ${values.length} values`,
           );

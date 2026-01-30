@@ -8,6 +8,11 @@ export * from './memory/memory-strategy';
 export * from './network/network-configuration';
 
 // ===================================
+// Common (shared types)
+// ===================================
+export * from './common/types';
+
+// ===================================
 // Runtime
 // ===================================
 export * from './runtime/perms';

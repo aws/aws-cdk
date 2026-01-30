@@ -10,7 +10,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
-import { RuntimeCustomClaim, RuntimeCustomClaimOperator } from '../../../lib/runtime/inbound-auth/custom-claim';
+import { CustomClaimOperator } from '../../../lib/common/types';
+import { RuntimeCustomClaim } from '../../../lib/runtime/inbound-auth/custom-claim';
 import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/inbound-auth/runtime-authorizer-configuration';
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
@@ -1119,7 +1120,7 @@ describe('Runtime with Custom Claims tests', () => {
   });
 
   test('Should create RuntimeCustomClaim with string array value (CONTAINS_ANY)', () => {
-    const claim = RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], RuntimeCustomClaimOperator.CONTAINS_ANY);
+    const claim = RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
     const rendered = claim._render();
 
     expect(rendered.inboundTokenClaimName).toBe('permissions');
@@ -1131,12 +1132,12 @@ describe('Runtime with Custom Claims tests', () => {
 
   test('Should throw error for invalid operator with string array', () => {
     expect(() => {
-      RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], RuntimeCustomClaimOperator.EQUALS);
+      RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.EQUALS);
     }).toThrow('STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators');
   });
 
   test('Should throw error when CONTAINS operator is used with multiple values', () => {
-    const claim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], RuntimeCustomClaimOperator.CONTAINS);
+    const claim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], CustomClaimOperator.CONTAINS);
     expect(() => {
       claim._render();
     }).toThrow('CONTAINS operator requires exactly one value, got 2 values');
@@ -1144,7 +1145,7 @@ describe('Runtime with Custom Claims tests', () => {
 
   test('Should create runtime with JWT authorizer and custom claims', () => {
     const stringClaim = RuntimeCustomClaim.withStringValue('department', 'engineering');
-    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], RuntimeCustomClaimOperator.CONTAINS_ANY);
+    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], CustomClaimOperator.CONTAINS_ANY);
 
     new Runtime(stack, 'test-runtime-custom-claims', {
       runtimeName: 'test_runtime_custom_claims',
@@ -1196,7 +1197,7 @@ describe('Runtime with Custom Claims tests', () => {
     const userPoolClient = userPool.addClient('TestClient');
 
     const stringClaim = RuntimeCustomClaim.withStringValue('team', 'backend');
-    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], RuntimeCustomClaimOperator.CONTAINS_ANY);
+    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
 
     new Runtime(stack, 'test-runtime-cognito-claims', {
       runtimeName: 'test_runtime_cognito_claims',

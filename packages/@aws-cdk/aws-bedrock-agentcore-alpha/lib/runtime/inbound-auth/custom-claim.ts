@@ -11,31 +11,10 @@
  *  and limitations under the License.
  */
 
+import { Token } from 'aws-cdk-lib';
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CustomClaimOperator, CustomClaimValueType } from '../../common/types';
 import { ValidationError } from '../validation-helpers';
-
-/**
- * Custom claim value type
- * @internal
- */
-enum CustomClaimValueType {
-  /** String value type */
-  STRING = 'STRING',
-  /** String array value type */
-  STRING_ARRAY = 'STRING_ARRAY',
-}
-
-/**
- * Custom claim match operator for Runtime JWT authorizers.
- */
-export enum RuntimeCustomClaimOperator {
-  /** Equals operator - used for STRING type claims */
-  EQUALS = 'EQUALS',
-  /** Contains operator - used for STRING_ARRAY type claims. Checks if the claim array contains a specific string value. */
-  CONTAINS = 'CONTAINS',
-  /** ContainsAny operator - used for STRING_ARRAY type claims. Checks if the claim array contains any of the provided string values. */
-  CONTAINS_ANY = 'CONTAINS_ANY',
-}
 
 /**
  * Represents a custom claim validation configuration for Runtime JWT authorizers.
@@ -52,7 +31,7 @@ export class RuntimeCustomClaim {
    * @returns A RuntimeCustomClaim configured for string validation
    */
   public static withStringValue(name: string, value: string): RuntimeCustomClaim {
-    return new RuntimeCustomClaim(name, CustomClaimValueType.STRING, RuntimeCustomClaimOperator.EQUALS, value);
+    return new RuntimeCustomClaim(name, CustomClaimValueType.STRING, CustomClaimOperator.EQUALS, value);
   }
 
   /**
@@ -67,10 +46,10 @@ export class RuntimeCustomClaim {
   public static withStringArrayValue(
     name: string,
     values: string[],
-    operator: RuntimeCustomClaimOperator = RuntimeCustomClaimOperator.CONTAINS,
+    operator: CustomClaimOperator = CustomClaimOperator.CONTAINS,
   ): RuntimeCustomClaim {
     // Validate operator is valid for STRING_ARRAY type
-    if (operator !== RuntimeCustomClaimOperator.CONTAINS && operator !== RuntimeCustomClaimOperator.CONTAINS_ANY) {
+    if (operator !== CustomClaimOperator.CONTAINS && operator !== CustomClaimOperator.CONTAINS_ANY) {
       throw new ValidationError(
         `Custom claim '${name}': STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators, got ${operator}`,
       );
@@ -81,9 +60,12 @@ export class RuntimeCustomClaim {
   private constructor(
     private readonly name: string,
     private readonly valueType: CustomClaimValueType,
-    private readonly operator: RuntimeCustomClaimOperator,
+    private readonly operator: CustomClaimOperator,
     private readonly value: string | string[],
   ) {
+    if (Token.isUnresolved(value)) {
+      return;
+    }
     // Validate that value matches the valueType
     if (valueType === CustomClaimValueType.STRING && typeof value !== 'string') {
       throw new ValidationError(`Custom claim '${name}': STRING type requires a string value, got ${typeof value}`);
@@ -107,10 +89,10 @@ export class RuntimeCustomClaim {
       };
     } else {
       // STRING_ARRAY type: CONTAINS uses matchValueString, CONTAINS_ANY uses matchValueStringList
-      if (this.operator === RuntimeCustomClaimOperator.CONTAINS) {
+      if (this.operator === CustomClaimOperator.CONTAINS) {
         // CONTAINS requires a single string value (check if claim array contains this string)
         const values = this.value as string[];
-        if (values.length !== 1) {
+        if (!Token.isUnresolved(values[0]) && values.length !== 1) {
           throw new ValidationError(
             `Custom claim '${this.name}': CONTAINS operator requires exactly one value, got ${values.length} values`,
           );

@@ -20,7 +20,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Gateway } from '../../../lib';
 import { GatewayExceptionLevel } from '../../../lib/gateway/gateway-base';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
-import { GatewayCustomClaim, GatewayCustomClaimOperator } from '../../../lib/gateway/inbound-auth/custom-claim';
+import { CustomClaimOperator } from '../../../lib/common/types';
+import { GatewayCustomClaim } from '../../../lib/gateway/inbound-auth/custom-claim';
 import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
 import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
@@ -1153,8 +1154,8 @@ describe('Authorizer Configuration Tests', () => {
 
   test('Should create custom JWT authorizer with custom claims', () => {
     const stringClaim = GatewayCustomClaim.withStringValue('department', 'engineering');
-    const arrayClaim = GatewayCustomClaim.withStringArrayValue('roles', ['admin'], GatewayCustomClaimOperator.CONTAINS);
-    const arrayClaimAny = GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], GatewayCustomClaimOperator.CONTAINS_ANY);
+    const arrayClaim = GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS);
+    const arrayClaimAny = GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
 
     const authorizer = GatewayAuthorizer.usingCustomJwt({
       discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
@@ -1174,7 +1175,7 @@ describe('Authorizer Configuration Tests', () => {
 
     const customClaims = [
       GatewayCustomClaim.withStringValue('department', 'engineering'),
-      GatewayCustomClaim.withStringArrayValue('roles', ['admin'], GatewayCustomClaimOperator.CONTAINS),
+      GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS),
     ];
 
     const authorizer = GatewayAuthorizer.usingCognito({
@@ -1188,8 +1189,8 @@ describe('Authorizer Configuration Tests', () => {
 
   test('Should render Gateway with custom JWT authorizer including custom claims in CloudFormation', () => {
     const stringClaim = GatewayCustomClaim.withStringValue('department', 'engineering');
-    const arrayClaim = GatewayCustomClaim.withStringArrayValue('roles', ['admin'], GatewayCustomClaimOperator.CONTAINS);
-    const arrayClaimAny = GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], GatewayCustomClaimOperator.CONTAINS_ANY);
+    const arrayClaim = GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS);
+    const arrayClaimAny = GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
 
     new Gateway(stack, 'TestGatewayRenderCustomClaims', {
       gatewayName: 'test-gateway-render-custom-claims',
