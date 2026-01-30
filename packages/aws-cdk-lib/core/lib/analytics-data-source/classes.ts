@@ -4663,6 +4663,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'acceleratorType': '*',
         'initialInstanceCount': '*',
         'instanceType': '*',
+        'containerStartupHealthCheckTimeout': '*',
         'initialVariantWeight': '*',
         'model': {
           'modelArn': '*',
@@ -4722,6 +4723,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'acceleratorType': '*',
           'initialInstanceCount': '*',
           'instanceType': '*',
+          'containerStartupHealthCheckTimeout': '*',
           'initialVariantWeight': '*',
           'model': {
             'modelArn': '*',
@@ -18763,6 +18765,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'encryptionKey': '*',
       'logGroupName': '*',
       'dataProtectionPolicy': '*',
+      'deletionProtectionEnabled': 'boolean',
       'fieldIndexPolicies': '*',
       'retention': 'RetentionDays',
       'logGroupClass': 'LogGroupClass',
@@ -23847,6 +23850,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'tags': '*',
+      'interceptorConfigurations': {
+        'interceptionPoint': 'InterceptionPoint'
+      },
       'addLambdaTarget': [
         '*',
         {
@@ -23924,6 +23930,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'credentialProviderConfigurations': {
             'credentialProviderType': 'CredentialProviderType'
           }
+        }
+      ],
+      'addInterceptor': [
+        {
+          'interceptionPoint': 'InterceptionPoint'
         }
       ]
     },
@@ -27470,6 +27481,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'addPlacementStrategies': [
         '*'
       ],
@@ -27719,6 +27738,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'attachToApplicationTargetGroup': [
         {
           'metrics': '*',
@@ -28077,6 +28104,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'attachToClassicLB': [
         '*'
       ]
