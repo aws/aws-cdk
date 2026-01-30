@@ -51,6 +51,26 @@ export enum Monitoring {
 }
 
 /**
+ * Deletion protection level for Auto Scaling group
+ */
+export enum DeletionProtection {
+  /**
+   * No deletion protection
+   */
+  NONE = 'None',
+
+  /**
+   * Block force delete operations
+   */
+  PREVENT_FORCE_DELETION = 'PreventForceDelete',
+
+  /**
+   * Block all delete operations
+   */
+  PREVENT_ALL_DELETION = 'PreventDelete',
+}
+
+/**
  * Basic properties of an AutoScalingGroup, except the exact machines to run and where they should run
  *
  * Constructs that want to create AutoScalingGroups can inherit
@@ -431,6 +451,13 @@ export interface CommonAutoScalingGroupProps {
    * @default None
    */
   readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy;
+
+  /**
+   * Deletion protection for the Auto Scaling group.
+   *
+   * @default DeletionProtection.NONE
+   */
+  readonly deletionProtection?: DeletionProtection;
 }
 
 /**
@@ -1612,6 +1639,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
+      deletionProtection: props.deletionProtection,
       instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(
         props.minHealthyPercentage,
         props.maxHealthyPercentage,

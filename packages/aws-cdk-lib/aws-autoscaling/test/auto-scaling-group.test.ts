@@ -3134,3 +3134,26 @@ function mockSecurityGroup(stack: cdk.Stack) {
 function getTestStack(): cdk.Stack {
   return new cdk.Stack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }
+
+test.each([
+  [autoscaling.DeletionProtection.NONE, 'None'],
+  [autoscaling.DeletionProtection.PREVENT_FORCE_DELETION, 'PreventForceDelete'],
+  [autoscaling.DeletionProtection.PREVENT_ALL_DELETION, 'PreventDelete'],
+])('can configure deletion protection with %s', (deletionProtection, expectedValue) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    deletionProtection,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    DeletionProtection: expectedValue,
+  });
+});
