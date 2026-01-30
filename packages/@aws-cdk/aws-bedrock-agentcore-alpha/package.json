@@ -81,7 +81,7 @@
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/aws-bedrock-alpha": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.193.5",
+    "@aws-cdk/integ-runner": "^2.194.1",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.14",

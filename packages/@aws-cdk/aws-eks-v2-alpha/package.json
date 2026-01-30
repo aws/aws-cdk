@@ -85,7 +85,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.193.5",
+    "@aws-cdk/integ-runner": "^2.194.1",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.242",
@@ -100,7 +100,7 @@
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "sinon": "^9.2.4",
-    "cdk8s": "2.70.43",
+    "cdk8s": "2.70.45",
     "cdk8s-plus-27": "2.9.5"
   },
   "dependencies": {
