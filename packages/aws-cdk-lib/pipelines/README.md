@@ -523,6 +523,34 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
+#### Configuring artifact bucket removal policy
+
+By default, the artifact bucket created by CDK Pipelines is retained when the pipeline stack is deleted. You can configure the removal policy and automatic object deletion for the artifact bucket using `artifactBucketRemovalPolicy` and `artifactBucketAutoDeleteObjects`.
+
+These properties only apply when an external artifact bucket is not provided via the `artifactBucket` property. If you provide your own bucket, you must configure its lifecycle properties directly.
+
+**Important**: If you enable `artifactBucketAutoDeleteObjects`, you must set `artifactBucketRemovalPolicy` to `RemovalPolicy.DESTROY`. This ensures that objects are deleted before the bucket is destroyed, preventing orphaned resources.
+
+Example:
+
+```ts
+import { RemovalPolicy } from 'aws-cdk-lib';
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn:
+        'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41',
+    }),
+    commands: ['npm ci', 'npm run build', 'npx cdk synth'],
+  }),
+  // Configure artifact bucket to be destroyed when pipeline stack is deleted
+  artifactBucketRemovalPolicy: RemovalPolicy.DESTROY,
+  // Automatically delete all objects in the bucket before destroying it
+  artifactBucketAutoDeleteObjects: true,
+});
+```
+
 #### Deploying without change sets
 
 Deployment is done by default with `CodePipeline` engine using change sets,
