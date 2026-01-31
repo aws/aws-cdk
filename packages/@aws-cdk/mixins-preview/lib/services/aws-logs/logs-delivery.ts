@@ -114,8 +114,8 @@ export class S3LogsDelivery implements ILogsDelivery {
     const deliverySourceRef = deliverySource.deliverySourceRef;
 
     const deliveryDestination = new S3DeliveryDestination(container, 'Dest', {
-      bucket: this.bucket, 
-      permissionsVersion: this.permissions, 
+      bucket: this.bucket,
+      permissionsVersion: this.permissions,
       encryptionKey: this.kmsKey,
       destinationid: logType.split('_').map(word => word.toLowerCase()).join('-'),
     });

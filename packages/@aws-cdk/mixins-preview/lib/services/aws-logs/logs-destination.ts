@@ -17,7 +17,7 @@ interface DestinationProps {
   /**
    * Optional Identifer to help identify a delivery destination
    */
-  readonly destinationid?: string,
+  readonly destinationid?: string;
 }
 
 /**
@@ -27,7 +27,7 @@ interface CrossAccountDestinationProps extends DestinationProps {
   /**
    * Optional acount id for account the delivery source is in for cross account Vended Logs
    */
-  readonly sourceAccountId?: string, // may also need to region for the source as well...
+  readonly sourceAccountId?: string; // may also need to region for the source as well...
 }
 
 /**
