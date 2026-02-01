@@ -4,11 +4,27 @@ import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
 import * as ecr from '../../aws-ecr';
 import { DockerImageAsset, TarballImageAsset } from '../../aws-ecr-assets';
+import * as secretsmanager from '../../aws-secretsmanager';
+
+/**
+ * Interface for container image providers.
+ *
+ * Implementations of this interface provide a container image that can be used by an ECS task.
+ */
+export interface IContainerImage {
+  /**
+   * Called when the image is used by a ContainerDefinition.
+   *
+   * @param scope The scope in which to create resources
+   * @param containerDefinition The container definition using this image
+   */
+  bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
+}
 
 /**
  * Constructs for types of container images
  */
-export abstract class ContainerImage {
+export abstract class ContainerImage implements IContainerImage {
   /**
    * Reference an image on DockerHub or another online registry
    */
@@ -77,9 +93,55 @@ export abstract class ContainerImage {
   }
 
   /**
+   * Use a custom container image configuration.
+   *
+   * This method allows you to specify custom container images from any registry
+   * without implementing the IContainerImage interface directly.
+   *
+   * @param config Configuration for the custom container image
+   */
+  public static fromCustomConfiguration(config: CustomContainerImageConfig): ContainerImage {
+    return {
+      bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+        // Grant read permissions on the secret if credentials are provided
+        if (config.repositoryCredential) {
+          config.repositoryCredential.grantRead(containerDefinition.taskDefinition.obtainExecutionRole());
+        }
+
+        return {
+          imageName: config.imageName,
+          repositoryCredentials: config.repositoryCredential && {
+            credentialsParameter: config.repositoryCredential.secretArn,
+          },
+        };
+      },
+    };
+  }
+
+  /**
    * Called when the image is used by a ContainerDefinition
    */
   public abstract bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
+}
+
+/**
+ * Configuration for a custom container image.
+ */
+export interface CustomContainerImageConfig {
+  /**
+   * The image name. Images in Docker Hub or ECR are supported.
+   *
+   * @example 'custom-registry.example.com/my-app:v1.0'
+   */
+  readonly imageName: string;
+
+  /**
+   * The secret that contains the credentials for the image repository.
+   * The supported value is the full ARN of an AWS Secrets Manager secret.
+   *
+   * @default - No credentials are used
+   */
+  readonly repositoryCredential?: secretsmanager.ISecret;
 }
 
 /**
