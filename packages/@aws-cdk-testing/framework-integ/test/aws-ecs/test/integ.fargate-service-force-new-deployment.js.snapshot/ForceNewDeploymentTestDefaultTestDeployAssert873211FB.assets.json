@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330": {
+      "source": {
+        "path": "asset.2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-7d008929": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6b3e055549781eabb1fd9b5ec89a96c0e09fbb4adeab3b6ae6679af30373b0b6": {
+      "displayName": "ForceNewDeploymentTestDefaultTestDeployAssert873211FB Template",
+      "source": {
+        "path": "ForceNewDeploymentTestDefaultTestDeployAssert873211FB.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4fdc4c93": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6b3e055549781eabb1fd9b5ec89a96c0e09fbb4adeab3b6ae6679af30373b0b6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
