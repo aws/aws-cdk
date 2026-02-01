@@ -43,16 +43,16 @@
         }
       }
     },
-    "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0": {
+    "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18": {
       "displayName": "Cluster/KubectlProvider/AwsCliLayer/Code",
       "source": {
-        "path": "asset.c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip",
+        "path": "asset.0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d93d677e": {
+        "current_account-current_region-3bd41744": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip",
+          "objectKey": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -71,16 +71,16 @@
         }
       }
     },
-    "c14da4fc991ced8194f74cbf8bc018b10571d80b418063e21d19827b64f69592": {
+    "1b11f8d4af066c0316257d9f68cac7133d5830c04c345a2e3771f83fd50eb220": {
       "displayName": "EksClusterWithAddonStack Template",
       "source": {
         "path": "EksClusterWithAddonStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8f6840c6": {
+        "current_account-current_region-18390d47": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c14da4fc991ced8194f74cbf8bc018b10571d80b418063e21d19827b64f69592.json",
+          "objectKey": "1b11f8d4af066c0316257d9f68cac7133d5830c04c345a2e3771f83fd50eb220.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
