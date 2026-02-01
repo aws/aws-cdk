@@ -70,6 +70,13 @@ export interface ItemReaderProps {
    * @default - Distributed Map state will iterate over all items provided by the ItemReader
    */
   readonly maxItems?: number;
+
+  /**
+   * The account ID of the expected bucket owner for cross-account access
+   *
+   * @default - No expected bucket owner validation
+   */
+  readonly expectedBucketOwner?: string;
 }
 
 /**
@@ -125,11 +132,19 @@ export class S3ObjectsItemReader implements IItemReader {
    */
   readonly maxItems?: number;
 
+  /**
+   * The account ID of the expected bucket owner for cross-account access
+   *
+   * @default - No expected bucket owner validation
+   */
+  readonly expectedBucketOwner?: string;
+
   constructor(props: S3ObjectsItemReaderProps) {
     this._bucket = props.bucket;
     this.bucketNamePath = props.bucketNamePath;
     this.prefix = props.prefix;
     this.maxItems = props.maxItems;
+    this.expectedBucketOwner = props.expectedBucketOwner;
     this.resource = Arn.format({
       region: '',
       account: '',
@@ -150,6 +165,7 @@ export class S3ObjectsItemReader implements IItemReader {
       ...(this._bucket && { Bucket: this._bucket.bucketName }),
       ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
       ...(this.prefix && { Prefix: this.prefix }),
+      ...(this.expectedBucketOwner && { ExpectedBucketOwner: this.expectedBucketOwner }),
     };
     return FieldUtils.renderObject({
       Resource: this.resource,
@@ -239,6 +255,13 @@ abstract class S3FileItemReader implements IItemReader {
    */
   readonly maxItems?: number;
 
+  /**
+   * The account ID of the expected bucket owner for cross-account access
+   *
+   * @default - No expected bucket owner validation
+   */
+  readonly expectedBucketOwner?: string;
+
   protected abstract readonly inputType: string;
 
   constructor(props: S3FileItemReaderProps) {
@@ -246,6 +269,7 @@ abstract class S3FileItemReader implements IItemReader {
     this.bucketNamePath = props.bucketNamePath;
     this.key = props.key;
     this.maxItems = props.maxItems;
+    this.expectedBucketOwner = props.expectedBucketOwner;
     this.resource = Arn.format({
       region: '',
       account: '',
@@ -266,6 +290,7 @@ abstract class S3FileItemReader implements IItemReader {
       ...(this._bucket && { Bucket: this._bucket.bucketName }),
       ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
       Key: this.key,
+      ...(this.expectedBucketOwner && { ExpectedBucketOwner: this.expectedBucketOwner }),
     };
 
     return FieldUtils.renderObject({
