@@ -486,7 +486,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     }
     const repoAndPrincipalAccountCompare = Token.compareStrings(this.env.account, principalAccount);
     if (repoAndPrincipalAccountCompare === TokenComparison.BOTH_UNRESOLVED ||
-        repoAndPrincipalAccountCompare === TokenComparison.SAME) {
+      repoAndPrincipalAccountCompare === TokenComparison.SAME) {
       return undefined;
     }
 
@@ -680,7 +680,7 @@ export class Repository extends RepositoryBase {
       throw new UnscopedValidationError('Could not determine repository identifier from provided options.');
     }
 
-    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+    const response: { [key: string]: any }[] = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
       props: {
         typeName: 'AWS::ECR::Repository',
@@ -871,7 +871,9 @@ export class Repository extends RepositoryBase {
       this.enableAutoDeleteImages();
     }
 
-    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
+    this.node.addValidation({
+      validate: () => this.policyDocument?.validateForResourcePolicy({ skipResourceValidation: true }) ?? [],
+    });
   }
 
   /**
