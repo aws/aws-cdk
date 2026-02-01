@@ -66,6 +66,14 @@
     "@aws-cdk/service-spec-types" "^0.0.210"
     "@cdklabs/tskb" "^0.0.4"
 
+"@aws-cdk/cloud-assembly-api@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-api/-/cloud-assembly-api-2.0.0.tgz#f4a97025d9deb43b9664beff168dbda7a5b32cd4"
+  integrity sha512-4WrZotQ8X4+GRBc+u9oecO7qtP4mXKV0+MiNa/mljhDQEOl1VnSp+RrA7ZMrlNiG/58mmtlpS4rO//o80bIYkg==
+  dependencies:
+    jsonschema "~1.4.1"
+    semver "^7.7.3"
+
 "@aws-cdk/cloud-assembly-schema@^48.20.0":
   version "48.20.0"
   resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-48.20.0.tgz#a2b60373cfbe228f901f62f0d7e2c5e2fe40702d"
