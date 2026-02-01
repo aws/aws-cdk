@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "e1b1e33b4f220a4fa0834d10fcd0b802142bbc552db49ec573a42b19d352e092": {
+    "2bc8cd25a1563b5f833a5eafad1cd4e7eea41a9adb170cc6477d5cf7cc171ff1": {
       "displayName": "aws-cdk-bedrock-agentcore-runtime-cognito Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-runtime-cognito.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9c41df07": {
+        "current_account-current_region-055e47e9": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e1b1e33b4f220a4fa0834d10fcd0b802142bbc552db49ec573a42b19d352e092.json",
+          "objectKey": "2bc8cd25a1563b5f833a5eafad1cd4e7eea41a9adb170cc6477d5cf7cc171ff1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
