@@ -405,6 +405,14 @@ export class BucketDeployment extends Construct {
       logGroup: props.logGroup,
     });
 
+    // Ensure the custom log group is not deleted before the Lambda function.
+    // Without this dependency, CloudFormation may delete the log group while the Lambda
+    // is still executing (during stack deletion), causing Lambda to auto-recreate the log group.
+    // See https://github.com/aws/aws-cdk/issues/35632
+    if (props.logGroup) {
+      handler.addDependency(props.logGroup);
+    }
+
     const handlerRole = handler.role;
     if (!handlerRole) { throw new ValidationError('lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;
