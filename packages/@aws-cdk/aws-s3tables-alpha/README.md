@@ -94,6 +94,77 @@ const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
 
 Learn more about table buckets maintenance operations and default behavior from the [S3 Tables User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
 
+### Advanced Iceberg Table Configuration
+
+You can configure partition specifications, sort orders, and table properties for optimized query performance:
+
+```ts
+// Build a table with partition spec, sort order, and table properties
+const advancedTable = new Table(scope, 'AdvancedTable', {
+    tableName: 'advanced_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+                {
+                    id: 1,
+                    name: 'event_date',
+                    type: 'date',
+                    required: true,
+                },
+                {
+                    id: 2,
+                    name: 'user_id',
+                    type: 'string',
+                    required: true,
+                },
+                {
+                    id: 3,
+                    name: 'event_count',
+                    type: 'int',
+                },
+            ],
+        },
+        // Partition by date for efficient time-based queries
+        icebergPartitionSpec: {
+            specId: 0,
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: 'identity',
+                    name: 'event_date_partition',
+                    fieldId: 1000,
+                },
+            ],
+        },
+        // Sort by date and user_id for better query performance
+        icebergSortOrder: {
+            orderId: 1,
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: 'identity',
+                    direction: 'asc',
+                    nullOrder: 'nulls-last',
+                },
+                {
+                    sourceId: 2,
+                    transform: 'identity',
+                    direction: 'asc',
+                    nullOrder: 'nulls-first',
+                },
+            ],
+        },
+        // Configure table properties for Parquet format
+        tableProperties: {
+            'write.format.default': 'parquet',
+            'write.parquet.compression-codec': 'zstd',
+        },
+    },
+});
+```
+
 ### Controlling Table Bucket Permissions
 
 ```ts
