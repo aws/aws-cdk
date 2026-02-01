@@ -9,6 +9,7 @@ import {
   ValidationError,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
+import { ICodeInterpreterCustomRef, CodeInterpreterCustomReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
   DimensionsMap,
   Metric,
@@ -60,7 +61,7 @@ const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
 /**
  * Interface for CodeInterpreterCustom resources
  */
-export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable, ICodeInterpreterCustomRef {
   /**
    * The ARN of the code interpreter resource
    * @attribute
@@ -180,6 +181,16 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * A reference to a CodeInterpreterCustom resource.
+   */
+  public get codeInterpreterCustomRef(): CodeInterpreterCustomReference {
+    return {
+      codeInterpreterId: this.codeInterpreterId,
+      codeInterpreterArn: this.codeInterpreterArn,
+    };
+  }
+
+  /**
    * An accessor for the Connections object that will fail if this Browser does not have a VPC
    * configured.
    */
@@ -212,7 +223,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.codeInterpreterArn],
+      resourceArns: [this.codeInterpreterCustomRef.codeInterpreterArn],
       actions: actions,
     });
   }
@@ -290,7 +301,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.codeInterpreterArn },
+      dimensionsMap: { ...dimensions, Resource: this.codeInterpreterCustomRef.codeInterpreterArn },
       ...props,
     };
     return this.configureMetric(metricProps);
