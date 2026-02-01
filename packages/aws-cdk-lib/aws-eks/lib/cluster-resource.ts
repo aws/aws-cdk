@@ -29,6 +29,7 @@ export interface ClusterResourceProps {
   readonly accessconfig?: CfnCluster.AccessConfigProperty;
   readonly remoteNetworkConfig?: CfnCluster.RemoteNetworkConfigProperty;
   readonly bootstrapSelfManagedAddons?: boolean;
+  readonly controlPlaneScalingConfig?: CfnCluster.ControlPlaneScalingConfigProperty;
 }
 
 /**
@@ -89,6 +90,7 @@ export class ClusterResource extends Construct {
           accessConfig: props.accessconfig,
           remoteNetworkConfig: props.remoteNetworkConfig,
           bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
+          controlPlaneScalingConfig: props.controlPlaneScalingConfig,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 
