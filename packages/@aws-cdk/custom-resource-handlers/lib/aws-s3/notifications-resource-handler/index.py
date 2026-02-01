@@ -2,6 +2,7 @@ import boto3  # type: ignore
 import json
 import logging
 import urllib.request
+from botocore.exceptions import ClientError
 
 s3 = boto3.client("s3")
 
@@ -22,7 +23,21 @@ def handler(event: dict, context):
       config = handle_managed(event["RequestType"], notification_configuration)
     else:
       config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
-    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config, SkipDestinationValidation=skipDestinationValidation)
+    
+    try:
+      s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config, SkipDestinationValidation=skipDestinationValidation)
+    except ClientError as e:
+      # Check if this is specifically a NoSuchBucket error
+      if e.response['Error']['Code'] == 'NoSuchBucket':
+        # If bucket doesn't exist during delete operations, that's actually the desired end state
+        if event["RequestType"] == "Delete":
+          logging.info(f"Bucket {props['BucketName']} already deleted, delete operation successful")
+        else:
+          # For Create/Update operations, this is an actual error
+          raise
+      else:
+        # For other ClientErrors, always raise
+        raise
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
     response_status = "FAILED"
@@ -47,7 +62,35 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
 
   # find external notifications
   external_notifications = {}
-  existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  try:
+    existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  except ClientError as e:
+    # Check if this is specifically a NoSuchBucket error
+    if e.response['Error']['Code'] == 'NoSuchBucket':
+      # If bucket doesn't exist during delete, that's okay - treat as no existing notifications
+      if request_type == 'Delete':
+        logging.info(f"Bucket {bucket} does not exist, treating as if no existing notifications")
+        existing_notifications = {}
+      else:
+        # For Create/Update operations, bucket not existing is an error
+        raise
+    else:
+      # For other ClientErrors, only be permissive during delete operations
+      if request_type == 'Delete':
+        logging.warning(f"Failed to get bucket notification configuration for {bucket}: {str(e)}")
+        existing_notifications = {}
+      else:
+        # For Create/Update operations, any error is fatal
+        raise
+  except Exception as e:
+    # For any other exceptions, only be permissive during delete operations
+    if request_type == 'Delete':
+      logging.warning(f"Failed to get bucket notification configuration for {bucket}: {str(e)}")
+      existing_notifications = {}
+    else:
+      # For Create/Update operations, any error is fatal
+      raise
+  
   for t in CONFIGURATION_TYPES:
     if request_type == 'Update':
         old_incoming_ids = [get_id(n) for n in old.get(t, [])]

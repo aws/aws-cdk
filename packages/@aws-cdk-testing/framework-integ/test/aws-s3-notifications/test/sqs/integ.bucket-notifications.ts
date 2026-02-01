@@ -14,6 +14,7 @@ const stack = new cdk.Stack(app, 'sqs-bucket-notifications');
 
 const bucket1 = new s3.Bucket(stack, 'Bucket1', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 const queue = new sqs.Queue(stack, 'MyQueue');
 
@@ -22,6 +23,7 @@ bucket1.addObjectCreatedNotification(new s3n.SqsDestination(queue));
 const bucket2 = new s3.Bucket(stack, 'Bucket2', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 bucket2.addObjectCreatedNotification(new s3n.SqsDestination(queue), { suffix: '.png' });
 
@@ -31,8 +33,11 @@ bucket1.addObjectRemovedNotification(new s3n.SqsDestination(encryptedQueue));
 const bucket3 = new s3.Bucket(stack, 'Bucket3WithSkipDestinationValidation', {
   notificationsSkipDestinationValidation: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
-const queueWithIncorrectS3Permissions = new sqs.Queue(stack, 'MyQueueWithIncorrectS3Permissions');
+const queueWithIncorrectS3Permissions = new sqs.Queue(stack, 'MyQueueWithIncorrectS3Permissions', {
+  encryption: sqs.QueueEncryption.KMS_MANAGED,
+});
 queueWithIncorrectS3Permissions.addToResourcePolicy(
   new cdk.aws_iam.PolicyStatement({
     effect: cdk.aws_iam.Effect.DENY,

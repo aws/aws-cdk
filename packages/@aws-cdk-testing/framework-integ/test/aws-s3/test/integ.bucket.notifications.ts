@@ -15,6 +15,7 @@ new s3.Bucket(stack, 'MyEventBridgeBucket', {
   eventBridgeEnabled: true,
   enforceSSL: true, // Adding dummy bucket policy for testing that bucket policy is created before bucket notification
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 new integ.IntegTest(app, 'NotificationTest', {

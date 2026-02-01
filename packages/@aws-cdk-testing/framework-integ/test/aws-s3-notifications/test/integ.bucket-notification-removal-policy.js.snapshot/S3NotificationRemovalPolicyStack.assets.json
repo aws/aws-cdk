@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "S3NotificationRemovalPolicyStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "427613144745-us-east-1-a348ed9b": {
+          "bucketName": "cdk-hnb659fds-assets-427613144745-us-east-1",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::427613144745:role/cdk-hnb659fds-file-publishing-role-427613144745-us-east-1"
+        }
+      }
+    },
+    "54afc48e0fd6d38f9abc3a4b66dd262a4952203a2760ee4647849b9f434ccd3b": {
+      "displayName": "S3NotificationRemovalPolicyStack Template",
+      "source": {
+        "path": "S3NotificationRemovalPolicyStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "427613144745-us-east-1-081902cf": {
+          "bucketName": "cdk-hnb659fds-assets-427613144745-us-east-1",
+          "objectKey": "54afc48e0fd6d38f9abc3a4b66dd262a4952203a2760ee4647849b9f434ccd3b.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::427613144745:role/cdk-hnb659fds-file-publishing-role-427613144745-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
