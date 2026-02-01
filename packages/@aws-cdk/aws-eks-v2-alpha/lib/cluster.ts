@@ -6,7 +6,7 @@ import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack, UnscopedValidationError, FeatureFlags } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicy, RemovalPolicies } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -422,6 +422,22 @@ export interface ClusterCommonOptions {
    * If not defined, kubectl provider will not be created by default.
    */
   readonly kubectlProviderOptions?: KubectlProviderOptions;
+
+  /**
+   * The removal policy applied to all CloudFormation resources created by this construct
+   * when they are no longer managed by CloudFormation.
+   *
+   * This can happen in one of three situations:
+     - The resource is removed from the template, so CloudFormation stops managing it;
+     - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it;
+     - The stack is deleted, so CloudFormation stops managing all resources in it.
+   *
+   * This affects the EKS cluster itself, associated IAM roles, node groups, security groups, VPC
+   * and any other CloudFormation resources managed by this construct.
+   *
+   * @default - Resources will be deleted.
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -1088,6 +1104,8 @@ export class Cluster extends ClusterBase {
 
   private readonly _clusterAdminAccess?: AccessEntry;
 
+  private readonly _removalPolicy?: RemovalPolicy;
+
   /**
    * Initiates an EKS Cluster with the supplied arguments
    *
@@ -1105,9 +1123,8 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
-
     this._kubectlProviderOptions = props.kubectlProviderOptions;
-
+    this._removalPolicy = props.removalPolicy;
     this.tagSubnets();
 
     // this is the role used by EKS when interacting with AWS resources
@@ -1353,6 +1370,11 @@ export class Cluster extends ClusterBase {
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
       new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
     }
+
+    // Apply removal policy to all CFN resources created under this construct.
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**
@@ -1531,10 +1553,12 @@ export class Cluster extends ClusterBase {
       if (FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)) {
         this._openIdConnectProvider = new OidcProviderNative(this, 'OidcProviderNative', {
           url: this.clusterOpenIdConnectIssuerUrl,
+          removalPolicy: this._removalPolicy,
         });
       } else {
         this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
           url: this.clusterOpenIdConnectIssuerUrl,
+          removalPolicy: this._removalPolicy,
         });
       }
     }
@@ -1560,6 +1584,7 @@ export class Cluster extends ClusterBase {
       this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
         cluster: this,
         addonName: 'eks-pod-identity-agent',
+        removalPolicy: this._removalPolicy,
       });
     }
 

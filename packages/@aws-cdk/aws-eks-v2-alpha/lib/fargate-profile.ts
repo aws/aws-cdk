@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnFargateProfile } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Annotations, ITaggable, TagManager, TagType } from 'aws-cdk-lib/core';
+import { Annotations, ITaggable, RemovalPolicy, RemovalPolicies, TagManager, TagType } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 
@@ -55,6 +55,20 @@ export interface FargateProfileOptions {
    * @default - all private subnets of the VPC are selected.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * The removal policy applied to the custom resource that manages the Fargate profile.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -183,6 +197,10 @@ export class FargateProfile extends Construct implements ITaggable {
 
     this.fargateProfileArn = resource.attrArn;
     this.fargateProfileName = resource.ref;
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
 
     // Fargate profiles must be created sequentially. If other profile(s) already
     // exist on the same cluster, create a dependency to force sequential creation.
