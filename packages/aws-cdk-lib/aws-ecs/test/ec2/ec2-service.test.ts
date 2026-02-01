@@ -4613,5 +4613,77 @@ describe('ec2 service', () => {
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
     });
+
+    test('does not include AvailabilityZoneRebalancing in CloudFormation when explicitly set to DISABLED', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.DISABLED,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'Ec2TaskDef0226F28C',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        LaunchType: LaunchType.EC2,
+        SchedulingStrategy: 'REPLICA',
+        // AvailabilityZoneRebalancing should be absent when explicitly set to DISABLED
+        // This prevents unnecessary CloudFormation changes
+        AvailabilityZoneRebalancing: Match.absent(),
+      });
+    });
+
+    test('includes AvailabilityZoneRebalancing in CloudFormation when explicitly set to ENABLED', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+        maxHealthyPercent: 150, // Required when ENABLED
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'Ec2TaskDef0226F28C',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        LaunchType: LaunchType.EC2,
+        SchedulingStrategy: 'REPLICA',
+        // AvailabilityZoneRebalancing should be present when explicitly set to ENABLED
+        AvailabilityZoneRebalancing: 'ENABLED',
+      });
+    });
   });
 });
