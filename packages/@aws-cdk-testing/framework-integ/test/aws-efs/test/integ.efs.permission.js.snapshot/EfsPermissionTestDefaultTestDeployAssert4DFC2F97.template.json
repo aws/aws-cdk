@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d": {
-   "Type": "Custom::DeployAssert@SdkCallSSMsendCommand",
+  "LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,43 +9,43 @@
       "Arn"
      ]
     },
-    "service": "SSM",
-    "api": "sendCommand",
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"result\":\"{\\\"$StringLike\\\":\\\".*Write successful.*\\\"}\"}}}",
     "parameters": {
-     "InstanceIds": {
+     "FunctionName": {
       "Fn::Join": [
        "",
        [
-        "[\"",
+        "\"",
         {
-         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefWriteLambda0E72B4A42765E7AF"
         },
-        "\"]"
-       ]
-      ]
-     },
-     "DocumentName": "\"AWS-RunShellScript\"",
-     "Parameters": {
-      "Fn::Join": [
-       "",
-       [
-        "{\"commands\":[\"mount -t efs -o tls,iam ",
-        {
-         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefFileSystem8A8E25C0B454ACF3"
-        },
-        " /mnt/efs\"]}"
+        "\""
        ]
       ]
      }
     },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "Command.CommandId"
-    ],
-    "salt": "1759420852517"
+    "flattenResponse": "false",
+    "salt": "1764866615884"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2cInvoke7150CDEA": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefWriteLambda0E72B4A42765E7AF"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
    "Type": "AWS::IAM::Role",
@@ -75,7 +75,7 @@
        "Statement": [
         {
          "Action": [
-          "ssm:SendCommand"
+          "lambda:Invoke"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -84,7 +84,38 @@
         },
         {
          "Action": [
-          "ssm:GetCommandInvocation"
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefWriteLambda0E72B4A42765E7AF"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -93,7 +124,38 @@
         },
         {
          "Action": [
-          "states:StartExecution"
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadLambda25A294445B02A7B5"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -102,7 +164,38 @@
         },
         {
          "Action": [
-          "ssm:SendCommand"
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadLambda25A294445B02A7B5"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -111,20 +204,33 @@
         },
         {
          "Action": [
-          "ssm:GetCommandInvocation"
+          "lambda:InvokeFunction"
          ],
          "Effect": "Allow",
          "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "states:StartExecution"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousLambda6BEDD8C7FD349EA7"
+             }
+            ]
+           ]
+          }
          ]
         }
        ]
@@ -141,7 +247,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip"
+     "S3Key": "ca235e6258b11c240506ff06f79037eca461b8d0d9464a947a386d38d8163515.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -153,8 +259,8 @@
     }
    }
   },
-  "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef": {
-   "Type": "Custom::DeployAssert@SdkCallSSMgetCommandInvocation",
+  "LambdaInvoke60d18b84c11c66e9414556fc35df6d38": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -162,35 +268,113 @@
       "Arn"
      ]
     },
-    "service": "SSM",
-    "api": "getCommandInvocation",
-    "expected": "{\"$ObjectLike\":{\"StandardErrorContent\":\"b'mount.nfs4: access denied by server while mounting 127.0.0.1:/'\\nfailed to run commands: exit status 32\",\"Status\":\"Failed\"}}",
-    "stateMachineArn": {
-     "Ref": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitFor25410491"
-    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"result\":\"{\\\"$StringLike\\\":\\\".*Content: Integ Test.*\\\"}\"}}}",
     "parameters": {
-     "CommandId": {
+     "FunctionName": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::GetAtt": [
-          "AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d",
-          "apiCallResponse.Command.CommandId"
-         ]
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadLambda25A294445B02A7B5"
         },
         "\""
        ]
       ]
      },
-     "InstanceId": {
+     "Payload": "\"{\\\"action\\\":\\\"read\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1764866615885"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke60d18b84c11c66e9414556fc35df6d38Invoke3518074E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadLambda25A294445B02A7B5"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokefdb04e42910c7dcf6256870d54fe4a59": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"result\":\"{\\\"$StringLike\\\":\\\".*Permission denied.*\\\"}\"}}}",
+    "parameters": {
+     "FunctionName": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadLambda25A294445B02A7B5"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Payload": "\"{\\\"action\\\":\\\"write\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1764866615886"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokefdb04e42910c7dcf6256870d54fe4a59InvokeACED3029": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadLambda25A294445B02A7B5"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke069b5aed588f50b50dfb3fae8f2be816": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"result\":\"{\\\"$StringLike\\\":\\\".*Error.*\\\"}\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousLambda6BEDD8C7FD349EA7"
         },
         "\""
        ]
@@ -198,457 +382,56 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1759420852518"
+    "salt": "1764866615886"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForIsCompleteProviderInvoke0E3B9656": {
+  "LambdaInvoke069b5aed588f50b50dfb3fae8f2be816InvokeA9153515": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::GetAtt": [
-      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-      "Arn"
-     ]
+     "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousLambda6BEDD8C7FD349EA7"
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForRoleCB1932A9",
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
     }
    }
-  },
-  "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForTimeoutProviderInvokeB2FF1355": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-      "Arn"
-     ]
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForRoleCB1932A9",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForRoleCB1932A9": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "states.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "Policies": [
-     {
-      "PolicyName": "InlineInvokeFunctions",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Action": "lambda:InvokeFunction",
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::GetAtt": [
-            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-            "Arn"
-           ]
-          },
-          {
-           "Fn::GetAtt": [
-            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-            "Arn"
-           ]
-          }
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitFor25410491": {
-   "Type": "AWS::StepFunctions::StateMachine",
-   "Properties": {
-    "DefinitionString": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":36,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
-       {
-        "Fn::GetAtt": [
-         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-         "Arn"
-        ]
-       },
-       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-       {
-        "Fn::GetAtt": [
-         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-         "Arn"
-        ]
-       },
-       "\"}}}"
-      ]
-     ]
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForRoleCB1932A9",
-      "Arn"
-     ]
-    }
-   },
-   "DependsOn": [
-    "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForRoleCB1932A9"
-   ]
-  },
-  "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyName": "Inline",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Action": [
-          "ssm:GetCommandInvocation"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "ssm:GetCommandInvocation"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Runtime": "nodejs22.x",
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip"
-    },
-    "Timeout": 120,
-    "Handler": "index.isComplete",
-    "Role": {
-     "Fn::GetAtt": [
-      "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Runtime": "nodejs22.x",
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip"
-    },
-    "Timeout": 120,
-    "Handler": "index.onTimeout",
-    "Role": {
-     "Fn::GetAtt": [
-      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f": {
-   "Type": "Custom::DeployAssert@SdkCallSSMsendCommand",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "SSM",
-    "api": "sendCommand",
-    "parameters": {
-     "InstanceIds": {
-      "Fn::Join": [
-       "",
-       [
-        "[\"",
-        {
-         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
-        },
-        "\"]"
-       ]
-      ]
-     },
-     "DocumentName": "\"AWS-RunShellScript\"",
-     "Parameters": "{\"commands\":[\"cat /mnt/efs/integ-test.txt\"]}"
-    },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "Command.CommandId"
-    ],
-    "salt": "1759420852521"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2": {
-   "Type": "Custom::DeployAssert@SdkCallSSMgetCommandInvocation",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "SSM",
-    "api": "getCommandInvocation",
-    "expected": "{\"$ObjectLike\":{\"StandardOutputContent\":\"Integ Test\\n\",\"Status\":\"Success\"}}",
-    "stateMachineArn": {
-     "Ref": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForBC48DF7E"
-    },
-    "parameters": {
-     "CommandId": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::GetAtt": [
-          "AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f",
-          "apiCallResponse.Command.CommandId"
-         ]
-        },
-        "\""
-       ]
-      ]
-     },
-     "InstanceId": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1759420852521"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForIsCompleteProviderInvoke0043BB8D": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-      "Arn"
-     ]
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForRoleA472C364",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForTimeoutProviderInvokeABA3643B": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-      "Arn"
-     ]
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForRoleA472C364",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForRoleA472C364": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "states.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "Policies": [
-     {
-      "PolicyName": "InlineInvokeFunctions",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Action": "lambda:InvokeFunction",
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::GetAtt": [
-            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-            "Arn"
-           ]
-          },
-          {
-           "Fn::GetAtt": [
-            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-            "Arn"
-           ]
-          }
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForBC48DF7E": {
-   "Type": "AWS::StepFunctions::StateMachine",
-   "Properties": {
-    "DefinitionString": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":36,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
-       {
-        "Fn::GetAtt": [
-         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-         "Arn"
-        ]
-       },
-       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-       {
-        "Fn::GetAtt": [
-         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-         "Arn"
-        ]
-       },
-       "\"}}}"
-      ]
-     ]
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForRoleA472C364",
-      "Arn"
-     ]
-    }
-   },
-   "DependsOn": [
-    "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForRoleA472C364"
-   ]
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef": {
+  "AssertionResultsLambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef",
+     "LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2": {
+  "AssertionResultsLambdaInvoke60d18b84c11c66e9414556fc35df6d38": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2",
+     "LambdaInvoke60d18b84c11c66e9414556fc35df6d38",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokefdb04e42910c7dcf6256870d54fe4a59": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokefdb04e42910c7dcf6256870d54fe4a59",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke069b5aed588f50b50dfb3fae8f2be816": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke069b5aed588f50b50dfb3fae8f2be816",
      "assertion"
     ]
    }
