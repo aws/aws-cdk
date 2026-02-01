@@ -150,6 +150,163 @@ describe('CrossRegionInferenceProfile', () => {
     });
   });
 
+  describe('grantProfileUsage multi-region ARN generation', () => {
+    test('generates multiple ARNs for US geoRegion', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.US,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'TestRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+
+      // Verify the policy has multiple resources (one per US region)
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+      const grantStatement = statements.find((s: any) =>
+        s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+
+      // Should have multiple resources (one per US region)
+      expect(Array.isArray(grantStatement.Resource)).toBe(true);
+      expect(grantStatement.Resource.length).toBeGreaterThan(1);
+    });
+
+    test('generates multiple ARNs for EU geoRegion', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.EU,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'TestRoleEU', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+      const grantStatement = statements.find((s: any) =>
+        s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+
+      // Should have multiple resources (one per EU region)
+      expect(Array.isArray(grantStatement.Resource)).toBe(true);
+      expect(grantStatement.Resource.length).toBeGreaterThan(1);
+    });
+
+    test('generates multiple ARNs for APAC geoRegion', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.APAC,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'TestRoleAPAC', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+      const grantStatement = statements.find((s: any) =>
+        s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+
+      // Should have multiple resources (one per APAC region)
+      expect(Array.isArray(grantStatement.Resource)).toBe(true);
+      expect(grantStatement.Resource.length).toBeGreaterThan(1);
+    });
+
+    test('generates wildcard ARN for GLOBAL geoRegion', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.GLOBAL,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'TestRoleGlobal', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+      const grantStatement = statements.find((s: any) =>
+        s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+
+      // For GLOBAL, should have a single resource with wildcard region
+      // When there's only one resource, CDK may not wrap it in an array
+      const resources = Array.isArray(grantStatement.Resource)
+        ? grantStatement.Resource
+        : [grantStatement.Resource];
+      expect(resources.length).toBe(1);
+    });
+
+    test('generates specific ARNs for JP geoRegion', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.JP,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'TestRoleJP', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+      const grantStatement = statements.find((s: any) =>
+        s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+
+      // Should have exactly 2 resources (ap-northeast-1 and ap-northeast-3)
+      expect(Array.isArray(grantStatement.Resource)).toBe(true);
+      expect(grantStatement.Resource.length).toBe(2);
+    });
+
+    test('generates specific ARNs for AU geoRegion', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.AU,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'TestRoleAU', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+      const grantStatement = statements.find((s: any) =>
+        s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+
+      // Should have exactly 2 resources (ap-southeast-2 and ap-southeast-4)
+      expect(Array.isArray(grantStatement.Resource)).toBe(true);
+      expect(grantStatement.Resource.length).toBe(2);
+    });
+  });
+
   describe('region mapping', () => {
     test('REGION_TO_GEO_AREA contains correct mappings', () => {
       expect(bedrockAlpha.REGION_TO_GEO_AREA['us-east-1']).toBe(bedrockAlpha.CrossRegionInferenceProfileRegion.US);
@@ -165,6 +322,30 @@ describe('CrossRegionInferenceProfile', () => {
       expect(bedrockAlpha.REGION_TO_GEO_AREA['ap-south-1']).toBe(bedrockAlpha.CrossRegionInferenceProfileRegion.APAC);
       expect(bedrockAlpha.REGION_TO_GEO_AREA['ap-southeast-1']).toBe(bedrockAlpha.CrossRegionInferenceProfileRegion.APAC);
       expect(bedrockAlpha.REGION_TO_GEO_AREA['ap-southeast-2']).toBe(bedrockAlpha.CrossRegionInferenceProfileRegion.APAC);
+    });
+
+    test('all CrossRegionInferenceProfileRegion enum values are supported by grantProfileUsage', () => {
+      // This test ensures that all geoRegion enum values have corresponding region mappings
+      // and won't throw an error when grantProfileUsage is called
+      const allGeoRegions = Object.values(bedrockAlpha.CrossRegionInferenceProfileRegion);
+
+      for (const geoRegion of allGeoRegions) {
+        // Create a fresh stack for each test to avoid resource name conflicts
+        const testApp = new core.App();
+        const testStack = new core.Stack(testApp, `TestStack-${geoRegion}`);
+
+        const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+          geoRegion: geoRegion,
+          model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        });
+
+        const role = new iam.Role(testStack, 'TestRole', {
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // This should not throw - all enum values should be supported
+        expect(() => profile.grantProfileUsage(role)).not.toThrow();
+      }
     });
   });
 
