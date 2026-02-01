@@ -1,0 +1,202 @@
+{
+ "Resources": {
+  "Layer1C6A95CF2": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "CompatibleRuntimes": [
+     "nodejs18.x"
+    ],
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "8190cbaf621223fb86e7062ea533415579c095416939dfc49a60f72b1b96c397.zip"
+    },
+    "Description": "Layer 1 for function A"
+   }
+  },
+  "Layer2764A4C47": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "CompatibleRuntimes": [
+     "nodejs18.x"
+    ],
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "8190cbaf621223fb86e7062ea533415579c095416939dfc49a60f72b1b96c397.zip"
+    },
+    "Description": "Layer 2 for function B"
+   }
+  },
+  "FunctionAServiceRole0B357DA6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "FunctionA5439B596": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async () => { return { statusCode: 200 }; }"
+    },
+    "Description": "version-hash:da9aa67610dbf038d58486a2c080f85b",
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "Layer1C6A95CF2"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "FunctionAServiceRole0B357DA6",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "FunctionAServiceRole0B357DA6"
+   ]
+  },
+  "FunctionACurrentVersion3D12132958bdd5af605562a0bf3f92d3e50693e2": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "FunctionA5439B596"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "FunctionBServiceRoleE7D64095": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "FunctionBA5DD4A80": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async () => { return { statusCode: 200 }; }"
+    },
+    "Description": "version-hash:d53e37b121b161dab7dd251584cd0a47",
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "Layer2764A4C47"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "FunctionBServiceRoleE7D64095",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "FunctionBServiceRoleE7D64095"
+   ]
+  },
+  "FunctionBCurrentVersion598F00965d985f4a7f52c439671822c772fe750f": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "FunctionBA5DD4A80"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
