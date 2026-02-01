@@ -5,7 +5,7 @@ import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import type { RemovalPolicy } from '../../core';
-import { FeatureFlags, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import { Annotations, FeatureFlags, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -13,6 +13,71 @@ import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL }
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
+
+/**
+ * Normalizes and validates a KMS alias name.
+ *
+ * @param aliasName The alias name to normalize
+ * @param scope The construct scope for error reporting
+ * @returns The normalized alias name with 'alias/' prefix
+ * @throws ValidationError if the alias name is invalid
+ */
+function normalizeAliasName(aliasName: string, scope: Construct): string {
+  if (!Token.isUnresolved(aliasName)) {
+    if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
+      aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
+    }
+
+    if (aliasName === REQUIRED_ALIAS_PREFIX) {
+      throw new ValidationError(
+        `Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`,
+        scope,
+      );
+    }
+
+    if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
+      throw new ValidationError(
+        `Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`,
+        scope,
+      );
+    }
+
+    if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+      throw new ValidationError(
+        'Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-',
+        scope,
+      );
+    }
+  } else if (Tokenization.reverseString(aliasName).firstValue &&
+             Tokenization.reverseString(aliasName).firstToken === undefined) {
+    const valueInToken = Tokenization.reverseString(aliasName).firstValue;
+
+    if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
+      aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
+    }
+
+    if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
+      throw new ValidationError(
+        `Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`,
+        scope,
+      );
+    }
+
+    if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+      throw new ValidationError(
+        'Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-',
+        scope,
+      );
+    }
+  } else {
+    Annotations.of(scope).addWarningV2(
+      '@aws-cdk/aws-kms:aliasNameNotValidated',
+      'Alias name is a token that cannot be validated at synthesis time. ' +
+      `Ensure it will resolve to a valid alias name (must start with "${REQUIRED_ALIAS_PREFIX}" and meet AWS KMS requirements).`,
+    );
+  }
+  return aliasName;
+}
 
 /**
  * A KMS Key alias.
@@ -189,7 +254,10 @@ abstract class AliasBase extends Resource implements IAlias {
  */
 export interface AliasAttributes {
   /**
-   * Specifies the alias name. This value must begin with alias/ followed by a name (i.e. alias/ExampleAlias)
+   * Specifies the alias name.
+   *
+   * The "alias/" prefix is optional and will be added if not present.
+   * The value will be validated to ensure it meets AWS KMS requirements.
    */
   readonly aliasName: string;
 
@@ -218,13 +286,20 @@ export class Alias extends AliasBase {
   /**
    * Import an existing KMS Alias defined outside the CDK app.
    *
+   * The alias name will be automatically normalized:
+   * - The "alias/" prefix will be added if not present
+   * - Names starting with "alias/aws/" will be rejected (reserved for AWS-managed keys)
+   * - Character set and length will be validated (1-256 chars, a-zA-Z0-9:/_-)
+   *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param attrs the properties of the referenced KMS Alias
    */
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
+    const normalizedAliasName = normalizeAliasName(attrs.aliasName, scope);
+
     class _Alias extends AliasBase {
-      public get aliasName() { return attrs.aliasName; }
+      public get aliasName() { return normalizedAliasName; }
       public get aliasTargetKey() { return attrs.aliasTargetKey; }
     }
     return new _Alias(scope, id);
@@ -242,13 +317,17 @@ export class Alias extends AliasBase {
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param aliasName The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias').
+   * @param aliasName The name of the KMS Alias. The "alias/" prefix is optional
+   *                  and will be added if not present (e.g., both 'myKeyAlias'
+   *                  and 'alias/myKeyAlias' are valid).
    */
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
+    const normalizedAliasName = normalizeAliasName(aliasName, scope);
+
     class Import extends Resource implements IAlias {
-      public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
-      public readonly keyId = aliasName;
-      public readonly aliasName = aliasName;
+      public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: normalizedAliasName });
+      public readonly keyId = normalizedAliasName;
+      public readonly aliasName = normalizedAliasName;
       public get aliasTargetKey(): IKey { throw new ValidationError('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
       public addAlias(_alias: string): Alias { throw new ValidationError('Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
@@ -338,39 +417,7 @@ export class Alias extends AliasBase {
   }
 
   constructor(scope: Construct, id: string, props: AliasProps) {
-    let aliasName = props.aliasName;
-
-    if (!Token.isUnresolved(aliasName)) {
-      if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
-        aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
-      }
-
-      if (aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new ValidationError(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
-      }
-
-      if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
-      }
-
-      if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
-      }
-    } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
-      const valueInToken = Tokenization.reverseString(aliasName).firstValue;
-
-      if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
-        aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
-      }
-
-      if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
-      }
-
-      if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
-      }
-    }
+    const aliasName = normalizeAliasName(props.aliasName, scope);
 
     super(scope, id, {
       physicalName: aliasName,
