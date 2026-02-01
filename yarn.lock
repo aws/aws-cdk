@@ -156,6 +156,13 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
+"@aws-cdk/service-spec-types@^0.0.154":
+  version "0.0.154"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.154.tgz#16aa80d75076bcd2c709708325f7b79f41f8b1e5"
+  integrity sha512-fwlkhdTG1ZypxVBsLTINEKynDeDS5EPBqNVSCi8/8JrXcwlUl/BHx9PQzrVKkVgrfvcI/rvtGiuTJfUmEsnM8g==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
 "@aws-crypto/crc32@5.2.0":
   version "5.2.0"
   resolved "https://registry.npmjs.org/@aws-crypto/crc32/-/crc32-5.2.0.tgz#cfcc22570949c98c6689cfcbd2d693d36cdae2e1"
