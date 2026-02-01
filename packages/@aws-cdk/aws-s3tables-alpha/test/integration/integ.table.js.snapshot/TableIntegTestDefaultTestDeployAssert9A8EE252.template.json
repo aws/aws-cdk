@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallawssdkclients3tablesListTablesCommand77c70519e42bc75a4776273a03b34c6f": {
+  "AwsApiCallawssdkclients3tablesListTablesCommandc2f489e925b885a5b09c6cc684801782": {
    "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesListTabl",
    "Properties": {
     "ServiceToken": {
@@ -25,10 +25,31 @@
        ]
       ]
      },
-     "namespace": "\"table_test_namespace\""
+     "namespace": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "|",
+            {
+             "Fn::ImportValue": "DefaultTableStack:ExportsOutputRefDefaultNamespaceD1A024671175E22D"
+            }
+           ]
+          }
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
     },
     "flattenResponse": "false",
-    "salt": "1753860830234"
+    "salt": "1768331773560"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -86,20 +107,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -111,7 +124,7 @@
     }
    }
   },
-  "AwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69": {
+  "AwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommandfaac8d26ca9257697fda744ce27f8d6f": {
    "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
    "Properties": {
     "ServiceToken": {
@@ -125,7 +138,28 @@
     "expected": "{\"$ObjectLike\":{\"configuration\":{\"icebergCompaction\":{\"status\":\"enabled\",\"settings\":{\"icebergCompaction\":{\"targetFileSizeMB\":128}}},\"icebergSnapshotManagement\":{\"status\":\"enabled\",\"settings\":{\"icebergSnapshotManagement\":{\"maxSnapshotAgeHours\":48,\"minSnapshotsToKeep\":5}}}}}}",
     "parameters": {
      "name": "\"schema_test_table\"",
-     "namespace": "\"schema_table_namespace\"",
+     "namespace": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "|",
+            {
+             "Fn::ImportValue": "SchemaTableStack:ExportsOutputRefSchemaNamespaceFDE8AD2ECB9F9FAF"
+            }
+           ]
+          }
+         ]
+        },
+        "\""
+       ]
+      ]
+     },
      "tableBucketARN": {
       "Fn::Join": [
        "",
@@ -140,160 +174,27 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1753860830235"
+    "salt": "1768331773562"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallawssdkclients3tablesListTablesCommand77c70519e42bc75a4776273a03b34c6f": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesListTablesCommandc2f489e925b885a5b09c6cc684801782": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3tablesListTablesCommand77c70519e42bc75a4776273a03b34c6f",
+     "AwsApiCallawssdkclients3tablesListTablesCommandc2f489e925b885a5b09c6cc684801782",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommandfaac8d26ca9257697fda744ce27f8d6f": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69",
+     "AwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommandfaac8d26ca9257697fda744ce27f8d6f",
      "assertion"
     ]
-   }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
    }
   }
  },

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/461f4a723b119ed220fa0999d61899c9e4a67dc4eba52debf9d13bcf04452eee.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa0c1bf13623348009eef7558adadc18cc8afe3742c400ea2b0010fa9305b99f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,6 +88,12 @@
             "data": "ExportsOutputFnGetAttTableBucket0BF18B0DTableBucketARN92D70B40"
           }
         ],
+        "/grant-read-table/Exports/Output{\"Ref\":\"NamespaceADFEA57E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefNamespaceADFEA57E9D22F106"
+          }
+        ],
         "/grant-read-table/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -120,7 +126,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57ed67ccacb74a8462ac3a9070aed70da5a884bae5c866f5f3baeef93f2d131a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2411750b76959c7f76bca65a079fd00ea12e85d5d6eab17c0fd05a7d2c303e9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -190,6 +196,12 @@
             "data": "ExportsOutputFnGetAttTableBucket0BF18B0DTableBucketARN92D70B40"
           }
         ],
+        "/grant-write-table/Exports/Output{\"Ref\":\"NamespaceADFEA57E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefNamespaceADFEA57E9D22F106"
+          }
+        ],
         "/grant-write-table/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -222,7 +234,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/408fba06eaca538703b7b544704483db0a7bc9763508771e59238f0bbf4a3768.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee18cf44fec7c1ba20a66cc819c1c48ea7316ef957d046733ac12c051783003f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -292,6 +304,12 @@
             "data": "ExportsOutputFnGetAttTableBucket0BF18B0DTableBucketARN92D70B40"
           }
         ],
+        "/grant-read-write-table/Exports/Output{\"Ref\":\"NamespaceADFEA57E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefNamespaceADFEA57E9D22F106"
+          }
+        ],
         "/grant-read-write-table/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -324,7 +342,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/25940a2ce11f62aa1802113e2b3b6d9c9eba78300e64df7a7c1969e76936fe9c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e8492c9b73745866de3ec8bfdb8354f465361eca45e9334344ac02b426c2a631.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -343,7 +361,7 @@
         "TableWithGrantIntegTestDefaultTestDeployAssertE9880469.assets"
       ],
       "metadata": {
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommandd7e0f74494f30feab69bdd20f4d219e4/Default": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommandacea57ccaa0a387c4f01d15a3d3fa3d6/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -357,16 +375,16 @@
             "data": "*"
           }
         ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommandd7e0f74494f30feab69bdd20f4d219e4/Default/Default": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommandacea57ccaa0a387c4f01d15a3d3fa3d6/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclients3tablesGetTablePolicyCommandd7e0f74494f30feab69bdd20f4d219e4"
+            "data": "AwsApiCallawssdkclients3tablesGetTablePolicyCommandacea57ccaa0a387c4f01d15a3d3fa3d6"
           }
         ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommandd7e0f74494f30feab69bdd20f4d219e4/AssertionResults": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommandacea57ccaa0a387c4f01d15a3d3fa3d6/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTablePolicyCommandd7e0f74494f30feab69bdd20f4d219e4"
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTablePolicyCommandacea57ccaa0a387c4f01d15a3d3fa3d6"
           }
         ],
         "/TableWithGrantIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -381,13 +399,7 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand74406d5d6a4ab6fb540d190ec8824fcf/Default": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand2262282ba0ae951564d04548321b4796/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -401,19 +413,19 @@
             "data": "*"
           }
         ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand74406d5d6a4ab6fb540d190ec8824fcf/Default/Default": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand2262282ba0ae951564d04548321b4796/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclients3tablesGetTablePolicyCommand74406d5d6a4ab6fb540d190ec8824fcf"
+            "data": "AwsApiCallawssdkclients3tablesGetTablePolicyCommand2262282ba0ae951564d04548321b4796"
           }
         ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand74406d5d6a4ab6fb540d190ec8824fcf/AssertionResults": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand2262282ba0ae951564d04548321b4796/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTablePolicyCommand74406d5d6a4ab6fb540d190ec8824fcf"
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTablePolicyCommand2262282ba0ae951564d04548321b4796"
           }
         ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand50df614cf2bcea3420376a134ef47a13/Default": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommande339976627bbbde746eeabb5706b5a0a/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -427,16 +439,16 @@
             "data": "*"
           }
         ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand50df614cf2bcea3420376a134ef47a13/Default/Default": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommande339976627bbbde746eeabb5706b5a0a/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclients3tablesGetTablePolicyCommand50df614cf2bcea3420376a134ef47a13"
+            "data": "AwsApiCallawssdkclients3tablesGetTablePolicyCommande339976627bbbde746eeabb5706b5a0a"
           }
         ],
-        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommand50df614cf2bcea3420376a134ef47a13/AssertionResults": [
+        "/TableWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTablePolicyCommande339976627bbbde746eeabb5706b5a0a/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTablePolicyCommand50df614cf2bcea3420376a134ef47a13"
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTablePolicyCommande339976627bbbde746eeabb5706b5a0a"
           }
         ],
         "/TableWithGrantIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -465,19 +477,10 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
-          "@aws-cdk/core:enableStackNameDuplicates": {
+          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
-            "explanation": "Allow multiple stacks with the same name",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "aws-cdk:enableDiffNoFail": {
-            "recommendedValue": true,
-            "explanation": "Make `cdk diff` not fail when there are differences",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
             "recommendedValue": true,
@@ -493,40 +496,10 @@
               "v2": true
             }
           },
-          "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": {
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
-            "explanation": "DockerImageAsset properly supports `.dockerignore` files by default",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": {
-            "recommendedValue": true,
-            "explanation": "Fix the referencing of SecretsManager names from ARNs",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-kms:defaultKeyPolicies": {
-            "recommendedValue": true,
-            "explanation": "Tighten default KMS key policies",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-s3:grantWriteWithoutAcl": {
-            "recommendedValue": true,
-            "explanation": "Remove `PutObjectAcl` from Bucket.grantWrite",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": {
-            "recommendedValue": true,
-            "explanation": "Do not specify a default DesiredCount for ECS services",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -538,13 +511,6 @@
           "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": {
             "recommendedValue": true,
             "explanation": "Allow adding/removing multiple UsagePlanKeys independently",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-efs:defaultEncryptionAtRest": {
-            "recommendedValue": true,
-            "explanation": "Enable this feature flag to have elastic file systems encrypted at rest by default.",
             "unconfiguredBehavesLike": {
               "v2": true
             }
@@ -643,7 +609,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -829,16 +795,6 @@
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
-          },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
             "recommendedValue": true,
@@ -945,10 +901,7 @@
           },
           "@aws-cdk/cognito:logUserPoolClientSecretValue": {
             "recommendedValue": false,
-            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs."
           },
           "@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope": {
             "recommendedValue": true,
@@ -974,10 +927,7 @@
           },
           "@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration": {
             "recommendedValue": false,
-            "explanation": "When enabled, use resource IDs for VPC V2 migration",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When enabled, use resource IDs for VPC V2 migration"
           },
           "@aws-cdk/aws-s3:publicAccessBlockedByDefault": {
             "userValue": true,
@@ -987,14 +937,30 @@
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function",
+            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
             "unconfiguredBehavesLike": {
-              "v2": false
+              "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1033.0"
 }

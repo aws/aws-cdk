@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "testCases": {
     "TableIntegTest/DefaultTest": {
       "stacks": [
@@ -11,5 +11,5 @@
       "assertionStackName": "TableIntegTestDefaultTestDeployAssert9A8EE252"
     }
   },
-  "minimumCliVersion": "2.1020.1"
+  "minimumCliVersion": "2.1033.0"
 }
