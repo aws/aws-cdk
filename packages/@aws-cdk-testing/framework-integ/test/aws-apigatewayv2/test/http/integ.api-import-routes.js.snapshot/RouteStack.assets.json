@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "ea3f2297da5944ef30d436bd3be32ddf94debd4bd1bb3a9984b0dbf612395a04": {
+      "displayName": "RouteStack Template",
+      "source": {
+        "path": "RouteStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-33509288": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ea3f2297da5944ef30d436bd3be32ddf94debd4bd1bb3a9984b0dbf612395a04.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
