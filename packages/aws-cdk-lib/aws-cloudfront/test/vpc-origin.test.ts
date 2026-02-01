@@ -197,3 +197,151 @@ test.each([88, 444, 65536])('VPC origins throws when httpsPort is %s', (port) =>
     });
   }).toThrow(`'httpsPort' must be 80, 443, or a value between 1024 and 65535, got ${port}`);
 });
+
+describe('Region-aware naming', () => {
+  test('VPC origin with region-aware naming enabled', () => {
+    // GIVEN
+    const regionStack = new Stack(app, 'RegionStack', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
+    regionStack.node.setContext('@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName', true);
+
+    // WHEN
+    new VpcOrigin(regionStack, 'VpcOrigin', {
+      endpoint: { endpointArn: 'arn:opaque' },
+    });
+
+    // THEN
+    const template = Template.fromStack(regionStack);
+    const resources = template.toJSON().Resources;
+    const vpcOriginResource = Object.values(resources).find(
+      (r: any) => r.Type === 'AWS::CloudFront::VpcOrigin',
+    ) as any;
+    const generatedName = vpcOriginResource.Properties.VpcOriginEndpointConfig.Name;
+
+    // Verify name ends with region suffix
+    expect(generatedName).toMatch(/-us-east-1$/);
+  });
+
+  test('VPC origin with region-aware naming handles longest region name', () => {
+    // GIVEN - ap-southeast-2 is one of the longest region names (14 chars)
+    const regionStack = new Stack(app, 'RegionStack', {
+      env: { account: '1234', region: 'ap-southeast-2' },
+    });
+    regionStack.node.setContext('@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName', true);
+
+    // WHEN
+    new VpcOrigin(regionStack, 'VpcOrigin', {
+      endpoint: { endpointArn: 'arn:opaque' },
+    });
+
+    // THEN
+    const template = Template.fromStack(regionStack);
+    const resources = template.toJSON().Resources;
+    const vpcOriginResource = Object.values(resources).find(
+      (r: any) => r.Type === 'AWS::CloudFront::VpcOrigin',
+    ) as any;
+    const generatedName = vpcOriginResource.Properties.VpcOriginEndpointConfig.Name;
+
+    // Verify name ends with region suffix
+    expect(generatedName).toMatch(/-ap-southeast-2$/);
+    // Verify name length is within 64 character limit
+    expect(generatedName.length).toBeLessThanOrEqual(64);
+  });
+
+  test('VPC origin with region-aware naming handles very long stack names', () => {
+    // GIVEN - Create a stack with a very long name to test truncation
+    const longStackName = 'VeryLongStackNameThatExceedsNormalLengthForTestingPurposes';
+    const regionStack = new Stack(app, longStackName, {
+      env: { account: '1234', region: 'ap-southeast-2' },
+    });
+    regionStack.node.setContext('@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName', true);
+
+    // WHEN
+    new VpcOrigin(regionStack, 'VpcOrigin', {
+      endpoint: { endpointArn: 'arn:opaque' },
+    });
+
+    // THEN
+    const template = Template.fromStack(regionStack);
+    const resources = template.toJSON().Resources;
+    const vpcOriginResource = Object.values(resources).find(
+      (r: any) => r.Type === 'AWS::CloudFront::VpcOrigin',
+    ) as any;
+    const generatedName = vpcOriginResource.Properties.VpcOriginEndpointConfig.Name;
+
+    // Verify name length is within 64 character limit
+    expect(generatedName.length).toBeLessThanOrEqual(64);
+    // Verify it ends with the region
+    expect(generatedName).toMatch(/-ap-southeast-2$/);
+  });
+
+  test('VPC origin without region-aware naming maintains backward compatibility', () => {
+    // GIVEN
+    const regionStack = new Stack(app, 'RegionStack', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
+    // Feature flag is NOT enabled (default behavior)
+
+    // WHEN
+    new VpcOrigin(regionStack, 'VpcOrigin', {
+      endpoint: { endpointArn: 'arn:opaque' },
+    });
+
+    // THEN
+    const template = Template.fromStack(regionStack);
+    const resources = template.toJSON().Resources;
+    const vpcOriginResource = Object.values(resources).find(
+      (r: any) => r.Type === 'AWS::CloudFront::VpcOrigin',
+    ) as any;
+    const generatedName = vpcOriginResource.Properties.VpcOriginEndpointConfig.Name;
+
+    // Verify name does NOT end with region suffix
+    expect(generatedName).not.toMatch(/-us-east-1$/);
+    // Verify name follows the expected pattern without region
+    expect(generatedName).toMatch(/^RegionStackVpcOrigin[A-F0-9]{8}$/);
+  });
+
+  test('VPC origin with region-aware naming and token region falls back to default', () => {
+    // GIVEN
+    const regionStack = new Stack(app, 'RegionStack');
+    regionStack.node.setContext('@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName', true);
+
+    // WHEN - Region is a token (unresolved)
+    new VpcOrigin(regionStack, 'VpcOrigin', {
+      endpoint: { endpointArn: 'arn:opaque' },
+    });
+
+    // THEN - Should use default naming without region suffix
+    const template = Template.fromStack(regionStack);
+    const resources = template.toJSON().Resources;
+    const vpcOriginResource = Object.values(resources).find(
+      (r: any) => r.Type === 'AWS::CloudFront::VpcOrigin',
+    ) as any;
+    const generatedName = vpcOriginResource.Properties.VpcOriginEndpointConfig.Name;
+
+    // Verify name follows the expected pattern without region
+    expect(generatedName).toMatch(/^RegionStackVpcOrigin[A-F0-9]{8}$/);
+  });
+
+  test('VPC origin with custom name ignores region-aware naming', () => {
+    // GIVEN
+    const regionStack = new Stack(app, 'RegionStack', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
+    regionStack.node.setContext('@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName', true);
+
+    // WHEN
+    new VpcOrigin(regionStack, 'VpcOrigin', {
+      endpoint: { endpointArn: 'arn:opaque' },
+      vpcOriginName: 'CustomOriginName',
+    });
+
+    // THEN
+    Template.fromStack(regionStack).hasResourceProperties('AWS::CloudFront::VpcOrigin', {
+      VpcOriginEndpointConfig: {
+        Name: 'CustomOriginName',
+      },
+    });
+  });
+});
