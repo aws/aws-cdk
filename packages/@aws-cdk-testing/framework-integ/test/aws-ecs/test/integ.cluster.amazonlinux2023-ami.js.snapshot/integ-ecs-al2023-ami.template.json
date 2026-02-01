@@ -222,7 +222,10 @@
    "Properties": {
     "CapacityProviders": [
      {
-      "Ref": "EC2CapacityProvider5A2E35CD"
+      "Ref": "StandardD5F7C7B5"
+     },
+     {
+      "Ref": "NeuronC9ABFC86"
      }
     ],
     "Cluster": {
@@ -341,10 +344,10 @@
     ]
    }
   },
-  "ASGInstanceSecurityGroup0525485D": {
+  "StandardASGInstanceSecurityGroup85036A10": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-ecs-al2023-ami/ASG/InstanceSecurityGroup",
+    "GroupDescription": "integ-ecs-al2023-ami/Standard/ASG/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -355,7 +358,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ecs-al2023-ami/ASG"
+      "Value": "integ-ecs-al2023-ami/Standard/ASG"
      }
     ],
     "VpcId": {
@@ -363,7 +366,7 @@
     }
    }
   },
-  "ASGInstanceProfile0A2834D7": {
+  "StandardASGInstanceProfile55F002C7": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -373,14 +376,14 @@
     ]
    }
   },
-  "ASGLaunchTemplate0CA92847": {
+  "StandardASGLaunchTemplateD06BAB94": {
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "ASGInstanceProfile0A2834D7",
+        "StandardASGInstanceProfile55F002C7",
         "Arn"
        ]
       }
@@ -395,7 +398,7 @@
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
-        "ASGInstanceSecurityGroup0525485D",
+        "StandardASGInstanceSecurityGroup85036A10",
         "GroupId"
        ]
       }
@@ -406,7 +409,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "integ-ecs-al2023-ami/ASG/LaunchTemplate"
+         "Value": "integ-ecs-al2023-ami/Standard/ASG/LaunchTemplate"
         }
        ]
       },
@@ -415,7 +418,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "integ-ecs-al2023-ami/ASG/LaunchTemplate"
+         "Value": "integ-ecs-al2023-ami/Standard/ASG/LaunchTemplate"
         }
        ]
       }
@@ -433,7 +436,19 @@
          {
           "Ref": "AWS::StackId"
          },
-         " --resource ASG46ED3070 --region ",
+         " --resource StandardASGD8CBE7F1 --region ",
+         {
+          "Ref": "AWS::Region"
+         },
+         "\necho ECS_CLUSTER=",
+         {
+          "Ref": "ClusterEB0386A7"
+         },
+         " >> /etc/ecs/ecs.config\nsudo yum install -y iptables-services; sudo iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\nyum install -y aws-cfn-bootstrap\n/opt/aws/bin/cfn-signal -e $? --stack ",
+         {
+          "Ref": "AWS::StackId"
+         },
+         " --resource NeuronASG0A0CD55A --region ",
          {
           "Ref": "AWS::Region"
          }
@@ -448,7 +463,7 @@
       "Tags": [
        {
         "Key": "Name",
-        "Value": "integ-ecs-al2023-ami/ASG/LaunchTemplate"
+        "Value": "integ-ecs-al2023-ami/Standard/ASG/LaunchTemplate"
        }
       ]
      }
@@ -459,16 +474,16 @@
     "InstanceRole3CCE2F1D"
    ]
   },
-  "ASG46ED3070": {
+  "StandardASGD8CBE7F1": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
     "LaunchTemplate": {
      "LaunchTemplateId": {
-      "Ref": "ASGLaunchTemplate0CA92847"
+      "Ref": "StandardASGLaunchTemplateD06BAB94"
      },
      "Version": {
       "Fn::GetAtt": [
-       "ASGLaunchTemplate0CA92847",
+       "StandardASGLaunchTemplateD06BAB94",
        "LatestVersionNumber"
       ]
      }
@@ -479,7 +494,7 @@
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "integ-ecs-al2023-ami/ASG"
+      "Value": "integ-ecs-al2023-ami/Standard/ASG"
      }
     ],
     "VPCZoneIdentifier": [
@@ -500,7 +515,7 @@
     }
    }
   },
-  "ASGDrainECSHookFunctionServiceRoleC12963BB": {
+  "StandardASGDrainECSHookFunctionServiceRole3278CE4E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -532,12 +547,12 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ecs-al2023-ami/ASG"
+      "Value": "integ-ecs-al2023-ami/Standard/ASG"
      }
     ]
    }
   },
-  "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27": {
+  "StandardASGDrainECSHookFunctionServiceRoleDefaultPolicyC2E945E1": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -573,7 +588,7 @@
           },
           ":autoScalingGroup:*:autoScalingGroupName/",
           {
-           "Ref": "ASG46ED3070"
+           "Ref": "StandardASGD8CBE7F1"
           }
          ]
         ]
@@ -616,15 +631,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27",
+    "PolicyName": "StandardASGDrainECSHookFunctionServiceRoleDefaultPolicyC2E945E1",
     "Roles": [
      {
-      "Ref": "ASGDrainECSHookFunctionServiceRoleC12963BB"
+      "Ref": "StandardASGDrainECSHookFunctionServiceRole3278CE4E"
      }
     ]
    }
   },
-  "ASGDrainECSHookFunction5F24CF4D": {
+  "StandardASGDrainECSHookFunction65254AA4": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -640,7 +655,7 @@
     "Handler": "index.lambda_handler",
     "Role": {
      "Fn::GetAtt": [
-      "ASGDrainECSHookFunctionServiceRoleC12963BB",
+      "StandardASGDrainECSHookFunctionServiceRole3278CE4E",
       "Arn"
      ]
     },
@@ -648,59 +663,59 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ecs-al2023-ami/ASG"
+      "Value": "integ-ecs-al2023-ami/Standard/ASG"
      }
     ],
     "Timeout": 310
    },
    "DependsOn": [
-    "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27",
-    "ASGDrainECSHookFunctionServiceRoleC12963BB"
+    "StandardASGDrainECSHookFunctionServiceRoleDefaultPolicyC2E945E1",
+    "StandardASGDrainECSHookFunctionServiceRole3278CE4E"
    ]
   },
-  "ASGDrainECSHookFunctionAllowInvokeintegecsal2023amiASGLifecycleHookDrainHookTopic083F299FF8F99189": {
+  "StandardASGDrainECSHookFunctionAllowInvokeintegecsal2023amiStandardASGLifecycleHookDrainHookTopic09E1832FC254E733": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "ASGDrainECSHookFunction5F24CF4D",
+      "StandardASGDrainECSHookFunction65254AA4",
       "Arn"
      ]
     },
     "Principal": "sns.amazonaws.com",
     "SourceArn": {
-     "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+     "Ref": "StandardASGLifecycleHookDrainHookTopicB3A212EB"
     }
    }
   },
-  "ASGDrainECSHookFunctionTopicD6FC59F7": {
+  "StandardASGDrainECSHookFunctionTopicAF0B5CAF": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Endpoint": {
      "Fn::GetAtt": [
-      "ASGDrainECSHookFunction5F24CF4D",
+      "StandardASGDrainECSHookFunction65254AA4",
       "Arn"
      ]
     },
     "Protocol": "lambda",
     "TopicArn": {
-     "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+     "Ref": "StandardASGLifecycleHookDrainHookTopicB3A212EB"
     }
    }
   },
-  "ASGLifecycleHookDrainHookTopicA8AD4ACB": {
+  "StandardASGLifecycleHookDrainHookTopicB3A212EB": {
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ecs-al2023-ami/ASG"
+      "Value": "integ-ecs-al2023-ami/Standard/ASG"
      }
     ]
    }
   },
-  "ASGLifecycleHookDrainHookRoleD640316C": {
+  "StandardASGLifecycleHookDrainHookRoleA9387665": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -718,12 +733,12 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ecs-al2023-ami/ASG"
+      "Value": "integ-ecs-al2023-ami/Standard/ASG"
      }
     ]
    }
   },
-  "ASGLifecycleHookDrainHookRoleDefaultPolicy3EEFDE57": {
+  "StandardASGLifecycleHookDrainHookRoleDefaultPolicy765778A8": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -732,50 +747,506 @@
        "Action": "sns:Publish",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+        "Ref": "StandardASGLifecycleHookDrainHookTopicB3A212EB"
        }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ASGLifecycleHookDrainHookRoleDefaultPolicy3EEFDE57",
+    "PolicyName": "StandardASGLifecycleHookDrainHookRoleDefaultPolicy765778A8",
     "Roles": [
      {
-      "Ref": "ASGLifecycleHookDrainHookRoleD640316C"
+      "Ref": "StandardASGLifecycleHookDrainHookRoleA9387665"
      }
     ]
    }
   },
-  "ASGLifecycleHookDrainHookFE4AFEBE": {
+  "StandardASGLifecycleHookDrainHook5D845C2C": {
    "Type": "AWS::AutoScaling::LifecycleHook",
    "Properties": {
     "AutoScalingGroupName": {
-     "Ref": "ASG46ED3070"
+     "Ref": "StandardASGD8CBE7F1"
     },
     "DefaultResult": "CONTINUE",
     "HeartbeatTimeout": 300,
     "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "NotificationTargetARN": {
-     "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+     "Ref": "StandardASGLifecycleHookDrainHookTopicB3A212EB"
     },
     "RoleARN": {
      "Fn::GetAtt": [
-      "ASGLifecycleHookDrainHookRoleD640316C",
+      "StandardASGLifecycleHookDrainHookRoleA9387665",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "ASGLifecycleHookDrainHookRoleDefaultPolicy3EEFDE57",
-    "ASGLifecycleHookDrainHookRoleD640316C"
+    "StandardASGLifecycleHookDrainHookRoleDefaultPolicy765778A8",
+    "StandardASGLifecycleHookDrainHookRoleA9387665"
    ]
   },
-  "EC2CapacityProvider5A2E35CD": {
+  "StandardD5F7C7B5": {
    "Type": "AWS::ECS::CapacityProvider",
    "Properties": {
     "AutoScalingGroupProvider": {
      "AutoScalingGroupArn": {
-      "Ref": "ASG46ED3070"
+      "Ref": "StandardASGD8CBE7F1"
+     },
+     "ManagedScaling": {
+      "Status": "ENABLED",
+      "TargetCapacity": 100
+     },
+     "ManagedTerminationProtection": "DISABLED"
+    }
+   }
+  },
+  "NeuronASGInstanceSecurityGroupF3E88979": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-ecs-al2023-ami/Neuron/ASG/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-al2023-ami/Neuron/ASG"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "NeuronASGInstanceProfile798D7733": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "InstanceRole3CCE2F1D"
+     }
+    ]
+   }
+  },
+  "NeuronASGLaunchTemplateA7CEC6FD": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "NeuronASGInstanceProfile798D7733",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023neuronrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "inf2.xlarge",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "NeuronASGInstanceSecurityGroupF3E88979",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-ecs-al2023-ami/Neuron/ASG/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-ecs-al2023-ami/Neuron/ASG/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\nset -x\nset -e\necho ECS_CLUSTER=",
+         {
+          "Ref": "ClusterEB0386A7"
+         },
+         " >> /etc/ecs/ecs.config\nsudo yum install -y iptables-services; sudo iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\nyum install -y aws-cfn-bootstrap\n/opt/aws/bin/cfn-signal -e $? --stack ",
+         {
+          "Ref": "AWS::StackId"
+         },
+         " --resource StandardASGD8CBE7F1 --region ",
+         {
+          "Ref": "AWS::Region"
+         },
+         "\necho ECS_CLUSTER=",
+         {
+          "Ref": "ClusterEB0386A7"
+         },
+         " >> /etc/ecs/ecs.config\nsudo yum install -y iptables-services; sudo iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\nyum install -y aws-cfn-bootstrap\n/opt/aws/bin/cfn-signal -e $? --stack ",
+         {
+          "Ref": "AWS::StackId"
+         },
+         " --resource NeuronASG0A0CD55A --region ",
+         {
+          "Ref": "AWS::Region"
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "integ-ecs-al2023-ami/Neuron/ASG/LaunchTemplate"
+       }
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "InstanceRoleDefaultPolicy1531605C",
+    "InstanceRole3CCE2F1D"
+   ]
+  },
+  "NeuronASG0A0CD55A": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "NeuronASGLaunchTemplateA7CEC6FD"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "NeuronASGLaunchTemplateA7CEC6FD",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "MaxSize": "1",
+    "MinSize": "1",
+    "Tags": [
+     {
+      "Key": "Name",
+      "PropagateAtLaunch": true,
+      "Value": "integ-ecs-al2023-ami/Neuron/ASG"
+     }
+    ],
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     }
+    ]
+   },
+   "CreationPolicy": {
+    "ResourceSignal": {
+     "Count": 1,
+     "Timeout": "PT10M"
+    }
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "NeuronASGDrainECSHookFunctionServiceRoleBA458FCE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-al2023-ami/Neuron/ASG"
+     }
+    ]
+   }
+  },
+  "NeuronASGDrainECSHookFunctionServiceRoleDefaultPolicy4F575EBC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:DescribeHosts",
+        "ec2:DescribeInstanceAttribute",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeInstances"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "autoscaling:CompleteLifecycleAction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":autoscaling:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":autoScalingGroup:*:autoScalingGroupName/",
+          {
+           "Ref": "NeuronASG0A0CD55A"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ecs:DescribeContainerInstances",
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:UpdateContainerInstancesState"
+       ],
+       "Condition": {
+        "ArnEquals": {
+         "ecs:cluster": {
+          "Fn::GetAtt": [
+           "ClusterEB0386A7",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ecs:ListContainerInstances",
+        "ecs:SubmitContainerStateChange",
+        "ecs:SubmitTaskStateChange"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ClusterEB0386A7",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "NeuronASGDrainECSHookFunctionServiceRoleDefaultPolicy4F575EBC",
+    "Roles": [
+     {
+      "Ref": "NeuronASGDrainECSHookFunctionServiceRoleBA458FCE"
+     }
+    ]
+   }
+  },
+  "NeuronASGDrainECSHookFunctionCE97C4B0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
+    },
+    "Environment": {
+     "Variables": {
+      "CLUSTER": {
+       "Ref": "ClusterEB0386A7"
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "NeuronASGDrainECSHookFunctionServiceRoleBA458FCE",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-al2023-ami/Neuron/ASG"
+     }
+    ],
+    "Timeout": 310
+   },
+   "DependsOn": [
+    "NeuronASGDrainECSHookFunctionServiceRoleDefaultPolicy4F575EBC",
+    "NeuronASGDrainECSHookFunctionServiceRoleBA458FCE"
+   ]
+  },
+  "NeuronASGDrainECSHookFunctionAllowInvokeintegecsal2023amiNeuronASGLifecycleHookDrainHookTopic5949A11FE04CB52A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "NeuronASGDrainECSHookFunctionCE97C4B0",
+      "Arn"
+     ]
+    },
+    "Principal": "sns.amazonaws.com",
+    "SourceArn": {
+     "Ref": "NeuronASGLifecycleHookDrainHookTopic3816D917"
+    }
+   }
+  },
+  "NeuronASGDrainECSHookFunctionTopic2AE11138": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "NeuronASGDrainECSHookFunctionCE97C4B0",
+      "Arn"
+     ]
+    },
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "NeuronASGLifecycleHookDrainHookTopic3816D917"
+    }
+   }
+  },
+  "NeuronASGLifecycleHookDrainHookTopic3816D917": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-al2023-ami/Neuron/ASG"
+     }
+    ]
+   }
+  },
+  "NeuronASGLifecycleHookDrainHookRole51771E42": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "autoscaling.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ecs-al2023-ami/Neuron/ASG"
+     }
+    ]
+   }
+  },
+  "NeuronASGLifecycleHookDrainHookRoleDefaultPolicy030E0E8F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "NeuronASGLifecycleHookDrainHookTopic3816D917"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "NeuronASGLifecycleHookDrainHookRoleDefaultPolicy030E0E8F",
+    "Roles": [
+     {
+      "Ref": "NeuronASGLifecycleHookDrainHookRole51771E42"
+     }
+    ]
+   }
+  },
+  "NeuronASGLifecycleHookDrainHookFF9E29DC": {
+   "Type": "AWS::AutoScaling::LifecycleHook",
+   "Properties": {
+    "AutoScalingGroupName": {
+     "Ref": "NeuronASG0A0CD55A"
+    },
+    "DefaultResult": "CONTINUE",
+    "HeartbeatTimeout": 300,
+    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+    "NotificationTargetARN": {
+     "Ref": "NeuronASGLifecycleHookDrainHookTopic3816D917"
+    },
+    "RoleARN": {
+     "Fn::GetAtt": [
+      "NeuronASGLifecycleHookDrainHookRole51771E42",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "NeuronASGLifecycleHookDrainHookRoleDefaultPolicy030E0E8F",
+    "NeuronASGLifecycleHookDrainHookRole51771E42"
+   ]
+  },
+  "NeuronC9ABFC86": {
+   "Type": "AWS::ECS::CapacityProvider",
+   "Properties": {
+    "AutoScalingGroupProvider": {
+     "AutoScalingGroupArn": {
+      "Ref": "NeuronASG0A0CD55A"
      },
      "ManagedScaling": {
       "Status": "ENABLED",
@@ -790,6 +1261,10 @@
   "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id"
+  },
+  "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023neuronrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2023/neuron/recommended/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
