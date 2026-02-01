@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "NeptuneClusterPortTestStack.assets": {
+    "PubliclyAccessibleInstanceStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "NeptuneClusterPortTestStack.assets.json",
+        "file": "PubliclyAccessibleInstanceStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "NeptuneClusterPortTestStack": {
+    "PubliclyAccessibleInstanceStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "NeptuneClusterPortTestStack.template.json",
+        "templateFile": "PubliclyAccessibleInstanceStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3cdf5bd41d575947790093a9eed409b069cfe0acd44dd8c96e2550e147aec36.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8bade07e7c27d79129520d08c3b6cb3db1647b32b5f9e80995d00e65017e753.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "NeptuneClusterPortTestStack.assets"
+          "PubliclyAccessibleInstanceStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,94 +31,25 @@
         }
       },
       "dependencies": [
-        "NeptuneClusterPortTestStack.assets"
+        "PubliclyAccessibleInstanceStack.assets"
       ],
       "metadata": {
-        "/NeptuneClusterPortTestStack/Vpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/NeptuneClusterPortTestStack/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38"
-          }
-        ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet1": [
+        "/PubliclyAccessibleInstanceStack/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
+              "maxAzs": "*",
+              "natGateways": "*"
             }
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet1/Subnet": [
+        "/PubliclyAccessibleInstanceStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+            "data": "VPCB9E5F0B4"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E"
-          }
-        ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-          }
-        ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-          }
-        ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1EIPD7E02669"
-          }
-        ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
-          }
-        ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet2": [
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -154,43 +85,95 @@
             }
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet2/Subnet": [
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
+            "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet2/RouteTable": [
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTable94F7E489"
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet2/DefaultRoute": [
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet2/EIP": [
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2EIP3C605A87"
+            "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PublicSubnet2/NATGateway": [
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2NATGateway9182C01D"
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet1": [
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -218,31 +201,31 @@
             "data": {}
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet1/Subnet": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet1/RouteTable": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet2": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -270,103 +253,103 @@
             "data": {}
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet2/Subnet": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet2/RouteTable": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableA678073B"
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/PubliclyAccessibleInstanceStack/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/IGW": [
+        "/PubliclyAccessibleInstanceStack/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C"
+            "data": "VPCIGWB7E252D3"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/VPCGW": [
+        "/PubliclyAccessibleInstanceStack/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E"
+            "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+        "/PubliclyAccessibleInstanceStack/VPC/RestrictDefaultSecurityGroupCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/NeptuneClusterPortTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/PubliclyAccessibleInstanceStack/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
           }
         ],
-        "/NeptuneClusterPortTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+        "/PubliclyAccessibleInstanceStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/NeptuneClusterPortTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/PubliclyAccessibleInstanceStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/NeptuneClusterPortTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/PubliclyAccessibleInstanceStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/NeptuneClusterPortTestStack/Params": [
+        "/PubliclyAccessibleInstanceStack/Params": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/NeptuneClusterPortTestStack/Params/Resource": [
+        "/PubliclyAccessibleInstanceStack/Params/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ParamsA8366201"
           }
         ],
-        "/NeptuneClusterPortTestStack/Database": [
+        "/PubliclyAccessibleInstanceStack/Database": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/NeptuneClusterPortTestStack/Database/Subnets": [
+        "/PubliclyAccessibleInstanceStack/Database/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/NeptuneClusterPortTestStack/Database/Subnets/Resource": [
+        "/PubliclyAccessibleInstanceStack/Database/Subnets/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSubnets3C9252C9"
           }
         ],
-        "/NeptuneClusterPortTestStack/Database/SecurityGroup": [
+        "/PubliclyAccessibleInstanceStack/Database/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -375,52 +358,76 @@
             }
           }
         ],
-        "/NeptuneClusterPortTestStack/Database/SecurityGroup/Resource": [
+        "/PubliclyAccessibleInstanceStack/Database/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecurityGroup5C91FDCB"
           }
         ],
-        "/NeptuneClusterPortTestStack/Database/Resource": [
+        "/PubliclyAccessibleInstanceStack/Database/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseB269D8BB"
           }
         ],
-        "/NeptuneClusterPortTestStack/Database/Instance1": [
+        "/PubliclyAccessibleInstanceStack/Database/Instance1": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseInstance1844F58FD"
           }
         ],
-        "/NeptuneClusterPortTestStack/BootstrapVersion": [
+        "/PubliclyAccessibleInstanceStack/EnabledInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/EnabledInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledInstance16182EFA"
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/DisabledInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/DisabledInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DisabledInstanceE76D5BED"
+          }
+        ],
+        "/PubliclyAccessibleInstanceStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/NeptuneClusterPortTestStack/CheckBootstrapVersion": [
+        "/PubliclyAccessibleInstanceStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "NeptuneClusterPortTestStack"
+      "displayName": "PubliclyAccessibleInstanceStack"
     },
-    "NeptuneClusterPortTestDefaultTestDeployAssert7A0847B4.assets": {
+    "PubliclyAccessibleInstanceIntegDefaultTestDeployAssert16E6A402.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "NeptuneClusterPortTestDefaultTestDeployAssert7A0847B4.assets.json",
+        "file": "PubliclyAccessibleInstanceIntegDefaultTestDeployAssert16E6A402.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "NeptuneClusterPortTestDefaultTestDeployAssert7A0847B4": {
+    "PubliclyAccessibleInstanceIntegDefaultTestDeployAssert16E6A402": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "NeptuneClusterPortTestDefaultTestDeployAssert7A0847B4.template.json",
+        "templateFile": "PubliclyAccessibleInstanceIntegDefaultTestDeployAssert16E6A402.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -429,7 +436,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "NeptuneClusterPortTestDefaultTestDeployAssert7A0847B4.assets"
+          "PubliclyAccessibleInstanceIntegDefaultTestDeployAssert16E6A402.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -438,23 +445,23 @@
         }
       },
       "dependencies": [
-        "NeptuneClusterPortTestDefaultTestDeployAssert7A0847B4.assets"
+        "PubliclyAccessibleInstanceIntegDefaultTestDeployAssert16E6A402.assets"
       ],
       "metadata": {
-        "/NeptuneClusterPortTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/PubliclyAccessibleInstanceInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/NeptuneClusterPortTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/PubliclyAccessibleInstanceInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "NeptuneClusterPortTest/DefaultTest/DeployAssert"
+      "displayName": "PubliclyAccessibleInstanceInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -468,6 +475,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -486,6 +494,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -597,7 +606,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -936,10 +945,25 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

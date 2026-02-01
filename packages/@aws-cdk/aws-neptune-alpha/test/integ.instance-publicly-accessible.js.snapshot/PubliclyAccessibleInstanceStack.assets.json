@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
-      "displayName": "AutoMinorVersionUpgradeInstanceStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "displayName": "PubliclyAccessibleInstanceStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
         "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
         "packaging": "zip"
@@ -15,16 +15,16 @@
         }
       }
     },
-    "5c48efd28ae2ab0c2cc0b89de76bfe805b63a86cb65412a69763f8e691c699f7": {
-      "displayName": "AutoMinorVersionUpgradeInstanceStack Template",
+    "da835538c91f74a6202676b58168904e2b0c52cdf842d44985625101630106be": {
+      "displayName": "PubliclyAccessibleInstanceStack Template",
       "source": {
-        "path": "AutoMinorVersionUpgradeInstanceStack.template.json",
+        "path": "PubliclyAccessibleInstanceStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-6c5e3ebf": {
+        "current_account-current_region-f327ab43": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5c48efd28ae2ab0c2cc0b89de76bfe805b63a86cb65412a69763f8e691c699f7.json",
+          "objectKey": "da835538c91f74a6202676b58168904e2b0c52cdf842d44985625101630106be.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
