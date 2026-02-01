@@ -1,7 +1,8 @@
-import { ITableRef } from './dynamodb.generated';
+import { CfnTable, ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
-import { Stack } from '../../core';
+import { GrantableResources } from '../../aws-iam';
+import { Lazy, ResourceEnvironment, Stack } from '../../core';
 
 /**
  * Construction properties for TableGrants
@@ -47,6 +48,19 @@ export interface TableGrantsProps {
  * A set of permissions to grant on a Table
  */
 export class TableGrants {
+  /**
+   * Creates grants for an ITableRef
+   */
+  public static fromTable(table: ITableRef): TableGrants {
+    return new TableGrants({
+      table,
+      encryptedResource: (iam.GrantableResources.isEncryptedResource(table) ? table : undefined),
+      policyResource: GrantableResources.isResourceWithPolicy(table)
+        ? table
+        : CfnTable.isCfnTable(table) ? new CfnTableWithPolicy(table) : undefined,
+    });
+  }
+
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
   private readonly encryptedResource?: iam.IEncryptedResource;
@@ -173,5 +187,33 @@ export class TableGrants {
     const result = this.actions(grantee, ...actions);
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
     return result;
+  }
+}
+
+class CfnTableWithPolicy implements iam.IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  private policyDocument?: iam.PolicyDocument;
+
+  constructor(private readonly table: CfnTable) {
+    this.env = table.env;
+  }
+
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (!this.table.resourcePolicy) {
+      this.table.resourcePolicy = {
+        policyDocument: { Statement: [] },
+      };
+    }
+
+    if (!this.policyDocument) {
+      this.policyDocument = new iam.PolicyDocument();
+      this.table.resourcePolicy = Lazy.any({
+        produce: () => {
+          return ({ policyDocument: this.policyDocument!.toJSON() });
+        },
+      });
+    }
+    this.policyDocument.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.table };
   }
 }
