@@ -1126,6 +1126,35 @@ describe('ManagedEc2EksComputeEnvironment', () => {
   });
 });
 
+describe('ManagedEc2EcsComputeEnvironment tags', () => {
+  let stack: Stack;
+  let vpc: ec2.Vpc;
+
+  beforeEach(() => {
+    stack = new Stack();
+    vpc = new ec2.Vpc(stack, 'vpc');
+  });
+
+  test('tags are rendered in CloudFormation', () => {
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      vpc,
+      tags: {
+        Environment: 'test',
+        Application: 'myapp',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      Tags: {
+        Environment: 'test',
+        Application: 'myapp',
+      },
+    });
+  });
+});
+
 describe('FargateComputeEnvironment', () => {
   beforeEach(() => {
     stack = new Stack();
