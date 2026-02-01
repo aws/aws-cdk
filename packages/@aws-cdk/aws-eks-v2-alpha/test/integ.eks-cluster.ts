@@ -97,6 +97,8 @@ class EksClusterStack extends Stack {
 
     this.assertExtendedServiceAccount();
 
+    this.assertBootstrapSelfManagedAddons();
+
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: this.cluster.clusterCertificateAuthorityData });
@@ -121,6 +123,15 @@ class EksClusterStack extends Stack {
       labels: {
         'some-label': 'with-some-value',
       },
+    });
+  }
+
+  private assertBootstrapSelfManagedAddons() {
+    // create a cluster with bootstrapSelfManagedAddons disabled
+    new eks.Cluster(this, 'ClusterWithoutAddons', {
+      vpc: this.vpc,
+      version: eks.KubernetesVersion.V1_32,
+      bootstrapSelfManagedAddons: false,
     });
   }
 

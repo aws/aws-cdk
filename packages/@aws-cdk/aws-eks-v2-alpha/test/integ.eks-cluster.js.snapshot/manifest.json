@@ -3268,6 +3268,126 @@
             "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
           }
         ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterWithoutAddonsRole72619EF6"
+          }
+        ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons/ControlPlaneSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons/ControlPlaneSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterWithoutAddonsControlPlaneSecurityGroup097EB91D"
+          }
+        ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons/ClusterWithoutAddonsnodePoolRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons/ClusterWithoutAddonsnodePoolRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterWithoutAddonsClusterWithoutAddonsnodePoolRoleB82EE683"
+          }
+        ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterWithoutAddonsBA3E8C11"
+          }
+        ],
+        "/aws-cdk-eks-cluster/ClusterWithoutAddons/KubectlReadyBarrier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterWithoutAddonsKubectlReadyBarrierB9E42AD5"
+          }
+        ],
         "/aws-cdk-eks-cluster/ClusterEndpoint": [
           {
             "type": "aws:cdk:logicalId",
