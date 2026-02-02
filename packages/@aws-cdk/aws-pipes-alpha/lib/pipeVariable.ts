@@ -1,4 +1,5 @@
-import { IResolvable, IResolveContext, captureStackTrace } from 'aws-cdk-lib';
+import type { IResolvable, IResolveContext } from 'aws-cdk-lib';
+import { captureStackTrace } from 'aws-cdk-lib';
 
 /** Reserved pipe variables
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-input-transformation.html#input-transform-reserved

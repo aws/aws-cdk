@@ -1,12 +1,14 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
-import { IWebSocketStage } from './stage';
-import { CfnUsagePlan, CfnUsagePlanKey, IApiKeyRef, IUsagePlanRef, UsagePlanReference } from '../../../aws-apigateway/lib';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi } from './api';
+import type { IWebSocketStage } from './stage';
+import type { IApiKeyRef, IUsagePlanRef, UsagePlanReference } from '../../../aws-apigateway/lib';
+import { CfnUsagePlan, CfnUsagePlanKey } from '../../../aws-apigateway/lib';
 import { validateDouble, validateInteger } from '../../../aws-apigateway/lib/util';
-import { IResource, Names, Resource, Lazy } from '../../../core';
+import type { IResource } from '../../../core';
+import { Names, Resource, Lazy } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ThrottleSettings } from '../common';
+import type { ThrottleSettings } from '../common';
 
 /**
  * Time period for which quota settings apply.

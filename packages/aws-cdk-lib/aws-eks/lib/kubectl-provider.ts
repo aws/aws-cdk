@@ -1,5 +1,7 @@
-import { Construct, IConstruct } from 'constructs';
-import { ICluster, Cluster } from './cluster';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster } from './cluster';
 import * as iam from '../../aws-iam';
 import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws, ValidationError } from '../../core';
 import { KubectlFunction } from '../../custom-resource-handlers/dist/aws-eks/kubectl-provider.generated';

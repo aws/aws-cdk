@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { ISubnet, Subnet, SubnetType } from './vpc';
+import type { Construct } from 'constructs';
+import type { ISubnet } from './vpc';
+import { Subnet, SubnetType } from './vpc';
 import { UnscopedValidationError } from '../../core';
 
 /**

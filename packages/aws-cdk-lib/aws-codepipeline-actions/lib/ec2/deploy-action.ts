@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
-import * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import { ArnFormat, Stack, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
 import { Action } from '../action';
