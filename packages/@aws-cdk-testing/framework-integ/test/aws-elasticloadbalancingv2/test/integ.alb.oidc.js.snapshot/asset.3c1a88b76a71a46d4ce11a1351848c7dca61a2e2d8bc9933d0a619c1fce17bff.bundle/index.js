@@ -32938,7 +32938,7 @@ var require_lib4 = __commonJS({
     }
     var INTERNALS$1 = Symbol("Response internals");
     var STATUS_CODES = http.STATUS_CODES;
-    var Response2 = class _Response {
+    var Response = class _Response {
       constructor() {
         let body = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
         let opts = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
@@ -32996,8 +32996,8 @@ var require_lib4 = __commonJS({
         });
       }
     };
-    Body.mixIn(Response2.prototype);
-    Object.defineProperties(Response2.prototype, {
+    Body.mixIn(Response.prototype);
+    Object.defineProperties(Response.prototype, {
       url: { enumerable: true },
       status: { enumerable: true },
       ok: { enumerable: true },
@@ -33006,7 +33006,7 @@ var require_lib4 = __commonJS({
       headers: { enumerable: true },
       clone: { enumerable: true }
     });
-    Object.defineProperty(Response2.prototype, Symbol.toStringTag, {
+    Object.defineProperty(Response.prototype, Symbol.toStringTag, {
       value: "Response",
       writable: false,
       enumerable: false,
@@ -33340,7 +33340,7 @@ var require_lib4 = __commonJS({
           };
           const codings = headers.get("Content-Encoding");
           if (!request2.compress || request2.method === "HEAD" || codings === null || res.statusCode === 204 || res.statusCode === 304) {
-            response = new Response2(body, response_options);
+            response = new Response(body, response_options);
             resolve(response);
             return;
           }
@@ -33350,7 +33350,7 @@ var require_lib4 = __commonJS({
           };
           if (codings == "gzip" || codings == "x-gzip") {
             body = body.pipe(zlib2.createGunzip(zlibOptions));
-            response = new Response2(body, response_options);
+            response = new Response(body, response_options);
             resolve(response);
             return;
           }
@@ -33362,12 +33362,12 @@ var require_lib4 = __commonJS({
               } else {
                 body = body.pipe(zlib2.createInflateRaw());
               }
-              response = new Response2(body, response_options);
+              response = new Response(body, response_options);
               resolve(response);
             });
             raw.on("end", function() {
               if (!response) {
-                response = new Response2(body, response_options);
+                response = new Response(body, response_options);
                 resolve(response);
               }
             });
@@ -33375,11 +33375,11 @@ var require_lib4 = __commonJS({
           }
           if (codings == "br" && typeof zlib2.createBrotliDecompress === "function") {
             body = body.pipe(zlib2.createBrotliDecompress());
-            response = new Response2(body, response_options);
+            response = new Response(body, response_options);
             resolve(response);
             return;
           }
-          response = new Response2(body, response_options);
+          response = new Response(body, response_options);
           resolve(response);
         });
         writeToStream(req, request2);
@@ -33421,7 +33421,7 @@ var require_lib4 = __commonJS({
     exports2.default = exports2;
     exports2.Headers = Headers2;
     exports2.Request = Request2;
-    exports2.Response = Response2;
+    exports2.Response = Response;
     exports2.FetchError = FetchError;
     exports2.AbortError = AbortError;
   }
