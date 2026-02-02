@@ -631,7 +631,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
    */
   public bind(_scope: Construct, gateway: IGateway): TargetConfigurationConfig {
     // Grant permission to export the API definition
-    // The gateway needs to call GetExport to retrieve the OpenAPI definition
+    // The gateway needs to call GetExport to retrieve the Rest api definition
     gateway.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,

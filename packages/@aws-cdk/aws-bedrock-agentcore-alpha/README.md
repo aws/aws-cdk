@@ -1435,7 +1435,7 @@ credential provider attached enabling you to securely access targets whether the
 | `gatewayTargetName` | `string` | No | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
-| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
+| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, Smithy, or API Gateway). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`, `GatewayTarget.forMcpServer()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()`, `addApiGatewayTarget()`, `addMcpServerTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
 | `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. Use `GatewayCredentialProvider.fromApiKeyIdentityArn()`, `GatewayCredentialProvider.fromOauthIdentityArn()`, or `GatewayCredentialProvider.fromIamRole()` |
 | `validateOpenApiSchema` | `boolean` | No | (OpenAPI targets only) Whether to validate the OpenAPI schema at synthesis time. Defaults to `true`. Only applies to inline and local asset schemas. For more information refer here <https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html> |
 
@@ -1649,7 +1649,9 @@ You can create targets in two ways: using the static factory methods on `Gateway
 
 #### Using addTarget methods (Recommended)
 
-Below are the examples on how you can create Lambda , Smity and OpenAPI target using `addTarget` method.
+This approach is recommended for most use cases, especially when creating targets alongside the gateway. It provides a cleaner, more fluent API by eliminating the need to explicitly pass the gateway reference.
+
+Below are the examples on how you can create Lambda, Smithy, OpenAPI, MCP Server, and API Gateway targets using `addTarget` methods.
 
 ```typescript fixture=default
 // Create a gateway first
@@ -1801,7 +1803,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// Basic example with only required fields - uses IAM authentication by default
+// Uses IAM authorization for outbound auth by default
 const apiGatewayTarget = gateway.addApiGatewayTarget("MyApiGatewayTarget", {
   restApiId: "abc123xyz",
   stage: "prod",
@@ -1816,186 +1818,11 @@ const apiGatewayTarget = gateway.addApiGatewayTarget("MyApiGatewayTarget", {
 });
 ```
 
-**API Gateway Target - Key Considerations:**
-
-When using an API Gateway REST API stage as a target, note the following:
-- **Same Account/Region**: API must be in the same account and region as the gateway
-- **REST APIs Only**: HTTP APIs and WebSocket APIs are not supported
-- **Public Endpoints**: API must use a public endpoint type. For VPC resources, use public endpoint with API Gateway private integration
-- **No Proxy Resources**: Paths like `/pets/{proxy+}` are not supported
-- **Auth Limitations**: Methods with both AWS_IAM authorization and API key requirements are not supported
-
-**Supported Outbound Authorization for API Gateway Targets:**
-
-API Gateway targets support three authentication modes:
-
-1. **IAM Authentication (Default)** - Gateway role signs requests with SigV4
-2. **API Key Authentication** - Uses AgentCore-managed API keys
-3. **No Authentication** - For publicly accessible APIs
-
-**Examples of All Three Authentication Options:**
-
-```typescript fixture=default
-const gateway = new agentcore.Gateway(this, "MyGateway", {
-  gatewayName: "my-gateway",
-});
-
-// Option 1: IAM Authentication (default)
-// The L2 construct automatically grants apigateway:GET and execute-api:Invoke permissions
-const iamTarget = gateway.addApiGatewayTarget("IamAuthTarget", {
-  restApiId: "abc123xyz",
-  stage: "prod",
-  apiGatewayToolConfiguration: {
-    toolFilters: [
-      {
-        filterPath: "/pets/*",
-        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
-      },
-    ],
-  },
-  // No credentialProviderConfigurations = defaults to IAM
-});
-
-// Option 2: API Key Authentication
-// First, create the API key provider via Console or AWS API (outside CDK)
-// This returns providerArn and secretArn
-const apiKeyTarget = gateway.addApiGatewayTarget("ApiKeyAuthTarget", {
-  restApiId: "xyz789abc",
-  stage: "prod",
-  apiGatewayToolConfiguration: {
-    toolFilters: [
-      {
-        filterPath: "/orders/*",
-        methods: [agentcore.ApiGatewayHttpMethod.GET],
-      },
-    ],
-  },
-  credentialProviderConfigurations: [
-    agentcore.GatewayCredentialProvider.fromApiKeyIdentityArn({
-      providerArn: "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/apikeycredentialprovider/my-key",
-      secretArn: "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-key-secret",
-      credentialLocation: agentcore.ApiKeyCredentialLocation.header({
-        credentialParameterName: "X-API-Key",
-        credentialPrefix: "ApiKey ",
-      }),
-    }),
-  ],
-});
-
-// Option 3: No Authentication
-// For publicly accessible APIs that don't require authentication
-const noAuthTarget = gateway.addApiGatewayTarget("NoAuthTarget", {
-  restApiId: "public123",
-  stage: "prod",
-  apiGatewayToolConfiguration: {
-    toolFilters: [
-      {
-        filterPath: "/public/*",
-        methods: [agentcore.ApiGatewayHttpMethod.GET],
-      },
-    ],
-  },
-  credentialProviderConfigurations: [],  // Empty array = No authentication
-});
-```
-
-**Passing Headers and Query Parameters with MetadataConfiguration:**
-
-Use `metadataConfiguration` to pass additional context through headers and query parameters:
-
-```typescript fixture=default
-const gateway = new agentcore.Gateway(this, "MyGateway", {
-  gatewayName: "my-gateway",
-});
-
-const target = gateway.addApiGatewayTarget("WithMetadata", {
-  restApiId: "abc123xyz",
-  stage: "prod",
-  apiGatewayToolConfiguration: {
-    toolFilters: [
-      {
-        filterPath: "/api/*",
-        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
-      },
-    ],
-  },
-  metadataConfiguration: {
-    allowedQueryParameters: ['userId', 'sessionId'],
-    allowedRequestHeaders: ['X-User-Context', 'X-Correlation-ID'],
-    allowedResponseHeaders: ['X-Request-ID', 'X-Response-Time'],
-  },
-});
-```
-
-**IAM Permissions:**
-
-The L2 construct **automatically** handles the following permissions:
-
-✅ **Automatically Granted:**
-- `apigateway:GET` - For retrieving the OpenAPI schema from API Gateway
-- `execute-api:Invoke` - For invoking the API Gateway REST API (when using IAM or no authentication)
-
-⚠️ **User Must Configure:**
-- **API Gateway Resource Policy** - Must allow `bedrock-agentcore.amazonaws.com` to invoke the API
-
-**Example API Gateway Resource Policy:**
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "bedrock-agentcore.amazonaws.com"
-      },
-      "Action": "execute-api:Invoke",
-      "Resource": "arn:aws:execute-api:region:account:api-id/stage/*/*",
-      "Condition": {
-        "ArnEquals": {
-          "aws:SourceArn": "arn:aws:bedrock-agentcore:region:account:gateway/gateway-id"
-        }
-      }
-    }
-  ]
-}
-```
-
-**Tool Filters and Overrides:**
-
-Tool filters support two path matching strategies:
-- **Explicit paths**: Match a specific path like `/pets/{petId}`
-- **Wildcard paths**: Match all paths with a prefix like `/pets/*`
-
-Example wildcard filter:
-```typescript fixture=default
-const gateway = new agentcore.Gateway(this, "MyGateway", {
-  gatewayName: "my-gateway",
-});
-
-gateway.addApiGatewayTarget("WildcardExample", {
-  restApiId: "abc123",
-  stage: "prod",
-  apiGatewayToolConfiguration: {
-    toolFilters: [
-      {
-        filterPath: "/pets/*",  // Matches /pets/{petId}, /pets/{petId}/photos, etc.
-        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
-      },
-    ],
-  },
-});
-```
-
-Tool overrides customize tool names and descriptions. They must:
-- Use explicit paths (no wildcards)
-- Match an operation selected by the filters
-- Provide a custom name (required if operationId is missing)
-
-For more information, see [API Gateway Target Documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html).
-
 #### Using static factory methods
 
-Create Gateway target using static convienence method.
+Use static factory methods when working with imported gateways, creating targets in different constructs/stacks, or when you need more explicit control over the construct tree hierarchy.
+
+Create Gateway target using static convenience methods.
 
 - Lambda Target
 
@@ -2111,6 +1938,35 @@ const mcpTarget = agentcore.GatewayTarget.forMcpServer(this, "MyMcpServer", {
 });
 ```
 
+- API Gateway Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Create a gateway target using the static factory method
+const apiGatewayTarget = agentcore.GatewayTarget.forApiGateway(this, "MyApiGatewayTarget", {
+  gatewayTargetName: "my-api-gateway-target",
+  description: "Target for API Gateway REST API integration",
+  gateway: gateway,
+  restApiId: "abc123xyz",
+  stage: "prod",
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
+      },
+    ],
+  },
+  metadataConfiguration: {
+    allowedRequestHeaders: ["X-User-Id"],
+    allowedQueryParameters: ["limit"],
+  },
+});
+```
+
 ### Advanced Usage: Direct Configuration for gateway target
 
 For advanced use cases where you need full control over the target configuration, you can create configurations manually using the static factory methods and use the GatewayTarget constructor directly.
@@ -2122,6 +1978,7 @@ Each target type has a corresponding configuration class with a static `create()
 - **Lambda**: `LambdaTargetConfiguration.create(lambdaFunction, toolSchema)`
 - **OpenAPI**: `OpenApiTargetConfiguration.create(apiSchema, validateSchema?)`
 - **Smithy**: `SmithyTargetConfiguration.create(smithyModel)`
+- **API Gateway**: `ApiGatewayTargetConfiguration.create(props)`
 
 #### Example: Lambda Target with Custom Configuration
 
@@ -2164,7 +2021,7 @@ const target = new agentcore.GatewayTarget(this, "AdvancedTarget", {
 });
 ```
 
-This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`) handle all of this internally.
+This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`) handle all of this internally.
 
 ### Gateway Interceptors
 
