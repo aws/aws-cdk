@@ -7,9 +7,9 @@ import {
   ISubnet,
   NetworkAcl,
   SubnetNetworkAclAssociation,
+  SubnetReference,
   SubnetType,
 } from 'aws-cdk-lib/aws-ec2';
-import { SubnetReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
