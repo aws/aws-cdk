@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { Architecture } from './architecture';
-import { CfnCapacityProvider, CfnFunction } from './lambda.generated';
-import * as ec2 from '../../aws-ec2';
+import type { Construct } from 'constructs';
+import type { Architecture } from './architecture';
+import { CfnCapacityProvider, type CfnFunction } from './lambda.generated';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type { IResource } from '../../core';
@@ -9,7 +9,7 @@ import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } 
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { CapacityProviderReference, ICapacityProviderRef, IFunctionRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
+import type { CapacityProviderReference, ICapacityProviderRef, IFunctionRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * Represents a Lambda capacity provider.
