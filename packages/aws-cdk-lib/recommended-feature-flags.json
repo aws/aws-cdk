@@ -2,6 +2,7 @@
   "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
   "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
   "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+  "@aws-cdk/aws-cloudfront:vpcOriginRegionAwareName": true,
   "@aws-cdk/core:checkSecretUsage": true,
   "@aws-cdk/core:target-partitions": [
     "aws",
