@@ -145,14 +145,15 @@ describe('Pipeline', () => {
     });
 
     test('validates pipeline name format - invalid names', () => {
+      // Invalid names per AWS pattern: ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$
+      // Note: consecutive hyphens ARE allowed by AWS
       const invalidNames = [
-        '-invalid-start',
-        'invalid-end-',
-        'invalid--double-dash',
-        'invalid_underscore',
-        'invalid.dot',
-        'invalid space',
-        '',
+        '-invalid-start', // cannot start with hyphen
+        'invalid-end-', // cannot end with hyphen
+        'invalid_underscore', // underscores not allowed
+        'invalid.dot', // dots not allowed
+        'invalid space', // spaces not allowed
+        '', // empty string not allowed
       ];
 
       invalidNames.forEach((name, index) => {
@@ -160,8 +161,17 @@ describe('Pipeline', () => {
           sagemaker.Pipeline.fromPipelineAttributes(stack, `Pipeline-${index}`, {
             pipelineName: name,
           });
-        }).toThrow(/Invalid pipeline name format/);
+        }).toThrow(/Invalid pipeline name/);
       });
+    });
+
+    test('validates pipeline name format - consecutive hyphens are allowed', () => {
+      // AWS pattern ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$ allows consecutive hyphens
+      expect(() => {
+        sagemaker.Pipeline.fromPipelineAttributes(stack, 'Pipeline-double-dash', {
+          pipelineName: 'valid--double-dash',
+        });
+      }).not.toThrow();
     });
   });
 

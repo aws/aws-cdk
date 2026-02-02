@@ -340,63 +340,18 @@ productionVariant.metricModelLatency().createAlarm(this, 'ModelLatencyAlarm', {
 
 ## Pipeline
 
-You can import existing SageMaker Pipelines into your CDK application to use with other AWS services like EventBridge Scheduler.
-
-### Importing an existing Pipeline
-
-Import a pipeline by ARN:
+Import existing SageMaker Pipelines to integrate with other AWS services like EventBridge Scheduler.
 
 ```typescript
 import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
+// Import by ARN
 const pipeline = sagemaker.Pipeline.fromPipelineArn(this, 'MyPipeline', 
   'arn:aws:sagemaker:us-east-1:123456789012:pipeline/my-pipeline');
-```
 
-Import a pipeline by name (must be in the same account and region as the stack):
+// Or import by name (same account/region)
+const pipeline2 = sagemaker.Pipeline.fromPipelineName(this, 'MyPipeline2', 'my-pipeline');
 
-```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
-
-const pipeline = sagemaker.Pipeline.fromPipelineName(this, 'MyPipeline', 'my-pipeline');
-```
-
-### Using with EventBridge Scheduler
-
-You can use imported pipelines with EventBridge Scheduler to trigger pipeline executions on a schedule:
-
-```typescript
-import * as scheduler from 'aws-cdk-lib/aws-scheduler';
-import * as targets from 'aws-cdk-lib/aws-scheduler-targets';
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
-import { Duration } from 'aws-cdk-lib';
-
-const pipeline = sagemaker.Pipeline.fromPipelineName(this, 'MyPipeline', 'my-pipeline');
-
-new scheduler.Schedule(this, 'PipelineSchedule', {
-  schedule: scheduler.ScheduleExpression.rate(Duration.hours(12)),
-  target: new targets.SageMakerStartPipelineExecution(pipeline, {
-    pipelineParameterList: [
-      { name: 'InputDataPath', value: 's3://my-bucket/input/' },
-      { name: 'ModelName', value: 'my-model-v1' }
-    ]
-  })
-});
-```
-
-### IAM Permissions
-
-Grant permissions to start pipeline executions:
-
-```typescript
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
-
-const pipeline = sagemaker.Pipeline.fromPipelineName(this, 'MyPipeline', 'my-pipeline');
-const role = new iam.Role(this, 'PipelineRole', {
-  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
-});
-
-// Grant permission to start pipeline execution
+// Grant permissions
 pipeline.grantStartPipelineExecution(role);
 ```
