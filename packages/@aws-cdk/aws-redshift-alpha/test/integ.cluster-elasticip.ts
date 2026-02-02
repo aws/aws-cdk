@@ -31,7 +31,6 @@ new redshift.Cluster(stack, 'Cluster', {
     masterUsername: 'admin',
   },
   publiclyAccessible: true,
-  nodeType: redshift.NodeType.RA3_XLPLUS,
   elasticIp: elasticIp.ref,
 });
 

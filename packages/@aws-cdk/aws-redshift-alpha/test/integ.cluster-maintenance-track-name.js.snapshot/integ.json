@@ -1,21 +1,12 @@
 {
   "version": "48.0.0",
   "testCases": {
-<<<<<<< HEAD
     "aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameInteg/DefaultTest": {
       "stacks": [
         "aws-cdk-redshift-cluster-database"
       ],
       "assertionStack": "aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5"
-=======
-    "RedshiftMaintenanceTrackNameInteg/DefaultTest": {
-      "stacks": [
-        "aws-cdk-redshift-cluster-database"
-      ],
-      "assertionStack": "RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert",
-      "assertionStackName": "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553"
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
     }
   },
   "minimumCliVersion": "2.1033.0"

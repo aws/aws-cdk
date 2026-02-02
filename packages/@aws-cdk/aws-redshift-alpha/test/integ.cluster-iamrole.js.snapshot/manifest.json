@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "version": "48.0.0",
-=======
   "version": "50.0.0",
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
   "artifacts": {
     "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D.assets": {
       "type": "cdk:asset-manifest",
@@ -22,11 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-<<<<<<< HEAD
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b7da8872661d018eb0305fd6ec0fa4f0236fcc7ddbd7768232cffc5eab508b0.json",
-=======
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c370cfc8c4373d3886af7f454b076359e95d661e2f7cc5ac2fe2a340579f8801.json",
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/85cb97041065d402ff18a0f84624cb8e01d704c65d64b189156123a24d17ff75.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -536,8 +528,18 @@
         ],
         "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -694,8 +696,18 @@
         ],
         "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -1150,11 +1162,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e8b0d9692439161b2820405e82523bcdc5a45972d8c945ef3e0c59b827a31c21.json",
-=======
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/acc1bfc7df361a590942641072989d14a67b99429fb2b8479630e2e61e5a37d0.json",
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1960,13 +1968,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
-<<<<<<< HEAD
-=======
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -2144,10 +2149,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
-<<<<<<< HEAD
-=======
             "userValue": true,
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -2159,10 +2161,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
-<<<<<<< HEAD
-=======
             "userValue": true,
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -2174,9 +2173,5 @@
       }
     }
   },
-<<<<<<< HEAD
-  "minimumCliVersion": "2.1033.0"
-=======
   "minimumCliVersion": "2.1101.0"
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
 }

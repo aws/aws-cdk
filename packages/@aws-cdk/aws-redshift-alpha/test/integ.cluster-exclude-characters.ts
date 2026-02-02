@@ -22,7 +22,7 @@ class RedshiftEnv extends Stack {
       vpc: vpc,
       masterUser: {
         masterUsername: 'admin',
-        excludeCharacters: '"@/\\ \'`',
+        excludeCharacters: '"@/\\\ \'`',
       },
       defaultDatabaseName: 'database',
       subnetGroup,
@@ -33,7 +33,7 @@ class RedshiftEnv extends Stack {
     new redshift.User(this, 'User', {
       cluster,
       databaseName: 'database',
-      excludeCharacters: '"@/\\ \'`',
+      excludeCharacters: '"@/\\\ \'`',
     });
   }
 }

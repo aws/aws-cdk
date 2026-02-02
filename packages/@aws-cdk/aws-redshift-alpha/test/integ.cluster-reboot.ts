@@ -55,7 +55,6 @@ class RedshiftRebootStack extends cdk.Stack {
       masterUser: {
         masterUsername: 'admin',
       },
-      nodeType: redshift.NodeType.RA3_XLPLUS,
       parameterGroup: this.parameterGroup,
       rebootForParameterChanges: true,
     });

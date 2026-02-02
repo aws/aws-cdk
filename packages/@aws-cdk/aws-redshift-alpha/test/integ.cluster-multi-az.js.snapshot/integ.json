@@ -5,9 +5,6 @@
       "stacks": [
         "MultiAzRedshift"
       ],
-      "regions": [
-        "us-west-2"
-      ],
       "assertionStack": "MultiAzRedshiftTest/DefaultTest/DeployAssert",
       "assertionStackName": "MultiAzRedshiftTestDefaultTestDeployAssert07040285"
     }

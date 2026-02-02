@@ -4,17 +4,6 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
-/**
- * Integration test for Redshift Multi-AZ clusters.
- *
- * Note: This test validates the Multi-AZ feature which requires at least 3 availability zones.
- * The test is configured to run in us-west-2 which has 4 AZs available.
- *
- * Original intent: Validate that Redshift clusters can be deployed with Multi-AZ enabled,
- * which provides higher availability by automatically provisioning and maintaining a standby
- * cluster in a different AZ.
- */
-
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'MultiAzRedshift');
 
@@ -44,7 +33,6 @@ new redshift.Cluster(stack, 'Cluster', {
   masterUser: {
     masterUsername: 'admin',
   },
-  nodeType: redshift.NodeType.RA3_XLPLUS,
   clusterType: redshift.ClusterType.MULTI_NODE,
   numberOfNodes: 2,
   multiAz: true,
@@ -52,5 +40,4 @@ new redshift.Cluster(stack, 'Cluster', {
 
 new integ.IntegTest(app, 'MultiAzRedshiftTest', {
   testCases: [stack],
-  regions: ['us-west-2'], // Specify region with 3+ AZs
 });

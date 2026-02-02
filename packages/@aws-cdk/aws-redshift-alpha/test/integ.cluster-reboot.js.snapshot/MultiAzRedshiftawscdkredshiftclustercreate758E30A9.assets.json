@@ -15,40 +15,30 @@
         }
       }
     },
-    "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a": {
+    "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e": {
       "displayName": "Cluster/ResourceProvider/framework-onEvent/Code",
       "source": {
-        "path": "asset.4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a",
+        "path": "asset.d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-f8801bef": {
+        "current_account-current_region-9e5c0bf1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip",
+          "objectKey": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-<<<<<<< HEAD
-    "ab723a2216597bd8c5c0c41d51226faa8dbe8e8712a8fd0c5cedc01733a49560": {
-=======
-    "38d540cee9d035d6fdb9bcc6905cbc2e0c645b9e5240dc7280ea0a5695e608f8": {
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
+    "8ff78a3899438811d66ffafb7133a6a5355e90bbdd13d253fffb072b63822cfa": {
       "displayName": "aws-cdk-redshift-cluster-reboot-integ Template",
       "source": {
         "path": "MultiAzRedshiftawscdkredshiftclustercreate758E30A9.template.json",
         "packaging": "file"
       },
       "destinations": {
-<<<<<<< HEAD
-        "current_account-current_region-c939516b": {
+        "current_account-current_region-1a4337d6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ab723a2216597bd8c5c0c41d51226faa8dbe8e8712a8fd0c5cedc01733a49560.json",
-=======
-        "current_account-current_region-77c9c6d4": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "38d540cee9d035d6fdb9bcc6905cbc2e0c645b9e5240dc7280ea0a5695e608f8.json",
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
+          "objectKey": "8ff78a3899438811d66ffafb7133a6a5355e90bbdd13d253fffb072b63822cfa.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

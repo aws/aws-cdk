@@ -734,7 +734,7 @@
      ]
     },
     "MultiAZ": true,
-    "NodeType": "ra3.xlplus",
+    "NodeType": "ra3.large",
     "NumberOfNodes": 2,
     "PubliclyAccessible": false,
     "VpcSecurityGroupIds": [

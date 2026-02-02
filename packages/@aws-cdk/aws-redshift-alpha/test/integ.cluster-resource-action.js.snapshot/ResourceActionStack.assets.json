@@ -1,29 +1,17 @@
 {
   "version": "48.0.0",
   "files": {
-<<<<<<< HEAD
-    "a8eba2791608439b10f1e8608ff3c57582431be6ae26664aa90f66922cf085ba": {
-=======
-    "c901bcda1be09c70616d0821a1ca78189c99325027bd3e846e83af4d2f3f15cd": {
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
+    "242ff6cbb29b9eccc5f68271eece4e3dc3a46cd815a02912efbb9e46b5477991": {
       "displayName": "ResourceActionStack Template",
       "source": {
         "path": "ResourceActionStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-<<<<<<< HEAD
-        "123456789012-us-east-1-f02de22c": {
-          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "objectKey": "a8eba2791608439b10f1e8608ff3c57582431be6ae26664aa90f66922cf085ba.json",
-          "region": "us-east-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
-=======
-        "current_account-current_region-296851af": {
+        "current_account-current_region-4284184e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c901bcda1be09c70616d0821a1ca78189c99325027bd3e846e83af4d2f3f15cd.json",
+          "objectKey": "242ff6cbb29b9eccc5f68271eece4e3dc3a46cd815a02912efbb9e46b5477991.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
->>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
         }
       }
     }

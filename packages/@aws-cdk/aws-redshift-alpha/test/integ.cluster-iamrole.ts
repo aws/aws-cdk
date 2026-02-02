@@ -24,7 +24,6 @@ class RedshiftEnv extends Stack {
       masterUser: {
         masterUsername: 'admin',
       },
-      nodeType: redshift.NodeType.RA3_XLPLUS,
       roles: [new iam.Role(this, 'RoleB', {
         assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
       })],
@@ -49,7 +48,6 @@ class SingleProviderRoleStack extends Stack {
       masterUser: {
         masterUsername: 'admin',
       },
-      nodeType: redshift.NodeType.RA3_XLPLUS,
       defaultDatabaseName: SingleProviderRoleStack.databaseName,
       removalPolicy: RemovalPolicy.DESTROY,
     });

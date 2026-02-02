@@ -18,7 +18,6 @@ class RedshiftStack extends Stack {
         excludeCharacters: '"@/\\ \'`',
       },
       defaultDatabaseName: 'database',
-      nodeType: redshift.NodeType.RA3_XLPLUS,
       maintenanceTrackName: redshift.MaintenanceTrackName.TRAILING,
       removalPolicy: RemovalPolicy.DESTROY,
     });

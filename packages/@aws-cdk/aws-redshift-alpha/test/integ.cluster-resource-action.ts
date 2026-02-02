@@ -28,7 +28,6 @@ new redshift.Cluster(stack, 'Cluster', {
     masterUsername: 'admin',
   },
   publiclyAccessible: true,
-  nodeType: redshift.NodeType.RA3_XLPLUS,
   resourceAction: redshift.ResourceAction.PAUSE_CLUSTER,
 });
 
