@@ -924,6 +924,142 @@ test('Alias keyRef should reference the Alias, not the underlying key', () => {
   expect(alias.keyRef.keyArn).toEqual(alias.aliasArn);
 });
 
+describe('fromAliasName validation and normalization', () => {
+  test('adds alias/ prefix when prefix is missing', () => {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'myAlias');
+
+    expect(myAlias.aliasName).toEqual('alias/myAlias');
+  });
+
+  test('does not double-prefix when alias/ prefix exists', () => {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+    expect(myAlias.aliasName).toEqual('alias/myAlias');
+  });
+
+  test('throws error for empty alias name after prefix', () => {
+    const stack = new Stack();
+
+    expect(() => Alias.fromAliasName(stack, 'MyAlias', '')).toThrow(/Alias must include a value after "alias\/"/);
+  });
+
+  test('throws error for alias/aws/ prefix (reserved)', () => {
+    const stack = new Stack();
+
+    expect(() => Alias.fromAliasName(stack, 'MyAlias', 'alias/aws/myAlias')).toThrow(/Alias cannot start with alias\/aws\//);
+  });
+
+  test('throws error for aws/ prefix (which becomes alias/aws/)', () => {
+    const stack = new Stack();
+
+    expect(() => Alias.fromAliasName(stack, 'MyAlias', 'aws/myAlias')).toThrow(/Alias cannot start with alias\/aws\//);
+  });
+
+  test('throws error for invalid characters', () => {
+    const stack = new Stack();
+
+    expect(() => Alias.fromAliasName(stack, 'MyAlias', 'my alias!')).toThrow(/Alias name must be between 1 and 256 characters in a-zA-Z0-9:\/_-/);
+  });
+
+  test('keyArn is correctly formatted with normalized alias name', () => {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'myAlias');
+
+    new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
+
+    Template.fromStack(stack).hasOutput('OutId', {
+      Value: 'alias/myAlias',
+    });
+    Template.fromStack(stack).hasOutput('OutArn', {
+      Value: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':kms:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':alias/myAlias',
+        ]],
+      },
+    });
+  });
+
+  test('handles partial token strings with concrete prefix', () => {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', `myAlias${Aws.ACCOUNT_ID}`);
+
+    new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
+
+    Template.fromStack(stack).hasOutput('OutId', {
+      Value: {
+        'Fn::Join': ['', [
+          'alias/myAlias',
+          { Ref: 'AWS::AccountId' },
+        ]],
+      },
+    });
+  });
+
+  test('handles partial token strings with alias/ prefix already present', () => {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', `alias/myAlias${Aws.ACCOUNT_ID}`);
+
+    new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
+
+    Template.fromStack(stack).hasOutput('OutId', {
+      Value: {
+        'Fn::Join': ['', [
+          'alias/myAlias',
+          { Ref: 'AWS::AccountId' },
+        ]],
+      },
+    });
+  });
+
+  test('throws error for partial token strings with invalid characters in concrete portion', () => {
+    const stack = new Stack();
+
+    expect(() => Alias.fromAliasName(stack, 'MyAlias', `my*Alias${Aws.ACCOUNT_ID}`)).toThrow(/Alias name must be between 1 and 256 characters in a-zA-Z0-9:\/_-/);
+  });
+
+  test('throws error for partial token strings with alias/aws/ prefix in concrete portion', () => {
+    const stack = new Stack();
+
+    expect(() => Alias.fromAliasName(stack, 'MyAlias', `alias/aws/myAlias${Aws.ACCOUNT_ID}`)).toThrow(/Alias cannot start with alias\/aws\//);
+  });
+
+  test('adds synthesis-time warning for fully unresolved tokens', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Test');
+
+    // Fully unresolved token (starts with token)
+    Alias.fromAliasName(stack, 'MyAlias', `${Aws.ACCOUNT_ID}myAlias`);
+
+    const assembly = app.synth();
+    const messages = assembly.getStackArtifact(stack.artifactId).messages;
+
+    expect(messages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          level: 'warning',
+          entry: expect.objectContaining({
+            type: 'aws:cdk:warning',
+            data: expect.stringContaining('Alias name is a token and cannot be validated at synthesis time'),
+          }),
+        }),
+      ]),
+    );
+  });
+});
+
 class AliasOutputsConstruct extends Construct {
   constructor(scope: Construct, id: string, key: IKey) {
     super(scope, id);
