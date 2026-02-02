@@ -1,4 +1,4 @@
-import { AgentCollaborator, AgentCollaboratorType } from './agent-collaborator';
+import type { AgentCollaborator, AgentCollaboratorType } from './agent-collaborator';
 
 /**
  * Configuration for agent collaboration settings.

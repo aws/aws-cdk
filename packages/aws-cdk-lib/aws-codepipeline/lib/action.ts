@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { Artifact } from './artifact';
-import * as notifications from '../../aws-codestarnotifications';
+import type { Construct } from 'constructs';
+import type { Artifact } from './artifact';
+import type * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
-import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
-import { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
+import type * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
+import type { Duration, IResource } from '../../core';
+import { Lazy, UnscopedValidationError } from '../../core';
+import type { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
 
 export enum ActionCategory {
   SOURCE = 'Source',

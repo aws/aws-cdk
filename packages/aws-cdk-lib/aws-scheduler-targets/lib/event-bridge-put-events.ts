@@ -1,7 +1,8 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import * as events from '../../aws-events';
-import { IRole } from '../../aws-iam';
-import { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig } from '../../aws-scheduler';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type * as events from '../../aws-events';
+import type { IRole } from '../../aws-iam';
+import type { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig } from '../../aws-scheduler';
 import { UnscopedValidationError } from '../../core';
 
 /**

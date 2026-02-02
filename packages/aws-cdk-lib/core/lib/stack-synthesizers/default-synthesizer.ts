@@ -1,12 +1,12 @@
 import { assertBound } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
-import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
+import type { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import * as cxapi from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { UnscopedValidationError } from '../errors';
 import { StringSpecializer } from '../helpers-internal/string-specializer';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';

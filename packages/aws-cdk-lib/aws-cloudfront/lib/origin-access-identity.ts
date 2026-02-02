@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import {
-  CfnCloudFrontOriginAccessIdentity,
+import type { Construct } from 'constructs';
+import type {
   CloudFrontOriginAccessIdentityReference,
   ICloudFrontOriginAccessIdentityRef,
+} from './cloudfront.generated';
+import {
+  CfnCloudFrontOriginAccessIdentity,
 } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';

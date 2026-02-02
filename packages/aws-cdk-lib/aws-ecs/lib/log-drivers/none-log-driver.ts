@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { LogDriver, LogDriverConfig } from './log-driver';
-import { ContainerDefinition } from '../container-definition';
+import type { Construct } from 'constructs';
+import type { LogDriverConfig } from './log-driver';
+import { LogDriver } from './log-driver';
+import type { ContainerDefinition } from '../container-definition';
 
 /**
  * A log driver that sets the log driver to `none` (no logs collected).

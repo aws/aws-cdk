@@ -5,8 +5,9 @@ import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { MatchmakingConfigurationProps, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
+import type { Construct } from 'constructs';
+import type { MatchmakingConfigurationProps, IMatchmakingConfiguration } from './matchmaking-configuration';
+import { MatchmakingConfigurationBase } from './matchmaking-configuration';
 
 /**
  * Properties for a new standalone matchmaking configuration

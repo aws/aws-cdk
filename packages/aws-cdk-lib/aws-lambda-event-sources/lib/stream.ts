@@ -1,7 +1,8 @@
 import { S3OnFailureDestination } from './s3-onfailuire-destination';
-import { IKey } from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import { Duration, UnscopedValidationError } from '../../core';
+import type { IKey } from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type { Duration } from '../../core';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * The set of properties for streaming event sources shared by
