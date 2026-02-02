@@ -3607,7 +3607,7 @@ describe('cluster', () => {
       vpc,
       version: CLUSTER_VERSION,
       prune: false,
-      secretsEncryptionKey: new kms.Key(stack, 'Key'),
+      secretsEncryptionKey: new kms.Key(stack, 'Key', { policy: new iam.PolicyDocument() }),
       kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
