@@ -140,6 +140,9 @@ describe('arnForResource is generated', () => {
       expect(rendered).toContain('.interpolate');
       expect(rendered).toMatchInlineSnapshot(`
 "public static arnForResource(resource: IResourceRef): string {
+  if ((resource.resourceRef.resourceId === undefined)) {
+    throw new cdk_errors.ValidationError("Cannot build an ARN for IResourceRef. Missing property 'resourceId'.", resource);
+  }
   return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${ResourceId}").interpolate({
     Partition: cdk.Stack.of(resource).partition,
     Region: resource.env.region,
@@ -168,6 +171,9 @@ describe('arnForResource is generated', () => {
       expect(rendered).toContain('.interpolate');
       expect(rendered).toMatchInlineSnapshot(`
 "public static arnForResource(resource: IResourceRef): string {
+  if ((resource.resourceRef.team === undefined)) {
+    throw new cdk_errors.ValidationError("Cannot build an ARN for IResourceRef. Missing property 'team'.", resource);
+  }
   return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${Team}").interpolate({
     Partition: cdk.Stack.of(resource).partition,
     Region: resource.env.region,
@@ -205,6 +211,9 @@ describe('arnForResource is generated', () => {
       expect(rendered).toContain('.interpolate');
       expect(rendered).toMatchInlineSnapshot(`
 "public static arnForResource(resource: IResourceRef): string {
+  if ((resource.resourceRef.workteamName === undefined)) {
+    throw new cdk_errors.ValidationError("Cannot build an ARN for IResourceRef. Missing property 'workteamName'.", resource);
+  }
   return new cfn_parse.TemplateString("arn:\${Partition}:sagemaker:\${Region}:\${Account}:workteam/\${WorkteamName}").interpolate({
     Partition: cdk.Stack.of(resource).partition,
     Region: resource.env.region,

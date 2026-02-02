@@ -1,4 +1,3 @@
-
 import { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import {
   $E,
@@ -31,6 +30,7 @@ import {
   SelectiveModuleImport,
   $this,
 } from '@cdklabs/typewriter';
+import { UNDEFINED } from '@cdklabs/typewriter/lib/expressions/builder';
 import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
 import { ImportPaths } from './aws-cdk-lib';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
@@ -532,11 +532,30 @@ export class ResourceClass extends ClassType implements Referenceable {
       const method = doAddMethod();
       const resourceIdentifier = $E(expr.ident('resource'));
 
+      const resourceIdentifiers = mapValues(
+        this.decider.resourceReference.arnVariables!, (propName) => resourceIdentifier[refAttributeName][propName],
+      );
+
+      const conditions = Object.values(resourceIdentifiers).map((value) => expr.eq(value, UNDEFINED));
+
+      for (let i = 0; i < Object.keys(resourceIdentifiers).length; i++) {
+        const errorMessage = expr.lit(
+          `Cannot build an ARN for ${this.ref.interfaceType.fqn}. Missing property '${Object.values(this.decider.resourceReference.arnVariables!)[i]}'.`,
+        );
+
+        method.addBody(stmt
+          .if_(conditions[i])
+          .then(
+            stmt.block(stmt.throw_(CDK_CORE.errors.ValidationError.newInstance(errorMessage, expr.ident('resource')))),
+          ),
+        );
+      }
+
       const interpolationVars = {
         Partition: $T(CDK_CORE.Stack).of(resourceIdentifier).prop('partition'),
         Region: resourceIdentifier.env.region,
         Account: resourceIdentifier.env.account,
-        ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => resourceIdentifier[refAttributeName][propName]),
+        ...resourceIdentifiers,
       };
 
       const interpolateArn = CDK_CORE.helpers.TemplateString

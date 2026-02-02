@@ -124,6 +124,7 @@ export class ResourceReference {
               immutable: true,
               docs: {
                 summary: `The ${variable} of the ${this.resource.name} resource.`,
+                default: 'No value',
               },
               optional: true,
             },
