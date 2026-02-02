@@ -1,47 +1,24 @@
-import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Aws, IEnvironmentAware, Names, Stack, Tags } from 'aws-cdk-lib/core';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, IConstruct } from 'constructs';
 import { tryFindBucketPolicyForBucket, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
 import { ConstructSelector, Mixins } from '../../core';
 import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
-import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 import { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
 import { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-
-/**
- * Properties for Delivery Destinations
- */
-interface DestinationProps {
-  /**
-   * Optional Identifer to help identify a delivery destination
-   */
-  readonly destinationid?: string;
-}
+import { S3LogsDeliveryPermissionsVersion } from './logs-delivery';
 
 /**
  * Properties for Delivery Destinations the participate in Cross Account Delivery
  */
-interface CrossAccountDestinationProps extends DestinationProps {
+interface CrossAccountDestinationProps {
   /**
    * Optional acount id for account the delivery source is in for cross account Vended Logs
    */
-  readonly sourceAccountId?: string; // may also need to region for the source as well...
-}
-
-/**
- * S3 Vended Logs Permissions version.
- */
-export enum S3LogsDeliveryPermissionsVersion {
-  /**
-   * V1
-   */
-  V1 = 'V1',
-  /**
-   * V2
-   */
-  V2 = 'V2',
+  readonly sourceAccountId?: string;
 }
 
 /**
@@ -71,7 +48,7 @@ export interface S3DeliveryDestinationProps extends CrossAccountDestinationProps
 /**
  * Properties for Firehose delivery destination
  */
-interface FirehoseDestinationProps extends CrossAccountDestinationProps {
+export interface FirehoseDelvieryDestinationProps extends CrossAccountDestinationProps {
   /**
    * Delivery stream to delivery logs to
    */
@@ -81,7 +58,7 @@ interface FirehoseDestinationProps extends CrossAccountDestinationProps {
 /**
  * Properties for Cloudwatch delivery destination
  */
-interface CloudwatchDestinationProps extends DestinationProps {
+export interface CloudwatchDeliveryDestinationProps {
   /**
    * Log group to deliver logs to
    */
@@ -95,16 +72,21 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
   private readonly bucket: IBucketRef;
   private readonly permissions: S3LogsDeliveryPermissionsVersion;
   private readonly kmsKey: IKeyRef | undefined;
+  private readonly sourceAccount: string | undefined;
 
   constructor(scope: Construct, id: string, props: S3DeliveryDestinationProps) {
     super(scope, id, {
       destinationResourceArn: props.bucket.bucketRef.bucketArn,
-      name: deliveryDestName('s3', props.destinationid ? props.destinationid : id, scope), // not entirely sure how I feel about this id business...mostly I may need to restrict the length of the id a customer can pass in
+      name: deliveryDestName('s3', id, scope),
       deliveryDestinationType: 'S3',
+      deliveryDestinationPolicy: props.sourceAccountId ? {
+        deliveryDestinationPolicy: deliveryDestCrossAccPolicy(props.sourceAccountId, props.bucket),
+      } : undefined,
     });
     this.bucket = props.bucket;
     this.permissions = props.permissionsVersion ? props.permissionsVersion : S3LogsDeliveryPermissionsVersion.V2;
     this.kmsKey = props.encryptionKey;
+    this.sourceAccount = props.sourceAccountId;
     const bucketPolicy = this.getOrCreateBucketPolicy(scope);
     this.grantLogsDelivery(bucketPolicy);
     this.node.addDependency(bucketPolicy);
@@ -138,6 +120,7 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
    */
   private grantLogsDelivery(policy: s3.CfnBucketPolicy): void {
     const stack = Stack.of(policy);
+    const account = this.sourceAccount ? this.sourceAccount : stack.account;
 
     // always required permissions
     const statements = [
@@ -145,14 +128,14 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
         effect: Effect.ALLOW,
         principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
         actions: ['s3:PutObject'],
-        resources: [`${this.bucket.bucketRef.bucketArn}/AWSLogs/${stack.account}/*`],
+        resources: [`${this.bucket.bucketRef.bucketArn}/AWSLogs/${account}/*`],
         conditions: {
           StringEquals: {
             's3:x-amz-acl': 'bucket-owner-full-control',
-            'aws:SourceAccount': stack.account,
+            'aws:SourceAccount': account,
           },
           ArnLike: {
-            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
+            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${account}:delivery-source:*`,
           },
         },
       }),
@@ -166,10 +149,10 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
         resources: [this.bucket.bucketRef.bucketArn],
         conditions: {
           StringEquals: {
-            'aws:SourceAccount': stack.account,
+            'aws:SourceAccount': account,
           },
           ArnLike: {
-            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
+            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${account}:*`,
           },
         },
       }));
@@ -189,19 +172,21 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
   private addToEncryptionKeyPolicy(key: CfnKey) {
     const existingKeyPolicy = key.keyPolicy;
     const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
+    const account = this.sourceAccount ? this.sourceAccount : key.env.account;
+    const actions = this.sourceAccount ? ['kms:GenerateDataKey*'] : ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'];
     const sid = 'AWS CDK: Allow Logs Delivery to use the key';
     const keyStatement = new PolicyStatement({
       sid,
       effect: Effect.ALLOW,
       principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-      actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+      actions,
       resources: ['*'],
       conditions: {
         StringEquals: {
-          'aws:SourceAccount': [key.env.account],
+          'aws:SourceAccount': [account],
         },
         ArnLike: {
-          'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${key.env.region}:${key.env.account}:${sourceArnPostfix}`],
+          'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${key.env.region}:${account}:${sourceArnPostfix}`],
         },
       },
     });
@@ -221,25 +206,34 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
   }
 }
 
+/**
+ * Firehose delivery destination for CloudWatch Logs.
+ */
 export class FirehoseDelvieryDestination extends logs.CfnDeliveryDestination {
-  constructor(scope: Construct, id: string, props: FirehoseDestinationProps) {
+  constructor(scope: Construct, id: string, props: FirehoseDelvieryDestinationProps) {
     super(scope, id, {
       destinationResourceArn: props.deliveryStream.deliveryStreamRef.deliveryStreamArn,
-      name: deliveryDestName('fh', props.destinationid ? props.destinationid : id, scope),
+      name: deliveryDestName('fh', id, scope),
       deliveryDestinationType: 'FH',
+      deliveryDestinationPolicy: props.sourceAccountId ? {
+        deliveryDestinationPolicy: deliveryDestCrossAccPolicy(props.sourceAccountId, props.deliveryStream),
+      } : undefined,
     });
 
     Tags.of(props.deliveryStream).add('LogDeliveryEnabled', 'true');
   }
 }
 
+/**
+ * CloudWatch delivery destination for CloudWatch Logs.
+ */
 export class CloudwatchDeliveryDestination extends logs.CfnDeliveryDestination {
   private readonly logGroup: logs.ILogGroupRef;
 
-  constructor(scope: Construct, id: string, props: CloudwatchDestinationProps) {
+  constructor(scope: Construct, id: string, props: CloudwatchDeliveryDestinationProps) {
     super(scope, id, {
       destinationResourceArn: props.logGroup.logGroupRef.logGroupArn,
-      name: deliveryDestName('cwl', props.destinationid ? props.destinationid : id, scope),
+      name: deliveryDestName('cwl', id, scope),
       deliveryDestinationType: 'CWL',
     });
     this.logGroup = props.logGroup;
@@ -293,4 +287,14 @@ export class CloudwatchDeliveryDestination extends logs.CfnDeliveryDestination {
 function deliveryDestName(destType: string, id: string, scope: IConstruct) {
   const prefix = `cdk-${destType}-${id}-dest-`;
   return `${prefix}${Names.uniqueResourceName(scope, { maxLength: 60 - prefix.length })}`;
+}
+
+function deliveryDestCrossAccPolicy(sourceAccount: string, destEnv: IEnvironmentAware) {
+  return new PolicyDocument({
+    statements: [new PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new AccountPrincipal(sourceAccount)],
+      resources: [`arn:${Aws.PARTITION}:logs:${destEnv.env.region}:${destEnv.env.account}:delivery-destination:*`],
+    })],
+  }).toJSON();
 }

@@ -113,11 +113,10 @@ export class S3LogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
 
-    const deliveryDestination = new S3DeliveryDestination(container, 'Dest', {
+    const deliveryDestination = new S3DeliveryDestination(container, 'Dest' + logType.split('_').map(word => word.toLowerCase()).join('-'), {
       bucket: this.bucket,
       permissionsVersion: this.permissions,
       encryptionKey: this.kmsKey,
-      destinationid: logType.split('_').map(word => word.toLowerCase()).join('-'),
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
@@ -158,9 +157,8 @@ export class FirehoseLogsDelivery implements ILogsDelivery {
 
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
 
-    const deliveryDestination = new FirehoseDelvieryDestination(container, 'Dest', {
+    const deliveryDestination = new FirehoseDelvieryDestination(container, 'Dest' + logType.split('_').map(word => word.toLowerCase()).join('-'), {
       deliveryStream: this.deliveryStream,
-      destinationid: logType.split('_').map(word => word.toLowerCase()).join('-'),
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
@@ -202,9 +200,8 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
 
-    const deliveryDestination= new CloudwatchDeliveryDestination(container, 'Dest', {
+    const deliveryDestination= new CloudwatchDeliveryDestination(container, 'Dest' + logType.split('_').map(word => word.toLowerCase()).join('-'), {
       logGroup: this.logGroup,
-      destinationid: logType.split('_').map(word => word.toLowerCase()).join('-'),
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {

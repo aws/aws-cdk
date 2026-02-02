@@ -30,7 +30,7 @@ describe('S3 Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkS3AccessLogsDeliverySourceBucketDestinationDestBA63D329',
+          'SourceBucketCdkS3AccessLogsDeliverySourceBucketDestinationDestaccesslogs73B16B4A',
           'Arn',
         ],
       },
@@ -46,7 +46,7 @@ describe('S3 Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-s3-access-logs-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-s3-Destaccess-logs-dest-.*'),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
       LogType: logType,
@@ -744,7 +744,7 @@ describe('Cloudwatch Logs Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupDeliveryDest89BD1E86',
+          'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupDeliveryDestaccesslogs87B1BF73',
           'Arn',
         ],
       },
@@ -760,7 +760,7 @@ describe('Cloudwatch Logs Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-cwl-access-logs-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-cwl-Destaccess-logs-dest-.*'),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
       LogType: logType,
@@ -1007,7 +1007,7 @@ describe('Firehose Stream Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkFirehoseAccessLogsDeliverySourceBucketFirehoseDestACDAE1B5',
+          'SourceBucketCdkFirehoseAccessLogsDeliverySourceBucketFirehoseDestaccesslogsC6B8A051',
           'Arn',
         ],
       },
@@ -1023,7 +1023,7 @@ describe('Firehose Stream Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-fh-access-logs-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-fh-Destaccess-logs-dest-.*'),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
       LogType: logType,

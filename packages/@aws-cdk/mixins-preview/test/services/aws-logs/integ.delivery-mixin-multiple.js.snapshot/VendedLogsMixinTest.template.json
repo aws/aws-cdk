@@ -10,7 +10,7 @@
     "Name": "vended-logs-mixin-event-bus"
    }
   },
-  "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E": {
+  "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDesterrorlogs4809B813": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "CWL",
@@ -20,7 +20,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-error-logs-dest-VendedLogsMixigGroupD06F335FDE18FD44"
+    "Name": "cdk-cwl-Desterror-logs-dest-VendedLogsMiroupD06F335FDE18FD44"
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
@@ -31,7 +31,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E",
+      "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDesterrorlogs4809B813",
       "Arn"
      ]
     },
@@ -40,7 +40,7 @@
     }
    },
    "DependsOn": [
-    "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E",
+    "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDesterrorlogs4809B813",
     "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
    ]
   },
@@ -57,7 +57,7 @@
     }
    }
   },
-  "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDest512D2F7B": {
+  "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestinfologsC05ADDC0": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "CWL",
@@ -67,7 +67,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-info-logs-dest-VendedLogsMixigGroupD06F335FC36F4D1E"
+    "Name": "cdk-cwl-Destinfo-logs-dest-VendedLogsMiroupD06F335FC36F4D1E"
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
@@ -78,7 +78,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDest512D2F7B",
+      "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestinfologsC05ADDC0",
       "Arn"
      ]
     },
@@ -87,7 +87,7 @@
     }
    },
    "DependsOn": [
-    "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDest512D2F7B",
+    "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestinfologsC05ADDC0",
     "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
    ]
   },
@@ -104,7 +104,7 @@
     }
    }
   },
-  "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4DestE59F2AF8": {
+  "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Desterrorlogs2589B657": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "S3",
@@ -114,7 +114,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-s3-error-logs-dest-VendedLogsMixiBucketE1BC60E4FF860E7B"
+    "Name": "cdk-s3-Desterror-logs-dest-VendedLogsMicketE1BC60E4FF860E7B"
    },
    "DependsOn": [
     "DeliveryBucketPolicyB86375F3"
@@ -125,7 +125,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4DestE59F2AF8",
+      "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Desterrorlogs2589B657",
       "Arn"
      ]
     },
@@ -134,11 +134,11 @@
     }
    },
    "DependsOn": [
-    "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4DestE59F2AF8",
+    "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Desterrorlogs2589B657",
     "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
    ]
   },
-  "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870": {
+  "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Destinfologs715126EC": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "S3",
@@ -148,7 +148,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-s3-info-logs-dest-VendedLogsMixinyBucketE1BC60E4818510B9"
+    "Name": "cdk-s3-Destinfo-logs-dest-VendedLogsMixucketE1BC60E4818510B9"
    },
    "DependsOn": [
     "DeliveryBucketPolicyB86375F3"
@@ -159,7 +159,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870",
+      "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Destinfologs715126EC",
       "Arn"
      ]
     },
@@ -168,7 +168,7 @@
     }
    },
    "DependsOn": [
-    "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870",
+    "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Destinfologs715126EC",
     "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
    ]
   },
