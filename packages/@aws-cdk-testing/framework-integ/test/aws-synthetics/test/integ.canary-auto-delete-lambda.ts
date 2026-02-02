@@ -1,6 +1,7 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib/core';
+import type { StackProps } from 'aws-cdk-lib/core';
+import { App, Stack } from 'aws-cdk-lib/core';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as synthetics from 'aws-cdk-lib/aws-synthetics';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 

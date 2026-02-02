@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { CODECOV_CHECKS } from '../constants';
-import { GitHubFile, GitHubLabel, GitHubPr } from '../github';
+import type { GitHubFile, GitHubLabel, GitHubPr } from '../github';
 import { PullRequestLinter } from '../lint';
-import { createOctomock, OctoMock } from './octomock';
+import type { OctoMock } from './octomock';
+import { createOctomock } from './octomock';
 
 type GitHubFileName = Omit<GitHubFile, 'deletions' | 'additions'>;
 
