@@ -75,6 +75,18 @@ class TestStack extends Stack {
       handler: 'handler',
     });
 
+    new lambda.NodejsFunction(this, 'ts-handler-custom-handler-rolldown', {
+      entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
+      runtime: STANDARD_NODEJS_RUNTIME,
+      bundling: {
+        bundler: lambda.Bundler.ROLLDOWN,
+        minify: true,
+        sourceMap: true,
+        sourceMapMode: lambda.SourceMapMode.BOTH,
+      },
+      handler: 'handler',
+    });
+
     new lambda.NodejsFunction(this, 'ts-handler-custom-handler-dots', {
       entry: path.join(__dirname, 'integ-handlers/ts-web-handler.ts'),
       runtime: STANDARD_NODEJS_RUNTIME,
