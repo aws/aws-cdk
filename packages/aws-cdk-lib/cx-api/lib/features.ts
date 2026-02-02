@@ -1159,7 +1159,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
 			To migrate in place without disruption, follow the guide at: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-eks/README.md#migrating-from-the-deprecated-eksopenidconnectprovider-to-eksoidcprovidernative
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.237.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use the custom resource provider.',
   },
