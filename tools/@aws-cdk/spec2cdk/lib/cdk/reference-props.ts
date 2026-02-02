@@ -125,6 +125,7 @@ export class ResourceReference {
               docs: {
                 summary: `The ${variable} of the ${this.resource.name} resource.`,
               },
+              optional: true,
             },
             cfnValue: access,
           });

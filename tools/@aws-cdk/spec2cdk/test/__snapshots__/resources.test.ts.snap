@@ -87,6 +87,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public id?: string;
 
   /**
+   * Name of the resource.
+   */
+  public resourceName?: string;
+
+  /**
    * Create a new \`AWS::Some::Resource\`.
    *
    * @param scope Scope in which this resource is defined
@@ -100,6 +105,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     });
 
     this.id = props.id;
+    this.resourceName = props.resourceName;
   }
 
   public get resourceRef(): ResourceReference {
@@ -110,7 +116,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this.id,
+      resourceName: this.resourceName
     };
   }
 
@@ -143,6 +150,13 @@ export interface CfnResourceProps {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
    */
   readonly id?: string;
+
+  /**
+   * Name of the resource.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-resourcename
+   */
+  readonly resourceName?: string;
 }
 
 /**
@@ -160,6 +174,7 @@ function CfnResourcePropsValidator(properties: any): cdk.ValidationResult {
     errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
   }
   errors.collect(cdk.propertyValidator("id", cdk.validateString)(properties.id));
+  errors.collect(cdk.propertyValidator("resourceName", cdk.validateString)(properties.resourceName));
   return errors.wrap("supplied properties not correct for \\"CfnResourceProps\\"");
 }
 
@@ -168,7 +183,8 @@ function convertCfnResourcePropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnResourcePropsValidator(properties).assertSuccess();
   return {
-    Id: cdk.stringToCloudFormation(properties.id)
+    Id: cdk.stringToCloudFormation(properties.id),
+    ResourceName: cdk.stringToCloudFormation(properties.resourceName)
   };
 }
 
@@ -183,6 +199,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   }
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
+  ret.addPropertyResult("resourceName", "ResourceName", (properties.ResourceName != null ? cfn_parse.FromCloudFormation.getString(properties.ResourceName) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
 }

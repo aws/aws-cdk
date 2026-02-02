@@ -282,7 +282,22 @@ test('resource interface with Arn as primaryIdentifier', () => {
 
 test('can generate interface types into a separate module', () => {
   // GIVEN
-  const resource = db.allocate('resource', BASE_RESOURCE);
+  const resource = db.allocate('resource', {
+    ...BASE_RESOURCE,
+    properties: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+      ResourceName: {
+        type: { type: 'string' },
+        documentation: 'Name of the resource',
+      },
+    },
+    // ResourceName is not part of the primary identifier, but is used in the arnTemplate
+    // so it should still appear in the interface as an optional property
+    arnTemplate: 'arn:${Partition}:some:${Region}:${Account}:resource/${ResourceName}',
+  });
   db.link('hasResource', service, resource);
 
   // THEN
