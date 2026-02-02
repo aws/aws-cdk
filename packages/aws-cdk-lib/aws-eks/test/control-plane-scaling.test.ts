@@ -8,14 +8,14 @@ describe('ControlPlaneScalingConfig', () => {
     // WHEN
     const { stack } = testFixture();
     new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_25,
+      version: KubernetesVersion.V1_31,
       kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: Match.objectLike({
-        version: '1.25',
+        version: '1.31',
         // controlPlaneScalingConfig should not be present when not specified
       }),
     });
@@ -28,23 +28,27 @@ describe('ControlPlaneScalingConfig', () => {
   });
 
   test('cluster with controlPlaneScalingConfig', () => {
-    // WHEN
-    const { stack } = testFixture();
-    new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_25,
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
-      controlPlaneScalingConfig: {
-        tier: 'standard',
-      },
-    });
+    const tiers = ['standard', 'tier-xl', 'tier-2xl', 'tier-4xl'];
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
+    tiers.forEach((tier) => {
+      // WHEN
+      const { stack } = testFixture();
+      new Cluster(stack, `Cluster-${tier}`, {
+        version: KubernetesVersion.V1_31,
+        kubectlLayer: new KubectlV31Layer(stack, `KubectlLayer-${tier}`),
         controlPlaneScalingConfig: {
-          tier: 'standard',
+          tier,
         },
-      },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          controlPlaneScalingConfig: {
+            tier,
+          },
+        },
+      });
     });
   });
 });
