@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
+import type { Construct } from 'constructs';
+import type { IAlarm, IAlarmRule } from './alarm-base';
+import { AlarmBase } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
 import { ArnFormat, Lazy, Names, Stack, Duration, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Properties for creating a Composite Alarm

@@ -1,5 +1,5 @@
-import * as cdk from '../../../core';
-import { TreatMissingData } from '../alarm';
+import type * as cdk from '../../../core';
+import type { TreatMissingData } from '../alarm';
 
 /**
  * Base options for creating CloudWatch alarms

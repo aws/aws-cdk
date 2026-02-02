@@ -1,19 +1,23 @@
-import { Construct } from 'constructs';
-import { IHttpRouteAuthorizer } from './authorizer';
-import { HttpRouteIntegration } from './integration';
-import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
-import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
-import { VpcLink, VpcLinkProps } from './vpc-link';
-import { CfnApi, CfnApiProps, HttpApiHelper } from '.././index';
-import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { Duration } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IHttpRouteAuthorizer } from './authorizer';
+import type { HttpRouteIntegration } from './integration';
+import type { BatchHttpRouteOptions } from './route';
+import { HttpMethod, HttpRoute, HttpRouteKey } from './route';
+import type { IHttpStage, HttpStageOptions } from './stage';
+import { HttpStage } from './stage';
+import type { VpcLinkProps } from './vpc-link';
+import { VpcLink } from './vpc-link';
+import type { CfnApiProps } from '.././index';
+import { CfnApi, HttpApiHelper } from '.././index';
+import type { Metric, MetricOptions } from '../../../aws-cloudwatch';
+import type { Duration } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApiReference, IApiRef } from '../apigatewayv2.generated';
-import { IApi, IpAddressType } from '../common/api';
+import type { ApiReference, IApiRef } from '../apigatewayv2.generated';
+import type { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
-import { DomainMappingOptions } from '../common/stage';
+import type { DomainMappingOptions } from '../common/stage';
 
 /**
  * Represents a reference to an HTTP API

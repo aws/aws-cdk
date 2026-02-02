@@ -1,7 +1,8 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AccessControl, CacheEngine, IamUser, ServerlessCache, UserGroup } from '../lib';
 
 const userName = 'user';

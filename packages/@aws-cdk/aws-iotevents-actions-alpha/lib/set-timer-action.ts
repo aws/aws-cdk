@@ -1,6 +1,6 @@
-import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
-import { Construct } from 'constructs';
-import { TimerDuration } from './timer-duration';
+import type * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import type { Construct } from 'constructs';
+import type { TimerDuration } from './timer-duration';
 
 /**
  * The action to create a timer with duration in seconds.

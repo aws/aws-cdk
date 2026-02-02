@@ -1,9 +1,10 @@
 import { Aws } from 'aws-cdk-lib';
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
 
 /**

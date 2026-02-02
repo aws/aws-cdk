@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
-import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
-import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import type { IEcsContainerDefinition } from './ecs-container-definition';
+import { EcsEc2ContainerDefinition } from './ecs-container-definition';
+import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
+import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IJobQueueRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type { IJobQueueRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * A JobDefinition that uses ECS orchestration

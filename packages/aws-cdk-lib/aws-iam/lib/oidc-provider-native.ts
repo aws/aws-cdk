@@ -1,6 +1,8 @@
-import { Construct } from 'constructs';
-import { CfnOIDCProvider, IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
-import { Arn, IResource, RemovalPolicy, Resource, Token, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
+import { CfnOIDCProvider } from './iam.generated';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Arn, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

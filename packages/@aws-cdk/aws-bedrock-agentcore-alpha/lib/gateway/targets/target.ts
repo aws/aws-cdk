@@ -1,17 +1,20 @@
 import { Lazy, Token, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IGateway } from '../gateway-base';
+import type { Construct } from 'constructs';
+import type { IGateway } from '../gateway-base';
 import { GATEWAY_SYNC_PERMS } from '../perms';
-import { ApiSchema } from './schema/api-schema';
-import { ToolSchema } from './schema/tool-schema';
-import { GatewayTargetBase, GatewayTargetProtocolType, IGatewayTarget, IMcpGatewayTarget, McpTargetType } from './target-base';
-import { ApiGatewayTargetConfiguration, ApiGatewayToolConfiguration, ITargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, MetadataConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
-import { GatewayCredentialProvider, ICredentialProviderConfig } from '../outbound-auth/credential-provider';
+import type { ApiSchema } from './schema/api-schema';
+import type { ToolSchema } from './schema/tool-schema';
+import type { IGatewayTarget, IMcpGatewayTarget } from './target-base';
+import { GatewayTargetBase, GatewayTargetProtocolType, McpTargetType } from './target-base';
+import type { ApiGatewayTargetConfiguration, ApiGatewayToolConfiguration, ITargetConfiguration } from './target-configuration';
+import { LambdaTargetConfiguration, McpServerTargetConfiguration, MetadataConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
+import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
+import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern, ValidationError } from '../validation-helpers';
 
 /******************************************************************************

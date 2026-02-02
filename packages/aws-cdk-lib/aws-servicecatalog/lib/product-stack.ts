@@ -1,11 +1,11 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
-import { ProductStackHistory } from './product-stack-history';
-import { IBucket } from '../../aws-s3';
-import { ServerSideEncryption } from '../../aws-s3-deployment';
+import type { ProductStackHistory } from './product-stack-history';
+import type { IBucket } from '../../aws-s3';
+import type { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 

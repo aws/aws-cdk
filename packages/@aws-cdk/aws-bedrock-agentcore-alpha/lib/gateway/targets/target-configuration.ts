@@ -2,12 +2,13 @@ import * as fs from 'fs';
 import * as cdk from 'aws-cdk-lib';
 import { Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
-import { IGateway } from '../gateway-base';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
+import type { IGateway } from '../gateway-base';
 import { validateOpenApiSchema, validateFieldPattern, validateStringField, ValidationError } from '../validation-helpers';
-import { ApiSchema, AssetApiSchema } from './schema/api-schema';
-import { ToolSchema } from './schema/tool-schema';
+import type { ApiSchema } from './schema/api-schema';
+import { AssetApiSchema } from './schema/api-schema';
+import type { ToolSchema } from './schema/tool-schema';
 import { McpTargetType } from './target-base';
 
 /******************************************************************************
