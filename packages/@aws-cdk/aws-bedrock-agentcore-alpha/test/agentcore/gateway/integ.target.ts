@@ -68,6 +68,27 @@ const smithyTarget = agentcore.GatewayTarget.forSmithy(stack, 'SmithyTarget', {
   smithyModel: agentcore.ApiSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'smithy', 'basic-service.json')),
 });
 
+// ===== Test 3a: GatewayTarget.forApiGateway() Static Method =====
+// NOTE: API Gateway target is included for synthesis testing only.
+// Full integration testing requires a deployed API Gateway REST API which is not
+// included in this automated test. The target validates that the construct can be
+// created and synthesizes correctly with default IAM authentication.
+const apiGatewayTarget = agentcore.GatewayTarget.forApiGateway(stack, 'ApiGatewayTarget', {
+  gateway: gateway,
+  gatewayTargetName: 'api-gateway-via-static',
+  description: 'Target created via forApiGateway static method (synthesis only)',
+  restApiId: 'placeholder-api-id', // Placeholder - not deployed
+  stage: 'prod',
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: '/test/*',
+        methods: [agentcore.ApiGatewayHttpMethod.GET],
+      },
+    ],
+  },
+});
+
 // ===== Test 4: GatewayTarget Constructor with LambdaTargetConfiguration =====
 const lambdaFunction2 = new lambda.Function(stack, 'Lambda2', {
   functionName: 'integ-test-target-lambda2',
@@ -114,6 +135,10 @@ new cdk.CfnOutput(stack, 'LambdaTargetId', {
 
 new cdk.CfnOutput(stack, 'SmithyTargetId', {
   value: smithyTarget.targetId,
+});
+
+new cdk.CfnOutput(stack, 'ApiGatewayTargetId', {
+  value: apiGatewayTarget.targetId,
 });
 
 new cdk.CfnOutput(stack, 'ConstructorTargetId', {
