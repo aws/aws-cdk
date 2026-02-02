@@ -43,14 +43,6 @@ describe('Mixin Metadata', () => {
     expect(metadata?.data).toEqual({ mixin: '@aws-cdk/mixins-preview.TestMixin' });
   });
 
-  test('does not add metadata when mixin has no jsii fqn', () => {
-    const construct = new Construct(stack, 'Test');
-    Mixins.of(construct).apply(new MixinWithoutFqn());
-
-    const metadata = construct.node.metadata.find(m => m.type === MIXIN_METADATA_KEY);
-    expect(metadata).toBeUndefined();
-  });
-
   test('adds metadata for each applied mixin', () => {
     const construct = new Construct(stack, 'Test');
     Mixins.of(construct).apply(new TestMixin(), new TestMixin());
@@ -62,6 +54,15 @@ describe('Mixin Metadata', () => {
   test('redacts fqn for non-allowed prefixes', () => {
     const construct = new Construct(stack, 'Test');
     Mixins.of(construct).apply(new ThirdPartyMixin());
+
+    const metadata = construct.node.metadata.find(m => m.type === MIXIN_METADATA_KEY);
+    expect(metadata).toBeDefined();
+    expect(metadata?.data).toEqual({ mixin: '*' });
+  });
+
+  test('tracks redacted mixins when mixin has no jsii fqn', () => {
+    const construct = new Construct(stack, 'Test');
+    Mixins.of(construct).apply(new MixinWithoutFqn());
 
     const metadata = construct.node.metadata.find(m => m.type === MIXIN_METADATA_KEY);
     expect(metadata).toBeDefined();
