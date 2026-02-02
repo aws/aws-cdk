@@ -9,16 +9,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **iam:** Receivers of `IEncryptedResource` objects now have fewer guarantees about the shape of the object. If you still require an `IResource`, change the type to `IEncryptedResource & IResource` and/or add a type guard check using `Resource.isResource()`. Implementations of `IEncryptedResource` no longer need to implement `IResource` but must continue to implement `IEnvironmentAware`. Since `IResource` extends `IEnvironmentAware`, there is no change for implementors. Calls to `GrantableResources.isEncryptedResource()` now require an `IEnvironmentAware` argument instead of `IConstruct`.
 
-### Describe any new or updated permissions being added
-
-N/A
-
-### Description of how you validated changes
-
-N/A
-
-### Checklist
-- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
 
 ### Features
 
