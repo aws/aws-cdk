@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "33ed9cec8bf717145419bca1ea74c4bfc57a4c4801629f3f9d44e9efcf979f2f": {
+      "displayName": "LifecycleRuleClassTest Template",
+      "source": {
+        "path": "LifecycleRuleClassTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6c0ac03d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "33ed9cec8bf717145419bca1ea74c4bfc57a4c4801629f3f9d44e9efcf979f2f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

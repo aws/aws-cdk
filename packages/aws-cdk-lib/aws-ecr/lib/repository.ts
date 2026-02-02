@@ -1,7 +1,7 @@
 import { EOL } from 'os';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
-import { LifecycleRule, TagStatus } from './lifecycle';
+import { LifecycleRule, LifecycleRuleClass, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -1106,6 +1106,12 @@ function validateAnyRuleLast(rules: LifecycleRule[]) {
  * Render the lifecycle rule to JSON
  */
 function renderLifecycleRule(rule: LifecycleRule) {
+  // If the rule is an instance of LifecycleRuleClass, use its toJSON method
+  if (rule instanceof LifecycleRuleClass) {
+    return rule.toJSON();
+  }
+
+  // Otherwise, use the original serialization logic for backward compatibility
   return {
     rulePriority: rule.rulePriority,
     description: rule.description,

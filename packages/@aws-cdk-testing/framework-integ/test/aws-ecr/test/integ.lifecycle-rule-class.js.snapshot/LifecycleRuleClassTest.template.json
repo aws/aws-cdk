@@ -1,0 +1,78 @@
+{
+ "Resources": {
+  "BasicTemplate": {
+   "Type": "AWS::ECR::RepositoryCreationTemplate",
+   "Properties": {
+    "AppliedFor": [
+     "PULL_THROUGH_CACHE"
+    ],
+    "LifecyclePolicy": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"prod\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}",
+    "Prefix": "basic-test"
+   }
+  },
+  "MultiRuleTemplate": {
+   "Type": "AWS::ECR::RepositoryCreationTemplate",
+   "Properties": {
+    "AppliedFor": [
+     "PULL_THROUGH_CACHE"
+    ],
+    "LifecyclePolicy": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Keep production images\",\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"prod\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":100},\"action\":{\"type\":\"expire\"}},{\"rulePriority\":2,\"description\":\"Clean up untagged images\",\"selection\":{\"tagStatus\":\"untagged\",\"countType\":\"sinceImagePushed\",\"countNumber\":1,\"countUnit\":\"days\"},\"action\":{\"type\":\"expire\"}}]}",
+    "Prefix": "multi-rule-test"
+   }
+  },
+  "AgeBasedTemplate": {
+   "Type": "AWS::ECR::RepositoryCreationTemplate",
+   "Properties": {
+    "AppliedFor": [
+     "PULL_THROUGH_CACHE"
+    ],
+    "LifecyclePolicy": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Age-based cleanup\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"sinceImagePushed\",\"countNumber\":30,\"countUnit\":\"days\"},\"action\":{\"type\":\"expire\"}}]}",
+    "Prefix": "age-based-test"
+   }
+  },
+  "TestRepo08D311A0": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"test\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":10},\"action\":{\"type\":\"expire\"}}]}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

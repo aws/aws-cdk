@@ -214,6 +214,40 @@ declare const repository: ecr.Repository;
 repository.addLifecycleRule({ tagPatternList: ['prod*'], maxImageCount: 9999 });
 ```
 
+### Using Lifecycle Rules with L1 Constructs
+
+For use cases requiring L1 constructs (such as `CfnRepositoryCreationTemplate`), you can use the `LifecycleRuleClass` which provides JSON serialization capability:
+
+```ts
+declare const stack: Stack;
+
+const lifecycleRule = new ecr.LifecycleRuleClass({
+  maxImageCount: 5,
+  tagStatus: ecr.TagStatus.TAGGED,
+  tagPrefixList: ['prod']
+});
+
+// Use with L1 constructs - lifecyclePolicy expects a JSON string
+const template = new ecr.CfnRepositoryCreationTemplate(stack, 'Template', {
+  appliedFor: ['PULL_THROUGH_CACHE'],
+  prefix: 'my-prefix',
+  lifecyclePolicy: JSON.stringify({
+    rules: [lifecycleRule.toJSON()]
+  })
+});
+```
+
+The `LifecycleRuleClass` supports the same properties as the `LifecycleRule` interface and provides identical validation. It can also be used with the `Repository` class:
+
+```ts
+declare const repository: ecr.Repository;
+const lifecycleRule = new ecr.LifecycleRuleClass({
+  maxImageAge: Duration.days(30)
+});
+
+repository.addLifecycleRule(lifecycleRule);
+```
+
 ### Repository deletion
 
 When a repository is removed from a stack (or the stack is deleted), the ECR
