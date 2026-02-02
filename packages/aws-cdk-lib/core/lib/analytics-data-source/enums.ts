@@ -1060,6 +1060,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FIRST_ROW",
     "GIVEN"
   ],
+  "CustomClaimOperator": [
+    "EQUALS",
+    "CONTAINS",
+    "CONTAINS_ANY"
+  ],
+  "CustomClaimValueType": [
+    "STRING",
+    "STRING_ARRAY"
+  ],
   "CustomControl": [
     "RETURN_CONTROL"
   ],
@@ -1411,6 +1420,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "EventSource": [
     "aws.config"
+  ],
+  "EventSourceMappingLogLevel": [
+    "INFO",
+    "DEBUG",
+    "WARN"
   ],
   "EventType": [
     "s3:ObjectCreated:*",

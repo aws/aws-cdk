@@ -1695,6 +1695,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ec2.InstanceClass.IM4GN,
       ec2.InstanceClass.R7GD,
       ec2.InstanceClass.R8GD,
+      'oi2', // OpenSearch-specific instance type with local NVMe storage
     ];
 
     const supportInstanceStorageInstanceType = [
@@ -1731,8 +1732,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new ValidationError(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`, this);
     }
 
-    // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
+    // Only R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD and OI2 support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
+    // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
       throw new ValidationError(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`, this);
     }

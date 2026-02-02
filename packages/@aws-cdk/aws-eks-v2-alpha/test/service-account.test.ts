@@ -417,4 +417,22 @@ describe('service account', () => {
       t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 0);
     });
   });
+
+  describe('Service Account with overwrite option', () => {
+    test('should pass overwrite to KubernetesManifest', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        overwriteServiceAccount: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Overwrite: true,
+      });
+    });
+  });
 });
