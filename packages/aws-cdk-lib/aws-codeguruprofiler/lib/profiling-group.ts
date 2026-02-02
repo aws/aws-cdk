@@ -93,6 +93,9 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
    *  - codeguru-profiler:ConfigureAgent
    *  - codeguru-profiler:PostAgentProfile
    *
+   *
+   * The use of this method is discouraged. Please use `grants.publish()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant publish rights to
@@ -108,6 +111,9 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
    *
    *  - codeguru-profiler:GetProfile
    *  - codeguru-profiler:DescribeProfilingGroup
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
    *
    * [disable-awslint:no-grants]
    *

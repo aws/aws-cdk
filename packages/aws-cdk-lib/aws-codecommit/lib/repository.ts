@@ -373,6 +373,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.pull()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPull(grantee: iam.IGrantable) {
@@ -380,6 +383,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.pullPush()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPullPush(grantee: iam.IGrantable) {
@@ -387,6 +393,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {

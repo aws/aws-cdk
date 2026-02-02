@@ -855,6 +855,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * If encryption is used, permission to use the key to decrypt the contents
    * of the bucket will also be granted to the same principal.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param identity The principal
@@ -865,6 +868,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
@@ -877,6 +883,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.put()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param identity The principal
@@ -887,6 +896,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.putAcl()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
@@ -896,6 +908,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   /**
    * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.delete()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -907,6 +922,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.readWrite()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
@@ -919,6 +937,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    * Note that when calling this function for source or destination buckets that support KMS encryption,
    * you need to specify the KMS key for encryption and the KMS key for decryption, respectively.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.replicationPermission()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -950,6 +971,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * Note that if this `IBucket` refers to an existing bucket, possibly not
    * managed by CloudFormation, this method will have no effect, since it's
    * impossible to modify the policy of an existing bucket.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.publicAccess()` instead.
    *
    * [disable-awslint:no-grants]
    *
