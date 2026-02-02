@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
-import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
+import type { Construct } from 'constructs';
+import type { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, StateBaseProps } from './state';
+import { renderJsonPath, State } from './state';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
-import { StateGraph } from '../state-graph';
-import { Credentials } from '../task-credentials';
-import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
+import type { StateGraph } from '../state-graph';
+import type { Credentials } from '../task-credentials';
+import type { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { QueryLanguage } from '../types';
 
 /**
  * Base options for all task states

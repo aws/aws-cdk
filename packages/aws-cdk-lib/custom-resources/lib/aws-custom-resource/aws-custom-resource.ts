@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { Logging } from './logging';
-import * as ec2 from '../../../aws-ec2';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as logs from '../../../aws-logs';
+import type * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';

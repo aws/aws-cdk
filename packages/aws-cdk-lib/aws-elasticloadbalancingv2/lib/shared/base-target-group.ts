@@ -1,10 +1,13 @@
-import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
-import { Protocol, TargetType } from './enums';
-import { Attributes, renderAttributes } from './util';
-import * as ec2 from '../../../aws-ec2';
+import type { IConstruct, IDependable } from 'constructs';
+import { Construct, DependencyGroup } from 'constructs';
+import type { Protocol } from './enums';
+import { TargetType } from './enums';
+import type { Attributes } from './util';
+import { renderAttributes } from './util';
+import type * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**

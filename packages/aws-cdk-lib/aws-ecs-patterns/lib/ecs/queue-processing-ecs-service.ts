@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import type { Construct } from 'constructs';
+import type { PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
+import type { QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
+import { QueueProcessingServiceBase } from '../base/queue-processing-service-base';
 
 /**
  * The properties for the QueueProcessingEc2Service service.
