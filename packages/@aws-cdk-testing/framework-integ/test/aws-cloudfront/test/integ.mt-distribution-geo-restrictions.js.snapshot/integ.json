@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "integ-mt-distribution-geo-restrictions-test/DefaultTest": {
+      "stacks": [
+        "mt-distribution-geo-restrictions"
+      ],
+      "assertionStack": "integ-mt-distribution-geo-restrictions-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integmtdistributiongeorestrictionstestDefaultTestDeployAssert22A29098"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

@@ -10,6 +10,7 @@ import { App, Aws, Duration, Stack, Token } from '../../core';
 import {
   AllowedMethods,
   CfnDistribution,
+  ConnectionMode,
   Distribution,
   Endpoint,
   Function,
@@ -96,6 +97,7 @@ test('exhaustive example of props renders correctly and SSL method sni-only', ()
     minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
     priceClass: PriceClass.PRICE_CLASS_100,
     webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    connectionMode: ConnectionMode.DIRECT,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
@@ -137,6 +139,7 @@ test('exhaustive example of props renders correctly and SSL method sni-only', ()
         MinimumProtocolVersion: 'TLSv1.2_2019',
       },
       WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+      ConnectionMode: 'direct',
     },
   });
 });
@@ -1698,5 +1701,181 @@ describe('gRPC', () => {
         },
       });
     }).toThrow(msg);
+  });
+});
+describe('multi-tenant distributions', () => {
+  test('minimal multi-tenant distribution config', () => {
+    const origin = defaultOrigin();
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      connectionMode: ConnectionMode.TENANT_ONLY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ConnectionMode: 'tenant-only',
+        TenantConfig: Match.absent(),
+      },
+    });
+  });
+
+  test('exhaustive multi-tenant distribution config', () => {
+    const origin = defaultOrigin();
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      connectionMode: ConnectionMode.TENANT_ONLY,
+      certificate,
+      comment: 'multi-tenant test',
+      defaultRootObject: 'index.html',
+      enabled: false,
+      enableLogging: true,
+      geoRestriction: GeoRestriction.denylist('US', 'GB'),
+      httpVersion: HttpVersion.HTTP2,
+      logFilePrefix: 'logs/',
+      logIncludesCookies: true,
+      sslSupportMethod: SSLMethod.SNI,
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+      webAclId: 'arn:aws:wafv2:us-east-1:123456789012:global/webacl/ExampleWebACL/473e64fd-f30b-4765-81a0-62ad96dd167a',
+      tenantConfig: {
+        parameterDefinitions: [
+          {
+            definition: {
+              stringSchema: {
+                required: true,
+                comment: 'tenant identifier',
+                defaultValue: 'default-tenant',
+              },
+            },
+            name: 'tenantId',
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ConnectionMode: 'tenant-only',
+        Comment: 'multi-tenant test',
+        DefaultRootObject: 'index.html',
+        Enabled: false,
+        HttpVersion: 'http2',
+        Logging: {
+          Bucket: { 'Fn::GetAtt': [Match.stringLikeRegexp('.*LoggingBucket.*'), 'RegionalDomainName'] },
+          IncludeCookies: true,
+          Prefix: 'logs/',
+        },
+        Restrictions: {
+          GeoRestriction: {
+            Locations: ['US', 'GB'],
+            RestrictionType: 'blacklist',
+          },
+        },
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          SslSupportMethod: 'sni-only',
+          MinimumProtocolVersion: 'TLSv1.2_2019',
+        },
+        WebACLId: 'arn:aws:wafv2:us-east-1:123456789012:global/webacl/ExampleWebACL/473e64fd-f30b-4765-81a0-62ad96dd167a',
+        TenantConfig: {
+          ParameterDefinitions: [
+            {
+              Definition: {
+                StringSchema: {
+                  Required: true,
+                  Comment: 'tenant identifier',
+                  DefaultValue: 'default-tenant',
+                },
+              },
+              Name: 'tenantId',
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('throws error when tenantConfig provided for direct distribution', () => {
+    const origin = defaultOrigin();
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        connectionMode: ConnectionMode.DIRECT,
+        tenantConfig: {
+          parameterDefinitions: [
+            {
+              definition: {
+                stringSchema: {
+                  required: false,
+                  comment: 'tenantName',
+                  defaultValue: 'root',
+                },
+              },
+              name: 'tenantName',
+            },
+          ],
+        },
+      });
+    }).toThrow(/tenantConfig is not supported for direct distributions/);
+  });
+
+  test('throws error when domainNames provided for multi-tenant distribution', () => {
+    const origin = defaultOrigin();
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        connectionMode: ConnectionMode.TENANT_ONLY,
+        domainNames: ['example.com'],
+      });
+    }).toThrow(/domainNames may not be configured for multi-tenant distributions/);
+  });
+
+  test('throws error when Ipv6 is enabled for multi-tenant distribution', () => {
+    const origin = defaultOrigin();
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        connectionMode: ConnectionMode.TENANT_ONLY,
+        enableIpv6: true,
+      });
+    }).toThrow(/enableIpv6 field is not supported for multi-tenant distributions/);
+  });
+
+  test('throws error when priceClass provided for multi-tenant distribution', () => {
+    const origin = defaultOrigin();
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        connectionMode: ConnectionMode.TENANT_ONLY,
+        priceClass: PriceClass.PRICE_CLASS_100,
+      });
+    }).toThrow(/priceClass may not be configured for multi-tenant distributions/);
+  });
+
+  test('throws error when VIP SSL method provided for multi-tenant distribution', () => {
+    const origin = defaultOrigin();
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        connectionMode: ConnectionMode.TENANT_ONLY,
+        certificate,
+        sslSupportMethod: SSLMethod.VIP,
+      });
+    }).toThrow(/invalid SSL Method/);
+  });
+
+  test('throws error when smoothStreaming enabled for multi-tenant distribution', () => {
+    const origin = defaultOrigin();
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: {
+          origin,
+          smoothStreaming: true,
+        },
+        connectionMode: ConnectionMode.TENANT_ONLY,
+      });
+    }).toThrow(/smoothStreaming not supported by multi-tenant distributions/);
   });
 });

@@ -80,6 +80,7 @@
     "resource-interface-extends-resource:aws-cdk-lib.aws_cloudfront.ICachePolicy",
     "props-physical-name:aws-cdk-lib.aws_cloudfront.CloudFrontWebDistributionProps",
     "props-physical-name:aws-cdk-lib.aws_cloudfront.DistributionProps",
+    "props-physical-name:aws-cdk-lib.aws_cloudfront.MTDistributionProps",
     "props-physical-name:aws-cdk-lib.aws_cloudfront.OriginAccessIdentityProps",
     "resource-interface-extends-resource:aws-cdk-lib.aws_cloudfront.IOriginRequestPolicy",
     "resource-interface-extends-resource:aws-cdk-lib.aws_cloudfront.IResponseHeadersPolicy",

@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "b77c86c8193b4d22a920e1774615a4c61808e68ab263c3edb2edda61968fa8c3": {
+      "displayName": "integ-mt-distribution-lambda Template",
+      "source": {
+        "path": "integ-mt-distribution-lambda.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-fd57cd91": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "b77c86c8193b4d22a920e1774615a4c61808e68ab263c3edb2edda61968fa8c3.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

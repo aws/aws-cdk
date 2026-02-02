@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "mt-distribution-multiple-tenants/DefaultTest": {
+      "stacks": [
+        "integ-mt-distribution-multiple-tenants"
+      ],
+      "assertionStack": "mt-distribution-multiple-tenants/DefaultTest/DeployAssert",
+      "assertionStackName": "mtdistributionmultipletenantsDefaultTestDeployAssert416E18E9"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

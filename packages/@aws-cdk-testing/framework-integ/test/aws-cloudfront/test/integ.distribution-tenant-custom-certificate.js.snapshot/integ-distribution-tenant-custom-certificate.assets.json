@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "090eaa0744e838239ef5eb55ea800392a29889ec25e825f18876311f3213a5e6": {
+      "displayName": "integ-distribution-tenant-custom-certificate Template",
+      "source": {
+        "path": "integ-distribution-tenant-custom-certificate.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-east-1-a075f5d3": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
+          "objectKey": "090eaa0744e838239ef5eb55ea800392a29889ec25e825f18876311f3213a5e6.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

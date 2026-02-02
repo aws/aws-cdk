@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "connection-group-extensive-test/DefaultTest": {
+      "stacks": [
+        "integ-connection-group-extensive"
+      ],
+      "assertionStack": "connection-group-extensive-test/DefaultTest/DeployAssert",
+      "assertionStackName": "connectiongroupextensivetestDefaultTestDeployAssert72D46169"
+    }
+  },
+  "minimumCliVersion": "2.1024.0"
+}

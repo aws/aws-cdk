@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "77be2be5b47a12befbb6e115ce83ddaab225226f240a5b2a6a5b29b83967e269": {
+      "displayName": "integ-mt-distribution-additional-metrics Template",
+      "source": {
+        "path": "integ-mt-distribution-additional-metrics.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5d69ad40": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "77be2be5b47a12befbb6e115ce83ddaab225226f240a5b2a6a5b29b83967e269.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
