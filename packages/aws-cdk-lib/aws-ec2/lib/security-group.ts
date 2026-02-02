@@ -1,25 +1,29 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Connections } from './connections';
-import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress, ISecurityGroupRef, SecurityGroupReference } from './ec2.generated';
-import { IPeer, Peer } from './peer';
+import type { ISecurityGroupRef, SecurityGroupReference } from './ec2.generated';
+import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
+import type { IPeer } from './peer';
+import { Peer } from './peer';
 import { Port } from './port';
-import { IVpc } from './vpc';
+import type { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
+import type {
+  IResource,
+  ResourceProps,
+} from '../../core';
 import {
   Annotations,
   ContextProvider,
-  IResource,
   Lazy,
   Names,
   Resource,
-  ResourceProps,
   Stack,
   Token,
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import * as cxapi from '../../cx-api';
+import type * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 

@@ -1,8 +1,10 @@
 
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import * as fc from 'fast-check';
 import * as fs from 'fs-extra';
-import { App, AppProps, AspectApplication, Aspects, IAspect } from '../lib';
+import type { AppProps, AspectApplication, IAspect } from '../lib';
+import { App, Aspects } from '../lib';
 
 // Control number of runs from an env var for a burn-in test
 if (process.env.FAST_CHECK_NUM_RUNS) {

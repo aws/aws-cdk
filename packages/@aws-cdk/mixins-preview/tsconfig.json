@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "declarationMap": false,
-    "inlineSourceMap": true,
-    "inlineSources": true,
+    "inlineSourceMap": false,
     "alwaysStrict": true,
     "declaration": true,
     "incremental": true,

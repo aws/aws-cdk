@@ -1,15 +1,17 @@
-import { Construct, IConstruct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
-import { LinuxParameters } from './linux-parameters';
-import * as ecs from '../../aws-ecs';
-import { IFileSystem } from '../../aws-efs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { CfnJobDefinition } from './batch.generated';
+import type { LinuxParameters } from './linux-parameters';
+import type * as ecs from '../../aws-ecs';
+import type { IFileSystem } from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import { LogGroup } from '../../aws-logs';
-import * as secretsmanager from '../../aws-secretsmanager';
-import * as ssm from '../../aws-ssm';
-import { Lazy, PhysicalName, Size, UnscopedValidationError, ValidationError } from '../../core';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type * as ssm from '../../aws-ssm';
+import type { Size } from '../../core';
+import { Lazy, PhysicalName, UnscopedValidationError, ValidationError } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
+import type { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');

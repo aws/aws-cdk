@@ -1,5 +1,6 @@
-import { App, Stack, StackProps, DefaultStackSynthesizer, Stage, StageProps, RemovalPolicy } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps, StageProps } from 'aws-cdk-lib';
+import { App, Stack, DefaultStackSynthesizer, Stage, RemovalPolicy } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as path from 'path';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as pipelines from 'aws-cdk-lib/pipelines';

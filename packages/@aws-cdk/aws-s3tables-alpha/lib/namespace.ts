@@ -1,10 +1,11 @@
 import { EOL } from 'os';
 import { CfnNamespace } from 'aws-cdk-lib/aws-s3tables';
-import { IResource, RemovalPolicy, Resource, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
+import { Resource, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ITableBucket } from './table-bucket';
+import type { Construct } from 'constructs';
+import type { ITableBucket } from './table-bucket';
 
 /**
  * Represents an S3 Tables Namespace.

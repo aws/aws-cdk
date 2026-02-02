@@ -1,22 +1,25 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Alias } from './alias';
 import { KeyGrants } from './key-grants';
-import { KeyLookupOptions } from './key-lookup';
-import { CfnKey, IKeyRef, KeyReference } from './kms.generated';
+import type { KeyLookupOptions } from './key-lookup';
+import type { IKeyRef, KeyReference } from './kms.generated';
+import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
+import type {
+  Duration,
+  IResource,
+  RemovalPolicy,
+  ResourceProps,
+} from '../../core';
 import {
   Arn,
   ArnFormat,
   ContextProvider,
-  Duration,
   FeatureFlags,
-  IResource,
   Lazy,
-  RemovalPolicy,
   Resource,
-  ResourceProps,
   Stack,
   Token,
   ValidationError,
