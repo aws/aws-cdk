@@ -650,7 +650,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
    */
   public bind(_scope: Construct, gateway: IGateway): TargetConfigurationConfig {
     // Grant permission to export the API definition
-    // The gateway needs to call GetExport to retrieve the OpenAPI definition ,
+    // The gateway needs to call GetExport to retrieve the Rest api definition ,
     // for more info: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html#gateway-target-api-gateway-outbound
     gateway.role.addToPrincipalPolicy(
       new iam.PolicyStatement({

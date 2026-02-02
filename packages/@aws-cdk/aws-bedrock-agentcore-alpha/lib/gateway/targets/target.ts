@@ -408,7 +408,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   }
 
   /**
-   * Create an API Gateway-based MCP target
+   * Create an API Gateway-based target
    * Convenience method for creating a target that connects to an API Gateway REST API
    *
    * @param scope The construct scope
