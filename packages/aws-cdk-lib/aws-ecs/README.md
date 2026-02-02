@@ -585,6 +585,28 @@ obtained from either DockerHub or from ECR repositories, built directly from a l
 - `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image
   but a CloudFormation parameter as the tag.
 
+#### Custom Container Images
+
+You can use `ContainerImage.fromCustomConfiguration()` to provide custom container image sources from any registry:
+
+```ts
+declare const secret: secretsmanager.ISecret;
+
+const customImage = ecs.ContainerImage.fromCustomConfiguration({
+  imageName: 'custom-registry.example.com/my-app:v1.0',
+  repositoryCredential: secret,
+});
+
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+
+taskDefinition.addContainer('Container', {
+  image: customImage,
+  memoryLimitMiB: 512,
+});
+```
+
+This enables integration with custom container registries or image management systems without needing to implement the `IContainerImage` interface directly. The `repositoryCredential` parameter accepts an AWS Secrets Manager secret containing the registry credentials, and the required IAM permissions are automatically granted to the task execution role.
+
 ### Environment variables
 
 To pass environment variables to the container, you can use the `environment`, `environmentFiles`, and `secrets` props.

@@ -3059,4 +3059,70 @@ describe('container definition', () => {
       ],
     });
   });
+
+  test('can use fromCustomConfiguration() for custom container images', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // Custom container image using fromCustomConfiguration
+    const customImage = ecs.ContainerImage.fromCustomConfiguration({
+      imageName: 'custom-registry.example.com/my-app:v1.0',
+    });
+
+    // WHEN
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: customImage,
+      taskDefinition,
+      memoryLimitMiB: 512,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: 'custom-registry.example.com/my-app:v1.0',
+          Memory: 512,
+          Name: 'Container',
+        },
+      ],
+    });
+  });
+
+  test('fromCustomConfiguration() can provide repository credentials', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const mySecretArn = 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret-AbCdEf';
+    const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'MySecret', mySecretArn);
+
+    // Custom container image with credentials
+    const customImage = ecs.ContainerImage.fromCustomConfiguration({
+      imageName: 'private-registry.example.com/my-app:latest',
+      repositoryCredential: secret,
+    });
+
+    // WHEN
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: customImage,
+      taskDefinition,
+      memoryLimitMiB: 256,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: 'private-registry.example.com/my-app:latest',
+          Memory: 256,
+          Name: 'Container',
+          RepositoryCredentials: {
+            CredentialsParameter: mySecretArn,
+          },
+        },
+      ],
+    });
+  });
 });
