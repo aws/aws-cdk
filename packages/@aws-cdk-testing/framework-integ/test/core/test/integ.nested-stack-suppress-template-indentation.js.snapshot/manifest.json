@@ -1,28 +1,28 @@
 {
-  "version": "50.0.0",
+  "version": "49.0.0",
   "artifacts": {
-    "aws-cdk-bedrock-agentcore-runtime-cognito.assets": {
+    "ParentStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-bedrock-agentcore-runtime-cognito.assets.json",
+        "file": "ParentStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-bedrock-agentcore-runtime-cognito": {
+    "ParentStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-bedrock-agentcore-runtime-cognito.template.json",
+        "templateFile": "ParentStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bc8cd25a1563b5f833a5eafad1cd4e7eea41a9adb170cc6477d5cf7cc171ff1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93d098b6c1d5f87d2a7f361765ba0c22baf2962ef6f60f832b33a676602a9d8b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-bedrock-agentcore-runtime-cognito.assets"
+          "ParentStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,331 +31,64 @@
         }
       },
       "dependencies": [
-        "aws-cdk-bedrock-agentcore-runtime-cognito.assets"
+        "ParentStack.assets"
       ],
       "metadata": {
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/MyUserPool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/MyUserPool/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyUserPoolD09D1D74"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/MyUserPool/MyUserPoolClient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "authFlows": {
-                "adminUserPassword": true
-              }
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/MyUserPool/MyUserPoolClient/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyUserPoolMyUserPoolClient01266CD6"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/MyUserPool/MyAnotherUserPoolClient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "authFlows": {
-                "adminUserPassword": true
-              }
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/MyUserPool/MyAnotherUserPoolClient/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyUserPoolMyAnotherUserPoolClient4444CD16"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/TestRuntime": [
+        "/ParentStack/NestedSuppressIndentation/Bucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:info",
-            "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time."
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/TestRuntime/ExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "description": "*",
-              "maxSessionDuration": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/TestRuntime/ExecutionRole/Resource": [
+        "/ParentStack/NestedSuppressIndentation/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestRuntimeExecutionRoleF819113E"
+            "data": "Bucket83908E77"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/TestRuntime/ExecutionRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/TestRuntime/ExecutionRole/DefaultPolicy/Resource": [
+        "/ParentStack/NestedSuppressIndentation.NestedStack/NestedSuppressIndentation.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestRuntimeExecutionRoleDefaultPolicyC7A978D3"
+            "data": "NestedSuppressIndentationNestedStackNestedSuppressIndentationNestedStackResourceC76400E1"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/TestRuntime/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRuntime65042BB5"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/RuntimeId": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeId"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/RuntimeArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeArn"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/UserPoolId": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserPoolId"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/UserPoolClientId1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserPoolClientId1"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/UserPoolClientId2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserPoolClientId2"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/BootstrapVersion": [
+        "/ParentStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime-cognito/CheckBootstrapVersion": [
+        "/ParentStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-bedrock-agentcore-runtime-cognito"
+      "displayName": "ParentStack"
     },
-    "BedrockAgentCoreRuntimeCognitoTestDefaultTestDeployAssert362339C9.assets": {
+    "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "BedrockAgentCoreRuntimeCognitoTestDefaultTestDeployAssert362339C9.assets.json",
+        "file": "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "BedrockAgentCoreRuntimeCognitoTestDefaultTestDeployAssert362339C9": {
+    "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "BedrockAgentCoreRuntimeCognitoTestDefaultTestDeployAssert362339C9.template.json",
+        "templateFile": "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e3893194c226c8fe86bfe2e822d92cd7682a7fd08f7ace3247264d98afd824c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "BedrockAgentCoreRuntimeCognitoTestDefaultTestDeployAssert362339C9.assets"
+          "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -364,23 +97,61 @@
         }
       },
       "dependencies": [
-        "BedrockAgentCoreRuntimeCognitoTestDefaultTestDeployAssert362339C9.assets"
+        "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC.assets"
       ],
       "metadata": {
-        "/BedrockAgentCoreRuntimeCognitoTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/NestedSuppressIndentationTest/DefaultTest/DeployAssert/AwsApiCallS3getObject58110d1fd222416abe8bb1021b7fa416/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/NestedSuppressIndentationTest/DefaultTest/DeployAssert/AwsApiCallS3getObject58110d1fd222416abe8bb1021b7fa416/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3getObject58110d1fd222416abe8bb1021b7fa416"
+          }
+        ],
+        "/NestedSuppressIndentationTest/DefaultTest/DeployAssert/AwsApiCallS3getObject58110d1fd222416abe8bb1021b7fa416/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3getObject58110d1fd222416abe8bb1021b7fa416"
+          }
+        ],
+        "/NestedSuppressIndentationTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/NestedSuppressIndentationTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/NestedSuppressIndentationTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/BedrockAgentCoreRuntimeCognitoTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/NestedSuppressIndentationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "BedrockAgentCoreRuntimeCognitoTest/DefaultTest/DeployAssert"
+      "displayName": "NestedSuppressIndentationTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -679,10 +450,6 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
-          "@aws-cdk/aws-eks:useNativeOidcProvider": {
-            "recommendedValue": true,
-            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
-          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -884,5 +651,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1100.3"
 }
