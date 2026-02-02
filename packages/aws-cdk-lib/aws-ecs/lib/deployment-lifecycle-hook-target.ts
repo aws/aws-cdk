@@ -1,6 +1,7 @@
 import { IConstruct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
+import { Fn, ValidationError } from '../../core';
 
 /**
  * Deployment lifecycle stages where hooks can be executed
@@ -55,6 +56,12 @@ export interface DeploymentLifecycleHookTargetConfig {
    * The lifecycle stages when this hook should be executed
    */
   readonly lifecycleStages: DeploymentLifecycleStage[];
+
+  /**
+   * Use this field to specify custom parameters that Amazon ECS will pass to your hook target invocations (such as a Lambda function).
+   * @default - No custom parameters will be passed
+   */
+  readonly hookDetails?: string;
 }
 
 /**
@@ -83,6 +90,18 @@ export interface DeploymentLifecycleLambdaTargetProps {
    * The lifecycle stages when this hook should be executed
    */
   readonly lifecycleStages: DeploymentLifecycleStage[];
+
+  /**
+   * Use this field to specify custom parameters that Amazon ECS will pass to your hook target invocations (such as a Lambda function).
+   *
+   * This field accepts JSON objects only
+   *
+   * @example
+   * {environment:"production",timeout:300};
+   *
+   * @default - No custom parameters will be passed
+   */
+  readonly hookDetails?: { [key: string]: any };
 }
 
 /**
@@ -117,10 +136,16 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
       this.handler.grantInvoke(this._role);
     }
 
+    // Reject arrays
+    if (Array.isArray(this.props.hookDetails)) {
+      throw new ValidationError('hookDetails must be a JSON object, got: array', scope);
+    }
+
     return {
       targetArn: this.handler.functionArn,
       role: this._role,
       lifecycleStages: this.props.lifecycleStages,
+      hookDetails: this.props.hookDetails ? Fn.toJsonString(this.props.hookDetails) : undefined,
     };
   }
 }
