@@ -1,0 +1,800 @@
+{
+  "tests": [
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-reboot",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-resource-action",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-nodetype",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.database-columnid-redshift-cluster-database-integ",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.database-redshift-cluster-database-integ",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-maintenance-track-name-aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameInteg",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-loggingbucket",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-iamrole",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-exclude-characters",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-enhancedvpcrouting",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-elasticip-aws-cdk-redshift-elastic-ip-test",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-distkey-aws-cdk-redshift-distkey-test",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-defaultiamrole",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-az-relocation",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-redshift-alpha/test/integ.cluster-multi-az",
+      "status": "fixed",
+      "originalError": "Fixed in PR #36842",
+      "originalPR": "https://github.com/aws/aws-cdk/pull/36842",
+      "attempts": [],
+      "fixSummary": "Fixed in PR #36842"
+    },
+    {
+      "path": "aws-eks-v2-alpha/test/integ.alb-controller",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "app-staging-synthesizer-alpha/test/integ.synth-default-encryption",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-servicecatalogappregistry-alpha/test/integ.application-integ.application",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-servicecatalogappregistry-alpha/test/integ.attribute-group-integ.attribute-group",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-s3objectlambda-alpha/test/integ.s3objectlambda",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "mixins-preview/test/services/aws-logs/integ.delivery-multiples",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "mixins-preview/test/services/aws-logs/integ.delivery",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/runtime/integ.runtime",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-alpha/test/bedrock/agents/integ.action-group",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/runtime/integ.runtime-with-imported-role",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-neptune-alpha/test/integ.cluster-serverless",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-pipes-targets-alpha/test/integ.sagemaker-integtest-pipe-target-sagemaker",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-pipes-sources-alpha/test/integ.dynamodb-integtest-pipe-source-dynamodb",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-msk-alpha/test/integ.cluster-express",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-location-alpha/test/integ.tracker",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-msk-alpha/test/integ.cluster",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-location-alpha/test/integ.place-index",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-location-alpha/test/integ.geofence-collection",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-msk-alpha/test/integ.cluster-storage-mode",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/tools/integ.browser",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/runtime/integ.runtime-with-custom-role",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/runtime/integ.runtime-endpoint",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/runtime/integ.runtime-cognito",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "mixins-preview/test/services/aws-logs/integ.delivery-mixin",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ivs-alpha/test/integ.ivs-ivs-test",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ivs-alpha/test/integ.ivs-recording-configuration-ivs-recording-configuration-test",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ivs-alpha/test/integ.ivs-multitrack-video-aws-cdk-ivs-multitarck-video-test",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ivs-alpha/test/integ.ivs-insecure-ingest-ivs-insecure-ingest-test",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ivs-alpha/test/integ.ivs-channel-advanced-ivs-test",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-kinesisanalytics-flink-alpha/test/integ.application.lit",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-iotevents-alpha/test/integ.detector-model-cdk-integ-detector-model-test-stack",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-iotevents-actions-alpha/test/lambda/integ.lambda-invoke-action",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-iotevents-actions-alpha/test/iot/integ.set-variable-action-integ.set-variable-action",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-iot-actions-alpha/test/iot/integ.iotevents-put-message-action-iotevents",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-imagebuilder-alpha/test/integ.all-parameters.image.container",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-imagebuilder-alpha/test/integ.all-parameters.image.ami",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-imagebuilder-alpha/test/integ.all-parameters.image-pipeline.container",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-imagebuilder-alpha/test/integ.all-parameters.image-pipeline.ami",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-glue-alpha/test/integ.partition-index-integ.partition-index",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-glue-alpha/test/integ.job-metrics-disabled-aws-glue-job-metrics-disabled-integ-test",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-gamelift-alpha/test/integ.matchmaking-ruleset",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-gamelift-alpha/test/integ.game-session-queue",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-gamelift-alpha/test/integ.game-server-group",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-gamelift-alpha/test/integ.build",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-gamelift-alpha/test/integ.alias",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-gamelift-alpha/test/integ.script",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-elasticache-alpha/test/integ.serverless-cache-aws-cdk-serverless-cache-integ",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.vpc-v2-tagging-integtest-model",
+      "status": "in_progress",
+      "originalError": "Hardcoded availability zones causing deployment failures in different regions. Assertion failures with tag names.",
+      "originalPR": null,
+      "attempts": [
+        {
+          "attemptNumber": 1,
+          "changes": "Replaced hardcoded AZs with Fn.select(Fn.getAzs()). Fixed IPAM region to use Stack.of(stack).region.",
+          "result": "Partial success - deployment works but assertions fail",
+          "error": "Assertion error: Expected tag 'CDKIntegTestTagIGW' but received 'CDKintegTestVPC'"
+        }
+      ],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.vpc-v2-alpha-integtest-model",
+      "status": "fixed",
+      "originalError": "Hardcoded availability zones (us-west-2a, us-west-2b) causing deployment failures",
+      "originalPR": null,
+      "attempts": [
+        {
+          "attemptNumber": 1,
+          "changes": "Replaced hardcoded AZs with Fn.select(Fn.getAzs())",
+          "result": "success",
+          "error": null
+        }
+      ],
+      "fixSummary": "Fixed hardcoded AZs to use dynamic AZ selection via Fn.select and Fn.getAzs"
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.vpc-shared-route-table",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.vpc-migration-feature-flag",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.transit-gateway-integtest-model",
+      "status": "fixed",
+      "originalError": "Hardcoded AZ (us-east-1a)",
+      "originalPR": null,
+      "attempts": [
+        {
+          "attemptNumber": 1,
+          "changes": "Replaced hardcoded AZ with Fn.select(Fn.getAzs())",
+          "result": "success",
+          "error": null
+        }
+      ],
+      "fixSummary": "Fixed hardcoded AZ to use dynamic AZ selection"
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.vpc-add-gateways",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.test-import-integtest-model",
+      "status": "deprecated",
+      "originalError": "Test imports VPCs with hardcoded IDs that don't exist. Requires pre-existing infrastructure.",
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": "Test requires manual setup with pre-existing VPCs. Cannot be automated."
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.peering-cross-account",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.subnet-map-public-ip",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-cloud9-alpha/test/integ.owner",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.subnet-v2-integtest-model",
+      "status": "fixed",
+      "originalError": "Hardcoded AZ (us-west-2a)",
+      "originalPR": null,
+      "attempts": [
+        {
+          "attemptNumber": 1,
+          "changes": "Replaced hardcoded AZ with Fn.select(Fn.getAzs())",
+          "result": "success",
+          "error": null
+        }
+      ],
+      "fixSummary": "Fixed hardcoded AZ to use dynamic AZ selection"
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.route-v2-integtest-model-8",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-cloud9-alpha/test/integ.connection-type-cloud-9-connection-type",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.byoip-ipv6-integtest-model",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-cloud9-alpha/test/integ.image-id",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-ec2-alpha/test/integ.ipam-integtest-model",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-cloud9-alpha/test/integ.cloud9-integ.cloud9",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/tools/integ.code-interpreter",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/memory/integ.memory",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.target",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association-no-stack-id-or-name",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-servicecatalogappregistry-alpha/test/integ.application-associator.cross-account-stack-association-enabled",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-servicecatalogappregistry-alpha/test/integ.application-associator.disable-url",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-iotevents-actions-alpha/test/iot/integ.timer-actions",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-cloud9-alpha/test/integ.automatic-stop",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-apprunner-alpha/test/integ.service-vpc-connector",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-apprunner-alpha/test/integ.service-later-secrets-env-vars",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-apprunner-alpha/test/integ.service-ip-address-type",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-apprunner-alpha/test/integ.service-health-check-configuration",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-apprunner-alpha/test/integ.service-github",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-apprunner-alpha/test/integ.service-encryption",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-apprunner-alpha/test/integ.service-ecr",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    },
+    {
+      "path": "aws-amplify-alpha/test/integ.app-custom-domain",
+      "status": "pending",
+      "originalError": null,
+      "originalPR": null,
+      "attempts": [],
+      "fixSummary": null
+    }
+  ]
+}

@@ -32,7 +32,7 @@ const routeTable1 = new RouteTable(stack, 'TestRouteTable', {
 
 const subnet1 = new SubnetV2(stack, 'testsubnet', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.1.1.0/28'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'CDKIntegTestSubnet',
@@ -46,7 +46,7 @@ const routeTable2 = new RouteTable(stack, 'TestRouteTable2', {
 
 const subnet2 = new SubnetV2(stack, 'testsubnet2', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.1.2.0/28'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'CDKIntegTestSubnet2',
@@ -69,7 +69,7 @@ vpc.addEgressOnlyInternetGateway({
 
 const subnet3 = new SubnetV2(stack, 'testsubnet3', {
   vpc,
-  availabilityZone: 'us-west-2c',
+  availabilityZone: cdk.Fn.select(2, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.1.3.0/28'),
   subnetType: SubnetType.PUBLIC,
   subnetName: 'CDKIntegTestSubnet3',

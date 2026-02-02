@@ -34,7 +34,7 @@ new SubnetV2(stack, 'Subnet-integ-test-1', {
   vpc: myVpc,
   ipv4CidrBlock: new IpCidr('10.1.1.0/24'),
   ipv6CidrBlock: new IpCidr('2600:f0f0:8:1::/64'), // To Be Replaced
-  availabilityZone: 'us-west-2a',
+  availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
@@ -45,7 +45,7 @@ new SubnetV2(stack, 'Subnet-integ-test-2', {
   vpc: myVpc,
   ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
   ipv6CidrBlock: new IpCidr('2600:f0f0:8:0::/64'), // To Be Replaced
-  availabilityZone: 'us-west-2a',
+  availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 

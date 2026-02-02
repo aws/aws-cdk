@@ -23,7 +23,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-integ-ipam');
 
 const ipam = new Ipam(stack, 'IpamTest', {
-  operatingRegions: ['us-west-2'],
+  operatingRegions: [cdk.Stack.of(stack).region],
 });
 
 /** Test Ipam Pool Ipv4 */
@@ -68,7 +68,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
  */
 new SubnetV2(stack, 'testsbubnet', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
   // defined on the basis of allocation done in IPAM console
   // ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
