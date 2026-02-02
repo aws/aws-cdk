@@ -2547,6 +2547,7 @@ describe('cluster', () => {
     // WHEN
     new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       bootstrapSelfManagedAddons: true,
     });
 
@@ -2569,6 +2570,20 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
       BootstrapSelfManagedAddons: Match.absent(),
     });
+  });
+
+  test('throws when bootstrapSelfManagedAddons is true and using Auto Mode', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN & THEN
+    expect(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+        bootstrapSelfManagedAddons: true,
+      });
+    }).toThrow(/bootstrapSelfManagedAddons cannot be true when using EKS Auto Mode/);
   });
 
   describe('AccessConfig', () => {

@@ -643,7 +643,7 @@ export interface ClusterProps extends ClusterCommonOptions {
    *
    * Changing this value after the cluster has been created will result in the cluster being replaced.
    *
-   * @default true
+   * @default true if the mode is not EKS Auto Mode
    */
   readonly bootstrapSelfManagedAddons?: boolean;
 
@@ -1209,6 +1209,10 @@ export class Cluster extends ClusterBase {
     const autoModeEnabled = this.isValidAutoModeConfig(props);
 
     if (autoModeEnabled) {
+      if (props.bootstrapSelfManagedAddons === true) {
+        throw new ValidationError('bootstrapSelfManagedAddons cannot be true when using EKS Auto Mode', this);
+      }
+
       // attach required managed policy for the cluster role in EKS Auto Mode
       // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
       ['AmazonEKSComputePolicy',
