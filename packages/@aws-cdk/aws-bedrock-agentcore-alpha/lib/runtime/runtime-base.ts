@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { IResource, Resource } from 'aws-cdk-lib';
+import { IResource, Resource, ResourceProps } from 'aws-cdk-lib';
 import {
   DimensionsMap,
   Metric,
@@ -219,12 +219,14 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    */
   protected _connections: ec2.Connections | undefined;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**
    * Grant the runtime specific actions on AWS resources
+   *
+   * [disable-awslint:no-grants]
    *
    * @param actions The actions to grant
    * @param resources The resource ARNs to grant access to
@@ -252,6 +254,9 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
   /**
    * Permits an IAM principal to invoke this runtime
    * Grants the bedrock-agentcore:InvokeAgentRuntime permission
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantInvokeRuntime(grantee: iam.IGrantable): iam.Grant {
@@ -266,6 +271,9 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    * Permits an IAM principal to invoke this runtime on behalf of a user
    * Grants the bedrock-agentcore:InvokeAgentRuntimeForUser permission
    * Required when using the X-Amzn-Bedrock-AgentCore-Runtime-User-Id header
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantInvokeRuntimeForUser(grantee: iam.IGrantable): iam.Grant {
@@ -279,6 +287,9 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
   /**
    * Permits an IAM principal to invoke this runtime both directly and on behalf of users
    * Grants both bedrock-agentcore:InvokeAgentRuntime and bedrock-agentcore:InvokeAgentRuntimeForUser permissions
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {

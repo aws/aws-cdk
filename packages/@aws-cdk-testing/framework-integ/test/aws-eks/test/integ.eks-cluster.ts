@@ -105,6 +105,7 @@ class EksClusterStack extends Stack {
   private assertServiceAccount() {
     // add a service account connected to a IAM role
     this.cluster.addServiceAccount('MyServiceAccount');
+    this.cluster.addServiceAccount('MyServiceAccountWithOverwrite', { overwriteServiceAccount: true });
   }
 
   private assertExtendedServiceAccount() {

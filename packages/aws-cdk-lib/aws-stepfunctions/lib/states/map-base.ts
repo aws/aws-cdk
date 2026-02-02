@@ -105,6 +105,21 @@ export interface MapBaseOptions extends AssignableStateOptions {
   readonly maxConcurrency?: number;
 
   /**
+   * JSONata expression for MaxConcurrency
+   *
+   * A JSONata expression that evaluates to an integer, specifying the maximum
+   * concurrency dynamically. Mutually exclusive with `maxConcurrency` and
+   * `maxConcurrencyPath`.
+   *
+   * Example value: `{% $states.input.maxConcurrency %}`
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-inline.html#map-state-inline-additional-fields
+   *
+   * @default - full concurrency
+   */
+  readonly jsonataMaxConcurrency?: string;
+
+  /**
    * The JSON that you want to override your default iteration input (mutually exclusive  with `parameters` and `jsonataItemSelector`).
    *
    * @see
@@ -157,6 +172,7 @@ export abstract class MapBase extends State implements INextable {
 
   private readonly maxConcurrency?: number;
   private readonly maxConcurrencyPath?: string;
+  private readonly jsonataMaxConcurrency?: string;
   protected readonly items?: ProvideItems;
   protected readonly itemsPath?: string;
   protected readonly itemSelector?: { [key: string]: any };
@@ -167,6 +183,7 @@ export abstract class MapBase extends State implements INextable {
     this.endStates = [this];
     this.maxConcurrency = props.maxConcurrency;
     this.maxConcurrencyPath = props.maxConcurrencyPath;
+    this.jsonataMaxConcurrency = props.jsonataMaxConcurrency;
     this.items = props.items;
     this.itemsPath = props.itemsPath;
     this.itemSelector = props.itemSelector;
@@ -200,6 +217,7 @@ export abstract class MapBase extends State implements INextable {
       ...this.renderItemProcessor(),
       ...(this.maxConcurrency && { MaxConcurrency: this.maxConcurrency }),
       ...(this.maxConcurrencyPath && { MaxConcurrencyPath: renderJsonPath(this.maxConcurrencyPath) }),
+      ...this.renderMaxConcurrency(),
       ...this.renderAssign(topLevelQueryLanguage),
     };
   }
@@ -220,6 +238,18 @@ export abstract class MapBase extends State implements INextable {
 
     if (this.maxConcurrency && this.maxConcurrencyPath) {
       errors.push('Provide either `maxConcurrency` or `maxConcurrencyPath`, but not both');
+    }
+
+    if (this.jsonataMaxConcurrency && this.maxConcurrency) {
+      errors.push('Provide either `maxConcurrency` or `jsonataMaxConcurrency`, but not both');
+    }
+
+    if (this.jsonataMaxConcurrency && this.maxConcurrencyPath) {
+      errors.push('Provide either `maxConcurrencyPath` or `jsonataMaxConcurrency`, but not both');
+    }
+
+    if (this.jsonataMaxConcurrency && !isValidJsonataExpression(this.jsonataMaxConcurrency)) {
+      errors.push('The `jsonataMaxConcurrency` property must be a valid JSONata expression');
     }
 
     if (this.itemSelector && this.jsonataItemSelector) {
@@ -246,6 +276,16 @@ export abstract class MapBase extends State implements INextable {
     if (!this.itemSelector && !this.jsonataItemSelector) return undefined;
     return FieldUtils.renderObject({
       ItemSelector: this.itemSelector ?? this.jsonataItemSelector,
+    });
+  }
+
+  /**
+   * Render MaxConcurrency in ASL JSON format
+   */
+  private renderMaxConcurrency(): any {
+    if (!this.maxConcurrency && !this.jsonataMaxConcurrency) return undefined;
+    return FieldUtils.renderObject({
+      MaxConcurrency: this.maxConcurrency ?? this.jsonataMaxConcurrency,
     });
   }
 }

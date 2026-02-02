@@ -334,24 +334,12 @@ expanding its surface area. It also allows the **Key** class to change its
 behavior (i.e. add an IAM action to enable encryption of certain types of keys)
 without affecting the API of the consumer.
 
-#### Owned vs. Unowned Constructs
+#### What type to use to accept other constructs (resources) as parameters
 
-Using object references instead of attribute references provides a richer API,
-but also introduces an inherent challenge: how do we reference constructs that
-are not defined inside the same app (“**owned**” by the app)? These could be
-resources that were created by some other AWS CDK app, via the AWS console,
-etc. We call these **“unowned” constructs.**
-
-In order to model this concept of owned and unowned constructs, all constructs
+In order to model the concept of owned and unowned constructs, all constructs
 in the AWS Construct Library should always have a corresponding **construct
 interface**. This interface includes the API of the construct
 _[awslint:construct-interface]_.
-
-Therefore, when constructs are referenced ***anywhere*** in the API (e.g. in
-properties or methods of other resources or higher-level constructs), the
-resource interface (`IFoo`) should be used over concrete resource classes
-(`Foo`). This will allow users to supply either internal or external resources
-_[awslint:ref-via-interface]_.
 
 Construct interfaces must extend the **IConstruct** interface in order to allow
 consumers to take advantage of common resource capabilities such as unique IDs,
@@ -360,6 +348,96 @@ paths, scopes, etc _[awslint:construct-interface-extends-iconstruct]_.
 Constructs that directly represent AWS resources (most of the constructs in the
 AWS Construct Library) should extend **IResource** (which, transitively, extends
 **IConstruct**) _[awslint:resource-interface-extends-resource]_.
+
+Using object references instead of attribute references provides a richer API,
+but also introduces an inherent challenge: there are different types of classes
+that represent different flavors of a resource with different capabilities:
+
+- Is it an L1?
+- Is it an AWS-written L2?
+- Is it an custom L2, for use inside an organization?
+- Is it perhaps not an **owned resource** but a **referenced resource** (i.e.,
+  is it a resource created and managed by your CDK app and the underlying
+  CloudFormation stack, or does it already exist in the account as something
+  immutable we are only allowed to point to but not change).
+
+To accept an as wide array as possible of type of input resource objects, your
+constructs should pose as little requirements on its parameters as possible. To
+that end, we prefer accepting **interfaces** over **classes**, and interfaces
+with **fewer members** over interfaces with **more members**. "Fewer members"
+means "fewer requirements", so easier to implement on a lot of classes!
+Unfortunately, it also means fewer guarantees, so pick your interface type
+according to what plan to do with the input construct.
+
+Here are your choices, from most preferred to least preferred.
+
+| Name | Example | When to use |
+|-----|----------|-----------|
+| Reference interface | `IBucketRef` | A resource of a certain type, that you can only reference. You can get its name or ARN. (**Should be your default choice**) |
+| L2 interface | `IBucket` | A resource of a certain type with convenience functions and additional attributes. Usually read-only, sometimes mutable. May or may not be "owned" (part of a Stack we are deploying) (**Most likely for legacy code**) |
+| L2 Resource construct | `Bucket` | A resource that is part of a Stack we are deploying. Has convenience functions and additional attributes, can be mutated. (**Only in exceptional cases**) |
+
+Given the examples above, if you write a construct to accept a Bucket source you
+you should prefer to accept `IBucketRef > IBucket > Bucket`, in that order.
+
+There are 2 linter rules that enforce this:
+
+* Prefer an interface over a concrete class _[awslint:ref-via-interface]_.
+* Prefer a reference interface over an L2 interface _[awslint:prefer-ref-interface]_.
+
+#### What if the entire L2 interface is too large, but the reference interface is too small?
+
+A reference interface (`IBucketRef`, for example) indicates that an object
+represents a Bucket resource, but the only thing it allows you to do is to name it.
+
+How should you write your code if you need additional features, one of the ones
+you would normally find on the traditional (and large) `IBucket` interface? That
+depends on the type of feature.
+
+**If the feature doesn't need the object's cooperation**: it might
+be that the feature is just a convenience method that uses information that's
+derivable from the reference interface already.
+
+For example, `bucket.arnForObjects('file.zip')` just takes the bucket's name and
+constructs a larger formatted string from it. You can write this as a standalone
+helper function, or as a collection of helper functions on a class.
+
+```ts
+var bucket: IBucket;
+var bucketRef: IBucketRef;
+
+// ❌ Requires a full implementation of IBucket for a small helper function
+bucket.arnForObjects('file.zip')
+
+// ✅ Free helper function, just accessible to you, the construct author
+arnForObjects(bucketRef, 'file.zip')
+// ✅ Even better, a collection of helper functions to you and library customers
+new BucketHelpers(bucketRef).arnForObjects('file.zip')
+```
+
+**If the feature needs the object's cooperation**: if you want to layer on
+*limited additional features onto a minimal interface,
+you can use [intersection
+types](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#intersection-types).
+This requires an interface type describing just the part of the construct
+surface area you need.
+
+This requires an interface that exclusively describes the feature we want, and
+nothing else. For example, `IGrantable` represents resources that can be granted
+to. Most of the time when a construct takes a Role, we just need the role name
+and we want to be able to grant to it.
+
+To represent that, we can use the intersection `IRoleRef & IGrantable`:
+
+```ts
+export interface MyConstructProps {
+  // ❌ Requires a full IRole while the only thing we actually need is `grantPrincipal`
+  readonly role: IRole;
+
+  // ✅ Just says "a Role resource that is also grantable"
+  readonly role: IRoleRef & IGrantable;
+}
+```
 
 #### Abstract Base
 
@@ -709,7 +787,7 @@ CloudFormation type (e.g. **string**, **string[]**) _[awslint:attribute-type]_.
   them or manipulate them), they can be used interchangeably.
 
 If needed, you can query whether an object includes unresolved tokens by using
-the **Token.unresolved(x)** method.
+the **Token.isUnresolved(x)** method.
 
 To ensure users are aware that the value returned by attribute properties should
 be treated as an opaque token, the JSDoc “@returns” annotation should begin with
@@ -884,7 +962,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   attribute to another. For example, given a name, it would need to render the
   ARN of the resource. Therefore, if **from\<Attribute\>** methods expect to be
   able to parse their input, they must verify that the input (e.g. ARN, name)
-  doesn't have unresolved tokens (using **Token.unresolved**). Preferably, they
+  doesn't have unresolved tokens (using **Token.isUnresolved**). Preferably, they
   can use **Stack.parseArn** to achieve this purpose.
 
 If a resource has an ARN attribute, it should implement at least a **fromFooArn**
@@ -1087,9 +1165,50 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 }
 ```
 
-The `TopicGrants` class, and many others, are generated automatically. But if there
-is no auto-generated grants class for a resource, you can implement it manually,
-following the same patterns.
+The `TopicGrants` class, and many others, are generated automatically from the `grants.json`
+file present at the root of each individual module (`packages/aws-sns` for SNS constructs and 
+so on). The `grants.json` file has the following general structure:
+
+```json
+{
+  "resources": {
+    "Topic": {
+      "hasResourcePolicy": true,
+      "grants": {
+        "publish": {
+          "actions": ["sns:Publish"],
+          "keyActions": ["kms:Decrypt", "kms:GenerateDataKey*"],
+          "docSummary": "Grant topic publishing permissions to the given identity"
+        },
+        "subscribe": {
+          "actions": ["sns:Subscribe"],
+          "arnFormat": "${topicArn}/*"
+        }
+      }
+    }
+  }
+}
+```
+
+where:
+
+* `Topic` - the class to generate grants for. This will lead to a class named TopicGrants.
+* `hasResourcePolicy` - indicates whether the resource supports a resource policy. When true, all auto-generated methods in the Grants class will attempt to add statements to the resource policy when applicable. When false, the methods will only modify the principal's policy.
+* `publish` - the name of a grant.
+* `actions` - the actions to encompass in the grant.
+* `keyActions` - if the resource has an associated KMS key, also grant these permissions on the key. Notice that the resource must implement the `iam.IEncryptedResource` interface for this to work.
+* `docSummary` - the public documentation for the method.
+* `arnFormat` - In some cases, the policy applies to a specific ARN patterns, rather than just the ARN of the resource.
+
+In some cases, however, it might not be possible to specify the grant details using the `grants.json`
+file. This is usually the case when grants require additional logic, such as checking whether the
+resource is owned or unowned, or when the grant needs to modify the resource policy of the resource
+(if it has one). In these cases, you can implement the grants class manually.
+
+Historically, grant methods were implemented directly on the resource construct interface (e.g.
+`sns.ITopic.grantPublish(principal)`). For backward compatibility reasons, these methods are still
+present on the resource interfaces, but new grant implementations are only allowed through the Grants
+classes [_awslint:no-grants_].
 
 ### Metrics
 

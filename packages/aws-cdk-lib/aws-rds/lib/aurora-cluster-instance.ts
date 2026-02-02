@@ -6,15 +6,16 @@ import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { helperRemovalPolicy } from './private/util';
 import { PerformanceInsightRetention } from './props';
 import { CfnDBInstance } from './rds.generated';
-import { ISubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import { IRoleRef } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
+import { aws_rds } from '../../interfaces';
 
 /**
  * Options for binding the instance to the cluster
@@ -61,7 +62,7 @@ export interface ClusterInstanceBindOptions {
    *
    * @default - cluster subnet group is used
    */
-  readonly subnetGroup?: ISubnetGroup;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
 }
 
 /**
@@ -432,7 +433,7 @@ export enum InstanceType {
 /**
  * An Aurora Cluster Instance
  */
-export interface IAuroraClusterInstance extends IResource {
+export interface IAuroraClusterInstance extends IResource, aws_rds.IDBInstanceRef {
   /**
    * The instance ARN
    */
@@ -488,16 +489,22 @@ export interface IAuroraClusterInstance extends IResource {
 class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.AuroraClusterInstance';
-  public readonly dbInstanceArn: string;
   public readonly dbiResourceId: string;
   public readonly dbInstanceEndpointAddress: string;
-  public readonly instanceIdentifier: string;
+
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly type: InstanceType;
   public readonly tier: number;
   public readonly instanceSize?: string;
   public readonly performanceInsightsEnabled: boolean;
   public readonly performanceInsightRetention?: PerformanceInsightRetention;
   public readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  private readonly _resource: CfnDBInstance;
   constructor(scope: Construct, id: string, props: AuroraClusterInstanceProps) {
     super(
       scope,
@@ -575,7 +582,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         // only need to supply this when migrating from legacy method.
         // this is not applicable for aurora instances, but if you do provide it and then
         // change it it will cause an instance replacement
-        dbSubnetGroupName: props.isFromLegacyInstanceProps ? props.subnetGroup?.subnetGroupName : undefined,
+        dbSubnetGroupName: props.isFromLegacyInstanceProps ? props.subnetGroup?.dbSubnetGroupRef.dbSubnetGroupName : undefined,
         dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
         monitoringRoleArn: props.monitoringRole?.roleRef.roleArn,
@@ -596,15 +603,29 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
       instance.node.addDependency(internetConnected);
     }
 
-    this.dbInstanceArn = this.getResourceArnAttribute(instance.attrDbInstanceArn, {
+    this._resource = instance;
+    this.dbiResourceId = instance.attrDbiResourceId;
+    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+  }
+
+  @memoizedGetter
+  public get dbInstanceArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrDbInstanceArn, {
       resource: 'db',
       service: 'rds',
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.physicalName,
     });
-    this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
-    this.dbiResourceId = instance.attrDbiResourceId;
-    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+  }
+
+  /**
+   * A reference to this cluster instance
+   */
+  public get dbInstanceRef(): aws_rds.DBInstanceReference {
+    return {
+      dbInstanceIdentifier: this.instanceIdentifier,
+      dbInstanceArn: this.dbInstanceArn,
+    };
   }
 }
 

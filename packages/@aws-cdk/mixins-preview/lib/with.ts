@@ -1,7 +1,7 @@
 import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
 import type { IMixin } from './core';
-import { Mixins, ConstructSelector } from './core';
+import { applyMixin } from './core/private/metadata';
 
 declare module 'constructs' {
   interface IConstruct {
@@ -15,6 +15,12 @@ declare module 'constructs' {
 
 // Hack the prototype to add .with() method
 (Construct.prototype as any).with = function(this: IConstruct, ...mixin: IMixin[]): IConstruct {
-  Mixins.of(this, ConstructSelector.cfnResource()).mustApply(...mixin);
+  for (const c of this.node.findAll()) {
+    for (const m of mixin) {
+      if (m.supports(c)) {
+        applyMixin(c, m);
+      }
+    }
+  }
   return this;
 };
