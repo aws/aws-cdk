@@ -1,5 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as bedrock from '../../../bedrock';
 
 const app = new cdk.App();
@@ -15,6 +16,16 @@ const crossRegionProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
   geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
   model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
 });
+
+// Create an IAM role to test grantProfileUsage
+const testRole = new iam.Role(stack, 'TestRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Role to test cross-region inference profile permissions',
+});
+
+// Grant the role permission to use the cross-region inference profile
+// This should generate IAM policies with multiple region-specific ARNs
+crossRegionProfile.grantProfileUsage(testRole);
 
 // Create an application inference profile with a foundation model
 const appProfileWithModel = new bedrock.ApplicationInferenceProfile(stack, 'AppProfileWithModel', {
@@ -103,6 +114,11 @@ new cdk.CfnOutput(stack, 'AgentWithCrossRegionArn', {
 new cdk.CfnOutput(stack, 'PromptWithRouterArn', {
   value: promptWithRouter.promptArn,
   description: 'ARN of the prompt using prompt router',
+});
+
+new cdk.CfnOutput(stack, 'TestRoleArn', {
+  value: testRole.roleArn,
+  description: 'ARN of the test role with cross-region inference profile permissions',
 });
 
 new IntegTest(app, 'BedrockInferenceProfilesTest', {
