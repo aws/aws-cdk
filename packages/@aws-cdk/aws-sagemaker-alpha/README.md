@@ -337,21 +337,3 @@ productionVariant.metricModelLatency().createAlarm(this, 'ModelLatencyAlarm', {
   evaluationPeriods: 3,
 });
 ```
-
-## Pipeline
-
-Import existing SageMaker Pipelines to integrate with other AWS services like EventBridge Scheduler.
-
-```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
-
-// Import by ARN
-const pipeline = sagemaker.Pipeline.fromPipelineArn(this, 'MyPipeline', 
-  'arn:aws:sagemaker:us-east-1:123456789012:pipeline/my-pipeline');
-
-// Or import by name (same account/region)
-const pipeline2 = sagemaker.Pipeline.fromPipelineName(this, 'MyPipeline2', 'my-pipeline');
-
-// Grant permissions
-pipeline.grantStartPipelineExecution(role);
-```
