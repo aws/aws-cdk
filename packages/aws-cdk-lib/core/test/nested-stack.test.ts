@@ -37,6 +37,62 @@ describe('nested-stack', () => {
     expect(nestedStack.templateOptions.description).toEqual(description);
   });
 
+  test('indent templates when suppressTemplateIndentation is not set', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1');
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+  });
+
+  test('indent templates when @aws-cdk/core:suppressTemplateIndentation is true but is overriden by suppressTemplateIndentation', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:suppressTemplateIndentation': true,
+      },
+    });
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1', { suppressTemplateIndentation: false });
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+  });
+
+  test('do not indent templates when suppressTemplateIndentation is true', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1', { suppressTemplateIndentation: true });
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
+  });
+
+  test('do not indent templates when @aws-cdk/core:suppressTemplateIndentation is true', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:suppressTemplateIndentation': true,
+      },
+    });
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1');
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
+  });
+
   test('can create cross region references when crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
