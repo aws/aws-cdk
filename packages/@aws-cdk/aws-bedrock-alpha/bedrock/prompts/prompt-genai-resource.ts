@@ -1,5 +1,5 @@
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-import { IAgentAlias } from '../agents/agent-alias';
+import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import type { IAgentAlias } from '../agents/agent-alias';
 
 /**
  * Properties for creating an agent GenAI resource configuration.

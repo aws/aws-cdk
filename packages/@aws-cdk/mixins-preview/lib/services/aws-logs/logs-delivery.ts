@@ -6,8 +6,8 @@ import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { tryFindDeliverySourceForResource } from '../../mixins/private/reflections';
 import * as xray from '../aws-xray/policy';
-import { IKeyRef } from 'aws-cdk-lib/aws-kms';
-import { CloudwatchDeliveryDestination, FirehoseDelvieryDestination, S3DeliveryDestination } from './logs-destination';
+import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
+import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
  * The individual elements of a logs delivery integration.

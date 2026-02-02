@@ -1,6 +1,6 @@
-import * as cxschema from '../../../cloud-assembly-schema';
+import type * as cxschema from '../../../cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
-import { CloudAssembly } from '../cloud-assembly';
+import type { CloudAssembly } from '../cloud-assembly';
 import { CloudAssemblyError } from '../private/error';
 
 const TREE_CLOUD_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.TreeCloudArtifact');

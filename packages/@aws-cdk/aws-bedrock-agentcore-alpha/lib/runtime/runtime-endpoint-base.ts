@@ -11,8 +11,9 @@
  *  and limitations under the License.
  */
 
-import { IResource, Resource, ResourceProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 
 /******************************************************************************
  *                                Interface

@@ -1,6 +1,8 @@
 
-import { CloudWatchLogsClient, CloudWatchLogsClientResolvedConfig, CreateLogGroupCommand, DeleteLogGroupCommand, DeleteRetentionPolicyCommand, OperationAbortedException, PutRetentionPolicyCommand, ResourceAlreadyExistsException, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-cloudwatch-logs';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import type { CloudWatchLogsClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-cloudwatch-logs';
+import { CloudWatchLogsClient, CreateLogGroupCommand, DeleteLogGroupCommand, DeleteRetentionPolicyCommand, OperationAbortedException, PutRetentionPolicyCommand, ResourceAlreadyExistsException } from '@aws-sdk/client-cloudwatch-logs';
+import type { AwsStub } from 'aws-sdk-client-mock';
+import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import * as nock from 'nock';
 import * as provider from '../../lib/aws-logs/log-retention-handler/index';
