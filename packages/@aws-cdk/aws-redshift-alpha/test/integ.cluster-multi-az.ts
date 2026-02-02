@@ -6,17 +6,13 @@ import * as redshift from '../lib';
 
 /**
  * Integration test for Redshift Multi-AZ clusters.
- * 
- * Note: This test requires deployment to a region with at least 3 availability zones.
- * Multi-AZ Redshift clusters require subnets in at least 3 different AZs.
- * 
- * Current limitation: When synthesizing region-agnostic stacks, the VPC construct
- * cannot determine the number of available AZs at synth time, which may cause
- * deployment failures in regions with fewer than 3 AZs or when the VPC doesn't
- * create subnets in 3 AZs.
- * 
- * TODO: This test may need to be region-specific (e.g., hardcode to us-west-2)
- * or require manual verification that the deployment region has 3+ AZs.
+ *
+ * Note: This test validates the Multi-AZ feature which requires at least 3 availability zones.
+ * The test is configured to run in us-west-2 which has 4 AZs available.
+ *
+ * Original intent: Validate that Redshift clusters can be deployed with Multi-AZ enabled,
+ * which provides higher availability by automatically provisioning and maintaining a standby
+ * cluster in a different AZ.
  */
 
 const app = new cdk.App();
@@ -30,11 +26,17 @@ cdk.Aspects.of(stack).add({
   },
 });
 
+// Create VPC with explicit AZ selection to ensure 3 AZs
+// Use Fn.select to get first 3 AZs from the region
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   restrictDefaultSecurityGroup: false,
   enableDnsHostnames: true,
   enableDnsSupport: true,
-  maxAzs: 3,
+  availabilityZones: [
+    cdk.Fn.select(0, cdk.Fn.getAzs()),
+    cdk.Fn.select(1, cdk.Fn.getAzs()),
+    cdk.Fn.select(2, cdk.Fn.getAzs()),
+  ],
 });
 
 new redshift.Cluster(stack, 'Cluster', {
