@@ -18,15 +18,12 @@ const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
 });
 
 const stack = new cdk.Stack(app, 'MultiAzRedshift', {
   env: {
-    account: '123456789012',
-    region: 'us-east-1',
+    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
   },
 });
 
@@ -63,6 +60,7 @@ class RedshiftRebootStack extends cdk.Stack {
       masterUser: {
         masterUsername: 'admin',
       },
+      nodeType: redshift.NodeType.RA3_XLPLUS,
       parameterGroup: this.parameterGroup,
       rebootForParameterChanges: true,
     });
