@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 
 import type { AwsCredentialIdentityProvider } from '@smithy/types';
-import { AwsSdkCall } from './construct-types';
+import type { AwsSdkCall } from './construct-types';
 
 type Event = AWSLambda.CloudFormationCustomResourceEvent;
 

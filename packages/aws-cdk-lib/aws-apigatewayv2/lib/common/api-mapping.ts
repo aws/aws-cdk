@@ -1,12 +1,14 @@
-import { Construct } from 'constructs';
-import { IDomainName } from './domain-name';
-import { IStage } from './stage';
-import { CfnApiMapping, CfnApiMappingProps } from '.././index';
-import { IResource, Resource } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IDomainName } from './domain-name';
+import type { IStage } from './stage';
+import type { CfnApiMappingProps } from '.././index';
+import { CfnApiMapping } from '.././index';
+import type { IResource } from '../../../core';
+import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApiMappingReference, IApiMappingRef, IApiRef, IDomainNameRef } from '../../../interfaces/generated/aws-apigatewayv2-interfaces.generated';
+import type { ApiMappingReference, IApiMappingRef, IApiRef, IDomainNameRef } from '../../../interfaces/generated/aws-apigatewayv2-interfaces.generated';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource

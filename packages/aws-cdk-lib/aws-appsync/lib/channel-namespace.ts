@@ -1,19 +1,20 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AppSyncEventResource } from './appsync-common';
 import { CfnChannelNamespace } from './appsync.generated';
-import { AppSyncAuthorizationType } from './auth-config';
-import { Code } from './code';
+import type { AppSyncAuthorizationType } from './auth-config';
+import type { Code } from './code';
+import type { AppSyncBackedDataSource } from './data-source-common';
 import {
-  AppSyncBackedDataSource,
   AppSyncDataSourceType,
   LambdaInvokeType,
 } from './data-source-common';
-import { IEventApi } from './eventapi';
-import { IGrantable } from '../../aws-iam';
-import { IResource, Resource, Token, ValidationError } from '../../core';
+import type { IEventApi } from './eventapi';
+import type { IGrantable } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IChannelNamespaceRef, ChannelNamespaceReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IChannelNamespaceRef, ChannelNamespaceReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * An AppSync channel namespace

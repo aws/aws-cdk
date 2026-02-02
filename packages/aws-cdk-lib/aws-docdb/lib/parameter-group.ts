@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup } from './docdb.generated';
-import { IResource, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IDBClusterParameterGroupRef, DBClusterParameterGroupReference } from '../../interfaces/generated/aws-docdb-interfaces.generated';
+import type { IDBClusterParameterGroupRef, DBClusterParameterGroupReference } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
 /**
  * A parameter group
