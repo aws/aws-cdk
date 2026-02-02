@@ -9,7 +9,7 @@ import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, s
 import { MIXINS_COMMON, MIXINS_CORE, MIXINS_UTILS } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import type { LocatedModule, SelectiveImport, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
+import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 
 class MixinsServiceModule extends BaseServiceSubmodule {
@@ -47,8 +47,6 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
     submodule.registerResource(resource.cloudFormationType, l1PropsMixin);
 
     l1PropsMixin.build();
-
-    submodule.registerSelectiveImports(...l1PropsMixin.imports);
   }
 
   private createMixinsModule(submodule: MixinsServiceModule, service: Service): LocatedModule<Module> {
@@ -86,7 +84,6 @@ class L1PropsMixin extends ClassType {
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
-  public readonly imports = new Array<SelectiveImport>();
 
   constructor(
     scope: Module,
@@ -126,14 +123,17 @@ class L1PropsMixin extends ClassType {
       },
     });
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db, false);
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, {
+      enableRelationships: false,
+      enableNestedRelationships: false,
+      refsImportLocation: 'aws-cdk-lib/interfaces',
+    });
     this.converter = TypeConverter.forMixin({
       db: db,
       resource: this.resource,
       resourceClass: this,
       relationshipDecider: this.relationshipDecider,
     });
-    this.imports = this.relationshipDecider.imports;
     this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
   }
 
@@ -211,11 +211,12 @@ class L1PropsMixin extends ClassType {
   }
 
   private makeSupportsMethod(): Method {
-    const resClass = Type.fromName(this.constructLibModule, naming.classNameFromResource(this.resource));
+    const resourceClassName = naming.classNameFromResource(this.resource);
+    const resourceClass = Type.fromName(this.constructLibModule, resourceClassName);
 
     const method = this.addMethod({
       name: 'supports',
-      returnType: Type.ambient(`construct is service.${resClass.symbol}`),
+      returnType: Type.ambient(`construct is service.${resourceClass.symbol}`),
       docs: {
         summary: 'Check if this mixin supports the given construct',
       },
@@ -231,7 +232,7 @@ class L1PropsMixin extends ClassType {
         expr.binOp(
           CallableProxy.fromName('CfnResource.isCfnResource', CDK_CORE).invoke(construct),
           '&&',
-          expr.eq(expr.get(construct, 'cfnResourceType'), expr.lit(this.resource.cloudFormationType)),
+          $T(resourceClass)[`is${resourceClassName}`](construct),
         ),
       ),
     );
@@ -242,7 +243,7 @@ class L1PropsMixin extends ClassType {
   private makeApplyToMethod(supports: Method) {
     const method = this.addMethod({
       name: 'applyTo',
-      returnType: CONSTRUCTS.IConstruct,
+      returnType: Type.VOID,
       docs: {
         summary: 'Apply the mixin properties to the construct',
       },
@@ -274,7 +275,6 @@ class L1PropsMixin extends ClassType {
               ),
           ),
         ),
-      stmt.ret(construct),
     );
   }
 }

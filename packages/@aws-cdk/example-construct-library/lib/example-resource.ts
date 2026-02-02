@@ -12,7 +12,8 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 // for files that are part of this package or part of core, we do import individual classes or functions
-import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, IWaitConditionHandleRef, RemovalPolicy, Resource, Stack, Token, ValidationError, WaitConditionHandleReference } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -67,7 +68,10 @@ export interface IExampleResource extends
   iam.IGrantable,
 
   // only for resources that are in a VPC and have SecurityGroups controlling their traffic
-  ec2.IConnectable {
+  ec2.IConnectable,
+
+  // Change this to the right resource type
+  IWaitConditionHandleRef {
 
   /**
    * The ARN of example resource.
@@ -182,7 +186,11 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
     }
   }
 
-  /** Implement the `IExampleResource.grantRead` method. */
+  /** Implement the `IExampleResource.grantRead` method.
+   *
+   * [disable-awslint:no-grants]
+   *
+   */
   public grantRead(identity: iam.IGrantable): iam.Grant {
     // usually, we would grant some service-specific permissions here,
     // but since this is just an example, let's use S3
@@ -222,6 +230,13 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
       dimensionsMap: { ExampleResource: this.exampleResourceName },
       ...props,
     }).attachTo(this);
+  }
+
+  public get waitConditionHandleRef(): WaitConditionHandleReference {
+    return {
+      // This should match the expected Ref interface properties to the correct field
+      waitConditionHandleId: this.exampleResourceName,
+    };
   }
 }
 
@@ -377,14 +392,13 @@ export class ExampleResource extends ExampleResourceBase {
     return new Import(scope, id);
   }
 
-  // implement all fields that are abstract in ExampleResourceBase
-  public readonly exampleResourceArn: string;
-  public readonly exampleResourceName: string;
   // while we know 'role' will actually never be undefined in this class,
   // JSII does not allow changing the optionality of a field
   // when overriding it, so it has to be 'role?'
   public readonly role?: iam.IRole;
   public readonly grantPrincipal: iam.IPrincipal;
+
+  private readonly _resource: CfnWaitCondition;
 
   /**
    * The constructor of a construct has always 3 arguments:
@@ -456,32 +470,7 @@ export class ExampleResource extends ExampleResourceBase {
       timeout: '10',
     });
 
-    // The resource's physical name and ARN are set using
-    // some protected methods from the Resource superclass
-    // that correctly resolve when your L2 is used in another resource
-    // that is in a different AWS region or account than this one.
-    this.exampleResourceName = this.getResourceNameAttribute(
-      // A lot of the CloudFormation resources return their physical name
-      // when the Ref function is used on them.
-      // If your resource is like that, simply pass 'resource.ref' here.
-      // However, if Ref for your resource returns something else,
-      // it's often still possible to use CloudFormation functions to get out the physical name;
-      // for example, if Ref for your resource returns the ARN,
-      // and the ARN for your resource is of the form 'arn:aws:<service>:<region>:<account>:resource/physical-name',
-      // which is quite common,
-      // you can use Fn::Select and Fn::Split to take out the part after the '/' from the ARN:
-      Fn.select(1, Fn.split('/', resource.ref)),
-    );
-    this.exampleResourceArn = this.getResourceArnAttribute(
-      // A lot of the L1 classes have an 'attrArn' property -
-      // if yours does, use it here.
-      // However, if it doesn't,
-      // you can often formulate the ARN yourself,
-      // using the Stack.formatArn helper function.
-      // Here, we assume resource.ref returns the physical name of the resource.
-      Stack.of(this).formatArn(exampleResourceArnComponents(resource.ref)),
-      // always use the protected physicalName property for this second argument
-      exampleResourceArnComponents(this.physicalName));
+    this._resource = resource;
 
     // if a role wasn't passed, create one
     const role = props.role || new iam.Role(this, 'Role', {
@@ -517,5 +506,41 @@ export class ExampleResource extends ExampleResourceBase {
       // this is the default to apply if props.removalPolicy is undefined
       default: RemovalPolicy.RETAIN,
     });
+  }
+
+  // implement all fields that are abstract in ExampleResourceBase
+  @memoizedGetter
+  public get exampleResourceArn(): string {
+    return this.getResourceArnAttribute(
+      // A lot of the L1 classes have an 'attrArn' property -
+      // if yours does, use it here.
+      // However, if it doesn't,
+      // you can often formulate the ARN yourself,
+      // using the Stack.formatArn helper function.
+      // Here, we assume resource.ref returns the physical name of the resource.
+      Stack.of(this).formatArn(exampleResourceArnComponents(this._resource.ref)),
+      // always use the protected physicalName property for this second argument
+      exampleResourceArnComponents(this.physicalName));
+  }
+
+  // implement all fields that are abstract in ExampleResourceBase
+  @memoizedGetter
+  public get exampleResourceName(): string {
+    // The resource's physical name and ARN are set using
+    // some protected methods from the Resource superclass
+    // that correctly resolve when your L2 is used in another resource
+    // that is in a different AWS region or account than this one.
+    return this.getResourceNameAttribute(
+      // A lot of the CloudFormation resources return their physical name
+      // when the Ref function is used on them.
+      // If your resource is like that, simply pass 'resource.ref' here.
+      // However, if Ref for your resource returns something else,
+      // it's often still possible to use CloudFormation functions to get out the physical name;
+      // for example, if Ref for your resource returns the ARN,
+      // and the ARN for your resource is of the form 'arn:aws:<service>:<region>:<account>:resource/physical-name',
+      // which is quite common,
+      // you can use Fn::Select and Fn::Split to take out the part after the '/' from the ARN:
+      Fn.select(1, Fn.split('/', this._resource.ref)),
+    );
   }
 }

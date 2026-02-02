@@ -4009,3 +4009,151 @@ weakened:aws-cdk-lib.aws_dynamodb.SchemaOptions
 # property unconfiguredBehavesLike is deprecated and had its type changed
 strengthened:aws-cdk-lib.cloud_assembly_schema.FeatureFlag
 weakened:aws-cdk-lib.cloud_assembly_schema.FeatureFlag
+
+# These shouldn't have been return values to begin with, but now that they're exposed we need the ability to change them
+weakened:aws-cdk-lib.aws_backup.BackupPlanCopyActionProps
+weakened:aws-cdk-lib.aws_backup.BackupPlanRuleProps
+
+# See https://github.com/aws/aws-cdk/discussions/32609
+removed:aws-cdk-lib.aws_ecs.AsgCapacityProvider.canContainersAccessInstanceRole
+removed:aws-cdk-lib.aws_ecs.AddAutoScalingGroupCapacityOptions.canContainersAccessInstanceRole
+removed:aws-cdk-lib.aws_ecs.AddCapacityOptions.canContainersAccessInstanceRole
+removed:aws-cdk-lib.aws_ecs.AsgCapacityProviderProps.canContainersAccessInstanceRole
+
+# Exposed struct with a ref interface
+weakened:aws-cdk-lib.aws_batch.OrderedComputeEnvironment
+
+# This should always have been an interface
+change-return-type:aws-cdk-lib.aws_events.ApiDestination.fromApiDestinationAttributes
+
+# Weakened guarantees of a data structure that's intended for internal construct usage
+weakened:aws-cdk-lib.aws_ec2.FlowLogDestinationConfig
+weakened:aws-cdk-lib.aws_ecs.ExecuteCommandLogConfiguration
+
+# Revert of PR #36378 which introduced reference interfaces that caused runtime errors
+# https://github.com/aws/aws-cdk/issues/36621
+removed:aws-cdk-lib.aws_apigatewayv2.HttpApiHelper
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpApiRef
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpStageRef
+removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketApiRef
+base-types:aws-cdk-lib.aws_apigatewayv2.ApiKey
+removed:aws-cdk-lib.aws_apigatewayv2.ApiKey.apiKeyRef
+base-types:aws-cdk-lib.aws_apigatewayv2.ApiMapping
+removed:aws-cdk-lib.aws_apigatewayv2.ApiMapping.apiMappingRef
+removed:aws-cdk-lib.aws_apigatewayv2.ApiMapping.domainUrl
+base-types:aws-cdk-lib.aws_apigatewayv2.DomainName
+removed:aws-cdk-lib.aws_apigatewayv2.DomainName.domainNameRef
+base-types:aws-cdk-lib.aws_apigatewayv2.HttpApi
+removed:aws-cdk-lib.aws_apigatewayv2.HttpApi.apiRef
+removed:aws-cdk-lib.aws_apigatewayv2.HttpApi.isHttpApi
+base-types:aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer
+removed:aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer.authorizerRef
+base-types:aws-cdk-lib.aws_apigatewayv2.HttpIntegration
+removed:aws-cdk-lib.aws_apigatewayv2.HttpIntegration.integrationRef
+base-types:aws-cdk-lib.aws_apigatewayv2.HttpRoute
+removed:aws-cdk-lib.aws_apigatewayv2.HttpRoute.routeRef
+base-types:aws-cdk-lib.aws_apigatewayv2.HttpStage
+removed:aws-cdk-lib.aws_apigatewayv2.HttpStage.isHttpStage
+removed:aws-cdk-lib.aws_apigatewayv2.HttpStage.stageRef
+base-types:aws-cdk-lib.aws_apigatewayv2.RateLimitedApiKey
+removed:aws-cdk-lib.aws_apigatewayv2.RateLimitedApiKey.apiKeyRef
+base-types:aws-cdk-lib.aws_apigatewayv2.UsagePlan
+incompatible-argument:aws-cdk-lib.aws_apigatewayv2.UsagePlan.addApiKey
+removed:aws-cdk-lib.aws_apigatewayv2.UsagePlan.usagePlanRef
+base-types:aws-cdk-lib.aws_apigatewayv2.VpcLink
+removed:aws-cdk-lib.aws_apigatewayv2.VpcLink.vpcLinkRef
+base-types:aws-cdk-lib.aws_apigatewayv2.WebSocketApi
+removed:aws-cdk-lib.aws_apigatewayv2.WebSocketApi.apiRef
+removed:aws-cdk-lib.aws_apigatewayv2.WebSocketApi.isWebsocketApi
+base-types:aws-cdk-lib.aws_apigatewayv2.WebSocketAuthorizer
+removed:aws-cdk-lib.aws_apigatewayv2.WebSocketAuthorizer.authorizerRef
+base-types:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration
+removed:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration.integrationRef
+base-types:aws-cdk-lib.aws_apigatewayv2.WebSocketRoute
+removed:aws-cdk-lib.aws_apigatewayv2.WebSocketRoute.routeRef
+base-types:aws-cdk-lib.aws_apigatewayv2.WebSocketStage
+removed:aws-cdk-lib.aws_apigatewayv2.WebSocketStage.stageRef
+removed:aws-cdk-lib.aws_apigatewayv2.ApiMappingAttributes.domainName
+strengthened:aws-cdk-lib.aws_apigatewayv2.ApiMappingProps
+strengthened:aws-cdk-lib.aws_apigatewayv2.DomainMappingOptions
+strengthened:aws-cdk-lib.aws_apigatewayv2.HttpAuthorizerProps
+strengthened:aws-cdk-lib.aws_apigatewayv2.HttpIntegrationProps
+strengthened:aws-cdk-lib.aws_apigatewayv2.HttpRouteProps
+strengthened:aws-cdk-lib.aws_apigatewayv2.HttpStageProps
+base-types:aws-cdk-lib.aws_apigatewayv2.IApi
+base-types:aws-cdk-lib.aws_apigatewayv2.IApiKey
+base-types:aws-cdk-lib.aws_apigatewayv2.IApiMapping
+base-types:aws-cdk-lib.aws_apigatewayv2.IAuthorizer
+base-types:aws-cdk-lib.aws_apigatewayv2.IDomainName
+base-types:aws-cdk-lib.aws_apigatewayv2.IHttpApi
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpApi.isHttpApi
+base-types:aws-cdk-lib.aws_apigatewayv2.IHttpAuthorizer
+base-types:aws-cdk-lib.aws_apigatewayv2.IHttpIntegration
+base-types:aws-cdk-lib.aws_apigatewayv2.IHttpRoute
+base-types:aws-cdk-lib.aws_apigatewayv2.IHttpStage
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpStage.isHttpStage
+base-types:aws-cdk-lib.aws_apigatewayv2.IIntegration
+base-types:aws-cdk-lib.aws_apigatewayv2.IRoute
+base-types:aws-cdk-lib.aws_apigatewayv2.IStage
+base-types:aws-cdk-lib.aws_apigatewayv2.IUsagePlan
+incompatible-argument:aws-cdk-lib.aws_apigatewayv2.IUsagePlan.addApiKey
+base-types:aws-cdk-lib.aws_apigatewayv2.IVpcLink
+base-types:aws-cdk-lib.aws_apigatewayv2.IWebSocketApi
+removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketApi.isWebsocketApi
+base-types:aws-cdk-lib.aws_apigatewayv2.IWebSocketAuthorizer
+base-types:aws-cdk-lib.aws_apigatewayv2.IWebSocketIntegration
+base-types:aws-cdk-lib.aws_apigatewayv2.IWebSocketRoute
+base-types:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage
+strengthened:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegrationProps
+removed:aws-cdk-lib.aws_apigatewayv2.IApi.apiRef
+removed:aws-cdk-lib.aws_apigatewayv2.IApiKey.apiKeyRef
+removed:aws-cdk-lib.aws_apigatewayv2.IApiMapping.apiMappingRef
+removed:aws-cdk-lib.aws_apigatewayv2.IAuthorizer.authorizerRef
+removed:aws-cdk-lib.aws_apigatewayv2.IDomainName.domainNameRef
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpApi.apiRef
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpAuthorizer.authorizerRef
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpIntegration.integrationRef
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpRoute.routeRef
+removed:aws-cdk-lib.aws_apigatewayv2.IHttpStage.stageRef
+removed:aws-cdk-lib.aws_apigatewayv2.IIntegration.integrationRef
+removed:aws-cdk-lib.aws_apigatewayv2.IRoute.routeRef
+removed:aws-cdk-lib.aws_apigatewayv2.IStage.stageRef
+removed:aws-cdk-lib.aws_apigatewayv2.IUsagePlan.usagePlanRef
+removed:aws-cdk-lib.aws_apigatewayv2.IVpcLink.vpcLinkRef
+removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketApi.apiRef
+removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketAuthorizer.authorizerRef
+removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketIntegration.integrationRef
+removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketRoute.routeRef
+removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
+
+# Had to revert these
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.Ec2Action.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.LambdaAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SnsAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmIncidentAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch.IAlarmAction.bind
+
+# This type must needs be weakened
+changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
+
+# CloudFormation has always required SecurityGroups for ManagedInstancesCapacityProvider.
+# Making it required in TypeScript catches the error at compile time instead of deploy time.
+strengthened:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps
+
+# IEncryptedResource was too strongly typed for practical use.
+# We need to weaken it and align with other traits.
+# See: https://github.com/aws/aws-cdk/pull/36787
+incompatible-argument:aws-cdk-lib.aws_iam.GrantableResources.isEncryptedResource
+base-types:aws-cdk-lib.aws_iam.IEncryptedResource
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.applyRemovalPolicy
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.node
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
+
+# These enum keys were auto-generated without underscores (ERRORCOUNT, KAFKAMETRICS).
+# The correct keys are ERROR_COUNT and KAFKA_METRICS. Safe to remove as these enums
+# were not usable without the feature implementation.
+removed:aws-cdk-lib.aws_lambda.MetricType.ERRORCOUNT
+removed:aws-cdk-lib.aws_lambda.MetricType.KAFKAMETRICS

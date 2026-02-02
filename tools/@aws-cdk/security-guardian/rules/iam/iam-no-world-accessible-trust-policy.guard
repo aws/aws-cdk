@@ -13,24 +13,11 @@ let iam_roles = Resources.*[
 ]
 
 # Trust policies allowing world accessibility
+# Note: Only string values are checked - intrinsic functions (maps like Fn::GetAtt) are skipped
 rule IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY when %iam_roles !empty {
-    %iam_roles {
-        Properties.AssumeRolePolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Principal exists {
-                    when Principal is_string {
-                        Principal != "*"
-                    }
-                    when Principal.AWS exists {
-                        when Principal.AWS is_string {
-                            Principal.AWS != "*"
-                        }
-                        when Principal.AWS is_list {
-                            Principal.AWS[*] != "*"
-                        }
-                    }
-                }
-            }
-        }
+    %iam_roles.Properties.AssumeRolePolicyDocument.Statement[ Effect == "Allow" ] {
+        when Principal is_string { Principal != "*" }
+        when Principal.AWS is_string { Principal.AWS != "*" }
+        when Principal.AWS is_list { Principal.AWS[*][ this is_string ] != "*" }
     }
 }

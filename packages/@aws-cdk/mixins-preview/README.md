@@ -54,7 +54,7 @@ For convenience, you can use the `.with()` method for a more fluent syntax:
 import '@aws-cdk/mixins-preview/with';
 
 const bucket = new s3.CfnBucket(scope, "MyBucket")
-  .with(new EnableVersioning())
+  .with(new BucketVersioning())
   .with(new AutoDeleteObjects());
 ```
 
@@ -127,11 +127,29 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new AutoDeleteObjects());
 ```
 
-**EnableVersioning**: Enables versioning on S3 buckets
+**BucketVersioning**: Enables versioning on S3 buckets
 
 ```typescript
 const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new EnableVersioning());
+Mixins.of(bucket).apply(new BucketVersioning());
+```
+
+**BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
+
+```typescript
+declare const bucket: s3.IBucketRef;
+
+const bucketPolicy = new s3.CfnBucketPolicy(scope, "BucketPolicy", {
+  bucket: bucket,
+  policyDocument: new iam.PolicyDocument(),
+});
+Mixins.of(bucketPolicy).apply(new BucketPolicyStatementsMixin([
+  new iam.PolicyStatement({
+    actions: ["s3:GetObject"],
+    resources: ["*"],
+    principals: [new iam.AnyPrincipal()],
+  }),
+]));
 ```
 
 ### Logs Delivery
@@ -213,7 +231,8 @@ Mixins.of(scope)
 
 // Strict application that requires all constructs to match
 Mixins.of(scope)
-  .mustApply(new EncryptionAtRest()); // Throws if no constructs support the mixin
+  .requireAll() // Throws if no constructs support the mixin
+  .apply(new EncryptionAtRest());
 ```
 
 ---
@@ -236,7 +255,7 @@ declare const fn: lambda.Function;
 
 new events.Rule(scope, 'Rule', {
   eventPattern: bucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [new targets.LambdaFunction(fn)]
 });
@@ -248,7 +267,7 @@ const cfnBucketEvents = BucketEvents.fromBucket(cfnBucket);
 new events.CfnRule(scope, 'CfnRule', {
   state: 'ENABLED',
   eventPattern: cfnBucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [{ arn: fn.functionArn, id: 'L1' }]
 });
@@ -273,13 +292,14 @@ const pattern = bucketEvents.objectCreatedPattern();
 
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
 
 declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 const pattern = bucketEvents.objectCreatedPattern({
   eventMetadata: {
-    region: ['us-east-1', 'us-west-2'],
+    region: events.Match.prefix('us-'),
     version: ['0']
   }
 });

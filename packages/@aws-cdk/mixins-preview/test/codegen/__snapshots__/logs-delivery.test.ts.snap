@@ -5,7 +5,6 @@ exports[`Logs Delivery Mixin for a resource 1`] = `
 import * as cdk from "aws-cdk-lib/core";
 import * as interfaces from "aws-cdk-lib/interfaces";
 import * as constructs from "constructs";
-import * as logs from "aws-cdk-lib/aws-logs";
 import * as core from "../../core";
 import * as logsDelivery from "../aws-logs/logs-delivery";
 import * as service from "aws-cdk-lib/aws-some";
@@ -18,6 +17,18 @@ import * as service from "aws-cdk-lib/aws-some";
  * @stability external
  */
 export class CfnThingApplicationLogs {
+  /**
+   * Send logs to an S3 Bucket
+   */
+  public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: logsDelivery.IS3LogsDestinationProps): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
+        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
+        kmsKey: (props && props.encryptionKey) ? props.encryptionKey : undefined
+      }));
+    }
+  }
+
   /**
    * Send logs to a CloudWatch Log Group
    */
@@ -35,17 +46,6 @@ export class CfnThingApplicationLogs {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
     }
   }
-
-  /**
-   * Send logs to an S3 Bucket
-   */
-  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
-    {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
-        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
-      }));
-    }
-  }
 }
 
 /**
@@ -56,6 +56,18 @@ export class CfnThingApplicationLogs {
  * @stability external
  */
 export class CfnThingAccessLogs {
+  /**
+   * Send logs to an S3 Bucket
+   */
+  public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: logsDelivery.IS3LogsDestinationProps): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
+        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
+        kmsKey: (props && props.encryptionKey) ? props.encryptionKey : undefined
+      }));
+    }
+  }
+
   /**
    * Send logs to a CloudWatch Log Group
    */
@@ -71,17 +83,6 @@ export class CfnThingAccessLogs {
   public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
-    }
-  }
-
-  /**
-   * Send logs to an S3 Bucket
-   */
-  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
-    {
-      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
-        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
-      }));
     }
   }
 }
@@ -105,7 +106,7 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
    * Create a mixin to enable vended logs for \`AWS::Some::Resource\`.
    *
    * @param logType Type of logs that are getting vended
-   * @param logDelivery Object in charge of setting up the delivery destination and delivery connection
+   * @param logDelivery Object in charge of setting up the delivery source, delivery destination, and delivery connection
    */
   public constructor(logType: string, logDelivery: logsDelivery.ILogsDelivery) {
     super();
@@ -117,26 +118,18 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
    * Check if this mixin supports the given construct (has vendedLogs property)
    */
   public supports(construct: constructs.IConstruct): construct is service.CfnThing {
-    return (cdk.CfnResource.isCfnResource(construct) && (construct.cfnResourceType === "AWS::Some::Resource"));
+    return (cdk.CfnResource.isCfnResource(construct) && service.CfnThing.isCfnThing(construct));
   }
 
   /**
    * Apply vended logs configuration to the construct
    */
-  public applyTo(resource: constructs.IConstruct): constructs.IConstruct {
+  public applyTo(resource: constructs.IConstruct): void {
     if (!this.supports(resource)) {
-      return resource;
+      return;
     }
     const sourceArn = service.CfnThing.arnForThing(resource);
-    const deliverySource = new logs.CfnDeliverySource(resource, "CdkSource" + cdk.Names.uniqueId(resource), {
-      name: "ThingSource-" + cdk.Names.uniqueResourceName(resource, {
-        maxLength: (47 - this.logType.length)
-      }) + "-" + this.logType,
-      resourceArn: sourceArn,
-      logType: this.logType
-    });
-    this.logDelivery.bind(resource, deliverySource, sourceArn);
-    return resource;
+    this.logDelivery.bind(resource, this.logType, sourceArn);
   }
 }"
 `;
