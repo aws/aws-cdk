@@ -369,6 +369,64 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
+### Event Capture
+
+Amazon ECS event capture stores ECS-generated events (such as cluster state changes, service actions, and task lifecycle events) to Amazon CloudWatch Logs through EventBridge. The `onEvent` method creates an EventBridge rule that captures cluster events and routes them to a specified target.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const logGroup: logs.LogGroup;
+
+// Enable event capture for all ECS events
+cluster.onEvent('EventCapture', {
+  target: new targets.CloudWatchLogGroup(logGroup)
+});
+```
+
+Important:
+- Both the log group name and the EventBridge rule name must follow the naming formats outlined below
+
+Log Group Name:
+- Use this log group naming format: `/aws/events/ecs/containerinsights/${clusterName}/performance`
+- Replace `${clusterName}` with the name of the cluster on which you would like to have Event Capture enabled
+
+EventBridge Rule Name:
+- The `onEvent` method automatically generates a properly formatted rule name following the pattern: `EventsToLogs-{clusterPrefix}-{hash}`
+- The `id` parameter you provide is used as a logical identifier for the CDK construct, not the actual EventBridge rule name
+
+Here's a complete deployment example:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'demoClusterStack', {
+  env: { region: 'YOUR_REGION', account: 'YOUR_ACCOUNT_ID' }
+});
+
+// Create cluster
+const cluster = new ecs.Cluster(stack, 'demoCluster', {
+  clusterName: 'demo'
+});
+
+// Create log group
+const logGroup = new logs.LogGroup(stack, 'EcsEventCaptureLogGroup', {
+  logGroupName: '/aws/events/ecs/containerinsights/demo/performance',
+  retention: logs.RetentionDays.ONE_WEEK
+});
+
+// Use onEvent function to create EventBridge rule targeting the log group
+cluster.onEvent('exampleRuleId', {
+  target: new targets.CloudWatchLogGroup(logGroup)
+});
+
+app.synth();
+```
+
+Note: Replace `YOUR_REGION` and `YOUR_ACCOUNT_ID` with your actual AWS account details.
+
+For more information about ECS event capture, see the [Amazon ECS documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-lifecycle-events.html).
+
 ## Task definitions
 
 A task definition describes what a single copy of a **task** should look like.

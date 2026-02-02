@@ -14,10 +14,12 @@ import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { InstanceRequirementsConfig } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
+import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IKey, IKeyRef } from '../../aws-kms';
+import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
@@ -36,11 +38,13 @@ import {
   ValidationError,
   Size,
   Lazy,
+  CustomResource,
 } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cr from '../../custom-resources';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -783,6 +787,131 @@ export class Cluster extends Resource implements ICluster {
   @MethodMetadata()
   public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
     return this.grants.taskProtection(grantee);
+  }
+
+  /**
+   * Defines an EventBridge rule that enables ECS EventCapture for this cluster
+   *
+   * @param id The construct id of the rule (must be unique within the construct scope)
+   * @param options Options for adding the rule
+   */
+  @MethodMetadata()
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    // Validate required id parameter
+    if (!id || id.trim() === '') {
+      throw new ValidationError('Rule ID cannot be empty', this);
+    }
+    if (!/^[a-zA-Z][a-zA-Z0-9._-]*$/.test(id)) {
+      throw new ValidationError('Rule ID must start with a letter and contain only alphanumeric characters, periods, hyphens, and underscores', this);
+    }
+    if (id.length > 255) {
+      throw new ValidationError('Rule ID cannot exceed 255 characters', this);
+    }
+
+    // Validate optional ruleName parameter
+    if (options.ruleName !== undefined) {
+      if (options.ruleName.trim() === '') {
+        throw new ValidationError('Rule name cannot be empty', this);
+      }
+      if (options.ruleName.length > 64) {
+        throw new ValidationError('Rule name cannot exceed 64 characters', this);
+      }
+      if (!/^[a-zA-Z0-9._-]+$/.test(options.ruleName)) {
+        throw new ValidationError('Rule name can only contain letters, numbers, periods, hyphens, and underscores', this);
+      }
+      if (options.ruleName.startsWith('aws-')) {
+        throw new ValidationError('Rule name cannot start with "aws-" (reserved prefix)', this);
+      }
+    }
+
+    // Validate other onEvent options
+    if (options.description && options.description.length > 512) {
+      throw new ValidationError('Rule description cannot exceed 512 characters', this);
+    }
+
+    // Generate rule name if not provided
+    const ruleOptions = { ...options };
+    if (!ruleOptions.ruleName) {
+      // Create Custom Resource to generate rule name at deployment time with actual values
+      const ruleNameGenerator = new lambda.Function(this, `${id}RuleNameGenerator`, {
+        runtime: lambda.Runtime.NODEJS_18_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline(`
+          const crypto = require('crypto');
+          
+          exports.handler = async (event) => {
+            console.log('Event:', JSON.stringify(event, null, 2));
+            
+            if (event.RequestType === 'Delete') {
+              return { PhysicalResourceId: event.PhysicalResourceId };
+            }
+            
+            const clusterArn = event.ResourceProperties.ClusterArn;
+            const clusterName = event.ResourceProperties.ClusterName;
+            
+            // Calculate hash from actual resolved ARN
+            const quotedArn = '"' + clusterArn + '"';
+            const hash = crypto.createHash('sha256').update(quotedArn, 'utf8').digest();
+            const base58Hash = base58Encode(hash);
+            
+            const clusterPrefix = clusterName.substring(0, 6);
+            const ruleName = 'EventsToLogs-' + clusterPrefix + '-' + base58Hash;
+            
+            console.log('Generated rule name:', ruleName);
+            
+            return {
+              PhysicalResourceId: ruleName,
+              Data: { RuleName: ruleName }
+            };
+          };
+          
+          // Converts a buffer to Base58 encoding using Bitcoin's alphabet (excludes confusing characters: 0, O, I, l)
+          function base58Encode(buffer) {
+            const alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+            let num = BigInt('0x' + buffer.toString('hex'));
+            let encoded = '';
+            while (num > BigInt(0)) {
+              encoded = alphabet[Number(num % BigInt(58))] + encoded;
+              num = num / BigInt(58);
+            }
+            for (let i = 0; i < buffer.length && buffer[i] === 0; i++) {
+              encoded = '1' + encoded;
+            }
+            return encoded || '1';
+          }
+        `),
+      });
+
+      // Creates a Custom Resource Provider that will execute the ruleNameGenerator function when CloudFormation lifecycle events occur (CREATE, UPDATE, DELETE)
+      const ruleNameProvider = new cr.Provider(this, `${id}RuleNameProvider`, {
+        onEventHandler: ruleNameGenerator,
+      });
+
+      // Creates the actual Custom Resource instance, linking it to the provider above. It passes the cluster ARN and name as properties that the ruleNameGenerator function can access.
+      const ruleNameResource = new CustomResource(this, `${id}RuleNameResource`, {
+        serviceToken: ruleNameProvider.serviceToken,
+        properties: {
+          ClusterArn: this.clusterArn,
+          ClusterName: this.clusterName,
+        },
+      });
+
+      // Sets the rule name by retrieving the 'RuleName' attribute returned by the custom resource (generated by the ruleNameGenerator function)
+      ruleOptions.ruleName = ruleNameResource.getAttString('RuleName');
+    }
+
+    // Creates an EventBridge rule using the options (including the dynamically generated rule name)
+    const rule = new events.Rule(this, id, ruleOptions);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detail: {
+        clusterArn: [this.clusterArn],
+      },
+    });
+    if (options.target) {
+      rule.addTarget(options.target);
+    }
+    return rule;
   }
 
   private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
