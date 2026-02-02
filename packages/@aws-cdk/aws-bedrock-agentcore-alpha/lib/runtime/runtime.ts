@@ -5,8 +5,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { RuntimeAuthorizerConfiguration } from './inbound-auth/runtime-authorizer-configuration';
+import type { Construct } from 'constructs';
+import type { RuntimeAuthorizerConfiguration } from './inbound-auth/runtime-authorizer-configuration';
 import {
   RUNTIME_LOGS_GROUP_ACTIONS,
   RUNTIME_LOGS_DESCRIBE_ACTIONS,
@@ -16,11 +16,13 @@ import {
   RUNTIME_CLOUDWATCH_NAMESPACE,
   RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
 } from './perms';
-import { AgentRuntimeArtifact } from './runtime-artifact';
+import type { AgentRuntimeArtifact } from './runtime-artifact';
 
-import { RuntimeBase, IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
+import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
+import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import { LifecycleConfiguration, ProtocolType, RequestHeaderConfiguration } from './types';
+import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
+import { ProtocolType } from './types';
 import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
 import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 

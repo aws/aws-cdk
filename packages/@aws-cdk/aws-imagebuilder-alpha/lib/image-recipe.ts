@@ -1,14 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImageRecipe } from 'aws-cdk-lib/aws-imagebuilder';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { BaseImage } from './base-image';
-import { IContainerRecipe } from './container-recipe';
-import { ComponentConfiguration, IRecipeBase } from './recipe-base';
+import type { Construct } from 'constructs';
+import type { BaseImage } from './base-image';
+import type { IContainerRecipe } from './container-recipe';
+import type { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
 const IMAGE_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ImageRecipe');
 

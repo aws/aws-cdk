@@ -1,6 +1,7 @@
-import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
-import * as ec2 from '../../../aws-ec2';
-import * as ecs from '../../../aws-ecs';
+import type { CommonEcsRunTaskProps } from './run-ecs-task-base';
+import { EcsRunTaskBase } from './run-ecs-task-base';
+import type * as ec2 from '../../../aws-ec2';
+import type * as ecs from '../../../aws-ecs';
 import { UnscopedValidationError } from '../../../core';
 
 /**
