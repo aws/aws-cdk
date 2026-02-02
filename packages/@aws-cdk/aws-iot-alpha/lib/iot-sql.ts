@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * The type returned from the `bind()` method in `IotSql`.

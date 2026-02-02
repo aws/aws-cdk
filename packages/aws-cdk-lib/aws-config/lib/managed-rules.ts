@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
+import type { Construct } from 'constructs';
+import type { RuleProps } from './rule';
+import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleScope } from './rule';
 import * as iam from '../../aws-iam';
-import * as sns from '../../aws-sns';
-import { Duration, Lazy, Stack, ValidationError } from '../../core';
+import type * as sns from '../../aws-sns';
+import type { Duration } from '../../core';
+import { Lazy, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

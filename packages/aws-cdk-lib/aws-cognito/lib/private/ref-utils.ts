@@ -1,7 +1,7 @@
 import { UnscopedValidationError } from '../../../core';
-import { IUserPoolIdentityProviderRef, IUserPoolRef } from '../cognito.generated';
-import { IUserPool } from '../user-pool';
-import { IUserPoolIdentityProvider } from '../user-pool-idp';
+import type { IUserPoolIdentityProviderRef, IUserPoolRef } from '../cognito.generated';
+import type { IUserPool } from '../user-pool';
+import type { IUserPoolIdentityProvider } from '../user-pool-idp';
 
 /**
  * Converts an IUserPoolRef to IUserPool, validating that it implements the full interface

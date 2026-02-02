@@ -1,13 +1,18 @@
-import { Connections, IConnectable } from './connections';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
 import { Instance } from './instance';
-import { InstanceArchitecture, InstanceType } from './instance-types';
-import { IKeyPair } from './key-pair';
-import { CpuCredits } from './launch-template';
-import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, IMachineImage, LookupMachineImage } from './machine-image';
+import type { InstanceType } from './instance-types';
+import { InstanceArchitecture } from './instance-types';
+import type { IKeyPair } from './key-pair';
+import type { CpuCredits } from './launch-template';
+import type { IMachineImage } from './machine-image';
+import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
-import { ISecurityGroup, SecurityGroup } from './security-group';
+import type { ISecurityGroup } from './security-group';
+import { SecurityGroup } from './security-group';
 import { UserData } from './user-data';
-import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
+import type { PrivateSubnet, PublicSubnet, Vpc } from './vpc';
+import { RouterType } from './vpc';
 import * as iam from '../../aws-iam';
 import { Fn, Token, UnscopedValidationError } from '../../core';
 

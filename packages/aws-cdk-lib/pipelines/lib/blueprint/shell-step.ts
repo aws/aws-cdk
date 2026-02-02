@@ -1,7 +1,9 @@
-import { FileSet, IFileSetProducer } from './file-set';
-import { StackDeployment } from './stack-deployment';
+import type { IFileSetProducer } from './file-set';
+import { FileSet } from './file-set';
+import type { StackDeployment } from './stack-deployment';
 import { Step } from './step';
-import { CfnOutput, Stack, UnscopedValidationError } from '../../../core';
+import type { CfnOutput } from '../../../core';
+import { Stack, UnscopedValidationError } from '../../../core';
 import { mapValues } from '../private/javascript';
 
 /**

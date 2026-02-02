@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { BaseInstanceProps, InstanceBase } from './instance';
+import type { Construct } from 'constructs';
+import type { BaseInstanceProps } from './instance';
+import { InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
-import { DnsRecordType, IService, RoutingPolicy } from './service';
+import type { IService } from './service';
+import { DnsRecordType, RoutingPolicy } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { Names, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

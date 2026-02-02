@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
 
-import { CfnResource } from '../../core';
+import type { CfnResource } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
-import { EndpointGroup } from '../lib';
+import type { EndpointGroup } from '../lib';
 
 /**
  * The security group used by a Global Accelerator to send traffic to resources in a VPC.

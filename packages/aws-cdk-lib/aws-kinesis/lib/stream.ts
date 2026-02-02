@@ -1,15 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token, ValidationError } from '../../core';
+import type { Duration, IResolvable, IResource, RemovalPolicy, ResourceProps } from '../../core';
+import { ArnFormat, Aws, CfnCondition, Fn, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IStreamRef, StreamReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
+import type { IStreamRef, StreamReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',

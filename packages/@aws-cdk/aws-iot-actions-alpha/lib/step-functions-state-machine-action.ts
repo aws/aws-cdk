@@ -1,8 +1,8 @@
-import * as iot from '@aws-cdk/aws-iot-alpha';
+import type * as iot from '@aws-cdk/aws-iot-alpha';
 import { ArnFormat, Stack, ValidationError } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as stepfunctions from 'aws-cdk-lib/aws-stepfunctions';
-import { CommonActionProps } from './common-action-props';
+import type * as stepfunctions from 'aws-cdk-lib/aws-stepfunctions';
+import type { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**

@@ -1,4 +1,4 @@
-import { IUserPool } from '../user-pool';
+import type { IUserPool } from '../user-pool';
 
 /**
  * An attribute available from a third party identity provider.

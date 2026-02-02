@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
-import * as dynamodb from '../../aws-dynamodb';
-import * as ec2 from '../../aws-ec2';
+import type { Construct } from 'constructs';
+import type * as dynamodb from '../../aws-dynamodb';
+import type * as ec2 from '../../aws-ec2';
 import { Stack } from '../../core';
-import { aws_rds } from '../../interfaces';
-import { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
+import type { aws_rds } from '../../interfaces';
+import type { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * An operation that is applied to a key-value pair

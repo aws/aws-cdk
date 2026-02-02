@@ -1,9 +1,9 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { UnscopedValidationError } from './errors';
 import { TokenString } from './private/encoding';
 import { TokenMap } from './private/token-map';
-import { TokenizedStringFragments } from './string-fragments';
-import { ResolutionTypeHint } from './type-hints';
+import type { TokenizedStringFragments } from './string-fragments';
+import type { ResolutionTypeHint } from './type-hints';
 
 /**
  * Current resolution context for tokens

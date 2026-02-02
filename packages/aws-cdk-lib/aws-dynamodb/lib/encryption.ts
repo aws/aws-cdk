@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { CfnGlobalTable } from './dynamodb.generated';
+import type { Construct } from 'constructs';
+import type { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryption } from './shared';
-import { IKey } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
 import { Stack, Token, ValidationError } from '../../core';
 
 /**

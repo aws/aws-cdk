@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs';
-import { IMixin } from '../mixins';
+import type { IMixin } from '../mixins';
 
 const MIXIN_METADATA_KEY = 'aws:cdk:analytics:mixin';
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');

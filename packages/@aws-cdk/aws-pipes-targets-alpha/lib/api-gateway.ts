@@ -1,6 +1,7 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
-import { IRestApi } from 'aws-cdk-lib/aws-apigateway';
-import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IRestApi } from 'aws-cdk-lib/aws-apigateway';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 /**
  * API Gateway REST API target properties.

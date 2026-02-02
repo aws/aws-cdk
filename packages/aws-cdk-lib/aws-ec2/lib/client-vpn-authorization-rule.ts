@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnClientVpnAuthorizationRule, IClientVpnEndpointRef } from './ec2.generated';
+import type { Construct } from 'constructs';
+import type { IClientVpnEndpointRef } from './ec2.generated';
+import { CfnClientVpnAuthorizationRule } from './ec2.generated';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

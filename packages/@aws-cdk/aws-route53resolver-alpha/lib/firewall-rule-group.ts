@@ -1,10 +1,12 @@
 import { CfnFirewallRuleGroup } from 'aws-cdk-lib/aws-route53resolver';
-import { Duration, IResource, Lazy, Resource } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Duration, Lazy, Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IFirewallDomainList } from './firewall-domain-list';
-import { FirewallRuleGroupAssociation, FirewallRuleGroupAssociationOptions } from './firewall-rule-group-association';
+import type { Construct } from 'constructs';
+import type { IFirewallDomainList } from './firewall-domain-list';
+import type { FirewallRuleGroupAssociationOptions } from './firewall-rule-group-association';
+import { FirewallRuleGroupAssociation } from './firewall-rule-group-association';
 
 /**
  * A Firewall Rule Group

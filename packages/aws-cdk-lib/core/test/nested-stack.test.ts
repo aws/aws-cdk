@@ -1,10 +1,11 @@
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { readFileSync } from 'fs-extra';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
+import type { CfnStack } from '../lib';
 import {
-  Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
+  Stack, NestedStack, Resource, CfnResource, App, CfnOutput,
 } from '../lib';
 import { memoizedGetter } from '../lib/helpers-internal/memoize';
 

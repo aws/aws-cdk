@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
+import type { IResource } from '../../lib';
 import * as core from '../../lib';
-import { Resource, IResource } from '../../lib';
+import { Resource } from '../../lib';
 import { ConstructTree } from '../../lib/validation/private/construct-tree';
 import { ReportTrace } from '../../lib/validation/private/trace';
 

@@ -1,20 +1,20 @@
 import { hashValues } from './util';
 import { InputValidator } from './validation';
-import * as iam from '../../../aws-iam';
-import * as sns from '../../../aws-sns';
-import * as cdk from '../../../core';
+import type * as iam from '../../../aws-iam';
+import type * as sns from '../../../aws-sns';
+import type * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
-import {
+import type {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions, StackSetsConstraintOptions,
   TagUpdateConstraintOptions, TemplateRule, TemplateRuleAssertion,
 } from '../constraints';
-import { IPortfolio } from '../portfolio';
-import { IProduct } from '../product';
+import type { IPortfolio } from '../portfolio';
+import type { IProduct } from '../product';
 import {
   CfnLaunchNotificationConstraint, CfnLaunchRoleConstraint, CfnLaunchTemplateConstraint, CfnPortfolioProductAssociation,
   CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOptionAssociation,
 } from '../servicecatalog.generated';
-import { TagOptions } from '../tag-options';
+import type { TagOptions } from '../tag-options';
 
 export class AssociationManager {
   public static associateProductWithPortfolio(

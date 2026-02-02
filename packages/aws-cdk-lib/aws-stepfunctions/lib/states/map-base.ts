@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
+import type { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, StateBaseProps } from './state';
+import { renderJsonPath, State } from './state';
 import { Token } from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { isValidJsonataExpression } from '../private/jsonata';
-import { IChainable, INextable, ProcessorMode, QueryLanguage } from '../types';
+import type { IChainable, INextable, QueryLanguage } from '../types';
+import { ProcessorMode } from '../types';
 
 /**
  * Base properties for defining a Map state that using JSONPath

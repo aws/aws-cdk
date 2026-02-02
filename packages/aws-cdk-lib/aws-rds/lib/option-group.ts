@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { IInstanceEngine } from './instance-engine';
-import { CfnOptionGroup, IOptionGroupRef, OptionGroupReference } from './rds.generated';
+import type { Construct } from 'constructs';
+import type { IInstanceEngine } from './instance-engine';
+import type { IOptionGroupRef, OptionGroupReference } from './rds.generated';
+import { CfnOptionGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
-import { IResource, Lazy, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

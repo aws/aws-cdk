@@ -1,9 +1,10 @@
-import { Construct, Node } from 'constructs';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import { Annotations } from './annotations';
 import { ValidationError } from './errors';
 import { Stack } from './stack';
 import { Token } from './token';
-import * as cxschema from '../../cloud-assembly-schema';
+import type * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 
 /**

@@ -1,10 +1,12 @@
 import { mergeBuildSpecs } from './private/buildspecs';
 import { makeCodePipelineOutput } from './private/outputs';
 import * as codebuild from '../../../aws-codebuild';
-import * as ec2 from '../../../aws-ec2';
-import * as iam from '../../../aws-iam';
-import { Duration, UnscopedValidationError } from '../../../core';
-import { ShellStep, ShellStepProps } from '../blueprint';
+import type * as ec2 from '../../../aws-ec2';
+import type * as iam from '../../../aws-iam';
+import type { Duration } from '../../../core';
+import { UnscopedValidationError } from '../../../core';
+import type { ShellStepProps } from '../blueprint';
+import { ShellStep } from '../blueprint';
 
 /**
  * Construction props for a CodeBuildStep

@@ -1,7 +1,7 @@
 import { UnscopedValidationError } from '../../../core';
-import { IDeploymentStrategyRef, IEnvironmentRef } from '../../../interfaces/generated/aws-appconfig-interfaces.generated';
-import { IDeploymentStrategy } from '../deployment-strategy';
-import { IEnvironment } from '../environment';
+import type { IDeploymentStrategyRef, IEnvironmentRef } from '../../../interfaces/generated/aws-appconfig-interfaces.generated';
+import type { IDeploymentStrategy } from '../deployment-strategy';
+import type { IEnvironment } from '../environment';
 
 /**
  * Converts an IEnvironmentRef to IEnvironment, with runtime type checking

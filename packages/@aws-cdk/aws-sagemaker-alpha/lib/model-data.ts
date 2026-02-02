@@ -1,7 +1,7 @@
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as assets from 'aws-cdk-lib/aws-s3-assets';
-import { Construct } from 'constructs';
-import { IModel } from './model';
+import type { Construct } from 'constructs';
+import type { IModel } from './model';
 import { hashcode } from './private/util';
 
 // The only supported extension for local asset model data

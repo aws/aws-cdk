@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
-import { CfnVirtualService, IVirtualServiceRef, VirtualServiceReference } from './appmesh.generated';
-import { IMesh, Mesh } from './mesh';
+import type { Construct } from 'constructs';
+import type { IVirtualServiceRef, VirtualServiceReference } from './appmesh.generated';
+import { CfnVirtualService } from './appmesh.generated';
+import type { IMesh } from './mesh';
+import { Mesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
-import { IVirtualNode } from './virtual-node';
-import { IVirtualRouter } from './virtual-router';
+import type { IVirtualNode } from './virtual-node';
+import type { IVirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

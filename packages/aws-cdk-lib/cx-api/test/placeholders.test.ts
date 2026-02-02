@@ -1,4 +1,5 @@
-import { EnvironmentPlaceholders, EnvironmentPlaceholderValues, IEnvironmentPlaceholderProvider } from '../lib';
+import type { EnvironmentPlaceholderValues, IEnvironmentPlaceholderProvider } from '../lib';
+import { EnvironmentPlaceholders } from '../lib';
 
 test('complex placeholder substitution', async () => {
   const replacer: IEnvironmentPlaceholderProvider = {

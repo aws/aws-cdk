@@ -1,4 +1,5 @@
-import { captureStackTrace, IResolvable, IResolveContext, Token, UnscopedValidationError } from '../../core';
+import type { IResolvable, IResolveContext } from '../../core';
+import { captureStackTrace, Token, UnscopedValidationError } from '../../core';
 
 type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
 

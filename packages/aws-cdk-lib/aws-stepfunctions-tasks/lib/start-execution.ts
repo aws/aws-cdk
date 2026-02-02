@@ -2,7 +2,7 @@ import { getResourceArn } from './resource-arn-suffix';
 import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
 import { ArnFormat, Stack, ValidationError } from '../../core';
-import { IStateMachineRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
+import type { IStateMachineRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 
 /**
  * Properties for StartExecution

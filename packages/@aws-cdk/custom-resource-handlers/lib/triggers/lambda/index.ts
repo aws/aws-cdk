@@ -1,5 +1,6 @@
 
-import { Lambda, InvocationResponse, InvocationType } from '@aws-sdk/client-lambda';
+import type { InvocationResponse, InvocationType } from '@aws-sdk/client-lambda';
+import { Lambda } from '@aws-sdk/client-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 

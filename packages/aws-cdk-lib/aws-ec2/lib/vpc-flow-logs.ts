@@ -1,14 +1,15 @@
-import { Construct } from 'constructs';
-import { CfnFlowLog, FlowLogReference, IFlowLogRef, ISubnetRef } from './ec2.generated';
-import { IVpc } from './vpc';
+import type { Construct } from 'constructs';
+import type { FlowLogReference, IFlowLogRef, ISubnetRef } from './ec2.generated';
+import { CfnFlowLog } from './ec2.generated';
+import type { IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
+import type { IResource } from '../../core';
 import {
   CfnResource,
   FeatureFlags,
-  IResource,
   PhysicalName,
   RemovalPolicy,
   Resource,

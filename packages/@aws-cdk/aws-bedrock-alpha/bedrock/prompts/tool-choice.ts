@@ -1,4 +1,4 @@
-import { CfnPrompt } from 'aws-cdk-lib/aws-bedrock';
+import type { CfnPrompt } from 'aws-cdk-lib/aws-bedrock';
 
 /**
  * Configuration for tools available to the model.

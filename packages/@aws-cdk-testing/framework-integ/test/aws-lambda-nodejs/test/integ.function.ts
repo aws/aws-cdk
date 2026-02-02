@@ -2,8 +2,9 @@ import * as os from 'os';
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
-import { Aws, App, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { Aws, App, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 

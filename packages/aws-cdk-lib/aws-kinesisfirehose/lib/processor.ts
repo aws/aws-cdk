@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
-import * as iam from '../../aws-iam';
-import { Duration, Size } from '../../core';
+import type { Construct } from 'constructs';
+import type { CfnDeliveryStream } from './kinesisfirehose.generated';
+import type * as iam from '../../aws-iam';
+import type { Duration, Size } from '../../core';
 
 /**
  * Configure the LambdaFunctionProcessor.

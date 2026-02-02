@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
+import type { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
+import type * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
 import { Names, ValidationError } from '../../core';
 import { regionFromArn } from './private/util';

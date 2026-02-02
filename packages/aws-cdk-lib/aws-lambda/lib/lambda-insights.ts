@@ -1,6 +1,6 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { Architecture } from './architecture';
-import { IFunction } from './function-base';
+import type { IFunction } from './function-base';
 import { Lazy, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { FactName, RegionInfo } from '../../region-info';

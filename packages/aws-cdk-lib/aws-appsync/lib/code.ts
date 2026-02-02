@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 

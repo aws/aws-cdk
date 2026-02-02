@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as appreg from '../lib';
 
 describe('Application', () => {

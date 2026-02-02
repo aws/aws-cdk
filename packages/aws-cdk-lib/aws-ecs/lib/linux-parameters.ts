@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnTaskDefinition } from './ecs.generated';
+import type { CfnTaskDefinition } from './ecs.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 

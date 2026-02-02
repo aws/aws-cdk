@@ -1,12 +1,12 @@
-import { Construct } from 'constructs';
-import { SubscriptionFilterOptions } from './log-group';
+import type { Construct } from 'constructs';
+import type { SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
-import * as iam from '../../aws-iam';
+import type * as iam from '../../aws-iam';
 import { KinesisDestination } from '../../aws-logs-destinations';
 import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Interface for classes that can be the destination of a log Subscription

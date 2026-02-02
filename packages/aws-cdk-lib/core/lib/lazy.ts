@@ -1,5 +1,5 @@
 import { CDK_DEBUG, debugModeEnabled } from './debug';
-import { IResolvable, IResolveContext } from './resolvable';
+import type { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 

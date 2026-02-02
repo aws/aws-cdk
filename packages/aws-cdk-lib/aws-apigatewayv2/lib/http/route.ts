@@ -1,14 +1,16 @@
 import { Construct } from 'constructs';
-import { IHttpApi, IHttpApiRef, toIHttpApi } from './api';
-import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
-import { HttpRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteProps, RouteReference } from '.././index';
+import type { IHttpApi, IHttpApiRef } from './api';
+import { toIHttpApi } from './api';
+import type { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
+import type { HttpRouteIntegration } from './integration';
+import type { CfnRouteProps, RouteReference } from '.././index';
+import { CfnRoute } from '.././index';
 import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IRoute } from '../common';
+import type { IRoute } from '../common';
 
 /**
  * Represents a Route for an HTTP API.

@@ -1,7 +1,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { GeofenceCollection } from '../lib';
 import { PositionFiltering, Tracker } from '../lib/tracker';
 

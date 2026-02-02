@@ -1,7 +1,8 @@
 import * as path from 'path';
-import { App, CustomResource, CustomResourceProvider, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CustomResource, CustomResourceProvider, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME } from '../../config';

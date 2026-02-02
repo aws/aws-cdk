@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { ContainerOverride } from '..';
+import type { Construct } from 'constructs';
+import type { ContainerOverride } from '..';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';

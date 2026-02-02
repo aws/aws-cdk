@@ -1,6 +1,7 @@
-import { IPeer, Peer } from './peer';
-import { Port } from './port';
-import { ISecurityGroup } from './security-group';
+import type { IPeer } from './peer';
+import { Peer } from './peer';
+import type { Port } from './port';
+import type { ISecurityGroup } from './security-group';
 import { UnscopedValidationError } from '../../core';
 
 /**

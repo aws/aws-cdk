@@ -3,10 +3,11 @@
 // See docs/policy-merging.als for a formal model of the logic
 // implemented here.
 
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { partitionPrincipals } from './comparable-principal';
-import { PolicyStatement, EstimateSizeOptions, deriveEstimateSizeOptions } from '../policy-statement';
-import { IPrincipal } from '../principals';
+import type { PolicyStatement, EstimateSizeOptions } from '../policy-statement';
+import { deriveEstimateSizeOptions } from '../policy-statement';
+import type { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
 
 /*

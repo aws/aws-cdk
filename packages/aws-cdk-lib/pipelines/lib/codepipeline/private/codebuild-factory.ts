@@ -1,22 +1,23 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct, IDependable, Node } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
+import { Node } from 'constructs';
 import { mergeBuildSpecs } from './buildspecs';
 import * as codebuild from '../../../../aws-codebuild';
-import * as codepipeline from '../../../../aws-codepipeline';
+import type * as codepipeline from '../../../../aws-codepipeline';
 import * as codepipeline_actions from '../../../../aws-codepipeline-actions';
 import * as ec2 from '../../../../aws-ec2';
 import * as iam from '../../../../aws-iam';
 import { Stack, Token, UnscopedValidationError } from '../../../../core';
-import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
+import type { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
 import { hash } from '../../private/identifiers';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../../private/javascript';
-import { ArtifactMap } from '../artifact-map';
-import { CodeBuildStep } from '../codebuild-step';
-import { CodeBuildOptions } from '../codepipeline';
-import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from '../codepipeline-action-factory';
+import type { ArtifactMap } from '../artifact-map';
+import type { CodeBuildStep } from '../codebuild-step';
+import type { CodeBuildOptions } from '../codepipeline';
+import type { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from '../codepipeline-action-factory';
 
 export interface CodeBuildFactoryProps {
   /**

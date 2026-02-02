@@ -1,10 +1,12 @@
 import { Construct } from 'constructs';
-import { Cluster, AuthenticationMode } from './cluster';
+import type { Cluster } from './cluster';
+import { AuthenticationMode } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType, ValidationError } from '../../core';
+import type { ITaggable } from '../../core';
+import { Annotations, CustomResource, Lazy, TagManager, TagType, ValidationError } from '../../core';
 
 /**
  * Options for defining EKS Fargate Profiles.

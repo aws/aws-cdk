@@ -1,13 +1,14 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
-import { BackupResource, TagOperation } from './resource';
+import type { BackupResource } from './resource';
+import { TagOperation } from './resource';
 import * as iam from '../../aws-iam';
 import { Lazy, Resource, Aspects } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IBackupPlanRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
+import type { IBackupPlanRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * Options for a BackupSelection

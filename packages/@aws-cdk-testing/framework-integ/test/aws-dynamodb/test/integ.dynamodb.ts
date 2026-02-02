@@ -1,7 +1,8 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { App, RemovalPolicy, Stack, Tags } from 'aws-cdk-lib';
-import { Attribute, AttributeType, ProjectionType, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import type { Attribute } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, ProjectionType, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 
 // CDK parameters
 const STACK_NAME = 'aws-cdk-dynamodb';

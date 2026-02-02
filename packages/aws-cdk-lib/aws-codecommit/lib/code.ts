@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
-import { CfnRepository } from './codecommit.generated';
+import type { Construct } from 'constructs';
+import type { CfnRepository } from './codecommit.generated';
 import * as assets from '../../aws-s3-assets';
 import { UnscopedValidationError, ValidationError } from '../../core';
 

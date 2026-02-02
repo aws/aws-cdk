@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
-import { Node, IConstruct } from 'constructs';
-import { ISynthesisSession } from './types';
+import type { IConstruct } from 'constructs';
+import { Node } from 'constructs';
+import type { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { UnscopedValidationError } from '../errors';
 import { Stack } from '../stack';

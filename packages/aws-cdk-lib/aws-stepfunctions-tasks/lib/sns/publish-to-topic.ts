@@ -1,5 +1,5 @@
 import * as iam from '../../../aws-iam';
-import * as sns from '../../../aws-sns';
+import type * as sns from '../../../aws-sns';
 import * as sfn from '../../../aws-stepfunctions';
 import { ValidationError } from '../../../core';
 import { getResourceArn } from '../resource-arn-suffix';

@@ -1,4 +1,4 @@
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as lambda from '../../aws-lambda';
 
 export class TestFunction extends lambda.Function {

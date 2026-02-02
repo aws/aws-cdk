@@ -1,10 +1,12 @@
 import { createHash } from 'crypto';
-import { Construct } from 'constructs';
-import { CfnConfigRule, ConfigRuleReference, IConfigRuleRef } from './config.generated';
+import type { Construct } from 'constructs';
+import type { ConfigRuleReference, IConfigRuleRef } from './config.generated';
+import { CfnConfigRule } from './config.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import { ArnFormat, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import type * as lambda from '../../aws-lambda';
+import type { IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

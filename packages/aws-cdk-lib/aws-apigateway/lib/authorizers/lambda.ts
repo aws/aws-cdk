@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { IdentitySource } from './identity-source';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
@@ -7,9 +7,11 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
-import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
-import { Authorizer, IAuthorizer } from '../authorizer';
-import { IRestApi } from '../restapi';
+import type { CfnAuthorizerProps } from '../apigateway.generated';
+import { CfnAuthorizer } from '../apigateway.generated';
+import type { IAuthorizer } from '../authorizer';
+import { Authorizer } from '../authorizer';
+import type { IRestApi } from '../restapi';
 
 /**
  * Base properties for all lambda authorizers

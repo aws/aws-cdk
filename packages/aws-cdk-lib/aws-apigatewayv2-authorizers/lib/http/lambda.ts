@@ -1,14 +1,16 @@
-import {
-  HttpAuthorizer,
-  HttpAuthorizerType,
+import type {
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
-  AuthorizerPayloadVersion,
   IHttpApi,
 } from '../../../aws-apigatewayv2';
+import {
+  HttpAuthorizer,
+  HttpAuthorizerType,
+  AuthorizerPayloadVersion,
+} from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
-import { IFunction } from '../../../aws-lambda';
+import type { IFunction } from '../../../aws-lambda';
 import { Stack, Duration, Names } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 

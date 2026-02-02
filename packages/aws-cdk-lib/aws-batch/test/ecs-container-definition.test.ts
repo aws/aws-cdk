@@ -12,7 +12,8 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import { Size, Stack } from '../../core';
-import { CfnJobDefinitionProps, EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, Secret, UlimitName } from '../lib';
+import type { CfnJobDefinitionProps, EcsContainerDefinitionProps, IEcsEc2ContainerDefinition } from '../lib';
+import { EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, LinuxParameters, Secret, UlimitName } from '../lib';
 
 // GIVEN
 const defaultContainerProps: EcsContainerDefinitionProps = {

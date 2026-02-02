@@ -1,5 +1,6 @@
-import { App, CfnParameter, Duration, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnParameter, Duration, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 

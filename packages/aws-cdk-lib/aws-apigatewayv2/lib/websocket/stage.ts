@@ -1,13 +1,14 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
 import { AccessLogField, AccessLogFormat } from '../../../aws-apigateway';
-import { Grant, IGrantable } from '../../../aws-iam';
+import type { IGrantable } from '../../../aws-iam';
+import { Grant } from '../../../aws-iam';
 import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { StageOptions, IApi, IStage, StageAttributes } from '../common';
+import type { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
 /**

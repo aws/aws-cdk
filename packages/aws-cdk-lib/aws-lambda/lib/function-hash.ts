@@ -1,6 +1,7 @@
 import { Function as LambdaFunction } from './function';
-import { ILayerVersion } from './layers';
-import { CfnResource, FeatureFlags, Stack, Token } from '../../core';
+import type { ILayerVersion } from './layers';
+import type { CfnResource } from '../../core';
+import { FeatureFlags, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, LAMBDA_RECOGNIZE_VERSION_PROPS } from '../../cx-api';

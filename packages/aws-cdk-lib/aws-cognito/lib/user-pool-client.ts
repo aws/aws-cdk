@@ -1,17 +1,18 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
-import { ClientAttributes } from './user-pool-attr';
-import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
-import { IRoleRef } from '../../aws-iam';
-import { CfnApp } from '../../aws-pinpoint';
-import { IResource, Resource, Duration, Stack, SecretValue, Token, FeatureFlags } from '../../core';
+import type { ClientAttributes } from './user-pool-attr';
+import type { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
+import type { IRoleRef } from '../../aws-iam';
+import type { CfnApp } from '../../aws-pinpoint';
+import type { IResource } from '../../core';
+import { Resource, Duration, Stack, SecretValue, Token, FeatureFlags } from '../../core';
 import { toIUserPool } from './private/ref-utils';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId } from '../../custom-resources';
 import * as cxapi from '../../cx-api';
-import { IUserPoolClientRef, IUserPoolRef, UserPoolClientReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
+import type { IUserPoolClientRef, IUserPoolRef, UserPoolClientReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Types of authentication flow

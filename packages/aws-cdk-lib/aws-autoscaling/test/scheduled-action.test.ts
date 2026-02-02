@@ -1,5 +1,5 @@
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';

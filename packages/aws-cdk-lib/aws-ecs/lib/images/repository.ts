@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import * as secretsmanager from '../../../aws-secretsmanager';
+import type { Construct } from 'constructs';
+import type * as secretsmanager from '../../../aws-secretsmanager';
 import { Annotations, Token } from '../../../core';
-import { ContainerDefinition } from '../container-definition';
-import { ContainerImage, ContainerImageConfig } from '../container-image';
+import type { ContainerDefinition } from '../container-definition';
+import type { ContainerImageConfig } from '../container-image';
+import { ContainerImage } from '../container-image';
 
 /**
  * Regex pattern to check if it is an ECR image URL.

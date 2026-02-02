@@ -1,4 +1,4 @@
-import { PolicyValidationPluginReportBeta1 } from './report';
+import type { PolicyValidationPluginReportBeta1 } from './report';
 
 /**
  * Represents a validation plugin that will be executed during synthesis

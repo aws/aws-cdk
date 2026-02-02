@@ -1,9 +1,11 @@
-import { Construct, IConstruct, Node } from 'constructs';
+import type { IConstruct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as sqs from '../../aws-sqs';
-import { Annotations, Names, Token, TokenComparison, Duration, PhysicalName, ValidationError } from '../../core';
+import type * as lambda from '../../aws-lambda';
+import type * as sqs from '../../aws-sqs';
+import type { Duration } from '../../core';
+import { Annotations, Names, Token, TokenComparison, PhysicalName, ValidationError } from '../../core';
 
 /**
  * The generic properties for an RuleTarget

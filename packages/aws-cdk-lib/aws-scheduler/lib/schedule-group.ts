@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ScheduleGroupGrants } from './schedule-group-grants';
-import { CfnScheduleGroup, IScheduleGroupRef, ScheduleGroupReference } from './scheduler.generated';
+import type { IScheduleGroupRef, ScheduleGroupReference } from './scheduler.generated';
+import { CfnScheduleGroup } from './scheduler.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { ArnFormat, Names, Resource, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

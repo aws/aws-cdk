@@ -1,18 +1,24 @@
 import { Construct } from 'constructs';
-import { Certificate, CertificateValidation, ICertificate } from '../../../aws-certificatemanager';
-import { IVpc } from '../../../aws-ec2';
-import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+import type { ICertificate } from '../../../aws-certificatemanager';
+import { Certificate, CertificateValidation } from '../../../aws-certificatemanager';
+import type { IVpc } from '../../../aws-ec2';
+import type {
+  BaseService, CloudMapOptions, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '../../../aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
+  AwsLogDriver, Cluster,
+} from '../../../aws-ecs';
+import type {
+  ApplicationListener, ApplicationProtocolVersion, ApplicationTargetGroup,
+  IApplicationLoadBalancer, AddApplicationTargetsProps, SslPolicy,
   IpAddressType,
   ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
-import { IRole } from '../../../aws-iam';
-import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
+import { ApplicationLoadBalancer, ApplicationProtocol, ListenerCertificate, ListenerAction } from '../../../aws-elasticloadbalancingv2';
+import type { IRole } from '../../../aws-iam';
+import type { IHostedZone } from '../../../aws-route53';
+import { ARecord, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
 import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';

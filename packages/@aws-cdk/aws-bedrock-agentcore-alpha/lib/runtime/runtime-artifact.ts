@@ -12,12 +12,12 @@
  */
 
 import { Stack, Token } from 'aws-cdk-lib';
-import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
+import type { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
-import { Runtime } from './runtime';
+import type { Construct } from 'constructs';
+import type { Runtime } from './runtime';
 import { ValidationError } from './validation-helpers';
 
 /**

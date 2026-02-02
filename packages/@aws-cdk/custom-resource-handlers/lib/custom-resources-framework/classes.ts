@@ -1,30 +1,32 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import type {
+  PropertySpec,
+  InterfaceSpec,
+  Expression,
+  ClassSpec,
+  Statement,
+} from '@cdklabs/typewriter';
 import {
   ClassType,
   stmt,
   expr,
   Type,
   Splat,
-  PropertySpec,
-  InterfaceSpec,
   InterfaceType,
   ObjectLiteral,
   MemberVisibility,
   SuperInitializer,
-  Expression,
-  ClassSpec,
   $T,
-  Statement,
 } from '@cdklabs/typewriter';
+import type { Runtime } from './config';
 import {
   CUSTOM_RESOURCE_PROVIDER,
   CUSTOM_RESOURCE_RUNTIME_FAMILY,
   CUSTOM_RESOURCE_SINGLETON,
   CUSTOM_RESOURCE_SINGLETON_LOG_GROUP,
   CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION,
-  Runtime,
 } from './config';
-import { HandlerFrameworkModule } from './framework';
+import type { HandlerFrameworkModule } from './framework';
 import {
   PATH_MODULE,
   CONSTRUCTS_MODULE,

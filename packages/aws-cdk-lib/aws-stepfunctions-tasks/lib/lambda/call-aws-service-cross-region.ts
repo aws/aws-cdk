@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import { IFunction } from '../../../aws-lambda';
+import type { IFunction } from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token, Duration, ValidationError } from '../../../core';
 import { CrossRegionAwsSdkSingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated';

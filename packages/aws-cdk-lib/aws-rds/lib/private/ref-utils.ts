@@ -1,6 +1,6 @@
 import { UnscopedValidationError } from '../../../core';
-import { IDBSubnetGroupRef } from '../rds.generated';
-import { ISubnetGroup } from '../subnet-group';
+import type { IDBSubnetGroupRef } from '../rds.generated';
+import type { ISubnetGroup } from '../subnet-group';
 
 /**
  * Convert an IBackupVaultRef to IBackupVault, throwing an error if the instance

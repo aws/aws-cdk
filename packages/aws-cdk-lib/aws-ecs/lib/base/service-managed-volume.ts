@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
-import { Size, Token, ValidationError } from '../../../core';
-import { BaseMountPoint, ContainerDefinition } from '../container-definition';
+import type * as kms from '../../../aws-kms';
+import type { Size } from '../../../core';
+import { Token, ValidationError } from '../../../core';
+import type { BaseMountPoint, ContainerDefinition } from '../container-definition';
 
 /**
  * Represents the Volume configuration for an ECS service.

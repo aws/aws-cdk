@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
+import type { CfnJobDefinition } from './batch.generated';
 import * as cdk from '../../core';
 
 /**

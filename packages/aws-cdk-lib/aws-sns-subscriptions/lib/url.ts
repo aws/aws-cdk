@@ -1,4 +1,4 @@
-import { SubscriptionProps } from './subscription';
+import type { SubscriptionProps } from './subscription';
 import * as sns from '../../aws-sns';
 import { Token, UnscopedValidationError } from '../../core';
 

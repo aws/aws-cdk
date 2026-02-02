@@ -1,40 +1,44 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { ClusterGrants } from './cluster-grants';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
+import type {
+  IClusterRef,
+  ClusterReference,
+} from './ecs.generated';
 import {
   CfnCluster,
   CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
-  IClusterRef,
-  ClusterReference,
 } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { InstanceRequirementsConfig } from '../../aws-ec2';
+import type { InstanceRequirementsConfig } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IKey, IKeyRef } from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as kms from '../../aws-kms';
+import type * as logs from '../../aws-logs';
+import type * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
+import type {
+  IResource,
+  IAspect,
+  Size,
+} from '../../core';
 import {
   Aws,
   Duration,
-  IResource,
   Resource,
   Stack,
   Aspects,
   ArnFormat,
-  IAspect,
   Token,
   Names,
   Annotations,
   ValidationError,
-  Size,
   Lazy,
 } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -1450,7 +1454,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly fargateEphemeralStorageKmsKey?: IKey;
+  readonly fargateEphemeralStorageKmsKey?: kms.IKey;
 
   /**
    * Customer KMS Key used to encrypt ECS managed Storage.
@@ -1459,7 +1463,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly kmsKey?: IKeyRef;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**

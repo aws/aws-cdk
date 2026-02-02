@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
-import { Asset } from '../../aws-s3-assets';
-import { CustomResource, Duration, Names, Stack, ValidationError } from '../../core';
+import type { Asset } from '../../aws-s3-assets';
+import type { Duration } from '../../core';
+import { CustomResource, Names, Stack, ValidationError } from '../../core';
 
 /**
  * Helm Chart options.

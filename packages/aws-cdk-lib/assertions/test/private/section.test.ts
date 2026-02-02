@@ -1,5 +1,6 @@
 import { Match } from '../../lib';
-import { MatchFailure, matchSection, MatchSuccess } from '../../lib/private/section';
+import type { MatchFailure, MatchSuccess } from '../../lib/private/section';
+import { matchSection } from '../../lib/private/section';
 
 describe('section', () => {
   describe('matchSection', () => {

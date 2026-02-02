@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
 
 export interface CfnOutputProps {
@@ -195,7 +195,7 @@ export class CfnOutput extends CfnElement {
 }
 
 /* eslint-disable import/order */
-import { CfnCondition } from './cfn-condition';
+import type { CfnCondition } from './cfn-condition';
 import { Fn } from './cfn-fn';
 import { Lazy } from './lazy';
 import { Stack } from './stack';

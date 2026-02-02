@@ -1,6 +1,6 @@
 import { Construct, Node } from 'constructs';
 import { AlbScheme } from './alb-controller';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 import { CustomResource, Stack } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

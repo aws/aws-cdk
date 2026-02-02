@@ -1,4 +1,4 @@
-import { IDistribution } from '..';
+import type { IDistribution } from '..';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 

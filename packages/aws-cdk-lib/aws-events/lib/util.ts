@@ -1,4 +1,4 @@
-import { EventPattern } from './event-pattern';
+import type { EventPattern } from './event-pattern';
 import { UnscopedValidationError } from '../../core';
 
 /**

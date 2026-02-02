@@ -1,10 +1,10 @@
 import { spawnSync } from 'child_process';
-import { Construct } from 'constructs';
-import * as ecr from '../../aws-ecr';
+import type { Construct } from 'constructs';
+import type * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
-import { IKeyRef } from '../../aws-kms';
-import * as s3 from '../../aws-s3';
+import type { IKeyRef } from '../../aws-kms';
+import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';

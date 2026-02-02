@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Annotations } from './annotations';
 import { CfnResource } from './cfn-resource';
-import { Duration } from './duration';
+import type { Duration } from './duration';
 import { ValidationError } from './errors';
 import { addConstructMetadata, MethodMetadata } from './metadata-resource';
 import { propertyInjectable } from './prop-injectable';

@@ -1,7 +1,8 @@
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { CustomResource, Duration, Names, Stack } from 'aws-cdk-lib/core';
+import type { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import type { Duration } from 'aws-cdk-lib/core';
+import { CustomResource, Names, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
 /**

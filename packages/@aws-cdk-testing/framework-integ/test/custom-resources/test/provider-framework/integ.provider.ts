@@ -2,7 +2,8 @@
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct, Node } from 'constructs';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import { S3Assert } from './integration-test-fixtures/s3-assert';
 import { S3File } from './integration-test-fixtures/s3-file';
 

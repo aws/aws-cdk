@@ -1,4 +1,4 @@
-import { IMetric } from './metric-types';
+import type { IMetric } from './metric-types';
 import { UnscopedValidationError } from '../../core';
 
 /**

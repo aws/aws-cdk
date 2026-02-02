@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
-import { IKey } from './key';
-import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generated';
+import type { Construct } from 'constructs';
+import type { IKey } from './key';
+import type { AliasReference, IAliasRef, KeyReference } from './kms.generated';
+import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
-import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { FeatureFlags, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

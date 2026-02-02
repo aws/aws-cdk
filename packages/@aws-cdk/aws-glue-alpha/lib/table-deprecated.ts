@@ -1,5 +1,6 @@
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { S3Table, S3TableProps } from './s3-table';
+import type { S3TableProps } from './s3-table';
+import { S3Table } from './s3-table';
 
 export interface TableProps extends S3TableProps {}
 

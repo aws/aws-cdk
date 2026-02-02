@@ -1,15 +1,15 @@
 import { Construct } from 'constructs';
 import { CfnResolver } from './appsync.generated';
-import { CachingConfig } from './caching-config';
+import type { CachingConfig } from './caching-config';
 import { BASE_CACHING_KEYS } from './caching-key';
-import { Code } from './code';
-import { BaseDataSource } from './data-source';
-import { IGraphqlApi } from './graphqlapi-base';
-import { MappingTemplate } from './mapping-template';
-import { FunctionRuntime } from './runtime';
+import type { Code } from './code';
+import type { BaseDataSource } from './data-source';
+import type { IGraphqlApi } from './graphqlapi-base';
+import type { MappingTemplate } from './mapping-template';
+import type { FunctionRuntime } from './runtime';
 import { Token, ValidationError } from '../../core';
 import { extractFunctionIdFromFunctionRef } from './private/ref-utils';
-import { IFunctionConfigurationRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IFunctionConfigurationRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Basic properties for an AppSync resolver

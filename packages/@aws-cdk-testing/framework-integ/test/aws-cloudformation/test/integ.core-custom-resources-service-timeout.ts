@@ -1,5 +1,5 @@
 import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*

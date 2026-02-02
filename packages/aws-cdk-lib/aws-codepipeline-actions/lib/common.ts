@@ -1,4 +1,4 @@
-import * as codepipeline from '../../aws-codepipeline';
+import type * as codepipeline from '../../aws-codepipeline';
 import { Token, UnscopedValidationError } from '../../core';
 
 /**

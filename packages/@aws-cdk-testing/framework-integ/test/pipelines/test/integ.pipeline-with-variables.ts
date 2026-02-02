@@ -3,8 +3,9 @@
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 
 class PipelineStack extends Stack {

@@ -1,14 +1,17 @@
-import { Construct } from 'constructs';
-import { Architecture } from './architecture';
-import { Code } from './code';
-import {
-  CfnLayerVersion,
-  CfnLayerVersionPermission,
+import type { Construct } from 'constructs';
+import type { Architecture } from './architecture';
+import type { Code } from './code';
+import type {
   ILayerVersionRef,
   LayerVersionReference,
 } from './lambda.generated';
+import {
+  CfnLayerVersion,
+  CfnLayerVersionPermission,
+} from './lambda.generated';
 import { Runtime } from './runtime';
-import { IResource, RemovalPolicy, Resource } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

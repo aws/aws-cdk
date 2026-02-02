@@ -1,8 +1,9 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from '../lib';
 
 interface EksFargateClusterStackProps extends StackProps {

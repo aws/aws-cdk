@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnTagOption } from './servicecatalog.generated';

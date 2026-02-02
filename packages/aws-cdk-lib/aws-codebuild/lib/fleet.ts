@@ -1,14 +1,15 @@
-import { Construct, IDependable } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
-import { EnvironmentType } from './environment-type';
+import type { EnvironmentType } from './environment-type';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Arn, ArnFormat, IResource, PhysicalName, Resource, Size, Token, UnscopedValidationError, ValidationError } from '../../core';
+import type { IResource, Size } from '../../core';
+import { Arn, ArnFormat, PhysicalName, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IFleetRef, FleetReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
+import type { IFleetRef, FleetReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 /**
  * Construction properties of a CodeBuild Fleet.

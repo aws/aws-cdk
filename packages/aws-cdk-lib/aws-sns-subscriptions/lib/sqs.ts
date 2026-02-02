@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
+import type { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';

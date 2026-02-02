@@ -1,6 +1,7 @@
 import { Match, Template } from '../../assertions';
 import { Duration, Stack, Token, Aws } from '../../core';
-import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
+import type { IWidget } from '../lib';
+import { Alarm, GraphWidget, MathExpression, Metric } from '../lib';
 
 const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
 

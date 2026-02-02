@@ -1,8 +1,8 @@
-import { Construct, IConstruct } from 'constructs';
-import * as cognito from '../../aws-cognito';
+import type { Construct, IConstruct } from 'constructs';
+import type * as cognito from '../../aws-cognito';
 import { Port } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
-import { Duration } from '../../core';
+import type { Duration } from '../../core';
 
 /**
  * Properties for AuthenticateCognitoAction

@@ -1,6 +1,6 @@
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
-import { IGateway } from './gateway-base';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
+import type { IGateway } from './gateway-base';
 
 /******************************************************************************
  *                                Enums

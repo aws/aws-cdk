@@ -1,9 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { FingerprintOptions, FollowMode, IAsset } from '../../assets';
+import type { FingerprintOptions, IAsset } from '../../assets';
+import { FollowMode } from '../../assets';
 import * as ecr from '../../aws-ecr';
-import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource, Names, ValidationError, UnscopedValidationError } from '../../core';
+import type { FileFingerprintOptions, CfnResource } from '../../core';
+import { Annotations, AssetStaging, FeatureFlags, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, Names, ValidationError, UnscopedValidationError } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
