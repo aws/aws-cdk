@@ -19,8 +19,10 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Gateway } from '../../../lib';
+import { CustomClaimOperator } from '../../../lib/common/types';
 import { GatewayExceptionLevel } from '../../../lib/gateway/gateway-base';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
+import { GatewayCustomClaim } from '../../../lib/gateway/inbound-auth/custom-claim';
 import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
 import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
@@ -149,6 +151,34 @@ describe('Gateway Core Tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
       AuthorizerType: 'CUSTOM_JWT',
     });
+  });
+
+  test('Should create Gateway with custom JWT authorizer including allowedScopes', () => {
+    new Gateway(stack, 'TestGatewayWithScopes', {
+      gatewayName: 'test-gateway-scopes',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+        allowedAudience: ['my-app'],
+        allowedClients: ['client-123'],
+        allowedScopes: ['read', 'write'],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayResource = Object.values(resources)[0];
+
+    expect(gatewayResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = gatewayResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedAudience).toEqual(['my-app']);
+      expect(jwtConfig.AllowedClients).toEqual(['client-123']);
+      expect(jwtConfig.AllowedScopes).toEqual(['read', 'write']);
+    }
   });
 
   test('Should create Gateway with KMS encryption', () => {
@@ -1025,6 +1055,7 @@ describe('Authorizer Configuration Tests', () => {
       discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
       allowedAudience: ['app1', 'app2', 'app3'],
       allowedClients: ['client1', 'client2'],
+      allowedScopes: ['read', 'write', 'admin'],
     });
 
     // Just verify the authorizer is created with correct type
@@ -1063,6 +1094,158 @@ describe('Authorizer Configuration Tests', () => {
     const authorizer = GatewayAuthorizer.usingCustomJwt({
       discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
       allowedClients: ['client-123'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create custom JWT authorizer with only allowedScopes', () => {
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      allowedScopes: ['read', 'write'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create Cognito authorizer with allowedScopes', () => {
+    const userPool = new cdk.aws_cognito.UserPool(stack, 'TestUserPool', {
+      userPoolName: 'test-pool',
+    });
+
+    const client1 = userPool.addClient('Client1');
+
+    const authorizer = GatewayAuthorizer.usingCognito({
+      userPool: userPool,
+      allowedClients: [client1],
+      allowedAudiences: ['cognito-audience'],
+      allowedScopes: ['read', 'write'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should render Gateway with custom JWT authorizer including allowedScopes in CloudFormation', () => {
+    new Gateway(stack, 'TestGatewayRenderScopes', {
+      gatewayName: 'test-gateway-render-scopes',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://oauth.provider.com/.well-known/openid-configuration',
+        allowedAudience: ['aud1', 'aud2'],
+        allowedClients: ['client-456'],
+        allowedScopes: ['openid', 'profile', 'email'],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayResource = Object.values(resources)[0];
+
+    expect(gatewayResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = gatewayResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://oauth.provider.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedAudience).toEqual(['aud1', 'aud2']);
+      expect(jwtConfig.AllowedClients).toEqual(['client-456']);
+      expect(jwtConfig.AllowedScopes).toEqual(['openid', 'profile', 'email']);
+    }
+  });
+
+  test('Should create custom JWT authorizer with custom claims', () => {
+    const stringClaim = GatewayCustomClaim.withStringValue('department', 'engineering');
+    const arrayClaim = GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS);
+    const arrayClaimAny = GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
+
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      allowedAudience: ['app1'],
+      customClaims: [stringClaim, arrayClaim, arrayClaimAny],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create Cognito authorizer with custom claims', () => {
+    const userPool = new cdk.aws_cognito.UserPool(stack, 'TestUserPool', {
+      userPoolName: 'test-pool',
+    });
+
+    const client1 = userPool.addClient('Client1');
+
+    const customClaims = [
+      GatewayCustomClaim.withStringValue('department', 'engineering'),
+      GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS),
+    ];
+
+    const authorizer = GatewayAuthorizer.usingCognito({
+      userPool: userPool,
+      allowedClients: [client1],
+      customClaims: customClaims,
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should render Gateway with custom JWT authorizer including custom claims in CloudFormation', () => {
+    const stringClaim = GatewayCustomClaim.withStringValue('department', 'engineering');
+    const arrayClaim = GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS);
+    const arrayClaimAny = GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
+
+    new Gateway(stack, 'TestGatewayRenderCustomClaims', {
+      gatewayName: 'test-gateway-render-custom-claims',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://oauth.provider.com/.well-known/openid-configuration',
+        allowedAudience: ['aud1'],
+        customClaims: [stringClaim, arrayClaim, arrayClaimAny],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayResource = Object.values(resources)[0];
+
+    expect(gatewayResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = gatewayResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig).toHaveProperty('CustomClaims');
+      expect(jwtConfig.CustomClaims).toHaveLength(3);
+
+      // Check first claim (string)
+      const stringClaimConfig = jwtConfig.CustomClaims[0];
+      expect(stringClaimConfig.InboundTokenClaimName).toBe('department');
+      expect(stringClaimConfig.InboundTokenClaimValueType).toBe('STRING');
+      expect(stringClaimConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('EQUALS');
+      expect(stringClaimConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueString).toBe('engineering');
+
+      // Check second claim (string array with CONTAINS)
+      const arrayClaimConfig = jwtConfig.CustomClaims[1];
+      expect(arrayClaimConfig.InboundTokenClaimName).toBe('roles');
+      expect(arrayClaimConfig.InboundTokenClaimValueType).toBe('STRING_ARRAY');
+      expect(arrayClaimConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('CONTAINS');
+      expect(arrayClaimConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueString).toBe('admin');
+
+      // Check third claim (string array with CONTAINS_ANY)
+      const arrayClaimAnyConfig = jwtConfig.CustomClaims[2];
+      expect(arrayClaimAnyConfig.InboundTokenClaimName).toBe('permissions');
+      expect(arrayClaimAnyConfig.InboundTokenClaimValueType).toBe('STRING_ARRAY');
+      expect(arrayClaimAnyConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('CONTAINS_ANY');
+      expect(arrayClaimAnyConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueStringList).toEqual(['read', 'write']);
+    }
+  });
+
+  test('Should create custom JWT authorizer with only customClaims (no other validations)', () => {
+    const customClaims = [
+      GatewayCustomClaim.withStringValue('department', 'engineering'),
+    ];
+
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      customClaims: customClaims,
     });
 
     expect(authorizer.authorizerType).toBe('CUSTOM_JWT');

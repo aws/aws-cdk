@@ -14,7 +14,8 @@
 import { Token } from 'aws-cdk-lib';
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { ValidationError } from './validation-helpers';
+import { ValidationError } from '../validation-helpers';
+import { RuntimeCustomClaim } from './custom-claim';
 
 /**
  * Abstract base class for runtime authorizer configurations.
@@ -38,17 +39,21 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param discoveryUrl The OIDC discovery URL (must end with /.well-known/openid-configuration)
    * @param allowedClients Optional array of allowed client IDs
    * @param allowedAudience Optional array of allowed audiences
+   * @param allowedScopes Optional array of allowed scopes
+   * @param customClaims Optional array of custom claim validations
    * @returns RuntimeAuthorizerConfiguration for JWT authentication
    */
   public static usingJWT(
     discoveryUrl: string,
     allowedClients?: string[],
     allowedAudience?: string[],
+    allowedScopes?: string[],
+    customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('JWT discovery URL must end with /.well-known/openid-configuration');
     }
-    return new JwtAuthorizerConfiguration(discoveryUrl, allowedClients, allowedAudience);
+    return new JwtAuthorizerConfiguration(discoveryUrl, allowedClients, allowedAudience, allowedScopes, customClaims);
   }
 
   /**
@@ -58,14 +63,18 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param userPool The Cognito User Pool
    * @param userPoolClients The Cognito User Pool App Clients
    * @param allowedAudience Optional array of allowed audiences
+   * @param allowedScopes Optional array of allowed scopes
+   * @param customClaims Optional array of custom claim validations
    * @returns RuntimeAuthorizerConfiguration for Cognito authentication
    */
   public static usingCognito(
     userPool: IUserPool,
     userPoolClients: IUserPoolClient[],
     allowedAudience?: string[],
+    allowedScopes?: string[],
+    customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
-    return new CognitoAuthorizerConfiguration(userPool, userPoolClients, allowedAudience);
+    return new CognitoAuthorizerConfiguration(userPool, userPoolClients, allowedAudience, allowedScopes, customClaims);
   }
 
   /**
@@ -75,17 +84,21 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param discoveryUrl The OIDC discovery URL (must end with /.well-known/openid-configuration)
    * @param clientId OAuth client ID
    * @param allowedAudience Optional array of allowed audiences
+   * @param allowedScopes Optional array of allowed scopes
+   * @param customClaims Optional array of custom claim validations
    * @returns RuntimeAuthorizerConfiguration for OAuth authentication
    */
   public static usingOAuth(
     discoveryUrl: string,
     clientId: string,
     allowedAudience?: string[],
+    allowedScopes?: string[],
+    customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
     }
-    return new OAuthAuthorizerConfiguration(discoveryUrl, clientId, allowedAudience);
+    return new OAuthAuthorizerConfiguration(discoveryUrl, clientId, allowedAudience, allowedScopes, customClaims);
   }
 
   /**
@@ -113,6 +126,8 @@ class JwtAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly discoveryUrl: string,
     private readonly allowedClients?: string[],
     private readonly allowedAudience?: string[],
+    private readonly allowedScopes?: string[],
+    private readonly customClaims?: RuntimeCustomClaim[],
   ) {
     super();
   }
@@ -123,6 +138,8 @@ class JwtAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
         discoveryUrl: this.discoveryUrl,
         allowedClients: this.allowedClients,
         allowedAudience: this.allowedAudience,
+        allowedScopes: this.allowedScopes,
+        customClaims: this.customClaims && this.customClaims.length > 0 ? this.customClaims.map(claim => claim._render()) : undefined,
       },
     };
   }
@@ -136,6 +153,8 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly userPool: IUserPool,
     private readonly userPoolClients: IUserPoolClient[],
     private readonly allowedAudience?: string[],
+    private readonly allowedScopes?: string[],
+    private readonly customClaims?: RuntimeCustomClaim[],
   ) {
     super();
   }
@@ -149,6 +168,8 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
         discoveryUrl: discoveryUrl,
         allowedClients: this.userPoolClients.map(client => client.userPoolClientId),
         allowedAudience: this.allowedAudience,
+        allowedScopes: this.allowedScopes,
+        customClaims: this.customClaims && this.customClaims.length > 0 ? this.customClaims.map(claim => claim._render()) : undefined,
       },
     };
   }
@@ -162,6 +183,8 @@ class OAuthAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly discoveryUrl: string,
     private readonly clientId: string,
     private readonly allowedAudience?: string[],
+    private readonly allowedScopes?: string[],
+    private readonly customClaims?: RuntimeCustomClaim[],
   ) {
     super();
   }
@@ -173,6 +196,8 @@ class OAuthAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
         discoveryUrl: this.discoveryUrl,
         allowedClients: [this.clientId],
         allowedAudience: this.allowedAudience,
+        allowedScopes: this.allowedScopes,
+        customClaims: this.customClaims && this.customClaims.length > 0 ? this.customClaims.map(claim => claim._render()) : undefined,
       },
     };
   }
