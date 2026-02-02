@@ -6,9 +6,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 // ---------------------------------
-// Define a rule that triggers an SNS topic every 1min.
-// Connect the topic with a queue. This means that the queue should have
-// a message sent to it every minute.
+// Define a rule that puts a message to a SQS queue every 1min.
 
 const app = new cdk.App();
 

@@ -15,6 +15,7 @@ Currently supported are:
   - [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
   - [Queue a Batch job](#queue-a-batch-job)
   - [Invoke an API Gateway REST API](#invoke-an-api-gateway-rest-api)
+  - [Invoke an API Gateway V2 HTTP API](#invoke-an-api-gateway-v2-http-api)
   - [Invoke an AWS API](#invoke-an-aws-api)
   - [Invoke an API Destination](#invoke-an-api-destination)
   - [Invoke an AppSync GraphQL API](#invoke-an-appsync-graphql-api)
@@ -25,8 +26,9 @@ Currently supported are:
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
-  - [Run a Redshift query](#schedule-a-redshift-query-serverless-or-cluster)
-  - [Publish to an SNS topic](#publish-to-an-sns-topic)
+    - [Overriding Values in the Task Definition](#overriding-values-in-the-task-definition)
+  - [Schedule a Redshift query (serverless or cluster)](#schedule-a-redshift-query-serverless-or-cluster)
+  - [Publish to an SNS Topic](#publish-to-an-sns-topic)
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.

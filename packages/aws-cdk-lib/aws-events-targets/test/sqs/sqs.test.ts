@@ -1,5 +1,6 @@
 import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sqs from '../../../aws-sqs';
 import { App, Duration, Stack } from '../../../core';
@@ -456,6 +457,46 @@ test('dead letter queue is imported', () => {
         Id: 'Target0',
         DeadLetterConfig: {
           Arn: dlqArn,
+        },
+      },
+    ],
+  });
+});
+
+test('role arn is added', () => {
+  // GIVEN
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue');
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+  const role = new iam.Role(stack, 'MyRole', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    eventRole: role,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RoleArn: {
+          'Fn::GetAtt': [
+            'MyRoleF48FFE04',
+            'Arn',
+          ],
         },
       },
     ],
