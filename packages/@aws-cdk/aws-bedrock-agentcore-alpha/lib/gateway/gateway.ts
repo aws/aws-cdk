@@ -21,7 +21,7 @@ import { McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } fr
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
-import { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
+import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
 import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
 
 /******************************************************************************

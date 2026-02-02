@@ -486,6 +486,7 @@ export interface ApiGatewayToolOverride {
 
   /**
    * Optional custom description for the tool
+   * @default - Uses the description from the OpenAPI definition
    */
   readonly description?: string;
 }
@@ -533,6 +534,7 @@ export interface ApiGatewayToolConfiguration {
   /**
    * Optional list of tool overrides to customize tool metadata
    * Each override must correspond to an operation selected by the filters
+   * @default - No tool overrides
    */
   readonly toolOverrides?: ApiGatewayToolOverride[];
 }

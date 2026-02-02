@@ -11,8 +11,8 @@ import type { ApiSchema } from './schema/api-schema';
 import type { ToolSchema } from './schema/tool-schema';
 import type { IGatewayTarget, IMcpGatewayTarget } from './target-base';
 import { GatewayTargetBase, GatewayTargetProtocolType, McpTargetType } from './target-base';
-import type { ApiGatewayTargetConfiguration, ApiGatewayToolConfiguration, ITargetConfiguration } from './target-configuration';
-import { LambdaTargetConfiguration, McpServerTargetConfiguration, MetadataConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
+import type { ApiGatewayToolConfiguration, ITargetConfiguration, MetadataConfiguration } from './target-configuration';
+import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern, ValidationError } from '../validation-helpers';
@@ -177,6 +177,7 @@ export interface GatewayTargetMcpServerProps extends GatewayTargetCommonProps {
 export interface GatewayTargetApiGatewayProps extends GatewayTargetCommonProps {
   /**
    * The gateway this target belongs to
+   * [disable-awslint:prefer-ref-interface]
    */
   readonly gateway: IGateway;
 
