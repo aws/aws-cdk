@@ -73,11 +73,10 @@ class CustomVersioningMixin extends Mixin implements IMixin {
     return construct instanceof s3.CfnBucket;
   }
 
-  applyTo(bucket: any): any {
+  applyTo(bucket: any): void {
     bucket.versioningConfiguration = {
       status: "Enabled"
     };
-    return bucket;
   }
 }
 
