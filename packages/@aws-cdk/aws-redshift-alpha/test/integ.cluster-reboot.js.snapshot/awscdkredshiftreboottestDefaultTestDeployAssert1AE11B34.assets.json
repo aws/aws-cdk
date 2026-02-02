@@ -1,6 +1,7 @@
 {
   "version": "48.0.0",
   "files": {
+<<<<<<< HEAD
     "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c": {
       "source": {
         "path": "asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle",
@@ -10,20 +11,41 @@
         "current_account-current_region-601aff7a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip",
+=======
+    "0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7": {
+      "source": {
+        "path": "asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-5c579aed": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.zip",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
+<<<<<<< HEAD
     "9b1d55107d3a0fbccb0535b544dc69adfd989eb764d00f200af300a6be422f7a": {
+=======
+    "26cf28eaeac6992759336d7e9544cadacf432b91c7942e9317c70665492b9772": {
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
       "displayName": "awscdkredshiftreboottestDefaultTestDeployAssert1AE11B34 Template",
       "source": {
         "path": "awscdkredshiftreboottestDefaultTestDeployAssert1AE11B34.template.json",
         "packaging": "file"
       },
       "destinations": {
+<<<<<<< HEAD
         "current_account-current_region-0070fdf8": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "9b1d55107d3a0fbccb0535b544dc69adfd989eb764d00f200af300a6be422f7a.json",
+=======
+        "current_account-current_region-8a2b2fd8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "26cf28eaeac6992759336d7e9544cadacf432b91c7942e9317c70665492b9772.json",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

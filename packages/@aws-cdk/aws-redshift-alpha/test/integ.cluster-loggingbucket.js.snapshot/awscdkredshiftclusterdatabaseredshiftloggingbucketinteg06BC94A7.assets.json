@@ -1,16 +1,26 @@
 {
   "version": "48.0.0",
   "files": {
+<<<<<<< HEAD
     "3f0c9163cab1761cc386ec6a83683db1b90edb8f57ed16eb3dbedefd577a5bb5": {
+=======
+    "d779015aded9cbd0438e73ac7798969b8e318045a689b3f569e4ada78e3f0234": {
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
       "displayName": "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7 Template",
       "source": {
         "path": "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7.template.json",
         "packaging": "file"
       },
       "destinations": {
+<<<<<<< HEAD
         "current_account-current_region-28801177": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "3f0c9163cab1761cc386ec6a83683db1b90edb8f57ed16eb3dbedefd577a5bb5.json",
+=======
+        "current_account-current_region-f11ed3fc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d779015aded9cbd0438e73ac7798969b8e318045a689b3f569e4ada78e3f0234.json",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -4,17 +4,23 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
-const app = new cdk.App({
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
-});
-const stack = new cdk.Stack(app, 'MultiAzRedshift', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  },
-});
+/**
+ * Integration test for Redshift Multi-AZ clusters.
+ * 
+ * Note: This test requires deployment to a region with at least 3 availability zones.
+ * Multi-AZ Redshift clusters require subnets in at least 3 different AZs.
+ * 
+ * Current limitation: When synthesizing region-agnostic stacks, the VPC construct
+ * cannot determine the number of available AZs at synth time, which may cause
+ * deployment failures in regions with fewer than 3 AZs or when the VPC doesn't
+ * create subnets in 3 AZs.
+ * 
+ * TODO: This test may need to be region-specific (e.g., hardcode to us-west-2)
+ * or require manual verification that the deployment region has 3+ AZs.
+ */
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'MultiAzRedshift');
 
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {
@@ -44,4 +50,5 @@ new redshift.Cluster(stack, 'Cluster', {
 
 new integ.IntegTest(app, 'MultiAzRedshiftTest', {
   testCases: [stack],
+  regions: ['us-west-2'], // Specify region with 3+ AZs
 });

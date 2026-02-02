@@ -29,16 +29,26 @@
         }
       }
     },
+<<<<<<< HEAD
     "6679909b5e19560f20d07c818833313aa89a990c7c3c696afa0d593c7c09f125": {
+=======
+    "034b1440871188c98199db610d99df93f58271990899f08bdd15139f95783b1e": {
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
       "displayName": "aws-cdk-redshift-cluster-reboot-integ Template",
       "source": {
         "path": "MultiAzRedshiftawscdkredshiftclusterupdateA33EB587.template.json",
         "packaging": "file"
       },
       "destinations": {
+<<<<<<< HEAD
         "current_account-current_region-7f627176": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "6679909b5e19560f20d07c818833313aa89a990c7c3c696afa0d593c7c09f125.json",
+=======
+        "current_account-current_region-0a1f6eb5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "034b1440871188c98199db610d99df93f58271990899f08bdd15139f95783b1e.json",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

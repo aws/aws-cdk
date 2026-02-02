@@ -32,7 +32,11 @@
      "Clusters.0.ClusterParameterGroups.0.ParameterGroupName",
      "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus"
     ],
+<<<<<<< HEAD
     "salt": "1767106558533"
+=======
+    "salt": "1770057963743"
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -104,7 +108,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
+<<<<<<< HEAD
      "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+=======
+     "S3Key": "0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.zip"
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -144,7 +152,11 @@
      "Source": "\"user\""
     },
     "flattenResponse": "false",
+<<<<<<< HEAD
     "salt": "1767106558534"
+=======
+    "salt": "1770057963744"
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -177,7 +189,11 @@
      "Source": "\"engine-default\""
     },
     "flattenResponse": "false",
+<<<<<<< HEAD
     "salt": "1767106558534"
+=======
+    "salt": "1770057963744"
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

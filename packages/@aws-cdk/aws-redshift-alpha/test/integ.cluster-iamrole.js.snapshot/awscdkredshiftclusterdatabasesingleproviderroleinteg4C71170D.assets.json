@@ -29,16 +29,26 @@
         }
       }
     },
+<<<<<<< HEAD
     "3b7da8872661d018eb0305fd6ec0fa4f0236fcc7ddbd7768232cffc5eab508b0": {
+=======
+    "c370cfc8c4373d3886af7f454b076359e95d661e2f7cc5ac2fe2a340579f8801": {
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
       "displayName": "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D Template",
       "source": {
         "path": "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D.template.json",
         "packaging": "file"
       },
       "destinations": {
+<<<<<<< HEAD
         "current_account-current_region-5c53c9a3": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "3b7da8872661d018eb0305fd6ec0fa4f0236fcc7ddbd7768232cffc5eab508b0.json",
+=======
+        "current_account-current_region-e03e6254": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c370cfc8c4373d3886af7f454b076359e95d661e2f7cc5ac2fe2a340579f8801.json",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

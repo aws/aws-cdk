@@ -708,7 +708,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
+<<<<<<< HEAD
      "S3Key": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip"
+=======
+     "S3Key": "a294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420b.zip"
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
     },
     "Handler": "index.handler",
     "Role": {

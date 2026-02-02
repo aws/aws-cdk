@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "version": "48.0.0",
+=======
+  "version": "50.0.0",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
   "artifacts": {
     "MultiAzRedshiftawscdkredshiftclustercreate758E30A9.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +22,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ab723a2216597bd8c5c0c41d51226faa8dbe8e8712a8fd0c5cedc01733a49560.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/38d540cee9d035d6fdb9bcc6905cbc2e0c645b9e5240dc7280ea0a5695e608f8.json",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -305,12 +313,6 @@
             }
           }
         ],
-        "/MultiAzRedshift/aws-cdk-redshift-cluster-create/Cluster/ResourceProvider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/MultiAzRedshift/aws-cdk-redshift-cluster-create/Cluster/ResourceProvider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -428,12 +430,6 @@
             }
           }
         ],
-        "/MultiAzRedshift/aws-cdk-redshift-cluster-create/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/MultiAzRedshift/aws-cdk-redshift-cluster-create/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -522,7 +518,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6679909b5e19560f20d07c818833313aa89a990c7c3c696afa0d593c7c09f125.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/034b1440871188c98199db610d99df93f58271990899f08bdd15139f95783b1e.json",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -810,12 +810,6 @@
             }
           }
         ],
-        "/MultiAzRedshift/aws-cdk-redshift-cluster-update/Cluster/ResourceProvider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/MultiAzRedshift/aws-cdk-redshift-cluster-update/Cluster/ResourceProvider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -933,12 +927,6 @@
             }
           }
         ],
-        "/MultiAzRedshift/aws-cdk-redshift-cluster-update/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/MultiAzRedshift/aws-cdk-redshift-cluster-update/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1032,21 +1020,21 @@
     },
     "MultiAzRedshift": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://123456789012/us-east-1",
+      "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "MultiAzRedshift.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "MultiAzRedshift.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -1087,7 +1075,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b1d55107d3a0fbccb0535b544dc69adfd989eb764d00f200af300a6be422f7a.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26cf28eaeac6992759336d7e9544cadacf432b91c7942e9317c70665492b9772.json",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1506,6 +1498,13 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+<<<<<<< HEAD
+=======
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1683,6 +1682,10 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+<<<<<<< HEAD
+=======
+            "userValue": true,
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1694,6 +1697,10 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+<<<<<<< HEAD
+=======
+            "userValue": true,
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -1705,5 +1712,9 @@
       }
     }
   },
+<<<<<<< HEAD
   "minimumCliVersion": "2.1033.0"
+=======
+  "minimumCliVersion": "2.1101.0"
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
 }

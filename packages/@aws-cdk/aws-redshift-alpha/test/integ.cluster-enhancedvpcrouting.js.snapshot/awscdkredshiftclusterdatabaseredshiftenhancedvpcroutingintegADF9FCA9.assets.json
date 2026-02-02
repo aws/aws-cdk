@@ -1,16 +1,26 @@
 {
   "version": "48.0.0",
   "files": {
+<<<<<<< HEAD
     "27650d92628e1a9bdc8a4788e2f324dbb0c171862fb4a33dd6f27fe33da8e7c8": {
+=======
+    "76fce6c3489f384afabcc253170ff03dea6d99598c2addb56fbf1b5ead1a0b3d": {
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
       "displayName": "awscdkredshiftclusterdatabaseredshiftenhancedvpcroutingintegADF9FCA9 Template",
       "source": {
         "path": "awscdkredshiftclusterdatabaseredshiftenhancedvpcroutingintegADF9FCA9.template.json",
         "packaging": "file"
       },
       "destinations": {
+<<<<<<< HEAD
         "current_account-current_region-ac0a9daf": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "27650d92628e1a9bdc8a4788e2f324dbb0c171862fb4a33dd6f27fe33da8e7c8.json",
+=======
+        "current_account-current_region-afcb1738": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "76fce6c3489f384afabcc253170ff03dea6d99598c2addb56fbf1b5ead1a0b3d.json",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

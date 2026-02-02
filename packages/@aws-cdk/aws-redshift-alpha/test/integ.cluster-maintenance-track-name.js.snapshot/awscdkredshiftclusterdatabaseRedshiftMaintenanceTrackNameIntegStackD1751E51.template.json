@@ -600,7 +600,11 @@
       ]
      ]
     },
+<<<<<<< HEAD
     "NodeType": "ra3.large",
+=======
+    "NodeType": "ra3.xlplus",
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
     "NumberOfNodes": 2,
     "PubliclyAccessible": false,
     "VpcSecurityGroupIds": [

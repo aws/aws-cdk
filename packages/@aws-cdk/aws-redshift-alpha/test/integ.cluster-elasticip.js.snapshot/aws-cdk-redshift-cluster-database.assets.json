@@ -1,18 +1,29 @@
 {
   "version": "48.0.0",
   "files": {
+<<<<<<< HEAD
     "fc7d9cc8619c9e0537f74d3299964912c88f1709096f9ef328654de42cbdc2c6": {
+=======
+    "060ddd68fb7bd70abb933027004e2bf0dedbd5a55f97075e41646f689c4e0028": {
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
       "displayName": "aws-cdk-redshift-cluster-database Template",
       "source": {
         "path": "aws-cdk-redshift-cluster-database.template.json",
         "packaging": "file"
       },
       "destinations": {
+<<<<<<< HEAD
         "123456789012-us-east-1-aeb9ab4e": {
           "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
           "objectKey": "fc7d9cc8619c9e0537f74d3299964912c88f1709096f9ef328654de42cbdc2c6.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
+=======
+        "current_account-current_region-aa12eac2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "060ddd68fb7bd70abb933027004e2bf0dedbd5a55f97075e41646f689c4e0028.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic)
         }
       }
     }
