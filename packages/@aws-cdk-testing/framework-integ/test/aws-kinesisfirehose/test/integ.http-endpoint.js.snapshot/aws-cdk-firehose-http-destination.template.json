@@ -240,7 +240,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7ae0215953180bc4435baca69220ababe2ce1757508a9c7c39d815a0ed106e50.zip"
+     "S3Key": "5bbc4fd59a61faa1bde3c1ea7137bb83ed01e5b2bd48542904f53ad33e5f946f.zip"
     },
     "Environment": {
      "Variables": {
@@ -666,6 +666,9 @@
   "DeliveryStream58CF96DB": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
+    "DeliveryStreamEncryptionConfigurationInput": {
+     "KeyType": "AWS_OWNED_CMK"
+    },
     "DeliveryStreamType": "DirectPut",
     "HttpEndpointDestinationConfiguration": {
      "BufferingHints": {

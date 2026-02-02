@@ -71,6 +71,7 @@ const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
       encryptionKey: backupKey,
     },
   }),
+  encryption: firehose.StreamEncryption.awsOwnedKey(),
 });
 
 const testCase = new IntegTest(app, 'integ-tests', {
