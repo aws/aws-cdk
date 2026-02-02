@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
 import { Arn, Resource, Stack, Token } from 'aws-cdk-lib';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { IPipeline, PipelineReference } from 'aws-cdk-lib/aws-sagemaker';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import type { Construct } from 'constructs';
 
 /**
  * Validates a SageMaker Pipeline name according to AWS requirements.
@@ -137,6 +138,10 @@ export class Pipeline extends Resource implements IPipeline {
       public readonly pipelineArn = pipelineArn;
       public readonly pipelineName = pipelineName;
 
+      public get pipelineRef(): PipelineReference {
+        return { pipelineName: this.pipelineName };
+      }
+
       public grantStartPipelineExecution(grantee: IGrantable): Grant {
         return Grant.addToPrincipal({
           grantee,
@@ -161,6 +166,13 @@ export class Pipeline extends Resource implements IPipeline {
    * The name of the pipeline.
    */
   public readonly pipelineName!: string;
+
+  /**
+   * A reference to this pipeline.
+   */
+  public get pipelineRef(): PipelineReference {
+    return { pipelineName: this.pipelineName };
+  }
 
   /**
    * Create a new Pipeline (not supported - use import methods instead)
