@@ -1,14 +1,14 @@
-import { Aws, IEnvironmentAware, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Aws, type IEnvironmentAware, Names, Stack, Tags } from 'aws-cdk-lib/core';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { tryFindBucketPolicyForBucket, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
 import { ConstructSelector, Mixins } from '../../core';
 import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
-import { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
-import { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
+import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
+import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { S3LogsDeliveryPermissionsVersion } from './logs-delivery';
 
 /**

@@ -1,13 +1,13 @@
 import { Names, Stack } from 'aws-cdk-lib/core';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { tryFindDeliverySourceForResource } from '../../mixins/private/reflections';
 import * as xray from '../aws-xray/policy';
-import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
-import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { IKeyRef } from 'aws-cdk-lib/aws-kms';
+import { S3DeliveryDestination, CloudwatchDeliveryDestination, FirehoseDelvieryDestination } from './logs-destination';
 
 /**
  * The individual elements of a logs delivery integration.
