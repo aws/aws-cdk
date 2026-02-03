@@ -1,6 +1,8 @@
 import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
-import { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
-import { BedrockFoundationModel, IBedrockInvokable } from '../models';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { IBedrockInvokable } from '../models';
+import { BedrockFoundationModel } from '../models';
 import {
   CrossRegionInferenceProfile,
   REGION_TO_GEO_AREA,

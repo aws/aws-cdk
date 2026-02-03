@@ -1,9 +1,11 @@
 import { randomUUID } from 'crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { DeliveryStream, DestinationBindOptions, DestinationConfig, IDestination } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { Construct } from 'constructs';
-import { CloudwatchLogsLogDestination, FirehoseLogDestination, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogLevel, Pipe, S3LogDestination, SourceConfig, TargetConfig } from '../lib';
+import type { DestinationBindOptions, DestinationConfig, IDestination } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { DeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import type { Construct } from 'constructs';
+import type { IPipe, ISource, ITarget, SourceConfig, TargetConfig } from '../lib';
+import { CloudwatchLogsLogDestination, FirehoseLogDestination, IncludeExecutionData, InputTransformation, LogLevel, Pipe, S3LogDestination } from '../lib';
 import { name } from '../package.json';
 
 const app = new cdk.App();

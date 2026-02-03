@@ -1,9 +1,10 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
 import { App, Stack } from '../../core';
+import type { AccessEntryProps, IAccessPolicy } from '../lib';
 import {
-  AccessEntry, AccessEntryProps, AccessEntryType,
-  AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion, AuthenticationMode,
+  AccessEntry, AccessEntryType,
+  AccessScopeType, Cluster, AccessPolicy, KubernetesVersion, AuthenticationMode,
 } from '../lib';
 
 describe('AccessEntry', () => {

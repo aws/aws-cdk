@@ -1,6 +1,6 @@
 import type { components } from '@octokit/openapi-types';
 import type { Octokit } from '@octokit/rest';
-import { StatusEvent } from '@octokit/webhooks-definitions/schema';
+import type { StatusEvent } from '@octokit/webhooks-definitions/schema';
 
 export type GitHubPr = Awaited<ReturnType<Octokit['pulls']['get']>>['data'];
 

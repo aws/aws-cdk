@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as cxschema from '../../../cloud-assembly-schema';
+import type * as cxschema from '../../../cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import type { CloudAssembly } from '../cloud-assembly';
 

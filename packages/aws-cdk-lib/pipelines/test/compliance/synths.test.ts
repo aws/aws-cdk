@@ -9,7 +9,8 @@ import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps, OneStackApp } from '../testhelpers';
+import type { ModernTestGitHubNpmPipelineProps } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, OneStackApp } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
