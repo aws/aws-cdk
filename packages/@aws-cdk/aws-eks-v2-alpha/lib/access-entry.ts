@@ -1,7 +1,6 @@
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
-import { Resource, IResource, Aws, Lazy, ValidationError, Token } from 'aws-cdk-lib/core';
 import type { IResource } from 'aws-cdk-lib/core';
-import { Resource, Aws, Lazy } from 'aws-cdk-lib/core';
+import { Resource, Aws, Lazy, ValidationError, Token } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';

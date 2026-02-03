@@ -3,7 +3,7 @@ import type { ICluster } from './cluster';
 import type { AccessEntryReference, IAccessEntryRef } from './eks.generated';
 import { CfnAccessEntry } from './eks.generated';
 import type { IResource } from '../../core';
-import { Resource, IResource, Aws, Lazy, ValidationError, Token } from '../../core';
+import { Resource, Aws, Lazy, ValidationError, Token } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
