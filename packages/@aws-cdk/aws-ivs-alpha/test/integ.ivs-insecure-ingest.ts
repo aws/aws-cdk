@@ -4,7 +4,10 @@ import * as ivs from '../lib';
 
 const app = new App();
 
-const stack = new Stack(app, 'aws-cdk-ivs-insecure-ingest');
+// Hardcoded to us-east-1 because IVS service is only available in specific regions
+const stack = new Stack(app, 'aws-cdk-ivs-insecure-ingest', {
+  env: { region: 'us-east-1' },
+});
 
 new ivs.Channel(stack, 'ChannelInsecureIngestEnabled', {
   type: ivs.ChannelType.STANDARD,
