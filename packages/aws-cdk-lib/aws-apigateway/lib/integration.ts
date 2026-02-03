@@ -5,6 +5,7 @@ import * as apigwv2 from '../../aws-apigatewayv2';
 import type * as iam from '../../aws-iam';
 import { Lazy, type Duration } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { IVpcLinkRef } from '../../interfaces/generated/aws-apigateway-interfaces.generated';
 
 /**
  * The response transfer mode of the integration
@@ -147,7 +148,7 @@ export interface IntegrationOptions {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-vpc-links-v2.html
    * @default - No VPC Link V2
    */
-  readonly vpcLinkV2?: apigwv2.IVpcLink;
+  readonly vpcLinkV2?: apigwv2.IVpcLinkRef;
 
   /**
    * The ALB ARN to send the request to.
