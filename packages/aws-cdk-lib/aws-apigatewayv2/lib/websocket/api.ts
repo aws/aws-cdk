@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
-import { WebSocketRoute, WebSocketRouteOptions } from './route';
+import type { Construct } from 'constructs';
+import type { WebSocketRouteOptions } from './route';
+import { WebSocketRoute } from './route';
 import { CfnApi } from '.././index';
-import { Grant, IGrantable } from '../../../aws-iam';
+import type { IGrantable } from '../../../aws-iam';
+import { Grant } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApiReference, IApiRef } from '../apigatewayv2.generated';
-import { IApi, IpAddressType } from '../common/api';
+import type { ApiReference, IApiRef } from '../apigatewayv2.generated';
+import type { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
 
 /**

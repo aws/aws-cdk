@@ -1,15 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
-import { IParameterRef, ParameterReference } from './ssm.generated';
+import type { IParameterRef, ParameterReference } from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
+import type { IResource } from '../../core';
 import {
   Annotations,
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  ContextProvider, Fn, IResource, Resource, Stack, Token,
+  ContextProvider, Fn, Resource, Stack, Token,
   Tokenization,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';

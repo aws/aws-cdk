@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { Queue, QueueProps, RedriveAllowPolicy, RedrivePermission } from './index';
+import type { Construct } from 'constructs';
+import type { QueueProps, RedriveAllowPolicy } from './index';
+import { Queue, RedrivePermission } from './index';
 import { Token } from '../../core';
-import { validateAllProps, ValidationRule } from '../../core/lib/helpers-internal';
+import type { ValidationRule } from '../../core/lib/helpers-internal';
+import { validateAllProps } from '../../core/lib/helpers-internal';
 
 function validateRange(value: number | undefined, minValue: number, maxValue: number): boolean {
   return value !== undefined && !Token.isUnresolved(value) && (value < minValue || value > maxValue);

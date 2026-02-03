@@ -1,5 +1,6 @@
 import { isDeepStrictEqual } from 'util';
-import { ListBucketsCommand, ListBucketsOutput, S3Client } from '@aws-sdk/client-s3';
+import type { ListBucketsOutput } from '@aws-sdk/client-s3';
+import { ListBucketsCommand, S3Client } from '@aws-sdk/client-s3';
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as nock from 'nock';

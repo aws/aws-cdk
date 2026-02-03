@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IAlarm } from './alarm-base';
+import type { Construct } from 'constructs';
+import type { IAlarm } from './alarm-base';
 
 /**
  * Interface for objects that can be the targets of CloudWatch alarm actions
