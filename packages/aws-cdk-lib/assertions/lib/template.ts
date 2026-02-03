@@ -8,8 +8,9 @@ import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
 import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, getResourceId, hasResource, hasResourceProperties } from './private/resources';
-import { Template as TemplateType } from './private/template';
-import { Stack, Stage } from '../../core';
+import type { Template as TemplateType } from './private/template';
+import type { Stack } from '../../core';
+import { Stage } from '../../core';
 import { AssertionError } from './private/error';
 
 /**

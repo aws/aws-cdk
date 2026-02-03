@@ -1,14 +1,16 @@
+import type {
+  HttpRouteIntegrationBindOptions,
+  HttpRouteIntegrationConfig,
+  IVpcLink,
+} from '../../../../aws-apigatewayv2';
 import {
   HttpConnectionType,
   HttpIntegrationType,
-  HttpRouteIntegrationBindOptions,
-  HttpRouteIntegrationConfig,
   HttpRouteIntegration,
   PayloadFormatVersion,
   HttpMethod,
-  IVpcLink,
 } from '../../../../aws-apigatewayv2';
-import * as ec2 from '../../../../aws-ec2';
+import type * as ec2 from '../../../../aws-ec2';
 import { ValidationError } from '../../../../core/lib/errors';
 
 /**

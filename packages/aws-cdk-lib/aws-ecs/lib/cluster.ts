@@ -1,40 +1,44 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { ClusterGrants } from './cluster-grants';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
+import type {
+  IClusterRef,
+  ClusterReference,
+} from './ecs.generated';
 import {
   CfnCluster,
   CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
-  IClusterRef,
-  ClusterReference,
 } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { InstanceRequirementsConfig } from '../../aws-ec2';
+import type { InstanceRequirementsConfig } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IKey, IKeyRef } from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as kms from '../../aws-kms';
+import type * as logs from '../../aws-logs';
+import type * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
+import type {
+  IResource,
+  IAspect,
+  Size,
+} from '../../core';
 import {
   Aws,
   Duration,
-  IResource,
   Resource,
   Stack,
   Aspects,
   ArnFormat,
-  IAspect,
   Token,
   Names,
   Annotations,
   ValidationError,
-  Size,
   Lazy,
 } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -1450,7 +1454,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly fargateEphemeralStorageKmsKey?: IKey;
+  readonly fargateEphemeralStorageKmsKey?: kms.IKey;
 
   /**
    * Customer KMS Key used to encrypt ECS managed Storage.
@@ -1459,7 +1463,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly kmsKey?: IKeyRef;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -1490,6 +1494,21 @@ export enum PropagateManagedInstancesTags {
    * Do not propagate tags
    */
   NONE = 'NONE',
+}
+
+/**
+ * The capacity option type for instances launched by a Managed Instances Capacity Provider.
+ */
+export enum CapacityOptionType {
+  /**
+   * Launch instances as On-Demand instances
+   */
+  ON_DEMAND = 'ON_DEMAND',
+
+  /**
+   * Launch instances as Spot instances
+   */
+  SPOT = 'SPOT',
 }
 
 /**
@@ -1585,6 +1604,14 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default PropagateManagedInstancesTags.NONE - no tag propagation
    */
   readonly propagateTags?: PropagateManagedInstancesTags;
+
+  /**
+   * Specifies the capacity option type for instances launched by this capacity provider.
+   * This determines whether instances are launched as On-Demand or Spot instances.
+   *
+   * @default - `ON_DEMAND`
+   */
+  readonly capacityOptionType?: CapacityOptionType;
 }
 
 /**
@@ -1680,6 +1707,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     const managedInstancesProviderConfig: CfnCapacityProvider.ManagedInstancesProviderProperty = {
       infrastructureRoleArn: this.infrastructureRole.roleArn,
       instanceLaunchTemplate: {
+        capacityOptionType: props.capacityOptionType,
         ec2InstanceProfileArn: this.ec2InstanceProfile.instanceProfileArn,
         networkConfiguration: {
           subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),

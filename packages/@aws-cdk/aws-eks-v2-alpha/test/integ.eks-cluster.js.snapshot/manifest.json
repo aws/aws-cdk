@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fe7cb5bb370839b0b24bbb694ce5b35accdfdf9311a6eb0f464ebf401dd74aec.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fe89f81960adb014a0fce2e33816c331c46ed17f35cb0237e7378f56313d5fb5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -3100,6 +3100,51 @@
             "data": "ClusterOpenIdConnectProviderE7EB0530"
           }
         ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/ConditionJson/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterMyServiceAccountWithOverwriteConditionJson36F53AEB"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterMyServiceAccountWithOverwriteRole751D899A"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/manifest-MyServiceAccountWithOverwriteServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/manifest-MyServiceAccountWithOverwriteServiceAccountResource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterMyServiceAccountWithOverwritemanifestMyServiceAccountWithOverwriteServiceAccountResource6DEFAA89"
+          }
+        ],
         "/aws-cdk-eks-cluster/Cluster/MyExtendedServiceAccount/ConditionJson/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -3625,6 +3670,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -3826,5 +3875,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }
