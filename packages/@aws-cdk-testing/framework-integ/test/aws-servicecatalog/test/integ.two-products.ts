@@ -4,8 +4,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as servicecatalog from 'aws-cdk-lib/aws-servicecatalog';
-import { ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
-import { Construct } from 'constructs';
+import type { ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
+import type { Construct } from 'constructs';
 
 /*
   See integ.product.ts for instructions on how to test successful deployments by hand

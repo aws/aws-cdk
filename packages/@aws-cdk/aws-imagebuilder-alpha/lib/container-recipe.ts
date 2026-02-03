@@ -1,18 +1,19 @@
 import * as cdk from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnContainerRecipe } from 'aws-cdk-lib/aws-imagebuilder';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { BaseContainerImage, ContainerInstanceImage } from './base-image';
-import { Repository } from './distribution-configuration';
-import { IImageRecipe } from './image-recipe';
-import { OSVersion } from './os-version';
-import { ComponentConfiguration, IRecipeBase } from './recipe-base';
+import type { Construct } from 'constructs';
+import type { BaseContainerImage, ContainerInstanceImage } from './base-image';
+import type { Repository } from './distribution-configuration';
+import type { IImageRecipe } from './image-recipe';
+import type { OSVersion } from './os-version';
+import type { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
 const CONTAINER_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ContainerRecipe');
 
@@ -475,22 +476,8 @@ export class ContainerRecipe extends ContainerRecipeBase {
     return x !== null && typeof x === 'object' && CONTAINER_RECIPE_SYMBOL in x;
   }
 
-  /**
-   * The ARN of the container recipe
-   */
-  public readonly containerRecipeArn: string;
-
-  /**
-   * The name of the container recipe
-   */
-  public readonly containerRecipeName: string;
-
-  /**
-   * The version of the container recipe
-   */
-  public readonly containerRecipeVersion: string;
-
   private readonly instanceBlockDevices: ec2.BlockDevice[] = [];
+  private resource: CfnContainerRecipe;
 
   public constructor(scope: Construct, id: string, props: ContainerRecipeProps) {
     super(scope, id, {
@@ -535,7 +522,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
       );
 
     const containerRecipeVersion = props.containerRecipeVersion ?? DEFAULT_RECIPE_VERSION;
-    const containerRecipe = new CfnContainerRecipe(this, 'Resource', {
+    this.resource = new CfnContainerRecipe(this, 'Resource', {
       name: this.physicalName,
       version: containerRecipeVersion,
       description: props.description,
@@ -554,14 +541,25 @@ export class ContainerRecipe extends ContainerRecipeBase {
       ...dockerfile.render(),
       ...(components?.length && { components }),
     });
+  }
 
-    this.containerRecipeName = this.getResourceNameAttribute(containerRecipe.attrName);
-    this.containerRecipeArn = this.getResourceArnAttribute(containerRecipe.attrArn, {
+  @memoizedGetter
+  public get containerRecipeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get containerRecipeArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'container-recipe',
-      resourceName: `${this.physicalName}/${containerRecipeVersion}`,
+      resourceName: `${this.physicalName}/${this.resource.version}`,
     });
-    this.containerRecipeVersion = containerRecipe.getAtt('Version').toString();
+  }
+
+  @memoizedGetter
+  public get containerRecipeVersion(): string {
+    return this.resource.getAtt('Version').toString();
   }
 
   /**

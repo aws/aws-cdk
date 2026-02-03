@@ -1,8 +1,9 @@
-import { Method } from './method';
-import { IVpcLink, VpcLink } from './vpc-link';
+import type { Method } from './method';
+import type { IVpcLink } from './vpc-link';
+import { VpcLink } from './vpc-link';
 import * as apigwv2 from '../../aws-apigatewayv2';
-import * as iam from '../../aws-iam';
-import { Lazy, Duration } from '../../core';
+import type * as iam from '../../aws-iam';
+import { Lazy, type Duration } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
 /**

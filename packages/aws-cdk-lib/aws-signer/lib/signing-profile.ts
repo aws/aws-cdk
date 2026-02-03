@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { CfnSigningProfile, SigningProfileReference } from './signer.generated';
-import { Duration, FeatureFlags, IResource, Resource, Stack } from '../../core';
+import type { Construct } from 'constructs';
+import type { SigningProfileReference } from './signer.generated';
+import { CfnSigningProfile } from './signer.generated';
+import type { Duration, IResource } from '../../core';
+import { FeatureFlags, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { aws_signer } from '../../interfaces';
+import type { aws_signer } from '../../interfaces';
 
 // Feature flag is defined in cx-api
 

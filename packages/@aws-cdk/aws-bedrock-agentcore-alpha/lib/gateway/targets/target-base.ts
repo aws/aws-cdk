@@ -1,7 +1,8 @@
-import { Resource, IResource } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IGateway } from '../gateway-base';
-import { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
+import type { IGateway } from '../gateway-base';
+import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 
 /******************************************************************************
  *                                 ENUM

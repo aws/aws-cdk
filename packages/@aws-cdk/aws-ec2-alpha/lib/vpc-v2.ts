@@ -1,12 +1,17 @@
 import { cx_api, region_info } from 'aws-cdk-lib';
-import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { Arn, CfnResource, FeatureFlags, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
+import type { DefaultInstanceTenancy, ISubnet } from 'aws-cdk-lib/aws-ec2';
+import { CfnVPC, CfnVPCCidrBlock, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import type { CfnResource } from 'aws-cdk-lib/core';
+import { Arn, FeatureFlags, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { IpamOptions, IIpamPool } from './ipam';
-import { ISubnetV2, SubnetV2, SubnetV2Attributes } from './subnet-v2';
-import { IVpcV2, VpcV2Base } from './vpc-v2-base';
+import type { Construct, IDependable } from 'constructs';
+import { DependencyGroup } from 'constructs';
+import type { IpamOptions, IIpamPool } from './ipam';
+import type { ISubnetV2, SubnetV2Attributes } from './subnet-v2';
+import { SubnetV2 } from './subnet-v2';
+import type { IVpcV2 } from './vpc-v2-base';
+import { VpcV2Base } from './vpc-v2-base';
 
 /**
  * Additional props needed for secondary Address
