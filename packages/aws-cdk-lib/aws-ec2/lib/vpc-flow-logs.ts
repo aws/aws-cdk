@@ -3,7 +3,7 @@ import type { FlowLogReference, IFlowLogRef, ISubnetRef } from './ec2.generated'
 import { CfnFlowLog } from './ec2.generated';
 import type { IVpc } from './vpc';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
+import type * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
