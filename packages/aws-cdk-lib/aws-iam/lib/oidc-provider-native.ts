@@ -27,13 +27,17 @@ export interface IOidcProvider extends IResource, IOIDCProviderRef {
 
   /**
    * Alias for `oidcProviderArn` to maintain backwards compatibility for
-   * constructs which expect IOpenIdConnectProvider.
+   * constructs which accept `iam.IOpenIdConnectProvider`.
+   *
+   * Use `oidcProviderArn` instead.
    */
   readonly openIdConnectProviderArn: string;
 
   /**
    * Alias for `oidcProviderIssuer` to maintain backwards compatibility for
-   * constructs which expect IOpenIdConnectProvider.
+   * constructs which accept `iam.IOpenIdConnectProvider.
+   *
+   * Use `oidcProviderIssuer` instead.
    */
   readonly openIdConnectProviderIssuer: string;
 }
