@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.voiceid"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.VoiceID"
+    },
+    "python": {
+      "module": "aws_cdk.aws_voiceid"
+    }
+  }
+}

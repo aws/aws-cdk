@@ -1,0 +1,227 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "latency-based-routing": {
+        "id": "latency-based-routing",
+        "path": "latency-based-routing",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "latency-based-routing/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "latency-based-routing/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk.dev."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "LatencyBasedRouting0": {
+            "id": "LatencyBasedRouting0",
+            "path": "latency-based-routing/LatencyBasedRouting0",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "latency-based-routing/LatencyBasedRouting0/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "region": "us-east-1",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "REGION_us-east-1_ID_latencybasedroutintencyBasedRouting09258C5CC",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "LatencyBasedRouting1": {
+            "id": "LatencyBasedRouting1",
+            "path": "latency-based-routing/LatencyBasedRouting1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "latency-based-routing/LatencyBasedRouting1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "region": "ap-northeast-1",
+                    "resourceRecords": [
+                      "2.3.4.5"
+                    ],
+                    "setIdentifier": "REGION_ap-northeast-1_ID_latencybasedroucyBasedRouting193C4855F",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "LatencyBasedRouting2": {
+            "id": "LatencyBasedRouting2",
+            "path": "latency-based-routing/LatencyBasedRouting2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "latency-based-routing/LatencyBasedRouting2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "region": "eu-west-1",
+                    "resourceRecords": [
+                      "3.4.5.6"
+                    ],
+                    "setIdentifier": "REGION_eu-west-1_ID_latencybasedroutintencyBasedRouting25966E4AD",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "latency-based-routing/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "latency-based-routing/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Route53LatencyBasedRoutingInteg": {
+        "id": "Route53LatencyBasedRoutingInteg",
+        "path": "Route53LatencyBasedRoutingInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Route53LatencyBasedRoutingInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Route53LatencyBasedRoutingInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Route53LatencyBasedRoutingInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Route53LatencyBasedRoutingInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Route53LatencyBasedRoutingInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

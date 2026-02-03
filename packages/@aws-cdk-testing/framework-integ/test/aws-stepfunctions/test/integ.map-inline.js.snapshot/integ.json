@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "cdk-stepfunctions-map-inline-integ/DefaultTest": {
+      "stacks": [
+        "cdk-stepfunctions-map-inline-stack"
+      ],
+      "assertionStack": "cdk-stepfunctions-map-inline-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkstepfunctionsmapinlineintegDefaultTestDeployAssertD29BA3EB"
+    }
+  }
+}

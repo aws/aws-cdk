@@ -1,0 +1,216 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-user-pool-idp-apple": {
+        "id": "integ-user-pool-idp-apple",
+        "path": "integ-user-pool-idp-apple",
+        "children": {
+          "pool": {
+            "id": "pool",
+            "path": "integ-user-pool-idp-apple/pool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-idp-apple/pool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "client": {
+                "id": "client",
+                "path": "integ-user-pool-idp-apple/pool/client",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-idp-apple/pool/client/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "supportedIdentityProviders": [
+                          {
+                            "Ref": "apple9B5408AC"
+                          },
+                          "COGNITO"
+                        ],
+                        "userPoolId": {
+                          "Ref": "pool056F3F7E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              },
+              "domain": {
+                "id": "domain",
+                "path": "integ-user-pool-idp-apple/pool/domain",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-idp-apple/pool/domain/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "nija-test-pool",
+                        "userPoolId": {
+                          "Ref": "pool056F3F7E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolDomain",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "apple": {
+            "id": "apple",
+            "path": "integ-user-pool-idp-apple/apple",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-idp-apple/apple/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeMapping": {
+                      "family_name": "lastName",
+                      "given_name": "firstName",
+                      "email_verified": "email_verified"
+                    },
+                    "providerDetails": {
+                      "client_id": "com.amzn.cdk",
+                      "team_id": "CDKTEAMCDK",
+                      "key_id": "CDKKEYCDK1",
+                      "private_key": "PRIV_KEY_CDK",
+                      "authorize_scopes": "email name"
+                    },
+                    "providerName": "SignInWithApple",
+                    "providerType": "SignInWithApple",
+                    "userPoolId": {
+                      "Ref": "pool056F3F7E"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolIdentityProvider",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPoolIdentityProviderApple",
+              "version": "0.0.0"
+            }
+          },
+          "SignInLink": {
+            "id": "SignInLink",
+            "path": "integ-user-pool-idp-apple/SignInLink",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-user-pool-idp-apple/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-user-pool-idp-apple/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

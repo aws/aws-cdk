@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "f62ad15f7b475bb2295e65a1d4832b14bd0cf20a051c398ab4c4484b6ceb3780": {
+      "displayName": "integ-ecs-neuron-ami Template",
+      "source": {
+        "path": "integ-ecs-neuron-ami.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e85b9c78": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f62ad15f7b475bb2295e65a1d4832b14bd0cf20a051c398ab4c4484b6ceb3780.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-alb-integration-test/DefaultTest": {
+      "stacks": [
+        "integ-alb-integration"
+      ],
+      "assertionStack": "integ-alb-integration-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integalbintegrationtestDefaultTestDeployAssert91001477"
+    }
+  }
+}

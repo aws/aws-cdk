@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "iam-instance-profile-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-iam-instance-profile"
+      ],
+      "assertionStack": "iam-instance-profile-test/DefaultTest/DeployAssert",
+      "assertionStackName": "iaminstanceprofiletestDefaultTestDeployAssert39594193"
+    }
+  }
+}

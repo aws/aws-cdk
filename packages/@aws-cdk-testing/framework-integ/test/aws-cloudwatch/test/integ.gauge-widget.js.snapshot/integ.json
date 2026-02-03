@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "LambdaTest/DefaultTest": {
+      "stacks": [
+        "gauge-alarm"
+      ],
+      "assertionStack": "LambdaTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaTestDefaultTestDeployAssert1AF2B360"
+    }
+  }
+}

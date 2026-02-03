@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "1b364b66e39ecc0e04fbe2faa9ca24e5ec8c7da2bd01d4f78ae935b06457b1b4": {
+      "displayName": "aws-ecs-integ-bottlerocket-nvidia-ami Template",
+      "source": {
+        "path": "aws-ecs-integ-bottlerocket-nvidia-ami.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-426fd7d8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1b364b66e39ecc0e04fbe2faa9ca24e5ec8c7da2bd01d4f78ae935b06457b1b4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

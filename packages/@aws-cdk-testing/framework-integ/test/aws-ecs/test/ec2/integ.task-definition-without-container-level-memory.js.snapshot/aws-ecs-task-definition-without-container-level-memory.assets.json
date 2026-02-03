@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "f0418187a9bb20f94c9c34694a64572ac4e7cb61962e83798b4266d0351e1f69": {
+      "source": {
+        "path": "aws-ecs-task-definition-without-container-level-memory.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f0418187a9bb20f94c9c34694a64572ac4e7cb61962e83798b4266d0351e1f69.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

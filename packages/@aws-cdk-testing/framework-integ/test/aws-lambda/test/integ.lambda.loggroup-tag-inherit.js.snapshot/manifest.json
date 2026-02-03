@@ -1,0 +1,217 @@
+{
+  "version": "43.0.0",
+  "artifacts": {
+    "loggroup-tag-inherit.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "loggroup-tag-inherit.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "loggroup-tag-inherit": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "loggroup-tag-inherit.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/466c40ced82d0cef4f96bcc6b029e9a5b09e17d2e2752f8eb9dbc8170130278f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "loggroup-tag-inherit.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "loggroup-tag-inherit.assets"
+      ],
+      "metadata": {
+        "/loggroup-tag-inherit/TaggedLmbdaFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/loggroup-tag-inherit/TaggedLmbdaFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/loggroup-tag-inherit/TaggedLmbdaFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/loggroup-tag-inherit/TaggedLmbdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaggedLmbdaFunctionServiceRoleD61A9249"
+          }
+        ],
+        "/loggroup-tag-inherit/TaggedLmbdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaggedLmbdaFunction46476F55"
+          }
+        ],
+        "/loggroup-tag-inherit/TaggedLmbdaFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/loggroup-tag-inherit/TaggedLmbdaFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaggedLmbdaFunctionLogGroup760E0CA2"
+          }
+        ],
+        "/loggroup-tag-inherit/Exports/Output{\"Ref\":\"TaggedLmbdaFunction46476F55\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefTaggedLmbdaFunction46476F55795F3C34"
+          }
+        ],
+        "/loggroup-tag-inherit/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/loggroup-tag-inherit/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "loggroup-tag-inherit"
+    },
+    "integtestslambdaloggrouptaginheritDefaultTestDeployAssertE0ADECB2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestslambdaloggrouptaginheritDefaultTestDeployAssertE0ADECB2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestslambdaloggrouptaginheritDefaultTestDeployAssertE0ADECB2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestslambdaloggrouptaginheritDefaultTestDeployAssertE0ADECB2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/73b0898d199f75cf79509bf810907950b4f51a5f6944897d1b17958b8f958a37.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestslambdaloggrouptaginheritDefaultTestDeployAssertE0ADECB2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "loggroup-tag-inherit",
+        "integtestslambdaloggrouptaginheritDefaultTestDeployAssertE0ADECB2.assets"
+      ],
+      "metadata": {
+        "/integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroupdee116f206bda45c2eb5641b65df6e9e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroupdee116f206bda45c2eb5641b65df6e9e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogslistTagsLogGroupdee116f206bda45c2eb5641b65df6e9e"
+          }
+        ],
+        "/integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroupdee116f206bda45c2eb5641b65df6e9e/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogslistTagsLogGroupdee116f206bda45c2eb5641b65df6e9e"
+          }
+        ],
+        "/integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1016.1"
+}

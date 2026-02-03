@@ -1,0 +1,23 @@
+{
+  "Mappings": {
+    "SomeMapping": {
+      "region": {
+        "key1": "value1"
+      }
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::FindInMap": [
+            "SomeMapping",
+            { "Ref": "AWS::Region" },
+            "key1"
+          ]
+        }
+      }
+    }
+  }
+}

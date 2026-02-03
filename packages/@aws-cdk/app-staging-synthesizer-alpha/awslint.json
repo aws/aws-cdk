@@ -1,0 +1,6 @@
+{
+    "exclude": [
+        "construct-ctor:@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack.<initializer>.params[0]",
+        "props-no-arn-refs:@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStackProps.deployRoleArn"
+    ]
+}

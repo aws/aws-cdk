@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "089508bb504b5082360eee91eedbf067227b226d8d75b484e5019fa5ea1800a1": {
+      "displayName": "AttributeBasedComputeFleetIntegStack0 Template",
+      "source": {
+        "path": "AttributeBasedComputeFleetIntegStack0.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ae4d60f6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "089508bb504b5082360eee91eedbf067227b226d8d75b484e5019fa5ea1800a1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

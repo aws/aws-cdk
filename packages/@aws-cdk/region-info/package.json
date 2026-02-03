@@ -1,0 +1,124 @@
+{
+  "name": "@aws-cdk/region-info",
+  "version": "0.0.0",
+  "description": "AWS region information, such as service principal names",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/**/*.js",
+          "{projectRoot}/**/*.d.ts",
+          "{projectRoot}/.jsii",
+          "{projectRoot}/.warnings.jsii.js",
+          "{projectRoot}/.gitignore",
+          "{projectRoot}/tsconfig.json",
+          "{projectRoot}/README.md",
+          "{projectRoot}/rosetta",
+          "!{projectRoot}/node_modules/**/*"
+        ]
+      }
+    }
+  },
+  "jsii": {
+    "excludeTypescript": [
+      "**/test/**/*.ts"
+    ],
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.regioninfo",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-region-info"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.RegionInfo",
+        "packageId": "Amazon.CDK.RegionInfo",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.region-info",
+        "module": "aws_cdk.region_info",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
+  },
+  "scripts": {
+    "build": "yarn gen && cdk-build --skip-lint",
+    "gen": "cdk-copy region-info",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "awslint": "cdk-awslint",
+    "package": "cdk-package",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "aws-cdk-lib": "0.0.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^29.5.14",
+    "fs-extra": "^9.1.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/region-info"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "stability": "stable",
+  "maturity": "stable",
+  "nozem": {
+    "ostools": [
+      "bash"
+    ]
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/region-info.Fact.regions",
+      "docs-public-apis:@aws-cdk/region-info.RegionInfo.regions",
+      "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
+    ]
+  }
+}

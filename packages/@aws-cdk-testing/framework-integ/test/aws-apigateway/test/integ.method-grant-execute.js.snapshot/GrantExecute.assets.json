@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "f6cef410c480d8747a5f4a440011c5e4ccc1ec37b0c97998ff09ac60a585c54b": {
+      "displayName": "GrantExecute Template",
+      "source": {
+        "path": "GrantExecute.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f6cef410c480d8747a5f4a440011c5e4ccc1ec37b0c97998ff09ac60a585c54b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

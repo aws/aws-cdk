@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "fb3fa5d51a7006850b23bbec64113f398d64cf5705c8d9f3180db28138b4aa02": {
+      "displayName": "aws-cdk-apigw-alias-integ Template",
+      "source": {
+        "path": "aws-cdk-apigw-alias-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fb3fa5d51a7006850b23bbec64113f398d64cf5705c8d9f3180db28138b4aa02.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

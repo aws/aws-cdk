@@ -1,0 +1,164 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-ecs-task-definition-container-credentialspecs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-task-definition-container-credentialspecs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-task-definition-container-credentialspecs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-task-definition-container-credentialspecs.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15b792b5a8db7ad07b3634fb52b565ba733387c368ab58c412b388fcaad71f2a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-task-definition-container-credentialspecs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-task-definition-container-credentialspecs.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-task-definition-container-credentialspecs/bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "bucket43879C71"
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "bucketPolicy638F945D"
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/parameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "parameter76C24FC7"
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/task-execution-role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taskexecutionrole7BB27090"
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "s3bucket64CB25AF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "s3bucket64CB25AF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "s3bucketPolicyF7E91061": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "s3bucketPolicyF7E91061",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-ecs-task-definition-container-credentialspecs"
+    },
+    "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424.assets"
+      ],
+      "metadata": {
+        "/TaskDefinitionContainerCredSpecs/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TaskDefinitionContainerCredSpecs/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TaskDefinitionContainerCredSpecs/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

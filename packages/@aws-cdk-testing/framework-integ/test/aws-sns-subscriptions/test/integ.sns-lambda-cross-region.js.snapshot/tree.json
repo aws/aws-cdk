@@ -1,0 +1,224 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "TopicStack": {
+        "id": "TopicStack",
+        "path": "TopicStack",
+        "children": {
+          "MyTopic": {
+            "id": "MyTopic",
+            "path": "TopicStack/MyTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "TopicStack/MyTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "topicName": "topicstackopicstackmytopicc43e67afb24f28bb94f9"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "FunctionStack": {
+        "id": "FunctionStack",
+        "path": "FunctionStack",
+        "children": {
+          "Echo": {
+            "id": "Echo",
+            "path": "FunctionStack/Echo",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "FunctionStack/Echo/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FunctionStack/Echo/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FunctionStack/Echo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "EchoServiceRoleBE28060B",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "AllowInvoke:TopicStackMyTopicC43E67AF": {
+                "id": "AllowInvoke:TopicStackMyTopicC43E67AF",
+                "path": "FunctionStack/Echo/AllowInvoke:TopicStackMyTopicC43E67AF",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "Echo11F3FB29",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "sns.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":sns:us-east-1:12345678:topicstackopicstackmytopicc43e67afb24f28bb94f9"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "MyTopic": {
+                "id": "MyTopic",
+                "path": "FunctionStack/Echo/MyTopic",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FunctionStack/Echo/MyTopic/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "protocol": "lambda",
+                        "topicArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":sns:us-east-1:12345678:topicstackopicstackmytopicc43e67afb24f28bb94f9"
+                            ]
+                          ]
+                        },
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "Echo11F3FB29",
+                            "Arn"
+                          ]
+                        },
+                        "region": "us-east-1"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Subscription",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

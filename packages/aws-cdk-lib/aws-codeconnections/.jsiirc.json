@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.codeconnections"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.CodeConnections"
+    },
+    "python": {
+      "module": "aws_cdk.aws_codeconnections"
+    }
+  }
+}

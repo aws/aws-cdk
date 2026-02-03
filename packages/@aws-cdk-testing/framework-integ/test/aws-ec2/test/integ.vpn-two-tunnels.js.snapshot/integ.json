@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-vpn-two-tunnels"
+      ],
+      "assertionStack": "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkec2vpntwotunnelstestDefaultTestDeployAssert354DB13C"
+    }
+  }
+}

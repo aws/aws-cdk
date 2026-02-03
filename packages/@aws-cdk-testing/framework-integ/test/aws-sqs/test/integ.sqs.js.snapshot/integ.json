@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "SqsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sqs"
+      ],
+      "assertionStack": "SqsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SqsTestDefaultTestDeployAssert659366A6"
+    }
+  }
+}

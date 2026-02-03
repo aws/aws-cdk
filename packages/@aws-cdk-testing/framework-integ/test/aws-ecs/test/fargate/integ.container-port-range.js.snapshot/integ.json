@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EcsContainerPortRange/DefaultTest": {
+      "stacks": [
+        "aws-ecs-container-port-range"
+      ],
+      "assertionStack": "EcsContainerPortRange/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsContainerPortRangeDefaultTestDeployAssert87C0580C"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,165 @@
+{
+ "Resources": {
+  "AwsApiCallAthenalistWorkGroups": {
+   "Type": "Custom::DeployAssert@SdkCallAthenalistWorkGroups",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Athena",
+    "api": "listWorkGroups",
+    "expected": "{\"$ObjectLike\":{\"WorkGroups\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"TestWG\"}}]}}}",
+    "flattenResponse": "false",
+    "salt": "1770042709940"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "athena:ListWorkGroups"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "athena:ListNotebookMetadata"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453": {
+   "Type": "Custom::DeployAssert@SdkCallAthenalistNotebookMetadata",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Athena",
+    "api": "listNotebookMetadata",
+    "expected": "{\"$ObjectLike\":{\"NotebookMetadataList\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"MyNotebook1\"}}]}}}",
+    "parameters": {
+     "WorkGroup": "\"TestWG\""
+    },
+    "flattenResponse": "false",
+    "salt": "1770042709940"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallAthenalistWorkGroups": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallAthenalistWorkGroups",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

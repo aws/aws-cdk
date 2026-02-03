@@ -1,0 +1,15 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "TableBucketEncryptionIntegTest/DefaultTest": {
+      "stacks": [
+        "OnlyEncryptionKeyTest",
+        "OnlyKMSEncryptionTypeTest",
+        "KeyWithKMSEncryptionTypeTest",
+        "OnlyS3ManagedEncryptionTest"
+      ],
+      "assertionStack": "TableBucketEncryptionIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9"
+    }
+  }
+}

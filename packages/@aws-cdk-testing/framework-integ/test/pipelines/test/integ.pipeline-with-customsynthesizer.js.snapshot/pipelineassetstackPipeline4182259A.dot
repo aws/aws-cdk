@@ -1,0 +1,59 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg pipelineassetstackPipeline4182259A.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c8245d2d6fb6250e68154d4e0009378253e99ba6e2" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate";
+"Build.Synth" -> "UpdatePipeline.SelfMutate";
+"BEGIN UpdatePipeline" -> "UpdatePipeline.SelfMutate";
+"UpdatePipeline.SelfMutate" -> "END UpdatePipeline";
+"BEGIN Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Assets.FileAsset1";
+"UpdatePipeline.SelfMutate" -> "Assets.FileAsset1";
+"BEGIN Assets" -> "Assets.FileAsset1";
+"Assets.FileAsset1" -> "END Assets";
+"BEGIN Staging" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Staging" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate" -> "BEGIN Staging";
+"BEGIN Staging.dev-lambda-stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Staging.dev-lambda-stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Staging.dev-lambda-stack.Deploy";
+"Staging.dev-lambda-stack.Prepare" -> "Staging.dev-lambda-stack.Deploy";
+"Staging.dev-lambda-stack.Prepare";
+"Build.Synth" -> "Staging.dev-lambda-stack.Prepare";
+"Assets.FileAsset1" -> "Staging.dev-lambda-stack.Prepare";
+"BEGIN Staging.dev-lambda-stack" -> "Staging.dev-lambda-stack.Prepare";
+"Staging.dev-lambda-stack.Deploy" -> "END Staging.dev-lambda-stack";
+"BEGIN Staging" -> "BEGIN Staging.dev-lambda-stack";
+"END Staging.dev-lambda-stack" -> "END Staging";
+"BEGIN Production" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Production" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate" -> "BEGIN Production";
+"END Staging" -> "BEGIN Production";
+"BEGIN Production.prd-lambda-stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Production.prd-lambda-stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Production.prd-lambda-stack.Deploy";
+"Production.prd-lambda-stack.Prepare" -> "Production.prd-lambda-stack.Deploy";
+"Production.prd-lambda-stack.Prepare";
+"Build.Synth" -> "Production.prd-lambda-stack.Prepare";
+"Assets.FileAsset1" -> "Production.prd-lambda-stack.Prepare";
+"BEGIN Production.prd-lambda-stack" -> "Production.prd-lambda-stack.Prepare";
+"Production.prd-lambda-stack.Deploy" -> "END Production.prd-lambda-stack";
+"BEGIN Production" -> "BEGIN Production.prd-lambda-stack";
+"END Production.prd-lambda-stack" -> "END Production";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c8245d2d6fb6250e68154d4e0009378253e99ba6e2";
+"BEGIN Source" -> "Source.c8245d2d6fb6250e68154d4e0009378253e99ba6e2";
+"Source.c8245d2d6fb6250e68154d4e0009378253e99ba6e2" -> "END Source";
+}

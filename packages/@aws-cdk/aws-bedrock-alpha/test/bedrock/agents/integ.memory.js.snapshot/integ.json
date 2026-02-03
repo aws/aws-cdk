@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockMemory/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-memory-1"
+      ],
+      "assertionStack": "BedrockMemory/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockMemoryDefaultTestDeployAssert5AD90360"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

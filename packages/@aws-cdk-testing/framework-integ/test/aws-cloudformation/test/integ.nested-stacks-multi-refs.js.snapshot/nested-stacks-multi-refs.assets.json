@@ -1,0 +1,58 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a": {
+      "source": {
+        "path": "nestedstacksmultirefsNested1Nested2Nested34EDB63C2.nested.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "3f13e5b641dc5e587f9205c95cfe6c5adb4f17c3635d8e199f8fc2aade38a2ff": {
+      "source": {
+        "path": "nestedstacksmultirefsNested1Nested2B1544EC7.nested.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3f13e5b641dc5e587f9205c95cfe6c5adb4f17c3635d8e199f8fc2aade38a2ff.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "4bdae5eef426be902bf557cb4e8586dca464f5907b710c68d9679f61d2b7eee7": {
+      "source": {
+        "path": "nestedstacksmultirefsNested146CE1F9F.nested.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4bdae5eef426be902bf557cb4e8586dca464f5907b710c68d9679f61d2b7eee7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "5226a2ceb49789473e556c40e4679adfa59293495e2266e8a053a3efc78cb9a5": {
+      "source": {
+        "path": "nested-stacks-multi-refs.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5226a2ceb49789473e556c40e4679adfa59293495e2266e8a053a3efc78cb9a5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

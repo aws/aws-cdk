@@ -1,0 +1,190 @@
+import { LogGroupResourcePolicy } from './log-group-resource-policy';
+import type { TargetBaseProps } from './util';
+import { bindBaseTargetConfig } from './util';
+import type { RuleTargetInputProperties, IRule } from '../../aws-events';
+import * as events from '../../aws-events';
+import { RuleTargetInput, EventField, InputType } from '../../aws-events';
+import * as iam from '../../aws-iam';
+import type * as logs from '../../aws-logs';
+import * as cdk from '../../core';
+import { ArnFormat, Stack, ValidationError } from '../../core';
+
+/**
+ * Options used when creating a target input template
+ */
+export interface LogGroupTargetInputOptions {
+  /**
+   * The timestamp that will appear in the CloudWatch Logs record
+   *
+   * @default EventField.time
+   */
+  readonly timestamp?: any;
+
+  /**
+   * The value provided here will be used in the Log "message" field.
+   *
+   * This field must be a string. If an object is passed (e.g. JSON data)
+   * it will not throw an error, but the message that makes it to
+   * CloudWatch logs will be incorrect. This is a likely scenario if
+   * doing something like: EventField.fromPath('$.detail') since in most cases
+   * the `detail` field contains JSON data.
+   *
+   * @default EventField.detailType
+   */
+  readonly message?: any;
+}
+
+/**
+ * The input to send to the CloudWatch LogGroup target
+ */
+export abstract class LogGroupTargetInput {
+  /**
+   * Pass a JSON object to the log group event target
+   *
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
+   * matched event.
+   *
+   * @deprecated use fromObjectV2
+   */
+  public static fromObject(options?: LogGroupTargetInputOptions): RuleTargetInput {
+    return RuleTargetInput.fromObject({
+      timestamp: options?.timestamp ?? EventField.time,
+      message: options?.message ?? EventField.detailType,
+    });
+  }
+
+  /**
+   * Pass a JSON object to the the log group event target
+   *
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
+   * matched event.
+   */
+  public static fromObjectV2(options?: LogGroupTargetInputOptions): LogGroupTargetInput {
+    return new events.FieldAwareEventInput({
+      timestamp: options?.timestamp ?? EventField.time,
+      message: options?.message ?? EventField.detailType,
+    }, InputType.Object);
+  }
+
+  /**
+   * Return the input properties for this input object
+   */
+  public abstract bind(rule: IRule): RuleTargetInputProperties;
+}
+
+/**
+ * Customize the CloudWatch LogGroup Event Target
+ */
+export interface LogGroupProps extends TargetBaseProps {
+  /**
+   * The event to send to the CloudWatch LogGroup
+   *
+   * This will be the event logged into the CloudWatch LogGroup
+   *
+   * @default - the entire EventBridge event
+   * @deprecated use logEvent instead
+   */
+  readonly event?: events.RuleTargetInput;
+
+  /**
+   * The event to send to the CloudWatch LogGroup
+   *
+   * This will be the event logged into the CloudWatch LogGroup
+   *
+   * @default - the entire EventBridge event
+   */
+  readonly logEvent?: LogGroupTargetInput;
+
+  /**
+   * Whether the custom resource created wll default to
+   * install latest AWS SDK
+   *
+   * @default - install latest AWS SDK
+   */
+  readonly installLatestAwsSdk?: boolean;
+}
+
+/**
+ * Use an AWS CloudWatch LogGroup as an event rule target.
+ */
+export class CloudWatchLogGroup implements events.IRuleTarget {
+  private target?: RuleTargetInputProperties;
+  constructor(private readonly logGroup: logs.ILogGroupRef, private readonly props: LogGroupProps = {}) {}
+
+  /**
+   * Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup
+   */
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
+    // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
+    const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(rule.node)}`;
+
+    const logGroupStack = cdk.Stack.of(this.logGroup);
+
+    if (this.props.event && this.props.logEvent) {
+      throw new ValidationError('Only one of "event" or "logEvent" can be specified', rule);
+    }
+
+    this.target = this.props.event?.bind(rule);
+    if (this.target?.inputPath || this.target?.input) {
+      throw new ValidationError('CloudWatchLogGroup targets does not support input or inputPath', rule);
+    }
+
+    rule.node.addValidation({ validate: () => this.validateInputTemplate() });
+
+    if (!this.logGroup.node.tryFindChild(resourcePolicyId)) {
+      new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {
+        installLatestAwsSdk: this.props.installLatestAwsSdk,
+        policyStatements: [new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+          resources: [this.logGroup.logGroupRef.logGroupArn],
+          principals: [new iam.ServicePrincipal('events.amazonaws.com')],
+        })],
+      });
+    }
+
+    return {
+      ...bindBaseTargetConfig(this.props),
+      arn: logGroupStack.formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        resourceName: this.logGroup.logGroupRef.logGroupName,
+      }),
+      input: this.props.event ?? this.props.logEvent,
+      targetResource: this.logGroup,
+    };
+  }
+
+  /**
+   * Validate that the target event input template has the correct format.
+   * The CloudWatchLogs target only supports a template with the format of:
+   *   {"timestamp": <time>, "message": <message>}
+   *
+   * This is only needed if the deprecated `event` property is used.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutTargets.html
+   */
+  private validateInputTemplate(): string[] {
+    if (this.target?.inputTemplate) {
+      const resolvedTemplate = Stack.of(this.logGroup).resolve(this.target.inputTemplate);
+      if (typeof(resolvedTemplate) === 'string') {
+        // need to add the quotes back to the string so that we can parse the json
+        // '{"timestamp": <time>}' -> '{"timestamp": "<time>"}'
+        const quotedTemplate = resolvedTemplate.replace(new RegExp('(<[^<>]*?>)', 'g'), '"$1"');
+        try {
+          const inputTemplate = JSON.parse(quotedTemplate);
+          const inputTemplateKeys = Object.keys(inputTemplate);
+          if (inputTemplateKeys.length !== 2 ||
+            (!inputTemplateKeys.includes('timestamp') || !inputTemplateKeys.includes('message'))) {
+            return ['CloudWatchLogGroup targets only support input templates in the format {timestamp: <timestamp>, message: <message>}'];
+          }
+        } catch (e: any) {
+          return ['Could not parse input template as JSON.\n' +
+            'CloudWatchLogGroup targets only support input templates in the format {timestamp: <timestamp>, message: <message>}', e];
+        }
+      }
+    }
+    return [];
+  }
+}

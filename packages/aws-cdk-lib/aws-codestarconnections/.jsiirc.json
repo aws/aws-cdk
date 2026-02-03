@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.codestarconnections"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.CodeStarConnections"
+    },
+    "python": {
+      "module": "aws_cdk.aws_codestarconnections"
+    }
+  }
+}

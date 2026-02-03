@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "CrossAccountDeploy/DefaultTest": {
+      "stacks": [
+        "ToCrossAccountRuleStack"
+      ],
+      "assertionStack": "CrossAccountDeploy/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossAccountDeployDefaultTestDeployAssertB5328BEF"
+    }
+  }
+}

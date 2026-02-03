@@ -1,0 +1,282 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "SyntheticsCanaryProvisionedResourceCleanupStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SyntheticsCanaryProvisionedResourceCleanupStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SyntheticsCanaryProvisionedResourceCleanupStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SyntheticsCanaryProvisionedResourceCleanupStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc4f1aa1010bfd77022720bba260394f6c178efb6d150d3fe09b0213ca5253d8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SyntheticsCanaryProvisionedResourceCleanupStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SyntheticsCanaryProvisionedResourceCleanupStack.assets"
+      ],
+      "metadata": {
+        "/SyntheticsCanaryProvisionedResourceCleanupStack/CleanupCanary/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CleanupCanaryArtifactsBucket4BAFA7C8"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanupStack/CleanupCanary/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CleanupCanaryArtifactsBucketPolicy17EC8B0E"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanupStack/CleanupCanary/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CleanupCanaryServiceRoleEE446EB1"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanupStack/CleanupCanary/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CleanupCanary598BDB03"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanupStack/Exports/Output{\"Ref\":\"CleanupCanary598BDB03\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefCleanupCanary598BDB03C4F8A825"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanupStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanupStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SyntheticsCanaryProvisionedResourceCleanupStack"
+    },
+    "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/73016d65ec698e42da76f63d6619e9d9699c3c45fc5a930b9647c6706652f8b2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SyntheticsCanaryProvisionedResourceCleanupStack",
+        "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202.assets"
+      ],
+      "metadata": {
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsgetCanary9f830b74058564ab20cf4c0b52d87666/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsgetCanary9f830b74058564ab20cf4c0b52d87666"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666WaitForIsCompleteProviderInvokeE30F2711"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666WaitForTimeoutProviderInvoke60201595"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666WaitForRoleAB4232D4"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsstopCanary9f830b74058564ab20cf4c0b52d87666WaitFor8567BB33"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666WaitForIsCompleteProviderInvoke9FB4BD75"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666WaitForTimeoutProviderInvoke99C011C7"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666WaitForRole6D7D816E"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsyntheticsdeleteCanary9f830b74058564ab20cf4c0b52d87666WaitForA4046A31"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCalllambdalistLayers/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCalllambdalistLayers"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCalllambdalistLayers/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCalllambdalistLayersWaitForIsCompleteProviderInvoke94BBE9D6"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCalllambdalistLayers/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCalllambdalistLayersWaitForTimeoutProviderInvoke6C05C935"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCalllambdalistLayers/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCalllambdalistLayersWaitForRole7FCF5FE2"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCalllambdalistLayers/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCalllambdalistLayersWaitFor5A5A51FF"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/AwsApiCalllambdalistLayers/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCalllambdalistLayers"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

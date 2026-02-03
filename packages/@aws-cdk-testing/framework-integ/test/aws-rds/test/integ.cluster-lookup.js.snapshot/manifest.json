@@ -1,0 +1,384 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "aws-cdk-rds-cluster-lookup.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-rds-cluster-lookup.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-rds-cluster-lookup": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/test-region",
+      "properties": {
+        "templateFile": "aws-cdk-rds-cluster-lookup.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/3bcd33e34603726e169ff4992b9678ec0884d78fef8095e40d73af38bf81fe04.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-rds-cluster-lookup.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-rds-cluster-lookup.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-rds-cluster-lookup/LookedUpCluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/LookedUpClusterEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LookedUpClusterEndpoint"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/LookedUpClusterReadEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LookedUpClusterReadEndpoint"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/LookedUpClusterIdentifier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LookedUpClusterIdentifier"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/LookedUpClusterResourceIdentifier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LookedUpClusterResourceIdentifier"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/LookedUpClusterArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LookedUpClusterArn"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/SecurityGroupIds": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupIds"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/DbAccessRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "description": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/DbAccessRole/ImportDbAccessRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/DbAccessRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbAccessRole408BD73D"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/DbAccessRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/DbAccessRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbAccessRoleDefaultPolicy8020DC70"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/HighConnectionsAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "alarmName": "*",
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "evaluateLowSampleCountPercentile": "*",
+              "treatMissingData": "*",
+              "actionsEnabled": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/HighConnectionsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighConnectionsAlarm3E20B33C"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/HighCPUAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "alarmName": "*",
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "evaluateLowSampleCountPercentile": "*",
+              "treatMissingData": "*",
+              "actionsEnabled": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/HighCPUAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighCPUAlarm56BE6E7D"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/LowMemoryAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "alarmName": "*",
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "evaluateLowSampleCountPercentile": "*",
+              "treatMissingData": "*",
+              "actionsEnabled": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/LowMemoryAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LowMemoryAlarmD9E02E14"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/DeadlockAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "alarmName": "*",
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "evaluateLowSampleCountPercentile": "*",
+              "treatMissingData": "*",
+              "actionsEnabled": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/DeadlockAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadlockAlarmC7257573"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-rds-cluster-lookup/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-rds-cluster-lookup"
+    },
+    "integrdsclusterfromlookupDefaultTestDeployAssert0EEE7886.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integrdsclusterfromlookupDefaultTestDeployAssert0EEE7886.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integrdsclusterfromlookupDefaultTestDeployAssert0EEE7886": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integrdsclusterfromlookupDefaultTestDeployAssert0EEE7886.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integrdsclusterfromlookupDefaultTestDeployAssert0EEE7886.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integrdsclusterfromlookupDefaultTestDeployAssert0EEE7886.assets"
+      ],
+      "metadata": {
+        "/integ-rds-cluster-from-lookup/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-rds-cluster-from-lookup/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-rds-cluster-from-lookup/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "missing": [
+    {
+      "key": "cc-api-provider:account=12345678:exactIdentifier=test-cluster-lookup:propertiesToReturn.0=DBClusterArn:propertiesToReturn.1=Endpoint.Address:propertiesToReturn.2=Endpoint.Port:propertiesToReturn.3=ReadEndpoint.Address:propertiesToReturn.4=DBClusterResourceId:propertiesToReturn.5=VpcSecurityGroupIds:propertiesToReturn.6=EnableHttpEndpoint:region=test-region:typeName=AWS$:$:RDS$:$:DBCluster",
+      "provider": "cc-api-provider",
+      "props": {
+        "dummyValue": [
+          {
+            "Identifier": "TEST",
+            "DBClusterArn": "TESTARN",
+            "Endpoint.Address": "TESTADDRESS",
+            "Endpoint.Port": "5432",
+            "ReadEndpoint.Address": "TESTREADERADDRESS",
+            "DBClusterResourceId": "TESTID",
+            "VpcSecurityGroupIds": [],
+            "EnableHttpEndpoint": true
+          }
+        ],
+        "account": "12345678",
+        "region": "test-region",
+        "typeName": "AWS::RDS::DBCluster",
+        "exactIdentifier": "test-cluster-lookup",
+        "propertiesToReturn": [
+          "DBClusterArn",
+          "Endpoint.Address",
+          "Endpoint.Port",
+          "ReadEndpoint.Address",
+          "DBClusterResourceId",
+          "VpcSecurityGroupIds",
+          "EnableHttpEndpoint"
+        ],
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
+      }
+    }
+  ],
+  "minimumCliVersion": "2.1019.2"
+}

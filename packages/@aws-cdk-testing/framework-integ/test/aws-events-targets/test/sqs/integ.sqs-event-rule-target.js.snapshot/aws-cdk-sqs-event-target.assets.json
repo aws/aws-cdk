@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "2dc225f2fbae904e5a29adf2e7d3d70b01c10760a4fb779d1a447bda79b33e1d": {
+      "source": {
+        "path": "aws-cdk-sqs-event-target.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2dc225f2fbae904e5a29adf2e7d3d70b01c10760a4fb779d1a447bda79b33e1d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

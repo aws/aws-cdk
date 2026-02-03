@@ -1,0 +1,494 @@
+{
+ "Resources": {
+  "MyAuthorizerFunctionServiceRole8A34C19E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyAuthorizerFunction70F1223E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "97aa803a04c812199731bb7640e5bd53e895f702200e9f6f2e65ed793f0e02fe.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyAuthorizerFunctionServiceRole8A34C19E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "MyAuthorizerFunctionServiceRole8A34C19E"
+   ]
+  },
+  "MyAuthorizerFunctionRequestAuthorizerIntegMyAuthorizer5D9D41C5PermissionsCB8B246E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyAuthorizerFunction70F1223E",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyRestApi2D1F47A9"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyAuthorizer6575980E"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyAuthorizerFunctionRequestAuthorizerIntegMySecondAuthorizerCCC4ECEDPermissions055F817A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyAuthorizerFunction70F1223E",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyRestApi2D1F47A9"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MySecondAuthorizer25A69B96"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyRestApi2D1F47A9": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "MyRestApi"
+   }
+  },
+  "MyRestApiCloudWatchRoleD4042E8E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyRestApiAccount2FB6DB7A": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "MyRestApiCloudWatchRoleD4042E8E",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "MyRestApi2D1F47A9"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyRestApiDeploymentB555B58276a4103e7ef38befb395a9ace5fdce44": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    }
+   },
+   "DependsOn": [
+    "MyAuthorizer6575980E",
+    "MyRestApiANY05143F93",
+    "MyRestApiauthANY12A3CAB7",
+    "MyRestApiauth918A22B9",
+    "MySecondAuthorizer25A69B96"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "MyRestApiDeploymentStageprodC33B8E5F": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "MyRestApiDeploymentB555B58276a4103e7ef38befb395a9ace5fdce44"
+    },
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "MyRestApiAccount2FB6DB7A"
+   ]
+  },
+  "MyRestApiANY05143F93": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyAuthorizer6575980E"
+    },
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "StatusCode": "200"
+      }
+     ],
+     "PassthroughBehavior": "NEVER",
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "MyRestApi2D1F47A9",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    }
+   }
+  },
+  "MyRestApiauth918A22B9": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "MyRestApi2D1F47A9",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "auth",
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    }
+   }
+  },
+  "MyRestApiauthANY12A3CAB7": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MySecondAuthorizer25A69B96"
+    },
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "StatusCode": "200"
+      }
+     ],
+     "PassthroughBehavior": "NEVER",
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "MyRestApiauth918A22B9"
+    },
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    }
+   }
+  },
+  "MyAuthorizer6575980E": {
+   "Type": "AWS::ApiGateway::Authorizer",
+   "Properties": {
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "MyAuthorizerFunction70F1223E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":apigateway:",
+       {
+        "Fn::Select": [
+         3,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "MyAuthorizerFunction70F1223E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "MyAuthorizerFunction70F1223E",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "IdentitySource": "method.request.header.Authorization,method.request.querystring.allow",
+    "Name": "RequestAuthorizerIntegMyAuthorizer5D9D41C5",
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    },
+    "Type": "REQUEST"
+   }
+  },
+  "MySecondAuthorizer25A69B96": {
+   "Type": "AWS::ApiGateway::Authorizer",
+   "Properties": {
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "MyAuthorizerFunction70F1223E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":apigateway:",
+       {
+        "Fn::Select": [
+         3,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "MyAuthorizerFunction70F1223E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "MyAuthorizerFunction70F1223E",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "IdentitySource": "method.request.header.Authorization,method.request.querystring.allow",
+    "Name": "RequestAuthorizerIntegMySecondAuthorizerCCC4ECED",
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    },
+    "Type": "REQUEST"
+   }
+  }
+ },
+ "Outputs": {
+  "MyRestApiEndpoint4C55E4CB": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MyRestApi2D1F47A9"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "MyRestApiDeploymentStageprodC33B8E5F"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

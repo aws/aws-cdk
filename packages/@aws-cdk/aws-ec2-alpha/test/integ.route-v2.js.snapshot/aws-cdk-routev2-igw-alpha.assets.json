@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "abce013327c0cc0761625da0a6b60cb53f21a84637168b7205f1b1d3829c4ee3": {
+      "displayName": "InternetGatewayVpc Template",
+      "source": {
+        "path": "aws-cdk-routev2-igw-alpha.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "abce013327c0cc0761625da0a6b60cb53f21a84637168b7205f1b1d3829c4ee3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

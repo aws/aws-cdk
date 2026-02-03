@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  Stage:
+    Type: String
+Resources:
+  Dashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub ${Stage}-Dashboard
+      DashboardBody: !Sub |
+        {
+            "widgets": [
+                {
+                    "type": "text",
+                    "properties": {
+                        "markdown": "${Stage} ${Stage}"
+                    }
+                },
+                {
+                    "type": "text",
+                    "properties": {
+                        "markdown": "${Stage} ${Stage}"
+                    }
+                }
+            ]
+        }

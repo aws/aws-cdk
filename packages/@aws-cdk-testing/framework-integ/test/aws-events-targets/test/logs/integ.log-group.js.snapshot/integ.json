@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LogGroup/DefaultTest": {
+      "stacks": [
+        "log-group-events"
+      ],
+      "diffAssets": true,
+      "assertionStack": "LogGroup/DefaultTest/DeployAssert",
+      "assertionStackName": "LogGroupDefaultTestDeployAssert353EE07A"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

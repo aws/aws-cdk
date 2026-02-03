@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SfnTasksEcsEc2TaskTest/DefaultTest": {
+      "stacks": [
+        "aws-sfn-tasks-ecs-task"
+      ],
+      "assertionStack": "SfnTasksEcsEc2TaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsEc2TaskTestDefaultTestDeployAssert9E1A388C"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

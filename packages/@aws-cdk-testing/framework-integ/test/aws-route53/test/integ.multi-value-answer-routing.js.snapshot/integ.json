@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Route53MultiValueAnswerRoutingInteg/DefaultTest": {
+      "stacks": [
+        "multi-value-answer-routing"
+      ],
+      "assertionStack": "Route53MultiValueAnswerRoutingInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53MultiValueAnswerRoutingIntegDefaultTestDeployAssert2794160C"
+    }
+  }
+}

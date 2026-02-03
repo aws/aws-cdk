@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "2a39fbf7192f71f2ade2c1ddeba447fe088dc986596356a56b2871ac5c8325a7": {
+      "displayName": "efs-from-imported-subnet Template",
+      "source": {
+        "path": "efs-from-imported-subnet.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2a39fbf7192f71f2ade2c1ddeba447fe088dc986596356a56b2871ac5c8325a7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

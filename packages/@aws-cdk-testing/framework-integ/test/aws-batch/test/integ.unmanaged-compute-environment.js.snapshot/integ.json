@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "BatchManagedComputeEnvironmentTest/DefaultTest": {
+      "stacks": [
+        "batch-stack"
+      ],
+      "assertionStack": "BatchManagedComputeEnvironmentTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80"
+    }
+  }
+}

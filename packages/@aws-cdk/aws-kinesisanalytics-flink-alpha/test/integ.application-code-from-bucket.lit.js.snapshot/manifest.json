@@ -1,0 +1,101 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "FlinkAppCodeFromBucketTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FlinkAppCodeFromBucketTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FlinkAppCodeFromBucketTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FlinkAppCodeFromBucketTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44fd92b7a5ccc7121c21de7cd5b1b4d06367ff64dd6b6e4c7471fdb07e352470.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FlinkAppCodeFromBucketTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FlinkAppCodeFromBucketTest.assets"
+      ],
+      "metadata": {
+        "/FlinkAppCodeFromBucketTest/App/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRole1AF9B530"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRoleDefaultPolicy9CADBAA1"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppF1B96344",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLogGroupC72EEC8C"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLogStream3CAF66A7"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/App/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLoggingOption75BE995E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FlinkAppCodeFromBucketTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FlinkAppCodeFromBucketTest"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

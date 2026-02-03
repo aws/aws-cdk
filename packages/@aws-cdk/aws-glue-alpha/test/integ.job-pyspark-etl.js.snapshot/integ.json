@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-glue-job-pyspark-etl-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-job-pyspark-etl"
+      ],
+      "assertionStack": "aws-glue-job-pyspark-etl-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluejobpysparketlintegtestDefaultTestDeployAssertED1ACE14"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

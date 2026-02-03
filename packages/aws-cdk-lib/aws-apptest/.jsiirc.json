@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.apptest"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.AppTest"
+    },
+    "python": {
+      "module": "aws_cdk.aws_apptest"
+    }
+  }
+}

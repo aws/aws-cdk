@@ -1,0 +1,245 @@
+{
+ "Resources": {
+  "TopicBFC7AF6E": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "AuditConfigurationAuditRole0FFA1461": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSIoTDeviceDefenderAudit"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AuditConfigurationNotificationRole9774BAD4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sns:Publish",
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "TopicBFC7AF6E"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "NotificationPolicy"
+     }
+    ]
+   }
+  },
+  "AuditConfiguration8C793652": {
+   "Type": "AWS::IoT::AccountAuditConfiguration",
+   "Properties": {
+    "AccountId": {
+     "Ref": "AWS::AccountId"
+    },
+    "AuditCheckConfigurations": {
+     "AuthenticatedCognitoRoleOverlyPermissiveCheck": {
+      "Enabled": true
+     },
+     "CaCertificateExpiringCheck": {
+      "Enabled": true
+     },
+     "CaCertificateKeyQualityCheck": {
+      "Enabled": true
+     },
+     "ConflictingClientIdsCheck": {
+      "Enabled": true
+     },
+     "DeviceCertificateAgeCheck": {
+      "Configuration": {
+       "CertAgeThresholdInDays": "1229"
+      },
+      "Enabled": true
+     },
+     "DeviceCertificateExpiringCheck": {
+      "Enabled": true
+     },
+     "DeviceCertificateKeyQualityCheck": {
+      "Enabled": true
+     },
+     "DeviceCertificateSharedCheck": {
+      "Enabled": true
+     },
+     "IntermediateCaRevokedForActiveDeviceCertificatesCheck": {
+      "Enabled": true
+     },
+     "IoTPolicyPotentialMisConfigurationCheck": {
+      "Enabled": true
+     },
+     "IotPolicyOverlyPermissiveCheck": {
+      "Enabled": true
+     },
+     "IotRoleAliasAllowsAccessToUnusedServicesCheck": {
+      "Enabled": true
+     },
+     "IotRoleAliasOverlyPermissiveCheck": {
+      "Enabled": true
+     },
+     "LoggingDisabledCheck": {
+      "Enabled": true
+     },
+     "RevokedCaCertificateStillActiveCheck": {
+      "Enabled": true
+     },
+     "RevokedDeviceCertificateStillActiveCheck": {
+      "Enabled": true
+     },
+     "UnauthenticatedCognitoRoleOverlyPermissiveCheck": {
+      "Enabled": true
+     }
+    },
+    "AuditNotificationTargetConfigurations": {
+     "Sns": {
+      "Enabled": true,
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "AuditConfigurationNotificationRole9774BAD4",
+        "Arn"
+       ]
+      },
+      "TargetArn": {
+       "Ref": "TopicBFC7AF6E"
+      }
+     }
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AuditConfigurationAuditRole0FFA1461",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "DailyAudit1160906D": {
+   "Type": "AWS::IoT::ScheduledAudit",
+   "Properties": {
+    "Frequency": "DAILY",
+    "TargetCheckNames": [
+     "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
+    ]
+   },
+   "DependsOn": [
+    "AuditConfigurationAuditRole0FFA1461",
+    "AuditConfigurationNotificationRole9774BAD4",
+    "AuditConfiguration8C793652"
+   ]
+  },
+  "WeeklyAudit5489D5FF": {
+   "Type": "AWS::IoT::ScheduledAudit",
+   "Properties": {
+    "DayOfWeek": "SUN",
+    "Frequency": "WEEKLY",
+    "TargetCheckNames": [
+     "CA_CERTIFICATE_EXPIRING_CHECK"
+    ]
+   },
+   "DependsOn": [
+    "AuditConfigurationAuditRole0FFA1461",
+    "AuditConfigurationNotificationRole9774BAD4",
+    "AuditConfiguration8C793652"
+   ]
+  },
+  "MonthlyAudit11A7B28C": {
+   "Type": "AWS::IoT::ScheduledAudit",
+   "Properties": {
+    "DayOfMonth": "LAST",
+    "Frequency": "MONTHLY",
+    "TargetCheckNames": [
+     "CA_CERTIFICATE_KEY_QUALITY_CHECK",
+     "CONFLICTING_CLIENT_IDS_CHECK",
+     "DEVICE_CERTIFICATE_EXPIRING_CHECK",
+     "DEVICE_CERTIFICATE_KEY_QUALITY_CHECK",
+     "DEVICE_CERTIFICATE_SHARED_CHECK",
+     "IOT_POLICY_OVERLY_PERMISSIVE_CHECK",
+     "IOT_ROLE_ALIAS_ALLOWS_ACCESS_TO_UNUSED_SERVICES_CHECK",
+     "IOT_ROLE_ALIAS_OVERLY_PERMISSIVE_CHECK",
+     "LOGGING_DISABLED_CHECK",
+     "REVOKED_CA_CERTIFICATE_STILL_ACTIVE_CHECK",
+     "REVOKED_DEVICE_CERTIFICATE_STILL_ACTIVE_CHECK",
+     "UNAUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
+    ]
+   },
+   "DependsOn": [
+    "AuditConfigurationAuditRole0FFA1461",
+    "AuditConfigurationNotificationRole9774BAD4",
+    "AuditConfiguration8C793652"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

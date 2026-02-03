@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4": {
+      "displayName": "integ-acm-stack/Custom::CrossRegionExportWriterCustomResourceProvider Code",
+      "source": {
+        "path": "asset.60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "12345678-us-east-1-2067237d": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
+          "objectKey": "60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
+        }
+      }
+    },
+    "9fa33286609db27845f4df290a1118fa0fb6eb3e7a49da50062bcc8955404bfb": {
+      "displayName": "integ-acm-stack Template",
+      "source": {
+        "path": "integ-acm-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-east-1-6c728d85": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
+          "objectKey": "9fa33286609db27845f4df290a1118fa0fb6eb3e7a49da50062bcc8955404bfb.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

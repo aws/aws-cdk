@@ -1,0 +1,155 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-principal-with-conditions-and-tags": {
+        "id": "integ-principal-with-conditions-and-tags",
+        "path": "integ-principal-with-conditions-and-tags",
+        "children": {
+          "TestRole2": {
+            "id": "TestRole2",
+            "path": "integ-principal-with-conditions-and-tags/TestRole2",
+            "children": {
+              "ImportTestRole2": {
+                "id": "ImportTestRole2",
+                "path": "integ-principal-with-conditions-and-tags/TestRole2/ImportTestRole2",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-principal-with-conditions-and-tags/TestRole2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "sts:AssumeRole",
+                            "sts:TagSession"
+                          ],
+                          "Condition": {
+                            "StringLike": {
+                              "aws:PrincipalTag/owner": "foo"
+                            },
+                            "Bool": {
+                              "aws:MultiFactorAuthPresent": "true"
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "*"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-principal-with-conditions-and-tags/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-principal-with-conditions-and-tags/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "PrincipalWithConditionAndTags": {
+        "id": "PrincipalWithConditionAndTags",
+        "path": "PrincipalWithConditionAndTags",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "PrincipalWithConditionAndTags/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "PrincipalWithConditionAndTags/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "PrincipalWithConditionAndTags/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "PrincipalWithConditionAndTags/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "PrincipalWithConditionAndTags/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

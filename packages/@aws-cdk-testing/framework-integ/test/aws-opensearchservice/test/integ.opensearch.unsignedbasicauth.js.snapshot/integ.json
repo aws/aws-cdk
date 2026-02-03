@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "OpenSearchUnsignedBasicAuthInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-unsignedbasicauth"
+      ],
+      "diffAssets": true,
+      "assertionStack": "OpenSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

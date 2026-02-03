@@ -1,0 +1,205 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-codecommit": {
+        "id": "aws-cdk-codecommit",
+        "path": "aws-cdk-codecommit",
+        "children": {
+          "MyCodecommitRepository": {
+            "id": "MyCodecommitRepository",
+            "path": "aws-cdk-codecommit/MyCodecommitRepository",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codecommit/MyCodecommitRepository/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeCommit::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "repositoryName": "my-test-repository"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codecommit.CfnRepository",
+                  "version": "0.0.0"
+                }
+              },
+              "NotifyOnPullRequestCreated": {
+                "id": "NotifyOnPullRequestCreated",
+                "path": "aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestCreated",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestCreated/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CodeStarNotifications::NotificationRule",
+                      "aws:cdk:cloudformation:props": {
+                        "detailType": "FULL",
+                        "eventTypeIds": [
+                          "codecommit-repository-pull-request-created"
+                        ],
+                        "name": "decommitMyCodecommitRepositoryNotifyOnPullRequestCreated65969BCB",
+                        "resource": {
+                          "Fn::GetAtt": [
+                            "MyCodecommitRepository26DB372B",
+                            "Arn"
+                          ]
+                        },
+                        "targets": [
+                          {
+                            "targetType": "SNS",
+                            "targetAddress": {
+                              "Ref": "MyTopic86869434"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codestarnotifications.CfnNotificationRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRule",
+                  "version": "0.0.0"
+                }
+              },
+              "NotifyOnPullRequestMerged": {
+                "id": "NotifyOnPullRequestMerged",
+                "path": "aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestMerged",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestMerged/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CodeStarNotifications::NotificationRule",
+                      "aws:cdk:cloudformation:props": {
+                        "detailType": "FULL",
+                        "eventTypeIds": [
+                          "codecommit-repository-pull-request-merged"
+                        ],
+                        "name": "odecommitMyCodecommitRepositoryNotifyOnPullRequestMergedF426197C",
+                        "resource": {
+                          "Fn::GetAtt": [
+                            "MyCodecommitRepository26DB372B",
+                            "Arn"
+                          ]
+                        },
+                        "targets": [
+                          {
+                            "targetType": "SNS",
+                            "targetAddress": {
+                              "Ref": "MyTopic86869434"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codestarnotifications.CfnNotificationRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codecommit.Repository",
+              "version": "0.0.0"
+            }
+          },
+          "MyTopic": {
+            "id": "MyTopic",
+            "path": "aws-cdk-codecommit/MyTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codecommit/MyTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-cdk-codecommit/MyTopic/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codecommit/MyTopic/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sns:Publish",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "codestar-notifications.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Ref": "MyTopic86869434"
+                              },
+                              "Sid": "0"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "topics": [
+                          {
+                            "Ref": "MyTopic86869434"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopicPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.TopicPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

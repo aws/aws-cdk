@@ -1,0 +1,109 @@
+{
+ "Resources": {
+  "myhandlerrootuserServiceRoleED38E6C4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerrootuserB19A637D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6737b724007fbce8d40ef449faf69cf9b95df819698a66b1271192f0731850ae.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerrootuserServiceRoleED38E6C4",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13"
+   },
+   "DependsOn": [
+    "myhandlerrootuserServiceRoleED38E6C4"
+   ]
+  }
+ },
+ "Outputs": {
+  "Function2Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "myhandlerrootuserB19A637D",
+     "Arn"
+    ]
+   }
+  },
+  "ExportsOutputRefmyhandlerrootuserB19A637D5B1D518E": {
+   "Value": {
+    "Ref": "myhandlerrootuserB19A637D"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-python-bundling-user:ExportsOutputRefmyhandlerrootuserB19A637D5B1D518E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

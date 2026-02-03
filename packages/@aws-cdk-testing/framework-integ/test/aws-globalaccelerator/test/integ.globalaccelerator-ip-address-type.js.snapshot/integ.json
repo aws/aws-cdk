@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "GlobalAcceleratorIpAddressType/DefaultTest": {
+      "stacks": [
+        "global-accelerator-ip-address-type"
+      ],
+      "assertionStack": "GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert",
+      "assertionStackName": "GlobalAcceleratorIpAddressTypeDefaultTestDeployAssertFE50B593"
+    }
+  }
+}

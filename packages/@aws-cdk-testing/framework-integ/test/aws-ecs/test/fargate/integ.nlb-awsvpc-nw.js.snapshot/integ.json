@@ -1,0 +1,15 @@
+{
+  "version": "49.0.0",
+  "testCases": {
+    "integ.nlb-awsvpc-nw": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1100.3"
+}

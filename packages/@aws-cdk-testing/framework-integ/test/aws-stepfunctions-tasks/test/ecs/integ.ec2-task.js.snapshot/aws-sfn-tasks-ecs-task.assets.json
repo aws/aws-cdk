@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "6b6dd5404e42874a33f7151fe22f302ead757064e06ac96ee5b29143061041c5": {
+      "displayName": "aws-sfn-tasks-ecs-task Template",
+      "source": {
+        "path": "aws-sfn-tasks-ecs-task.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4cbda0da": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6b6dd5404e42874a33f7151fe22f302ead757064e06ac96ee5b29143061041c5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534": {
+      "displayName": "TaskDef/Container/AssetImage",
+      "source": {
+        "directory": "asset.d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534"
+      },
+      "destinations": {
+        "current_account-current_region-dd0fae61": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}

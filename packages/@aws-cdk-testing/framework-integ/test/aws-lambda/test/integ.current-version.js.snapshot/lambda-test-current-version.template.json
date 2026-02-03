@@ -1,0 +1,135 @@
+{
+ "Resources": {
+  "MyLambdaServiceRole4539ECB6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyLambdaCCE802FB": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "bcc0b05ef0a1a225a30c245c26232f00ff0b69ef30f3afa548235ab51e1cc225.zip"
+    },
+    "Description": "version-hash:8c084350bd5f45040943cca49cb6ae65",
+    "Handler": "index.main",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyLambdaServiceRole4539ECB6",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "MyLambdaServiceRole4539ECB6"
+   ]
+  },
+  "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "MyLambdaCCE802FB"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "MyLambdaCurrentVersionEventInvokeConfigD120DC68": {
+   "Type": "AWS::Lambda::EventInvokeConfig",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "MyLambdaCCE802FB"
+    },
+    "MaximumRetryAttempts": 1,
+    "Qualifier": {
+     "Fn::GetAtt": [
+      "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec",
+      "Version"
+     ]
+    }
+   }
+  },
+  "MyLambdaCurrentVersionAliaslive9151E913": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "MyLambdaCCE802FB"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec",
+      "Version"
+     ]
+    },
+    "Name": "live"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

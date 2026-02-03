@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ClusterImported/DefaultTest": {
+      "stacks": [
+        "integ-ecs-imported-cluster"
+      ],
+      "assertionStack": "ClusterImported/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterImportedDefaultTestDeployAssert8B67C7A2"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "67c9b02fd0799a18b990e29ef666e89a742f8266f91ffe882574773220381b7a": {
+      "displayName": "integ-ec2-capacity-provider Template",
+      "source": {
+        "path": "integ-ec2-capacity-provider.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-be8e8a04": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "67c9b02fd0799a18b990e29ef666e89a742f8266f91ffe882574773220381b7a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,1188 @@
+{
+ "Resources": {
+  "Vpc8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc"
+     }
+    ]
+   }
+  },
+  "VpcPublicSubnet1Subnet5C2D37C4": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPublicSubnet1RouteTable6C95E38E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPublicSubnet1RouteTableAssociation97140677": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+   }
+  },
+  "VpcPublicSubnet1DefaultRoute3DA9E72A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+   },
+   "DependsOn": [
+    "VpcVPCGWBF912B6E"
+   ]
+  },
+  "VpcPublicSubnet1EIPD7E02669": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VpcPublicSubnet1NATGateway4D7517AA": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VpcPublicSubnet1EIPD7E02669",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
+  },
+  "VpcPublicSubnet2Subnet691E08A3": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPublicSubnet2RouteTable94F7E489": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
+    }
+   }
+  },
+  "VpcPublicSubnet2DefaultRoute97F91067": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+    }
+   },
+   "DependsOn": [
+    "VpcVPCGWBF912B6E"
+   ]
+  },
+  "VpcPublicSubnet2EIP3C605A87": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VpcPublicSubnet2NATGateway9182C01D": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VpcPublicSubnet2EIP3C605A87",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ]
+  },
+  "VpcPrivateSubnet1Subnet536B997A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPrivateSubnet1RouteTableB2C5B500": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+    },
+    "SubnetId": {
+     "Ref": "VpcPrivateSubnet1Subnet536B997A"
+    }
+   }
+  },
+  "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+    }
+   }
+  },
+  "VpcPrivateSubnet2Subnet3788AAA1": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPrivateSubnet2RouteTableA678073B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+    },
+    "SubnetId": {
+     "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+    }
+   }
+  },
+  "VpcPrivateSubnet2DefaultRoute060D2087": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+    }
+   }
+  },
+  "VpcIGWD7BA715C": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "KafkaVersionTestStack/Vpc"
+     }
+    ]
+   }
+  },
+  "VpcVPCGWBF912B6E": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion340SecurityGroupBCDEC51B": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion340D193688A": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion340SecurityGroupBCDEC51B",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-4-0",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.4.0",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion351SecurityGroup866E7223": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion3515E181C3E": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion351SecurityGroup866E7223",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-5-1",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.5.1",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion360SecurityGroupDE3FDA4D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion360A3C740F1": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion360SecurityGroupDE3FDA4D",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-6-0",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.6.0",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion37xSecurityGroup907921C2": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion37xF25198B0": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion37xSecurityGroup907921C2",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-7-x",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.7.x",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion37xkraftSecurityGroupD9C2010F": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion37xkraft42DC71DF": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion37xkraftSecurityGroupD9C2010F",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-7-x-kraft",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.7.x.kraft",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion38xSecurityGroupF2DB8982": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion38x7A89E888": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion38xSecurityGroupF2DB8982",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-8-x",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.8.x",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion38xkraftSecurityGroup0FA5642D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion38xkraft98AC7604": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion38xkraftSecurityGroup0FA5642D",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-8-x-kraft",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.8.x.kraft",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion39xSecurityGroupEEB562CB": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion39x27DE3BBA": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion39xSecurityGroupEEB562CB",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-9-x",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.9.x",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion39xkraftSecurityGroupA2700FB1": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion39xkraft96CD852C": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion39xkraftSecurityGroupA2700FB1",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-9-x-kraft",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.9.x.kraft",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion40xkraftSecurityGroup81D50A3C": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion40xkraft5E11CA80": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion40xkraftSecurityGroup81D50A3C",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v4-0-x-kraft",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "4.0.x.kraft",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion41xkraftSecurityGroupC357F84A": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion41xkraft3364A75F": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion41xkraftSecurityGroupC357F84A",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v4-1-x-kraft",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "4.1.x.kraft",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

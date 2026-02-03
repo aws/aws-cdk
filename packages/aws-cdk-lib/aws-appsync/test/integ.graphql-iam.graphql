@@ -1,0 +1,19 @@
+type test @aws_iam {
+  id: String!
+  version: String!
+}
+
+type Query {
+  getTest(id: String!): test
+  getTests: [ test! ]
+    @aws_iam 
+}
+
+input TestInput {
+  version: String!
+}
+
+type Mutation {
+  addTest(input: TestInput!): test
+    @aws_iam
+}

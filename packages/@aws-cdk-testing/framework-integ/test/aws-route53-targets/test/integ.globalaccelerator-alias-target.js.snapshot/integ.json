@@ -1,0 +1,14 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ.globalaccelerator-alias-target": {
+      "stacks": [
+        "aws-cdk-globalaccelerator-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

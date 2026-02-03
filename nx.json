@@ -1,0 +1,80 @@
+{
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "{projectRoot}/**/bin/!(*.d|*.generated).ts",
+        "{projectRoot}/**/lib/!(*.d|*.generated).ts",
+        "{projectRoot}/**/test/!(*.d).ts",
+        "!{workspaceRoot}/**/tsconfig.json",
+        "!{workspaceRoot}/**/tsconfig.json",
+        "!{workspaceRoot}/tsconfig.base.json",
+        "!{workspaceRoot}/**/tsconfig.tsbuildinfo",
+        "!{workspaceRoot}/**/jest.config.js"
+      ],
+      "outputs": [
+        "{projectRoot}/**/*.integ.*.js.snapshot/*",
+        "{projectRoot}/tsconfig.json",
+        "{projectRoot}/**/lib/aws-custom-resource/sdk-v2-to-v3.json",
+        "{projectRoot}/**/lib/aws-custom-resource/sdk-v3-metadata.json",
+        "{projectRoot}/**/build-info.json",
+        "{projectRoot}/**/*.js",
+        "{projectRoot}/**/*.js.map",
+        "{projectRoot}/**/*.d.ts",
+        "{projectRoot}/**/lib/layer.zip",
+        "{projectRoot}/**/*.generated.ts",
+        "{projectRoot}/**/built-ins.generated/*",
+        "{projectRoot}/**/schema/*.json",
+        "{projectRoot}/**/.jsii",
+        "{projectRoot}/**/.jsii.gz",
+        "{projectRoot}/**/spec/*.json",
+        "{projectRoot}/**/.warnings.jsii.js"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "{projectRoot}/**/test/!(*.d|*.generated).ts"
+      ]
+    }
+  },
+  "extends": "@nx/workspace/presets/npm.json",
+  "workspaceLayout": {},
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nx/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "test",
+          "lint",
+          "package",
+          "prepare"
+        ]
+      }
+    }
+  },
+  "affected": {
+    "defaultBase": "main"
+  },
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": false
+    }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "sharedGlobals": [],
+    "production": [
+      "default"
+    ]
+  }
+}

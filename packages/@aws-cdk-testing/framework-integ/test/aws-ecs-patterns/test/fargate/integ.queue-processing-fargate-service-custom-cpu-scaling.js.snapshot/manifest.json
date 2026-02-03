@@ -1,0 +1,371 @@
+{
+  "version": "35.0.0",
+  "artifacts": {
+    "aws-ecs-patterns-queue-custom-cpu-scaling.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-patterns-queue-custom-cpu-scaling.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-patterns-queue-custom-cpu-scaling": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-patterns-queue-custom-cpu-scaling.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5b5ba7ab28cb4e87b045328a0e57414435e379fb779cfb17c2741f676ed2fd30.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-patterns-queue-custom-cpu-scaling.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-patterns-queue-custom-cpu-scaling.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/EcsProcessingDeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingEcsProcessingDeadLetterQueue018F2F89"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/EcsProcessingQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/SQSDeadLetterQueue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingSQSDeadLetterQueue94103AB7"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/SQSDeadLetterQueueArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingSQSDeadLetterQueueArn45AA7A61"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/SQSQueue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingSQSQueue56D4C1AB"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/SQSQueueArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingSQSQueueArnA165EB72"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDef7D327EDA"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefQueueProcessingContainerLogGroup706DABB2"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRole3F91D316"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRoleDefaultPolicy25E1F570"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateService88A0B9F9"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceSecurityGroup48C94096"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetEA4C3C9A"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetCpuScalingF32A6EB0"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy081DB979"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerAlarm53129CF0"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyF6102775"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperAlarm9397ABFA"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/EcsDefaultClusterMnL3mNNYNVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-patterns-queue-custom-cpu-scaling/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-patterns-queue-custom-cpu-scaling"
+    },
+    "customCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssert7FDCD114.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "customCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssert7FDCD114.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "customCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssert7FDCD114": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "customCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssert7FDCD114.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "customCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssert7FDCD114.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "customCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssert7FDCD114.assets"
+      ],
+      "metadata": {
+        "/customCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/customCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "customCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

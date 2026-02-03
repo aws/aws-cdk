@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "0109ed980d060e788d5ff84f66ab8a5a33ceee66748b8a6d04946fe7a20aa670": {
+      "source": {
+        "path": "aws-cdk-elbv2-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0109ed980d060e788d5ff84f66ab8a5a33ceee66748b8a6d04946fe7a20aa670.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

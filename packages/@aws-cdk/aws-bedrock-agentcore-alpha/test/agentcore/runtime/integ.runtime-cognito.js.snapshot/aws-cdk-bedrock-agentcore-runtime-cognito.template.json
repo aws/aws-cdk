@@ -1,0 +1,480 @@
+{
+ "Resources": {
+  "MyUserPoolD09D1D74": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyUserPoolMyUserPoolClient01266CD6": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ExplicitAuthFlows": [
+     "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "MyUserPoolD09D1D74"
+    }
+   }
+  },
+  "MyUserPoolMyAnotherUserPoolClient4444CD16": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ExplicitAuthFlows": [
+     "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "MyUserPoolD09D1D74"
+    }
+   }
+  },
+  "TestRuntimeExecutionRoleF819113E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Execution role for Bedrock Agent Core Runtime",
+    "MaxSessionDuration": 28800
+   }
+  },
+  "TestRuntimeExecutionRoleDefaultPolicyC7A978D3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:DescribeLogStreams"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:/aws/bedrock-agentcore/runtimes/*"
+         ]
+        ]
+       },
+       "Sid": "LogGroupAccess"
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       },
+       "Sid": "DescribeLogGroups"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*"
+         ]
+        ]
+       },
+       "Sid": "LogStreamAccess"
+      },
+      {
+       "Action": [
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "XRayAccess"
+      },
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Condition": {
+        "StringEquals": {
+         "cloudwatch:namespace": "bedrock-agentcore"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "CloudWatchMetrics"
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:GetWorkloadAccessToken",
+        "bedrock-agentcore:GetWorkloadAccessTokenForJWT",
+        "bedrock-agentcore:GetWorkloadAccessTokenForUserId"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity/*"
+          ]
+         ]
+        }
+       ],
+       "Sid": "GetAgentAccessToken"
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestRuntimeExecutionRoleDefaultPolicyC7A978D3",
+    "Roles": [
+     {
+      "Ref": "TestRuntimeExecutionRoleF819113E"
+     }
+    ]
+   }
+  },
+  "TestRuntime65042BB5": {
+   "Type": "AWS::BedrockAgentCore::Runtime",
+   "Properties": {
+    "AgentRuntimeArtifact": {
+     "ContainerConfiguration": {
+      "ContainerUri": {
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
+      }
+     }
+    },
+    "AgentRuntimeName": "integ_test_runtime_cognito",
+    "AuthorizerConfiguration": {
+     "CustomJWTAuthorizer": {
+      "AllowedAudience": [
+       "audience1"
+      ],
+      "AllowedClients": [
+       {
+        "Ref": "MyUserPoolMyUserPoolClient01266CD6"
+       },
+       {
+        "Ref": "MyUserPoolMyAnotherUserPoolClient4444CD16"
+       }
+      ],
+      "AllowedScopes": [
+       "read",
+       "write"
+      ],
+      "CustomClaims": [
+       {
+        "AuthorizingClaimMatchValue": {
+         "ClaimMatchOperator": "EQUALS",
+         "ClaimMatchValue": {
+          "MatchValueString": "engineering"
+         }
+        },
+        "InboundTokenClaimName": "department",
+        "InboundTokenClaimValueType": "STRING"
+       },
+       {
+        "AuthorizingClaimMatchValue": {
+         "ClaimMatchOperator": "CONTAINS_ANY",
+         "ClaimMatchValue": {
+          "MatchValueStringList": [
+           "admin",
+           "user"
+          ]
+         }
+        },
+        "InboundTokenClaimName": "roles",
+        "InboundTokenClaimValueType": "STRING_ARRAY"
+       }
+      ],
+      "DiscoveryUrl": {
+       "Fn::Join": [
+        "",
+        [
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
+         {
+          "Ref": "MyUserPoolD09D1D74"
+         },
+         "/.well-known/openid-configuration"
+        ]
+       ]
+      }
+     }
+    },
+    "LifecycleConfiguration": {},
+    "NetworkConfiguration": {
+     "NetworkMode": "PUBLIC"
+    },
+    "ProtocolConfiguration": "HTTP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "TestRuntimeExecutionRoleF819113E",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "TestRuntimeExecutionRoleDefaultPolicyC7A978D3",
+    "TestRuntimeExecutionRoleF819113E"
+   ]
+  }
+ },
+ "Outputs": {
+  "RuntimeId": {
+   "Description": "Runtime ID",
+   "Value": {
+    "Fn::GetAtt": [
+     "TestRuntime65042BB5",
+     "AgentRuntimeId"
+    ]
+   }
+  },
+  "RuntimeArn": {
+   "Description": "Runtime ARN",
+   "Value": {
+    "Fn::GetAtt": [
+     "TestRuntime65042BB5",
+     "AgentRuntimeArn"
+    ]
+   }
+  },
+  "UserPoolId": {
+   "Description": "Cognito User Pool ID",
+   "Value": {
+    "Ref": "MyUserPoolD09D1D74"
+   }
+  },
+  "UserPoolClientId1": {
+   "Description": "Cognito User Pool Client ID 1 (MyUserPoolClient)",
+   "Value": {
+    "Ref": "MyUserPoolMyUserPoolClient01266CD6"
+   }
+  },
+  "UserPoolClientId2": {
+   "Description": "Cognito User Pool Client ID 2 (MyAnotherUserPoolClient)",
+   "Value": {
+    "Ref": "MyUserPoolMyAnotherUserPoolClient4444CD16"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

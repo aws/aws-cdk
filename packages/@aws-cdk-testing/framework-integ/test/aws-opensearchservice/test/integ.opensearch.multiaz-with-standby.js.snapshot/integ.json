@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "IntegOpenSearchMultiAzWithStandby/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-multiaz-with-standby"
+      ],
+      "assertionStack": "IntegOpenSearchMultiAzWithStandby/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

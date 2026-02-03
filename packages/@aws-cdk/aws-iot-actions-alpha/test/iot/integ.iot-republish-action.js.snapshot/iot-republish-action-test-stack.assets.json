@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "305c9fc874736995eb3f5e716c69ca33d448880fc9502324f8ac195078444310": {
+      "source": {
+        "path": "iot-republish-action-test-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "305c9fc874736995eb3f5e716c69ca33d448880fc9502324f8ac195078444310.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

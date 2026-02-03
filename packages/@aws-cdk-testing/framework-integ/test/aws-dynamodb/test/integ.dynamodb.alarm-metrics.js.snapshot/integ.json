@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "alarm-metrics-integ/DefaultTest": {
+      "stacks": [
+        "alarm-metrics"
+      ],
+      "assertionStack": "alarm-metrics-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "alarmmetricsintegDefaultTestDeployAssert8721BBC0"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

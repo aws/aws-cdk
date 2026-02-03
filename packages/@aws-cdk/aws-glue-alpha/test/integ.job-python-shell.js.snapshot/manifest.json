@@ -1,0 +1,137 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "aws-glue-job-python-shell.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-glue-job-python-shell.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-glue-job-python-shell": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-glue-job-python-shell.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0222cd48958b3146476a2504ebb4e4e21ba80d0d900991f191243efc281b0da2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-glue-job-python-shell.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-glue-job-python-shell.assets"
+      ],
+      "metadata": {
+        "/aws-glue-job-python-shell/IAMServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IAMServiceRole61C662C4"
+          }
+        ],
+        "/aws-glue-job-python-shell/IAMServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IAMServiceRoleDefaultPolicy379D1A0E"
+          }
+        ],
+        "/aws-glue-job-python-shell/BasicShellJob39/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BasicShellJob39F2E7D12A"
+          }
+        ],
+        "/aws-glue-job-python-shell/BasicShellJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BasicShellJobC7D0761E"
+          }
+        ],
+        "/aws-glue-job-python-shell/DetailedShellJob39/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DetailedShellJob39CB370B41"
+          }
+        ],
+        "/aws-glue-job-python-shell/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-glue-job-python-shell/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-glue-job-python-shell"
+    },
+    "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.assets"
+      ],
+      "metadata": {
+        "/aws-glue-job-python-shell-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-glue-job-python-shell-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-glue-job-python-shell-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

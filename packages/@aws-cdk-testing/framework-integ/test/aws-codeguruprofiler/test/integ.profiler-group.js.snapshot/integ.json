@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "cdk-code-guru-profiler-group/DefaultTest": {
+      "stacks": [
+        "ProfilerGroupIntegrationTest"
+      ],
+      "assertionStack": "cdk-code-guru-profiler-group/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkcodeguruprofilergroupDefaultTestDeployAssert05871DAC"
+    }
+  }
+}

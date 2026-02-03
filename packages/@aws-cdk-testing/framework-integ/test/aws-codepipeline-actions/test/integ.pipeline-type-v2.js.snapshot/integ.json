@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "codepipeline-type-v2-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-type-v2"
+      ],
+      "diffAssets": true,
+      "assertionStack": "codepipeline-type-v2-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelinetypev2testDefaultTestDeployAssertD8DB1C31"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

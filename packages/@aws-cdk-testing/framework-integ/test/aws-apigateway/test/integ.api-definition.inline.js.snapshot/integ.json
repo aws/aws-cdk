@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "inline-api-definition/DefaultTest": {
+      "stacks": [
+        "integtest-restapi-fromdefinition-inline"
+      ],
+      "assertionStack": "inline-api-definition/DefaultTest/DeployAssert",
+      "assertionStackName": "inlineapidefinitionDefaultTestDeployAssert923CAC29"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

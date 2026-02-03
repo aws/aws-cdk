@@ -1,0 +1,15 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ.request-authorizer.lit": {
+      "stacks": [
+        "RequestAuthorizerInteg"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1018.0"
+}

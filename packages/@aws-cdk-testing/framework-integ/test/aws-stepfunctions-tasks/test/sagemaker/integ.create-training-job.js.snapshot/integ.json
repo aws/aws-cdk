@@ -1,0 +1,14 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ.create-training-job": {
+      "stacks": [
+        "integ-stepfunctions-sagemaker"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

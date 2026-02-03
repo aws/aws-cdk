@@ -1,0 +1,14 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "VpcMigrationFeatureFlagTest/DefaultTest": {
+      "stacks": [
+        "VpcMigrationFeatureFlagEnabledStack",
+        "VpcMigrationFeatureFlagDisabledStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "VpcMigrationFeatureFlagTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcMigrationFeatureFlagTestDefaultTestDeployAssertD39E876C"
+    }
+  }
+}

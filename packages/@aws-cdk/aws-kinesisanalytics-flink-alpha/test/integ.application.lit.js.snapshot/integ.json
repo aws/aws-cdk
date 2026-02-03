@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "ApplicationTest/DefaultTest": {
+      "stacks": [
+        "FlinkAppTest"
+      ],
+      "assertionStack": "ApplicationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationTestDefaultTestDeployAssertF9C5F731"
+    }
+  }
+}

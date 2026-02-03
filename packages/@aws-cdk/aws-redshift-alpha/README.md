@@ -1,0 +1,736 @@
+# Amazon Redshift Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
+
+---
+
+<!--END STABILITY BANNER-->
+
+## Starting a Redshift Cluster Database
+
+To set up a Redshift cluster, define a `Cluster`. It will be launched in a VPC.
+You can specify a VPC, otherwise one will be created. The nodes are always launched in private subnets and are encrypted by default.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc
+});
+```
+
+By default, the master password will be generated and stored in AWS Secrets Manager.
+You can specify characters to not include in generated passwords by setting `excludeCharacters` property.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+    excludeCharacters: '"@/\\\ \'`',
+  },
+  vpc
+});
+```
+
+A default database named `default_db` will be created in the cluster. To change the name of this database set the `defaultDatabaseName` attribute in the constructor properties.
+
+By default, the cluster will not be publicly accessible.
+Depending on your use case, you can make the cluster publicly accessible with the `publiclyAccessible` property.
+
+## Adding a logging bucket for database audit logging to S3
+
+Amazon Redshift logs information about connections and user activities in your database. These logs help you to monitor the database for security and troubleshooting purposes, a process called database auditing. To send these logs to an S3 bucket, specify the `loggingProperties` when creating a new cluster.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'amzn-s3-demo-bucket');
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  loggingProperties: {
+    loggingBucket: bucket,
+    loggingKeyPrefix: 'prefix',
+  }
+});
+```
+
+## Availability Zone Relocation
+
+By using [relocation in Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html), you allow Amazon Redshift to move a cluster to another Availability Zone (AZ) without any loss of data or changes to your applications.
+This feature can be applied to both new and existing clusters.
+
+To enable this feature, set the `availabilityZoneRelocation` property to `true`.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  nodeType: NodeType.RA3_XLPLUS,
+  availabilityZoneRelocation: true,
+});
+```
+
+**Note**: The `availabilityZoneRelocation` property is only available for RA3 node types.
+
+## Connecting
+
+To control who can access the cluster, use the `.connections` attribute. Redshift Clusters have
+a default port, so you don't need to specify the port:
+
+```ts fixture=cluster
+cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+```
+
+The endpoint to access your database cluster will be available as the `.clusterEndpoint` attribute:
+
+```ts fixture=cluster
+cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
+```
+
+## Database Resources
+
+This module allows for the creation of non-CloudFormation database resources such as users
+and tables. This allows you to manage identities, permissions, and stateful resources
+within your Redshift cluster from your CDK application.
+
+Because these resources are not available in CloudFormation, this library leverages
+[custom
+resources](https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html)
+to manage them. In addition to the IAM permissions required to make Redshift service
+calls, the execution role for the custom resource handler requires database credentials to
+create resources within the cluster.
+
+These database credentials can be supplied explicitly through the `adminUser` properties
+of the various database resource constructs. Alternatively, the credentials can be
+automatically pulled from the Redshift cluster's default administrator
+credentials. However, this option is only available if the password for the credentials
+was generated by the CDK application (ie., no value vas provided for [the `masterPassword`
+property](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-redshift.Login.html#masterpasswordspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan)
+of
+[`Cluster.masterUser`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-redshift.Cluster.html#masteruserspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan)).
+
+### Creating Users
+
+Create a user within a Redshift cluster database by instantiating a `User` construct. This
+will generate a username and password, store the credentials in a [AWS Secrets Manager
+`Secret`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-secretsmanager.Secret.html),
+and make a query to the Redshift cluster to create a new database user with the
+credentials.
+
+```ts fixture=cluster
+new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+By default, the user credentials are encrypted with your AWS account's default Secrets
+Manager encryption key. You can specify the encryption key used for this purpose by
+supplying a key in the `encryptionKey` property.
+
+```ts fixture=cluster
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const encryptionKey = new kms.Key(this, 'Key');
+new User(this, 'User', {
+  encryptionKey: encryptionKey,
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+By default, a username is automatically generated from the user construct ID and its path
+in the construct tree. You can specify a particular username by providing a value for the
+`username` property. Usernames must be valid identifiers; see: [Names and
+identifiers](https://docs.aws.amazon.com/redshift/latest/dg/r_names.html) in the *Amazon
+Redshift Database Developer Guide*.
+
+```ts fixture=cluster
+new User(this, 'User', {
+  username: 'myuser',
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+The user password is generated by AWS Secrets Manager using the default configuration
+found in
+[`secretsmanager.SecretStringGenerator`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-secretsmanager.SecretStringGenerator.html),
+except with password length `30` and some SQL-incompliant characters excluded. The
+plaintext for the password will never be present in the CDK application; instead, a
+[CloudFormation Dynamic
+Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html)
+will be used wherever the password value is required.
+
+You can specify characters to not include in generated passwords by setting `excludeCharacters` property.
+
+```ts fixture=cluster
+new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+  excludeCharacters: '"@/\\\ \'`',
+});
+```
+
+### Creating Tables
+
+Create a table within a Redshift cluster database by instantiating a `Table`
+construct. This will make a query to the Redshift cluster to create a new database table
+with the supplied schema.
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+Tables greater than v2.114.1 can have their table name changed, for versions <= v2.114.1, this would not be possible.
+Therefore, changing of table names for <= v2.114.1 have been disabled.
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableName: 'oldTableName' // This value can be change for versions greater than v2.114.1
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+The table can be configured to have distStyle attribute and a distKey column:
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', distKey: true },
+    { name: 'col2', dataType: 'float' },
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  distStyle: TableDistStyle.KEY,
+});
+```
+
+The table can also be configured to have sortStyle attribute and sortKey columns:
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', sortKey: true },
+    { name: 'col2', dataType: 'float', sortKey: true },
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  sortStyle: TableSortStyle.COMPOUND,
+});
+```
+
+Tables and their respective columns can be configured to contain comments:
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a column comment' },
+    { name: 'col2', dataType: 'float', comment: 'This is a another column comment' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  tableComment: 'This is a table comment',
+});
+```
+
+Table columns can be configured to use a specific compression encoding:
+
+```ts fixture=cluster
+import { ColumnEncoding } from '@aws-cdk/aws-redshift-alpha';
+
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', encoding: ColumnEncoding.TEXT32K },
+    { name: 'col2', dataType: 'float', encoding: ColumnEncoding.DELTA32K },
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+Table columns can also contain an `id` attribute, which can allow table columns to be renamed.
+
+**NOTE** To use the `id` attribute, you must also enable the `@aws-cdk/aws-redshift:columnId` feature flag.
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+    { id: 'col2', name: 'col2', dataType: 'float' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+Query execution duration is limited to 1 minute by default. You can change this by setting the `timeout` property.
+
+Valid timeout values are between 1 seconds and 15 minutes.
+
+```ts fixture=cluster
+import { Duration } from 'aws-cdk-lib';
+
+new Table(this, 'Table', {
+  tableColumns: [
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+    { id: 'col2', name: 'col2', dataType: 'float' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  timeout: Duration.minutes(15),
+});
+```
+
+### Granting Privileges
+
+You can give a user privileges to perform certain actions on a table by using the
+`Table.grant()` method.
+
+```ts fixture=cluster
+const user = new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+const table = new Table(this, 'Table', {
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+
+table.grant(user, TableAction.DROP, TableAction.SELECT);
+```
+
+Take care when managing privileges via the CDK, as attempting to manage a user's
+privileges on the same table in multiple CDK applications could lead to accidentally
+overriding these permissions. Consider the following two CDK applications which both refer
+to the same user and table. In application 1, the resources are created and the user is
+given `INSERT` permissions on the table:
+
+```ts fixture=cluster
+const databaseName = 'databaseName';
+const username = 'myuser'
+const tableName = 'mytable'
+
+const user = new User(this, 'User', {
+  username: username,
+  cluster: cluster,
+  databaseName: databaseName,
+});
+const table = new Table(this, 'Table', {
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: databaseName,
+});
+table.grant(user, TableAction.INSERT);
+```
+
+In application 2, the resources are imported and the user is given `INSERT` permissions on
+the table:
+
+```ts fixture=cluster
+const databaseName = 'databaseName';
+const username = 'myuser'
+const tableName = 'mytable'
+
+const user = User.fromUserAttributes(this, 'User', {
+  username: username,
+  password: SecretValue.unsafePlainText('NOT_FOR_PRODUCTION'),
+  cluster: cluster,
+  databaseName: databaseName,
+});
+const table = Table.fromTableAttributes(this, 'Table', {
+  tableName: tableName,
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+table.grant(user, TableAction.INSERT);
+```
+
+Both applications attempt to grant the user the appropriate privilege on the table by
+submitting a `GRANT USER` SQL query to the Redshift cluster. Note that the latter of these
+two calls will have no effect since the user has already been granted the privilege.
+
+Now, if application 1 were to remove the call to `grant`, a `REVOKE USER` SQL query is
+submitted to the Redshift cluster. In general, application 1 does not know that
+application 2 has also granted this permission and thus cannot decide not to issue the
+revocation. This leads to the undesirable state where application 2 still contains the
+call to `grant` but the user does not have the specified permission.
+
+Note that this does not occur when duplicate privileges are granted within the same
+application, as such privileges are de-duplicated before any SQL query is submitted.
+
+## Rotating credentials
+
+When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
+
+```ts fixture=cluster
+cluster.addRotationSingleUser(); // Will rotate automatically after 30 days
+```
+
+The multi user rotation scheme is also available:
+
+```ts fixture=cluster
+
+const user = new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+cluster.addRotationMultiUser('MultiUserRotation', {
+  secret: user.secret,
+});
+```
+
+## Adding Parameters
+
+You can add a parameter to a parameter group with`ClusterParameterGroup.addParameter()`.
+
+```ts
+import { ClusterParameterGroup } from '@aws-cdk/aws-redshift-alpha';
+
+const params = new ClusterParameterGroup(this, 'Params', {
+  description: 'desc',
+  parameters: {
+    require_ssl: 'true',
+  },
+});
+
+params.addParameter('enable_user_activity_logging', 'true');
+```
+
+Additionally, you can add a parameter to the cluster's associated parameter group with `Cluster.addToParameterGroup()`. If the cluster does not have an associated parameter group, a new parameter group is created.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
+declare const vpc: ec2.Vpc;
+
+const cluster = new Cluster(this, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+    masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+  },
+  vpc,
+});
+
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+```
+
+## Rebooting for Parameter Updates
+
+In most cases, existing clusters [must be manually rebooted](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html) to apply parameter changes. You can automate parameter related reboots by setting the cluster's `rebootForParameterChanges` property to `true` , or by using `Cluster.enableRebootForParameterChanges()`.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
+declare const vpc: ec2.Vpc;
+
+const cluster = new Cluster(this, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+    masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+  },
+  vpc,
+});
+
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+cluster.enableRebootForParameterChanges()
+```
+
+## Resource Action
+
+You can perform various actions on the Redshift resource by specifying the `resourceAction` property,
+including [pausing and resuming the cluster](https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html), as well as initiating [failover for Multi-AZ clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html).
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { ResourceAction } from '@aws-cdk/aws-redshift-alpha';
+
+declare const vpc: ec2.IVpc;
+
+// Pause the cluster
+new Cluster(this, 'PausedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.PAUSE,
+});
+
+// Resume the cluster
+new Cluster(this, 'ResumedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.RESUME,
+});
+
+// Failover the cluster
+new Cluster(this, 'FailOverCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  // VPC must have 3 AZs for the cluster which executes failover action
+  vpc,
+  // Must be a multi-AZ cluster to failover
+  multiAz: true,
+  resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+});
+```
+
+## Elastic IP
+
+If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
+declare const vpc: ec2.Vpc;
+
+new Cluster(this, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+    publiclyAccessible: true,
+    elasticIp: '10.123.123.255', // A elastic ip you own
+})
+```
+
+If the Cluster is in a VPC and you want to connect to it using the private IP address from within the cluster, it is important to enable *DNS resolution* and *DNS hostnames* in the VPC config. If these parameters would not be set, connections from within the VPC would connect to the elastic IP address and not the private IP address.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+const vpc = new ec2.Vpc(this, 'VPC', {
+  enableDnsSupport: true,
+  enableDnsHostnames: true,
+});
+```
+
+Note that if there is already an existing, public accessible Cluster, which VPC configuration is changed to use *DNS hostnames* and *DNS resolution*, connections still use the elastic IP address until the cluster is resized.
+
+### Elastic IP vs. Cluster node public IP
+
+The elastic IP address is an external IP address for accessing the cluster outside of a VPC. It's not related to the cluster node public IP addresses and private IP addresses that are accessible via the `clusterEndpoint` property. The public and private cluster node IP addresses appear regardless of whether the cluster is publicly accessible or not. They are used only in certain circumstances to configure ingress rules on the remote host. These circumstances occur when you load data from an Amazon EC2 instance or other remote host using a Secure Shell (SSH) connection.
+
+### Attach Elastic IP after Cluster creation
+
+In some cases, you might want to associate the cluster with an elastic IP address or change an elastic IP address that is associated with the cluster. To attach an elastic IP address after the cluster is created, first update the cluster so that it is not publicly accessible, then make it both publicly accessible and add an Elastic IP address in the same operation.
+
+## Enhanced VPC Routing
+
+When you use Amazon Redshift enhanced VPC routing, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC) based on the Amazon VPC service. By using enhanced VPC routing, you can use standard VPC features, such as VPC security groups, network access control lists (ACLs), VPC endpoints, VPC endpoint policies, internet gateways, and Domain Name System (DNS) servers, as described in the Amazon VPC User Guide. You use these features to tightly manage the flow of data between your Amazon Redshift cluster and other resources. When you use enhanced VPC routing to route traffic through your VPC, you can also use VPC flow logs to monitor COPY and UNLOAD traffic.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
+declare const vpc: ec2.Vpc;
+
+new Cluster(this, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+    enhancedVpcRouting: true,
+})
+```
+
+If enhanced VPC routing is not enabled, Amazon Redshift routes traffic through the internet, including traffic to other services within the AWS network.
+
+## Default IAM role
+
+Some Amazon Redshift features require Amazon Redshift to access other AWS services on your behalf. For your Amazon Redshift clusters to act on your behalf, you supply security credentials to your clusters. The preferred method to supply security credentials is to specify an AWS Identity and Access Management (IAM) role.
+
+When you create an IAM role and set it as the default for the cluster using console, you don't have to provide the IAM role's Amazon Resource Name (ARN) to perform authentication and authorization.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const vpc: ec2.Vpc;
+
+const defaultRole = new iam.Role(this, 'DefaultRole', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+},
+);
+
+new Cluster(this, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    roles: [defaultRole],
+    defaultRole: defaultRole,
+});
+```
+
+A default role can also be added to a cluster using the `addDefaultIamRole` method.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const vpc: ec2.Vpc;
+
+const defaultRole = new iam.Role(this, 'DefaultRole', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+},
+);
+
+const redshiftCluster = new Cluster(this, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    roles: [defaultRole],
+});
+
+redshiftCluster.addDefaultIamRole(defaultRole);
+```
+
+## IAM roles
+
+Attaching IAM roles to a Redshift Cluster grants permissions to the Redshift service to perform actions on your behalf.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const vpc: ec2.Vpc
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+});
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  roles: [role],
+});
+```
+
+Additional IAM roles can be attached to a cluster using the `addIamRole` method.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const vpc: ec2.Vpc
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+});
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+});
+cluster.addIamRole(role);
+```
+
+## Multi-AZ
+
+Amazon Redshift supports [multiple Availability Zones (Multi-AZ) deployments]((https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)) for provisioned RA3 clusters.
+By using Multi-AZ deployments, your Amazon Redshift data warehouse can continue operating in failure scenarios when an unexpected event happens in an Availability Zone.
+
+To create a Multi-AZ cluster, set the `multiAz` property to `true` when creating the cluster.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new redshift.Cluster(stack, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc, // 3 AZs are required for Multi-AZ
+  nodeType: redshift.NodeType.RA3_XLPLUS, // must be RA3 node type
+  clusterType: redshift.ClusterType.MULTI_NODE, // must be MULTI_NODE
+  numberOfNodes: 2, // must be 2 or more
+  multiAz: true,
+});
+```
+
+## Resizing
+
+As your data warehousing needs change, it's possible to resize your Redshift cluster. If the cluster was deployed via CDK,
+it's important to resize it via CDK so the change is registered in the AWS CloudFormation template.
+There are two types of resize operations:
+
+* Elastic resize - Number of nodes and node type can be changed, but not at the same time. Elastic resize is the default behavior,
+as it's a fast operation and typically completes in minutes. Elastic resize is only supported on clusters of the following types:
+  * dc1.large (if your cluster is in a VPC)
+  * dc1.8xlarge (if your cluster is in a VPC)
+  * dc2.large
+  * dc2.8xlarge
+  * ds2.xlarge
+  * ds2.8xlarge
+  * ra3.large
+  * ra3.xlplus
+  * ra3.4xlarge
+  * ra3.16xlarge
+
+* Classic resize - Number of nodes, node type, or both, can be changed. This operation takes longer to complete,
+but is useful when the resize operation doesn't meet the criteria of an elastic resize. If you prefer classic resizing,
+you can set the `classicResizing` flag when creating the cluster.
+
+There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are
+limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) and [AWS API Documentation](https://docs.aws.amazon.com/redshift/latest/APIReference/API_ResizeCluster.html) for more details.
+
+## Maintenance track name
+
+When Amazon Redshift releases a new cluster version, your cluster is updated during its maintenance window.
+You can control whether your cluster is updated to the most recent approved release or to the previous release.
+See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks) for more details.
+
+To control which cluster version is applied during a maintenance window, set the `maintenanceTrackName` property for the cluster.
+
+```ts
+new redshift.Cluster(stack, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  maintenanceTrackName: redshift.MaintenanceTrackName.CURRENT,
+});
+```
+
+You can specify one of the following `MaintenanceTrackName` values:
+
+* `CURRENT`: Use the most current approved cluster version.
+* `TRAILING`: Use the cluster version before the current version.

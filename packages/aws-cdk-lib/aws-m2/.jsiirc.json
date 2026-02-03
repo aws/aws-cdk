@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.m2"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.M2"
+    },
+    "python": {
+      "module": "aws_cdk.aws_m2"
+    }
+  }
+}

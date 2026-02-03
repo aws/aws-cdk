@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "78cc229e03089baaf3a077eec860257b6f25c65bb9d947b34726938edb330b20": {
+      "displayName": "LateBoundDeploymentStageStack Template",
+      "source": {
+        "path": "LateBoundDeploymentStageStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "78cc229e03089baaf3a077eec860257b6f25c65bb9d947b34726938edb330b20.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

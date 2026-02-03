@@ -1,0 +1,20 @@
+github:
+  prebuilds:
+    pullRequestsFromForks: true
+    addComment: true
+
+image: public.ecr.aws/jsii/superchain:1-bookworm-slim-node20
+
+tasks:
+  - init: |
+        (
+          set -e
+          yarn install
+          export NODE_OPTIONS=--max-old-space-size=8192
+          # pre-build packages
+          npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ --skip-nx-cache
+        )
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint

@@ -1,0 +1,129 @@
+{
+  "version": "32.0.0",
+  "artifacts": {
+    "aws-glue-data-quality-ruleset.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-glue-data-quality-ruleset.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-glue-data-quality-ruleset": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-glue-data-quality-ruleset.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9515accbd6b765c36fbffa5adb190fc8f6d1f67573ab2655ede370368887799.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-glue-data-quality-ruleset.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-glue-data-quality-ruleset.assets"
+      ],
+      "metadata": {
+        "/aws-glue-data-quality-ruleset/DataBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataBucketE3889A50"
+          }
+        ],
+        "/aws-glue-data-quality-ruleset/MyDatabase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDatabase1E2517DB"
+          }
+        ],
+        "/aws-glue-data-quality-ruleset/CSVTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSVTableE499CABA"
+          }
+        ],
+        "/aws-glue-data-quality-ruleset/DataQualityRuleset/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataQualityRulesetBB177ADB"
+          }
+        ],
+        "/aws-glue-data-quality-ruleset/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-glue-data-quality-ruleset/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-glue-data-quality-ruleset"
+    },
+    "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.assets"
+      ],
+      "metadata": {
+        "/glue-data-quality-ruleset/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/glue-data-quality-ruleset/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "glue-data-quality-ruleset/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

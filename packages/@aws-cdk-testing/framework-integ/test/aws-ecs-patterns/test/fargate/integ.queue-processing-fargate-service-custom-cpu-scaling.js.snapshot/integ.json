@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "customCpuScalingQueueProcessingFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-queue-custom-cpu-scaling"
+      ],
+      "assertionStack": "customCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "customCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssert7FDCD114"
+    }
+  }
+}

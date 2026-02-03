@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "SyntheticsCanaryProvisionedResourceCleanup/DefaultTest": {
+      "stacks": [
+        "SyntheticsCanaryProvisionedResourceCleanupStack"
+      ],
+      "assertionStack": "SyntheticsCanaryProvisionedResourceCleanup/DefaultTest/DeployAssert",
+      "assertionStackName": "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202"
+    }
+  }
+}

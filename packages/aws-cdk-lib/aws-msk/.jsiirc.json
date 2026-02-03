@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.msk"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.MSK"
+    },
+    "python": {
+      "module": "aws_cdk.aws_msk"
+    }
+  }
+}

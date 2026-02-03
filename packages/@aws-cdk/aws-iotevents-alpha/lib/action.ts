@@ -1,0 +1,34 @@
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
+import type { Construct } from 'constructs';
+
+/**
+ * Options when binding a Action to a detector model.
+ */
+export interface ActionBindOptions {
+  /**
+   * The IAM role assumed by IoT Events to perform the action.
+   */
+  readonly role: iam.IRole;
+}
+
+/**
+ * An abstract action for DetectorModel.
+ */
+export interface IAction {
+  /**
+   * Returns the AWS IoT Events action specification.
+   * @internal
+   */
+  _bind(scope: Construct, options: ActionBindOptions): ActionConfig;
+}
+
+/**
+ * Properties for a AWS IoT Events action
+ */
+export interface ActionConfig {
+  /**
+   * The configuration for this action.
+   */
+  readonly configuration: CfnDetectorModel.ActionProperty;
+}

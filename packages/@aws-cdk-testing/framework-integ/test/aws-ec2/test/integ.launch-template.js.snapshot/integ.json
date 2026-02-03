@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LambdaTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-lt-metadata-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "LambdaTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaTestDefaultTestDeployAssert1AF2B360"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

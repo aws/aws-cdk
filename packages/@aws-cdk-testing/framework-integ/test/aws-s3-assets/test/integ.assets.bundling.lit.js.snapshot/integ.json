@@ -1,0 +1,15 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ.assets.bundling.lit": {
+      "stacks": [
+        "cdk-integ-assets-bundling"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1018.0"
+}

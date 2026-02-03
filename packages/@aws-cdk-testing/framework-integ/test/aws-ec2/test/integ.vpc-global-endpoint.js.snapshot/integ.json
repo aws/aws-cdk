@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "globalvpcendpoint/DefaultTest": {
+      "stacks": [
+        "test-globalvpcendpoint"
+      ],
+      "assertionStack": "globalvpcendpoint/DefaultTest/DeployAssert",
+      "assertionStackName": "globalvpcendpointDefaultTestDeployAssertE52DED6D"
+    }
+  }
+}

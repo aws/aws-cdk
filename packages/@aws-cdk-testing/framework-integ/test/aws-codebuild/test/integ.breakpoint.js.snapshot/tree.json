@@ -1,0 +1,289 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      },
+      "aws-cdk-codebuild-breakpoint": {
+        "id": "aws-cdk-codebuild-breakpoint",
+        "path": "aws-cdk-codebuild-breakpoint",
+        "children": {
+          "Project": {
+            "id": "Project",
+            "path": "aws-cdk-codebuild-breakpoint/Project",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-codebuild-breakpoint/Project/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codebuild-breakpoint/Project/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "codebuild.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-codebuild-breakpoint/Project/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-codebuild-breakpoint/Project/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":logs:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":log-group:/aws/codebuild/",
+                                          {
+                                            "Ref": "ProjectC78D97AD"
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":logs:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":log-group:/aws/codebuild/",
+                                          {
+                                            "Ref": "ProjectC78D97AD"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "codebuild:BatchPutCodeCoverages",
+                                    "codebuild:BatchPutTestCases",
+                                    "codebuild:CreateReport",
+                                    "codebuild:CreateReportGroup",
+                                    "codebuild:UpdateReport"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":codebuild:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":report-group/",
+                                        {
+                                          "Ref": "ProjectC78D97AD"
+                                        },
+                                        "-*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:DescribeLogGroups",
+                                    "logs:PutLogEvents",
+                                    "s3:GetEncryptionConfiguration",
+                                    "s3:PutObject",
+                                    "ssmmessages:CreateControlChannel",
+                                    "ssmmessages:CreateDataChannel",
+                                    "ssmmessages:OpenControlChannel",
+                                    "ssmmessages:OpenDataChannel"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ProjectRoleDefaultPolicy7F29461B",
+                            "roles": [
+                              {
+                                "Ref": "ProjectRole4CCB274E"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codebuild-breakpoint/Project/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeBuild::Project",
+                  "aws:cdk:cloudformation:props": {
+                    "artifacts": {
+                      "type": "NO_ARTIFACTS"
+                    },
+                    "environment": {
+                      "type": "LINUX_CONTAINER",
+                      "image": "aws/codebuild/standard:6.0",
+                      "imagePullCredentialsType": "CODEBUILD",
+                      "privilegedMode": false,
+                      "computeType": "BUILD_GENERAL1_SMALL"
+                    },
+                    "serviceRole": {
+                      "Fn::GetAtt": [
+                        "ProjectRole4CCB274E",
+                        "Arn"
+                      ]
+                    },
+                    "source": {
+                      "type": "NO_SOURCE",
+                      "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"codebuild-breakpoint\",\n        \"echo \\\"regular build here\\\"\"\n      ]\n    }\n  }\n}"
+                    },
+                    "cache": {
+                      "type": "NO_CACHE"
+                    },
+                    "encryptionKey": "alias/aws/s3"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codebuild.Project",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ReportGroupIntegTest": {
+        "id": "ReportGroupIntegTest",
+        "path": "ReportGroupIntegTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ReportGroupIntegTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ReportGroupIntegTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ReportGroupIntegTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

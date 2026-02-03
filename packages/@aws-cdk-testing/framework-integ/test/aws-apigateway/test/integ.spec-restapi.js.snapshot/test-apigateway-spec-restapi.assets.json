@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb": {
+      "displayName": "my-api/APIDefinition",
+      "source": {
+        "path": "asset.68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-30dbd999": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f02e9077cb2b4edf5636431cb6f8a000ee6f12dc2b4db3ba6ec25573a057ada2": {
+      "displayName": "test-apigateway-spec-restapi Template",
+      "source": {
+        "path": "test-apigateway-spec-restapi.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b2191f5e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f02e9077cb2b4edf5636431cb6f8a000ee6f12dc2b4db3ba6ec25573a057ada2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

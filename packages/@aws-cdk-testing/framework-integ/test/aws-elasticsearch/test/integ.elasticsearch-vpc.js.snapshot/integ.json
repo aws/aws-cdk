@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "cdk-integ-elasticsearch-vpc-test/DefaultTest": {
+      "stacks": [
+        "cdk-integ-elasticsearch-vpc"
+      ],
+      "assertionStack": "cdk-integ-elasticsearch-vpc-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegelasticsearchvpctestDefaultTestDeployAssert0B044175"
+    }
+  }
+}

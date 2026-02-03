@@ -1,0 +1,384 @@
+{
+ "Resources": { 
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": { 
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole", 
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codepipeline.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "MyPipelineRoleName"
+   }
+  },
+  "RoleDefaultPolicy5FFB7DAB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:s3:::cross-region-support-us-weplicationbucket8a287d3945436008ebfd",
+        "arn:aws:s3:::cross-region-support-us-weplicationbucket8a287d3945436008ebfd/*",
+        {
+         "Fn::GetAtt": [
+          "PipelineArtifactsBucket22248F97",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineArtifactsBucket22248F97",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "*",
+        {
+         "Fn::GetAtt": [
+          "PipelineArtifactsBucketEncryptionKey01D58D69",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PipelineTestCodePipelineActionRoleDD85885D",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+    "Roles": [
+     {
+      "Ref": "Role1ABCC5F0"
+     }
+    ]
+   }
+  },
+  "PipelineArtifactsBucketEncryptionKey01D58D69": {   
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::123456789012:root"
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
+   "Type": "AWS::KMS::Alias",
+   "Properties": {
+    "AliasName": "alias/codepipeline-code-pipeline-nested-stack-pipelinecrossregionstack-pipeline-6b0d06de",
+    "TargetKeyId": {
+     "Fn::GetAtt": [
+      "PipelineArtifactsBucketEncryptionKey01D58D69",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PipelineArtifactsBucket22248F97": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "PipelineArtifactsBucketEncryptionKey01D58D69",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "PipelineArtifactsBucketPolicyD4F9712A": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "PipelineArtifactsBucket22248F97"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineArtifactsBucket22248F97",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineArtifactsBucket22248F97",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineC660917D": {
+   "Type": "AWS::CodePipeline::Pipeline",
+   "Properties": {
+    "ArtifactStores": [
+     {
+      "ArtifactStore": {
+       "EncryptionKey": {
+        "Id": "arn:aws:kms:us-west-2:123456789012:alias/ort-us-wtencryptionalias8f9701ce6a32f909886f",
+        "Type": "KMS"
+       },
+       "Location": "cross-region-support-us-weplicationbucket8a287d3945436008ebfd",
+       "Type": "S3"
+      },
+      "Region": "us-west-2"
+     },
+     {
+      "ArtifactStore": {
+       "EncryptionKey": {
+        "Id": {
+         "Fn::GetAtt": [
+          "PipelineArtifactsBucketEncryptionKey01D58D69",
+          "Arn"
+         ]
+        },
+        "Type": "KMS"
+       },
+       "Location": {
+        "Ref": "PipelineArtifactsBucket22248F97"
+       },
+       "Type": "S3"
+      },
+      "Region": "us-east-1"
+     }
+    ],
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "Role1ABCC5F0",
+      "Arn"
+     ]
+    },
+    "Stages": [
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Source",
+         "Owner": "ThirdParty",
+         "Provider": "GitHub",
+         "Version": "1"
+        },
+        "Configuration": {
+         "Owner": "aws",
+         "Repo": "aws-cdk",
+         "Branch": "master",
+         "OAuthToken": "test",
+         "PollForSourceChanges": false
+        },
+        "Name": "Github",
+        "OutputArtifacts": [
+         {
+          "Name": "Pipeline"
+         }
+        ],
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Source"
+     },
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Invoke",
+         "Owner": "AWS",
+         "Provider": "StepFunctions",
+         "Version": "1"
+        },
+        "Configuration": {
+         "StateMachineArn": "arn:aws:states:us-west-2:123456789012:stateMachine/MyStateMachine",
+         "Input": "{}",
+         "InputType": "Literal"
+        },
+        "Name": "Test",
+        "Region": "us-west-2",
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "PipelineTestCodePipelineActionRoleDD85885D",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Test"
+     }
+    ]
+   },
+   "DependsOn": [
+    "RoleDefaultPolicy5FFB7DAB",
+    "Role1ABCC5F0"
+   ]
+  },
+  "PipelineSourceGithubWebhookResource9724AEC2": {
+   "Type": "AWS::CodePipeline::Webhook",
+   "Properties": {
+    "Authentication": "GITHUB_HMAC",
+    "AuthenticationConfiguration": {
+     "SecretToken": "test"
+    },
+    "Filters": [
+     {
+      "JsonPath": "$.ref",
+      "MatchEquals": "refs/heads/{Branch}"
+     }
+    ],
+    "RegisterWithThirdParty": true,
+    "TargetAction": "Github",
+    "TargetPipeline": {
+     "Ref": "PipelineC660917D"
+    },
+    "TargetPipelineVersion": 1
+   }
+  },
+  "PipelineTestCodePipelineActionRoleDD85885D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::123456789012:root"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineTestCodePipelineActionRoleDefaultPolicy7ECDF2A5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "states:DescribeStateMachine",
+        "states:StartExecution"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:states:us-west-2:123456789012:stateMachine/MyStateMachine"
+      },
+      {
+       "Action": "states:DescribeExecution",
+       "Effect": "Allow",
+       "Resource": "arn:aws:states:us-west-2:123456789012:execution:MyStateMachine:*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineTestCodePipelineActionRoleDefaultPolicy7ECDF2A5",
+    "Roles": [
+     {
+      "Ref": "PipelineTestCodePipelineActionRoleDD85885D"
+     }
+    ]
+   }
+  }
+ }
+}

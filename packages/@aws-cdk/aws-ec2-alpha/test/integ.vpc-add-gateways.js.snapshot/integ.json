@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "VpcSameAccountInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-alpha-gateways"
+      ],
+      "assertionStack": "VpcSameAccountInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

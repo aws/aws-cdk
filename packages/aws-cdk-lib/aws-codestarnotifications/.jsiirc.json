@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.codestarnotifications"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.CodeStarNotifications"
+    },
+    "python": {
+      "module": "aws_cdk.aws_codestarnotifications"
+    }
+  }
+}

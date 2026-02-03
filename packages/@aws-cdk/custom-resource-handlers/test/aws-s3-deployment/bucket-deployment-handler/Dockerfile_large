@@ -1,0 +1,16 @@
+FROM public.ecr.aws/lambda/python:latest
+
+# add everything to /opt/awscli (this is where \`aws\` is executed from)
+ADD . /opt/awscli
+
+# install boto3, which is available on Lambda
+RUN pip3 install boto3 PyYAML
+
+# Set working directory
+WORKDIR /opt/awscli
+
+# Make the script executable
+RUN chmod +x run_individual_tests.sh
+
+# Run tests individually
+ENTRYPOINT ["./run_individual_tests.sh"]

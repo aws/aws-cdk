@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses"
+      ],
+      "assertionStack": "aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest/DeployAssert",
+      "assertionStackName": "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

@@ -1,0 +1,355 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.102"
+        }
+      },
+      "FromCrossAccountRuleStack": {
+        "id": "FromCrossAccountRuleStack",
+        "path": "FromCrossAccountRuleStack",
+        "children": {
+          "MyRule": {
+            "id": "MyRule",
+            "path": "FromCrossAccountRuleStack/MyRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FromCrossAccountRuleStack/MyRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "detail": {
+                        "foo": [
+                          "bar"
+                        ]
+                      },
+                      "detail-type": [
+                        "cdk-integ-custom-rule"
+                      ],
+                      "source": [
+                        "cdk-integ"
+                      ]
+                    },
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "SQS",
+                        "arn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":events:test-region:12345678:event-bus/default"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ToCrossAccountRuleStack": {
+        "id": "ToCrossAccountRuleStack",
+        "path": "ToCrossAccountRuleStack",
+        "children": {
+          "Queue": {
+            "id": "Queue",
+            "path": "ToCrossAccountRuleStack/Queue",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnResource",
+              "version": "0.0.0"
+            }
+          },
+          "FromCrossAccountRuleStackMyRule68A189ED-SQS": {
+            "id": "FromCrossAccountRuleStackMyRule68A189ED-SQS",
+            "path": "ToCrossAccountRuleStack/FromCrossAccountRuleStackMyRule68A189ED-SQS",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ToCrossAccountRuleStack/FromCrossAccountRuleStackMyRule68A189ED-SQS/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "detail": {
+                        "foo": [
+                          "bar"
+                        ]
+                      },
+                      "detail-type": [
+                        "cdk-integ-custom-rule"
+                      ],
+                      "source": [
+                        "cdk-integ"
+                      ]
+                    },
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "SQS",
+                        "arn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":sqs:test-region:12345678:IntegTestCrossEnvRule"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EventBusPolicy-987654321-test-region-12345678": {
+        "id": "EventBusPolicy-987654321-test-region-12345678",
+        "path": "EventBusPolicy-987654321-test-region-12345678",
+        "children": {
+          "GivePermToOtherAccount": {
+            "id": "GivePermToOtherAccount",
+            "path": "EventBusPolicy-987654321-test-region-12345678/GivePermToOtherAccount",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Events::EventBusPolicy",
+              "aws:cdk:cloudformation:props": {
+                "statementId": "Allow-account-987654321-FromCrossAccountRuleStackMyRule68A189ED",
+                "action": "events:PutEvents",
+                "principal": "987654321"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.CfnEventBusPolicy",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CrossAccountDeploy": {
+        "id": "CrossAccountDeploy",
+        "path": "CrossAccountDeploy",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "CrossAccountDeploy/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CrossAccountDeploy/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.102"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "CrossAccountDeploy/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallEventBridgedescribeEventBus": {
+                    "id": "AwsApiCallEventBridgedescribeEventBus",
+                    "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.102"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertEqualsEventBridgedescribeEventBus": {
+                        "id": "AssertEqualsEventBridgedescribeEventBus",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/AssertEqualsEventBridgedescribeEventBus",
+                        "children": {
+                          "AssertionProvider": {
+                            "id": "AssertionProvider",
+                            "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/AssertEqualsEventBridgedescribeEventBus/AssertionProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/AssertEqualsEventBridgedescribeEventBus/AssertionProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.102"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/AssertEqualsEventBridgedescribeEventBus/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/AssertEqualsEventBridgedescribeEventBus/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssertionResults": {
+                            "id": "AssertionResults",
+                            "path": "CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/AssertEqualsEventBridgedescribeEventBus/AssertionResults",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.102"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "lambda-version/DefaultTest": {
+      "stacks": [
+        "lambda-version-arn"
+      ],
+      "assertionStack": "lambda-version/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaversionDefaultTestDeployAssert7B4F8B2D"
+    }
+  }
+}

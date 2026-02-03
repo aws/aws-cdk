@@ -1,0 +1,267 @@
+{
+ "Resources": {
+  "MySecret8FE80B51": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "SecretString": "abc123"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyConnection925E5E94": {
+   "Type": "AWS::Events::Connection",
+   "Properties": {
+    "AuthParameters": {
+     "ApiKeyAuthParameters": {
+      "ApiKeyName": "x-api-key",
+      "ApiKeyValue": {
+       "Fn::Join": [
+        "",
+        [
+         "{{resolve:secretsmanager:",
+         {
+          "Ref": "MySecret8FE80B51"
+         },
+         ":SecretString:::}}"
+        ]
+       ]
+      }
+     }
+    },
+    "AuthorizationType": "API_KEY",
+    "Description": "Connection with API Key x-api-key",
+    "Name": "MyConnection"
+   }
+  },
+  "MyDestinationApiDestination78511D9A": {
+   "Type": "AWS::Events::ApiDestination",
+   "Properties": {
+    "ConnectionArn": {
+     "Fn::GetAtt": [
+      "MyConnection925E5E94",
+      "Arn"
+     ]
+    },
+    "Description": "Calling example.com with API key x-api-key",
+    "HttpMethod": "GET",
+    "InvocationEndpoint": "https://httpbin.org/headers",
+    "InvocationRateLimitPerSecond": 1,
+    "Name": "MyDestination"
+   }
+  },
+  "MyDestinationEventsRole9C7EBBEA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyDestinationEventsRoleDefaultPolicy6CA0D88B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:InvokeApiDestination",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyDestinationApiDestination78511D9A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyDestinationEventsRoleDefaultPolicy6CA0D88B",
+    "Roles": [
+     {
+      "Ref": "MyDestinationEventsRole9C7EBBEA"
+     }
+    ]
+   }
+  },
+  "MyRuleA44AB831": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Name": "MyRule",
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "MyDestinationApiDestination78511D9A",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyDestinationEventsRole9C7EBBEA",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "ImportedDestinationEventsRoleEE2E7BB0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ImportedDestinationEventsRoleDefaultPolicy5955C33B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:InvokeApiDestination",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyDestinationApiDestination78511D9A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ImportedDestinationEventsRoleDefaultPolicy5955C33B",
+    "Roles": [
+     {
+      "Ref": "ImportedDestinationEventsRoleEE2E7BB0"
+     }
+    ]
+   }
+  },
+  "MyOtherRuleF2A0D4EA": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Name": "MyOtherRule",
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "MyDestinationApiDestination78511D9A",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "ImportedDestinationEventsRoleEE2E7BB0",
+        "Arn"
+       ]
+      }
+     },
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "MyDestinationApiDestination78511D9A",
+        "Arn"
+       ]
+      },
+      "Id": "Target1",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "ImportedDestinationEventsRoleEE2E7BB0",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttMyDestinationApiDestination78511D9AArn163C1613": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MyDestinationApiDestination78511D9A",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-events-targets-api-destination-integ:ExportsOutputFnGetAttMyDestinationApiDestination78511D9AArn163C1613"
+   }
+  },
+  "ExportsOutputRefMyRuleA44AB83142DADF44": {
+   "Value": {
+    "Ref": "MyRuleA44AB831"
+   },
+   "Export": {
+    "Name": "aws-events-targets-api-destination-integ:ExportsOutputRefMyRuleA44AB83142DADF44"
+   }
+  },
+  "ExportsOutputRefMyOtherRuleF2A0D4EA23C33165": {
+   "Value": {
+    "Ref": "MyOtherRuleF2A0D4EA"
+   },
+   "Export": {
+    "Name": "aws-events-targets-api-destination-integ:ExportsOutputRefMyOtherRuleF2A0D4EA23C33165"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

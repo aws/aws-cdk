@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "DeploymentAlarms/DefaultTest": {
+      "stacks": [
+        "integ-deployment-alarms"
+      ],
+      "assertionStack": "DeploymentAlarms/DefaultTest/DeployAssert",
+      "assertionStackName": "DeploymentAlarmsDefaultTestDeployAssertAFB973D1"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

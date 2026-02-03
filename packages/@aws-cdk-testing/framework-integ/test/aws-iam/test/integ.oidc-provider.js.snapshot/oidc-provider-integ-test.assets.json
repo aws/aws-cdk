@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8": {
+      "displayName": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider Code",
+      "source": {
+        "path": "asset.8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-f94424fd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "75407eef25878d8c61f60aebf9ca66005e1a757b366dab5b3ee8d8ee462f5048": {
+      "displayName": "oidc-provider-integ-test Template",
+      "source": {
+        "path": "oidc-provider-integ-test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6b016a62": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "75407eef25878d8c61f60aebf9ca66005e1a757b366dab5b3ee8d8ee462f5048.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

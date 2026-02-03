@@ -1,0 +1,15 @@
+{
+  "enableLookups": true,
+  "version": "48.0.0",
+  "testCases": {
+    "appsync-event-api-test/DefaultTest": {
+      "stacks": [
+        "appsync-event-api-stack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "appsync-event-api-test/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapitestDefaultTestDeployAssertBF937085"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

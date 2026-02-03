@@ -1,0 +1,122 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      },
+      "integ-distribution-origin-shield": {
+        "id": "integ-distribution-origin-shield",
+        "path": "integ-distribution-origin-shield",
+        "children": {
+          "Dist": {
+            "id": "Dist",
+            "path": "integ-distribution-origin-shield/Dist",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "integ-distribution-origin-shield/Dist/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-origin-shield/Dist/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "integdistributionoriginshieldDistOrigin11F51234E",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          },
+                          "originShield": {
+                            "enabled": false
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "integdistributionoriginshieldDistOrigin11F51234E",
+                        "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "DistributionOriginShield": {
+        "id": "DistributionOriginShield",
+        "path": "DistributionOriginShield",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "DistributionOriginShield/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "DistributionOriginShield/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "DistributionOriginShield/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

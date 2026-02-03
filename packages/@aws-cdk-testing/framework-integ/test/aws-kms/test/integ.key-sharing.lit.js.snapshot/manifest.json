@@ -1,0 +1,54 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "KeyStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "KeyStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/KeyStack/MyKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKey6AB29FA6"
+          }
+        ],
+        "/KeyStack/Exports/Output{\"Fn::GetAtt\":[\"MyKey6AB29FA6\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttMyKey6AB29FA6Arn4FA82736"
+          }
+        ]
+      },
+      "displayName": "KeyStack"
+    },
+    "UseStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "UseStack.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "KeyStack"
+      ],
+      "metadata": {
+        "/UseStack/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias325C5727"
+          }
+        ]
+      },
+      "displayName": "UseStack"
+    }
+  }
+}

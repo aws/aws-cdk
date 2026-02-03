@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "e3de0a9470ecad347ef79fba6bba568c37816e6fe039a7d5620db7736ac88932": {
+      "displayName": "aws-cdk-emr-create-cluster-v1-policy Template",
+      "source": {
+        "path": "aws-cdk-emr-create-cluster-v1-policy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-80229248": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e3de0a9470ecad347ef79fba6bba568c37816e6fe039a7d5620db7736ac88932.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

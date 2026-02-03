@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.invoicing"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Invoicing"
+    },
+    "python": {
+      "module": "aws_cdk.aws_invoicing"
+    }
+  }
+}

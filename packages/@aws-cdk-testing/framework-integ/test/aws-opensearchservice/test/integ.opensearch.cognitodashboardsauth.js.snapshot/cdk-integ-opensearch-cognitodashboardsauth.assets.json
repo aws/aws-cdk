@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "04a8c6fc574b5c4049ad41adaad94bbca3d9dcc7c2b938ddb6c33fe27327e74e": {
+      "displayName": "cdk-integ-opensearch-cognitodashboardsauth Template",
+      "source": {
+        "path": "cdk-integ-opensearch-cognitodashboardsauth.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "04a8c6fc574b5c4049ad41adaad94bbca3d9dcc7c2b938ddb6c33fe27327e74e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "autoCreateNlbFargateTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-l3-autocreate"
+      ],
+      "assertionStack": "autoCreateNlbFargateTest/DefaultTest/DeployAssert",
+      "assertionStackName": "autoCreateNlbFargateTestDefaultTestDeployAssertD6693011"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

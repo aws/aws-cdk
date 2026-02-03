@@ -1,0 +1,15 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "TableIntegTest/DefaultTest": {
+      "stacks": [
+        "DefaultTableStack",
+        "SchemaTableStack",
+        "ImportedTableStack"
+      ],
+      "assertionStack": "TableIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableIntegTestDefaultTestDeployAssert9A8EE252"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

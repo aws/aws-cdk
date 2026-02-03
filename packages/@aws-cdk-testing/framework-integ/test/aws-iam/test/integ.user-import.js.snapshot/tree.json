@@ -1,0 +1,179 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "dummy-stack": {
+        "id": "dummy-stack",
+        "path": "dummy-stack",
+        "children": {
+          "UserParameter": {
+            "id": "UserParameter",
+            "path": "dummy-stack/UserParameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "imported-user": {
+            "id": "imported-user",
+            "path": "dummy-stack/imported-user",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "imported-user2": {
+            "id": "imported-user2",
+            "path": "dummy-stack/imported-user2",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "User": {
+            "id": "User",
+            "path": "dummy-stack/User",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "dummy-stack/User/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "LocalUser": {
+            "id": "LocalUser",
+            "path": "dummy-stack/LocalUser",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "UserOutput": {
+            "id": "UserOutput",
+            "path": "dummy-stack/UserOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "User2Output": {
+            "id": "User2Output",
+            "path": "dummy-stack/User2Output",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "User3Output": {
+            "id": "User3Output",
+            "path": "dummy-stack/User3Output",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "integ-test": {
+            "id": "integ-test",
+            "path": "dummy-stack/integ-test",
+            "children": {
+              "DefaultTest": {
+                "id": "DefaultTest",
+                "path": "dummy-stack/integ-test/DefaultTest",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "dummy-stack/integ-test/DefaultTest/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DeployAssert": {
+                    "id": "DeployAssert",
+                    "path": "dummy-stack/integ-test/DefaultTest/DeployAssert",
+                    "children": {
+                      "BootstrapVersion": {
+                        "id": "BootstrapVersion",
+                        "path": "dummy-stack/integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnParameter",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "CheckBootstrapVersion": {
+                        "id": "CheckBootstrapVersion",
+                        "path": "dummy-stack/integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnRule",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Stack",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "dummy-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "dummy-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

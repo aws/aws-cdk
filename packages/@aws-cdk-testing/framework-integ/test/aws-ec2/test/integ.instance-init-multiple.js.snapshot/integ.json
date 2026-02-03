@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "instance-test/DefaultTest": {
+      "stacks": [
+        "integ-ec2-multiple-instances-in-stack"
+      ],
+      "assertionStack": "instance-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancetestDefaultTestDeployAssert5516EAF1"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

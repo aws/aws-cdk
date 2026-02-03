@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.accessanalyzer"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.AccessAnalyzer"
+    },
+    "python": {
+      "module": "aws_cdk.aws_accessanalyzer"
+    }
+  }
+}

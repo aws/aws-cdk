@@ -1,0 +1,332 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "lambda-test-assets-file-for-ruby32.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-test-assets-file-for-ruby32.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-test-assets-file-for-ruby32": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-test-assets-file-for-ruby32.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d04d5416de6055cc1e9a1e4369a6d7913402df348f4dfb8e93c10d9e201438ff.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-test-assets-file-for-ruby32.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-test-assets-file-for-ruby32.assets"
+      ],
+      "metadata": {
+        "/lambda-test-assets-file-for-ruby32/MyRubyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRubyLambdaServiceRoleDC227070"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby32/MyRubyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRubyLambdaAFED834F"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby32/Exports/Output{\"Ref\":\"MyRubyLambdaAFED834F\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyRubyLambdaAFED834FC50AFB5F"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby32/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby32/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-test-assets-file-for-ruby32"
+    },
+    "lambda-test-assets-file-for-ruby33.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-test-assets-file-for-ruby33.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-test-assets-file-for-ruby33": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-test-assets-file-for-ruby33.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/81baaf8ccfe5ead6c61cb8966e91c5d552140b8b55abfa09a2553141012c1b80.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-test-assets-file-for-ruby33.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-test-assets-file-for-ruby33.assets"
+      ],
+      "metadata": {
+        "/lambda-test-assets-file-for-ruby33/MyRuby33Lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRuby33LambdaServiceRole51E65E25"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby33/MyRuby33Lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRuby33Lambda335A543E"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby33/Exports/Output{\"Ref\":\"MyRuby33Lambda335A543E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyRuby33Lambda335A543E78F0067A"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby33/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby33/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-test-assets-file-for-ruby33"
+    },
+    "lambda-test-assets-file-for-ruby34.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-test-assets-file-for-ruby34.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-test-assets-file-for-ruby34": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-test-assets-file-for-ruby34.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e521079936f2b05382c6116d68fd4a54996396b8d12d9362eb7d845b9f89a8a6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-test-assets-file-for-ruby34.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-test-assets-file-for-ruby34.assets"
+      ],
+      "metadata": {
+        "/lambda-test-assets-file-for-ruby34/MyRuby34Lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRuby34LambdaServiceRoleBF4E7133"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby34/MyRuby34Lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRuby34Lambda934E0C6B"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby34/Exports/Output{\"Ref\":\"MyRuby34Lambda934E0C6B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyRuby34Lambda934E0C6BC97D6137"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby34/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-test-assets-file-for-ruby34/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-test-assets-file-for-ruby34"
+    },
+    "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/150880188e84e4df0016771f51bdf60344f2e19bdb412b8f5fbb054e8c816592.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-test-assets-file-for-ruby32",
+        "lambda-test-assets-file-for-ruby33",
+        "lambda-test-assets-file-for-ruby34",
+        "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5.assets"
+      ],
+      "metadata": {
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383Invoke42FF4B85"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokeec8ae1d1a74c1e6701caf81677da8383"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aaInvokeEA6B1443"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke2611b17e8a75a257ff7c40d9f87106aaInvokeBD1C7D20"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke2611b17e8a75a257ff7c40d9f87106aa"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/RubyRuntimeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "RubyRuntimeTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

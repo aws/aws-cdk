@@ -1,0 +1,17 @@
+# Approve PRs with "auto-approve". mergify takes care of the actual merge.
+
+name: auto-approve
+on:
+  pull_request_target:
+    types: [ labeled, unlabeled, opened, synchronize, reopened, ready_for_review, review_requested ]
+
+jobs:
+  auto-approve:
+    if: contains(github.event.pull_request.labels.*.name, 'auto-approve')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+    - uses: hmarr/auto-approve-action@v4.0.0
+      with:
+        github-token: "${{ secrets.GITHUB_TOKEN }}"

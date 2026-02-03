@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-ecs-ec2-integ-secret-json-field/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-secret-json-field"
+      ],
+      "assertionStack": "aws-ecs-ec2-integ-secret-json-field/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsec2integsecretjsonfieldDefaultTestDeployAssert5B8058F0"
+    }
+  }
+}

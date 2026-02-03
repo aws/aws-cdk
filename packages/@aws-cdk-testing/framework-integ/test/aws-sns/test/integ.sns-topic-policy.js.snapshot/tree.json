@@ -1,0 +1,336 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "SNSTopicPolicyStack": {
+        "id": "SNSTopicPolicyStack",
+        "path": "SNSTopicPolicyStack",
+        "children": {
+          "Topic": {
+            "id": "Topic",
+            "path": "SNSTopicPolicyStack/Topic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSTopicPolicyStack/Topic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "fooDisplay",
+                    "topicName": "fooTopic"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "TopicPolicy": {
+            "id": "TopicPolicy",
+            "path": "SNSTopicPolicyStack/TopicPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSTopicPolicyStack/TopicPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sns:Publish",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "s3.amazonaws.com"
+                          },
+                          "Resource": {
+                            "Ref": "TopicBFC7AF6E"
+                          },
+                          "Sid": "0"
+                        },
+                        {
+                          "Action": "sns:Publish",
+                          "Condition": {
+                            "Bool": {
+                              "aws:SecureTransport": "false"
+                            }
+                          },
+                          "Effect": "Deny",
+                          "Principal": "*",
+                          "Resource": {
+                            "Ref": "TopicBFC7AF6E"
+                          },
+                          "Sid": "AllowPublishThroughSSLOnly"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "topics": [
+                      {
+                        "Ref": "TopicBFC7AF6E"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "TopicAddPolicy": {
+            "id": "TopicAddPolicy",
+            "path": "SNSTopicPolicyStack/TopicAddPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSTopicPolicyStack/TopicAddPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "topicDisplayNameAddPolicy",
+                    "topicName": "topicAddPolicy"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "SNSTopicPolicyStack/TopicAddPolicy/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "SNSTopicPolicyStack/TopicAddPolicy/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sns:Publish",
+                              "Condition": {
+                                "Bool": {
+                                  "aws:SecureTransport": "false"
+                                }
+                              },
+                              "Effect": "Deny",
+                              "Principal": "*",
+                              "Resource": {
+                                "Ref": "TopicAddPolicy7DB03706"
+                              },
+                              "Sid": "AllowPublishThroughSSLOnly"
+                            },
+                            {
+                              "Action": "sns:Publish",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "s3.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Ref": "TopicAddPolicy7DB03706"
+                              },
+                              "Sid": "1"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "topics": [
+                          {
+                            "Ref": "TopicAddPolicy7DB03706"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "TopicWithSSL": {
+            "id": "TopicWithSSL",
+            "path": "SNSTopicPolicyStack/TopicWithSSL",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSTopicPolicyStack/TopicWithSSL/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "SNSTopicPolicyStack/TopicWithSSL/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "SNSTopicPolicyStack/TopicWithSSL/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sns:Publish",
+                              "Condition": {
+                                "Bool": {
+                                  "aws:SecureTransport": "false"
+                                }
+                              },
+                              "Effect": "Deny",
+                              "Principal": "*",
+                              "Resource": {
+                                "Ref": "TopicWithSSLC879A4EA"
+                              },
+                              "Sid": "AllowPublishThroughSSLOnly"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "topics": [
+                          {
+                            "Ref": "TopicWithSSLC879A4EA"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "SNSTopicPolicyStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "SNSTopicPolicyStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "SNSTopicPolicyInteg": {
+        "id": "SNSTopicPolicyInteg",
+        "path": "SNSTopicPolicyInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SNSTopicPolicyInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SNSTopicPolicyInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SNSTopicPolicyInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "SNSTopicPolicyInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "SNSTopicPolicyInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}

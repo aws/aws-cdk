@@ -1,0 +1,28 @@
+{
+  "Parameters": {
+    "Param": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "AlwaysTrue": {
+      "Fn::Not": [{ "Condition": "AlwaysFalse" }]
+    },
+    "AlwaysFalse": {
+      "Fn::Equals": [{ "Ref":  "Param" }, 2]
+    }
+  },
+  "Resources": {
+    "AlwaysTrue": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::If": ["AlwaysFalse",
+            { "Ref":  "Param" },
+            { "Ref":  "AWS::NoValue" }
+          ]
+        }
+      }
+    }
+  }
+}

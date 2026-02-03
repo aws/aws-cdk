@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-nested-stack-in-product-stack-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-nested-stack-in-product-stack"
+      ],
+      "assertionStack": "aws-cdk-nested-stack-in-product-stack-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdknestedstackinproductstackintegDefaultTestDeployAssert7C8849C0"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}

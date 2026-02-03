@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BucketNotificationsSortingTest/DefaultTest": {
+      "stacks": [
+        "sns-bucket-notifications"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        }
+      },
+      "assertionStack": "BucketNotificationsSortingTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BucketNotificationsSortingTestDefaultTestDeployAssertB6A5A8AF"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}

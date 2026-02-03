@@ -1,0 +1,17 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ.newpipeline-with-vpc": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {
+    "@aws-cdk/core:newStyleStackSynthesis": "true"
+  },
+  "enableLookups": false,
+  "minimumCliVersion": "2.1018.0"
+}

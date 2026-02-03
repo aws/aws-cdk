@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "InstanceTargetTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-elb-instance-target-integ"
+      ],
+      "assertionStack": "InstanceTargetTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceTargetTestDefaultTestDeployAssertAF607556"
+    }
+  }
+}

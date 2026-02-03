@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "CapacityProviderDefaultsTest/DefaultTest": {
+      "stacks": [
+        "CapacityProviderDefaultsStack"
+      ],
+      "assertionStack": "CapacityProviderDefaultsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CapacityProviderDefaultsTestDefaultTestDeployAssert3D74D40E"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

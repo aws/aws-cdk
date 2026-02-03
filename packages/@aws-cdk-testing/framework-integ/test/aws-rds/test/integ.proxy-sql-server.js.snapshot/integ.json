@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "proxy-sql-server-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-proxy-sql-server"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "proxy-sql-server-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "proxysqlserverintegtestDefaultTestDeployAssert14B31776"
+    }
+  }
+}

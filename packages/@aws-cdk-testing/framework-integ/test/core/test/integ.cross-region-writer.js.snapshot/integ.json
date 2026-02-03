@@ -1,0 +1,15 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "CrossRegionWriterInteg/DefaultTest": {
+      "stacks": [
+        "CrossRegionRefProducerInteg"
+      ],
+      "regions": [
+        "us-east-2"
+      ],
+      "assertionStack": "CrossRegionWriterInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossRegionWriterIntegDefaultTestDeployAssert348AA7F9"
+    }
+  }
+}

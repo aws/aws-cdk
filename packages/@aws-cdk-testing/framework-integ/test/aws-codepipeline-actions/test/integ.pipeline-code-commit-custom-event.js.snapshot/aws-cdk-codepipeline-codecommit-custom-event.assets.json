@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "e13e6995609aa8454729e5485c2f4e44385b644253c73c5872c27fce2403603e": {
+      "displayName": "MyFunc/Code",
+      "source": {
+        "path": "asset.e13e6995609aa8454729e5485c2f4e44385b644253c73c5872c27fce2403603e",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-99b30203": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e13e6995609aa8454729e5485c2f4e44385b644253c73c5872c27fce2403603e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "b469011dc409ac18440abda7a7b6302e1eb27a794556ca8b2b029fd152889268": {
+      "displayName": "aws-cdk-codepipeline-codecommit-custom-event Template",
+      "source": {
+        "path": "aws-cdk-codepipeline-codecommit-custom-event.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-438b1f01": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b469011dc409ac18440abda7a7b6302e1eb27a794556ca8b2b029fd152889268.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "cognito-authorizer/DefaultTest": {
+      "stacks": [
+        "CognitoUserPoolsAuthorizerInteg"
+      ],
+      "assertionStack": "cognito-authorizer/DefaultTest/DeployAssert",
+      "assertionStackName": "cognitoauthorizerDefaultTestDeployAssert4551574C"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

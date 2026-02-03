@@ -1,0 +1,439 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-ecr-integ-stack": {
+        "id": "aws-ecr-integ-stack",
+        "path": "aws-ecr-integ-stack",
+        "children": {
+          "Repo": {
+            "id": "Repo",
+            "path": "aws-ecr-integ-stack/Repo",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecr-integ-stack/Repo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "lifecyclePolicy": {
+                      "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"abc\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}},{\"rulePriority\":2,\"selection\":{\"tagStatus\":\"tagged\",\"tagPatternList\":[\"abc*\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}},{\"rulePriority\":3,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
+                    },
+                    "repositoryPolicyText": {
+                      "Statement": [
+                        {
+                          "Action": "ecr:GetDownloadUrlForLayer",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "*"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecr.CfnRepository",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecr.Repository",
+              "version": "0.0.0"
+            }
+          },
+          "MyIamUser": {
+            "id": "MyIamUser",
+            "path": "aws-ecr-integ-stack/MyIamUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecr-integ-stack/MyIamUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-ecr-integ-stack/MyIamUser/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecr-integ-stack/MyIamUser/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "ecr:BatchCheckLayerAvailability",
+                                "ecr:BatchGetImage",
+                                "ecr:CompleteLayerUpload",
+                                "ecr:DescribeImages",
+                                "ecr:DescribeRepositories",
+                                "ecr:GetDownloadUrlForLayer",
+                                "ecr:InitiateLayerUpload",
+                                "ecr:PutImage",
+                                "ecr:UploadLayerPart"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "Repo02AC86CF",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "ecr:GetAuthorizationToken",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "MyIamUserDefaultPolicy4B9C0A95",
+                        "users": [
+                          {
+                            "Ref": "MyIamUser046086A4"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "RepoWithEmptyOnDelete": {
+            "id": "RepoWithEmptyOnDelete",
+            "path": "aws-ecr-integ-stack/RepoWithEmptyOnDelete",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecr-integ-stack/RepoWithEmptyOnDelete/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "emptyOnDelete": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecr.CfnRepository",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecr.Repository",
+              "version": "0.0.0"
+            }
+          },
+          "RepositoryURI": {
+            "id": "RepositoryURI",
+            "path": "aws-ecr-integ-stack/RepositoryURI",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "RepoOnEvent": {
+            "id": "RepoOnEvent",
+            "path": "aws-ecr-integ-stack/RepoOnEvent",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecr-integ-stack/RepoOnEvent/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecr.CfnRepository",
+                  "version": "0.0.0"
+                }
+              },
+              "OnEventTargetLambda": {
+                "id": "OnEventTargetLambda",
+                "path": "aws-ecr-integ-stack/RepoOnEvent/OnEventTargetLambda",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecr-integ-stack/RepoOnEvent/OnEventTargetLambda/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                      "aws:cdk:cloudformation:props": {
+                        "eventPattern": {
+                          "source": [
+                            "aws.ecr"
+                          ],
+                          "detail": {
+                            "repository-name": [
+                              {
+                                "Ref": "RepoOnEvent13B6ADDB"
+                              }
+                            ]
+                          }
+                        },
+                        "state": "ENABLED",
+                        "targets": [
+                          {
+                            "id": "Target0",
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "LambdaFunctionBF21E41F",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AllowEventRuleawsecrintegstackLambdaFunctionB6045AA7": {
+                    "id": "AllowEventRuleawsecrintegstackLambdaFunctionB6045AA7",
+                    "path": "aws-ecr-integ-stack/RepoOnEvent/OnEventTargetLambda/AllowEventRuleawsecrintegstackLambdaFunctionB6045AA7",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "LambdaFunctionBF21E41F",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "events.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::GetAtt": [
+                            "RepoOnEventOnEventTargetLambda2934FA99",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecr.Repository",
+              "version": "0.0.0"
+            }
+          },
+          "LambdaFunction": {
+            "id": "LambdaFunction",
+            "path": "aws-ecr-integ-stack/LambdaFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-ecr-integ-stack/LambdaFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-ecr-integ-stack/LambdaFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecr-integ-stack/LambdaFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecr-integ-stack/LambdaFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "# dummy func"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "LambdaFunctionServiceRoleC555A460",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.12"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-ecr-integ-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-ecr-integ-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-ecr-integ-test-basic": {
+        "id": "cdk-ecr-integ-test-basic",
+        "path": "cdk-ecr-integ-test-basic",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-ecr-integ-test-basic/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-ecr-integ-test-basic/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-ecr-integ-test-basic/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-ecr-integ-test-basic/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-ecr-integ-test-basic/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "KeyPairTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-key-pair-1"
+      ],
+      "assertionStack": "KeyPairTest/DefaultTest/DeployAssert",
+      "assertionStackName": "KeyPairTestDefaultTestDeployAssertF103D058"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

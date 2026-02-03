@@ -1,0 +1,15 @@
+{
+  "version": "43.0.0",
+  "testCases": {
+    "integ.core-custom-resources": {
+      "stacks": [
+        "custom-resource-test"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1014.0"
+}

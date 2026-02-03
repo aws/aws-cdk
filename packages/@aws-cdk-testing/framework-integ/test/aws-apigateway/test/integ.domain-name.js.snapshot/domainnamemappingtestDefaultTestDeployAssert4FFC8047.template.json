@@ -1,0 +1,376 @@
+{
+ "Resources": {
+  "HttpApiCall5c7406415c21459755238de5e3d1af86": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefIntegDomain624DF323D17B7540"
+        },
+        "/orders/v1/items"
+       ]
+      ]
+     },
+     "fetchOptions": {}
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":201}}",
+    "flattenResponse": "false",
+    "salt": "1749802564430"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5bc7ca7323e085fed7f85a690594a53ffcd62be4651195afe166f4a2bafad9fa.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "HttpApiCall87249be5ff18205c5f4320c2baec9418": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefIntegDomain624DF323D17B7540"
+        },
+        "/orders/v2/items"
+       ]
+      ]
+     },
+     "fetchOptions": {}
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":202}}",
+    "flattenResponse": "false",
+    "salt": "1749802564432"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCall39df1b9413ee8ef1155877d35e1a132f": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInteg2Domain70CCEA688A08551F"
+        },
+        "/orders/items"
+       ]
+      ]
+     },
+     "fetchOptions": {}
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":201}}",
+    "flattenResponse": "false",
+    "salt": "1749802564433"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallbfb4c2986471eaae77943449a0ea25f6": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInteg2Domain70CCEA688A08551F"
+        },
+        "/orders/v2/items"
+       ]
+      ]
+     },
+     "fetchOptions": {}
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":202}}",
+    "flattenResponse": "false",
+    "salt": "1749802564433"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsHttpApiCall5c7406415c21459755238de5e3d1af86": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall5c7406415c21459755238de5e3d1af86",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall87249be5ff18205c5f4320c2baec9418": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall87249be5ff18205c5f4320c2baec9418",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall39df1b9413ee8ef1155877d35e1a132f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall39df1b9413ee8ef1155877d35e1a132f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCallbfb4c2986471eaae77943449a0ea25f6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCallbfb4c2986471eaae77943449a0ea25f6",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs22.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs22.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "il-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-south-1": {
+    "value": "nodejs22.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs22.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-2": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-2": {
+    "value": "nodejs22.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

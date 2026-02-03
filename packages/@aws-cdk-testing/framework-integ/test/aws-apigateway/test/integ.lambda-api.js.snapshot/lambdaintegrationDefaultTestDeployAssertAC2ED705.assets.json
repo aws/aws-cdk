@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564": {
+      "source": {
+        "path": "asset.c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-ddc2bfd5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "af21779a41e08536897d95a5d135c95d632170c03aaa983a4853c5f651540979": {
+      "displayName": "lambdaintegrationDefaultTestDeployAssertAC2ED705 Template",
+      "source": {
+        "path": "lambdaintegrationDefaultTestDeployAssertAC2ED705.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-568c2dc8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "af21779a41e08536897d95a5d135c95d632170c03aaa983a4853c5f651540979.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

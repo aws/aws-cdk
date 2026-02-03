@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "VpcNoDefaultIgw/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpc-no-default-igw"
+      ],
+      "assertionStack": "VpcNoDefaultIgw/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcNoDefaultIgwDefaultTestDeployAssertDB3FDBEB"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

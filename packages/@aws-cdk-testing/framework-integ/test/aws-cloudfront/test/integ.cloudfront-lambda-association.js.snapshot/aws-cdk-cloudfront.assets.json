@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "d8b1c3082f8c318de7fe79591aa3d78f63cfe6838b376677c152ef36699cc873": {
+      "displayName": "aws-cdk-cloudfront Template",
+      "source": {
+        "path": "aws-cdk-cloudfront.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d8b1c3082f8c318de7fe79591aa3d78f63cfe6838b376677c152ef36699cc873.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

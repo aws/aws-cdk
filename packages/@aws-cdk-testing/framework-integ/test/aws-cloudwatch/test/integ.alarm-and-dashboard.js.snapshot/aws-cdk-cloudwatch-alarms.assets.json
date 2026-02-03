@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "e67f6a09a927a571ca0657ecb81b20ef21bed19cf09cd155428d83a751ddf8db": {
+      "displayName": "aws-cdk-cloudwatch-alarms Template",
+      "source": {
+        "path": "aws-cdk-cloudwatch-alarms.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e67f6a09a927a571ca0657ecb81b20ef21bed19cf09cd155428d83a751ddf8db.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

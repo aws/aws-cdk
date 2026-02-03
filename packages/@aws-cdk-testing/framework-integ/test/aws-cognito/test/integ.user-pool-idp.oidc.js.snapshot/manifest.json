@@ -1,0 +1,90 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "integ-user-pool-idp-google.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-pool-idp-google.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-user-pool-idp-google": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-idp-google.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6bf1bea6590a55bdf15809be2f8c8b055e553e7361f981a3dae33b33eee135ca.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-pool-idp-google.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-user-pool-idp-google.assets"
+      ],
+      "metadata": {
+        "/integ-user-pool-idp-google/pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pool056F3F7E"
+          }
+        ],
+        "/integ-user-pool-idp-google/pool/client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclient2623294C"
+          }
+        ],
+        "/integ-user-pool-idp-google/pool/domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pooldomain430FA744"
+          }
+        ],
+        "/integ-user-pool-idp-google/cdk/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdk52888317"
+          }
+        ],
+        "/integ-user-pool-idp-google/SignInLink": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SignInLink"
+          }
+        ],
+        "/integ-user-pool-idp-google/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-pool-idp-google/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-idp-google"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

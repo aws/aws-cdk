@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.macie"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Macie"
+    },
+    "python": {
+      "module": "aws_cdk.aws_macie"
+    }
+  }
+}

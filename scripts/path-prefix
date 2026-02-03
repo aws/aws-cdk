@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+// converts relative file paths at the beginning of each input line to absolute file paths
+const path = require('path');
+const fs = require('fs');
+const rl = require('readline');
+
+const REMOVE_COLORS = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+
+const dir = process.argv[2];
+if (!dir) {
+  throw new Error(`usage: path-prefix DIR`);
+}
+
+const reldir = path.relative(process.cwd(), dir);
+
+const ifc = rl.createInterface(process.stdin);
+ifc.on('line', line => {
+  line = line.toString();
+  const [ relative, ...rest ] = line.split(':');
+  const rel = relative.replace(REMOVE_COLORS, '');
+  const absolute = path.join(dir, rel);
+  if (relative && fs.existsSync(absolute)) {
+    process.stdout.write(path.join(reldir, rel) + ':' + rest.join(':') + '\n');
+  } else {
+    process.stdout.write(line + '\n');
+  }
+});
+
+process.stdin.resume();
+
+function exists(p) {
+  try {
+    fs.readFileSync(p);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

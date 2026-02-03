@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "61ca0b6c07fe1c93c815f8adacb6d33d05cc776eb9cda47c27ec032686c4db46": {
+      "displayName": "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7 Template",
+      "source": {
+        "path": "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "61ca0b6c07fe1c93c815f8adacb6d33d05cc776eb9cda47c27ec032686c4db46.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

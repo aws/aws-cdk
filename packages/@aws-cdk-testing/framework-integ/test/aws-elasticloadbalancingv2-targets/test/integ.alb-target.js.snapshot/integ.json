@@ -1,0 +1,15 @@
+{
+  "version": "49.0.0",
+  "testCases": {
+    "integ.alb-target": {
+      "stacks": [
+        "TestStack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1100.3"
+}

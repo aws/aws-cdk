@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "d844cc00e1cf74258ed5a73992c535edd8ee765841bd3114b99a6af6f8e9d2c4": {
+      "source": {
+        "path": "integ-realtime-config.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d844cc00e1cf74258ed5a73992c535edd8ee765841bd3114b99a6af6f8e9d2c4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

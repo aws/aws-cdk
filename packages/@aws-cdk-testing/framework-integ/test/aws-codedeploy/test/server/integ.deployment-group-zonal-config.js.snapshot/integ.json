@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ServerDeploymentGroupZonalConfig/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert",
+      "assertionStackName": "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

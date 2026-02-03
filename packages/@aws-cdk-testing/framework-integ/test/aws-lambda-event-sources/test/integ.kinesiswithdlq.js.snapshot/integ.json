@@ -1,0 +1,15 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ.kinesiswithdlq": {
+      "stacks": [
+        "lambda-event-source-kinesis-with-dlq"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1033.0"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "f65d1c55ae9dedd6a90721be84440c6b06fc2a898190de5c0fba1eb186076ea7": {
+      "displayName": "DualStackHttpApiStack Template",
+      "source": {
+        "path": "DualStackHttpApiStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f65d1c55ae9dedd6a90721be84440c6b06fc2a898190de5c0fba1eb186076ea7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

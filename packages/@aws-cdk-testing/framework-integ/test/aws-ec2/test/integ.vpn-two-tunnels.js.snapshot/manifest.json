@@ -1,0 +1,332 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "aws-cdk-ec2-vpn-two-tunnels.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ec2-vpn-two-tunnels.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ec2-vpn-two-tunnels": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ec2-vpn-two-tunnels.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/087176c81f7e6638d7037e15168e603138ce4e0ab52a8c8234e1b2d98fda93a1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ec2-vpn-two-tunnels.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ec2-vpn-two-tunnels.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcF9F0CA6F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1SubnetF6608456",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1RouteTableC46AB2F4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1DefaultRoute95FDF9EB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1EIP096967CB"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1NATGatewayAD3400C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2Subnet492B6BFB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2RouteTable1DF17386",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2DefaultRoute052936F6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2EIP8CCBA239"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2NATGateway91BFBEC9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1Subnet5057CF7E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1RouteTable8819E6E2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2Subnet0040C983",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2RouteTableCEDCEECE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2DefaultRoute9CE96294",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcIGW5C4A4F63"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVPCGW488ACE0D"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/VpnGateway/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVpnGateway11FB05E5"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/VPCVPNGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVPCVPNGW0CB969B3"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/RoutePropagation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcRoutePropagation122FC3BE"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/Dynamic/CustomerGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcDynamicCustomerGatewayFB63DFBF"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/MyVpc/Dynamic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcDynamic739F3519"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ec2-vpn-two-tunnels"
+    },
+    "awscdkec2vpntwotunnelstestDefaultTestDeployAssert354DB13C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkec2vpntwotunnelstestDefaultTestDeployAssert354DB13C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkec2vpntwotunnelstestDefaultTestDeployAssert354DB13C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkec2vpntwotunnelstestDefaultTestDeployAssert354DB13C.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awscdkec2vpntwotunnelstestDefaultTestDeployAssert354DB13C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awscdkec2vpntwotunnelstestDefaultTestDeployAssert354DB13C.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

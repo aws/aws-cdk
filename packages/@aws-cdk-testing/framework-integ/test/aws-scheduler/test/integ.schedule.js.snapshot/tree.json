@@ -1,0 +1,976 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-scheduler-schedule": {
+        "id": "aws-cdk-scheduler-schedule",
+        "path": "aws-cdk-scheduler-schedule",
+        "children": {
+          "ScheduleTargetQueue": {
+            "id": "ScheduleTargetQueue",
+            "path": "aws-cdk-scheduler-schedule/ScheduleTargetQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleTargetQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "Role": {
+            "id": "Role",
+            "path": "aws-cdk-scheduler-schedule/Role",
+            "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "aws-cdk-scheduler-schedule/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "scheduler.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-cdk-scheduler-schedule/Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-scheduler-schedule/Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "sqs:GetQueueAttributes",
+                                "sqs:GetQueueUrl",
+                                "sqs:SendMessage"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "ScheduleTargetQueueFA42B954",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "kms:Decrypt",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "ScheduleKey7E6B3A92",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "RoleDefaultPolicy5FFB7DAB",
+                        "roles": [
+                          {
+                            "Ref": "Role1ABCC5F0"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduleToSendMessageToQueue": {
+            "id": "ScheduleToSendMessageToQueue",
+            "path": "aws-cdk-scheduler-schedule/ScheduleToSendMessageToQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleToSendMessageToQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "test description from the ScheduleToSendMessageToQueue",
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "scheduleExpression": "rate(1 minute)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "ScheduleTargetQueueFA42B954",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "input": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "valueA-",
+                            {
+                              "Ref": "AWS::Region"
+                            }
+                          ]
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduleKey": {
+            "id": "ScheduleKey",
+            "path": "aws-cdk-scheduler-schedule/ScheduleKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduleWithCMK": {
+            "id": "ScheduleWithCMK",
+            "path": "aws-cdk-scheduler-schedule/ScheduleWithCMK",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleWithCMK/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "kmsKeyArn": {
+                      "Fn::GetAtt": [
+                        "ScheduleKey7E6B3A92",
+                        "Arn"
+                      ]
+                    },
+                    "scheduleExpression": "rate(1 minute)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "ScheduleTargetQueueFA42B954",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "input": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "valueB-",
+                            {
+                              "Ref": "AWS::Region"
+                            }
+                          ]
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "NamedGroup": {
+            "id": "NamedGroup",
+            "path": "aws-cdk-scheduler-schedule/NamedGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/NamedGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::ScheduleGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "TestGroup"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnScheduleGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Group",
+              "version": "0.0.0"
+            }
+          },
+          "UnnamedGroup": {
+            "id": "UnnamedGroup",
+            "path": "aws-cdk-scheduler-schedule/UnnamedGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/UnnamedGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::ScheduleGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "awscdkschedulerschedule-UnnamedGroup-97DBE50D"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnScheduleGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Group",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduleToTestWithNamedGroup": {
+            "id": "ScheduleToTestWithNamedGroup",
+            "path": "aws-cdk-scheduler-schedule/ScheduleToTestWithNamedGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleToTestWithNamedGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "groupName": "TestGroup",
+                    "scheduleExpression": "at(2060-04-15T06:30:00)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "ScheduleTargetQueueFA42B954",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduleToTestWithUnnamedGroup": {
+            "id": "ScheduleToTestWithUnnamedGroup",
+            "path": "aws-cdk-scheduler-schedule/ScheduleToTestWithUnnamedGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleToTestWithUnnamedGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "groupName": "awscdkschedulerschedule-UnnamedGroup-97DBE50D",
+                    "scheduleExpression": "at(2060-04-15T06:30:00)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "ScheduleTargetQueueFA42B954",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "TestDisabledSchedule": {
+            "id": "TestDisabledSchedule",
+            "path": "aws-cdk-scheduler-schedule/TestDisabledSchedule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/TestDisabledSchedule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "scheduleExpression": "at(2060-04-15T06:30:00)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "DISABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "ScheduleTargetQueueFA42B954",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "UseFlexibleTimeWindow": {
+            "id": "UseFlexibleTimeWindow",
+            "path": "aws-cdk-scheduler-schedule/UseFlexibleTimeWindow",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/UseFlexibleTimeWindow/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "FLEXIBLE",
+                      "maximumWindowInMinutes": 10
+                    },
+                    "scheduleExpression": "at(2060-04-15T06:30:00)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "ScheduleTargetQueueFA42B954",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduleWithTimeFrame": {
+            "id": "ScheduleWithTimeFrame",
+            "path": "aws-cdk-scheduler-schedule/ScheduleWithTimeFrame",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleWithTimeFrame/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "endDate": "2060-10-01T00:00:00.000Z",
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "scheduleExpression": "rate(1 minute)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "startDate": "2060-04-15T06:30:00.000Z",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "ScheduleTargetQueueFA42B954",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "AllSchedulerErrorsAlarm": {
+            "id": "AllSchedulerErrorsAlarm",
+            "path": "aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "metricName": "TargetErrorCount",
+                    "namespace": "AWS/Scheduler",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-scheduler-schedule/Exports",
+            "children": {
+              "Output{\"Ref\":\"ScheduleTargetQueueFA42B954\"}": {
+                "id": "Output{\"Ref\":\"ScheduleTargetQueueFA42B954\"}",
+                "path": "aws-cdk-scheduler-schedule/Exports/Output{\"Ref\":\"ScheduleTargetQueueFA42B954\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-scheduler-schedule/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-scheduler-schedule/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integtest-schedule": {
+        "id": "integtest-schedule",
+        "path": "integtest-schedule",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integtest-schedule/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integtest-schedule/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integtest-schedule/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47": {
+                    "id": "AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47",
+                    "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage81f677e2db5b90f01aff10b7e764af47/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integtest-schedule/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integtest-schedule/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integtest-schedule/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integtest-schedule/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

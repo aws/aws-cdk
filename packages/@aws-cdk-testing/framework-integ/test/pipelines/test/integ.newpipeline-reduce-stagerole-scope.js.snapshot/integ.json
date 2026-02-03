@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "CdkPipelineInvestigationTest/DefaultTest": {
+      "stacks": [
+        "CdkPipelineInvestigationStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CdkPipelineInvestigationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

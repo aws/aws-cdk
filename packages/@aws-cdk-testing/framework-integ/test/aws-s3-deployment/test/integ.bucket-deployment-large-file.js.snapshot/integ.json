@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-large-file/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-large-file"
+      ],
+      "assertionStack": "integ-test-bucket-deployment-large-file/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentlargefileDefaultTestDeployAssert903EA848"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

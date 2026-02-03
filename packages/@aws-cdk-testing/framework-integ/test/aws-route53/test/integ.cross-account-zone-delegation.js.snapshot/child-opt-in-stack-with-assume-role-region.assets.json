@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "02154fa4fa901cb86e12faa37c99adf61e71f0180e05221439550707fc0638b9": {
+      "displayName": "child-opt-in-stack-with-assume-role-region/Custom::CrossAccountZoneDelegationCustomResourceProvider Code",
+      "source": {
+        "path": "asset.02154fa4fa901cb86e12faa37c99adf61e71f0180e05221439550707fc0638b9",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "234567890123-af-south-1-fae99461": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
+          "objectKey": "02154fa4fa901cb86e12faa37c99adf61e71f0180e05221439550707fc0638b9.zip",
+          "region": "af-south-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
+        }
+      }
+    },
+    "ac84f38774092b631bae42b0f02d3906d97acb4ccff01468664de7007d09e13b": {
+      "displayName": "child-opt-in-stack-with-assume-role-region Template",
+      "source": {
+        "path": "child-opt-in-stack-with-assume-role-region.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "234567890123-af-south-1-45a62956": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
+          "objectKey": "ac84f38774092b631bae42b0f02d3906d97acb4ccff01468664de7007d09e13b.json",
+          "region": "af-south-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

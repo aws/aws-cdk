@@ -1,0 +1,286 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-user-email-mfa": {
+        "id": "integ-user-email-mfa",
+        "path": "integ-user-email-mfa",
+        "children": {
+          "myuserpool": {
+            "id": "myuserpool",
+            "path": "integ-user-email-mfa/myuserpool",
+            "children": {
+              "smsRole": {
+                "id": "smsRole",
+                "path": "integ-user-email-mfa/myuserpool/smsRole",
+                "children": {
+                  "ImportsmsRole": {
+                    "id": "ImportsmsRole",
+                    "path": "integ-user-email-mfa/myuserpool/smsRole/ImportsmsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-email-mfa/myuserpool/smsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Condition": {
+                                "StringEquals": {
+                                  "sts:ExternalId": "integuseremailmfamyuserpool8F31F20B"
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "cognito-idp.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "sns-publish",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sns:Publish",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "inlinePolicies": "*"
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-email-mfa/myuserpool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailConfiguration": {
+                      "from": "\"myname@mycompany.com\" <noreply@*.example.com>",
+                      "replyToEmailAddress": "support@*.example.com",
+                      "emailSendingAccount": "DEVELOPER",
+                      "sourceArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":ses:us-east-1:",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":identity/*.example.com"
+                          ]
+                        ]
+                      }
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "enabledMfas": [
+                      "SMS_MFA",
+                      "EMAIL_OTP"
+                    ],
+                    "mfaConfiguration": "ON",
+                    "smsConfiguration": {
+                      "externalId": "integuseremailmfamyuserpool8F31F20B",
+                      "snsCallerArn": {
+                        "Fn::GetAtt": [
+                          "myuserpoolsmsRole0E16FDD9",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolAddOns": {
+                      "advancedSecurityMode": "ENFORCED"
+                    },
+                    "userPoolName": "MyUserPool",
+                    "userPoolTier": "PLUS",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy",
+                  "userPoolName": "*",
+                  "email": "*",
+                  "mfa": "ON",
+                  "mfaSecondFactor": {
+                    "sms": true,
+                    "otp": false,
+                    "email": true
+                  },
+                  "advancedSecurityMode": "ENFORCED",
+                  "featurePlan": "PLUS"
+                }
+              ]
+            }
+          },
+          "user-pool-id": {
+            "id": "user-pool-id",
+            "path": "integ-user-email-mfa/user-pool-id",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-user-email-mfa/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-user-email-mfa/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-user-email-mfa-test": {
+        "id": "integ-user-email-mfa-test",
+        "path": "integ-user-email-mfa-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-user-email-mfa-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-user-email-mfa-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-user-email-mfa-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-user-email-mfa-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-user-email-mfa-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

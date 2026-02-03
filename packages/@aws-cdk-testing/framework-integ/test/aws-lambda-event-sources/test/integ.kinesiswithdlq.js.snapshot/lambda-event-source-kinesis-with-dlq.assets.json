@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4e390f1df70c604cdc24dd406f8e7d9e71a28f9d3f1074cc5fbc1b5e58b06c69": {
+      "displayName": "lambda-event-source-kinesis-with-dlq Template",
+      "source": {
+        "path": "lambda-event-source-kinesis-with-dlq.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b378f49f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4e390f1df70c604cdc24dd406f8e7d9e71a28f9d3f1074cc5fbc1b5e58b06c69.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,34 @@
+{
+  "Parameters": {
+    "FirstParameter": {
+      "Type": "String"
+    },
+    "SecondParameter": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "BucketImport": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "FirstParameter"
+        },
+        "AccessControl": {
+          "Ref": "SecondParameter"
+        }
+      }
+    },
+    "GrandChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/grandchild-import-stack.json",
+        "Parameters": {
+          "FirstParameter": {
+            "Ref": "FirstParameter"
+          }
+        }
+      }
+    }
+  }
+}

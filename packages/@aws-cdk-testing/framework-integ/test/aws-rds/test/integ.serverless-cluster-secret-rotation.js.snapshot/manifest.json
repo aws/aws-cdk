@@ -1,0 +1,141 @@
+{
+  "version": "30.1.0",
+  "artifacts": {
+    "aws-cdk-rds-integ-secret-rotation.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-rds-integ-secret-rotation.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-rds-integ-secret-rotation": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-rds-integ-secret-rotation.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b78e7a70e98ec500faa058ecc14892c94df0ab8d0359ba99718203b67d4a2e6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-rds-integ-secret-rotation.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-rds-integ-secret-rotation.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-rds-integ-secret-rotation/DbSecurity/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbSecurity381C2C15"
+          }
+        ],
+        "/aws-cdk-rds-integ-secret-rotation/test-secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsecretF8BBC644"
+          }
+        ],
+        "/aws-cdk-rds-integ-secret-rotation/test-secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsecretAttachment19AD251F"
+          }
+        ],
+        "/aws-cdk-rds-integ-secret-rotation/test-secret/test-schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsecrettestscheduleEA0B5085"
+          }
+        ],
+        "/aws-cdk-rds-integ-secret-rotation/test-secret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsecretPolicyA5D2F46F"
+          }
+        ],
+        "/aws-cdk-rds-integ-secret-rotation/Database/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseB269D8BB"
+          }
+        ],
+        "/aws-cdk-rds-integ-secret-rotation/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-rds-integ-secret-rotation/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-rds-integ-secret-rotation"
+    },
+    "cdkrdsintegsecretrotationDefaultTestDeployAssert9780868B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdkrdsintegsecretrotationDefaultTestDeployAssert9780868B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdkrdsintegsecretrotationDefaultTestDeployAssert9780868B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdkrdsintegsecretrotationDefaultTestDeployAssert9780868B.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdkrdsintegsecretrotationDefaultTestDeployAssert9780868B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdkrdsintegsecretrotationDefaultTestDeployAssert9780868B.assets"
+      ],
+      "metadata": {
+        "/cdk-rds-integ-secret-rotation/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-rds-integ-secret-rotation/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-rds-integ-secret-rotation/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

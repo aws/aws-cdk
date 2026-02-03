@@ -1,0 +1,33 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "title": "S3 API Schema",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/s3hello": {
+        "get": {
+          "operationId": "s3HelloWorld",
+          "summary": "Say hello from S3",
+          "description": "Returns a greeting message from S3-stored schema",
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }

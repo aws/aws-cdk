@@ -1,0 +1,220 @@
+import type { Construct } from 'constructs';
+import { CfnReportGroup } from './codebuild.generated';
+import { renderReportGroupArn, reportGroupArnComponents } from './report-group-utils';
+import * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
+import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IReportGroupRef, ReportGroupReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
+
+/**
+ * The interface representing the ReportGroup resource -
+ * either an existing one, imported using the
+ * `ReportGroup.fromReportGroupName` method,
+ * or a new one, created with the `ReportGroup` class.
+ */
+export interface IReportGroup extends cdk.IResource, IReportGroupRef {
+  /**
+   * The ARN of the ReportGroup.
+   *
+   * @attribute
+   */
+  readonly reportGroupArn: string;
+
+  /**
+   * The name of the ReportGroup.
+   *
+   * @attribute
+   */
+  readonly reportGroupName: string;
+
+  /**
+   * Grants the given entity permissions to write
+   * (that is, upload reports to)
+   * this report group.
+   */
+  grantWrite(identity: iam.IGrantable): iam.Grant;
+}
+
+abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
+  public abstract readonly reportGroupArn: string;
+  public abstract readonly reportGroupName: string;
+  protected abstract readonly exportBucket?: s3.IBucket;
+  protected abstract readonly type?: ReportGroupType;
+
+  public get reportGroupRef(): ReportGroupReference {
+    return {
+      reportGroupArn: this.reportGroupArn,
+    };
+  }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
+  public grantWrite(identity: iam.IGrantable): iam.Grant {
+    const typeAction = this.type === ReportGroupType.CODE_COVERAGE ? 'codebuild:BatchPutCodeCoverages' : 'codebuild:BatchPutTestCases';
+    const ret = iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'codebuild:CreateReport',
+        'codebuild:UpdateReport',
+        typeAction,
+      ],
+      resourceArns: [this.reportGroupArn],
+    });
+
+    if (this.exportBucket) {
+      this.exportBucket.grantWrite(identity);
+    }
+
+    return ret;
+  }
+}
+
+/**
+ * The type of reports in the report group.
+ */
+export enum ReportGroupType {
+  /**
+   * The report group contains test reports.
+   */
+  TEST = 'TEST',
+  /**
+   * The report group contains code coverage reports.
+   */
+  CODE_COVERAGE = 'CODE_COVERAGE',
+}
+
+/**
+ * Construction properties for `ReportGroup`.
+ */
+export interface ReportGroupProps {
+  /**
+   * The physical name of the report group.
+   *
+   * @default - CloudFormation-generated name
+   */
+  readonly reportGroupName?: string;
+
+  /**
+   * An optional S3 bucket to export the reports to.
+   *
+   * @default - the reports will not be exported
+   */
+  readonly exportBucket?: s3.IBucket;
+
+  /**
+   * Whether to output the report files into the export bucket as-is,
+   * or create a ZIP from them before doing the export.
+   * Ignored if `exportBucket` has not been provided.
+   *
+   * @default - false (the files will not be ZIPped)
+   */
+  readonly zipExport?: boolean;
+
+  /**
+   * What to do when this resource is deleted from a stack.
+   * As CodeBuild does not allow deleting a ResourceGroup that has reports inside of it,
+   * this is set to retain the resource by default.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+   * The type of report group. This can be one of the following values:
+   *
+   * - **TEST** - The report group contains test reports.
+   * - **CODE_COVERAGE** - The report group contains code coverage reports.
+   *
+   * @default TEST
+   */
+  readonly type?: ReportGroupType;
+
+  /**
+   * If true, deleting the report group force deletes the contents of the report group. If false, the report group must be empty before attempting to delete it.
+   *
+   * @default false
+   */
+  readonly deleteReports?: boolean;
+}
+
+/**
+ * The ReportGroup resource class.
+ */
+@propertyInjectable
+export class ReportGroup extends ReportGroupBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.ReportGroup';
+
+  /**
+   * Reference an existing ReportGroup,
+   * defined outside of the CDK code,
+   * by name.
+   */
+  public static fromReportGroupName(scope: Construct, id: string, reportGroupName: string): IReportGroup {
+    class Import extends ReportGroupBase {
+      public readonly reportGroupName = reportGroupName;
+      public readonly reportGroupArn = renderReportGroupArn(scope, reportGroupName);
+      protected readonly exportBucket = undefined;
+      protected readonly type = undefined;
+    }
+
+    return new Import(scope, id);
+  }
+
+  @memoizedGetter
+  get reportGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn,
+      reportGroupArnComponents(this.physicalName));
+  }
+
+  protected readonly exportBucket?: s3.IBucket;
+  protected readonly type?: ReportGroupType;
+  private readonly resource: CfnReportGroup;
+
+  constructor(scope: Construct, id: string, props: ReportGroupProps = {}) {
+    super(scope, id, {
+      physicalName: props.reportGroupName,
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+    this.type = props.type ? props.type : ReportGroupType.TEST;
+    const resource = new CfnReportGroup(this, 'Resource', {
+      type: this.type,
+      exportConfig: {
+        exportConfigType: props.exportBucket ? 'S3' : 'NO_EXPORT',
+        s3Destination: props.exportBucket
+          ? {
+            bucket: props.exportBucket.bucketName,
+            encryptionDisabled: props.exportBucket.encryptionKey ? false : undefined,
+            encryptionKey: props.exportBucket.encryptionKey?.keyArn,
+            packaging: props.zipExport ? 'ZIP' : undefined,
+          }
+          : undefined,
+      },
+      name: props.reportGroupName,
+      deleteReports: props.deleteReports,
+    });
+    resource.applyRemovalPolicy(props.removalPolicy, {
+      default: cdk.RemovalPolicy.RETAIN,
+    });
+    this.resource = resource;
+    this.exportBucket = props.exportBucket;
+
+    if (props.deleteReports && props.removalPolicy !== cdk.RemovalPolicy.DESTROY) {
+      throw new cdk.ValidationError('Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.', this);
+    }
+  }
+
+  @memoizedGetter
+  public get reportGroupName(): string {
+    return this.getResourceNameAttribute(
+      // there is no separate name attribute,
+      // so use Fn::Select + Fn::Split to make one
+      cdk.Fn.select(1, cdk.Fn.split('/', this.resource.ref)),
+    );
+  }
+}

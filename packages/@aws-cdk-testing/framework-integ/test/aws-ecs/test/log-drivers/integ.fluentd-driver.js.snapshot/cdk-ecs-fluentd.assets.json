@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "5377c2126468273666a595a2007b1bf64f47b94d0a22fedb7ccbd4957abbd8d9": {
+      "displayName": "cdk-ecs-fluentd Template",
+      "source": {
+        "path": "cdk-ecs-fluentd.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f89877c8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5377c2126468273666a595a2007b1bf64f47b94d0a22fedb7ccbd4957abbd8d9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

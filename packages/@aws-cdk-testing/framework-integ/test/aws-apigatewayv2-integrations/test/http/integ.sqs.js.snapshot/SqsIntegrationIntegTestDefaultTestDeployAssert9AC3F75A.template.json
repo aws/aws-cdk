@@ -1,0 +1,240 @@
+{
+ "Resources": {
+  "HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::ImportValue": "sqs-integration:ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+        },
+        "/default"
+       ]
+      ]
+     },
+     "fetchOptions": {
+      "body": "{\"MessageBody\":\"Hello World!\"}",
+      "method": "POST"
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"statusText\":\"OK\"}}",
+    "salt": "1711685778001"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs18.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "556f7b960c212183e2f73e1410a097107af3ccf13c8880a717edbcadd89611a4.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::ImportValue": "sqs-integration:ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+        },
+        "/send-message"
+       ]
+      ]
+     },
+     "fetchOptions": {
+      "body": "{\"MessageBody\":\"Hello World!\"}",
+      "method": "POST"
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"statusText\":\"OK\"}}",
+    "salt": "1711685778002"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::ImportValue": "sqs-integration:ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+        },
+        "/receive-message"
+       ]
+      ]
+     },
+     "fetchOptions": {
+      "method": "POST"
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"statusText\":\"OK\"}}",
+    "salt": "1711685778002"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::ImportValue": "sqs-integration:ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+        },
+        "/purge-queue"
+       ]
+      ]
+     },
+     "fetchOptions": {
+      "method": "POST"
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"statusText\":\"OK\"}}",
+    "salt": "1711685778002"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsHttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall3699477dc71bfafe6aa1fbda37f83f1e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall4c25c02fbad6a4cec2d718d20402c7d6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

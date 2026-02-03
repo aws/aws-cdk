@@ -1,0 +1,361 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "RequestAuthorizerInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "RequestAuthorizerInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "RequestAuthorizerInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "RequestAuthorizerInteg.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10c2ba246ab9ac2875408308329c74a73daf7a91d146d989d26ff99c39df83ed.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "RequestAuthorizerInteg.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "RequestAuthorizerInteg.assets"
+      ],
+      "metadata": {
+        "/RequestAuthorizerInteg/MyAuthorizerFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunctionServiceRole8A34C19E"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyAuthorizerFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunction70F1223E"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyAuthorizerFunction/RequestAuthorizerIntegMyAuthorizer5D9D41C5:Permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunctionRequestAuthorizerIntegMyAuthorizer5D9D41C5PermissionsCB8B246E"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyAuthorizerFunction/RequestAuthorizerIntegMySecondAuthorizerCCC4ECED:Permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunctionRequestAuthorizerIntegMySecondAuthorizerCCC4ECEDPermissions055F817A"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApi2D1F47A9"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiCloudWatchRoleD4042E8E"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiAccount2FB6DB7A"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentB555B58276a4103e7ef38befb395a9ace5fdce44"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentStageprodC33B8E5F"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiEndpoint4C55E4CB"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ],
+                "authorizer": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiANY05143F93"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Default/auth": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Default/auth/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiauth918A22B9"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Default/auth/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ],
+                "authorizer": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Default/auth/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiauthANY12A3CAB7"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyAuthorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizer6575980E"
+          }
+        ],
+        "/RequestAuthorizerInteg/MySecondAuthorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RequestAuthorizerInteg/MySecondAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecondAuthorizer25A69B96"
+          }
+        ],
+        "/RequestAuthorizerInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/RequestAuthorizerInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "RequestAuthorizerInteg"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

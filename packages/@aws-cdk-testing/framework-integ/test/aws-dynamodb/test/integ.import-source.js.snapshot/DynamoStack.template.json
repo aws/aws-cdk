@@ -1,0 +1,166 @@
+{
+ "Resources": {
+  "DynamoDBJsonTable73E42181": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "ImportSourceSpecification": {
+     "InputCompressionType": "NONE",
+     "InputFormat": "DYNAMODB_JSON",
+     "S3BucketSource": {
+      "S3Bucket": {
+       "Fn::ImportValue": "S3Stack:ExportsOutputRefBucket83908E7781C90AC0"
+      },
+      "S3KeyPrefix": "dynamodb-json"
+     }
+    },
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "IonTableD6B7D52B": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "ImportSourceSpecification": {
+     "InputCompressionType": "NONE",
+     "InputFormat": "ION",
+     "S3BucketSource": {
+      "S3Bucket": {
+       "Fn::ImportValue": "S3Stack:ExportsOutputRefBucket83908E7781C90AC0"
+      },
+      "S3KeyPrefix": "ion"
+     }
+    },
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CsvTableF720A0A1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "ImportSourceSpecification": {
+     "InputCompressionType": "NONE",
+     "InputFormat": "CSV",
+     "InputFormatOptions": {
+      "Csv": {}
+     },
+     "S3BucketSource": {
+      "S3Bucket": {
+       "Fn::ImportValue": "S3Stack:ExportsOutputRefBucket83908E7781C90AC0"
+      },
+      "S3KeyPrefix": "csv"
+     }
+    },
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDynamoDBJsonTable73E42181AA2EAFDC": {
+   "Value": {
+    "Ref": "DynamoDBJsonTable73E42181"
+   },
+   "Export": {
+    "Name": "DynamoStack:ExportsOutputRefDynamoDBJsonTable73E42181AA2EAFDC"
+   }
+  },
+  "ExportsOutputRefIonTableD6B7D52BC6D72761": {
+   "Value": {
+    "Ref": "IonTableD6B7D52B"
+   },
+   "Export": {
+    "Name": "DynamoStack:ExportsOutputRefIonTableD6B7D52BC6D72761"
+   }
+  },
+  "ExportsOutputRefCsvTableF720A0A12DCFE97C": {
+   "Value": {
+    "Ref": "CsvTableF720A0A1"
+   },
+   "Export": {
+    "Name": "DynamoStack:ExportsOutputRefCsvTableF720A0A12DCFE97C"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

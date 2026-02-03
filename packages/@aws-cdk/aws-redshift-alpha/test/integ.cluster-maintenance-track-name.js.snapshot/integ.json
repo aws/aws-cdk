@@ -1,0 +1,11 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameInteg/DefaultTest": {
+      "stacks": [],
+      "assertionStack": "aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

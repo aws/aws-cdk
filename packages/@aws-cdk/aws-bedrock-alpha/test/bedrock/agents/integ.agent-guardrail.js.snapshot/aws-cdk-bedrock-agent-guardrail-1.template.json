@@ -1,0 +1,223 @@
+{
+ "Resources": {
+  "GuardrailMyGuardrailF9A5588E": {
+   "Type": "AWS::Bedrock::Guardrail",
+   "Properties": {
+    "BlockedInputMessaging": "Sorry, your query violates our usage policy.",
+    "BlockedOutputsMessaging": "Sorry, I am unable to answer your question because of our usage policy.",
+    "ContentPolicyConfig": {
+     "ContentFiltersTierConfig": {
+      "TierName": "CLASSIC"
+     },
+     "FiltersConfig": [
+      {
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "InputStrength": "HIGH",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
+       "OutputStrength": "MEDIUM",
+       "Type": "SEXUAL"
+      }
+     ]
+    },
+    "Description": "This is a guardrail with at least 40 characters of description",
+    "Name": "guardrail"
+   }
+  },
+  "AgentWithGuardrailRole7432C16A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockagentgentwithguardrail-83bb6b17-bedrockagent"
+   }
+  },
+  "AgentWithGuardrailRoleDefaultPolicyB902C056": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "bedrock:ApplyGuardrail",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "GuardrailMyGuardrailF9A5588E",
+         "GuardrailArn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AgentWithGuardrailRoleDefaultPolicyB902C056",
+    "Roles": [
+     {
+      "Ref": "AgentWithGuardrailRole7432C16A"
+     }
+    ]
+   }
+  },
+  "AgentWithGuardrail931B1A0C": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "agent-with-guardrail",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "AgentWithGuardrailRole7432C16A",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "GuardrailConfiguration": {
+     "GuardrailIdentifier": {
+      "Fn::GetAtt": [
+       "GuardrailMyGuardrailF9A5588E",
+       "GuardrailId"
+      ]
+     },
+     "GuardrailVersion": {
+      "Fn::GetAtt": [
+       "GuardrailMyGuardrailF9A5588E",
+       "Version"
+      ]
+     }
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "You are a helpful and friendly agent that answers questions about literature.",
+    "OrchestrationType": "DEFAULT",
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "AgentWithGuardrailRoleDefaultPolicyB902C056"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

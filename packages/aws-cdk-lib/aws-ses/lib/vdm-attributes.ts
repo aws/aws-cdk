@@ -1,0 +1,102 @@
+import type { Construct } from 'constructs';
+import { CfnVdmAttributes } from './ses.generated';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IVdmAttributesRef, VdmAttributesReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+
+/**
+ * Virtual Deliverability Manager (VDM) attributes
+ */
+export interface IVdmAttributes extends IResource, IVdmAttributesRef {
+  /**
+   * The name of the resource behind the Virtual Deliverability Manager attributes.
+   *
+   * @attribute
+   */
+  readonly vdmAttributesName: string;
+}
+
+/**
+ * Properties for the Virtual Deliverability Manager (VDM) attributes
+ */
+export interface VdmAttributesProps {
+  /**
+   * Whether engagement metrics are enabled for your account
+   *
+   * @default true
+   */
+  readonly engagementMetrics?: boolean;
+
+  /**
+   * Whether optimized shared delivery is enabled for your account
+   *
+   * @default true
+   */
+  readonly optimizedSharedDelivery?: boolean;
+}
+
+/**
+ * Virtual Deliverability Manager (VDM) attributes
+ */
+@propertyInjectable
+export class VdmAttributes extends Resource implements IVdmAttributes {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.VdmAttributes';
+
+  /**
+   * Use an existing Virtual Deliverability Manager attributes resource
+   */
+  public static fromVdmAttributesName(scope: Construct, id: string, vdmAttributesName: string): IVdmAttributes {
+    class Import extends Resource implements IVdmAttributes {
+      public readonly vdmAttributesName = vdmAttributesName;
+
+      public get vdmAttributesRef(): VdmAttributesReference {
+        return {
+          vdmAttributesResourceId: this.vdmAttributesName,
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  public readonly vdmAttributesName: string;
+
+  /**
+   * Resource ID for the Virtual Deliverability Manager attributes
+   *
+   * @attribute
+   */
+  public readonly vdmAttributesResourceId: string;
+
+  public get vdmAttributesRef(): VdmAttributesReference {
+    return {
+      vdmAttributesResourceId: this.vdmAttributesResourceId,
+    };
+  }
+
+  constructor(scope: Construct, id: string, props: VdmAttributesProps = {}) {
+    super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    const resource = new CfnVdmAttributes(this, 'Resource', {
+      dashboardAttributes: {
+        engagementMetrics: booleanToEnabledDisabled(props.engagementMetrics ?? true),
+      },
+      guardianAttributes: {
+        optimizedSharedDelivery: booleanToEnabledDisabled(props.optimizedSharedDelivery ?? true),
+      },
+    });
+
+    this.vdmAttributesName = resource.ref;
+    this.vdmAttributesResourceId = resource.attrVdmAttributesResourceId;
+  }
+}
+
+function booleanToEnabledDisabled(value: boolean): 'ENABLED' | 'DISABLED' {
+  return value === true
+    ? 'ENABLED'
+    : 'DISABLED';
+}

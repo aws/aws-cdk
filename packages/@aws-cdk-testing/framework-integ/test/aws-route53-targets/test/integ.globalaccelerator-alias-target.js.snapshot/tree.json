@@ -1,0 +1,206 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-globalaccelerator-integ": {
+        "id": "aws-cdk-globalaccelerator-integ",
+        "path": "aws-cdk-globalaccelerator-integ",
+        "children": {
+          "Accelerator": {
+            "id": "Accelerator",
+            "path": "aws-cdk-globalaccelerator-integ/Accelerator",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-globalaccelerator-integ/Accelerator/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
+                  "aws:cdk:cloudformation:props": {
+                    "enabled": true,
+                    "name": "aws-cdk-globalaccelerator-integ"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_globalaccelerator.CfnAccelerator",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_globalaccelerator.Accelerator",
+              "version": "0.0.0"
+            }
+          },
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "aws-cdk-globalaccelerator-integ/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-globalaccelerator-integ/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "test.public."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "LocalGlobalAcceleratorAlias": {
+            "id": "LocalGlobalAcceleratorAlias",
+            "path": "aws-cdk-globalaccelerator-integ/LocalGlobalAcceleratorAlias",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-globalaccelerator-integ/LocalGlobalAcceleratorAlias/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "aliasTarget": {
+                      "hostedZoneId": "Z2BJ6XQ5FK7U4H",
+                      "dnsName": {
+                        "Fn::GetAtt": [
+                          "Accelerator8EB0B6B1",
+                          "DnsName"
+                        ]
+                      }
+                    },
+                    "comment": "Alias to the locally created Global Accelerator",
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "test-local.test.public.",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ExistingGlobalAcceleratorAlias": {
+            "id": "ExistingGlobalAcceleratorAlias",
+            "path": "aws-cdk-globalaccelerator-integ/ExistingGlobalAcceleratorAlias",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-globalaccelerator-integ/ExistingGlobalAcceleratorAlias/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "aliasTarget": {
+                      "hostedZoneId": "Z2BJ6XQ5FK7U4H",
+                      "dnsName": "someexisting.awsglobalaccelerator.com"
+                    },
+                    "comment": "Alias to the an existing Global Accelerator",
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "test-existing.test.public.",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "LocalGlobalAcceleratorAliasWithHealthCheck": {
+            "id": "LocalGlobalAcceleratorAliasWithHealthCheck",
+            "path": "aws-cdk-globalaccelerator-integ/LocalGlobalAcceleratorAliasWithHealthCheck",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-globalaccelerator-integ/LocalGlobalAcceleratorAliasWithHealthCheck/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "aliasTarget": {
+                      "hostedZoneId": "Z2BJ6XQ5FK7U4H",
+                      "dnsName": {
+                        "Fn::GetAtt": [
+                          "Accelerator8EB0B6B1",
+                          "DnsName"
+                        ]
+                      },
+                      "evaluateTargetHealth": true
+                    },
+                    "comment": "Alias to the locally created Global Accelerator with health check",
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "test-local-health.test.public.",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-globalaccelerator-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-globalaccelerator-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

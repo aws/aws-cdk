@@ -1,0 +1,15 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ.asg-lt": {
+      "stacks": [
+        "aws-cdk-asg-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1019.2"
+}

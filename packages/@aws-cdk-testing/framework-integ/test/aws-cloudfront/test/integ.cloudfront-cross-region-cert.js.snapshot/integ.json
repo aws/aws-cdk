@@ -1,0 +1,15 @@
+{
+  "enableLookups": true,
+  "version": "48.0.0",
+  "testCases": {
+    "integ-cloudfront-cross-region-acm/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-stack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "integ-cloudfront-cross-region-acm/DefaultTest/DeployAssert",
+      "assertionStackName": "integcloudfrontcrossregionacmDefaultTestDeployAssertD48673AA"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -1,0 +1,215 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "aws-cdk-glue.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-glue.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-glue": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-glue.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da03946f3d9f7502490ea840d2b597db3ee9912d25cfc58e27cd53a0432b663e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-glue.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-glue.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-glue/DataBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataBucketE3889A50"
+          }
+        ],
+        "/aws-cdk-glue/MyDatabase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDatabase1E2517DB"
+          }
+        ],
+        "/aws-cdk-glue/AVROTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AVROTable58646ABF"
+          }
+        ],
+        "/aws-cdk-glue/CSVTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSVTableE499CABA"
+          }
+        ],
+        "/aws-cdk-glue/JSONTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JSONTable00348F1D"
+          }
+        ],
+        "/aws-cdk-glue/ParquetTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParquetTableE84E985F"
+          }
+        ],
+        "/aws-cdk-glue/MyKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKey6AB29FA6"
+          }
+        ],
+        "/aws-cdk-glue/MyEncryptedTable/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEncryptedTableBucket7B28486D"
+          }
+        ],
+        "/aws-cdk-glue/MyEncryptedTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEncryptedTable981A88C6"
+          }
+        ],
+        "/aws-cdk-glue/MyPartitionFilteredTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPartitionFilteredTable324BA27A"
+          }
+        ],
+        "/aws-cdk-glue/MyTableWithConnection/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTableWithConnectionTable4BCA8495"
+          }
+        ],
+        "/aws-cdk-glue/MyTableWithStorageDescriptorParameters/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTableWithStorageDescriptorParametersTable1A347345"
+          }
+        ],
+        "/aws-cdk-glue/MyTableWithParameters/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTableWithParametersTable39568AB8"
+          }
+        ],
+        "/aws-cdk-glue/MyDeprecatedTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeprecatedTableAA0364FD"
+          }
+        ],
+        "/aws-cdk-glue/MyUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDC45028B"
+          }
+        ],
+        "/aws-cdk-glue/MyUser/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDefaultPolicy7B897426"
+          }
+        ],
+        "/aws-cdk-glue/AnotherUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherUser254B09E3"
+          }
+        ],
+        "/aws-cdk-glue/AnotherUser/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherUserDefaultPolicyDBDB9923"
+          }
+        ],
+        "/aws-cdk-glue/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-glue/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-glue"
+    },
+    "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-glue-table-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-glue-table-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-glue-table-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

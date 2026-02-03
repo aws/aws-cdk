@@ -1,0 +1,144 @@
+{
+ "Resources": {
+  "TopicRule40A4EA44": {
+   "Type": "AWS::IoT::TopicRule",
+   "Properties": {
+    "TopicRulePayload": {
+     "Actions": [
+      {
+       "Http": {
+        "Auth": {
+         "Sigv4": {
+          "RoleArn": {
+           "Fn::GetAtt": [
+            "TopicRuleTopicRuleActionRole246C4F77",
+            "Arn"
+           ]
+          },
+          "ServiceName": "serviceName",
+          "SigningRegion": "us-east-1"
+         }
+        },
+        "ConfirmationUrl": "https://example.com",
+        "EnableBatching": false,
+        "Headers": [
+         {
+          "Key": "key0",
+          "Value": "value0"
+         },
+         {
+          "Key": "key1",
+          "Value": "value1"
+         }
+        ],
+        "Url": "https://example.com/endpoint"
+       }
+      }
+     ],
+     "AwsIotSqlVersion": "2016-03-23",
+     "Sql": "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRole246C4F77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TopicRuleWithBatchB26E5020": {
+   "Type": "AWS::IoT::TopicRule",
+   "Properties": {
+    "TopicRulePayload": {
+     "Actions": [
+      {
+       "Http": {
+        "BatchConfig": {
+         "MaxBatchOpenMs": 100,
+         "MaxBatchSize": 5,
+         "MaxBatchSizeBytes": 1024
+        },
+        "EnableBatching": true,
+        "Url": "https://example.com/batch"
+       }
+      }
+     ],
+     "AwsIotSqlVersion": "2016-03-23",
+     "Sql": "SELECT topic(2) as device_id FROM 'device/+/batch'"
+    }
+   }
+  },
+  "TopicRuleWithBatchTopicRuleActionRole2FADFCA6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefTopicRuleWithBatchB26E5020737A011E": {
+   "Value": {
+    "Ref": "TopicRuleWithBatchB26E5020"
+   },
+   "Export": {
+    "Name": "IoTHttpsActionTestStack:ExportsOutputRefTopicRuleWithBatchB26E5020737A011E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

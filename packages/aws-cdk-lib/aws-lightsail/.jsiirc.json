@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.lightsail"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Lightsail"
+    },
+    "python": {
+      "module": "aws_cdk.aws_lightsail"
+    }
+  }
+}

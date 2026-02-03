@@ -1,0 +1,49 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg PipelineStackPipeline9DB740AF.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.aws/aws-cdk" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate";
+"Build.Synth" -> "UpdatePipeline.SelfMutate";
+"BEGIN UpdatePipeline" -> "UpdatePipeline.SelfMutate";
+"UpdatePipeline.SelfMutate" -> "END UpdatePipeline";
+"BEGIN Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Assets.FileAsset1";
+"UpdatePipeline.SelfMutate" -> "Assets.FileAsset1";
+"Assets.FileAsset2";
+"UpdatePipeline.SelfMutate" -> "Assets.FileAsset2";
+"BEGIN Assets" -> "Assets.FileAsset1";
+"BEGIN Assets" -> "Assets.FileAsset2";
+"Assets.FileAsset1" -> "END Assets";
+"Assets.FileAsset2" -> "END Assets";
+"BEGIN Beta" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Beta" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate" -> "BEGIN Beta";
+"BEGIN Beta.Stack1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Beta.Stack1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Beta.Stack1.Deploy";
+"Beta.Stack1.Prepare" -> "Beta.Stack1.Deploy";
+"Beta.Stack1.Prepare";
+"Build.Synth" -> "Beta.Stack1.Prepare";
+"Assets.FileAsset1" -> "Beta.Stack1.Prepare";
+"Assets.FileAsset2" -> "Beta.Stack1.Prepare";
+"BEGIN Beta.Stack1" -> "Beta.Stack1.Prepare";
+"Beta.Stack1.Deploy" -> "END Beta.Stack1";
+"BEGIN Beta" -> "BEGIN Beta.Stack1";
+"END Beta.Stack1" -> "END Beta";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.aws/aws-cdk";
+"BEGIN Source" -> "Source.aws/aws-cdk";
+"Source.aws/aws-cdk" -> "END Source";
+}

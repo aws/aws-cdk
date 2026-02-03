@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "SNSTopicPolicyInteg/DefaultTest": {
+      "stacks": [
+        "SNSTopicPolicyStack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "SNSTopicPolicyInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA"
+    }
+  }
+}

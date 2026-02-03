@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "ReportGroupIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-report-group"
+      ],
+      "assertionStack": "ReportGroupIntegTest/DefaultTest/DeployAssert"
+    }
+  }
+}

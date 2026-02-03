@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "d206dbb42802564127a0b8dba464e12c67b92c14fd97d201c4d8e8ba6af1116b": {
+      "displayName": "grant-read-bucket-all-tables Template",
+      "source": {
+        "path": "grant-read-bucket-all-tables.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e4382bfd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d206dbb42802564127a0b8dba464e12c67b92c14fd97d201c4d8e8ba6af1116b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

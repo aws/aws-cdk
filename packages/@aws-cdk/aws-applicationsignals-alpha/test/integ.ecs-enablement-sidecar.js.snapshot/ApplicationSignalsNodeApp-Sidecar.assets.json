@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "65d2cfcb44ea0e4987f58724c7b9de5422900c872ae11a8b199c3d8a33ff556c": {
+      "displayName": "ApplicationSignalsNodeApp-Sidecar Template",
+      "source": {
+        "path": "ApplicationSignalsNodeApp-Sidecar.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-15357e2b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "65d2cfcb44ea0e4987f58724c7b9de5422900c872ae11a8b199c3d8a33ff556c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

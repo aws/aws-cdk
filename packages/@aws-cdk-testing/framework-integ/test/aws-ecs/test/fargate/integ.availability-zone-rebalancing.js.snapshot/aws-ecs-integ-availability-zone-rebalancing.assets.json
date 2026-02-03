@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "0b3dbadae076acc28a4163b5ef9b34083e7c1fc5354f99abf74720d323b94433": {
+      "source": {
+        "path": "aws-ecs-integ-availability-zone-rebalancing.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0b3dbadae076acc28a4163b5ef9b34083e7c1fc5354f99abf74720d323b94433.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "528ab13296e3b851585a0c6d995a2d684b70b4d0a3f37b52fcdc83d165341462": {
+      "displayName": "LambdaAlarmActionIntegrationTestStack Template",
+      "source": {
+        "path": "LambdaAlarmActionIntegrationTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "528ab13296e3b851585a0c6d995a2d684b70b4d0a3f37b52fcdc83d165341462.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

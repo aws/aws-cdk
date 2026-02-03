@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ArchiveTest/DefaultTest": {
+      "stacks": [
+        "IntegStack"
+      ],
+      "assertionStack": "ArchiveTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ArchiveTestDefaultTestDeployAssert3405726A"
+    }
+  },
+  "minimumCliVersion": "2.1024.0"
+}

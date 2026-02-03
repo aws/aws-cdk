@@ -1,0 +1,258 @@
+{
+  "version": "35.0.0",
+  "artifacts": {
+    "synthesize-default-resources.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "synthesize-default-resources.assets.json"
+      },
+      "dependencies": [
+        "StagingStack-default-resourcesmax-ACCOUNT-REGION"
+      ]
+    },
+    "synthesize-default-resources": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "synthesize-default-resources.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "additionalDependencies": [
+          "synthesize-default-resources.assets"
+        ],
+        "stackTemplateAssetObjectUrl": "s3://cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4.json",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      },
+      "dependencies": [
+        "StagingStack-default-resourcesmax-ACCOUNT-REGION",
+        "synthesize-default-resources.assets"
+      ],
+      "metadata": {
+        "/synthesize-default-resources/lambda-s3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdas3ServiceRoleC9EDE33A"
+          }
+        ],
+        "/synthesize-default-resources/lambda-s3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdas342CE2BBD"
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-1-copy/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecr1copyServiceRole2A9FAF5F"
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-1-copy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecr1copyD39CDE9B"
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-two/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecrtwoServiceRole13E37F90"
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-two/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecrtwo03D31DB7"
+          }
+        ]
+      },
+      "displayName": "synthesize-default-resources"
+    },
+    "StagingStack-default-resourcesmax-ACCOUNT-REGION": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "StagingStack-default-resourcesmax-ACCOUNT-REGION.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackName": "StagingStack-default-resourcesmax"
+      },
+      "metadata": {
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkFileRoleE26CEABA"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkFileRoleDefaultPolicy621C7E5B"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketKey7092080A"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketKeyAlias69A0886F"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkStagingBucket1636058C"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkStagingBucketPolicy42BD1F92"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkStagingBucketAutoDeleteObjectsCustomResource800E998D"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkImageRoleF1394AC3"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkImageRoleDefaultPolicy4A1572DE"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesmaxecrasset13112F7F9"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesmaxecrasset2904B88A7"
+          }
+        ],
+        "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "StagingStack-default-resourcesmax-ACCOUNT-REGION"
+    },
+    "integtestsDefaultTestDeployAssert44C8D370.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestsDefaultTestDeployAssert44C8D370.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestsDefaultTestDeployAssert44C8D370": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestsDefaultTestDeployAssert44C8D370.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestsDefaultTestDeployAssert44C8D370.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtestsDefaultTestDeployAssert44C8D370.assets"
+      ],
+      "metadata": {
+        "/integ-tests/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-tests/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

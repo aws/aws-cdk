@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "6bd6fb7e8b4681a5095bacc1b336e28b565163379a4858182844e179961e69d1": {
+      "source": {
+        "path": "aws-cdk-dynamodb-gsi.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6bd6fb7e8b4681a5095bacc1b336e28b565163379a4858182844e179961e69d1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

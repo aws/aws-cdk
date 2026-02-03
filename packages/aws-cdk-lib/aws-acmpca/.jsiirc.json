@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.acmpca"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ACMPCA"
+    },
+    "python": {
+      "module": "aws_cdk.aws_acmpca"
+    }
+  }
+}

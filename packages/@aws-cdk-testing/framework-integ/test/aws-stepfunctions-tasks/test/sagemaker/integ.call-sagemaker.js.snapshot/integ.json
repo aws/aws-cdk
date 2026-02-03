@@ -1,0 +1,14 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ.call-sagemaker": {
+      "stacks": [
+        "aws-stepfunctions-integ-sagemaker"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

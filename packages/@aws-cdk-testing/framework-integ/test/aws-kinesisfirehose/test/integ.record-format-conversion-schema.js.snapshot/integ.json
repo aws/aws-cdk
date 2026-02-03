@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "RecordFormatConversionSchemaTest/DefaultTest": {
+      "stacks": [
+        "RecordFormatConversionSchema"
+      ],
+      "assertionStack": "RecordFormatConversionSchemaTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RecordFormatConversionSchemaTestDefaultTestDeployAssert82AC0CDA"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

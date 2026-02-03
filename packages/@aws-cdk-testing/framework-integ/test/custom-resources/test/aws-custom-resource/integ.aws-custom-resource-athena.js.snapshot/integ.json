@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "CustomResourceAthena/DefaultTest": {
+      "stacks": [
+        "aws-cdk-customresources-athena"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CustomResourceAthena/DefaultTest/DeployAssert",
+      "assertionStackName": "CustomResourceAthenaDefaultTestDeployAssert7AE6A475"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

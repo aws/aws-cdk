@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "VariablePipelineTest/DefaultTest": {
+      "stacks": [
+        "VariablePipelineStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "VariablePipelineTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VariablePipelineTestDefaultTestDeployAssertC1E57581"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

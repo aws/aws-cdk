@@ -1,0 +1,491 @@
+{
+ "Resources": {
+  "IpamTestIpam6C9298EF": {
+   "Type": "AWS::EC2::IPAM",
+   "Properties": {
+    "OperatingRegions": [
+     {
+      "RegionName": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ]
+   }
+  },
+  "IpamTestPrivatePool039C763DC": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv4",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IpamTestIpam6C9298EF",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "Locale": {
+     "Ref": "AWS::Region"
+    },
+    "ProvisionedCidrs": [
+     {
+      "Cidr": "10.2.0.0/16"
+     }
+    ]
+   }
+  },
+  "IpamTestPublicPool0C44B7C49": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv6",
+    "AwsService": "ec2",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IpamTestIpam6C9298EF",
+      "PublicDefaultScopeId"
+     ]
+    },
+    "Locale": {
+     "Ref": "AWS::Region"
+    },
+    "PublicIpSource": "amazon"
+   }
+  },
+  "IpamTestPublicPool0PublicPool0CidrC57CE00C": {
+   "Type": "AWS::EC2::IPAMPoolCidr",
+   "Properties": {
+    "IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    },
+    "NetmaskLength": 52
+   }
+  },
+  "VPCintegtest1EBA1CB75": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "IpamPoolCleanup"
+   ]
+  },
+  "VPCintegtest1ipv4IpamCidr451A5376": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv4IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPrivatePool039C763DC",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv4NetmaskLength": 20,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpamPoolCleanup"
+   ]
+  },
+  "VPCintegtest1Ipv6IpamCidr2E5BBFED": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv6IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv6NetmaskLength": 60,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpamPoolCleanup",
+    "IpamTestPublicPool0PublicPool0CidrC57CE00C"
+   ]
+  },
+  "testsbubnetSubnet77337845": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
+   ]
+  },
+  "testsbubnetRouteTableD0136BEA": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
+   ]
+  },
+  "testsbubnetRouteTableAssociationD6D083FA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "testsbubnetRouteTableD0136BEA",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "testsbubnetSubnet77337845"
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
+   ]
+  },
+  "IpamCleanupFnServiceRole58DCCBDE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "IpamCleanupFnServiceRoleDefaultPolicyA090BBB0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:DeprovisionIpamPoolCidr",
+        "ec2:GetIpamPoolAllocations",
+        "ec2:GetIpamPoolCidrs"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IpamCleanupFnServiceRoleDefaultPolicyA090BBB0",
+    "Roles": [
+     {
+      "Ref": "IpamCleanupFnServiceRole58DCCBDE"
+     }
+    ]
+   }
+  },
+  "IpamCleanupFn5E044491": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "85031586289267da11741deea4cf0d619a9a946d74e7a94f02b631c4c1a27225.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "IpamCleanupFnServiceRole58DCCBDE",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "IpamCleanupFnServiceRoleDefaultPolicyA090BBB0",
+    "IpamCleanupFnServiceRole58DCCBDE"
+   ]
+  },
+  "IpamCleanupFnLogGroup57CF72FE": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "IpamCleanupFn5E044491"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "IpamCleanupProviderframeworkonEventServiceRole4BF23FAC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "IpamCleanupProviderframeworkonEventServiceRoleDefaultPolicy476C432B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IpamCleanupFn5E044491",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IpamCleanupFn5E044491",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IpamCleanupFn5E044491",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IpamCleanupProviderframeworkonEventServiceRoleDefaultPolicy476C432B",
+    "Roles": [
+     {
+      "Ref": "IpamCleanupProviderframeworkonEventServiceRole4BF23FAC"
+     }
+    ]
+   }
+  },
+  "IpamCleanupProviderframeworkonEventEA8643CD": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "IpamCleanupFn5E044491",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "IpamCleanupProviderframeworkonEventServiceRole4BF23FAC",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "IpamCleanupProviderframeworkonEventServiceRoleDefaultPolicy476C432B",
+    "IpamCleanupProviderframeworkonEventServiceRole4BF23FAC"
+   ]
+  },
+  "IpamCleanupProviderframeworkonEventLogGroupA79DF283": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "IpamCleanupProviderframeworkonEventEA8643CD"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "IpamPoolCleanup": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "IpamCleanupProviderframeworkonEventEA8643CD",
+      "Arn"
+     ]
+    },
+    "PoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpamTestPublicPool0PublicPool0CidrC57CE00C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

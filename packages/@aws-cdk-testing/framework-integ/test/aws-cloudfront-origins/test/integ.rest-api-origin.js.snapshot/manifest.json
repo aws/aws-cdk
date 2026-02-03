@@ -1,0 +1,250 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "integ-cloudfront-rest-api-origin.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-cloudfront-rest-api-origin.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-cloudfront-rest-api-origin": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-cloudfront-rest-api-origin.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8cefc1380f321cba310bd033edc18e5d717de57cd544ee5bdc72b6bb2b075fbe.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-cloudfront-rest-api-origin.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-cloudfront-rest-api-origin.assets"
+      ],
+      "metadata": {
+        "/integ-cloudfront-rest-api-origin/RestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointTypes": [
+                "REGIONAL"
+              ],
+              "cloudWatchRole": true
+            }
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApi0C43BF4B"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiCloudWatchRoleE3ED6605"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiAccount7C83CF5A"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiDeployment180EC50368af6d4b358eff290c08cb2de07c4042"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiDeploymentStageprod3855DE66"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiEndpoint0551178A"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/RestApi/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiGET0F59260B"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/Distribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              }
+            }
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/Distribution/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Distribution830FAC52"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-cloudfront-rest-api-origin/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-cloudfront-rest-api-origin"
+    },
+    "restapioriginDefaultTestDeployAssert6BBA15BA.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "restapioriginDefaultTestDeployAssert6BBA15BA.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "restapioriginDefaultTestDeployAssert6BBA15BA": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapioriginDefaultTestDeployAssert6BBA15BA.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "restapioriginDefaultTestDeployAssert6BBA15BA.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "restapioriginDefaultTestDeployAssert6BBA15BA.assets"
+      ],
+      "metadata": {
+        "/rest-api-origin/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/rest-api-origin/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "rest-api-origin/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

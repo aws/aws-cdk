@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "df34b2df735e0f503ff60945d27845c0c760649008b32f822b19dc8942b54975": {
+      "source": {
+        "path": "aws-cdk-codepipeline-lambda.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "df34b2df735e0f503ff60945d27845c0c760649008b32f822b19dc8942b54975.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

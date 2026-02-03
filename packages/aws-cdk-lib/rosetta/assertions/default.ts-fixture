@@ -1,0 +1,21 @@
+import { Construct } from 'constructs';
+import { Aspects, CfnResource, Stack } from 'aws-cdk-lib';
+import { Annotations, Capture, Match, Tags, Template } from 'aws-cdk-lib/assertions';
+
+interface Expect {
+  toEqual(what: any): void;
+  toThrow(what?: any): void;
+}
+
+declare function expect(what: any): Expect;
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const stack = new Stack();
+    const template = Template.fromStack(stack);
+
+    /// here
+  }
+}

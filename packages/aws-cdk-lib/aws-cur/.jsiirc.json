@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.cur"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.CUR"
+    },
+    "python": {
+      "module": "aws_cdk.aws_cur"
+    }
+  }
+}

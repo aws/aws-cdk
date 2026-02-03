@@ -1,0 +1,171 @@
+{
+ "Resources": {
+  "natgwpriv081A7D93": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv"
+     }
+    ]
+   }
+  },
+  "natgwprivAmazonIpv68FE21C45": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgwpriv081A7D93",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgwpriv081A7D93",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoottablenatGwPrivRoute9F8908DE": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "testNATgwNATGateway1533420D",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testNATgwNATGateway1533420D"
+   ]
+  },
+  "natgwprivSubnetE547C5A0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "natgwpriv081A7D93",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgwpriv081A7D93",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "natgwprivAmazonIpv68FE21C45"
+   ]
+  },
+  "natgwprivSubnetRouteTableAssociation9E115869": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "natgwprivSubnetE547C5A0"
+    }
+   },
+   "DependsOn": [
+    "natgwprivAmazonIpv68FE21C45"
+   ]
+  },
+  "testNATgwNATGateway1533420D": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "ConnectivityType": "private",
+    "PrivateIpAddress": "10.0.0.42",
+    "SecondaryPrivateIpAddresses": [
+     "10.0.0.43",
+     "10.0.0.44",
+     "10.0.0.45"
+    ],
+    "SubnetId": {
+     "Ref": "natgwprivSubnetE547C5A0"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-privatenatgw-alpha/natgw_privSubnet"
+     }
+    ]
+   },
+   "DependsOn": [
+    "natgwprivSubnetRouteTableAssociation9E115869"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

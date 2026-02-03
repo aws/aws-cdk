@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.mediapackagev2"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.MediaPackageV2"
+    },
+    "python": {
+      "module": "aws_cdk.aws_mediapackagev2"
+    }
+  }
+}

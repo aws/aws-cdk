@@ -1,0 +1,370 @@
+{
+ "Resources": {
+  "ScheduleRuleDA5BD877": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "cron(0 0 * * ? *)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "Input": "{\"service\":\"ECS\",\"action\":\"updateService\",\"parameters\":{\"service\":\"cool-service\",\"forceNewDeployment\":true}}"
+     },
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+        "Arn"
+       ]
+      },
+      "Id": "Target1",
+      "Input": "{\"service\":\"RDS\",\"action\":\"stopDBInstance\",\"parameters\":{\"DBInstanceIdentifier\":\"dev-instance\"}}"
+     }
+    ]
+   }
+  },
+  "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898874A4805": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "ScheduleRuleDA5BD877",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C0179F894": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "ScheduleRuleDA5BD877",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecs:UpdateService",
+        "kms:Encrypt",
+        "rds:StopDBInstance",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",
+    "Roles": [
+     {
+      "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
+     }
+    ]
+   }
+  },
+  "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3ccde8904a962232b8b3bac4ee526560cae345952557e1920be0d62560fbce68.zip"
+    },
+    "Handler": "index.handler",
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 60
+   },
+   "DependsOn": [
+    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",
+    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
+   ]
+  },
+  "TestParameter95DD6E25": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "/cdk-integ/aws-event-targets/aws-api-target/default-param",
+    "Type": "String",
+    "Value": "default-value"
+   }
+  },
+  "UpdateSSMRule6532685F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "cdk.integ"
+     ],
+     "detail-type": [
+      "SSMUpdateParameter"
+     ],
+     "detail": {
+      "Name": [
+       {
+        "Ref": "TestParameter95DD6E25"
+       }
+      ]
+     }
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "InputTransformer": {
+       "InputPathsMap": {
+        "detail-Name": "$.detail.Name",
+        "detail-Value": "$.detail.Value"
+       },
+       "InputTemplate": "{\"service\":\"SSM\",\"action\":\"putParameter\",\"parameters\":{\"Name\":<detail-Name>,\"Value\":<detail-Value>,\"Overwrite\":true}}"
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestParameter95DD6E25"
+   ]
+  },
+  "UpdateSSMRuleAllowEventRuleawscdkawsapitargetintegUpdateSSMRuleUpdateSSMRuleTarget0Handler573B788B9ACEE6B4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "UpdateSSMRule6532685F",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "TestParameter95DD6E25"
+   ]
+  },
+  "EncryptionKey1B843E66": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "EncryptDataRule79774425": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "cdk.integ"
+     ],
+     "detail-type": [
+      "EncryptData"
+     ],
+     "detail": {
+      "KeyId": [
+       {
+        "Ref": "EncryptionKey1B843E66"
+       }
+      ]
+     }
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "InputTransformer": {
+       "InputPathsMap": {
+        "detail-KeyId": "$.detail.KeyId",
+        "detail-Plaintext": "$.detail.Plaintext"
+       },
+       "InputTemplate": "{\"service\":\"KMS\",\"action\":\"encrypt\",\"parameters\":{\"KeyId\":<detail-KeyId>,\"Plaintext\":<detail-Plaintext>}}"
+      }
+     }
+    ]
+   }
+  },
+  "EncryptDataRuleAllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED86520046E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "EncryptDataRule79774425",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefTestParameter95DD6E25D868FBA1": {
+   "Value": {
+    "Ref": "TestParameter95DD6E25"
+   },
+   "Export": {
+    "Name": "aws-cdk-aws-api-target-integ:ExportsOutputRefTestParameter95DD6E25D868FBA1"
+   }
+  },
+  "ExportsOutputRefEncryptionKey1B843E66D737BCFC": {
+   "Value": {
+    "Ref": "EncryptionKey1B843E66"
+   },
+   "Export": {
+    "Name": "aws-cdk-aws-api-target-integ:ExportsOutputRefEncryptionKey1B843E66D737BCFC"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

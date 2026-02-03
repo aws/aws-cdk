@@ -1,0 +1,208 @@
+{
+ "Resources": {
+  "redirectRedirectCertificateD6C59F7F": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "integ-same-region.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "integ-same-region.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     },
+     {
+      "DomainName": "integ-same-region.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    ],
+    "SubjectAlternativeNames": [
+     "integ-same-region.example.com"
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-https-redirect-same-region/redirect/RedirectCertificate"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   }
+  },
+  "redirectRedirectBucketAA44E2FE": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "WebsiteConfiguration": {
+     "RedirectAllRequestsTo": {
+      "HostName": "aws.amazon.com",
+      "Protocol": "https"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "redirectRedirectDistribution5423F951": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "Aliases": [
+      "integ-same-region.example.com"
+     ],
+     "Comment": "Redirect to aws.amazon.com from integ-same-region.example.com",
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integhttpsredirectsameregionredirectRedirectDistributionOrigin1609D30F4",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "DefaultRootObject": "",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "http-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Fn::GetAtt": [
+             "redirectRedirectBucketAA44E2FE",
+             "WebsiteURL"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "Id": "integhttpsredirectsameregionredirectRedirectDistributionOrigin1609D30F4"
+      }
+     ],
+     "PriceClass": "PriceClass_All",
+     "ViewerCertificate": {
+      "AcmCertificateArn": {
+       "Ref": "redirectRedirectCertificateD6C59F7F"
+      },
+      "MinimumProtocolVersion": "TLSv1.2_2021",
+      "SslSupportMethod": "sni-only"
+     }
+    }
+   }
+  },
+  "redirectRedirectAliasRecorde7728a9F2A656C": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "redirectRedirectDistribution5423F951",
+       "DomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "integ-same-region.example.com.",
+    "Type": "A"
+   }
+  },
+  "redirectRedirectAliasRecordSixe7728a9391F03E": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "redirectRedirectDistribution5423F951",
+       "DomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "integ-same-region.example.com.",
+    "Type": "AAAA"
+   }
+  }
+ },
+ "Mappings": {
+  "AWSCloudFrontPartitionHostedZoneIdMap": {
+   "aws": {
+    "zoneId": "Z2FDTNDATAQYW2"
+   },
+   "aws-cn": {
+    "zoneId": "Z3RFFRIM2A3IF5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

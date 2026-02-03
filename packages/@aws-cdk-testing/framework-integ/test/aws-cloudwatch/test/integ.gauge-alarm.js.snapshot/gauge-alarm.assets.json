@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "31a11372efe507963d903ca1895c7c79413006b732b701aecb68df137871d7ad": {
+      "displayName": "gauge-alarm Template",
+      "source": {
+        "path": "gauge-alarm.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-24e8d37d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "31a11372efe507963d903ca1895c7c79413006b732b701aecb68df137871d7ad.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

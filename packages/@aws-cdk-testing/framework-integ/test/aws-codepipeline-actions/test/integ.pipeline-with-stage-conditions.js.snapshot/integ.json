@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "codepipeline-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-stage-conditions"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "codepipeline-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelineintegtestDefaultTestDeployAssert88EAAC45"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "OpenSearchCustomKmsInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-custom-kms-key"
+      ],
+      "diffAssets": true,
+      "assertionStack": "OpenSearchCustomKmsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

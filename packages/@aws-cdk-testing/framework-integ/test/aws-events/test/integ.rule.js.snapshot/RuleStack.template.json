@@ -1,0 +1,316 @@
+{
+ "Resources": {
+  "MyRoleF48FFE04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyRuleA44AB831": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      "account1",
+      "account2"
+     ],
+     "detail": {
+      "foo": [
+       1,
+       2
+      ],
+      "strings": [
+       "foo",
+       "bar"
+      ],
+      "rangeMatcher": [
+       {
+        "numeric": [
+         ">=",
+         -1,
+         "<=",
+         1
+        ]
+       }
+      ],
+      "stringMatcher": [
+       "I am just a string"
+      ],
+      "prefixMatcher": [
+       {
+        "prefix": "aws."
+       }
+      ],
+      "ipAddress": [
+       {
+        "cidr": "192.0.2.0/24"
+       }
+      ],
+      "shouldExist": [
+       {
+        "exists": true
+       }
+      ],
+      "shouldNotExist": [
+       {
+        "exists": false
+       }
+      ],
+      "numbers": [
+       {
+        "numeric": [
+         ">",
+         0,
+         "<",
+         5
+        ]
+       }
+      ],
+      "topLevel": {
+       "deeper": [
+        {
+         "numeric": [
+          "=",
+          42
+         ]
+        }
+       ],
+       "oneMoreLevel": {
+        "deepest": [
+         {
+          "numeric": [
+           "<=",
+           -1
+          ]
+         },
+         {
+          "numeric": [
+           ">=",
+           1
+          ]
+         }
+        ]
+       }
+      },
+      "state": [
+       {
+        "anything-but": [
+         "initializing"
+        ]
+       }
+      ],
+      "limit": [
+       {
+        "anything-but": [
+         100,
+         200,
+         300
+        ]
+       }
+      ],
+      "notPrefixedBy": [
+       {
+        "anything-but": {
+         "prefix": "sensitive-"
+        }
+       }
+      ],
+      "suffix": [
+       {
+        "suffix": ".com"
+       }
+      ],
+      "equalsIgnoreCase": [
+       {
+        "equals-ignore-case": "ignore case"
+       }
+      ]
+     },
+     "detail-type": [
+      "detailType1"
+     ],
+     "id": [
+      "id1",
+      "id2"
+     ],
+     "region": [
+      "region1",
+      "region2",
+      "region3"
+     ],
+     "resources": [
+      "r1"
+     ],
+     "source": [
+      "src1",
+      "src2"
+     ],
+     "time": [
+      "t1"
+     ],
+     "version": [
+      "0"
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "MyRoleF48FFE04",
+      "Arn"
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyWildcardRule477FB0F9": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "wildcard": "account*"
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButPrefixRule756FC7C6": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "prefix": "prefix-"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButSuffixRuleB1E496DF": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "suffix": "-suffix"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButWildcardRuleEED7F44B": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "wildcard": "account*"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButEqualsIgnoreCaseEBE7F91F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "equals-ignore-case": [
+         "account1",
+         "account2"
+        ]
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyPrefixEqualsIgnoreCaseC9726B40": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "prefix": {
+        "equals-ignore-case": "prefix-"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MySuffixEqualsIgnoreCaseBE2DDE03": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "suffix": {
+        "equals-ignore-case": "-suffix"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

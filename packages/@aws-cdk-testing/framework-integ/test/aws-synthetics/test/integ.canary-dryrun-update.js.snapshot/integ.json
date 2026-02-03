@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "SyntheticsCanaryDryRunAndUpdate/DefaultTest": {
+      "stacks": [
+        "SyntheticsCanaryDryRunAndUpdateStack"
+      ],
+      "assertionStack": "SyntheticsCanaryDryRunAndUpdate/DefaultTest/DeployAssert",
+      "assertionStackName": "SyntheticsCanaryDryRunAndUpdateDefaultTestDeployAssertAF68FFC6"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

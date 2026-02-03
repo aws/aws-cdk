@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-integ-distribution-lambda-cross-region/DefaultTest": {
+      "stacks": [
+        "integ-distribution-lambda-cross-region"
+      ],
+      "diffAssets": true,
+      "assertionStack": "cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

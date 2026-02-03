@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-efs-lambda-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-efs",
+        "aws-cdk-lambda"
+      ],
+      "assertionStack": "aws-efs-lambda-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsefslambdatestDefaultTestDeployAssert5DC2C506"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

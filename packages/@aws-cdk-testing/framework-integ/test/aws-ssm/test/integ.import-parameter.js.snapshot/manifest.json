@@ -1,0 +1,135 @@
+{
+  "version": "32.0.0",
+  "artifacts": {
+    "Import-SSM-Parameter.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Import-SSM-Parameter.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Import-SSM-Parameter": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Import-SSM-Parameter.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0c9f637062451a2002409e9c30b657f39990631000a05a12bef7fcdb73ec5332.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Import-SSM-Parameter.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Import-SSM-Parameter.assets"
+      ],
+      "metadata": {
+        "/Import-SSM-Parameter/StringParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringParameter472EED0E"
+          }
+        ],
+        "/Import-SSM-Parameter/ImportedWithName.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedWithNameParameter"
+          }
+        ],
+        "/Import-SSM-Parameter/ImportedWithNameOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedWithNameOutput"
+          }
+        ],
+        "/Import-SSM-Parameter/ImportedWithIntrinsicOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedWithIntrinsicOutput"
+          }
+        ],
+        "/Import-SSM-Parameter/ImportedWithForceFlagOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedWithForceFlagOutput"
+          }
+        ],
+        "/Import-SSM-Parameter/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Import-SSM-Parameter/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Import-SSM-Parameter"
+    },
+    "cdkintegimportssmparameterDefaultTestDeployAssert2A3D6843.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdkintegimportssmparameterDefaultTestDeployAssert2A3D6843.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdkintegimportssmparameterDefaultTestDeployAssert2A3D6843": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdkintegimportssmparameterDefaultTestDeployAssert2A3D6843.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdkintegimportssmparameterDefaultTestDeployAssert2A3D6843.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdkintegimportssmparameterDefaultTestDeployAssert2A3D6843.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-import-ssm-parameter/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-import-ssm-parameter/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-import-ssm-parameter/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

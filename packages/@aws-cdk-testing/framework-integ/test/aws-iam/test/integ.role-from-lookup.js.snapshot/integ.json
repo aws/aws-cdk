@@ -1,0 +1,22 @@
+{
+  "enableLookups": true,
+  "version": "41.0.0",
+  "testCases": {
+    "integ-iam-role-from-lookup/DefaultTest": {
+      "stacks": [
+        "LookupRoleStack"
+      ],
+      "hooks": {
+        "preDeploy": [
+          "aws iam create-role --role-name MyLookupTestRole --assume-role-policy-document file://policy-document.json"
+        ],
+        "postDestroy": [
+          "aws iam delete-role --role-name MyLookupTestRole"
+        ]
+      },
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-iam-role-from-lookup/DefaultTest/DeployAssert",
+      "assertionStackName": "integiamrolefromlookupDefaultTestDeployAssert63955306"
+    }
+  }
+}

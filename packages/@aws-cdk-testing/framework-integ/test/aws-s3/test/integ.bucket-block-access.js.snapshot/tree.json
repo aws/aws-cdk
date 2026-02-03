@@ -1,0 +1,271 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-s3-bucket-block-access": {
+        "id": "aws-cdk-s3-bucket-block-access",
+        "path": "aws-cdk-s3-bucket-block-access",
+        "children": {
+          "blockAcls": {
+            "id": "blockAcls",
+            "path": "aws-cdk-s3-bucket-block-access/blockAcls",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-bucket-block-access/blockAcls/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "blockPublicAccess": "*"
+                }
+              ]
+            }
+          },
+          "blockAclsOnly": {
+            "id": "blockAclsOnly",
+            "path": "aws-cdk-s3-bucket-block-access/blockAclsOnly",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-bucket-block-access/blockAclsOnly/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": false,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "blockPublicAccess": "*"
+                }
+              ]
+            }
+          },
+          "blockAll": {
+            "id": "blockAll",
+            "path": "aws-cdk-s3-bucket-block-access/blockAll",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-bucket-block-access/blockAll/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "blockPublicAccess": "*"
+                }
+              ]
+            }
+          },
+          "blockOnly2": {
+            "id": "blockOnly2",
+            "path": "aws-cdk-s3-bucket-block-access/blockOnly2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-bucket-block-access/blockOnly2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": false,
+                      "blockPublicPolicy": false,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "blockPublicAccess": "*"
+                }
+              ]
+            }
+          },
+          "blockOnly1": {
+            "id": "blockOnly1",
+            "path": "aws-cdk-s3-bucket-block-access/blockOnly1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-bucket-block-access/blockOnly1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": false,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "blockPublicAccess": "*"
+                }
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-s3-bucket-block-access/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-s3-bucket-block-access/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "testBlockingBucketAccess": {
+        "id": "testBlockingBucketAccess",
+        "path": "testBlockingBucketAccess",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "testBlockingBucketAccess/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "testBlockingBucketAccess/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "testBlockingBucketAccess/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "testBlockingBucketAccess/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "testBlockingBucketAccess/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

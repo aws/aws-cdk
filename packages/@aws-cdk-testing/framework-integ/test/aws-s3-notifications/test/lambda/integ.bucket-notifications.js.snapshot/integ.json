@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LambdaBucketNotificationsTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-bucket-s3-notifications"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        }
+      },
+      "assertionStack": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaBucketNotificationsTestDefaultTestDeployAssertDC5450F4"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}

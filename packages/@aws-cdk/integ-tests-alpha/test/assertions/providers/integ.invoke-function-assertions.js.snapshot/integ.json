@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AssertionsTest/DefaultTest": {
+      "stacks": [
+        "InvokeFunctionAssertions"
+      ],
+      "assertionStack": "AssertionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AssertionsTestDefaultTestDeployAssertDC0672BB"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

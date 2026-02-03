@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "39.0.0",
+  "testCases": {
+    "integ-user-email-mfa-test/DefaultTest": {
+      "stacks": [
+        "integ-user-email-mfa"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-user-email-mfa-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuseremailmfatestDefaultTestDeployAssertD4C43B3C"
+    }
+  }
+}

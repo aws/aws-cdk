@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.ssmincidents"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SSMIncidents"
+    },
+    "python": {
+      "module": "aws_cdk.aws_ssmincidents"
+    }
+  }
+}

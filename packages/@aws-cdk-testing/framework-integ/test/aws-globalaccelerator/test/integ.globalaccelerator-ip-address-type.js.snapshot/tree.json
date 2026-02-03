@@ -1,0 +1,127 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "global-accelerator-ip-address-type": {
+        "id": "global-accelerator-ip-address-type",
+        "path": "global-accelerator-ip-address-type",
+        "children": {
+          "Accelerator": {
+            "id": "Accelerator",
+            "path": "global-accelerator-ip-address-type/Accelerator",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "global-accelerator-ip-address-type/Accelerator/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
+                  "aws:cdk:cloudformation:props": {
+                    "enabled": true,
+                    "ipAddressType": "DUAL_STACK",
+                    "name": "acceleratorWithIpAddressType"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "global-accelerator-ip-address-type/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "global-accelerator-ip-address-type/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "GlobalAcceleratorIpAddressType": {
+        "id": "GlobalAcceleratorIpAddressType",
+        "path": "GlobalAcceleratorIpAddressType",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "GlobalAcceleratorIpAddressType/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "GlobalAcceleratorIpAddressType/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}

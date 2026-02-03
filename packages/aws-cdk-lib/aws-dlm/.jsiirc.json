@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.dlm"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.DLM"
+    },
+    "python": {
+      "module": "aws_cdk.aws_dlm"
+    }
+  }
+}

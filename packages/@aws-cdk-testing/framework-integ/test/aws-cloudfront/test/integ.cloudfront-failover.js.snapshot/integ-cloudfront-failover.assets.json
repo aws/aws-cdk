@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "e9e1a2dc7eb62608999762bf2b4469b0ce33b1c7ddf679e960ea98d02c826cad": {
+      "source": {
+        "path": "integ-cloudfront-failover.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e9e1a2dc7eb62608999762bf2b4469b0ce33b1c7ddf679e960ea98d02c826cad.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

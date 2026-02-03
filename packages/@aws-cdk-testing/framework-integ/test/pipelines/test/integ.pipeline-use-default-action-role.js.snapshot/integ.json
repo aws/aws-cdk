@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "UsePipelineRoleForActionsTest/DefaultTest": {
+      "stacks": [
+        "UsePipelineRoleForActions"
+      ],
+      "diffAssets": true,
+      "assertionStack": "UsePipelineRoleForActionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "UsePipelineRoleForActionsTestDefaultTestDeployAssert16904455"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LambdaEventSourceS3Integ/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-s3"
+      ],
+      "diffAssets": true,
+      "assertionStack": "LambdaEventSourceS3Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaEventSourceS3IntegDefaultTestDeployAssertACE2A452"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

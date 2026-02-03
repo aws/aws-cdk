@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.gameliftstreams"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.GameLiftStreams"
+    },
+    "python": {
+      "module": "aws_cdk.aws_gameliftstreams"
+    }
+  }
+}

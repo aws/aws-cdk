@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.mwaa"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.MWAA"
+    },
+    "python": {
+      "module": "aws_cdk.aws_mwaa"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "dummy-stack/integ-test/DefaultTest": {
+      "stacks": [
+        "dummy-stack"
+      ],
+      "assertionStack": "dummy-stack/integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "dummystackintegtestDefaultTestDeployAssertF190D0AF"
+    }
+  }
+}

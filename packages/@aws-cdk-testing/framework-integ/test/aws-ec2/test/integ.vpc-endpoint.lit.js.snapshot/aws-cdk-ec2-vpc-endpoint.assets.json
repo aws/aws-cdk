@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "fba77ce7666353e1a9ff62a7331cd4e25544aed711bffe3475e34a6411572bd5": {
+      "displayName": "aws-cdk-ec2-vpc-endpoint Template",
+      "source": {
+        "path": "aws-cdk-ec2-vpc-endpoint.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-0aea0a8c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fba77ce7666353e1a9ff62a7331cd4e25544aed711bffe3475e34a6411572bd5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

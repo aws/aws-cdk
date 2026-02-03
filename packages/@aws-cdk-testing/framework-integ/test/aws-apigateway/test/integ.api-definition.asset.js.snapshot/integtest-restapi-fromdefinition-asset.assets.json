@@ -1,0 +1,34 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb": {
+      "displayName": "my-api/APIDefinition",
+      "source": {
+        "path": "asset.68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "38853cb73e6e3d1f6a10d7370a6dee8d866636f0777a0c55a46ca1f1d03c346e": {
+      "displayName": "integtest-restapi-fromdefinition-asset Template",
+      "source": {
+        "path": "integtest-restapi-fromdefinition-asset.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "38853cb73e6e3d1f6a10d7370a6dee8d866636f0777a0c55a46ca1f1d03c346e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

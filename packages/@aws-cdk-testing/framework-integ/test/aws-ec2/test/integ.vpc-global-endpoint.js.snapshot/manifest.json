@@ -1,0 +1,221 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "test-globalvpcendpoint.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "test-globalvpcendpoint.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "test-globalvpcendpoint": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-globalvpcendpoint.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8fbe6bbbf0115139386555c8d6336ab9878f211062bcaeda9445b22400ab430f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "test-globalvpcendpoint.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "test-globalvpcendpoint.assets"
+      ],
+      "metadata": {
+        "/test-globalvpcendpoint/MyVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcF9F0CA6F"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1SubnetF6608456"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1DefaultRoute95FDF9EB"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2Subnet492B6BFB"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2RouteTable1DF17386"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2DefaultRoute052936F6"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2Subnet0040C983"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcIGW5C4A4F63"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVPCGW488ACE0D"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/S3MultiRegionAccessEndpoint/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcS3MultiRegionAccessEndpointSecurityGroup0B79B22B"
+          }
+        ],
+        "/test-globalvpcendpoint/MyVpc/S3MultiRegionAccessEndpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcS3MultiRegionAccessEndpointBBDE5F84"
+          }
+        ],
+        "/test-globalvpcendpoint/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-globalvpcendpoint/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "test-globalvpcendpoint"
+    },
+    "globalvpcendpointDefaultTestDeployAssertE52DED6D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "globalvpcendpointDefaultTestDeployAssertE52DED6D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "globalvpcendpointDefaultTestDeployAssertE52DED6D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "globalvpcendpointDefaultTestDeployAssertE52DED6D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "globalvpcendpointDefaultTestDeployAssertE52DED6D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "globalvpcendpointDefaultTestDeployAssertE52DED6D.assets"
+      ],
+      "metadata": {
+        "/globalvpcendpoint/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/globalvpcendpoint/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "globalvpcendpoint/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

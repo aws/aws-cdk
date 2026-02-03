@@ -1,0 +1,386 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "code-first-schema": {
+        "id": "code-first-schema",
+        "path": "code-first-schema",
+        "children": {
+          "code-first-api": {
+            "id": "code-first-api",
+            "path": "code-first-schema/code-first-api",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "code-first-schema/code-first-api/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "API_KEY",
+                    "name": "api"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "code-first-schema/code-first-api/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "codefirstapi1A3CC7D2",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "schema {\n  query: Query\n  mutation: Mutation\n  subscription: Subscription\n}\ninterface Node {\n  created: String\n  edited: String\n  id: ID!\n}\ntype Planet {\n  name: String\n  diameter: Int\n  rotationPeriod: Int\n  orbitalPeriod: Int\n  gravity: String\n  population: [String]\n  climates: [String]\n  terrains: [String]\n  surfaceWater: Float\n  created: String\n  edited: String\n  id: ID!\n}\ntype Species implements Node {\n  name: String\n  classification: String\n  designation: String\n  averageHeight: Float\n  averageLifespan: Int\n  eyeColors: [String]\n  hairColors: [String]\n  skinColors: [String]\n  language: String\n  homeworld: Planet\n  created: String\n  edited: String\n  id: ID!\n}\ntype Query {\n  getPlanets: [Planet]\n}\ntype Mutation {\n  addPlanet(name: String diameter: Int rotationPeriod: Int orbitalPeriod: Int gravity: String population: [String] climates: [String] terrains: [String] surfaceWater: Float): Planet\n}\ntype Subscription {\n  addedPlanets(id: ID!): Planet\n  @aws_subscribe(mutations: [\"addPlanet\"])\n}\ninput AwesomeInput {\n  awesomeInput: String\n}\nenum Episodes {\n  The_Phantom_Menace\n  Attack_of_the_Clones\n  Revenge_of_the_Sith\n  A_New_Hope\n  The_Empire_Strikes_Back\n  Return_of_the_Jedi\n  The_Force_Awakens\n  The_Last_Jedi\n  The_Rise_of_Skywalker\n}\nunion Union = Species | Planet\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "code-first-schema/code-first-api/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "codefirstapi1A3CC7D2",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "code-first-schema/code-first-api/LogGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "planets": {
+                "id": "planets",
+                "path": "code-first-schema/code-first-api/planets",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "code-first-schema/code-first-api/planets/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "code-first-schema/code-first-api/planets/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "code-first-schema/code-first-api/planets/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "code-first-schema/code-first-api/planets/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "code-first-schema/code-first-api/planets/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:ConditionCheckItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:PutItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:UpdateItem"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "table8235A42E",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Ref": "AWS::NoValue"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "codefirstapiplanetsServiceRoleDefaultPolicy76FE4F2C",
+                                "roles": [
+                                  {
+                                    "Ref": "codefirstapiplanetsServiceRole2F4AA8E7"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "code-first-schema/code-first-api/planets/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "codefirstapi1A3CC7D2",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "planets",
+                        "type": "AMAZON_DYNAMODB",
+                        "dynamoDbConfig": {
+                          "tableName": {
+                            "Ref": "table8235A42E"
+                          },
+                          "awsRegion": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "codefirstapiplanetsServiceRole2F4AA8E7",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "QuerygetPlanetsResolver": {
+                "id": "QuerygetPlanetsResolver",
+                "path": "code-first-schema/code-first-api/QuerygetPlanetsResolver",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "code-first-schema/code-first-api/QuerygetPlanetsResolver/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "codefirstapi1A3CC7D2",
+                            "ApiId"
+                          ]
+                        },
+                        "fieldName": "getPlanets",
+                        "typeName": "Query",
+                        "dataSourceName": "planets",
+                        "kind": "UNIT",
+                        "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
+                  "version": "0.0.0"
+                }
+              },
+              "MutationaddPlanetResolver": {
+                "id": "MutationaddPlanetResolver",
+                "path": "code-first-schema/code-first-api/MutationaddPlanetResolver",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "code-first-schema/code-first-api/MutationaddPlanetResolver/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "codefirstapi1A3CC7D2",
+                            "ApiId"
+                          ]
+                        },
+                        "fieldName": "addPlanet",
+                        "typeName": "Mutation",
+                        "dataSourceName": "planets",
+                        "kind": "UNIT",
+                        "requestMappingTemplate": "\n      #set($input = $context.arguments)\n      $util.qr($input.put(\"name\", $context.arguments.name))\n$util.qr($input.put(\"diameter\", $context.arguments.diameter))\n$util.qr($input.put(\"rotationPeriod\", $context.arguments.rotationPeriod))\n$util.qr($input.put(\"orbitalPeriod\", $context.arguments.orbitalPeriod))\n$util.qr($input.put(\"gravityPeriod\", $context.arguments.gravity))\n$util.qr($input.put(\"population\", $context.arguments.population))\n$util.qr($input.put(\"climates\", $context.arguments.climates))\n$util.qr($input.put(\"terrains\", $context.arguments.terrains))\n$util.qr($input.put(\"surfaceWater\", $context.arguments.surfaceWater))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "table": {
+            "id": "table",
+            "path": "code-first-schema/table",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "code-first-schema/table/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "code-first-schema/table/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "code-first-schema/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "code-first-schema/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.161"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

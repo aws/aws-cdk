@@ -1,0 +1,34 @@
+#!/bin/bash
+# A wee little script to compile samples in a package directory.
+#
+# Normally, samples are only compiled when doing 'pack.sh', if you are iterating
+# on them you can use this script for quicker feedback.
+#
+# This could maybe have been an 'npm run' script, but it's not self-contained
+# (needs the "aws-cdk-lib" package to compile against and runs jsii-rosetta from the
+# repo root) so that didn't feel right. For now this is what we have.
+set -eu
+scriptdir=$(cd $(dirname $0) && pwd)
+
+dirs="${@:-$PWD}"
+
+for dir in $dirs; do
+    (
+        cd $dir
+        if [[ ! -f package.json ]]; then
+            echo "Run this against a directory with package.json in it (got: $PWD)" >&2
+            exit 1
+        fi
+
+        # Run jsii
+        npm run build
+
+        # Run rosetta against aws-cdk-lib dir, failing on compilation errors
+        node --experimental-worker $scriptdir/../node_modules/.bin/jsii-rosetta \
+            --directory $scriptdir/../packages/aws-cdk-lib \
+            --compile \
+            --output /dev/null \
+            --verbose \
+            --fail
+    )
+done

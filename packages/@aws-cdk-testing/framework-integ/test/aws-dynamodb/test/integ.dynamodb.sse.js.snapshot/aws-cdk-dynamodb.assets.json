@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "33e4f9047343681b2fc18b6e1265ffb236106dec4c06189058ad009552f0a1c1": {
+      "displayName": "aws-cdk-dynamodb Template",
+      "source": {
+        "path": "aws-cdk-dynamodb.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-9fe70d94": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "33e4f9047343681b2fc18b6e1265ffb236106dec4c06189058ad009552f0a1c1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

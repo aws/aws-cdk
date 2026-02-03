@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "GlobalAcceleratorInteg/DefaultTest": {
+      "stacks": [
+        "integ-globalaccelerator"
+      ],
+      "diffAssets": true,
+      "assertionStack": "GlobalAcceleratorInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "GlobalAcceleratorIntegDefaultTestDeployAssert748E6B41"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

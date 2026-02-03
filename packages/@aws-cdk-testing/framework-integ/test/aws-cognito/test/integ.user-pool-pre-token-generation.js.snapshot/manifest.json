@@ -1,0 +1,205 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "UserPoolPreTokenGenerationStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "UserPoolPreTokenGenerationStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "UserPoolPreTokenGenerationStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "UserPoolPreTokenGenerationStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5d21b9fa5a417b9c924aeecb4c22509cc0b66b14729d7b75dbb2fdd5516e6136.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "UserPoolPreTokenGenerationStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "UserPoolPreTokenGenerationStack.assets"
+      ],
+      "metadata": {
+        "/UserPoolPreTokenGenerationStack/PreTokenGenerationLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/PreTokenGenerationLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/PreTokenGenerationLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/PreTokenGenerationLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PreTokenGenerationLambdaServiceRole9DEA7D8A"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/PreTokenGenerationLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PreTokenGenerationLambda1F82A453"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolV2AAED3EE9"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV2/PreTokenGenerationConfigCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolV2PreTokenGenerationConfigCognito5CA259FE"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV2/Client": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV2/Client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolV2ClientDF661186"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolV32089E007"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV3/PreTokenGenerationConfigCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolV3PreTokenGenerationConfigCognitoA6B9795F"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV3/Client": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/UserPoolV3/Client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolV3Client9E0EE7AD"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/UserPoolPreTokenGenerationStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "UserPoolPreTokenGenerationStack"
+    },
+    "PreTokenGenerationIntegTestDefaultTestDeployAssert5121EE60.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PreTokenGenerationIntegTestDefaultTestDeployAssert5121EE60.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PreTokenGenerationIntegTestDefaultTestDeployAssert5121EE60": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PreTokenGenerationIntegTestDefaultTestDeployAssert5121EE60.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PreTokenGenerationIntegTestDefaultTestDeployAssert5121EE60.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "PreTokenGenerationIntegTestDefaultTestDeployAssert5121EE60.assets"
+      ],
+      "metadata": {
+        "/PreTokenGenerationIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PreTokenGenerationIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PreTokenGenerationIntegTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

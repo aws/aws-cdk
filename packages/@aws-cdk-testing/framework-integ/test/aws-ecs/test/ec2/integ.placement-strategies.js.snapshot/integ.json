@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LambdaTest/DefaultTest": {
+      "stacks": [
+        "ecs-placement-strategies-with-strategies",
+        "ecs-placement-strategies-empty"
+      ],
+      "assertionStack": "LambdaTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaTestDefaultTestDeployAssert1AF2B360"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "d57c778c0e7dcd2363421806a4d1df676740c6be3ce0121e591650bbd6ab39f8": {
+      "displayName": "test-apigateway-access-logs Template",
+      "source": {
+        "path": "test-apigateway-access-logs.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d57c778c0e7dcd2363421806a4d1df676740c6be3ce0121e591650bbd6ab39f8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

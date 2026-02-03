@@ -1,0 +1,153 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0a079fad9490e60650bca4a35c6c90273204a816beb74fb80c7b5ae490208d1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "stack.assets"
+      ],
+      "metadata": {
+        "/stack/myContainer/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myContainerExecutionRoleEBACF86C"
+          }
+        ],
+        "/stack/myContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myContainerExecutionRoleDefaultPolicy42DA929E"
+          }
+        ],
+        "/stack/SingleContainerMultiNodeJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingleContainerMultiNodeJob1118AC82"
+          }
+        ],
+        "/stack/multinodecontainer/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "multinodecontainerExecutionRoleAB7AA30A"
+          }
+        ],
+        "/stack/multinodecontainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "multinodecontainerExecutionRoleDefaultPolicy2AAB071A"
+          }
+        ],
+        "/stack/MultiContainerMultiNodeJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MultiContainerMultiNodeJobBA8ED368"
+          }
+        ],
+        "/stack/multiContainer/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "multiContainerExecutionRole317DED72"
+          }
+        ],
+        "/stack/multiContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "multiContainerExecutionRoleDefaultPolicyE3E7D32C"
+          }
+        ],
+        "/stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "stack"
+    },
+    "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D.assets"
+      ],
+      "metadata": {
+        "/BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

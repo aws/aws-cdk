@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "restapi-books/DefaultTest": {
+      "stacks": [
+        "restapi-books-example"
+      ],
+      "assertionStack": "restapi-books/DefaultTest/DeployAssert",
+      "assertionStackName": "restapibooksDefaultTestDeployAssert1D3FCB77"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

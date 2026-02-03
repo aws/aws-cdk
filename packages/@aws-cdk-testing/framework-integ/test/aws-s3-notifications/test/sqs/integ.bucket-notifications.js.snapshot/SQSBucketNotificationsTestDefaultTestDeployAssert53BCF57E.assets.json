@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276": {
+      "source": {
+        "path": "asset.4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-26dc760b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "06a7351067baa22a3e9ae72e0bcacfa0db0c5c69d4372ef5f13a65bdb3765b06": {
+      "displayName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E Template",
+      "source": {
+        "path": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3f31182d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "06a7351067baa22a3e9ae72e0bcacfa0db0c5c69d4372ef5f13a65bdb3765b06.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

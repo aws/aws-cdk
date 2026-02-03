@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "9d255bf88332928597c7fafa86e3de2059114c045ec73a946038fd011bdf2628": {
+      "source": {
+        "path": "cluster-replication.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9d255bf88332928597c7fafa86e3de2059114c045ec73a946038fd011bdf2628.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

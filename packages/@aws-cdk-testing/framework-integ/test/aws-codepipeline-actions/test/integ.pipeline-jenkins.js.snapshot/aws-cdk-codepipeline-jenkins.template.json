@@ -1,0 +1,417 @@
+{
+ "Resources": {
+  "MyBucketF68F3FF0": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "PipelineRoleD68726F7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codepipeline.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineRoleDefaultPolicyC7A05455": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PipelineSourceS3CodePipelineActionRole3CAFD08F",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
+    "Roles": [
+     {
+      "Ref": "PipelineRoleD68726F7"
+     }
+    ]
+   }
+  },
+  "PipelineC660917D": {
+   "Type": "AWS::CodePipeline::Pipeline",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "PipelineRoleD68726F7",
+      "Arn"
+     ]
+    },
+    "Stages": [
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Source",
+         "Owner": "AWS",
+         "Provider": "S3",
+         "Version": "1"
+        },
+        "Configuration": {
+         "S3Bucket": {
+          "Ref": "MyBucketF68F3FF0"
+         },
+         "S3ObjectKey": "some/path"
+        },
+        "Name": "S3",
+        "OutputArtifacts": [
+         {
+          "Name": "Artifact_Source_S3"
+         }
+        ],
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "PipelineSourceS3CodePipelineActionRole3CAFD08F",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Source"
+     },
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Build",
+         "Owner": "Custom",
+         "Provider": "JenkinsProvider",
+         "Version": "2"
+        },
+        "Configuration": {
+         "ProjectName": "JenkinsProject1"
+        },
+        "InputArtifacts": [
+         {
+          "Name": "Artifact_Source_S3"
+         }
+        ],
+        "Name": "JenkinsBuild",
+        "OutputArtifacts": [
+         {
+          "Name": "Artifact_Build_JenkinsBuild"
+         }
+        ],
+        "RunOrder": 1
+       },
+       {
+        "ActionTypeId": {
+         "Category": "Test",
+         "Owner": "Custom",
+         "Provider": "JenkinsProvider",
+         "Version": "2"
+        },
+        "Configuration": {
+         "ProjectName": "JenkinsProject2"
+        },
+        "InputArtifacts": [
+         {
+          "Name": "Artifact_Source_S3"
+         }
+        ],
+        "Name": "JenkinsTest",
+        "RunOrder": 1
+       },
+       {
+        "ActionTypeId": {
+         "Category": "Test",
+         "Owner": "Custom",
+         "Provider": "JenkinsProvider",
+         "Version": "2"
+        },
+        "Configuration": {
+         "ProjectName": "JenkinsProject3"
+        },
+        "InputArtifacts": [
+         {
+          "Name": "Artifact_Source_S3"
+         }
+        ],
+        "Name": "JenkinsTest2",
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Build"
+     }
+    ],
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "MyBucketF68F3FF0"
+     },
+     "Type": "S3"
+    }
+   },
+   "DependsOn": [
+    "PipelineRoleDefaultPolicyC7A05455",
+    "PipelineRoleD68726F7"
+   ]
+  },
+  "PipelineSourceS3CodePipelineActionRole3CAFD08F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineSourceS3CodePipelineActionRoleDefaultPolicy8B9DCBCF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/some/path"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineSourceS3CodePipelineActionRoleDefaultPolicy8B9DCBCF",
+    "Roles": [
+     {
+      "Ref": "PipelineSourceS3CodePipelineActionRole3CAFD08F"
+     }
+    ]
+   }
+  },
+  "JenkinsProviderJenkinsBuildProviderResourceD9231CAC": {
+   "Type": "AWS::CodePipeline::CustomActionType",
+   "Properties": {
+    "Category": "Build",
+    "InputArtifactDetails": {
+     "MaximumCount": 5,
+     "MinimumCount": 0
+    },
+    "OutputArtifactDetails": {
+     "MaximumCount": 5,
+     "MinimumCount": 0
+    },
+    "Provider": "JenkinsProvider",
+    "Version": "2",
+    "ConfigurationProperties": [
+     {
+      "Key": true,
+      "Name": "ProjectName",
+      "Queryable": true,
+      "Required": true,
+      "Secret": false
+     }
+    ],
+    "Settings": {
+     "EntityUrlTemplate": "http://myjenkins.com:8080/job/{Config:ProjectName}",
+     "ExecutionUrlTemplate": "http://myjenkins.com:8080/job/{Config:ProjectName}/{ExternalExecutionId}"
+    }
+   }
+  },
+  "JenkinsProviderJenkinsTestProviderResourceF0CF8F0E": {
+   "Type": "AWS::CodePipeline::CustomActionType",
+   "Properties": {
+    "Category": "Test",
+    "InputArtifactDetails": {
+     "MaximumCount": 5,
+     "MinimumCount": 0
+    },
+    "OutputArtifactDetails": {
+     "MaximumCount": 5,
+     "MinimumCount": 0
+    },
+    "Provider": "JenkinsProvider",
+    "Version": "2",
+    "ConfigurationProperties": [
+     {
+      "Key": true,
+      "Name": "ProjectName",
+      "Queryable": true,
+      "Required": true,
+      "Secret": false
+     }
+    ],
+    "Settings": {
+     "EntityUrlTemplate": "http://myjenkins.com:8080/job/{Config:ProjectName}",
+     "ExecutionUrlTemplate": "http://myjenkins.com:8080/job/{Config:ProjectName}/{ExternalExecutionId}"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

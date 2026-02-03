@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.lookoutequipment"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.LookoutEquipment"
+    },
+    "python": {
+      "module": "aws_cdk.aws_lookoutequipment"
+    }
+  }
+}

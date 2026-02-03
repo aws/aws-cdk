@@ -1,0 +1,200 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "EcrRepoLookupStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EcrRepoLookupStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EcrRepoLookupStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/test-region",
+      "properties": {
+        "templateFile": "EcrRepoLookupStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/694b1f59a97a2cabd43348095c6983d394ce506020298a3a62f3067ae6ce7e18.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EcrRepoLookupStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EcrRepoLookupStack.assets"
+      ],
+      "metadata": {
+        "/EcrRepoLookupStack/Lambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EcrRepoLookupStack/Lambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/EcrRepoLookupStack/Lambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EcrRepoLookupStack/Lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaServiceRoleA8ED4D3B"
+          }
+        ],
+        "/EcrRepoLookupStack/Lambda/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/EcrRepoLookupStack/Lambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaServiceRoleDefaultPolicyDAE46E21"
+          }
+        ],
+        "/EcrRepoLookupStack/Lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaD247545B"
+          }
+        ],
+        "/EcrRepoLookupStack/RepositoryUri": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepositoryUri"
+          }
+        ],
+        "/EcrRepoLookupStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EcrRepoLookupStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EcrRepoLookupStack"
+    },
+    "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3.assets"
+      ],
+      "metadata": {
+        "/EcrRepoLookupTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EcrRepoLookupTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EcrRepoLookupTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "missing": [
+    {
+      "key": "cc-api-provider:account=12345678:exactIdentifier=my-repo:propertiesToReturn.0=Arn:region=test-region:typeName=AWS$:$:ECR$:$:Repository",
+      "provider": "cc-api-provider",
+      "props": {
+        "dummyValue": [
+          {
+            "Arn": "arn:${Token[AWS.Partition.3]}:ecr:us-east-1:123456789012:repository/DUMMY_ARN"
+          }
+        ],
+        "account": "12345678",
+        "region": "test-region",
+        "typeName": "AWS::ECR::Repository",
+        "exactIdentifier": "my-repo",
+        "propertiesToReturn": [
+          "Arn"
+        ],
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
+      }
+    }
+  ]
+}

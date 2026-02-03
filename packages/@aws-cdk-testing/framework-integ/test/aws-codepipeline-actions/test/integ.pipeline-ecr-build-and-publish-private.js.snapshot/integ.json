@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "codepipeline-ecr-build-and-publish-private-test/DefaultTest": {
+      "stacks": [
+        "codepipeline-ecr-build-and-publish-private"
+      ],
+      "diffAssets": true,
+      "assertionStack": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelineecrbuildandpublishprivatetestDefaultTestDeployAssert80443302"
+    }
+  }
+}

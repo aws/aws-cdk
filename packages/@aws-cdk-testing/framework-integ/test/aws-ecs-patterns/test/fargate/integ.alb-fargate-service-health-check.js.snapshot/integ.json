@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "healthCheckApplicationLoadBalancedFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-alb-health-check"
+      ],
+      "assertionStack": "healthCheckApplicationLoadBalancedFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "healthCheckApplicationLoadBalancedFargateServiceTestDefaultTestDeployAssert796A0E8E"
+    }
+  }
+}

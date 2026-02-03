@@ -1,0 +1,31 @@
+# Apply various labels on PRs
+
+name: pr-labeler
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+
+jobs:
+  auto-approve:
+    if: github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'dependabot-preview[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - run: gh pr edit ${{ github.event.pull_request.number }} --add-label "auto-approve" -R ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  copy-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: cdklabs/pr-triage-manager@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+

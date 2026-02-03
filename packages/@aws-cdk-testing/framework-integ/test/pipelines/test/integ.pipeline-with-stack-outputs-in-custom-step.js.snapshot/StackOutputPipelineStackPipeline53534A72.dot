@@ -1,0 +1,34 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg StackOutputPipelineStackPipeline53534A72.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c8c25a16b0aa1e8dca2f4c906a3af2cd762badd5ce" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN AppStage" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END AppStage" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth" -> "BEGIN AppStage";
+"BEGIN AppStage.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END AppStage.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"AppStage.Stack.Deploy";
+"AppStage.Stack.Prepare" -> "AppStage.Stack.Deploy";
+"AppStage.Stack.Prepare";
+"Build.Synth" -> "AppStage.Stack.Prepare";
+"BEGIN AppStage.Stack" -> "AppStage.Stack.Prepare";
+"AppStage.Stack.Deploy" -> "END AppStage.Stack";
+"AppStage.CustomStep";
+"AppStage.Stack.Deploy" -> "AppStage.CustomStep";
+"END AppStage.Stack" -> "AppStage.CustomStep";
+"BEGIN AppStage" -> "BEGIN AppStage.Stack";
+"AppStage.CustomStep" -> "END AppStage";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c8c25a16b0aa1e8dca2f4c906a3af2cd762badd5ce";
+"BEGIN Source" -> "Source.c8c25a16b0aa1e8dca2f4c906a3af2cd762badd5ce";
+"Source.c8c25a16b0aa1e8dca2f4c906a3af2cd762badd5ce" -> "END Source";
+}

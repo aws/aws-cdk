@@ -1,0 +1,176 @@
+{
+ "Resources": {
+  "MessageSQSQueueF7E656B7": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "FifoQueue": true,
+    "QueueName": "MessageSQSQueue.fifo"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "webSocketApi5AB89700": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Description": "Send websocket data to SQS which is then processed by a Lambda 2",
+    "Name": "webSocketApi",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "webSocketApidefaultRouteSQSSendMessageFC4F9133": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "webSocketApi5AB89700"
+    },
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "webSocketApiRoleE85311F3",
+      "Arn"
+     ]
+    },
+    "IntegrationMethod": "POST",
+    "IntegrationType": "AWS",
+    "IntegrationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":sqs:path/",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "/",
+       {
+        "Fn::GetAtt": [
+         "MessageSQSQueueF7E656B7",
+         "QueueName"
+        ]
+       }
+      ]
+     ]
+    },
+    "PassthroughBehavior": "NEVER",
+    "RequestParameters": {
+     "integration.request.header.Content-Type": "'application/x-www-form-urlencoded'"
+    },
+    "RequestTemplates": {
+     "$default": "Action=SendMessage&MessageGroupId=$input.path('$.MessageGroupId')&MessageDeduplicationId=$context.requestId&MessageAttribute.1.Name=connectionId&MessageAttribute.1.Value.StringValue=$context.connectionId&MessageAttribute.1.Value.DataType=String&MessageAttribute.2.Name=requestId&MessageAttribute.2.Value.StringValue=$context.requestId&MessageAttribute.2.Value.DataType=String&MessageBody=$input.json('$')"
+    },
+    "TemplateSelectionExpression": "\\$default"
+   }
+  },
+  "webSocketApidefaultRoute749519EC": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "webSocketApi5AB89700"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "$default",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "webSocketApidefaultRouteSQSSendMessageFC4F9133"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "DevStage520A913F": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "webSocketApi5AB89700"
+    },
+    "AutoDeploy": true,
+    "StageName": "dev"
+   }
+  },
+  "webSocketApiRoleE85311F3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "webSocketApiRoleDefaultPolicyF067C420": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MessageSQSQueueF7E656B7",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "webSocketApiRoleDefaultPolicyF067C420",
+    "Roles": [
+     {
+      "Ref": "webSocketApiRoleE85311F3"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

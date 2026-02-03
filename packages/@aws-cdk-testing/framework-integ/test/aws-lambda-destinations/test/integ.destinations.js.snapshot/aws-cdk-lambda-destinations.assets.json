@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "8ab912a8115d0c02ec958410337ff7200c7fefeb78fb3bbfcd5b318873c27d5a": {
+      "displayName": "aws-cdk-lambda-destinations Template",
+      "source": {
+        "path": "aws-cdk-lambda-destinations.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8ab912a8115d0c02ec958410337ff7200c7fefeb78fb3bbfcd5b318873c27d5a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

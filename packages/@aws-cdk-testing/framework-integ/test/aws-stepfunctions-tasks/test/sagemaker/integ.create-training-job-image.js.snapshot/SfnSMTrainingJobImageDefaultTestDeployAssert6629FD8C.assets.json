@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656": {
+      "source": {
+        "path": "asset.4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-767d8bdc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "193e39f9a8ce6df504b79aa77e199dfab67bf96494c7f5db2c945855ebe33996": {
+      "displayName": "SfnSMTrainingJobImageDefaultTestDeployAssert6629FD8C Template",
+      "source": {
+        "path": "SfnSMTrainingJobImageDefaultTestDeployAssert6629FD8C.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-18f66e30": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "193e39f9a8ce6df504b79aa77e199dfab67bf96494c7f5db2c945855ebe33996.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

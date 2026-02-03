@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "8a5916de581113cbb780d8a8c2a0761e00179933b79decaab1671e72ea4d176d": {
+      "displayName": "aws-cdk-ec2-alpha-tag Template",
+      "source": {
+        "path": "aws-cdk-ec2-alpha-tag.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8a5916de581113cbb780d8a8c2a0761e00179933b79decaab1671e72ea4d176d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

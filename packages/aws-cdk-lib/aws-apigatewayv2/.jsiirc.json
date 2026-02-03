@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.apigatewayv2"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Apigatewayv2"
+    },
+    "python": {
+      "module": "aws_cdk.aws_apigatewayv2"
+    }
+  }
+}

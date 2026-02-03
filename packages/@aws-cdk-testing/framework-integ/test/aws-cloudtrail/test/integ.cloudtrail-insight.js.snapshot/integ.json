@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-cloudtrail-inshights/DefaultTest": {
+      "stacks": [
+        "aws-cdk-cloudtrail-inshights-test"
+      ],
+      "assertionStack": "aws-cdk-cloudtrail-inshights/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkcloudtrailinshightsDefaultTestDeployAssertF7B86FF0"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

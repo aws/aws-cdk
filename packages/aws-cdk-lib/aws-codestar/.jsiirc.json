@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.codestar"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Codestar"
+    },
+    "python": {
+      "module": "aws_cdk.aws_codestar"
+    }
+  }
+}

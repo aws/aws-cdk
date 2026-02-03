@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-ff046730": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "66b1bb5eec089f6e3388c8676183bba4cecc13101fbabf150ec98571c13890e8": {
+      "displayName": "cdk-integ-elasticsearch-custom-kms-key Template",
+      "source": {
+        "path": "cdk-integ-elasticsearch-custom-kms-key.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8882f7e5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "66b1bb5eec089f6e3388c8676183bba4cecc13101fbabf150ec98571c13890e8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

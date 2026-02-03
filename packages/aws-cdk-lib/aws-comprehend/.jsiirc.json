@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.comprehend"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Comprehend"
+    },
+    "python": {
+      "module": "aws_cdk.aws_comprehend"
+    }
+  }
+}

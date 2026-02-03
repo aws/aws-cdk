@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.finspace"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.FinSpace"
+    },
+    "python": {
+      "module": "aws_cdk.aws_finspace"
+    }
+  }
+}

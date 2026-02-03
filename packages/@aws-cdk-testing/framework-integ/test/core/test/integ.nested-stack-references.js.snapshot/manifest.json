@@ -1,0 +1,294 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "Producer.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Producer.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Producer": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Producer.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/940e0cdba35ee0357312769ef05a69684199551e97cc9f00a5a5816a4c214a40.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Producer.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Producer.assets"
+      ],
+      "metadata": {
+        "/Producer/Nested/RequiredResource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RequiredResourceA026AF42"
+          }
+        ],
+        "/Producer/Nested/NestedString": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NestedString"
+          }
+        ],
+        "/Producer/Nested/NestedNumber": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NestedNumber"
+          }
+        ],
+        "/Producer/Nested/NestedList": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NestedList"
+          }
+        ],
+        "/Producer/Nested/ProducerNestedNestedString6B1C0634Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProducerNestedNestedString6B1C0634Ref"
+          }
+        ],
+        "/Producer/Nested/ProducerNestedNestedNumberEF88914ERef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProducerNestedNestedNumberEF88914ERef"
+          }
+        ],
+        "/Producer/Nested/ProducerNestedNestedListCF0BC56DRef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProducerNestedNestedListCF0BC56DRef"
+          }
+        ],
+        "/Producer/Nested.NestedStack/Nested.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NestedNestedStackNestedNestedStackResourceDEFDAA4D"
+          }
+        ],
+        "/Producer/Exports/Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedString6B1C0634Ref\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4DOutputsProducerNestedNestedString6B1C0634Ref48A5688D"
+          }
+        ],
+        "/Producer/Exports/Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedNumberEF88914ERef\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4DOutputsProducerNestedNestedNumberEF88914ERefF4C5CBF2"
+          }
+        ],
+        "/Producer/Exports/Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedListCF0BC56DRef\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4DOutputsProducerNestedNestedListCF0BC56DRefE50D3EDA"
+          }
+        ],
+        "/Producer/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Producer/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "NestorNestedStackNestorNestedStackResourceAE182597": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NestorNestedStackNestorNestedStackResourceAE182597",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "Producer"
+    },
+    "Consumer.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Consumer.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Consumer": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Consumer.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b6784fe30ad46fd26d52f2dabf920168e240b748c0c8a4f702179b0688f71f80.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Consumer.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Producer",
+        "Consumer.assets"
+      ],
+      "metadata": {
+        "/Consumer/RequiredResource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RequiredResourceA026AF42"
+          }
+        ],
+        "/Consumer/StringReference": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringReference"
+          }
+        ],
+        "/Consumer/NumberReference": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NumberReference"
+          }
+        ],
+        "/Consumer/ListReference": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListReference"
+          }
+        ],
+        "/Consumer/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Consumer/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ConsumerBucket7FE5DCDD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConsumerBucket7FE5DCDD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "Consumer"
+    },
+    "NestedStackReferencesDefaultTestDeployAssertFE4F9D3A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "NestedStackReferencesDefaultTestDeployAssertFE4F9D3A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "NestedStackReferencesDefaultTestDeployAssertFE4F9D3A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "NestedStackReferencesDefaultTestDeployAssertFE4F9D3A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8aee67261308df6491d629e659aae8cc097097f9fa1cbfab094ddaf8cde06a68.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "NestedStackReferencesDefaultTestDeployAssertFE4F9D3A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "NestedStackReferencesDefaultTestDeployAssertFE4F9D3A.assets"
+      ],
+      "metadata": {
+        "/NestedStackReferences/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01"
+          }
+        ],
+        "/NestedStackReferences/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01"
+          }
+        ],
+        "/NestedStackReferences/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/NestedStackReferences/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/NestedStackReferences/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/NestedStackReferences/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/NestedStackReferences/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "NestedStackReferences/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

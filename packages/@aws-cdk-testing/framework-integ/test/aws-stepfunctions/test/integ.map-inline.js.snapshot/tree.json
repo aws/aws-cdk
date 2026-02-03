@@ -1,0 +1,198 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-stepfunctions-map-inline-stack": {
+        "id": "cdk-stepfunctions-map-inline-stack",
+        "path": "cdk-stepfunctions-map-inline-stack",
+        "children": {
+          "Map": {
+            "id": "Map",
+            "path": "cdk-stepfunctions-map-inline-stack/Map",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Map",
+              "version": "0.0.0"
+            }
+          },
+          "Pass State": {
+            "id": "Pass State",
+            "path": "cdk-stepfunctions-map-inline-stack/Pass State",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine": {
+            "id": "StateMachine",
+            "path": "cdk-stepfunctions-map-inline-stack/StateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "cdk-stepfunctions-map-inline-stack/StateMachine/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "cdk-stepfunctions-map-inline-stack/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-stepfunctions-map-inline-stack/StateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-stepfunctions-map-inline-stack/StateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": "{\"StartAt\":\"My-Map-State\",\"States\":{\"My-Map-State\":{\"Type\":\"Map\",\"End\":true,\"Parameters\":{\"foo\":\"foo\",\"bar.$\":\"$.bar\"},\"ItemsPath\":\"$.inputForMap\",\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"INLINE\"},\"StartAt\":\"Pass State\",\"States\":{\"Pass State\":{\"Type\":\"Pass\",\"End\":true}}},\"MaxConcurrency\":1}},\"TimeoutSeconds\":30}",
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineARN": {
+            "id": "StateMachineARN",
+            "path": "cdk-stepfunctions-map-inline-stack/StateMachineARN",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-stepfunctions-map-inline-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-stepfunctions-map-inline-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-stepfunctions-map-inline-integ": {
+        "id": "cdk-stepfunctions-map-inline-integ",
+        "path": "cdk-stepfunctions-map-inline-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-stepfunctions-map-inline-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-stepfunctions-map-inline-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-stepfunctions-map-inline-integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-stepfunctions-map-inline-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-stepfunctions-map-inline-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

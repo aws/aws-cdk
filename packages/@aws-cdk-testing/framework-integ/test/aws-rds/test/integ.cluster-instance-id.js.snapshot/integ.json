@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "instanceIdentifiersTest/DefaultTest": {
+      "stacks": [
+        "Default"
+      ],
+      "assertionStack": "instanceIdentifiersTest/DefaultTest/DeployAssert",
+      "assertionStackName": "instanceIdentifiersTestDefaultTestDeployAssertC062AEBE"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "rds-serverlessV2-stack/DefaultTest": {
+      "stacks": [
+        "appsync-rds-serverlessV2"
+      ],
+      "assertionStack": "rds-serverlessV2-stack/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsserverlessV2stackDefaultTestDeployAssert877504EC"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

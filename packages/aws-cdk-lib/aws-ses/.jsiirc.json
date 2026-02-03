@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.ses"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SES"
+    },
+    "python": {
+      "module": "aws_cdk.aws_ses"
+    }
+  }
+}

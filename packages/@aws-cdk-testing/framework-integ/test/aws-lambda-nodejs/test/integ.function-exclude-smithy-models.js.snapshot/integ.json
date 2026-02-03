@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "NodeJsFunctionExcludeSmithyInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-20-exclude-smithy"
+      ],
+      "diffAssets": true,
+      "assertionStack": "NodeJsFunctionExcludeSmithyInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "NodeJsFunctionExcludeSmithyIntegDefaultTestDeployAssert8BE0D2D1"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

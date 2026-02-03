@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-interence-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-inference"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-interence-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterinterenceintegDefaultTestDeployAssert08800940"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

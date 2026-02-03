@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LambdaNodeJsLatestInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-latest"
+      ],
+      "diffAssets": true,
+      "assertionStack": "LambdaNodeJsLatestInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaNodeJsLatestIntegDefaultTestDeployAssertD40B5C28"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}

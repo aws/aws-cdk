@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.xray"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.XRay"
+    },
+    "python": {
+      "module": "aws_cdk.aws_xray"
+    }
+  }
+}

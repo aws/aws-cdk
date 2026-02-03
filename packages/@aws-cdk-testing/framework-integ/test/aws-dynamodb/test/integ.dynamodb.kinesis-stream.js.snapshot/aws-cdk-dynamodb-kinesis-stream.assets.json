@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "671ebc97901116d0268136488a5ac9d7f9e9063f47eaeba1f894063342206593": {
+      "source": {
+        "path": "aws-cdk-dynamodb-kinesis-stream.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "671ebc97901116d0268136488a5ac9d7f9e9063f47eaeba1f894063342206593.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

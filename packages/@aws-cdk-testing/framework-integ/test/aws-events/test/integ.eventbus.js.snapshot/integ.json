@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "IntegTest-EventBusStack/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "IntegTest-EventBusStack/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

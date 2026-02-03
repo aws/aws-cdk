@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.fsx"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.FSx"
+    },
+    "python": {
+      "module": "aws_cdk.aws_fsx"
+    }
+  }
+}

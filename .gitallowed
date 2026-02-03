@@ -1,0 +1,42 @@
+# The only AWS account number allowed to be used in tests (used by git-secrets)
+account = '123456789012';
+# account used for cross-environment tests in addition to the one above
+account: '234567890123'
+# Account patterns used in the README
+account: '000000000000'
+account: '111111111111'
+account: '222222222222'
+account: '333333333333'
+
+# used in physical names tests in @aws-cdk/core
+account: '012345678912'
+account: '012345678913'
+
+# Account patterns used in the CHANGELOG
+account: '123456789012'
+
+111111111111
+222222222222
+123456789012
+333333333333
+
+# The account ID's of public facing ECR images for App Mesh Envoy
+# https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
+account: '772975370895'
+account: '856666278305'
+account: '840364872350'
+account: '422531588944'
+account: '924023996002'
+account: '919366029133' #cn-north-1
+account: '919830735681' #cn-northwest-1
+account: '909464085924' #ap-southeast-3
+account: '564877687649' #il-central-1
+
+# The account IDs of password rotation applications of Serverless Application Repository
+# https://docs.aws.amazon.com/secretsmanager/latest/userguide/enable-rotation-rds.html
+# partition aws
+account: '297356227824'
+# partition aws-cn
+account: '193023089310'
+# partition aws-us-gov
+account: '023102451235'

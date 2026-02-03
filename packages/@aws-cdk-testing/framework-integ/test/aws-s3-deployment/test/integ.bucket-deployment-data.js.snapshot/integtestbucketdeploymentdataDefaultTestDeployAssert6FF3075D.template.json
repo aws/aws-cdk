@@ -1,0 +1,242 @@
+{
+ "Resources": {
+  "AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"secret_value\\\":\\\"test\\\\\\\"with\\\\\\\"quotes\\\"}\"}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"deploy/here/my-json/secret-config.json\""
+    },
+    "flattenResponse": "false",
+    "salt": "1763112638469"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ca235e6258b11c240506ff06f79037eca461b8d0d9464a947a386d38d8163515.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"hello\\\":\\\"there\\\",\\\"goodbye\\\":null}\"}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"deploy/here/my-json/config-with-null.json\""
+    },
+    "flattenResponse": "false",
+    "salt": "1763112638470"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"secret_value: test\\\"with\\\"quotes\\n\"}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
+    },
+    "flattenResponse": "false",
+    "salt": "1763112638470"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.securityhub"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SecurityHub"
+    },
+    "python": {
+      "module": "aws_cdk.aws_securityhub"
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+ "Resources": {
+  "AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeSecurityGroups",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeSecurityGroups",
+    "expected": "{\"$ObjectLike\":{\"SecurityGroups\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Description\":\"default VPC security group\",\"GroupName\":\"default\",\"IpPermissions\":[],\"IpPermissionsEgress\":[]}}]}}}",
+    "parameters": {
+     "GroupIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "integ-restrict-default-sg:ExportsOutputFnGetAttVpc8378EB38DefaultSecurityGroupF5E0D218"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1765372977495"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ec2:DescribeSecurityGroups"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "8208945b020ee79332597d5ad6dfd363938ca96ad50ae746ae25aed3d2845c8f.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

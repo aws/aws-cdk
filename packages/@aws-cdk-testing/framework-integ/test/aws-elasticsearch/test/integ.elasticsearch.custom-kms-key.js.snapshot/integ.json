@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ElasticsearchCustomKmsInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-elasticsearch-custom-kms-key"
+      ],
+      "diffAssets": true,
+      "assertionStack": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ElasticsearchCustomKmsIntegDefaultTestDeployAssertFEEBA45B"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

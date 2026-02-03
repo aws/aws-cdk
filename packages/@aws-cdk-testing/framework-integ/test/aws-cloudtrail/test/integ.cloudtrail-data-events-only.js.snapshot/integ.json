@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "CloudTrailDataEventsOnlyTest/DefaultTest": {
+      "stacks": [
+        "integ-cloudtrail-data-events"
+      ],
+      "assertionStack": "CloudTrailDataEventsOnlyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudTrailDataEventsOnlyTestDefaultTestDeployAssertA7E52868"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

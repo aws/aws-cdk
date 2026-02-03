@@ -1,0 +1,163 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "aws-cdk-cloudfront.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-cloudfront.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-cloudfront": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-cloudfront.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d8b1c3082f8c318de7fe79591aa3d78f63cfe6838b376677c152ef36699cc873.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-cloudfront.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-cloudfront.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-cloudfront/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-cdk-cloudfront/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-cdk-cloudfront/Lambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-cloudfront/Lambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-cloudfront/Lambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-cloudfront/Lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaServiceRoleA8ED4D3B"
+          }
+        ],
+        "/aws-cdk-cloudfront/Lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaD247545B"
+          }
+        ],
+        "/aws-cdk-cloudfront/LambdaVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*"
+            }
+          }
+        ],
+        "/aws-cdk-cloudfront/LambdaVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaVersionFA49E61E"
+          }
+        ],
+        "/aws-cdk-cloudfront/MyDistribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "originConfigs": [
+                {
+                  "s3OriginSource": {
+                    "s3BucketSource": "*"
+                  },
+                  "behaviors": [
+                    {
+                      "isDefaultBehavior": true,
+                      "lambdaFunctionAssociations": [
+                        {
+                          "eventType": "origin-request",
+                          "lambdaFunction": "*"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-cloudfront/MyDistribution/CFDistribution": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDistributionCFDistributionDE147309"
+          }
+        ],
+        "/aws-cdk-cloudfront/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-cloudfront/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-cloudfront"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

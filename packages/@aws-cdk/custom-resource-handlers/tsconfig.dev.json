@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "commonjs",
+        "lib": ["es2022", "dom"],
+        "strict": true,
+        "alwaysStrict": true,
+        "declaration": true,
+        "inlineSourceMap": true,
+        "inlineSources": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "resolveJsonModule": true,
+        "composite": true,
+        "incremental": true,
+        "isolatedModules": true
+    },
+    "include": [
+        "**/*.ts"
+    ],
+    "exclude": [
+        "**/*.d.ts",
+        "test/custom-resources-framework/expected/**/*.ts"
+    ]
+}

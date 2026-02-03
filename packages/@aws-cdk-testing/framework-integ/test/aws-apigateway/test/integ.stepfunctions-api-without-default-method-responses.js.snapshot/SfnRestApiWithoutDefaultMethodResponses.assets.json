@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "2538e176b7b85a36529ed1b09362f64e6b45d84b0e985a662c47951d18025332": {
+      "displayName": "SfnRestApiWithoutDefaultMethodResponses Template",
+      "source": {
+        "path": "SfnRestApiWithoutDefaultMethodResponses.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e9ee8aec": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2538e176b7b85a36529ed1b09362f64e6b45d84b0e985a662c47951d18025332.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

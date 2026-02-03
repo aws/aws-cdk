@@ -1,0 +1,430 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   }
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet2Subnet74179F39": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet2RouteTable6F1A15F1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    }
+   }
+  },
+  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCIsolatedSubnet1SubnetEBD00FC6": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC/IsolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCIsolatedSubnet1RouteTableEB156210": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC/IsolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
+    },
+    "SubnetId": {
+     "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+    }
+   }
+  },
+  "VPCIsolatedSubnet2Subnet4B1C8CAA": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC/IsolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCIsolatedSubnet2RouteTable9B4F78DC": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC/IsolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+    },
+    "SubnetId": {
+     "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+    }
+   }
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cluster-applyimmediately-integ/VPC"
+     }
+    ]
+   }
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "DatabaseClusterSubnets7FAE1846": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for DatabaseCluster database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+     },
+     {
+      "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+     }
+    ]
+   }
+  },
+  "DatabaseClusterSecurityGroupCBE34284": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "DatabaseCluster68FC2945": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBSubnetGroupName": {
+     "Ref": "DatabaseClusterSubnets7FAE1846"
+    },
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
+    "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+    "MasterUsername": "admin",
+    "ServerlessV2ScalingConfiguration": {
+     "MaxCapacity": 2,
+     "MinCapacity": 0.5
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "DatabaseClusterSecurityGroupCBE34284",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DatabaseClusterInstance168E207E2": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "ApplyImmediately": false,
+    "DBClusterIdentifier": {
+     "Ref": "DatabaseCluster68FC2945"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "Engine": "aurora-mysql",
+    "PromotionTier": 0,
+    "PubliclyAccessible": false
+   },
+   "DependsOn": [
+    "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C",
+    "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DatabaseClusterInstance25E78AB82": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "ApplyImmediately": false,
+    "DBClusterIdentifier": {
+     "Ref": "DatabaseCluster68FC2945"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-mysql",
+    "PromotionTier": 2,
+    "PubliclyAccessible": false
+   },
+   "DependsOn": [
+    "DatabaseClusterInstance168E207E2",
+    "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C",
+    "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

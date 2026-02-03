@@ -1,0 +1,55 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "Custom::ManyStrings",
+      "Properties": {
+        "SymbolsOnly": {
+          "DollarSign": {
+            "Fn::Sub": "$"
+          },
+          "OpeningBrace": {
+            "Fn::Sub": "{"
+          },
+          "ClosingBrace": {
+            "Fn::Sub": "}"
+          },
+          "DollarOpeningBrace": {
+            "Fn::Sub": "${"
+          },
+          "DollarClosingBrace": {
+            "Fn::Sub": "$}"
+          },
+          "OpeningBraceDollar": {
+            "Fn::Sub": "{$"
+          },
+          "ClosingBraceDollar": {
+            "Fn::Sub": "}$"
+          }
+        },
+        "SymbolsAndResources": {
+          "DollarSign": {
+            "Fn::Sub": "DoesNotExist$DoesNotExist"
+          },
+          "OpeningBrace": {
+            "Fn::Sub": "DoesNotExist{DoesNotExist"
+          },
+          "ClosingBrace": {
+            "Fn::Sub": "DoesNotExist}DoesNotExist"
+          },
+          "DollarOpeningBrace": {
+            "Fn::Sub": "DoesNotExist${DoesNotExist"
+          },
+          "DollarClosingBrace": {
+            "Fn::Sub": "DoesNotExist$}DoesNotExist"
+          },
+          "OpeningBraceDollar": {
+            "Fn::Sub": "DoesNotExist{$DoesNotExist"
+          },
+          "ClosingBraceDollar": {
+            "Fn::Sub": "DoesNotExist}$DoesNotExist"
+          }
+        }
+      }
+    }
+  }
+}

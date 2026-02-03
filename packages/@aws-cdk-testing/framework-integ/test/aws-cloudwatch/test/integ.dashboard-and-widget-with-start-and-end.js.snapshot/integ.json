@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "cdk-integ-dashboard-and-widget-with-start-and-end/DefaultTest": {
+      "stacks": [
+        "DashboardAndWidgetWithStartAndEnd"
+      ],
+      "assertionStack": "cdk-integ-dashboard-and-widget-with-start-and-end/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegdashboardandwidgetwithstartandendDefaultTestDeployAssert4D8483F4"
+    }
+  }
+}

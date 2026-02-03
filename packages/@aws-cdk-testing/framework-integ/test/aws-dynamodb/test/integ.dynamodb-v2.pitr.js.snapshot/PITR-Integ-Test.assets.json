@@ -1,0 +1,20 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "0418629b0628f97e666451fa00925d057fd7dff0620b45116b1776e029f336f8": {
+      "source": {
+        "path": "PITR-Integ-Test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-eu-west-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
+          "objectKey": "0418629b0628f97e666451fa00925d057fd7dff0620b45116b1776e029f336f8.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

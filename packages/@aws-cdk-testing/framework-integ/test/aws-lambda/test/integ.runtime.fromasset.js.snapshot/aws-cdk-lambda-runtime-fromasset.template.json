@@ -1,0 +1,162 @@
+{
+ "Resources": {
+  "MyFunctionJava21ServiceRole0645B770": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyFunctionJava216AE56E90": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ff6ca8da1c8c599aa9f53b242d0e817f8a336ad653e62805a13a5ad46ea7ebe1.zip"
+    },
+    "Handler": "com.mycompany.app.LambdaMethodHandler::handleRequest",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyFunctionJava21ServiceRole0645B770",
+      "Arn"
+     ]
+    },
+    "Runtime": "java21"
+   },
+   "DependsOn": [
+    "MyFunctionJava21ServiceRole0645B770"
+   ]
+  },
+  "MyFunctionJava25ServiceRole7485EA0E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyFunctionJava25D0EF0C44": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ff6ca8da1c8c599aa9f53b242d0e817f8a336ad653e62805a13a5ad46ea7ebe1.zip"
+    },
+    "Handler": "com.mycompany.app.LambdaMethodHandler::handleRequest",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyFunctionJava25ServiceRole7485EA0E",
+      "Arn"
+     ]
+    },
+    "Runtime": "java25"
+   },
+   "DependsOn": [
+    "MyFunctionJava25ServiceRole7485EA0E"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefMyFunctionJava216AE56E906B018223": {
+   "Value": {
+    "Ref": "MyFunctionJava216AE56E90"
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-runtime-fromasset:ExportsOutputRefMyFunctionJava216AE56E906B018223"
+   }
+  },
+  "ExportsOutputRefMyFunctionJava25D0EF0C44D46CC469": {
+   "Value": {
+    "Ref": "MyFunctionJava25D0EF0C44"
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-runtime-fromasset:ExportsOutputRefMyFunctionJava25D0EF0C44D46CC469"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

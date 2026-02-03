@@ -1,0 +1,15 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ.opensearch.ultrawarm": {
+      "stacks": [
+        "cdk-integ-opensearch-ultrawarm"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1018.0"
+}

@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dynamodb-global-replicas-provisioned"
+      ],
+      "diffAssets": true,
+      "assertionStack": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

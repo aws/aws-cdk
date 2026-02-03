@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "ResourceActionInteg/DefaultTest": {
+      "stacks": [
+        "ResourceActionStack"
+      ],
+      "assertionStack": "ResourceActionInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ResourceActionIntegDefaultTestDeployAssert086BABC4"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

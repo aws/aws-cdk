@@ -1,0 +1,190 @@
+import type { Construct } from 'constructs';
+import type { CfnVirtualGateway, GatewayRouteReference, IGatewayRouteRef } from './appmesh.generated';
+import { CfnGatewayRoute } from './appmesh.generated';
+import type { GatewayRouteSpec } from './gateway-route-spec';
+import { renderMeshOwner } from './private/utils';
+import type { IVirtualGateway } from './virtual-gateway';
+import { VirtualGateway } from './virtual-gateway';
+import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+
+/**
+ * Interface for which all GatewayRoute based classes MUST implement
+ */
+export interface IGatewayRoute extends cdk.IResource, IGatewayRouteRef {
+  /**
+   * The name of the GatewayRoute
+   *
+   * @attribute
+   */
+  readonly gatewayRouteName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) for the GatewayRoute
+   *
+   * @attribute
+   */
+  readonly gatewayRouteArn: string;
+
+  /**
+   * The VirtualGateway the GatewayRoute belongs to
+   */
+  readonly virtualGateway: IVirtualGateway;
+}
+
+/**
+ * Basic configuration properties for a GatewayRoute
+ */
+export interface GatewayRouteBaseProps {
+  /**
+   * The name of the GatewayRoute
+   *
+   * @default - an automatically generated name
+   */
+  readonly gatewayRouteName?: string;
+
+  /**
+   * What protocol the route uses
+   */
+  readonly routeSpec: GatewayRouteSpec;
+}
+
+/**
+ * Properties to define a new GatewayRoute
+ */
+export interface GatewayRouteProps extends GatewayRouteBaseProps {
+  /**
+   * The VirtualGateway this GatewayRoute is associated with
+   */
+  readonly virtualGateway: IVirtualGateway;
+}
+
+/**
+ * GatewayRoute represents a new or existing gateway route attached to a VirtualGateway and Mesh
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/gateway-routes.html
+ */
+@propertyInjectable
+export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appmesh.GatewayRoute';
+
+  /**
+   * Import an existing GatewayRoute given an ARN
+   */
+  public static fromGatewayRouteArn(scope: Construct, id: string, gatewayRouteArn: string): IGatewayRoute {
+    return new class extends cdk.Resource implements IGatewayRoute {
+      readonly gatewayRouteArn = gatewayRouteArn;
+      readonly gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(gatewayRouteArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
+      readonly virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', gatewayRouteArn);
+
+      public get gatewayRouteRef(): GatewayRouteReference {
+        return { gatewayRouteArn: this.gatewayRouteArn };
+      }
+    }(scope, id);
+  }
+
+  /**
+   * Import an existing GatewayRoute given attributes
+   */
+  public static fromGatewayRouteAttributes(scope: Construct, id: string, attrs: GatewayRouteAttributes): IGatewayRoute {
+    return new class extends cdk.Resource implements IGatewayRoute {
+      readonly gatewayRouteName = attrs.gatewayRouteName;
+      readonly gatewayRouteArn = cdk.Stack.of(scope).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${attrs.virtualGateway.mesh.meshName}/virtualGateway/${attrs.virtualGateway.virtualGatewayName}/gatewayRoute`,
+        resourceName: this.gatewayRouteName,
+      });
+      readonly virtualGateway = attrs.virtualGateway;
+
+      public get gatewayRouteRef(): GatewayRouteReference {
+        return { gatewayRouteArn: this.gatewayRouteArn };
+      }
+    }(scope, id);
+  }
+
+  /**
+   * The name of the GatewayRoute
+   */
+  @memoizedGetter
+  public get gatewayRouteName(): string {
+    return this.getResourceNameAttribute(this.gatewayRoute.attrGatewayRouteName);
+  }
+
+  /**
+   * The Amazon Resource Name (ARN) for the GatewayRoute
+   */
+  @memoizedGetter
+  public get gatewayRouteArn(): string {
+    return this.getResourceArnAttribute(this.gatewayRoute.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.virtualGateway.mesh.meshName}/virtualRouter/${this.virtualGateway.virtualGatewayName}/gatewayRoute`,
+      resourceName: this.physicalName,
+    });
+  }
+
+  /**
+   * The VirtualGateway this GatewayRoute is a part of
+   */
+  public readonly virtualGateway: IVirtualGateway;
+
+  private readonly gatewayRoute: CfnGatewayRoute;
+
+  constructor(scope: Construct, id: string, props: GatewayRouteProps) {
+    super(scope, id, {
+      physicalName: props.gatewayRouteName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.virtualGateway = props.virtualGateway;
+    const routeSpecConfig = props.routeSpec.bind(this);
+
+    this.gatewayRoute = new CfnGatewayRoute(this, 'Resource', {
+      gatewayRouteName: this.physicalName,
+      meshName: props.virtualGateway.mesh.meshName,
+      meshOwner: renderMeshOwner(this.env.account, this.virtualGateway.mesh.env.account),
+      spec: {
+        httpRoute: routeSpecConfig.httpSpecConfig,
+        http2Route: routeSpecConfig.http2SpecConfig,
+        grpcRoute: routeSpecConfig.grpcSpecConfig,
+        priority: routeSpecConfig.priority,
+      },
+      virtualGatewayName: this.virtualGateway.virtualGatewayName,
+    });
+
+    this.node.addValidation({
+      validate() {
+        if (cdk.Resource.isOwnedResource(props.virtualGateway)) {
+          const cfnGateway = props.virtualGateway.node.defaultChild as CfnVirtualGateway;
+          const listeners = (cfnGateway.spec as CfnVirtualGateway.VirtualGatewaySpecProperty).listeners;
+          if (Array.isArray(listeners) && listeners.length > 1) {
+            return ['Gateway route must define a match port if the parent Virtual Gateway has multiple listeners.'];
+          }
+        }
+        return [];
+      },
+    });
+  }
+
+  public get gatewayRouteRef(): GatewayRouteReference {
+    return { gatewayRouteArn: this.gatewayRouteArn };
+  }
+}
+
+/**
+ * Interface with properties necessary to import a reusable GatewayRoute
+ */
+export interface GatewayRouteAttributes {
+  /**
+   * The name of the GatewayRoute
+   */
+  readonly gatewayRouteName: string;
+
+  /**
+   * The VirtualGateway this GatewayRoute is associated with.
+   */
+  readonly virtualGateway: IVirtualGateway;
+}

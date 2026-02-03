@@ -1,0 +1,14 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ.user-pool-idp.apple": {
+      "stacks": [
+        "integ-user-pool-idp-apple"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

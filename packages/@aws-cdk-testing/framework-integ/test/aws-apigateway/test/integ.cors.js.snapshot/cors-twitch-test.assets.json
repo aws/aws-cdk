@@ -1,0 +1,34 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "8acb5caf9986fc38529f137481ecc2500fa4914281114be778f5f715b9cf175a": {
+      "displayName": "handler/Code",
+      "source": {
+        "path": "asset.8acb5caf9986fc38529f137481ecc2500fa4914281114be778f5f715b9cf175a.handler",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8acb5caf9986fc38529f137481ecc2500fa4914281114be778f5f715b9cf175a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "ba277b03c66a6a15b04ba9f24700207b5966fce9d3b72131e097bc1a8559b6ab": {
+      "displayName": "cors-twitch-test Template",
+      "source": {
+        "path": "cors-twitch-test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ba277b03c66a6a15b04ba9f24700207b5966fce9d3b72131e097bc1a8559b6ab.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

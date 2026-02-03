@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "2186358e2348b6db5b865bbe1d1586d8b251cc4185f4aa4728c33fe1e82b652d": {
+      "displayName": "restapi-metrics Template",
+      "source": {
+        "path": "restapi-metrics.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2186358e2348b6db5b865bbe1d1586d8b251cc4185f4aa4728c33fe1e82b652d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

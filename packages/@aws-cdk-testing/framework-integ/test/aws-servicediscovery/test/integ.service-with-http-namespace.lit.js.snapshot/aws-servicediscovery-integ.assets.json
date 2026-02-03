@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "13ad8d0248b0f59b00ee16d1d818d24403ff02a8722a623a96510f74baa0277d": {
+      "source": {
+        "path": "aws-servicediscovery-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "13ad8d0248b0f59b00ee16d1d818d24403ff02a8722a623a96510f74baa0277d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

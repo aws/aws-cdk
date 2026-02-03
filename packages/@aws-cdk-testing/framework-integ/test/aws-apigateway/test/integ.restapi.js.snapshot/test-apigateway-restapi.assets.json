@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "5aac1969a366ef841818ebd93e994351ea64c0b4f95dd2868dbc10e270294b1a": {
+      "displayName": "test-apigateway-restapi Template",
+      "source": {
+        "path": "test-apigateway-restapi.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5aac1969a366ef841818ebd93e994351ea64c0b4f95dd2868dbc10e270294b1a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

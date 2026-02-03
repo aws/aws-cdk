@@ -1,0 +1,107 @@
+{
+ "Resources": {
+  "SecretA720EF05": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "SecretString": "abc123"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Connection07624BCD": {
+   "Type": "AWS::Events::Connection",
+   "Properties": {
+    "AuthParameters": {
+     "ApiKeyAuthParameters": {
+      "ApiKeyName": "x-api-key",
+      "ApiKeyValue": {
+       "Fn::Join": [
+        "",
+        [
+         "{{resolve:secretsmanager:",
+         {
+          "Ref": "SecretA720EF05"
+         },
+         ":SecretString:::}}"
+        ]
+       ]
+      }
+     }
+    },
+    "AuthorizationType": "API_KEY",
+    "Description": "Connection with API Key x-api-key",
+    "Name": "MyConnection"
+   }
+  },
+  "DestinationApiDestinationA879FAE5": {
+   "Type": "AWS::Events::ApiDestination",
+   "Properties": {
+    "ConnectionArn": {
+     "Fn::GetAtt": [
+      "Connection07624BCD",
+      "Arn"
+     ]
+    },
+    "Description": "Calling example.com with API key x-api-key",
+    "HttpMethod": "GET",
+    "InvocationEndpoint": "https://httpbin.org/headers",
+    "InvocationRateLimitPerSecond": 1,
+    "Name": "MyDestination"
+   }
+  }
+ },
+ "Outputs": {
+  "DestinationArn": {
+   "Description": "The ARN of the API destination",
+   "Value": {
+    "Fn::GetAtt": [
+     "DestinationApiDestinationA879FAE5",
+     "Arn"
+    ]
+   }
+  },
+  "DestinationArnForPolicy": {
+   "Description": "The ARN of the API destination in resource format",
+   "Value": {
+    "Fn::GetAtt": [
+     "DestinationApiDestinationA879FAE5",
+     "ArnForPolicy"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

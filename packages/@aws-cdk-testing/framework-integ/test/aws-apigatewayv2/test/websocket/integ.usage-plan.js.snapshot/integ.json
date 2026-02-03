@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "WebSocketUsagePlanInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-apigatewayv2-websocket-usage-plan"
+      ],
+      "assertionStack": "WebSocketUsagePlanInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "WebSocketUsagePlanIntegDefaultTestDeployAssert17052BCC"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

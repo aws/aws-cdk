@@ -1,0 +1,159 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "multi-value-answer-routing": {
+        "id": "multi-value-answer-routing",
+        "path": "multi-value-answer-routing",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "multi-value-answer-routing/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "multi-value-answer-routing/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk.dev."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "MultiValueAnswerRouting": {
+            "id": "MultiValueAnswerRouting",
+            "path": "multi-value-answer-routing/MultiValueAnswerRouting",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "multi-value-answer-routing/MultiValueAnswerRouting/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "multiValueAnswer": true,
+                    "name": "www.cdk.dev.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "MVA_ID_multivalueanswerroutingMultiValueAnswerRoutingD94947BD",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "multi-value-answer-routing/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "multi-value-answer-routing/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Route53MultiValueAnswerRoutingInteg": {
+        "id": "Route53MultiValueAnswerRoutingInteg",
+        "path": "Route53MultiValueAnswerRoutingInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Route53MultiValueAnswerRoutingInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Route53MultiValueAnswerRoutingInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Route53MultiValueAnswerRoutingInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Route53MultiValueAnswerRoutingInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Route53MultiValueAnswerRoutingInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.codeguruprofiler"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.CodeGuruProfiler"
+    },
+    "python": {
+      "module": "aws_cdk.aws_codeguruprofiler"
+    }
+  }
+}

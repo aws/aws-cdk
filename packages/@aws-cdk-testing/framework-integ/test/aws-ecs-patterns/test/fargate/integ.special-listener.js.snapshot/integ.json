@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "publicQueueProcessingFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-fargate-special-listener"
+      ],
+      "assertionStack": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

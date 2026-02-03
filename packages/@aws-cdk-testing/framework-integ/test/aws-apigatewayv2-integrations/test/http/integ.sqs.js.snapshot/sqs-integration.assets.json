@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "2a0c9cb36a87b6eaff8d4374a0cddf2f74af34851117514243e8968794dc2299": {
+      "source": {
+        "path": "sqs-integration.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2a0c9cb36a87b6eaff8d4374a0cddf2f74af34851117514243e8968794dc2299.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

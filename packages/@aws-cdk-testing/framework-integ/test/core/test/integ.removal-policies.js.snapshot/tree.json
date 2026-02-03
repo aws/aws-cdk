@@ -1,0 +1,399 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "TestStack": {
+        "id": "TestStack",
+        "path": "TestStack",
+        "children": {
+          "TestBucket": {
+            "id": "TestBucket",
+            "path": "TestStack/TestBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "TestStack/TestBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "TestTable": {
+            "id": "TestTable",
+            "path": "TestStack/TestTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "TestStack/TestTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "TestStack/TestTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "partitionKey": {
+                    "name": "*",
+                    "type": "S"
+                  }
+                }
+              ]
+            }
+          },
+          "TestUser": {
+            "id": "TestUser",
+            "path": "TestStack/TestUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "TestStack/TestUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.User",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "DestroyBucket": {
+            "id": "DestroyBucket",
+            "path": "TestStack/DestroyBucket",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "TestStack/DestroyBucket/Default",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestStack/DestroyBucket/Default/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "MissingPoliciesTest": {
+            "id": "MissingPoliciesTest",
+            "path": "TestStack/MissingPoliciesTest",
+            "children": {
+              "PreConfigured": {
+                "id": "PreConfigured",
+                "path": "TestStack/MissingPoliciesTest/PreConfigured",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestStack/MissingPoliciesTest/PreConfigured/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "removalPolicy": "destroy"
+                    }
+                  ]
+                }
+              },
+              "NotConfigured": {
+                "id": "NotConfigured",
+                "path": "TestStack/MissingPoliciesTest/NotConfigured",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestStack/MissingPoliciesTest/NotConfigured/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "FilteredMissingPoliciesTest": {
+            "id": "FilteredMissingPoliciesTest",
+            "path": "TestStack/FilteredMissingPoliciesTest",
+            "children": {
+              "BucketToRetain": {
+                "id": "BucketToRetain",
+                "path": "TestStack/FilteredMissingPoliciesTest/BucketToRetain",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestStack/FilteredMissingPoliciesTest/BucketToRetain/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
+              "TableToSkip": {
+                "id": "TableToSkip",
+                "path": "TestStack/FilteredMissingPoliciesTest/TableToSkip",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestStack/FilteredMissingPoliciesTest/TableToSkip/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                      "aws:cdk:cloudformation:props": {
+                        "attributeDefinitions": [
+                          {
+                            "attributeName": "id",
+                            "attributeType": "S"
+                          }
+                        ],
+                        "keySchema": [
+                          {
+                            "attributeName": "id",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 5,
+                          "writeCapacityUnits": 5
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ScalingRole": {
+                    "id": "ScalingRole",
+                    "path": "TestStack/FilteredMissingPoliciesTest/TableToSkip/ScalingRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "partitionKey": {
+                        "name": "*",
+                        "type": "S"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "TestStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "TestStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "RemovalPoliciesTest": {
+        "id": "RemovalPoliciesTest",
+        "path": "RemovalPoliciesTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "RemovalPoliciesTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "RemovalPoliciesTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "RemovalPoliciesTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "RemovalPoliciesTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "RemovalPoliciesTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

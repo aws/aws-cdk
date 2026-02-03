@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "217f24a5576264df4108195a985d02d5709bb6fa75f7885d8bb19cb025da06a1": {
+      "displayName": "LambdaApiIntegrationOptionsNonProxyIntegrationStack Template",
+      "source": {
+        "path": "LambdaApiIntegrationOptionsNonProxyIntegrationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "217f24a5576264df4108195a985d02d5709bb6fa75f7885d8bb19cb025da06a1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

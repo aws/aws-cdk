@@ -1,0 +1,89 @@
+{
+ "Parameters": {
+  "AMI": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Resources": {
+  "LaunchTemplate": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "ImageId": {
+      "Ref": "AMI"
+     },
+     "InstanceType": "t3.micro"
+    }
+   }
+  },
+  "ASG": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "AvailabilityZones": {
+     "Fn::GetAZs": ""
+    },
+    "DesiredCapacity": "2",
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "LaunchTemplate"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "LaunchTemplate",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "MaxSize": "10",
+    "MinSize": "1"
+   },
+   "UpdatePolicy": {
+    "AutoScalingRollingUpdate": {
+     "MaxBatchSize": 2,
+     "MinInstancesInService": 1,
+     "MinSuccessfulInstancesPercent": 75,
+     "MinActiveInstancesPercent": 50,
+     "PauseTime": "PT5M",
+     "SuspendProcesses": [
+      "HealthCheck",
+      "ReplaceUnhealthy"
+     ],
+     "WaitOnResourceSignals": true
+    }
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

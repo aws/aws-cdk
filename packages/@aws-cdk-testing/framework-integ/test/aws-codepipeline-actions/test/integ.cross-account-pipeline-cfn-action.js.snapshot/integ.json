@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-pipeline-cfn-cross-account/DefaultTest": {
+      "stacks": [
+        "CdkPipelineCfnActionStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "integ-pipeline-cfn-cross-account/DefaultTest/DeployAssert",
+      "assertionStackName": "integpipelinecfncrossaccountDefaultTestDeployAssertC7E37541"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

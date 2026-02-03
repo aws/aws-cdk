@@ -1,0 +1,4 @@
+# example: https://github.com/github/codeql-action/blob/main/.github/codeql/codeql-config.yml
+name: "CodeQL config"
+paths-ignore:
+  - '**/*.snapshot/**/asset*/index.js'

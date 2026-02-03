@@ -1,0 +1,39 @@
+{
+  "folders": [{ "path": "." }],
+  "settings": {
+    "files.insertFinalNewline": true,
+    "jest.jestCommandLine": "node_modules/.bin/jest",
+    "jest.runMode": {
+      "type": "on-demand"
+    },
+    "jest.virtualFolders": [
+      {
+        "name": "aws-cdk-lib",
+        "rootPath": "packages/aws-cdk-lib"
+      },
+      {
+        "name": "custom-resource-handlers",
+        "rootPath": "packages/@aws-cdk/custom-resource-handlers"
+      },
+      {
+        "name": "integ-tests-alpha",
+        "rootPath": "packages/@aws-cdk/integ-tests-alpha"
+      },
+      {
+        "name": "aws-custom-resource-sdk-adapter",
+        "rootPath": "packages/@aws-cdk/aws-custom-resource-sdk-adapter"
+      },
+      {
+        "name": "mixins",
+        "rootPath": "packages/@aws-cdk/mixins-preview"
+      },
+      {
+        "name": "spec2cdk",
+        "rootPath": "tools/@aws-cdk/spec2cdk"
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": ["dbaeumer.vscode-eslint", "Orta.vscode-jest"]
+  }
+}

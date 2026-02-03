@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-api-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-api-target-integ"
+      ],
+      "assertionStack": "aws-api-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awsapiintegDefaultTestDeployAssertBB35B14E"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

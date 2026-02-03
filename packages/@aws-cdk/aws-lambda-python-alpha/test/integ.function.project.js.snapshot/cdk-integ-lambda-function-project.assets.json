@@ -1,0 +1,48 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "47b73e4768b1d0def976a8491024814dbf62a59a303acfad0c72f66317d6a44c": {
+      "displayName": "Shared/Code",
+      "source": {
+        "path": "asset.47b73e4768b1d0def976a8491024814dbf62a59a303acfad0c72f66317d6a44c",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "47b73e4768b1d0def976a8491024814dbf62a59a303acfad0c72f66317d6a44c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "680ec1382df99fb7fe345ad64b6f1d8eb256c1c878e925fb94fcb730a48e3549": {
+      "displayName": "my_handler/Code",
+      "source": {
+        "path": "asset.680ec1382df99fb7fe345ad64b6f1d8eb256c1c878e925fb94fcb730a48e3549",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "680ec1382df99fb7fe345ad64b6f1d8eb256c1c878e925fb94fcb730a48e3549.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "4fc09cde884b7b075f516cc145bf0b4c3ddede5b23a3fbf049498800f4063a2d": {
+      "displayName": "cdk-integ-lambda-function-project Template",
+      "source": {
+        "path": "cdk-integ-lambda-function-project.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4fc09cde884b7b075f516cc145bf0b4c3ddede5b23a3fbf049498800f4063a2d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

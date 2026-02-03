@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EmrCreateClusterTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-emr-create-cluster-with-spot-instance-fleet"
+      ],
+      "assertionStack": "EmrCreateClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EmrCreateClusterTestDefaultTestDeployAssert697DC891"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

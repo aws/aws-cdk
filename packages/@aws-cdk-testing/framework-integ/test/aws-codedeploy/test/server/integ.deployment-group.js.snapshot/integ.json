@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-deployment-group/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codedeploy-server-dg"
+      ],
+      "assertionStack": "integ-deployment-group/DefaultTest/DeployAssert",
+      "assertionStackName": "integdeploymentgroupDefaultTestDeployAssert282ECB20"
+    }
+  }
+}

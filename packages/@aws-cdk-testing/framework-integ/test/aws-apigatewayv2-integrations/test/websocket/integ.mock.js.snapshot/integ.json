@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "apigatewayv2-mock-integration-integ-test/DefaultTest": {
+      "stacks": [
+        "integ-mock-websocket-integration"
+      ],
+      "assertionStack": "apigatewayv2-mock-integration-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewayv2mockintegrationintegtestDefaultTestDeployAssert3D8FA778"
+    }
+  }
+}

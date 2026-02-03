@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cpuAndMemoryAreSpecifiedTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-container-cpu-memory"
+      ],
+      "assertionStack": "cpuAndMemoryAreSpecifiedTest/DefaultTest/DeployAssert",
+      "assertionStackName": "cpuAndMemoryAreSpecifiedTestDefaultTestDeployAssert2F87E3D5"
+    }
+  }
+}

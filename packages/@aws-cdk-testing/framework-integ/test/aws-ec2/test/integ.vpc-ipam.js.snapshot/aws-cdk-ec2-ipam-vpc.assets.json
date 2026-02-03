@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "5b3a6377cf636bdf8b57c28c24c57742dfd668f4536432348222f40b5ce1a63d": {
+      "source": {
+        "path": "aws-cdk-ec2-ipam-vpc.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5b3a6377cf636bdf8b57c28c24c57742dfd668f4536432348222f40b5ce1a63d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

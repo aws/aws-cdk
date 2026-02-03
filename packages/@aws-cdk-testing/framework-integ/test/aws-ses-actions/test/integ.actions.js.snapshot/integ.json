@@ -1,0 +1,15 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ.actions": {
+      "stacks": [
+        "aws-cdk-ses-receipt"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1027.0"
+}

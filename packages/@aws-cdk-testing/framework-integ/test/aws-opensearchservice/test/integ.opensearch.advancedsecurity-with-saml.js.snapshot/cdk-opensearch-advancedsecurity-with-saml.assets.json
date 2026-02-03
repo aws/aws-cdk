@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "10d8a2bb032437d4b9c4b56ec97f401234075f8364019b7cd45e6eb0be00d031": {
+      "displayName": "cdk-opensearch-advancedsecurity-with-saml Template",
+      "source": {
+        "path": "cdk-opensearch-advancedsecurity-with-saml.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "10d8a2bb032437d4b9c4b56ec97f401234075f8364019b7cd45e6eb0be00d031.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

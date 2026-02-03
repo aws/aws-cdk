@@ -1,0 +1,101 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.92"
+        }
+      },
+      "topic-rule-test-stack": {
+        "id": "topic-rule-test-stack",
+        "path": "topic-rule-test-stack",
+        "children": {
+          "TopicRule": {
+            "id": "TopicRule",
+            "path": "topic-rule-test-stack/TopicRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "topic-rule-test-stack/TopicRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
+                  "aws:cdk:cloudformation:props": {
+                    "topicRulePayload": {
+                      "actions": [
+                        {
+                          "http": {
+                            "url": "https://example.com"
+                          }
+                        }
+                      ],
+                      "awsIotSqlVersion": "2015-10-08",
+                      "sql": "SELECT topic(2) as device_id FROM 'device/+/data'"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iot.CfnTopicRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot.TopicRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "TopicRule": {
+        "id": "TopicRule",
+        "path": "TopicRule",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "TopicRule/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "TopicRule/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "TopicRule/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

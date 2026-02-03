@@ -1,0 +1,671 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-events-targets-api-destination-integ": {
+        "id": "aws-events-targets-api-destination-integ",
+        "path": "aws-events-targets-api-destination-integ",
+        "children": {
+          "MySecret": {
+            "id": "MySecret",
+            "path": "aws-events-targets-api-destination-integ/MySecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-events-targets-api-destination-integ/MySecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "secretString": "abc123"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "MyConnection": {
+            "id": "MyConnection",
+            "path": "aws-events-targets-api-destination-integ/MyConnection",
+            "children": {
+              "Connection": {
+                "id": "Connection",
+                "path": "aws-events-targets-api-destination-integ/MyConnection/Connection",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Connection",
+                  "aws:cdk:cloudformation:props": {
+                    "authorizationType": "API_KEY",
+                    "authParameters": {
+                      "apiKeyAuthParameters": {
+                        "apiKeyName": "x-api-key",
+                        "apiKeyValue": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "{{resolve:secretsmanager:",
+                              {
+                                "Ref": "MySecret8FE80B51"
+                              },
+                              ":SecretString:::}}"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "description": "Connection with API Key x-api-key",
+                    "name": "MyConnection"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnConnection",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Connection",
+              "version": "0.0.0"
+            }
+          },
+          "MyDestination": {
+            "id": "MyDestination",
+            "path": "aws-events-targets-api-destination-integ/MyDestination",
+            "children": {
+              "ApiDestination": {
+                "id": "ApiDestination",
+                "path": "aws-events-targets-api-destination-integ/MyDestination/ApiDestination",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::ApiDestination",
+                  "aws:cdk:cloudformation:props": {
+                    "connectionArn": {
+                      "Fn::GetAtt": [
+                        "MyConnection925E5E94",
+                        "Arn"
+                      ]
+                    },
+                    "description": "Calling example.com with API key x-api-key",
+                    "httpMethod": "GET",
+                    "invocationEndpoint": "https://httpbin.org/headers",
+                    "invocationRateLimitPerSecond": 1,
+                    "name": "MyDestination"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnApiDestination",
+                  "version": "0.0.0"
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "aws-events-targets-api-destination-integ/MyDestination/EventsRole",
+                "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "aws-events-targets-api-destination-integ/MyDestination/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-events-targets-api-destination-integ/MyDestination/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-events-targets-api-destination-integ/MyDestination/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-events-targets-api-destination-integ/MyDestination/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:InvokeApiDestination",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyDestinationApiDestination78511D9A",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyDestinationEventsRoleDefaultPolicy6CA0D88B",
+                            "roles": [
+                              {
+                                "Ref": "MyDestinationEventsRole9C7EBBEA"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.ApiDestination",
+              "version": "0.0.0"
+            }
+          },
+          "MyRule": {
+            "id": "MyRule",
+            "path": "aws-events-targets-api-destination-integ/MyRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-events-targets-api-destination-integ/MyRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyRule",
+                    "scheduleExpression": "rate(1 minute)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "MyDestinationApiDestination78511D9A",
+                            "Arn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "MyDestinationEventsRole9C7EBBEA",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedConnection": {
+            "id": "ImportedConnection",
+            "path": "aws-events-targets-api-destination-integ/ImportedConnection",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedDestination": {
+            "id": "ImportedDestination",
+            "path": "aws-events-targets-api-destination-integ/ImportedDestination",
+            "children": {
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "aws-events-targets-api-destination-integ/ImportedDestination/EventsRole",
+                "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "aws-events-targets-api-destination-integ/ImportedDestination/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-events-targets-api-destination-integ/ImportedDestination/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-events-targets-api-destination-integ/ImportedDestination/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-events-targets-api-destination-integ/ImportedDestination/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:InvokeApiDestination",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyDestinationApiDestination78511D9A",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ImportedDestinationEventsRoleDefaultPolicy5955C33B",
+                            "roles": [
+                              {
+                                "Ref": "ImportedDestinationEventsRoleEE2E7BB0"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "MyOtherRule": {
+            "id": "MyOtherRule",
+            "path": "aws-events-targets-api-destination-integ/MyOtherRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-events-targets-api-destination-integ/MyOtherRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyOtherRule",
+                    "scheduleExpression": "rate(1 minute)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "MyDestinationApiDestination78511D9A",
+                            "Arn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "ImportedDestinationEventsRoleEE2E7BB0",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      {
+                        "id": "Target1",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "MyDestinationApiDestination78511D9A",
+                            "Arn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "ImportedDestinationEventsRoleEE2E7BB0",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-events-targets-api-destination-integ/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"MyDestinationApiDestination78511D9A\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"MyDestinationApiDestination78511D9A\",\"Arn\"]}",
+                "path": "aws-events-targets-api-destination-integ/Exports/Output{\"Fn::GetAtt\":[\"MyDestinationApiDestination78511D9A\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"MyRuleA44AB831\"}": {
+                "id": "Output{\"Ref\":\"MyRuleA44AB831\"}",
+                "path": "aws-events-targets-api-destination-integ/Exports/Output{\"Ref\":\"MyRuleA44AB831\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"MyOtherRuleF2A0D4EA\"}": {
+                "id": "Output{\"Ref\":\"MyOtherRuleF2A0D4EA\"}",
+                "path": "aws-events-targets-api-destination-integ/Exports/Output{\"Ref\":\"MyOtherRuleF2A0D4EA\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-events-targets-api-destination-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-events-targets-api-destination-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ApiDestinationTarget": {
+        "id": "ApiDestinationTarget",
+        "path": "ApiDestinationTarget",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ApiDestinationTarget/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ApiDestinationTarget/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ApiDestinationTarget/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRulecf1c31b2b905b12a0c2acd62bf3ed283": {
+                    "id": "AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRulecf1c31b2b905b12a0c2acd62bf3ed283",
+                    "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRulecf1c31b2b905b12a0c2acd62bf3ed283",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRulecf1c31b2b905b12a0c2acd62bf3ed283/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRulecf1c31b2b905b12a0c2acd62bf3ed283/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRulecf1c31b2b905b12a0c2acd62bf3ed283/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRulecf1c31b2b905b12a0c2acd62bf3ed283/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRulecf1c31b2b905b12a0c2acd62bf3ed283/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "ApiDestinationTarget/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRule27ef2899de06020ffe226176095beaf4": {
+                    "id": "AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRule27ef2899de06020ffe226176095beaf4",
+                    "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRule27ef2899de06020ffe226176095beaf4",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRule27ef2899de06020ffe226176095beaf4/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRule27ef2899de06020ffe226176095beaf4/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRule27ef2899de06020ffe226176095beaf4/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRule27ef2899de06020ffe226176095beaf4/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "ApiDestinationTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRule27ef2899de06020ffe226176095beaf4/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ApiDestinationTarget/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ApiDestinationTarget/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

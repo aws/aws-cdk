@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "lambda-layer-kubectl-integ-test/DefaultTest": {
+      "stacks": [
+        "lambda-layer-kubectl-integ-stack"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "lambda-layer-kubectl-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

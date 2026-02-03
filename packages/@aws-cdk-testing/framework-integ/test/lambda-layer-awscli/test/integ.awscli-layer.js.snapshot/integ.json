@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "lambda-layer-awscli-integ-test/DefaultTest": {
+      "stacks": [
+        "lambda-layer-awscli-integ-stack"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "lambda-layer-awscli-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdalayerawscliintegtestDefaultTestDeployAssert8E1153D3"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

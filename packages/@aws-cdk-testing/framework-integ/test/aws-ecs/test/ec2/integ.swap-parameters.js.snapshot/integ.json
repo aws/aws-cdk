@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SwapParametersTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "assertionStack": "SwapParametersTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SwapParametersTestDefaultTestDeployAssert4CDF4940"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -1,0 +1,53 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform": "AWS::LanguageExtensions",
+    "Parameters": {
+        "Stage": {
+            "Type": "String",
+            "AllowedValues": [
+                "Prod",
+                "Staging",
+                "Dev"
+            ]
+        }
+    },
+    "Conditions": {
+        "IsProd": {
+            "Fn::Equals": [
+                {
+                    "Ref": "Stage"
+                },
+                "Prod"
+            ]
+        }
+    },
+    "Resources": {
+        "Table": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "KeySchema": [{
+                    "AttributeName": "primaryKey",
+                    "KeyType": "HASH"
+                }],
+                "AttributeDefinitions": [{
+                        "AttributeName": "primaryKey",
+                        "AttributeType": "S"
+                }]
+            },
+            "DeletionPolicy": {
+                "Fn::If": [
+                    "IsProd",
+                    "Retain",
+                    "Delete"
+                ]
+            },
+            "UpdateReplacePolicy": {
+                "Fn::If": [
+                    "IsProd",
+                    "Retain",
+                    "Delete"
+                ]
+            }
+        }
+    }
+}

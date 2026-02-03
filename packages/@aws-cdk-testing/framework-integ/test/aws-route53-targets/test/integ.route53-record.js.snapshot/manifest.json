@@ -1,0 +1,76 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-r53-record-alias-target-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-r53-record-alias-target-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-r53-record-alias-target-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-r53-record-alias-target-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/416179f340be776011b45cc43f1d0239b17ec48b65ff631fca70f3b8e801aeea.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-r53-record-alias-target-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-r53-record-alias-target-integ.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-r53-record-alias-target-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/aws-cdk-r53-record-alias-target-integ/WWW/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WWW9F8609DA"
+          }
+        ],
+        "/aws-cdk-r53-record-alias-target-integ/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias325C5727"
+          }
+        ],
+        "/aws-cdk-r53-record-alias-target-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-r53-record-alias-target-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-r53-record-alias-target-integ"
+    }
+  }
+}

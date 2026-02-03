@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.lookoutvision"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.LookoutVision"
+    },
+    "python": {
+      "module": "aws_cdk.aws_lookoutvision"
+    }
+  }
+}

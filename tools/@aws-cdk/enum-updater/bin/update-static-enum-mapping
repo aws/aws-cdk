@@ -1,0 +1,2 @@
+#!/usr/bin/env node
+require('./update-static-enum-mapping.js');

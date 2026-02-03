@@ -1,0 +1,14 @@
+{
+  "Rules": {
+    "VpcRule": {
+      "Assertions": [
+        {
+          "Fn::EachMemberIn": [
+            { "Fn::ValueOfAll": ["AWS::EC2::Subnet::Id", "VpcId"] },
+            { "Fn::ValueOf": ["Subnets", "VpcId"] }
+          ]
+        }
+      ]
+    }
+  }
+}

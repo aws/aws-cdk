@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "commonjs",
+        "lib": ["es2022", "dom"],
+        "strict": true,
+        "alwaysStrict": true,
+        "declaration": true,
+        "sourceMap": false,
+        "inlineSourceMap": false,
+        "inlineSources": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "resolveJsonModule": true,
+        "composite": true,
+        "isolatedModules": true,
+        "incremental": true
+    },
+    "include": [
+        "config.ts",
+        "**/*.ts",
+        "**/*.d.ts"
+    ],
+    "exclude": [
+        "resources/**/*",
+        "**/*.snapshot/**/*"
+    ]
+}

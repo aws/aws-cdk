@@ -1,0 +1,382 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-apprunner-secrets-manager": {
+        "id": "integ-apprunner-secrets-manager",
+        "path": "integ-apprunner-secrets-manager",
+        "children": {
+          "Secret": {
+            "id": "Secret",
+            "path": "integ-apprunner-secrets-manager/Secret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner-secrets-manager/Secret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "secretString": "{\"password\":\"mySecretPassword\",\"apikey\":\"mySecretApiKey\"}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "String": {
+            "id": "String",
+            "path": "integ-apprunner-secrets-manager/String",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner-secrets-manager/String/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "Abc123",
+                    "name": "/My/Public/Parameter"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "Parameter": {
+            "id": "Parameter",
+            "path": "integ-apprunner-secrets-manager/Parameter",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Service8": {
+            "id": "Service8",
+            "path": "integ-apprunner-secrets-manager/Service8",
+            "children": {
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "integ-apprunner-secrets-manager/Service8/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-apprunner-secrets-manager/Service8/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apprunner-secrets-manager/Service8/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "tasks.apprunner.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "integ-apprunner-secrets-manager/Service8/InstanceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-apprunner-secrets-manager/Service8/InstanceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "secretsmanager:DescribeSecret",
+                                    "secretsmanager:GetSecretValue"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "SecretA720EF05"
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "ssm:DescribeParameters",
+                                    "ssm:GetParameter",
+                                    "ssm:GetParameterHistory",
+                                    "ssm:GetParameters"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ssm:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":parameter/My/Public/Parameter"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Service8InstanceRoleDefaultPolicy7BC4087D",
+                            "roles": [
+                              {
+                                "Ref": "Service8InstanceRole6CC2A03A"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner-secrets-manager/Service8/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "sourceConfiguration": {
+                      "authenticationConfiguration": {},
+                      "imageRepository": {
+                        "imageConfiguration": {
+                          "port": "8000",
+                          "runtimeEnvironmentSecrets": [
+                            {
+                              "name": "PASSWORD",
+                              "value": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Ref": "SecretA720EF05"
+                                    },
+                                    ":password::"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "PARAMETER",
+                              "value": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":ssm:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":parameter/My/Public/Parameter"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "API_KEY",
+                              "value": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Ref": "SecretA720EF05"
+                                    },
+                                    ":apikey::"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "imageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                        "imageRepositoryType": "ECR_PUBLIC"
+                      }
+                    },
+                    "instanceConfiguration": {
+                      "instanceRoleArn": {
+                        "Fn::GetAtt": [
+                          "Service8InstanceRole6CC2A03A",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "version": "0.0.0"
+            }
+          },
+          "URL8": {
+            "id": "URL8",
+            "path": "integ-apprunner-secrets-manager/URL8",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-apprunner-secrets-manager/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-apprunner-secrets-manager/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "AppRunnerSecretsManger": {
+        "id": "AppRunnerSecretsManger",
+        "path": "AppRunnerSecretsManger",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "AppRunnerSecretsManger/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "AppRunnerSecretsManger/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.209"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "AppRunnerSecretsManger/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "AppRunnerSecretsManger/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "AppRunnerSecretsManger/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.209"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

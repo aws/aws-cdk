@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-dynamodb-global-20191121-test/DefaultTest": {
+      "stacks": [
+        "cdk-dynamodb-global-20191121"
+      ],
+      "diffAssets": true,
+      "assertionStack": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

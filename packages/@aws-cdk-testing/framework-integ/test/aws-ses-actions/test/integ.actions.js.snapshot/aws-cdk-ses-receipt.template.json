@@ -1,0 +1,479 @@
+{
+ "Resources": {
+  "TopicBFC7AF6E": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "FunctionServiceRole675BB04A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Function76856677": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async (event) => event;"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "FunctionServiceRole675BB04A",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "FunctionServiceRole675BB04A"
+   ]
+  },
+  "FunctionAllowSes1829904A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Function76856677",
+      "Arn"
+     ]
+    },
+    "Principal": "ses.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    }
+   }
+  },
+  "Bucket83908E77": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "BucketPolicyE9A3008A": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "Bucket83908E77"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ses.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "Bucket83908E77",
+            "Arn"
+           ]
+          },
+          "/emails/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Encrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Condition": {
+        "Null": {
+         "kms:EncryptionContext:aws:ses:rule-name": "false",
+         "kms:EncryptionContext:aws:ses:message-id": "false"
+        },
+        "StringEquals": {
+         "kms:EncryptionContext:aws:ses:source-account": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ses.amazonaws.com"
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "RuleSetE30C6C48": {
+   "Type": "AWS::SES::ReceiptRuleSet"
+  },
+  "RuleSetDropSpamRule5809F51B": {
+   "Type": "AWS::SES::ReceiptRule",
+   "Properties": {
+    "Rule": {
+     "Actions": [
+      {
+       "LambdaAction": {
+        "FunctionArn": {
+         "Fn::GetAtt": [
+          "SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15",
+          "Arn"
+         ]
+        },
+        "InvocationType": "RequestResponse"
+       }
+      }
+     ],
+     "Enabled": true,
+     "ScanEnabled": true
+    },
+    "RuleSetName": {
+     "Ref": "RuleSetE30C6C48"
+    }
+   }
+  },
+  "RuleSetFirstRule0A27C8CC": {
+   "Type": "AWS::SES::ReceiptRule",
+   "Properties": {
+    "After": {
+     "Ref": "RuleSetDropSpamRule5809F51B"
+    },
+    "Rule": {
+     "Actions": [
+      {
+       "WorkmailAction": {
+        "OrganizationArn": "arn:aws:workmail:us-east-1:339712719728:organization/m-5ea60ed9e37442c388898996f05c17ac",
+        "TopicArn": {
+         "Ref": "TopicBFC7AF6E"
+        }
+       }
+      },
+      {
+       "AddHeaderAction": {
+        "HeaderName": "X-My-Header",
+        "HeaderValue": "value"
+       }
+      },
+      {
+       "LambdaAction": {
+        "FunctionArn": {
+         "Fn::GetAtt": [
+          "Function76856677",
+          "Arn"
+         ]
+        },
+        "InvocationType": "RequestResponse",
+        "TopicArn": {
+         "Ref": "TopicBFC7AF6E"
+        }
+       }
+      },
+      {
+       "S3Action": {
+        "BucketName": {
+         "Ref": "Bucket83908E77"
+        },
+        "KmsKeyArn": {
+         "Fn::GetAtt": [
+          "Key961B73FD",
+          "Arn"
+         ]
+        },
+        "ObjectKeyPrefix": "emails/",
+        "TopicArn": {
+         "Ref": "TopicBFC7AF6E"
+        }
+       }
+      },
+      {
+       "SNSAction": {
+        "Encoding": "Base64",
+        "TopicArn": {
+         "Ref": "TopicBFC7AF6E"
+        }
+       }
+      },
+      {
+       "BounceAction": {
+        "Message": "Message content rejected",
+        "Sender": "test@cdk-test-123.awsapps.com",
+        "SmtpReplyCode": "500",
+        "StatusCode": "5.6.1",
+        "TopicArn": {
+         "Ref": "TopicBFC7AF6E"
+        }
+       }
+      }
+     ],
+     "Enabled": true,
+     "Name": "FirstRule",
+     "Recipients": [
+      "test@cdk-test-123.awsapps.com"
+     ],
+     "ScanEnabled": true,
+     "TlsPolicy": "Require"
+    },
+    "RuleSetName": {
+     "Ref": "RuleSetE30C6C48"
+    }
+   },
+   "DependsOn": [
+    "BucketPolicyE9A3008A",
+    "FunctionAllowSes1829904A"
+   ]
+  },
+  "RuleSetSecondRule03178AD4": {
+   "Type": "AWS::SES::ReceiptRule",
+   "Properties": {
+    "After": {
+     "Ref": "RuleSetFirstRule0A27C8CC"
+    },
+    "Rule": {
+     "Actions": [
+      {
+       "StopAction": {
+        "Scope": "RuleSet",
+        "TopicArn": {
+         "Ref": "TopicBFC7AF6E"
+        }
+       }
+      }
+     ],
+     "Enabled": true
+    },
+    "RuleSetName": {
+     "Ref": "RuleSetE30C6C48"
+    }
+   }
+  },
+  "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "19044c50ec489a0413f51a8e60d6272e5746e9b5a0356ed15c12de97c3ca93ec.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4"
+   ]
+  },
+  "SingletonLambda224e77f9a32e4b4dac32983477abba16AllowSesB42DF904": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15",
+      "Arn"
+     ]
+    },
+    "Principal": "ses.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    }
+   }
+  },
+  "NotificationQueue36610CC1": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "NotificationQueuePolicyCC060EA6": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Ref": "TopicBFC7AF6E"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "NotificationQueue36610CC1",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "NotificationQueue36610CC1"
+     }
+    ]
+   }
+  },
+  "NotificationQueueawscdksesreceiptTopicE9CA2388E8E96C33": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "NotificationQueue36610CC1",
+      "Arn"
+     ]
+    },
+    "Protocol": "sqs",
+    "TopicArn": {
+     "Ref": "TopicBFC7AF6E"
+    }
+   },
+   "DependsOn": [
+    "NotificationQueuePolicyCC060EA6"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

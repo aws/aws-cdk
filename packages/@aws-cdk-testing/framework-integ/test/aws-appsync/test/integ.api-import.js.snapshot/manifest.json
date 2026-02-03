@@ -1,0 +1,114 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "baseStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "baseStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/baseStack/baseApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "baseApiCDA4D43A"
+          }
+        ],
+        "/baseStack/baseApi/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "baseApiSchemaB12C7BB0"
+          }
+        ],
+        "/baseStack/baseApi/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "baseApiDefaultApiKeyA3A0A16A"
+          }
+        ],
+        "/baseStack/Exports/Output{\"Fn::GetAtt\":[\"baseApiCDA4D43A\",\"ApiId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
+          }
+        ]
+      },
+      "displayName": "baseStack"
+    },
+    "stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stack.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "baseStack"
+      ],
+      "metadata": {
+        "/stack/Api/ds/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsServiceRoleADC7D124"
+          }
+        ],
+        "/stack/Api/ds/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsServiceRoleDefaultPolicyE5E18D6D"
+          }
+        ],
+        "/stack/Api/ds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Apids0DB53FEA"
+          }
+        ],
+        "/stack/Api/ds/QuerygetTestsResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsQuerygetTestsResolver952F49EE"
+          }
+        ],
+        "/stack/Api/ds/MutationaddTestResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsMutationaddTestResolverBCF0400B"
+          }
+        ],
+        "/stack/TestTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestTable5769773A"
+          }
+        ],
+        "/stack/api2/none/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "api2noneC88DB89F"
+          }
+        ],
+        "/stack/api2/none/pipeline_functionFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "api2nonepipelinefunctionFunction2426F465"
+          }
+        ],
+        "/stack/pipeline_resolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelineresolver843133EA"
+          }
+        ]
+      },
+      "displayName": "stack"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ReplicationInteg/DefaultTest": {
+      "stacks": [
+        "BucketReplicationTestStack"
+      ],
+      "assertionStack": "ReplicationInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ReplicationIntegDefaultTestDeployAssert2C07A074"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,124 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-ec2-vpc-endpoint.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ec2-vpc-endpoint.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ec2-vpc-endpoint": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ec2-vpc-endpoint.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/67351fc4d4c0da58fde206ba5e91519591cc2f147b2de7f4d137ab5a2f300e12.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ec2-vpc-endpoint.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ec2-vpc-endpoint.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ec2-vpc-endpoint/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/ingressSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCingressSubnet1SubnetBB7FDF67"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/ingressSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCingressSubnet1RouteTableEEF02A64"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/ingressSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCingressSubnet1RouteTableAssociation7700457B"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/ingressSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCingressSubnet1DefaultRouteC1C9D77C"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/ingressSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCingressSubnet2SubnetE30F0091"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/ingressSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCingressSubnet2RouteTable8565F2D0"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/ingressSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCingressSubnet2RouteTableAssociation35C35494"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/ingressSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCingressSubnet2DefaultRoute8E2F45A7"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ec2-vpc-endpoint"
+    }
+  }
+}

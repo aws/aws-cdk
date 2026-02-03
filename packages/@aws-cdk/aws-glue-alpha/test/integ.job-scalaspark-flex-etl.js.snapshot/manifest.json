@@ -1,0 +1,131 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "aws-glue-job-scalasparkflex-etl.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-glue-job-scalasparkflex-etl.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-glue-job-scalasparkflex-etl": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-glue-job-scalasparkflex-etl.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c0d31e02ab980459f90299032315caaa05e6b665bdcd686783bdb95a6ff474f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-glue-job-scalasparkflex-etl.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-glue-job-scalasparkflex-etl.assets"
+      ],
+      "metadata": {
+        "/aws-glue-job-scalasparkflex-etl/IAMServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IAMServiceRole61C662C4"
+          }
+        ],
+        "/aws-glue-job-scalasparkflex-etl/IAMServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IAMServiceRoleDefaultPolicy379D1A0E"
+          }
+        ],
+        "/aws-glue-job-scalasparkflex-etl/BasicScalaSparkFlexEtlJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BasicScalaSparkFlexEtlJobF8FD9EFB"
+          }
+        ],
+        "/aws-glue-job-scalasparkflex-etl/OverrideScalaSparkFlexEtlJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OverrideScalaSparkFlexEtlJob843D93B4"
+          }
+        ],
+        "/aws-glue-job-scalasparkflex-etl/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-glue-job-scalasparkflex-etl/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-glue-job-scalasparkflex-etl"
+    },
+    "awsgluejobscalasparkflexetlintegtestDefaultTestDeployAssert8009E6FC.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awsgluejobscalasparkflexetlintegtestDefaultTestDeployAssert8009E6FC.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awsgluejobscalasparkflexetlintegtestDefaultTestDeployAssert8009E6FC": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awsgluejobscalasparkflexetlintegtestDefaultTestDeployAssert8009E6FC.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awsgluejobscalasparkflexetlintegtestDefaultTestDeployAssert8009E6FC.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awsgluejobscalasparkflexetlintegtestDefaultTestDeployAssert8009E6FC.assets"
+      ],
+      "metadata": {
+        "/aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

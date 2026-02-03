@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ElasticSearchUnsignedBasicAuthInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-elasticsearch-unsignedbasicauth"
+      ],
+      "diffAssets": true,
+      "assertionStack": "ElasticSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ElasticSearchUnsignedBasicAuthIntegDefaultTestDeployAssertB125FC47"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

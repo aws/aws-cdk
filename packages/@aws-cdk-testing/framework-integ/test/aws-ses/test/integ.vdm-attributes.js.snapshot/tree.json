@@ -1,0 +1,130 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-ses-vdm-attributes": {
+        "id": "cdk-integ-ses-vdm-attributes",
+        "path": "cdk-integ-ses-vdm-attributes",
+        "children": {
+          "Vdm": {
+            "id": "Vdm",
+            "path": "cdk-integ-ses-vdm-attributes/Vdm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-ses-vdm-attributes/Vdm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::VdmAttributes",
+                  "aws:cdk:cloudformation:props": {
+                    "dashboardAttributes": {
+                      "engagementMetrics": "ENABLED"
+                    },
+                    "guardianAttributes": {
+                      "optimizedSharedDelivery": "ENABLED"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ses.CfnVdmAttributes",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ses.VdmAttributes",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-ses-vdm-attributes/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-ses-vdm-attributes/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "VdmAttribtuesInteg": {
+        "id": "VdmAttribtuesInteg",
+        "path": "VdmAttribtuesInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "VdmAttribtuesInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "VdmAttribtuesInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.154"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "VdmAttribtuesInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "VdmAttribtuesInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "VdmAttribtuesInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.154"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

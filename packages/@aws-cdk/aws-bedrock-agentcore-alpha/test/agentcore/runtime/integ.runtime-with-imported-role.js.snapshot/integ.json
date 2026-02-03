@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentCoreRuntimeWithImportedRole/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-runtime-with-imported-role"
+      ],
+      "assertionStack": "BedrockAgentCoreRuntimeWithImportedRole/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreRuntimeWithImportedRoleDefaultTestDeployAssert640CC592"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

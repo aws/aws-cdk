@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "resource-policy-integ-test/DefaultTest": {
+      "stacks": [
+        "resource-policy-stack"
+      ],
+      "assertionStack": "resource-policy-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "resourcepolicyintegtestDefaultTestDeployAssert9778837B"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

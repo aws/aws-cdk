@@ -1,0 +1,141 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "aws-gamelift-standalone-matchmaking-configuration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-gamelift-standalone-matchmaking-configuration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-gamelift-standalone-matchmaking-configuration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-gamelift-standalone-matchmaking-configuration.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49f6e7e838beb118afcdc5a5082ed92c402292f42c290c4ac272b74e6f3a48a7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-gamelift-standalone-matchmaking-configuration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-gamelift-standalone-matchmaking-configuration.assets"
+      ],
+      "metadata": {
+        "/aws-gamelift-standalone-matchmaking-configuration/StandaloneMatchmakingConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandaloneMatchmakingConfigurationC77F3149"
+          }
+        ],
+        "/aws-gamelift-standalone-matchmaking-configuration/MyStandaloneMatchmakingConfiguration/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStandaloneMatchmakingConfigurationTopicDEF24815"
+          }
+        ],
+        "/aws-gamelift-standalone-matchmaking-configuration/MyStandaloneMatchmakingConfiguration/TopicPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStandaloneMatchmakingConfigurationTopicPolicy9FA21BCE"
+          }
+        ],
+        "/aws-gamelift-standalone-matchmaking-configuration/MyStandaloneMatchmakingConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStandaloneMatchmakingConfiguration01AA1DFD"
+          }
+        ],
+        "/aws-gamelift-standalone-matchmaking-configuration/MatchmakingConfigurationArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MatchmakingConfigurationArn"
+          }
+        ],
+        "/aws-gamelift-standalone-matchmaking-configuration/MatchmakingConfigurationName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MatchmakingConfigurationName"
+          }
+        ],
+        "/aws-gamelift-standalone-matchmaking-configuration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-gamelift-standalone-matchmaking-configuration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-gamelift-standalone-matchmaking-configuration"
+    },
+    "StandaloneMatchmakingConfigurationDefaultTestDeployAssertAA4E73AF.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "StandaloneMatchmakingConfigurationDefaultTestDeployAssertAA4E73AF.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "StandaloneMatchmakingConfigurationDefaultTestDeployAssertAA4E73AF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "StandaloneMatchmakingConfigurationDefaultTestDeployAssertAA4E73AF.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "StandaloneMatchmakingConfigurationDefaultTestDeployAssertAA4E73AF.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "StandaloneMatchmakingConfigurationDefaultTestDeployAssertAA4E73AF.assets"
+      ],
+      "metadata": {
+        "/StandaloneMatchmakingConfiguration/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/StandaloneMatchmakingConfiguration/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "StandaloneMatchmakingConfiguration/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "networkLoadBalancedFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "tls-network-load-balanced-fargate-service"
+      ],
+      "assertionStack": "networkLoadBalancedFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "networkLoadBalancedFargateServiceTestDefaultTestDeployAssertBFBAA75B"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

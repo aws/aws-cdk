@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "44.0.0",
+  "testCases": {
+    "domain-name-mapping-test/DefaultTest": {
+      "stacks": [
+        "integ-apigw-domain-name-mapping"
+      ],
+      "assertionStack": "domain-name-mapping-test/DefaultTest/DeployAssert",
+      "assertionStackName": "domainnamemappingtestDefaultTestDeployAssert4FFC8047"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "7bce581332c2023dc738f386470e309df520cc88646ad049622208130ba0bbbe": {
+      "source": {
+        "path": "cloudfront-geo-restrictions.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7bce581332c2023dc738f386470e309df520cc88646ad049622208130ba0bbbe.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

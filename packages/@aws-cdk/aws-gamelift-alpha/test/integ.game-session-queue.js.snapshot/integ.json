@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "GameSessionQueue/DefaultTest": {
+      "stacks": [
+        "aws-gamelift-gameSessionQueue"
+      ],
+      "assertionStack": "GameSessionQueue/DefaultTest/DeployAssert",
+      "assertionStackName": "GameSessionQueueDefaultTestDeployAssert72367A40"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "8b3a919055a71136a49316ea7be0de576bd04dc56a8257523d7a5963678dc177": {
+      "displayName": "aws-ecs-integ-fargate-health-percentage Template",
+      "source": {
+        "path": "aws-ecs-integ-fargate-health-percentage.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-de1f94ff": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8b3a919055a71136a49316ea7be0de576bd04dc56a8257523d7a5963678dc177.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

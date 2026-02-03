@@ -1,0 +1,164 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-loggroup-grantreads-integ": {
+        "id": "aws-cdk-loggroup-grantreads-integ",
+        "path": "aws-cdk-loggroup-grantreads-integ",
+        "children": {
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "aws-cdk-loggroup-grantreads-integ/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-loggroup-grantreads-integ/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-cdk-loggroup-grantreads-integ/LogGroup/Policy",
+                "children": {
+                  "ResourcePolicy": {
+                    "id": "ResourcePolicy",
+                    "path": "aws-cdk-loggroup-grantreads-integ/LogGroup/Policy/ResourcePolicy",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::ResourcePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "{\"Statement\":[{\"Action\":[\"logs:FilterLogEvents\",\"logs:GetLogEvents\",\"logs:GetLogGroupFields\",\"logs:DescribeLogGroups\",\"logs:DescribeLogStreams\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":\"",
+                              {
+                                "Fn::GetAtt": [
+                                  "LogGroupF5B46931",
+                                  "Arn"
+                                ]
+                              },
+                              "\"}],\"Version\":\"2012-10-17\"}"
+                            ]
+                          ]
+                        },
+                        "policyName": "awscdkloggroupgrantreadsintegLogGroupPolicy974F6709"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnResourcePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.ResourcePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-loggroup-grantreads-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-loggroup-grantreads-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "loggroup-grantreads": {
+        "id": "loggroup-grantreads",
+        "path": "loggroup-grantreads",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "loggroup-grantreads/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "loggroup-grantreads/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.168"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "loggroup-grantreads/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "loggroup-grantreads/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "loggroup-grantreads/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

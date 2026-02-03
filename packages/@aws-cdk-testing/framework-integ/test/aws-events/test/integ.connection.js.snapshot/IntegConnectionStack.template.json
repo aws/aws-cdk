@@ -1,0 +1,69 @@
+{
+ "Resources": {
+  "Connection07624BCD": {
+   "Type": "AWS::Events::Connection",
+   "Properties": {
+    "AuthorizationType": "API_KEY",
+    "AuthParameters": {
+     "ApiKeyAuthParameters": {
+      "ApiKeyName": "keyname",
+      "ApiKeyValue": "keyvalue"
+     },
+     "InvocationHttpParameters": {
+      "HeaderParameters": [
+       {
+        "IsValueSecret": false,
+        "Key": "content-type",
+        "Value": "application/json"
+       }
+      ]
+     }
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefConnection07624BCD5A8A23C8": {
+   "Value": {
+    "Ref": "Connection07624BCD"
+   },
+   "Export": {
+    "Name": "IntegConnectionStack:ExportsOutputRefConnection07624BCD5A8A23C8"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,2637 @@
+import { Match, Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
+import * as targets from '../../aws-events-targets';
+import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal, CompositePrincipal } from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as lambda from '../../aws-lambda';
+import * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
+import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
+import * as rds from '../lib';
+
+let stack: cdk.Stack;
+let vpc: ec2.Vpc;
+
+describe('instance', () => {
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+  });
+
+  test('create a DB instance', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+      licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
+      multiAz: true,
+      storageType: rds.StorageType.IO1,
+      credentials: rds.Credentials.fromUsername('syscdk', {
+        excludeCharacters: '"@/\\',
+      }),
+      vpc,
+      databaseName: 'ORCL',
+      storageEncrypted: true,
+      backupRetention: cdk.Duration.days(7),
+      monitoringInterval: cdk.Duration.minutes(1),
+      enablePerformanceInsights: true,
+      cloudwatchLogsExports: [
+        'trace',
+        'audit',
+        'alert',
+        'listener',
+      ],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+      autoMinorVersionUpgrade: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
+      Properties: {
+        DBInstanceClass: 'db.t2.medium',
+        AllocatedStorage: '100',
+        AutoMinorVersionUpgrade: false,
+        BackupRetentionPeriod: 7,
+        CopyTagsToSnapshot: true,
+        DBName: 'ORCL',
+        DBSubnetGroupName: {
+          Ref: 'InstanceSubnetGroupF2CBA54F',
+        },
+        EnableCloudwatchLogsExports: [
+          'trace',
+          'audit',
+          'alert',
+          'listener',
+        ],
+        EnablePerformanceInsights: true,
+        Engine: 'oracle-se2',
+        EngineVersion: '19.0.0.0.ru-2020-04.rur-2020-04.r1',
+        Iops: 1000,
+        LicenseModel: 'bring-your-own-license',
+        MasterUsername: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:',
+              {
+                Ref: 'InstanceSecret478E0A47',
+              },
+              ':SecretString:username::}}',
+            ],
+          ],
+        },
+        MasterUserPassword: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:',
+              {
+                Ref: 'InstanceSecret478E0A47',
+              },
+              ':SecretString:password::}}',
+            ],
+          ],
+        },
+        MonitoringInterval: 60,
+        MonitoringRoleArn: {
+          'Fn::GetAtt': [
+            'InstanceMonitoringRole3E2B4286',
+            'Arn',
+          ],
+        },
+        MultiAZ: true,
+        PerformanceInsightsRetentionPeriod: 7,
+        StorageEncrypted: true,
+        StorageType: 'io1',
+        VPCSecurityGroups: [
+          {
+            'Fn::GetAtt': [
+              'InstanceSecurityGroupB4E5FA83',
+              'GroupId',
+            ],
+          },
+        ],
+      },
+      DeletionPolicy: 'Snapshot',
+      UpdateReplacePolicy: 'Snapshot',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
+      DBSubnetGroupDescription: 'Subnet group for Instance database',
+      SubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Security group for Instance database',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'monitoring.rds.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
+            ],
+          ],
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      Description: {
+        'Fn::Join': [
+          '',
+          [
+            'Generated by the CDK for stack: ',
+            {
+              Ref: 'AWS::StackName',
+            },
+          ],
+        ],
+      },
+      GenerateSecretString: {
+        ExcludeCharacters: '\"@/\\',
+        GenerateStringKey: 'password',
+        PasswordLength: 30,
+        SecretStringTemplate: '{"username":"syscdk"}',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::SecretTargetAttachment', {
+      SecretId: {
+        Ref: 'InstanceSecret478E0A47',
+      },
+      TargetId: {
+        Ref: 'InstanceC1063A87',
+      },
+      TargetType: 'AWS::RDS::DBInstance',
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 4);
+  });
+
+  test.each([
+    [rds.StorageType.STANDARD, 'standard', 2000, undefined],
+    [rds.StorageType.GP2, 'gp2', 2000, undefined],
+    [rds.StorageType.GP3, 'gp3', 2000, 2000],
+    [rds.StorageType.IO1, 'io1', 2000, 2000],
+    [rds.StorageType.IO1, 'io1', undefined, 1000],
+    [rds.StorageType.IO2, 'io2', 2000, 2000],
+    [rds.StorageType.IO2, 'io2', undefined, 1000],
+  ])('storage type and IOPS for %s storage type', (inStorageType, outStorageType, inIops, outIops) => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      vpc,
+      storageType: inStorageType,
+      iops: inIops,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      StorageType: outStorageType,
+      Iops: outIops ?? Match.absent(),
+    });
+  });
+
+  test('throws when create database with specific AZ and multiAZ enabled', () => {
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        multiAz: true,
+        availabilityZone: 'ew-west-1a',
+      });
+    }).toThrow(/Requesting a specific availability zone is not valid for Multi-AZ instances/);
+  });
+
+  test('instance with option and parameter group', () => {
+    const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+      configurations: [
+        {
+          name: 'XMLDB',
+        },
+      ],
+    });
+
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({
+        version: rds.SqlServerEngineVersion.VER_11,
+      }),
+      description: 'desc',
+      parameters: {
+        key: 'value',
+      },
+    });
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      optionGroup,
+      parameterGroup,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB',
+      },
+      OptionGroupName: {
+        Ref: 'OptionGroupACA43DC1',
+      },
+    });
+  });
+
+  test('instance with inline parameter group', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+      vpc,
+      parameters: {
+        locks: '100',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'DatabaseParameterGroup2A921026',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
+      Family: 'sqlserver-ee-11.0',
+      Parameters: {
+        locks: '100',
+      },
+    });
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({
+        version: rds.SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        key: 'value',
+      },
+    });
+
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+        vpc,
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
+  test('can specify subnet type', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromUsername('syscdk'),
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBSubnetGroupName: {
+        Ref: 'InstanceSubnetGroupF2CBA54F',
+      },
+      PubliclyAccessible: false,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
+      DBSubnetGroupDescription: 'Subnet group for Instance database',
+      SubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+    });
+  });
+
+  test('instance with IPv4 network type', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      networkType: rds.NetworkType.IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      NetworkType: 'IPV4',
+    });
+  });
+
+  test('instance with cloudwatchLogsExports', () => {
+    // WHEN
+    const cloudwatchTraceLog = 'trace';
+    const cloudwatchAuditLog = 'audit';
+    const cloudwatchAlertLog = 'alert';
+    const cloudwatchListenerLog = 'listener';
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      cloudwatchLogsExports: [cloudwatchTraceLog, cloudwatchAuditLog, cloudwatchAlertLog, cloudwatchListenerLog],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [cloudwatchTraceLog, cloudwatchAuditLog, cloudwatchAlertLog, cloudwatchListenerLog],
+    });
+
+    expect(Object.keys(instance.cloudwatchLogGroups).length).toEqual(4);
+    expect(instance.cloudwatchLogGroups[cloudwatchTraceLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchTraceLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchAuditLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchAuditLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchAlertLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchAlertLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchListenerLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchListenerLog}`);
+  });
+
+  test('instance replica with cloudwatchLogsExports', () => {
+    const cloudwatchTraceLog = 'trace';
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // WHEN
+    const replicaInstance = new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      cloudwatchLogsExports: [cloudwatchTraceLog],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [cloudwatchTraceLog],
+    });
+
+    expect(Object.keys(replicaInstance.cloudwatchLogGroups).length).toEqual(1);
+    expect(replicaInstance.cloudwatchLogGroups[cloudwatchTraceLog].logGroupName).toEqual(`/aws/rds/instance/${replicaInstance.instanceIdentifier}/${cloudwatchTraceLog}`);
+  });
+
+  test('instance snapshot with cloudwatchLogsExports', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      cloudwatchLogsExports: [],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [],
+    });
+
+    expect(Object.keys(instance.cloudwatchLogGroups).length).toEqual(0);
+  });
+
+  test('instance with dual-stack network type', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      networkType: rds.NetworkType.DUAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      NetworkType: 'DUAL',
+    });
+  });
+
+  test.each([[true], [false]])('instance with applyImmediately set to %s', (applyImmediately) => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.SMALL),
+      vpc,
+      applyImmediately,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      ApplyImmediately: applyImmediately,
+    });
+  });
+
+  describe('DatabaseInstanceFromSnapshot', () => {
+    test('create an instance from snapshot', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+        vpc,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        DBSnapshotIdentifier: 'my-snapshot',
+      });
+    });
+
+    test('can generate a new snapshot password', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
+          excludeCharacters: '"@/\\',
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MasterUsername: Match.absent(),
+        MasterUserPassword: {
+          'Fn::Join': ['', [
+            '{{resolve:secretsmanager:',
+            { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' },
+            ':SecretString:password::}}',
+          ]],
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        Description: {
+          'Fn::Join': ['', ['Generated by the CDK for stack: ', { Ref: 'AWS::StackName' }]],
+        },
+        GenerateSecretString: {
+          ExcludeCharacters: '\"@/\\',
+          GenerateStringKey: 'password',
+          PasswordLength: 30,
+          SecretStringTemplate: '{"username":"admin"}',
+        },
+      });
+    });
+
+    test('fromGeneratedSecret with replica regions', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
+          replicaRegions: [{ region: 'eu-west-1' }],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        ReplicaRegions: [
+          {
+            Region: 'eu-west-1',
+          },
+        ],
+      });
+    });
+
+    test('throws if generating a new password without a username', () => {
+      expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: { generatePassword: true },
+      })).toThrow(/`credentials` `username` must be specified when `generatePassword` is set to true/);
+    });
+
+    test('can set a new snapshot password from an existing SecretValue', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.unsafePlainText('mysecretpassword')),
+      });
+
+      // TODO - Expect this to be broken
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MasterUsername: Match.absent(),
+        MasterUserPassword: 'mysecretpassword',
+      });
+    });
+
+    test('can set a new snapshot password from an existing Secret', () => {
+      const secret = new rds.DatabaseSecret(stack, 'DBSecret', {
+        username: 'admin',
+        encryptionKey: new kms.Key(stack, 'PasswordKey'),
+      });
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromSecret(secret),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MasterUsername: Match.absent(),
+        MasterUserPassword: {
+          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'DBSecretD58955BC' }, ':SecretString:password::}}']],
+        },
+      });
+    });
+
+    test('can create a new database instance with fromDatabaseInstanceAttributes using a token for the port', () => {
+      // GIVEN
+      const databasePort = new cdk.CfnParameter(stack, 'DatabasePort', {
+        type: 'Number',
+        default: 5432,
+      }).valueAsNumber;
+
+      // WHEN
+      const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'DatabaseInstance', {
+        instanceIdentifier: '',
+        securityGroups: [],
+        instanceEndpointAddress: '',
+        port: databasePort,
+      });
+
+      new cdk.CfnOutput(stack, 'portOutput', {
+        exportName: 'databaseUrl',
+        value: `${instance.dbInstanceEndpointPort}`,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasOutput('portOutput', {
+        Export: { Name: 'databaseUrl' },
+        Value: {
+          Ref: 'DatabasePort',
+        },
+      });
+    });
+
+    test('create an instance from clusterSnapshotIdentifier', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        clusterSnapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+        vpc,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterSnapshotIdentifier: 'my-snapshot',
+      });
+    });
+
+    test('throws when both snapshotIdentifier and clusterSnapshotIdentifier specified', () => {
+      expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        clusterSnapshotIdentifier: 'my-cluster-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      })).toThrow(/You cannot specify both `snapshotIdentifier` and `clusterSnapshotIdentifier`/);
+    });
+
+    test('throws when none of snapshotIdentifier or clusterSnapshotIdentifier specified', () => {
+      expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      })).toThrow(/You must specify `snapshotIdentifier` or `clusterSnapshotIdentifier`/);
+    });
+  });
+
+  test('create a read replica in the same region - with the subnet group name', () => {
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':db:',
+          { Ref: 'InstanceC1063A87' },
+        ]],
+      },
+      DBSubnetGroupName: {
+        Ref: 'ReadReplicaSubnetGroup680C605C',
+      },
+    });
+  });
+
+  test('on event', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('dummy'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // WHEN
+    instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: [
+          'aws.rds',
+        ],
+        resources: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':db:',
+                {
+                  Ref: 'InstanceC1063A87',
+                },
+              ],
+            ],
+          },
+        ],
+      },
+      Targets: [
+        {
+          Arn: {
+            'Fn::GetAtt': [
+              'Function76856677',
+              'Arn',
+            ],
+          },
+          Id: 'Target0',
+        },
+      ],
+    });
+  });
+
+  test('on event without target', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // WHEN
+    instance.onEvent('InstanceEvent');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: [
+          'aws.rds',
+        ],
+        resources: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':db:',
+                {
+                  Ref: 'InstanceC1063A87',
+                },
+              ],
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('can use metricCPUUtilization', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve(instance.metricCPUUtilization())).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
+  test('can use metricReadIOPS', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve(instance.metricReadIOPS())).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'ReadIOPS',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
+  test('can use metricWriteIOPS', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve(instance.metricWriteIOPS())).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'WriteIOPS',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
+  test('can resolve endpoint port and socket address', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    expect(stack.resolve(instance.instanceEndpoint.port)).toEqual({
+      'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port'],
+    });
+
+    expect(stack.resolve(instance.instanceEndpoint.socketAddress)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port'] },
+        ],
+      ],
+    });
+  });
+
+  test('can deactivate backup', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+      backupRetention: cdk.Duration.seconds(0),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      BackupRetentionPeriod: 0,
+    });
+  });
+
+  test('imported instance with imported security group with allowAllOutbound set to false', () => {
+    const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Database', {
+      instanceEndpointAddress: 'address',
+      instanceIdentifier: 'identifier',
+      port: 3306,
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      })],
+    });
+
+    // WHEN
+    instance.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'sg-123456789',
+    });
+  });
+
+  test('create an instance with imported monitoring role', () => {
+    const monitoringRole = new Role(stack, 'MonitoringRole', {
+      assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+      ],
+    });
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+      monitoringInterval: cdk.Duration.minutes(1),
+      monitoringRole,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn'],
+      },
+    });
+  });
+
+  test('create an instance with an existing security group', () => {
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      allowAllOutbound: false,
+    });
+
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+      securityGroups: [securityGroup],
+    });
+    instance.connections.allowDefaultPortFromAnyIpv4();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      VPCSecurityGroups: ['sg-123456789'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      FromPort: {
+        'Fn::GetAtt': [
+          'InstanceC1063A87',
+          'Endpoint.Port',
+        ],
+      },
+      GroupId: 'sg-123456789',
+      ToPort: {
+        'Fn::GetAtt': [
+          'InstanceC1063A87',
+          'Endpoint.Port',
+        ],
+      },
+    });
+  });
+
+  test('addRotationSingleUser()', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc,
+    });
+
+    // WHEN
+    instance.addRotationSingleUser();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'DatabaseSecretAttachmentE5D1B020',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseRotationSingleUser65F55654',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        ScheduleExpression: 'rate(30 days)',
+      },
+    });
+  });
+
+  test('addRotationMultiUser()', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc,
+    });
+
+    // WHEN
+    const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+    instance.addRotationMultiUser('user', { secret: userSecret.attach(instance) });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        ScheduleExpression: 'rate(30 days)',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
+      },
+    });
+  });
+
+  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
+    // GIVEN
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpcWithIsolated,
+    });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc: vpcWithIsolated,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    instance.addRotationSingleUser({
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        ScheduleExpression: 'rate(15 days)',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
+        excludeCharacters: '°_@',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            stack.getLogicalId(securityGroup.node.defaultChild as ec2.CfnSecurityGroup),
+            'GroupId',
+          ],
+        },
+      },
+    });
+  });
+
+  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
+    // GIVEN
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpcWithIsolated,
+    });
+    const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc: vpcWithIsolated,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    instance.addRotationMultiUser('user', {
+      secret: userSecret.attach(instance),
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        ScheduleExpression: 'rate(15 days)',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
+        excludeCharacters: '°_@',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            stack.getLogicalId(securityGroup.node.defaultChild as ec2.CfnSecurityGroup),
+            'GroupId',
+          ],
+        },
+      },
+    });
+  });
+
+  test('addRotationSingleUser() with VPC interface endpoint', () => {
+    // GIVEN
+    const vpcIsolatedOnly = new ec2.Vpc(stack, 'Vpc', { natGateways: 0 });
+
+    const endpoint = new ec2.InterfaceVpcEndpoint(stack, 'Endpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      vpc: vpcIsolatedOnly,
+      subnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc: vpcIsolatedOnly,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // Rotation in isolated subnet with access to Secrets Manager API via endpoint
+    instance.addRotationSingleUser({ endpoint });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://',
+            { Ref: 'EndpointEEF1FD8F' },
+            '.secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        functionName: 'DatabaseRotationSingleUser458A45BE',
+        vpcSubnetIds: {
+          'Fn::Join': ['', [
+            { Ref: 'VpcIsolatedSubnet1SubnetE48C5737' },
+            ',',
+            { Ref: 'VpcIsolatedSubnet2Subnet16364B91' },
+          ]],
+        },
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
+            'GroupId',
+          ],
+        },
+        excludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+      },
+    });
+  });
+
+  test('throws when trying to add rotation to an instance without secret', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.unsafePlainText('tooshort') }),
+      vpc,
+    });
+
+    // THEN
+    expect(() => instance.addRotationSingleUser()).toThrow(/without secret/);
+  });
+
+  test('throws when trying to add single user rotation multiple times', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      credentials: rds.Credentials.fromUsername('syscdk'),
+      vpc,
+    });
+
+    // WHEN
+    instance.addRotationSingleUser();
+
+    // THEN
+    expect(() => instance.addRotationSingleUser()).toThrow(/A single user rotation was already added to this instance/);
+  });
+
+  test('throws when timezone is set for non-sqlserver database engine', () => {
+    const tzSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
+      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB];
+    const tzUnsupportedEngines = [rds.DatabaseInstanceEngine.MYSQL, rds.DatabaseInstanceEngine.POSTGRES,
+      rds.DatabaseInstanceEngine.ORACLE_EE, rds.DatabaseInstanceEngine.MARIADB];
+
+    // THEN
+    tzSupportedEngines.forEach((engine) => {
+      expect(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        timezone: 'Europe/Zurich',
+        vpc,
+      })).toBeDefined();
+    });
+
+    tzUnsupportedEngines.forEach((engine) => {
+      expect(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        timezone: 'Europe/Zurich',
+        vpc,
+      })).toThrow(/timezone property can not be configured for/);
+    });
+  });
+
+  test('create an instance from snapshot with maximum allocated storage', () => {
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.POSTGRES,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      maxAllocatedStorage: 200,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBSnapshotIdentifier: 'my-snapshot',
+      MaxAllocatedStorage: 200,
+    });
+  });
+
+  test('create a DB instance with maximum allocated storage', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+      backupRetention: cdk.Duration.seconds(0),
+      maxAllocatedStorage: 250,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      BackupRetentionPeriod: 0,
+      MaxAllocatedStorage: 250,
+    });
+  });
+
+  test('iam authentication - off by default', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      vpc,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableIAMDatabaseAuthentication: Match.absent(),
+    });
+  });
+
+  test('createGrant - creates IAM policy and enables IAM auth', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      vpc,
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    instance.grantConnect(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableIAMDatabaseAuthentication: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/{{resolve:secretsmanager:',
+                {
+                  Ref: 'InstanceSecretAttachment83BEE581',
+                },
+                ':SecretString:username::}}',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('createGrant - creates IAM policy and enables IAM auth for a specific user', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      vpc,
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    instance.grantConnect(role, 'my-user');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableIAMDatabaseAuthentication: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/my-user',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('createGrant - creates IAM policy and enables IAM auth on instance with secret credentials without passing dbUser', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      vpc,
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_14,
+      }),
+      credentials: rds.Credentials.fromGeneratedSecret('dbuser'),
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    instance.grantConnect(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/{{resolve:secretsmanager:',
+                { Ref: 'InstanceSecretAttachment83BEE581' },
+                ':SecretString:username::}}',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('createGrant - throws if IAM auth disabled', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      vpc,
+      iamAuthentication: false,
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+
+    expect(() => { instance.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
+  });
+
+  test('createGrant - creates IAM policy for instance replica when the USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY feature flag is enabled', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: true } });
+    stack = new cdk.Stack(app);
+    vpc = new ec2.Vpc( stack, 'VPC' );
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+
+    const replicaInstance = new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+    });
+
+    // WHEN
+    replicaInstance.grantConnect(role, 'my-user');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'ReadReplicaDA01B356',
+                    'DbiResourceId',
+                  ],
+                },
+                '/my-user',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('createGrant - creates IAM policy for instance replica when the USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY feature flag is disabled by default', () => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app);
+    vpc = new ec2.Vpc( stack, 'VPC' );
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+
+    const replicaInstance = new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+    });
+
+    // WHEN
+    replicaInstance.grantConnect(role, 'my-user');
+
+    // THEN
+    app.synth();
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'ReadReplicaDA01B356',
+                    'DBInstanceArn',
+                  ],
+                },
+                '/my-user',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('domain - sets domain property', () => {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      domain: domain,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Domain: domain,
+    });
+  });
+
+  test('domain - uses role if provided', () => {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    const role = new Role(stack, 'DomainRole', {
+      assumedBy: new CompositePrincipal(
+        new ServicePrincipal('rds.amazonaws.com'),
+        new ServicePrincipal('directoryservice.rds.amazonaws.com'),
+      ),
+    });
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      domain: domain,
+      domainRole: role,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Domain: domain,
+      DomainIAMRoleName: stack.resolve(role.roleName),
+    });
+  });
+
+  test('domain - creates role if not provided', () => {
+    const domain = 'd-90670a8d36';
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+      vpc,
+      domain: domain,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Domain: domain,
+      DomainIAMRoleName: Match.anyValue(),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'rds.amazonaws.com',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'directoryservice.rds.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess',
+            ],
+          ],
+        },
+      ],
+    });
+  });
+
+  test('throws when domain is set for mariadb database engine', () => {
+    const domainSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
+      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB, rds.DatabaseInstanceEngine.MYSQL,
+      rds.DatabaseInstanceEngine.POSTGRES, rds.DatabaseInstanceEngine.ORACLE_EE];
+    const domainUnsupportedEngines = [rds.DatabaseInstanceEngine.MARIADB];
+
+    // THEN
+    domainSupportedEngines.forEach((engine) => {
+      expect(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        domain: 'd-90670a8d36',
+        vpc,
+      })).not.toThrow();
+    });
+
+    domainUnsupportedEngines.forEach((engine) => {
+      const expectedError = new RegExp(`domain property cannot be configured for ${engine.engineType}`);
+
+      expect(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+        engine,
+        domain: 'd-90670a8d36',
+        vpc,
+      })).toThrow(expectedError);
+    });
+  });
+
+  describe('performance insights', () => {
+    test('instance with all performance insights properties', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        enablePerformanceInsights: true,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+        performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+        PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      });
+    });
+
+    test('setting performance insights fields enables performance insights', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: true,
+        PerformanceInsightsRetentionPeriod: 731,
+      });
+    });
+
+    test.each<keyof typeof rds.PerformanceInsightRetention>([
+      'DEFAULT',
+      'MONTHS_1',
+      'MONTHS_2',
+      'MONTHS_3',
+      'MONTHS_4',
+      'MONTHS_5',
+      'MONTHS_6',
+      'MONTHS_7',
+      'MONTHS_8',
+      'MONTHS_9',
+      'MONTHS_10',
+      'MONTHS_11',
+      'MONTHS_12',
+      'MONTHS_13',
+      'MONTHS_14',
+      'MONTHS_15',
+      'MONTHS_16',
+      'MONTHS_17',
+      'MONTHS_18',
+      'MONTHS_19',
+      'MONTHS_20',
+      'MONTHS_21',
+      'MONTHS_22',
+      'MONTHS_23',
+      'LONG_TERM',
+    ])('performance insights retention of %s', (performanceInsightRetentionKey) => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention[performanceInsightRetentionKey],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        PerformanceInsightsRetentionPeriod: rds.PerformanceInsightRetention[performanceInsightRetentionKey],
+      });
+    });
+
+    test('throws if performance insights fields are set but performance insights is disabled', () => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          enablePerformanceInsights: false,
+          performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
+        });
+      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+    });
+  });
+
+  test('reuse an existing subnet group', () => {
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc,
+      subnetGroup: rds.SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup', 'my-subnet-group'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBSubnetGroupName: 'my-subnet-group',
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBSubnetGroup', 0);
+  });
+
+  test('defaultChild returns the DB Instance', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc,
+    });
+
+    // THEN
+    expect(instance.node.defaultChild instanceof rds.CfnDBInstance).toBeTruthy();
+  });
+
+  test("PostgreSQL database instance uses a different default master username than 'admin', which is a reserved word", () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      vpc,
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_16_3,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"postgres"}',
+      },
+    });
+  });
+
+  describe('S3 Import/Export', () => {
+    test('instance with s3 import and export buckets', () => {
+      stack = new cdk.Stack();
+      vpc = new ec2.Vpc(stack, 'VPC');
+      new rds.DatabaseInstance(stack, 'DB', {
+        engine: rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+        vpc,
+        s3ImportBuckets: [new s3.Bucket(stack, 'S3Import')],
+        s3ExportBuckets: [new s3.Bucket(stack, 'S3Export')],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AssociatedRoles: [
+          {
+            FeatureName: 'S3_INTEGRATION',
+            RoleArn: { 'Fn::GetAtt': ['DBS3ImportRoleEF69B7D7', 'Arn'] },
+          },
+        ],
+        OptionGroupName: { Ref: 'DBInstanceOptionGroup46C68006' },
+      });
+
+      // Can read from import bucket, and read/write from export bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['S3ImportD5D5F2EB', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['S3ImportD5D5F2EB', 'Arn'] }, '/*']] },
+            ],
+          },
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
+              's3:Abort*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['S3Export390B8694', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['S3Export390B8694', 'Arn'] }, '/*']] },
+            ],
+          }],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
+    test('throws if using s3 import on unsupported engine', () => {
+      const s3ImportRole = new Role(stack, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'DBWithImportBucket', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          s3ImportBuckets: [new s3.Bucket(stack, 'S3Import')],
+        });
+      }).toThrow(/Engine 'mysql-8.0.19' does not support S3 import/);
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'DBWithImportRole', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          s3ImportRole,
+        });
+      }).toThrow(/Engine 'mysql-8.0.19' does not support S3 import/);
+    });
+
+    test('throws if using s3 export on unsupported engine', () => {
+      const s3ExportRole = new Role(stack, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'DBWithExportBucket', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          s3ExportBuckets: [new s3.Bucket(stack, 'S3Export')],
+        });
+      }).toThrow(/Engine 'mysql-8.0.19' does not support S3 export/);
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'DBWithExportRole', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          s3ExportRole: s3ExportRole,
+        });
+      }).toThrow(/Engine 'mysql-8.0.19' does not support S3 export/);
+    });
+
+    test('throws if provided two different roles for import/export', () => {
+      const s3ImportRole = new Role(stack, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+      const s3ExportRole = new Role(stack, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'DBWithExportBucket', {
+          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
+          vpc,
+          s3ImportRole,
+          s3ExportRole,
+        });
+      }).toThrow(/S3 import and export roles must be the same/);
+    });
+  });
+
+  test('fromGeneratedSecret', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc,
+      credentials: rds.Credentials.fromGeneratedSecret('postgres'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      MasterUsername: 'postgres', // username is a string
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'DatabaseSecretC9203AE33fdaad7efa858a3daf9490cf0a702aeb', // logical id is a hash
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('fromGeneratedSecret with replica regions', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc,
+      credentials: rds.Credentials.fromGeneratedSecret('postgres', {
+        replicaRegions: [{ region: 'eu-west-1' }],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      ReplicaRegions: [
+        {
+          Region: 'eu-west-1',
+        },
+      ],
+    });
+  });
+
+  test('fromPassword', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      vpc,
+      credentials: rds.Credentials.fromPassword('postgres', cdk.SecretValue.ssmSecure('/dbPassword', '1')),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      MasterUsername: 'postgres', // username is a string
+      MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
+    });
+  });
+
+  test('can set custom name to database secret by fromSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    const secret = new rds.DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+      secretName,
+    } );
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromSecret(secret),
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
+  });
+
+  test('can set custom name to database secret by fromGeneratedSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromGeneratedSecret('admin', { secretName }),
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
+  });
+
+  test('can set publiclyAccessible to false with public subnets', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+      publiclyAccessible: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      PubliclyAccessible: false,
+    });
+  });
+
+  test('can set publiclyAccessible to true with private subnets', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      },
+      publiclyAccessible: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      PubliclyAccessible: true,
+    });
+  });
+
+  test('changes the case of the cluster identifier', () => {
+    // GIVEN
+    const app = new cdk.App();
+    stack = new cdk.Stack( app );
+    vpc = new ec2.Vpc( stack, 'VPC' );
+
+    // WHEN
+    const instanceIdentifier = 'TestInstanceIdentifier';
+    new rds.DatabaseInstance( stack, 'DB', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      instanceIdentifier,
+    } );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBInstanceIdentifier: instanceIdentifier.toLowerCase(),
+    });
+  });
+
+  test( 'does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
+    stack = new cdk.Stack(app);
+    vpc = new ec2.Vpc( stack, 'VPC' );
+
+    // WHEN
+    const instanceIdentifier = 'TestInstanceIdentifier';
+    new rds.DatabaseInstance( stack, 'DB', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      instanceIdentifier,
+    } );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBInstanceIdentifier: instanceIdentifier,
+    });
+  });
+
+  test('throws with backupRetention on a read replica if engine does not support it', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const backupRetention = cdk.Duration.days(5);
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      backupRetention,
+      instanceType,
+      vpc,
+    });
+
+    expect(() => {
+      new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+        sourceDatabaseInstance: source,
+        backupRetention,
+        instanceType,
+        vpc,
+      });
+    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-16.3' does not support automatic backups for read replicas/);
+  });
+
+  test('read replica with allocatedStorage', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+      allocatedStorage: 500,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      AllocatedStorage: '500',
+    });
+  });
+
+  test('can set parameter group on read replica', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB',
+      },
+    });
+  });
+
+  test('instance with port provided as a number', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port: 3306,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Port: '3306',
+    });
+  });
+
+  test('instance with port provided as a CloudFormation parameter', () => {
+    // GIVEN
+    const port = new cdk.CfnParameter(stack, 'Port', {
+      type: 'Number',
+    }).valueAsNumber;
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Port: {
+        Ref: 'Port',
+      },
+    });
+  });
+
+  test('engine is specified for read replica using domain', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      instanceType,
+      vpc,
+      domain: 'my-domain',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: Match.anyValue(),
+      Engine: 'postgres',
+    });
+  });
+
+  test('specify `storageThroughput` for gp3 storage type', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      allocatedStorage: 500,
+      storageType: rds.StorageType.GP3,
+      storageThroughput: 500,
+      iops: 4000,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      StorageType: 'gp3',
+      StorageThroughput: 500,
+      Iops: 4000,
+    });
+  });
+
+  test('with CA certificate', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      caCertificate: rds.CaCertificate.RDS_CA_RSA2048_G1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      CACertificateIdentifier: 'rds-ca-rsa2048-g1',
+    });
+  });
+
+  test('throws with storage throughput and not GP3', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      storageType: rds.StorageType.GP2,
+      storageThroughput: 500,
+    })).toThrow(/storage throughput can only be specified with GP3 storage type/);
+  });
+
+  test('throws with a ratio of storage throughput to IOPS greater than 0.25', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      allocatedStorage: 1000,
+      storageType: rds.StorageType.GP3,
+      iops: 5000,
+      storageThroughput: 2500,
+    })).toThrow(/maximum ratio of storage throughput to IOPS is 0.25/);
+  });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstance can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstanceFromSnapshot can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstanceReadReplica can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':db:',
+          { Ref: 'DatabaseB269D8BB' },
+        ]],
+      },
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstance cannot specify engine lifecycle support for engine %s', (engine) => {
+    expect(() => new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstanceFromSnapshot cannot specify engine lifecycle support for engine %s', (engine) => {
+    expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstanceReadReplica cannot specify engine lifecycle support for engine %s', (engine) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+    });
+
+    expect(() => new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstance can specify engine lifecycle support for engine %s', (engine) => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstanceFromSnapshot can specify engine lifecycle support for engine %s', (engine) => {
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstanceReadReplica can specify engine lifecycle support for engine %s', (engine) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':db:',
+          { Ref: 'DatabaseB269D8BB' },
+        ]],
+      },
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
+});
+
+test.each([
+  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', Match.absent()],
+])('if Instance RemovalPolicy is \'%s\', the instance has DeletionPolicy \'%s\' and the DBSubnetGroup has \'%s\'', (instanceRemovalPolicy, instanceValue, subnetValue) => {
+  // GIVEN
+  stack = new cdk.Stack();
+  vpc = new ec2.Vpc(stack, 'VPC');
+
+  // WHEN
+  new rds.DatabaseInstance(stack, 'Instance', {
+    engine: rds.DatabaseInstanceEngine.mysql({
+      version: rds.MysqlEngineVersion.VER_8_0_19,
+    }),
+    vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    removalPolicy: instanceRemovalPolicy,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
+    DeletionPolicy: instanceValue,
+    UpdateReplacePolicy: instanceValue,
+  });
+
+  Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
+    DeletionPolicy: subnetValue,
+    UpdateReplacePolicy: subnetValue,
+  });
+});
+
+describe('cross-account instance', () => {
+  test.each([
+    ['MyInstance', 'MyInstance', 'myinstance'],
+    ['PhysicalName.GENERATE_IF_NEEDED', cdk.PhysicalName.GENERATE_IF_NEEDED, 'instancestackncestackinstancec830ba83756a6dfc7154'],
+  ])("with database identifier '%s' can be referenced from a Stack in a different account", (_, providedInstanceId, expectedInstanceId) => {
+    const app = new cdk.App();
+    const instanceStack = new cdk.Stack(app, 'InstanceStack', {
+      env: { account: '123', region: 'my-region' },
+    });
+    const instance = new rds.DatabaseInstance(instanceStack, 'Instance', {
+      vpc: new ec2.Vpc(instanceStack, 'Vpc'),
+      engine: rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_5 }),
+      // physical name set
+      instanceIdentifier: providedInstanceId,
+    });
+
+    const outputStack = new cdk.Stack(app, 'OutputStack', {
+      env: { account: '456', region: 'my-region' },
+    });
+    new cdk.CfnOutput(outputStack, 'DatabaseInstanceArn', {
+      value: instance.instanceArn,
+    });
+    new cdk.CfnOutput(outputStack, 'DatabaseInstanceName', {
+      value: instance.instanceIdentifier,
+    });
+
+    Template.fromStack(outputStack).templateMatches({
+      Outputs: {
+        DatabaseInstanceArn: {
+          Value: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              `:rds:my-region:123:db:${expectedInstanceId}`,
+            ]],
+          },
+        },
+        DatabaseInstanceName: {
+          Value: expectedInstanceId,
+        },
+      },
+    });
+  });
+});
+
+describe('database insights for instance', () => {
+  test('instance with the advanced mode of database insights', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13_7 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      vpc,
+      databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+      performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnablePerformanceInsights: true,
+      PerformanceInsightsRetentionPeriod: 465,
+      DatabaseInsightsMode: 'advanced',
+    });
+  });
+
+  test.each([true, false])('instance with the standard mode of database insights when enablePerformanceInsights is %s', (enablePerformanceInsights) => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      vpc,
+      enablePerformanceInsights,
+      databaseInsightsMode: rds.DatabaseInsightsMode.STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnablePerformanceInsights: enablePerformanceInsights,
+      DatabaseInsightsMode: 'standard',
+    });
+  });
+
+  test('throw if performance insights is disabled and the advanced mode of database insights is set', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc,
+        enablePerformanceInsights: false,
+        databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+        performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+      });
+    }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to '\${DatabaseInsightsMode.ADVANCED}'/);
+  });
+
+  test('throw if the advanced mode of database insights is set and any retention other than MONTHS_15 is set for performanceInsightRetention', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+        databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+      });
+    }).toThrow(/`performanceInsightRetention` must be set to '\${PerformanceInsightRetention.MONTHS_15}' when `databaseInsightsMode` is set to '\${DatabaseInsightsMode.ADVANCED}'/);
+  });
+});

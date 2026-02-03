@@ -1,0 +1,12 @@
+// Fixture with packages imported, but nothing else
+import { Stack, SecretValue } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as apprunner from 'aws-cdk-lib/aws-apprunner';
+import * as path from 'path';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}

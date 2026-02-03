@@ -1,0 +1,45 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, RemovalPolicy, Stack, CfnOutput } from 'aws-cdk-lib';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import type { Construct } from 'constructs';
+import * as msk from '../lib/index';
+
+/*
+ * Stack verification steps:
+ *
+ * -- the zookeeper string is returned as a cfnoutput to the console
+ */
+
+class KafkaZookeeperTest extends Stack {
+  public readonly zookeeperConnection: string;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+
+    const cluster = new msk.Cluster(this, 'ClusterZookeeper', {
+      clusterName: 'cluster-zookeeper',
+      kafkaVersion: msk.KafkaVersion.V3_5_1,
+      vpc,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    this.zookeeperConnection = cluster.zookeeperConnectionString;
+
+    new CfnOutput(this, 'Zookeeper', {
+      value: this.zookeeperConnection,
+    });
+  }
+}
+
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
+const testCase = new KafkaZookeeperTest(app, 'KafkaZookeeperTestStack');
+new IntegTest(app, 'KafkaZookeeperIntegTest', {
+  testCases: [testCase],
+});
+
+app.synth();

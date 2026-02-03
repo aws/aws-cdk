@@ -1,0 +1,351 @@
+{
+ "Resources": {
+  "CollaboratorAgentRoleB40DB843": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockagentcollaboratoragent-bedab26c-bedrockagent"
+   }
+  },
+  "CollaboratorAgentRoleDefaultPolicy40D7F24F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CollaboratorAgentRoleDefaultPolicy40D7F24F",
+    "Roles": [
+     {
+      "Ref": "CollaboratorAgentRoleB40DB843"
+     }
+    ]
+   }
+  },
+  "CollaboratorAgent1160D465": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "collaborator-agent",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "CollaboratorAgentRoleB40DB843",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is a collaborator agent with at least 40 characters of instruction",
+    "OrchestrationType": "DEFAULT",
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "CollaboratorAgentRoleDefaultPolicy40D7F24F"
+   ]
+  },
+  "CollaboratorAliasDF4958C3": {
+   "Type": "AWS::Bedrock::AgentAlias",
+   "Properties": {
+    "AgentAliasName": "collaborator-alias",
+    "AgentId": {
+     "Fn::GetAtt": [
+      "CollaboratorAgent1160D465",
+      "AgentId"
+     ]
+    }
+   }
+  },
+  "CollaborativeAgentRole0E9B1104": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockagentollaborativeagent-63d793e3-bedrockagent"
+   }
+  },
+  "CollaborativeAgentRoleDefaultPolicy94AAE53F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock:GetAgentAlias",
+        "bedrock:InvokeAgent"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CollaboratorAliasDF4958C3",
+         "AgentAliasArn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CollaborativeAgentRoleDefaultPolicy94AAE53F",
+    "Roles": [
+     {
+      "Ref": "CollaborativeAgentRole0E9B1104"
+     }
+    ]
+   }
+  },
+  "CollaborativeAgent97CD08C5": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentCollaboration": "SUPERVISOR",
+    "AgentCollaborators": [
+     {
+      "AgentDescriptor": {
+       "AliasArn": {
+        "Fn::GetAtt": [
+         "CollaboratorAliasDF4958C3",
+         "AgentAliasArn"
+        ]
+       }
+      },
+      "CollaborationInstruction": "Help the primary agent with complex tasks and provide additional context",
+      "CollaboratorName": "HelperAgent",
+      "RelayConversationHistory": "TO_COLLABORATOR"
+     }
+    ],
+    "AgentName": "collaborative-agent",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "CollaborativeAgentRole0E9B1104",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is a collaborative agent with at least 40 characters of instruction",
+    "OrchestrationType": "DEFAULT",
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "CollaborativeAgentRoleDefaultPolicy94AAE53F"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "f3adbf3426efedfef748320d2b748e9fc0d285a04c6368f366c80422cc14e54c": {
+      "source": {
+        "path": "integ-user-pool-idp-apple.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f3adbf3426efedfef748320d2b748e9fc0d285a04c6368f366c80422cc14e54c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

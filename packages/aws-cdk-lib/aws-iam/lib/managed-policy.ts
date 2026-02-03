@@ -1,0 +1,425 @@
+import type { Construct } from 'constructs';
+import type {
+  IGroupRef,
+  IManagedPolicyRef,
+  IRoleRef,
+  IUserRef,
+  ManagedPolicyReference,
+} from './iam.generated';
+import {
+  CfnManagedPolicy,
+} from './iam.generated';
+import { PolicyDocument } from './policy-document';
+import type { PolicyStatement } from './policy-statement';
+import type { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ArnPrincipal } from './principals';
+import { undefinedIfEmpty } from './private/util';
+import type { IRole } from './role';
+import type { IUser } from './user';
+import { Arn, ArnFormat, Aws, Resource, Stack, ValidationError, Lazy } from '../../core';
+import { getCustomizeRolesConfig, memoizedGetter, PolicySynthesizer } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+
+/**
+ * A managed policy
+ */
+export interface IManagedPolicy extends IManagedPolicyRef {
+  /**
+   * The ARN of the managed policy
+   * @attribute
+   */
+  readonly managedPolicyArn: string;
+}
+
+/**
+ * Properties for defining an IAM managed policy
+ */
+export interface ManagedPolicyProps {
+  /**
+   * The name of the managed policy. If you specify multiple policies for an entity,
+   * specify unique names. For example, if you specify a list of policies for
+   * an IAM role, each policy must have a unique name.
+   *
+   * @default - A name is automatically generated.
+   */
+  readonly managedPolicyName?: string;
+
+  /**
+   * A description of the managed policy. Typically used to store information about the
+   * permissions defined in the policy. For example, "Grants access to production DynamoDB tables."
+   * The policy description is immutable. After a value is assigned, it cannot be changed.
+   *
+   * @default - empty
+   */
+  readonly description?: string;
+
+  /**
+   * The path for the policy. This parameter allows (through its regex pattern) a string of characters
+   * consisting of either a forward slash (/) by itself or a string that must begin and end with forward slashes.
+   * In addition, it can contain any ASCII character from the ! (\u0021) through the DEL character (\u007F),
+   * including most punctuation characters, digits, and upper and lowercased letters.
+   *
+   * For more information about paths, see IAM Identifiers in the IAM User Guide.
+   *
+   * @default - "/"
+   */
+  readonly path?: string;
+
+  /**
+   * Users to attach this policy to.
+   * You can also use `attachToUser(user)` to attach this policy to a user.
+   *
+   * @default - No users.
+   */
+  readonly users?: IUser[];
+
+  /**
+   * Roles to attach this policy to.
+   * You can also use `attachToRole(role)` to attach this policy to a role.
+   *
+   * @default - No roles.
+   */
+  readonly roles?: IRole[];
+
+  /**
+   * Groups to attach this policy to.
+   * You can also use `attachToGroup(group)` to attach this policy to a group.
+   *
+   * @default - No groups.
+   */
+  readonly groups?: IGroupRef[];
+
+  /**
+   * Initial set of permissions to add to this policy document.
+   * You can also use `addPermission(statement)` to add permissions later.
+   *
+   * @default - No statements.
+   */
+  readonly statements?: PolicyStatement[];
+
+  /**
+   * Initial PolicyDocument to use for this ManagedPolicy. If omited, any
+   * `PolicyStatement` provided in the `statements` property will be applied
+   * against the empty default `PolicyDocument`.
+   *
+   * @default - An empty policy.
+   */
+  readonly document?: PolicyDocument;
+}
+
+/**
+ * Managed policy
+ *
+ */
+@propertyInjectable
+export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ManagedPolicy';
+
+  /**
+   * Import a customer managed policy from the managedPolicyName.
+   *
+   * For this managed policy, you only need to know the name to be able to use it.
+   *
+   */
+  public static fromManagedPolicyName(scope: Construct, id: string, managedPolicyName: string): IManagedPolicy {
+    class Import extends Resource implements IManagedPolicy {
+      public readonly managedPolicyArn = Stack.of(scope).formatArn({
+        service: 'iam',
+        region: '', // no region for managed policy
+        account: Stack.of(scope).account, // Can this be something the user specifies?
+        resource: 'policy',
+        resourceName: managedPolicyName,
+      });
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an external managed policy by ARN.
+   *
+   * For this managed policy, you only need to know the ARN to be able to use it.
+   * This can be useful if you got the ARN from a CloudFormation Export.
+   *
+   * If the imported Managed Policy ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * managed policy has a `path` (like `arn:...:policy/AdminPolicy/AdminAllow`), the
+   * `managedPolicyName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression. In this scenario the Managed Policy ARN should be supplied without the
+   * `path` in order to resolve the correct managed policy resource.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param managedPolicyArn the ARN of the managed policy to import
+   */
+  public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
+    class Import extends Resource implements IManagedPolicy {
+      public readonly managedPolicyArn = managedPolicyArn;
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import a managed policy from one of the policies that AWS manages.
+   *
+   * For this managed policy, you only need to know the name to be able to use it.
+   *
+   * Some managed policy names start with "service-role/", some start with
+   * "job-function/", and some don't start with anything. Include the
+   * prefix when constructing this object.
+   */
+  public static fromAwsManagedPolicyName(managedPolicyName: string): IManagedPolicy {
+    class AwsManagedPolicy extends DetachedConstruct implements IManagedPolicy {
+      public readonly managedPolicyArn = Arn.format({
+        partition: Aws.PARTITION,
+        service: 'iam',
+        region: '', // no region for managed policy
+        account: 'aws', // the account for a managed policy is 'aws'
+        resource: 'policy',
+        resourceName: managedPolicyName,
+      });
+      constructor() {
+        super('The result of fromAwsManagedPolicyName can not be used in this API');
+      }
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
+    }
+    return new AwsManagedPolicy();
+  }
+
+  /**
+   * The CfnManagedPolicy resource
+   */
+  private readonly _resource?: CfnManagedPolicy;
+
+  /**
+   * Returns the ARN of this managed policy.
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get managedPolicyArn(): string {
+    if (this._precreatedPolicy) {
+      return this._precreatedPolicy.managedPolicyArn;
+    }
+    if (!this._resource) {
+      throw new ValidationError('Cannot access managedPolicyArn when synthesis is prevented', this);
+    }
+    return this.getResourceArnAttribute(this._resource.ref, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'policy',
+      resourceName: this.physicalName,
+    });
+  }
+
+  /**
+   * The policy document.
+   */
+  public readonly document = new PolicyDocument();
+
+  /**
+   * The name of this policy.
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get managedPolicyName(): string {
+    if (this._precreatedPolicy) {
+      return this.node.id;
+    }
+    if (!this._resource) {
+      throw new ValidationError('Cannot access managedPolicyName when synthesis is prevented', this);
+    }
+    return this.getResourceNameAttribute(Stack.of(this).splitArn(this._resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+  }
+
+  /**
+   * The description of this policy.
+   *
+   * @attribute
+   */
+  public readonly description: string;
+
+  /**
+   * The path of this policy.
+   *
+   * @attribute
+   */
+  public readonly path: string;
+
+  public readonly grantPrincipal: IPrincipal;
+
+  private readonly roles = new Array<IRoleRef>();
+  private readonly users = new Array<IUserRef>();
+  private readonly groups = new Array<IGroupRef>();
+  private readonly _precreatedPolicy?: IManagedPolicy;
+
+  constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {
+    super(scope, id, {
+      physicalName: props.managedPolicyName,
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.description = props.description || '';
+    this.path = props.path || '/';
+
+    if (props.document) {
+      this.document = props.document;
+    }
+
+    const config = getCustomizeRolesConfig(this);
+    if (config.enabled) {
+      this._precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported'+id, id);
+    }
+    if (!config.preventSynthesis) {
+      this._resource = new CfnManagedPolicy(this, 'Resource', {
+        policyDocument: this.document,
+        managedPolicyName: this.physicalName,
+        description: this.description,
+        path: this.path,
+        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleRef.roleName)),
+        users: undefinedIfEmpty(() => this.users.map(u => u.userRef.userName)),
+        groups: undefinedIfEmpty(() => this.groups.map(g => g.groupRef.groupName)),
+      });
+    }
+
+    if (props.users) {
+      props.users.forEach(u => this.attachToUser(u));
+    }
+
+    if (props.groups) {
+      props.groups.forEach(g => this.attachToGroup(g));
+    }
+
+    if (props.roles) {
+      props.roles.forEach(r => this.attachToRole(r));
+    }
+
+    if (props.statements) {
+      props.statements.forEach(p => this.addStatements(p));
+    }
+
+    this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
+
+    this.node.addValidation({ validate: () => this.validateManagedPolicy() });
+  }
+
+  public get managedPolicyRef(): ManagedPolicyReference {
+    return {
+      policyArn: this.managedPolicyArn,
+    };
+  }
+
+  /**
+   * Adds a statement to the policy document.
+   */
+  @MethodMetadata()
+  public addStatements(...statement: PolicyStatement[]) {
+    this.document.addStatements(...statement);
+  }
+
+  /**
+   * Attaches this policy to a user.
+   */
+  @MethodMetadata()
+  public attachToUser(user: IUserRef) {
+    if (this.users.find(u => u.userRef.userArn === user.userRef.userArn)) { return; }
+    this.users.push(user);
+  }
+
+  /**
+   * Attaches this policy to a role.
+   */
+  @MethodMetadata()
+  public attachToRole(role: IRole) {
+    if (this.roles.find(r => r.roleRef.roleArn === role.roleArn)) { return; }
+    this.roles.push(role);
+  }
+
+  /**
+   * Attaches this policy to a group.
+   */
+  @MethodMetadata()
+  public attachToGroup(group: IGroupRef) {
+    if (this.groups.find(g => g.groupRef.groupArn === group.groupRef.groupArn)) { return; }
+    this.groups.push(group);
+  }
+
+  private validateManagedPolicy(): string[] {
+    const result = new Array<string>();
+
+    // validate that the policy document is not empty
+    if (this.document.isEmpty) {
+      result.push('Managed Policy is empty. You must add statements to the policy');
+    }
+
+    result.push(...this.document.validateForIdentityPolicy());
+
+    if (result.length === 0 && this._precreatedPolicy) {
+      PolicySynthesizer.getOrCreate(this).addManagedPolicy(this.node.path, {
+        policyStatements: this.document.toJSON()?.Statement,
+        roles: this.roles.map(role => role.node.path),
+      });
+    }
+    return result;
+  }
+}
+
+class ManagedPolicyGrantPrincipal implements IPrincipal {
+  public readonly policyFragment: PrincipalPolicyFragment;
+  public readonly principalAccount?: string;
+  public readonly grantPrincipal: IPrincipal = this;
+
+  constructor(private _managedPolicy: ManagedPolicy) {
+    // lambda.Function.grantInvoke() wants policyFragment to be readable to use as a dedupe hash.
+    // The ARN is referenced to add policy statements as a resource-based policy.
+    // We should fail to synth because a managed policy cannot be used as a principal of a policy document.
+    // cf. https://github.com/aws/aws-cdk/issues/32980
+    const arn = Lazy.string({
+      produce: () => {
+        throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', _managedPolicy);
+      },
+    });
+    this.policyFragment = new ArnPrincipal(arn).policyFragment;
+    this.principalAccount = _managedPolicy.env.account;
+  }
+
+  public get assumeRoleAction(): string {
+    // This property is referenced to add policy statements as a trust policy.
+    // We should fail because a managed policy cannot be used as a principal of a policy document.
+    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
+    throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', this._managedPolicy);
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    this._managedPolicy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._managedPolicy };
+  }
+
+  public toString(): string {
+    return `ManagedPolicy(${this._managedPolicy.node.path})`;
+  }
+}

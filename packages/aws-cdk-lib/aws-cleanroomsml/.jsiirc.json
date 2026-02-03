@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.cleanroomsml"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.CleanRoomsML"
+    },
+    "python": {
+      "module": "aws_cdk.aws_cleanroomsml"
+    }
+  }
+}

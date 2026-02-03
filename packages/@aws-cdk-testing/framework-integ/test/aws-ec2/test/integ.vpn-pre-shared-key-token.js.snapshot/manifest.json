@@ -1,0 +1,250 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-ec2-vpn.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ec2-vpn.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ec2-vpn": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ec2-vpn.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2082321985aacf578a7a9680040c8e316b4232c149615ada40258be21e9cafa2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ec2-vpn.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ec2-vpn.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ec2-vpn/MyVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcF9F0CA6F"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1SubnetF6608456"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1DefaultRoute95FDF9EB"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1EIP096967CB"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1NATGatewayAD3400C1"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2Subnet492B6BFB"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2RouteTable1DF17386"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2DefaultRoute052936F6"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2EIP8CCBA239"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2NATGateway91BFBEC9"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2Subnet0040C983"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2DefaultRoute9CE96294"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcIGW5C4A4F63"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVPCGW488ACE0D"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/VpnGateway/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVpnGateway11FB05E5"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/VPCVPNGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVPCVPNGW0CB969B3"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/RoutePropagation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcRoutePropagation122FC3BE"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/Dynamic/CustomerGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcDynamicCustomerGatewayFB63DFBF"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/Dynamic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcDynamic739F3519"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/Static/CustomerGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcStaticCustomerGateway43D01906"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/Static/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcStaticABA7F625"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/Static/Route19216810024": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcStaticRoute192168100240A24A5CC"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/MyVpc/Static/Route19216820024": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcStaticRoute19216820024CD4B642F"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ec2-vpn/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ec2-vpn"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integtest-endpointconfig/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sagemaker-endpointconfig"
+      ],
+      "assertionStack": "integtest-endpointconfig/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestendpointconfigDefaultTestDeployAssert8D52A281"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

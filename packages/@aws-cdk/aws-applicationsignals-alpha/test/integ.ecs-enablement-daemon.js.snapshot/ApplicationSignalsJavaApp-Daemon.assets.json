@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "8ca51b098ebf62171fa202ee565e2f89a928a218f90bcfc033e8c55140623c13": {
+      "displayName": "ApplicationSignalsJavaApp-Daemon Template",
+      "source": {
+        "path": "ApplicationSignalsJavaApp-Daemon.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1b13b903": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8ca51b098ebf62171fa202ee565e2f89a928a218f90bcfc033e8c55140623c13.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

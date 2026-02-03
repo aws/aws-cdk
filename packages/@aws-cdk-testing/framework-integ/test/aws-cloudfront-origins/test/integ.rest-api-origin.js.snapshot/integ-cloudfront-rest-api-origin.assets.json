@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "8cefc1380f321cba310bd033edc18e5d717de57cd544ee5bdc72b6bb2b075fbe": {
+      "displayName": "integ-cloudfront-rest-api-origin Template",
+      "source": {
+        "path": "integ-cloudfront-rest-api-origin.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8cefc1380f321cba310bd033edc18e5d717de57cd544ee5bdc72b6bb2b075fbe.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,401 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "msk-serverless-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "msk-serverless-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "msk-serverless-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "msk-serverless-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3fe96e39425f97feda99213d01b2d2cc26bae96d4178c3cff77274254846f2dc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "msk-serverless-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "msk-serverless-stack.assets"
+      ],
+      "metadata": {
+        "/msk-serverless-stack/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/msk-serverless-stack/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/msk-serverless-stack/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/msk-serverless-stack/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPC6F66D700"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet1Subnet2C5E9FEA"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet1RouteTable99F4404A"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet1RouteTableAssociation2362026E"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet1DefaultRouteA00BB689"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet1EIPEF7D42CC"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet1NATGatewayCF4D3D2F"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet2Subnet15F04B8B"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet2RouteTableFE644F5F"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet2RouteTableAssociationC009DC2F"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet2DefaultRoute5306D480"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet2EIP19D14E7D"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPublicSubnet2NATGatewayC40A97B0"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPrivateSubnet1Subnet15DC540C"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPrivateSubnet1RouteTable3DABBDAF"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPrivateSubnet1RouteTableAssociation013B68AD"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPrivateSubnet1DefaultRoute2361ECAB"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPrivateSubnet2Subnet418BD755"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPrivateSubnet2RouteTableA7D262FC"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPrivateSubnet2RouteTableAssociation5A9F546E"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCPrivateSubnet2DefaultRouteE03FE5F7"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCIGW5E5649EB"
+          }
+        ],
+        "/msk-serverless-stack/AnotherVPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnotherVPCVPCGW86198180"
+          }
+        ],
+        "/msk-serverless-stack/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/msk-serverless-stack/ServerlessCluster/SecurityGroup-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServerlessClusterSecurityGroup0535E269F"
+          }
+        ],
+        "/msk-serverless-stack/ServerlessCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServerlessClusterD09D5D78"
+          }
+        ],
+        "/msk-serverless-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/msk-serverless-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "msk-serverless-stack"
+    },
+    "mskserverlessintegDefaultTestDeployAssertDD46F007.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "mskserverlessintegDefaultTestDeployAssertDD46F007.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "mskserverlessintegDefaultTestDeployAssertDD46F007": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "mskserverlessintegDefaultTestDeployAssertDD46F007.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "mskserverlessintegDefaultTestDeployAssertDD46F007.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "mskserverlessintegDefaultTestDeployAssertDD46F007.assets"
+      ],
+      "metadata": {
+        "/msk-serverless-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/msk-serverless-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "msk-serverless-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

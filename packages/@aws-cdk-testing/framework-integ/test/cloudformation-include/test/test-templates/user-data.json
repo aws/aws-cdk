@@ -1,0 +1,30 @@
+{
+  "Resources": {
+    "LaunchConfig": {
+      "Type" : "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "ImageId": "ami-01e24be29428c15b2",
+        "InstanceType": "t1.micro",
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": ["", [
+              "#!/bin/bash -xe\n",
+              "yum update -y aws-cfn-bootstrap\n",
+
+              "/opt/aws/bin/cfn-init -v ",
+              "         --stack ", { "Ref" : "AWS::StackName" },
+              "         --resource LaunchConfig ",
+              "         --configsets wordpress_install ",
+              "         --region ", { "Ref" : "AWS::Region" }, "\n",
+
+              "/opt/aws/bin/cfn-signal -e $? ",
+              "         --stack ", { "Ref" : "AWS::StackName" },
+              "         --resource WebServerGroup ",
+              "         --region ", { "Ref" : "AWS::Region" }, "\n"
+            ]]
+          }
+        }
+      }
+    }
+  }
+}

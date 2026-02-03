@@ -1,0 +1,46 @@
+{
+  "name": "@aws-cdk/prlint",
+  "private": true,
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^5.1.1",
+    "@octokit/rest": "^18",
+    "@octokit/webhooks-definitions": "^3.68.1",
+    "conventional-commits-parser": "^3.2.4",
+    "make-runnable": "^1.4.1",
+    "fs-extra": "^9.1.0",
+    "glob": "^7.2.3"
+  },
+  "devDependencies": {
+    "@aws-cdk/eslint-config": "0.0.0",
+    "@types/conventional-commits-parser": "3.0.2",
+    "@types/fs-extra": "^9.0.13",
+    "@types/glob": "^7.2.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "make-runnable": "^1.4.1",
+    "typescript": "~5.5.4"
+  },
+  "jest": {
+    "testMatch": [
+      "<rootDir>/test/**/?(*.)+(test).js"
+    ]
+  },
+  "scripts": {
+    "build": "tsc --build && yarn lint",
+    "test": "jest",
+    "build+test": "npm run build && npm run test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build",
+    "lint": "eslint"
+  }
+}

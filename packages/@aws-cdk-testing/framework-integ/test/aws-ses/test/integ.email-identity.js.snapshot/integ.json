@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "EmailIdentityInteg/DefaultTest": {
+      "stacks": [
+        "cdk-ses-email-identity-integ"
+      ],
+      "assertionStack": "EmailIdentityInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EmailIdentityIntegDefaultTestDeployAssert3F909307"
+    }
+  }
+}

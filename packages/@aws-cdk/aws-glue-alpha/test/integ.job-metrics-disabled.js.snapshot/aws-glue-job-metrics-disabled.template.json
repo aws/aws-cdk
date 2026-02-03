@@ -1,0 +1,234 @@
+{
+ "Resources": {
+  "IAMServiceRole61C662C4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "IAMServiceRoleDefaultPolicy379D1A0E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IAMServiceRoleDefaultPolicy379D1A0E",
+    "Roles": [
+     {
+      "Ref": "IAMServiceRole61C662C4"
+     }
+    ]
+   }
+  },
+  "PySparkETLJobNoMetrics83C22B7E": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true"
+    },
+    "GlueVersion": "4.0",
+    "JobRunQueuingEnabled": false,
+    "Name": "PySparkETLJobNoMetrics",
+    "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "IAMServiceRole61C662C4",
+      "Arn"
+     ]
+    },
+    "WorkerType": "G.1X"
+   }
+  },
+  "RayJobNoMetricsBE507C8E": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueray",
+     "Runtime": "Ray2.4",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--enable-continuous-cloudwatch-log": "true"
+    },
+    "GlueVersion": "4.0",
+    "JobRunQueuingEnabled": false,
+    "Name": "RayJobNoMetrics",
+    "NumberOfWorkers": 3,
+    "Role": {
+     "Fn::GetAtt": [
+      "IAMServiceRole61C662C4",
+      "Arn"
+     ]
+    },
+    "WorkerType": "Z.2X"
+   }
+  },
+  "PySparkETLJobSelectiveMetrics9B08F2F0": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-observability-metrics": "true"
+    },
+    "GlueVersion": "4.0",
+    "JobRunQueuingEnabled": false,
+    "Name": "PySparkETLJobSelectiveMetrics",
+    "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "IAMServiceRole61C662C4",
+      "Arn"
+     ]
+    },
+    "WorkerType": "G.1X"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

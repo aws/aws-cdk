@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "383bba57d3e9b38d7d9d7ed4f157432f90dea97cf65de9a33073c07e9b41c0dc": {
+      "displayName": "FirstStack Template",
+      "source": {
+        "path": "FirstStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "383bba57d3e9b38d7d9d7ed4f157432f90dea97cf65de9a33073c07e9b41c0dc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

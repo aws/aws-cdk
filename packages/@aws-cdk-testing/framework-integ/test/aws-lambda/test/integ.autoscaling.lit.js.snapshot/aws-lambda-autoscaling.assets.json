@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "b5cd4061f9f1fdab8a90e980a826e770ca41bc8521961ed977ed17acd2623cfa": {
+      "displayName": "aws-lambda-autoscaling Template",
+      "source": {
+        "path": "aws-lambda-autoscaling.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b5cd4061f9f1fdab8a90e980a826e770ca41bc8521961ed977ed17acd2623cfa.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

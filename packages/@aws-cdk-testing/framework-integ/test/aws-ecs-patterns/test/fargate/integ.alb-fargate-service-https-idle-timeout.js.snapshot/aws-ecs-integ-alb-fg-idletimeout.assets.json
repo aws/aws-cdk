@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "bc81a1c074918ce84349bc7940a8fcd31c30ad4f4eef31b8ead8a189fbf17143": {
+      "source": {
+        "path": "aws-ecs-integ-alb-fg-idletimeout.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bc81a1c074918ce84349bc7940a8fcd31c30ad4f4eef31b8ead8a189fbf17143.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

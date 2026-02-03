@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "Ec2InstancePlacementGroup/DefaultTest": {
+      "stacks": [
+        "ec2-instance-placementgroup-stack"
+      ],
+      "assertionStack": "Ec2InstancePlacementGroup/DefaultTest/DeployAssert",
+      "assertionStackName": "Ec2InstancePlacementGroupDefaultTestDeployAssertCBC801E8"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

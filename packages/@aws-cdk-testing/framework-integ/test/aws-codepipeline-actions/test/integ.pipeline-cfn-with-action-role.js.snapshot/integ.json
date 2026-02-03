@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.pipeline-cfn-with-action-role": {
+      "stacks": [
+        "aws-cdk-codepipeline-cloudformation-cross-region-with-action-role"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

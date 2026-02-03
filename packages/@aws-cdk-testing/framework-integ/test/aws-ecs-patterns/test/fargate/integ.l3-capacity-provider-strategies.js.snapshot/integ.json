@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "l3CapacityProviderStrategiesTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-lb-fargate"
+      ],
+      "assertionStack": "l3CapacityProviderStrategiesTest/DefaultTest/DeployAssert",
+      "assertionStackName": "l3CapacityProviderStrategiesTestDefaultTestDeployAssertCE3F86E7"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

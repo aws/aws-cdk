@@ -1,0 +1,402 @@
+import type { IResolvable, IResolveContext } from '../../core';
+import { captureStackTrace, Token, UnscopedValidationError } from '../../core';
+
+type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
+
+/**
+ * Options for how to construct matchers
+ */
+interface MatchOptions {
+  /**
+   * Whether the list of matchers should be merged into a single matcher
+   */
+  readonly mergeMatchers: boolean;
+}
+
+/**
+ * An event pattern matcher
+ */
+export class Match implements IResolvable {
+  /**
+   * Matches a null value in the JSON of the event
+   */
+  public static nullValue(): string[] {
+    return [Token.asString(null)];
+  }
+
+  /**
+   * Matches when the field is present in the JSON of the event
+   */
+  public static exists(): string[] {
+    return [Token.asString({ exists: true })];
+  }
+
+  /**
+   * Matches when the field is absent from the JSON of the event
+   */
+  public static doesNotExist(): string[] {
+    return [Token.asString({ exists: false })];
+  }
+
+  /**
+   * Matches a string, exactly, in the JSON of the event
+   */
+  public static exactString(value: string): string[] {
+    return [Token.asString(value)];
+  }
+
+  /**
+   * Matches a string, regardless of case, in the JSON of the event
+   */
+  public static equalsIgnoreCase(value: string): string[] {
+    return [Token.asString({ 'equals-ignore-case': value })];
+  }
+
+  /**
+   * Matches strings with the given prefix in the JSON of the event
+   */
+  public static prefix(value: string): string[] {
+    return [Token.asString({ prefix: value })];
+  }
+
+  /**
+   * Matches strings with the given suffix in the JSON of the event
+   */
+  public static suffix(value: string): string[] {
+    return [Token.asString({ suffix: value })];
+  }
+
+  /**
+   * Matches strings with the given prefix in the JSON of the event regardless of the casing
+   */
+  public static prefixEqualsIgnoreCase(value: string): string[] {
+    return [Token.asString({ prefix: { 'equals-ignore-case': value } })];
+  }
+
+  /**
+   * Matches strings with the given suffix in the JSON of the event regardless of the casing
+   */
+  public static suffixEqualsIgnoreCase(value: string): string[] {
+    return [Token.asString({ suffix: { 'equals-ignore-case': value } })];
+  }
+
+  /**
+   * Matches strings with the given wildcard pattern in the JSON of the event
+   */
+  public static wildcard(value: string): string[] {
+    return [Token.asString({ wildcard: value })];
+  }
+
+  /**
+   * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format
+   */
+  public static cidr(range: string): string[] {
+    const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/igm;
+    const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/igm;
+
+    if (!ipv4Regex.test(range) && !ipv6Regex.test(range)) {
+      throw new UnscopedValidationError(`Invalid IP address range: ${range}`);
+    }
+
+    return [Token.asString({ cidr: range })];
+  }
+
+  /**
+   * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format.
+   * Alias of `cidr()`.
+   */
+  public static ipAddressRange(range: string): string[] {
+    return Match.cidr(range);
+  }
+
+  /**
+   * Matches anything except what's provided in the rule. The list of provided values must contain
+   * only strings or only numbers.
+   */
+  public static anythingBut(...values: any[]): string[] {
+    if (values.length === 0) {
+      throw new UnscopedValidationError('anythingBut matchers must be non-empty lists');
+    }
+
+    const allNumbers = values.every(v => typeof (v) === 'number');
+    const allStrings = values.every(v => typeof (v) === 'string');
+
+    if (!(allNumbers || allStrings)) {
+      throw new UnscopedValidationError('anythingBut matchers must be lists that contain only strings or only numbers.');
+    }
+
+    return [Token.asString({ 'anything-but': values })];
+  }
+
+  /**
+   * Matches any string that doesn't start with the given prefix.
+   */
+  public static anythingButPrefix(...values: string[]): string[] {
+    return this.anythingButConjunction('prefix', values);
+  }
+
+  /**
+   * Matches any string that doesn't end with the given suffix.
+   */
+  public static anythingButSuffix(...values: string[]): string[] {
+    return this.anythingButConjunction('suffix', values);
+  }
+
+  /**
+   * Matches any string that doesn't match with the given wildcard pattern.
+   */
+  public static anythingButWildcard(...values: string[]): string[] {
+    return this.anythingButConjunction('wildcard', values);
+  }
+
+  /**
+   * Matches any string that doesn't match with the given value regardless of character casing.
+   */
+  public static anythingButEqualsIgnoreCase(...values: string[]): string[] {
+    return this.anythingButConjunction('equals-ignore-case', values);
+  }
+
+  /**
+   * Matches numbers greater than the provided value
+   */
+  public static greaterThan(value: number): string[] {
+    return this.numeric('>', value);
+  }
+
+  /**
+   * Matches numbers greater than, or equal to, the provided value
+   */
+  public static greaterThanOrEqual(value: number): string[] {
+    return this.numeric('>=', value);
+  }
+
+  /**
+   * Matches numbers less than the provided value
+   */
+  public static lessThan(value: number): string[] {
+    return this.numeric('<', value);
+  }
+
+  /**
+   * Matches numbers less than, or equal to, the provided value
+   */
+  public static lessThanOrEqual(value: number): string[] {
+    return this.numeric('<=', value);
+  }
+
+  /**
+   * Matches numbers equal to the provided value
+   */
+  public static equal(value: number): string[] {
+    return this.numeric('=', value);
+  }
+
+  /**
+   * Matches numbers inside a closed numeric interval. Equivalent to:
+   *
+   *    Match.allOf(Match.greaterThanOrEqual(lower), Match.lessThanOrEqual(upper))
+   *
+   * @param lower Lower bound (inclusive)
+   * @param upper Upper bound (inclusive)
+   */
+  public static interval(lower: number, upper: number): string[] {
+    if (lower > upper) {
+      throw new UnscopedValidationError(`Invalid interval: [${lower}, ${upper}]`);
+    }
+
+    return Match.allOf(Match.greaterThanOrEqual(lower), Match.lessThanOrEqual(upper));
+  }
+
+  /**
+   * Matches an event if any of the provided matchers do. Only numeric matchers are accepted.
+   */
+  public static allOf(...matchers: any[]): string[] {
+    if (matchers.length === 0) {
+      throw new UnscopedValidationError('A list of matchers must contain at least one element.');
+    }
+
+    return this.fromMergedObjects(matchers);
+  }
+
+  /**
+   * Matches an event if any of the provided matchers does.
+   */
+  public static anyOf(...matchers: any[]): string[] {
+    if (matchers.length === 0) {
+      throw new UnscopedValidationError('A list of matchers must contain at least one element.');
+    }
+
+    return matchers.map(match => match.map(Token.asString)).flatMap(a => a);
+  }
+
+  private static anythingButConjunction(filterKey: string, values: string[]): string[] {
+    if (values.length === 0) {
+      throw new UnscopedValidationError('anythingBut matchers must be non-empty lists');
+    }
+
+    // When there is a single value return it, otherwise return the array
+    const filterValue = values.length === 1 ? values[0] : values;
+
+    return [Token.asString({ 'anything-but': { [filterKey]: filterValue } })];
+  }
+
+  private static numeric(operator: ComparisonOperator, value: number): string[] {
+    return [Token.asString({ numeric: [operator, value] })];
+  }
+
+  private static fromMergedObjects(values: any[]): string[] {
+    return new Match(values, { mergeMatchers: true }).asList();
+  }
+
+  public readonly creationStack: string[];
+
+  private constructor(private readonly matchers: any[],
+    private readonly options: MatchOptions) {
+    this.creationStack = captureStackTrace();
+  }
+
+  resolve(context: IResolveContext): any {
+    const matchers = this.matchers.flatMap(matcher => context.resolve(matcher));
+    return this.options.mergeMatchers ? this.merge(matchers) : matchers;
+  }
+
+  private merge(matchers: any[]): any {
+    // This is the only supported case for merging at the moment.
+    // We can generalize this logic if EventBridge starts supporting more cases in the future.
+    if (!matchers.every(matcher => matcher?.numeric)) {
+      throw new UnscopedValidationError('Only numeric matchers can be merged into a single matcher.');
+    }
+
+    return [{ numeric: matchers.flatMap(matcher => matcher.numeric) }];
+  }
+
+  toString(): string {
+    return Token.asString(this);
+  }
+
+  /**
+   * A representation of this matcher as a list of strings
+   */
+  asList(): string[] {
+    return Token.asList(this);
+  }
+}
+
+/**
+ * Events in Amazon CloudWatch Events are represented as JSON objects. For more
+ * information about JSON objects, see RFC 7159.
+ *
+ * Rules use event patterns to select events and route them to targets. A
+ * pattern either matches an event or it doesn't. Event patterns are represented
+ * as JSON objects with a structure that is similar to that of events.
+ *
+ * It is important to remember the following about event pattern matching:
+ *
+ * - For a pattern to match an event, the event must contain all the field names
+ *   listed in the pattern. The field names must appear in the event with the
+ *   same nesting structure.
+ *
+ * - Other fields of the event not mentioned in the pattern are ignored;
+ *   effectively, there is a ``"*": "*"`` wildcard for fields not mentioned.
+ *
+ * - The matching is exact (character-by-character), without case-folding or any
+ *   other string normalization.
+ *
+ * - The values being matched follow JSON rules: Strings enclosed in quotes,
+ *   numbers, and the unquoted keywords true, false, and null.
+ *
+ * - Number matching is at the string representation level. For example, 300,
+ *   300.0, and 3.0e2 are not considered equal.
+ *
+ * For custom events, some optional properties are required. For more information, see
+ * [Minimum information needed for a valid custom event](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events-structure.html#eb-custom-event).
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html
+ */
+export interface EventPattern {
+  /**
+   * By default, this is set to 0 (zero) in all events.
+   *
+   * @default - No filtering on version
+   */
+  readonly version?: string[];
+
+  /**
+   * A unique value is generated for every event. This can be helpful in
+   * tracing events as they move through rules to targets, and are processed.
+   *
+   * @default - No filtering on id
+   */
+  readonly id?: string[];
+
+  /**
+   * Identifies, in combination with the source field, the fields and values
+   * that appear in the detail field.
+   *
+   * Represents the "detail-type" event field.
+   *
+   * @default - No filtering on detail type
+   */
+  readonly detailType?: string[];
+
+  /**
+   * Identifies the service that sourced the event. All events sourced from
+   * within AWS begin with "aws." Customer-generated events can have any value
+   * here, as long as it doesn't begin with "aws." We recommend the use of
+   * Java package-name style reverse domain-name strings.
+   *
+   * To find the correct value for source for an AWS service, see the table in
+   * AWS Service Namespaces. For example, the source value for Amazon
+   * CloudFront is aws.cloudfront.
+   *
+   * @see http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces
+   * @default - No filtering on source
+   */
+  readonly source?: string[];
+
+  /**
+   * The 12-digit number identifying an AWS account.
+   *
+   * @default - No filtering on account
+   */
+  readonly account?: string[];
+
+  /**
+   * The event timestamp, which can be specified by the service originating
+   * the event. If the event spans a time interval, the service might choose
+   * to report the start time, so this value can be noticeably before the time
+   * the event is actually received.
+   *
+   * @default - No filtering on time
+   */
+  readonly time?: string[];
+
+  /**
+   * Identifies the AWS region where the event originated.
+   *
+   * @default - No filtering on region
+   */
+  readonly region?: string[];
+
+  /**
+   * This JSON array contains ARNs that identify resources that are involved
+   * in the event. Inclusion of these ARNs is at the discretion of the
+   * service.
+   *
+   * For example, Amazon EC2 instance state-changes include Amazon EC2
+   * instance ARNs, Auto Scaling events include ARNs for both instances and
+   * Auto Scaling groups, but API calls with AWS CloudTrail do not include
+   * resource ARNs.
+   *
+   * @default - No filtering on resource
+   */
+  readonly resources?: string[];
+
+  /**
+   * A JSON object, whose content is at the discretion of the service
+   * originating the event.
+   *
+   * @default - No filtering on detail
+   */
+  readonly detail?: { [key: string]: any };
+}

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["es2022", "dom"],
+    "strict": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "declaration": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": false,
+    "composite": true,
+    "incremental": true,
+    "isolatedModules": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["**/*.d.ts"]
+}

@@ -1,0 +1,45 @@
+{
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "10",
+        "DesiredCapacity": "2",
+        "AvailabilityZones": {
+          "Fn::GetAZs": ""
+        },
+        "LaunchTemplate": {
+          "LaunchTemplateId": { "Ref": "LaunchTemplate" },
+          "Version": { "Fn::GetAtt": ["LaunchTemplate", "LatestVersionNumber"] }
+        }
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MaxBatchSize": 2,
+          "MinInstancesInService": 1,
+          "MinSuccessfulInstancesPercent": 75,
+          "MinActiveInstancesPercent": 50,
+          "PauseTime": "PT5M",
+          "SuspendProcesses": ["HealthCheck", "ReplaceUnhealthy"],
+          "WaitOnResourceSignals": true
+        }
+      }
+    },
+    "LaunchTemplate": {
+      "Type": "AWS::EC2::LaunchTemplate",
+      "Properties": {
+        "LaunchTemplateData": {
+          "ImageId": { "Ref": "AMI" },
+          "InstanceType": "t3.micro"
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "AMI": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "applicationLoadBalancedEc2ServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb"
+      ],
+      "assertionStack": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

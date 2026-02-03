@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.project-secondary-sources-artifacts": {
+      "stacks": [
+        "aws-cdk-codebuild-secondary-sources-artifacts"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

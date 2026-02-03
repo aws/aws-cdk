@@ -1,0 +1,159 @@
+{
+ "Resources": {
+  "mywsapi32E6CE11": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "mywsapi",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "mywsapidefaultRouteDefaultIntegrationFFCB3BA9": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "IntegrationType": "MOCK",
+    "IntegrationUri": ""
+   }
+  },
+  "mywsapidefaultRouteE9382DF8": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "$default",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "mywsapisendmessageRouteDefaultIntegration702159AD": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "IntegrationType": "MOCK",
+    "IntegrationUri": "",
+    "RequestTemplates": {
+     "application/json": "{\"statusCode\":200}"
+    },
+    "TemplateSelectionExpression": "\\$default"
+   }
+  },
+  "mywsapisendmessageRouteAE873328": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "sendmessage",
+    "RouteResponseSelectionExpression": "$default",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "mywsapisendmessageRouteDefaultIntegration702159AD"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "mywsapisendmessageRouteResponse2ED167D2": {
+   "Type": "AWS::ApiGatewayV2::RouteResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "RouteId": {
+     "Ref": "mywsapisendmessageRouteAE873328"
+    },
+    "RouteResponseKey": "$default"
+   }
+  },
+  "mystage114C35EC": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "AutoDeploy": true,
+    "StageName": "dev"
+   }
+  }
+ },
+ "Outputs": {
+  "ApiEndpoint": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "mywsapi32E6CE11"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/dev"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

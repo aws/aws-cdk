@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c4d830eb199c03fec47e71920ad743bb7117759ea1dbc25af09022b0a89cf05d": {
+      "displayName": "nlb-alb-listner-stack Template",
+      "source": {
+        "path": "nlb-alb-listner-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3c600dfa": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c4d830eb199c03fec47e71920ad743bb7117759ea1dbc25af09022b0a89cf05d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,15 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ.cluster-rotation.lit": {
+      "stacks": [
+        "aws-cdk-docdb-cluster-rotation"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,195 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "VpcPeeringSameAccountIntegStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "VpcPeeringSameAccountIntegStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "VpcPeeringSameAccountIntegStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "VpcPeeringSameAccountIntegStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/765be6b1dc796d080ff0e4a58844a77656cb8d4141c141eb55fa9f251c5f641d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "VpcPeeringSameAccountIntegStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "VpcPeeringSameAccountIntegStack.assets"
+      ],
+      "metadata": {
+        "/VpcPeeringSameAccountIntegStack/acceptorVpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcPeeringSameAccountIntegStack/acceptorVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acceptorVpc5B7D1670"
+          }
+        ],
+        "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "requestorVpcSameAccountF27E91F7"
+          }
+        ],
+        "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount/sameAccountPeering": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount/sameAccountPeering/VPCPeeringConnection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD"
+          }
+        ],
+        "/VpcPeeringSameAccountIntegStack/Exports/Output{\"Fn::GetAtt\":[\"requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD\",\"Id\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttrequestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CDIdCEF66BF2"
+          }
+        ],
+        "/VpcPeeringSameAccountIntegStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/VpcPeeringSameAccountIntegStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "VpcPeeringSameAccountIntegStack"
+    },
+    "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3e7cddbfeffb5b00d6da9610180895c2c9849294dd412202ae9c29a261e841b3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "VpcPeeringSameAccountIntegStack",
+        "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D.assets"
+      ],
+      "metadata": {
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcPeeringConnectionsffd9cfa258f9cf263dcae5acc4466f62/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcPeeringConnectionsffd9cfa258f9cf263dcae5acc4466f62/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallEC2describeVpcPeeringConnectionsffd9cfa258f9cf263dcae5acc4466f62"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcPeeringConnectionsffd9cfa258f9cf263dcae5acc4466f62/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallEC2describeVpcPeeringConnectionsffd9cfa258f9cf263dcae5acc4466f62"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "VpcSameAccountInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

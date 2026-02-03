@@ -1,0 +1,48 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "07d8f4e69597eb1f36b7146e8c501bb1af1a56b12a30552f86727887e63a17de": {
+      "displayName": "EventApiHttp/chat/Code",
+      "source": {
+        "path": "asset.07d8f4e69597eb1f36b7146e8c501bb1af1a56b12a30552f86727887e63a17de.js",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "07d8f4e69597eb1f36b7146e8c501bb1af1a56b12a30552f86727887e63a17de.js",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1": {
+      "displayName": "EventApiHttpTestFunction/Code",
+      "source": {
+        "path": "asset.cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "75a5590ce3ffae4a02a95f890056e77d183a16696c7ed189dd983b0f76bbaac4": {
+      "displayName": "EventApiHttpStack Template",
+      "source": {
+        "path": "EventApiHttpStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "75a5590ce3ffae4a02a95f890056e77d183a16696c7ed189dd983b0f76bbaac4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,20 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "subsubassembly": {
+      "type": "cdk:cloud-assembly",
+      "properties": {
+        "directoryName": "subsubassembly",
+        "displayName": "subsubassembly"
+      }
+    },
+    "stack1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "properties": {
+        "templateFile": "template.json",
+        "stackName": "first-stack"
+      }
+    }
+  }
+}

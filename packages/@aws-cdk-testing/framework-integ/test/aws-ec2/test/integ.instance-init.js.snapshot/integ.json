@@ -1,0 +1,12 @@
+{
+  "version": "36.0.24",
+  "testCases": {
+    "instance-init-test/DefaultTest": {
+      "stacks": [
+        "integ-init"
+      ],
+      "assertionStack": "instance-init-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instanceinittestDefaultTestDeployAssert2123E149"
+    }
+  }
+}

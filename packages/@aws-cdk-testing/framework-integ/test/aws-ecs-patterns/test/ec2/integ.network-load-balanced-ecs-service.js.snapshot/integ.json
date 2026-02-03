@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "networkLoadBalancedEc2ServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-nlb"
+      ],
+      "assertionStack": "networkLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "networkLoadBalancedEc2ServiceTestDefaultTestDeployAssert34DAD7DE"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

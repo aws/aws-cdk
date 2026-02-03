@@ -1,0 +1,17 @@
+{
+  "Conditions": {
+    "AlwaysTrue": {
+      "Fn::Equals": [
+        { "Fn::FindInMap": ["Mapping01", "Key01", "Name"] },
+        "Value01"
+      ]
+    }
+  },
+  "Mappings" : {
+    "Mapping01" : {
+      "Key01" : {
+        "Name" : "Value01"
+      }
+    }
+  }
+}

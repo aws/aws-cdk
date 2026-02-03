@@ -1,0 +1,25 @@
+*.d.ts
+*.js
+
+.LAST_BUILD
+*.snk
+junit.xml
+!eslint.config.mjs
+.nyc_output
+coverage
+nyc.config.js
+
+!test/aws-synthetics/test/canaries/**/*
+
+
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**
+
+**/*.ts.snapshot
+
+!jest.config.js
+
+# deployment asset cache
+**/.cache/**

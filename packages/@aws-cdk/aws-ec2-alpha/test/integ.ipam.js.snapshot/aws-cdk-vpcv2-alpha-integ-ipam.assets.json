@@ -1,0 +1,48 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "85031586289267da11741deea4cf0d619a9a946d74e7a94f02b631c4c1a27225": {
+      "displayName": "IpamCleanupFn/Code",
+      "source": {
+        "path": "asset.85031586289267da11741deea4cf0d619a9a946d74e7a94f02b631c4c1a27225",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-89ca242e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "85031586289267da11741deea4cf0d619a9a946d74e7a94f02b631c4c1a27225.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e": {
+      "displayName": "IpamCleanupProvider/framework-onEvent/Code",
+      "source": {
+        "path": "asset.d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9e5c0bf1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "e53932feb84441f59d3e9af304486ef1a21b60ed4e4b693799368a98ac49f7e2": {
+      "displayName": "aws-cdk-vpcv2-alpha-integ-ipam Template",
+      "source": {
+        "path": "aws-cdk-vpcv2-alpha-integ-ipam.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1852b096": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e53932feb84441f59d3e9af304486ef1a21b60ed4e4b693799368a98ac49f7e2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

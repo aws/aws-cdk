@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "lambda-non-proxy-integration/DefaultTest": {
+      "stacks": [
+        "LambdaApiIntegrationOptionsNonProxyIntegrationStack"
+      ],
+      "assertionStack": "lambda-non-proxy-integration/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdanonproxyintegrationDefaultTestDeployAssert31D3AA1B"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

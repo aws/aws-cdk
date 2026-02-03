@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.panorama"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Panorama"
+    },
+    "python": {
+      "module": "aws_cdk.aws_panorama"
+    }
+  }
+}

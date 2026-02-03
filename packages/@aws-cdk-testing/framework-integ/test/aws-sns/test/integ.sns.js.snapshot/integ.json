@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "SNSTest/DefaultTest": {
+      "stacks": [
+        "SNSInteg"
+      ],
+      "assertionStack": "SNSTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SNSTestDefaultTestDeployAssert607DA316"
+    }
+  }
+}

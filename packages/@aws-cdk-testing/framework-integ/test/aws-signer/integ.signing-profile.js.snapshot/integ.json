@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-integ-signer-signing-profile/DefaultTest": {
+      "stacks": [
+        "aws-cdk-signer-signing-profile"
+      ],
+      "assertionStack": "cdk-integ-signer-signing-profile/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsignersigningprofileDefaultTestDeployAssertE50BA0E5"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-substitution-with-destination-key/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-substitution-with-destination-key"
+      ],
+      "assertionStack": "integ-test-bucket-deployment-substitution-with-destination-key/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentsubstitutionwithdestinationkeyDefaultTestDeployAssertE3C0FD56"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "bdd082ae39d6d3314af0ee76bf769321d0ac49191dd84aa1b921f7b64367e46b": {
+      "displayName": "ApplicationSignalsPythonApp-Replica Template",
+      "source": {
+        "path": "ApplicationSignalsPythonApp-Replica.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-244766cd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bdd082ae39d6d3314af0ee76bf769321d0ac49191dd84aa1b921f7b64367e46b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

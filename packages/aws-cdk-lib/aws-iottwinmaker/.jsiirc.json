@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.iottwinmaker"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.IoTTwinMaker"
+    },
+    "python": {
+      "module": "aws_cdk.aws_iottwinmaker"
+    }
+  }
+}

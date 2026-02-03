@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.amplify"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Amplify"
+    },
+    "python": {
+      "module": "aws_cdk.aws_amplify"
+    }
+  }
+}

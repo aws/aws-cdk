@@ -1,0 +1,30 @@
+{
+  "npmClient": "yarn",
+  "packages": [
+    "packages/aws-cdk-lib",
+    "packages/aws-cdk",
+    "packages/cdk",
+    "packages/@aws-cdk/*",
+    "packages/awslint",
+    "packages/@aws-cdk-containers/*",
+    "packages/@aws-cdk-testing/*",
+    "packages/@aws-cdk/*/lambda-packages/*",
+    "tools/@aws-cdk/eslint-config",
+    "tools/@aws-cdk/cdk-build-tools",
+    "tools/@aws-cdk/user-input-gen",
+    "tools/@aws-cdk/cdk-release",
+    "tools/@aws-cdk/pkglint",
+    "tools/@aws-cdk/pkgtools",
+    "tools/@aws-cdk/prlint",
+    "tools/@aws-cdk/spec2cdk",
+    "tools/@aws-cdk/lazify",
+    "tools/@aws-cdk/lambda-integration-test-updater",
+    "tools/@aws-cdk/construct-metadata-updater",
+    "tools/@aws-cdk/project-sync",
+    "tools/@aws-cdk/integration-test-deployment",
+    "scripts/@aws-cdk/script-tests"
+  ],
+  "rejectCycles": true,
+  "version": "0.0.0",
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json"
+}

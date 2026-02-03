@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "f479d71edc397ab84e3385982c1e1598b5b59f17c8258c137fb2b424bb1d489d": {
+      "source": {
+        "path": "sns-fifo-throughput-scope.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f479d71edc397ab84e3385982c1e1598b5b59f17c8258c137fb2b424bb1d489d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

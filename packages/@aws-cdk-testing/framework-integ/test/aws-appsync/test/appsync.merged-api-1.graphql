@@ -1,0 +1,9 @@
+type firstTest {
+  version: String!
+}
+type Query {
+  getFirstTests: [firstTest]!
+}
+type Mutation {
+  addFirstTest(version: String!): firstTest
+}

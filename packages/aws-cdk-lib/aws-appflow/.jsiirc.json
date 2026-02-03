@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.appflow"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.AppFlow"
+    },
+    "python": {
+      "module": "aws_cdk.aws_appflow"
+    }
+  }
+}

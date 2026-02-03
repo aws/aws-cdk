@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ-instance-database-insights/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-integ-instance-database-insights"
+      ],
+      "assertionStack": "integ-instance-database-insights/DefaultTest/DeployAssert",
+      "assertionStackName": "integinstancedatabaseinsightsDefaultTestDeployAssertC69F68F1"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

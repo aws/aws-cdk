@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "rds-integ-instance-create-grant/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-integ-instance-create-grant"
+      ],
+      "assertionStack": "rds-integ-instance-create-grant/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

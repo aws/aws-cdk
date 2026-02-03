@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "metric-with-dimensions-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-cloudwatch-metric-dimensions"
+      ],
+      "assertionStack": "metric-with-dimensions-test/DefaultTest/DeployAssert",
+      "assertionStackName": "metricwithdimensionstestDefaultTestDeployAssert1196DF0F"
+    }
+  }
+}

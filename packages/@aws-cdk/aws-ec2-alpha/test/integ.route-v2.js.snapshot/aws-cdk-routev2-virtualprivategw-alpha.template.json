@@ -1,0 +1,187 @@
+{
+ "Resources": {
+  "vpgw2AB64B6B": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-virtualprivategw-alpha/vpgw"
+     }
+    ]
+   }
+  },
+  "vpgwAmazonIpv6D24D8752": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpgw2AB64B6B",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpgw2AB64B6B",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoottablevpgwRouteAD510A2A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testVPGWIGW816C7C4F",
+    "testVPGWRoutePropagationD01C7942",
+    "testVPGWVPCVPNGWF1D3DC88"
+   ]
+  },
+  "vpgwSubnet5E7F36AD": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "vpgw2AB64B6B",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpgw2AB64B6B",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "vpgwAmazonIpv6D24D8752"
+   ]
+  },
+  "vpgwSubnetRouteTableAssociation49921F90": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "vpgwSubnet5E7F36AD"
+    }
+   },
+   "DependsOn": [
+    "vpgwAmazonIpv6D24D8752"
+   ]
+  },
+  "testVPGWIGW816C7C4F": {
+   "Type": "AWS::EC2::VPNGateway",
+   "Properties": {
+    "Type": "ipsec.1"
+   }
+  },
+  "testVPGWVPCVPNGWF1D3DC88": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpgw2AB64B6B",
+      "VpcId"
+     ]
+    },
+    "VpnGatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    }
+   }
+  },
+  "testVPGWRoutePropagationD01C7942": {
+   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
+   "Properties": {
+    "RouteTableIds": [],
+    "VpnGatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testVPGWVPCVPNGWF1D3DC88"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

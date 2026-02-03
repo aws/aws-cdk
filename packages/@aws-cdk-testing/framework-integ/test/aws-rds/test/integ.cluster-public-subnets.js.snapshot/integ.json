@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "test-aurora-pub-sn-cluster/DefaultTest": {
+      "stacks": [
+        "integ-aurora-pub-sn-cluster"
+      ],
+      "assertionStack": "test-aurora-pub-sn-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

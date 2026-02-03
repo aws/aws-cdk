@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-substitution-with-role/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-substitution-with-role"
+      ],
+      "assertionStack": "integ-test-bucket-deployment-substitution-with-role/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentsubstitutionwithroleDefaultTestDeployAssertCE8DBE46"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+const path = require('path');
+process.stdout.write(require(path.join(process.cwd(), 'package.json')).name + '\n');

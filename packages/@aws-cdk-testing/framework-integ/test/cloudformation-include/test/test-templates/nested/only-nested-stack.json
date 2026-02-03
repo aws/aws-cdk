@@ -1,0 +1,10 @@
+{
+  "Resources": {
+    "NestedStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "doesnt-matter"
+      }
+    }
+  }
+}

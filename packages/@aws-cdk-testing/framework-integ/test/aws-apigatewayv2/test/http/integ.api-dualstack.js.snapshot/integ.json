@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "DualStackHttpApiInteg/DefaultTest": {
+      "stacks": [
+        "DualStackHttpApiStack"
+      ],
+      "assertionStack": "DualStackHttpApiInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "DualStackHttpApiIntegDefaultTestDeployAssertCB101E5C"
+    }
+  }
+}

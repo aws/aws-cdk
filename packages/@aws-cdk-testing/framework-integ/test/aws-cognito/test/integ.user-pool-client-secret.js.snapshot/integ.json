@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-user-pool-client-secret-test/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-client-secret-not-logged",
+        "integ-user-pool-client-secret-logged"
+      ],
+      "assertionStack": "integ-user-pool-client-secret-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolclientsecrettestDefaultTestDeployAssert4FDD1661"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

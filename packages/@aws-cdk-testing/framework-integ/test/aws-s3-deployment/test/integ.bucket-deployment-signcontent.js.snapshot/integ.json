@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-signcontent/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-signobject"
+      ],
+      "diffAssets": true,
+      "assertionStack": "integ-test-bucket-deployment-signcontent/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentsigncontentDefaultTestDeployAssert99231547"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

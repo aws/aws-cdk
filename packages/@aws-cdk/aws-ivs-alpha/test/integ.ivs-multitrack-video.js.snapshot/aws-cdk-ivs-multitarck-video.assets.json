@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "e0d37ee6ba31d5a59e1ba06c8c5ca6fe67cc4392968f9b983b163f29c1a468f2": {
+      "source": {
+        "path": "aws-cdk-ivs-multitarck-video.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e0d37ee6ba31d5a59e1ba06c8c5ca6fe67cc4392968f9b983b163f29c1a468f2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "cors/DefaultTest": {
+      "stacks": [
+        "cors-twitch-test"
+      ],
+      "assertionStack": "cors/DefaultTest/DeployAssert",
+      "assertionStackName": "corsDefaultTestDeployAssert5CF8F851"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

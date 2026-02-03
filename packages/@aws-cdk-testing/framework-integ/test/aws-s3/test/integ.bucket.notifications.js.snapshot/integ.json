@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "NotificationTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-notifications"
+      ],
+      "assertionStack": "NotificationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NotificationTestDefaultTestDeployAssertBFB81666"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}

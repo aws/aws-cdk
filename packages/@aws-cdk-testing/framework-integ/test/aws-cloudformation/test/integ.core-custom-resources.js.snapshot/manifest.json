@@ -1,0 +1,122 @@
+{
+  "version": "43.0.0",
+  "artifacts": {
+    "custom-resource-test.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "custom-resource-test.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "custom-resource-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "custom-resource-test.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea4cc10f0bac43b997718d2adeda73a195b848863af9d0683cdd3f2c08657692.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "custom-resource-test.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "custom-resource-test.assets"
+      ],
+      "metadata": {
+        "/custom-resource-test/Custom::ReflectCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomReflectCustomResourceProviderRoleB4B29AEC"
+          }
+        ],
+        "/custom-resource-test/Custom::ReflectCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomReflectCustomResourceProviderHandler2E189D0B"
+          }
+        ],
+        "/custom-resource-test/MyResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/custom-resource-test/MyResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyResource"
+          }
+        ],
+        "/custom-resource-test/MyLengthyTypeResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/custom-resource-test/MyLengthyTypeResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLengthyTypeResource"
+          }
+        ],
+        "/custom-resource-test/Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ref"
+          }
+        ],
+        "/custom-resource-test/GetAtt.Attribute1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttAttribute1"
+          }
+        ],
+        "/custom-resource-test/GetAtt.Attribute2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttAttribute2"
+          }
+        ],
+        "/custom-resource-test/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/custom-resource-test/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "custom-resource-test"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1014.0"
+}

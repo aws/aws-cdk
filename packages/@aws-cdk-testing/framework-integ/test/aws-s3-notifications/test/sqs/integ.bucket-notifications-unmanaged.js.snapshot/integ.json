@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SQSBucketNotificationsTest/DefaultTest": {
+      "stacks": [
+        "integ-sqs-bucket-notifications"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        }
+      },
+      "assertionStack": "SQSBucketNotificationsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

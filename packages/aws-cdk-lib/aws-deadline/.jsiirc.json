@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.deadline"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Deadline"
+    },
+    "python": {
+      "module": "aws_cdk.aws_deadline"
+    }
+  }
+}

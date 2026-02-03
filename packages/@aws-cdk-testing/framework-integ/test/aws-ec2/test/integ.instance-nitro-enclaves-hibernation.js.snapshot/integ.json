@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "instance-nitro-enclaves-hibernation/DefaultTest": {
+      "stacks": [
+        "integ-ec2-instance-nitro-enclaves-hibernation"
+      ],
+      "assertionStack": "instance-nitro-enclaves-hibernation/DefaultTest/DeployAssert",
+      "assertionStackName": "instancenitroenclaveshibernationDefaultTestDeployAssertDE7E123E"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
