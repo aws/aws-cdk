@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { BackupMode, CommonDestinationProps, SecretsManagerProps } from './common';
-import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import type { Construct } from 'constructs';
+import type { CommonDestinationProps, SecretsManagerProps } from './common';
+import { BackupMode } from './common';
+import type { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
 import * as iam from '../../aws-iam';
 import { createBackupConfig, createBufferingHints, createLoggingOptions, createProcessingConfig, createSecretsManagerConfiguration } from './private/helpers';
 import * as cdk from '../../core';
