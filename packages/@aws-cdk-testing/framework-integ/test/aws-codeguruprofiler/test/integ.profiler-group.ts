@@ -1,5 +1,6 @@
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ProfilingGroup } from 'aws-cdk-lib/aws-codeguruprofiler';
 

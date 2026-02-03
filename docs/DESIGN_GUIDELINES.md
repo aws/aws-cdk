@@ -787,7 +787,7 @@ CloudFormation type (e.g. **string**, **string[]**) _[awslint:attribute-type]_.
   them or manipulate them), they can be used interchangeably.
 
 If needed, you can query whether an object includes unresolved tokens by using
-the **Token.unresolved(x)** method.
+the **Token.isUnresolved(x)** method.
 
 To ensure users are aware that the value returned by attribute properties should
 be treated as an opaque token, the JSDoc “@returns” annotation should begin with
@@ -962,7 +962,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   attribute to another. For example, given a name, it would need to render the
   ARN of the resource. Therefore, if **from\<Attribute\>** methods expect to be
   able to parse their input, they must verify that the input (e.g. ARN, name)
-  doesn't have unresolved tokens (using **Token.unresolved**). Preferably, they
+  doesn't have unresolved tokens (using **Token.isUnresolved**). Preferably, they
   can use **Stack.parseArn** to achieve this purpose.
 
 If a resource has an ARN attribute, it should implement at least a **fromFooArn**
@@ -1165,9 +1165,50 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 }
 ```
 
-The `TopicGrants` class, and many others, are generated automatically. But if there
-is no auto-generated grants class for a resource, you can implement it manually,
-following the same patterns.
+The `TopicGrants` class, and many others, are generated automatically from the `grants.json`
+file present at the root of each individual module (`packages/aws-sns` for SNS constructs and 
+so on). The `grants.json` file has the following general structure:
+
+```json
+{
+  "resources": {
+    "Topic": {
+      "hasResourcePolicy": true,
+      "grants": {
+        "publish": {
+          "actions": ["sns:Publish"],
+          "keyActions": ["kms:Decrypt", "kms:GenerateDataKey*"],
+          "docSummary": "Grant topic publishing permissions to the given identity"
+        },
+        "subscribe": {
+          "actions": ["sns:Subscribe"],
+          "arnFormat": "${topicArn}/*"
+        }
+      }
+    }
+  }
+}
+```
+
+where:
+
+* `Topic` - the class to generate grants for. This will lead to a class named TopicGrants.
+* `hasResourcePolicy` - indicates whether the resource supports a resource policy. When true, all auto-generated methods in the Grants class will attempt to add statements to the resource policy when applicable. When false, the methods will only modify the principal's policy.
+* `publish` - the name of a grant.
+* `actions` - the actions to encompass in the grant.
+* `keyActions` - if the resource has an associated KMS key, also grant these permissions on the key. Notice that the resource must implement the `iam.IEncryptedResource` interface for this to work.
+* `docSummary` - the public documentation for the method.
+* `arnFormat` - In some cases, the policy applies to a specific ARN patterns, rather than just the ARN of the resource.
+
+In some cases, however, it might not be possible to specify the grant details using the `grants.json`
+file. This is usually the case when grants require additional logic, such as checking whether the
+resource is owned or unowned, or when the grant needs to modify the resource policy of the resource
+(if it has one). In these cases, you can implement the grants class manually.
+
+Historically, grant methods were implemented directly on the resource construct interface (e.g.
+`sns.ITopic.grantPublish(principal)`). For backward compatibility reasons, these methods are still
+present on the resource interfaces, but new grant implementations are only allowed through the Grants
+classes [_awslint:no-grants_].
 
 ### Metrics
 

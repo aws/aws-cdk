@@ -1,16 +1,21 @@
-import { Construct, DependencyGroup, IConstruct, Node } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
+import { DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
-import { CfnRole, IRoleRef, RoleReference } from './iam.generated';
-import { IIdentity } from './identity-base';
-import { IManagedPolicy, ManagedPolicy } from './managed-policy';
+import type { IRoleRef, RoleReference } from './iam.generated';
+import { CfnRole } from './iam.generated';
+import type { IIdentity } from './identity-base';
+import type { IManagedPolicy } from './managed-policy';
+import { ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
-import { PolicyStatement } from './policy-statement';
-import {
+import type { PolicyStatement } from './policy-statement';
+import type {
   AddToPrincipalPolicyResult,
-  ArnPrincipal,
   IPrincipal,
   PrincipalPolicyFragment,
+} from './principals';
+import {
+  ArnPrincipal,
 } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
@@ -20,22 +25,24 @@ import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
 import { RoleGrants } from './role-grants';
 import * as cxschema from '../../cloud-assembly-schema';
+import type {
+  Duration,
+  RemovalPolicy,
+} from '../../core';
 import {
   Annotations,
   ArnFormat,
   Aspects,
   ContextProvider,
-  Duration,
-  RemovalPolicy,
   Resource,
   Stack,
   Token,
   TokenComparison,
   ValidationError,
 } from '../../core';
+import type { CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import {
   CUSTOMIZE_ROLES_CONTEXT_KEY,
-  CustomizeRoleConfig,
   getCustomizeRolesConfig,
   getPrecreatedRoleConfig,
   memoizedGetter,

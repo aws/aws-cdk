@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
-import { AddonReference, CfnAddon, IAddonRef } from './eks.generated';
-import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
+import type { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import type { AddonReference, IAddonRef } from './eks.generated';
+import { CfnAddon } from './eks.generated';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack, Fn } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

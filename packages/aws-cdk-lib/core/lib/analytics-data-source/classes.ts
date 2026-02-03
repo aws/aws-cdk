@@ -4663,6 +4663,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'acceleratorType': '*',
         'initialInstanceCount': '*',
         'instanceType': '*',
+        'containerStartupHealthCheckTimeout': '*',
         'initialVariantWeight': '*',
         'model': {
           'modelArn': '*',
@@ -4722,6 +4723,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'acceleratorType': '*',
           'initialInstanceCount': '*',
           'instanceType': '*',
+          'containerStartupHealthCheckTimeout': '*',
           'initialVariantWeight': '*',
           'model': {
             'modelArn': '*',
@@ -5303,7 +5305,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': '*',
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'tags': '*',
@@ -5857,7 +5861,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': '*',
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'tags': '*',
@@ -6056,7 +6062,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableNodeAutoRepair': 'boolean'
     },
     'OpenIdConnectProvider': {
-      'url': '*'
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OidcProviderNative': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   'aws-cdk-lib.aws-apigateway': {
@@ -15111,7 +15122,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'additionalHelmChartValues': {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
-        }
+        },
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15696,7 +15708,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'additionalHelmChartValues': {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
-        }
+        },
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15940,7 +15953,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableNodeAutoRepair': 'boolean'
     },
     'OpenIdConnectProvider': {
-      'url': '*'
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OidcProviderNative': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   'aws-cdk-lib.aws-elasticloadbalancing': {
@@ -16688,12 +16706,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'oidcProviderName': '*',
       'url': '*',
       'clientIds': '*',
-      'thumbprints': '*'
+      'thumbprints': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'OpenIdConnectProvider': {
       'url': '*',
       'clientIds': '*',
-      'thumbprints': '*'
+      'thumbprints': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Policy': {
       'policyName': '*',
@@ -17433,6 +17453,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'metricsConfig': {
         'metrics': 'MetricType'
       },
+      'logLevel': 'EventSourceMappingLogLevel',
       'schemaRegistryConfig': '*'
     },
     'LatestVersion': {
@@ -18763,6 +18784,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'encryptionKey': '*',
       'logGroupName': '*',
       'dataProtectionPolicy': '*',
+      'deletionProtectionEnabled': 'boolean',
       'fieldIndexPolicies': '*',
       'retention': 'RetentionDays',
       'logGroupClass': 'LogGroupClass',
@@ -23847,6 +23869,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'tags': '*',
+      'interceptorConfigurations': {
+        'interceptionPoint': 'InterceptionPoint'
+      },
       'addLambdaTarget': [
         '*',
         {
@@ -23924,6 +23949,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'credentialProviderConfigurations': {
             'credentialProviderType': 'CredentialProviderType'
           }
+        }
+      ],
+      'addInterceptor': [
+        {
+          'interceptionPoint': 'InterceptionPoint'
         }
       ]
     },
@@ -26112,6 +26142,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'metricsConfig': {
             'metrics': 'MetricType'
           },
+          'logLevel': 'EventSourceMappingLogLevel',
           'schemaRegistryConfig': '*'
         }
       ],
@@ -27470,6 +27501,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'addPlacementStrategies': [
         '*'
       ],
@@ -27719,6 +27758,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'attachToApplicationTargetGroup': [
         {
           'metrics': '*',
@@ -28077,6 +28124,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'attachToClassicLB': [
         '*'
       ]

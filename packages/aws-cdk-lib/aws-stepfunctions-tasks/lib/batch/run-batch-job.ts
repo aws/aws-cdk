@@ -1,7 +1,8 @@
-import * as ec2 from '../../../aws-ec2';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Duration, Stack, UnscopedValidationError, withResolved } from '../../../core';
+import type { Duration } from '../../../core';
+import { Stack, UnscopedValidationError, withResolved } from '../../../core';
 import { getResourceArn } from '../resource-arn-suffix';
 
 /**

@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { Component, IComponent } from './component';
+import type { Construct } from 'constructs';
+import type { IComponent } from './component';
+import { Component } from './component';
 import { Platform } from './os-version';
 import { LATEST_VERSION } from './private/constants';
 

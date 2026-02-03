@@ -5,6 +5,7 @@ import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as kms from '../lib';
 import { KeySpec, KeyUsage } from '../lib';
+import { KeyGrants } from '../lib/key-grants';
 
 const ADMIN_ACTIONS: string[] = [
   'kms:Create*',
@@ -182,7 +183,7 @@ describe('key policies', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    key.grantDecrypt(user);
+    KeyGrants.fromKey(key).decrypt(user);
 
     // THEN
     // Key policy should be unmodified by the grant.
@@ -214,6 +215,82 @@ describe('key policies', () => {
     });
   });
 
+  test('decrypt with trustAccountIdentities false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    KeyGrants.fromKey(key, false).decrypt(user);
+
+    // THEN
+    // Only the principal's policy is modified by the grant.
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('decrypt L1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.CfnKey(stack, 'Key');
+    key.keyPolicy = {
+      Statement: [
+        {
+          Action: 'kms:*',
+          Effect: 'Allow',
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    };
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    KeyGrants.fromKey(key).decrypt(user);
+
+    // THEN
+    // Key policy should be unmodified by the grant.
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('encrypt', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -221,7 +298,7 @@ describe('key policies', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    key.grantEncrypt(user);
+    key.grants.encrypt(user);
 
     // THEN
     // Key policy should be unmodified by the grant.
@@ -260,7 +337,7 @@ describe('key policies', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    key.grantSign(user);
+    key.grants.sign(user);
 
     // THEN
     // Key policy should be unmodified by the grant.
@@ -299,7 +376,7 @@ describe('key policies', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    key.grantVerify(user);
+    key.grants.verify(user);
 
     // THEN
     // Key policy should be unmodified by the grant.
@@ -338,7 +415,7 @@ describe('key policies', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    key.grantSignVerify(user);
+    key.grants.signVerify(user);
 
     // THEN
     // Key policy should be unmodified by the grant.
@@ -382,7 +459,7 @@ describe('key policies', () => {
 
     principalStack.addDependency(keyStack);
 
-    key.grantEncrypt(principal);
+    key.grants.encrypt(principal);
 
     Template.fromStack(principalStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -415,7 +492,7 @@ describe('key policies', () => {
     const keyStack = new cdk.Stack(app, 'KeyStack', { env: { region: 'testregion2' } });
     const key = new kms.Key(keyStack, 'Key');
 
-    key.grantEncrypt(principal);
+    key.grants.encrypt(principal);
 
     Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
@@ -463,7 +540,7 @@ describe('key policies', () => {
     const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
     const key = new kms.Key(keyStack, 'Key');
 
-    key.grantEncrypt(principal);
+    key.grants.encrypt(principal);
 
     Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
@@ -509,7 +586,7 @@ describe('key policies', () => {
     const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
     const key = new kms.Key(keyStack, 'Key');
     principalStack.addDependency(keyStack);
-    key.grantEncrypt(principal.withoutPolicyUpdates());
+    key.grants.encrypt(principal.withoutPolicyUpdates());
 
     Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
@@ -1278,7 +1355,7 @@ describe('HMAC', () => {
     });
     const user = new iam.User(stack, 'User');
 
-    key.grantGenerateMac(user);
+    key.grants.generateMac(user);
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
@@ -1315,7 +1392,7 @@ describe('HMAC', () => {
     });
     const user = new iam.User(stack, 'User');
 
-    key.grantVerifyMac(user);
+    key.grants.verifyMac(user);
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {

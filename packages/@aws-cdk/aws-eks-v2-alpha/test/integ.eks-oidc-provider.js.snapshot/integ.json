@@ -1,12 +1,12 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "aws-cdk-eks-oidc-provider/DefaultTest": {
+    "aws-cdk-eks-v2-alpha-oidc-provider/DefaultTest": {
       "stacks": [
-        "aws-eks-oidc-provider-test"
+        "aws-cdk-eks-v2-alpha-oidc-provider-test"
       ],
-      "assertionStack": "aws-cdk-eks-oidc-provider/DefaultTest/DeployAssert",
-      "assertionStackName": "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9"
+      "assertionStack": "aws-cdk-eks-v2-alpha-oidc-provider/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksv2alphaoidcproviderDefaultTestDeployAssertDE0838AE"
     }
   },
   "minimumCliVersion": "2.1033.0"

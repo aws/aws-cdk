@@ -1,13 +1,18 @@
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
+import type { ISecurityGroup, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { InstanceType, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
-import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cxapi from 'aws-cdk-lib/cx-api';
-import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster, IpFamily } from './cluster';
 import { isGpuInstanceType } from './private/nodegroup';
 
 /**

@@ -1,5 +1,5 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { LinuxLambdaBuildImage, Project, BuildSpec, ComputeType } from 'aws-cdk-lib/aws-codebuild';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 

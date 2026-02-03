@@ -1,8 +1,9 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, Stack } from 'aws-cdk-lib/core';
+import type { AccessEntryProps, IAccessPolicy } from '../lib';
 import {
-  AccessEntry, AccessEntryProps, AccessEntryType,
-  AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion,
+  AccessEntry, AccessEntryType,
+  AccessScopeType, Cluster, AccessPolicy, KubernetesVersion,
 } from '../lib';
 
 describe('AccessEntry', () => {

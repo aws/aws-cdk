@@ -1,8 +1,9 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as path from 'path';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';

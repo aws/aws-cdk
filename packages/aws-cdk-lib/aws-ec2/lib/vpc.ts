@@ -1,5 +1,12 @@
-import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
-import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
+import type { IConstruct, IDependable } from 'constructs';
+import { Construct, Dependable, DependencyGroup, Node } from 'constructs';
+import type { ClientVpnEndpointOptions } from './client-vpn-endpoint';
+import { ClientVpnEndpoint } from './client-vpn-endpoint';
+import type {
+  CfnVPCCidrBlock,
+  ISubnetRef,
+  IVPCRef, SubnetReference, VPCReference,
+} from './ec2.generated';
 import {
   CfnEgressOnlyInternetGateway,
   CfnEIP,
@@ -10,22 +17,22 @@ import {
   CfnSubnet,
   CfnSubnetRouteTableAssociation,
   CfnVPC,
-  CfnVPCCidrBlock,
   CfnVPCGatewayAttachment,
   CfnVPNGatewayRoutePropagation,
-  ISubnetRef,
-  IVPCRef, SubnetReference, VPCReference,
 } from './ec2.generated';
-import {
+import type {
   AllocatedSubnet,
   IIpAddresses,
   IIpv6Addresses,
-  IpAddresses,
-  Ipv6Addresses,
   RequestedSubnet,
 } from './ip-addresses';
+import {
+  IpAddresses,
+  Ipv6Addresses,
+} from './ip-addresses';
 import { NatProvider } from './nat';
-import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
+import type { INetworkAcl } from './network-acl';
+import { NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
 import {
   allRouteTableIds,
@@ -35,17 +42,22 @@ import {
   subnetGroupNameFromConstructId,
   subnetId,
 } from './util';
+import type {
+  GatewayVpcEndpointOptions,
+  InterfaceVpcEndpointOptions,
+} from './vpc-endpoint';
 import {
   GatewayVpcEndpoint,
   GatewayVpcEndpointAwsService,
-  GatewayVpcEndpointOptions,
   InterfaceVpcEndpoint,
-  InterfaceVpcEndpointOptions,
 } from './vpc-endpoint';
-import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
-import { VpcLookupOptions } from './vpc-lookup';
-import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
+import type { FlowLogOptions } from './vpc-flow-logs';
+import { FlowLog, FlowLogResourceType } from './vpc-flow-logs';
+import type { VpcLookupOptions } from './vpc-lookup';
+import type { EnableVpnGatewayOptions, VpnConnectionOptions } from './vpn';
+import { VpnConnection, VpnConnectionType, VpnGateway } from './vpn';
 import * as cxschema from '../../cloud-assembly-schema';
+import type { IResource } from '../../core';
 import {
   Annotations,
   Arn,
@@ -53,7 +65,6 @@ import {
   CustomResource,
   FeatureFlags,
   Fn,
-  IResource,
   Lazy,
   Names,
   Resource,

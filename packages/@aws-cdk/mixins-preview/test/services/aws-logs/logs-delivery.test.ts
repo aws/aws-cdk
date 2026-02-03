@@ -1,10 +1,11 @@
 import { Stack } from 'aws-cdk-lib';
-import { Bucket, BucketPolicy, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { Bucket, BucketEncryption, BucketPolicy, CfnBucket, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { CfnDeliveryStream, DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { CfnLogGroup, LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { CfnKey, Key } from 'aws-cdk-lib/aws-kms';
 import { FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../../lib/services/aws-logs';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
@@ -64,6 +65,83 @@ describe('S3 Delivery', () => {
     const bucketPolicyLogicalId = Object.keys(bucketPolicies)[0];
 
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(bucketPolicyLogicalId);
+  });
+
+  test('creates S3 Delivery when bucket is an L1', () => {
+    const bucket = new CfnBucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket);
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: {
+        Ref: 'Destination',
+      },
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:PutObject',
+            Condition: {
+              StringEquals: {
+                's3:x-amz-acl': 'bucket-owner-full-control',
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
+              },
+              ArnLike: {
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':logs:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                },
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'Destination',
+                      'Arn',
+                    ],
+                  },
+                  '/AWSLogs/',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    },
+    );
   });
 
   test('creates delivery source as child of source resource', () => {
@@ -444,6 +522,202 @@ describe('S3 Delivery', () => {
     },
     );
   });
+
+  test('adds KMS key policy when bucket is encrypted with KMS key and KMS key is passed in to S3LogsDelivery', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket = new Bucket(stack, 'Destination', {
+      encryptionKey: key,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket, { kmsKey: key });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('adds KMS key policy when Key is an L1 Construct', () => {
+    const key = new CfnKey(stack, 'EncryptionKey');
+    const bucket = new CfnBucket(stack, 'Destination', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          bucketKeyEnabled: true,
+          serverSideEncryptionByDefault: {
+            kmsMasterKeyId: key.attrKeyId,
+            sseAlgorithm: 'aws:kms',
+          },
+        }],
+      },
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket, { kmsKey: key });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('adds KMS key policy when bucket is encrypted with KMS key and KMS key is not passed in to S3LogsDelivery', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket = new Bucket(stack, 'Destination', {
+      encryptionKey: key,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket);
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('KMS key policy is not duplicated when multiple buckets use the same key for encryption', () => {
+    const key = new Key(stack, 'EncryptionKey');
+    const bucket1 = new Bucket(stack, 'Destination1', {
+      encryptionKey: key,
+    });
+
+    const bucket2 = new Bucket(stack, 'Destination2', {
+      encryptionKey: key,
+    });
+
+    const s3Logs1 = new S3LogsDelivery(bucket1, { kmsKey: key });
+    const s3Logs2 = new S3LogsDelivery(bucket2);
+    s3Logs1.bind(source, logType, source.bucketArn);
+    s3Logs2.bind(source, logType, source.bucketArn);
+
+    const template = Template.fromStack(stack);
+    const keyResource = template.findResources('AWS::KMS::Key');
+    const keyPolicy = Object.values(keyResource)[0].Properties.KeyPolicy;
+    const logsDeliveryStatements = keyPolicy.Statement.filter((stmt: any) =>
+      stmt.Sid === 'AWS CDK: Allow Logs Delivery to use the key',
+    );
+
+    expect(logsDeliveryStatements).toHaveLength(1);
+  });
+
+  test('does not add KMS key policy when bucket is encrypted using AWS managed keys', () => {
+    const bucket = new Bucket(stack, 'Destination', {
+      encryption: BucketEncryption.KMS_MANAGED,
+    });
+
+    const s3Logs = new S3LogsDelivery(bucket);
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+            },
+          },
+        ],
+      },
+    });
+  });
 });
 
 describe('Cloudwatch Logs Delivery', () => {
@@ -540,6 +814,54 @@ describe('Cloudwatch Logs Delivery', () => {
     const cwlPolicyLogicalId = Object.keys(resourcePolicies)[0];
 
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(cwlPolicyLogicalId);
+  });
+
+  test('creates Cloudwatch delivery destination when given an L1 Log Group', () => {
+    const logGroup = new CfnLogGroup(stack, 'LogGroup', {
+      retentionInDays: 7,
+      logGroupName: 'myCoolLogGroup',
+    });
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup);
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Condition":{"StringEquals":{"aws:SourceAccount":"',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '"},"ArnLike":{"aws:SourceArn":"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':logs:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"',
+            {
+              'Fn::GetAtt': [
+                'LogGroup',
+                'Arn',
+              ],
+            },
+            ':log-stream:*"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+      PolicyName: 'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupB6CEE4EE',
+    });
   });
 
   test('if there is an exsiting Cloudwatch resource policy but it is not attached to the root of the stack, make a new one', () => {
@@ -711,6 +1033,42 @@ describe('Firehose Stream Delivery', () => {
       Name: Match.stringLikeRegexp('cdk-accesslogs-source-.*'),
     });
 
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+      Tags: Match.arrayWith([Match.objectLike({
+        Key: 'LogDeliveryEnabled',
+        Value: 'true',
+      })]),
+    });
+  });
+
+  test('creates Firehose Delivery with an L1 Delivery Stream', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket', {});
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+      inlinePolicies: {
+        S3Access: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ['s3:PutObject', 's3:GetObject', 's3:ListBucket'],
+              resources: [streamBucket.bucketArn, `${streamBucket.bucketArn}/*`],
+            }),
+          ],
+        }),
+      },
+    });
+    const stream = new CfnDeliveryStream(stack, 'Firehose', {
+      s3DestinationConfiguration: {
+        bucketArn: streamBucket.bucketArn,
+        roleArn: firehoseRole.roleArn,
+      },
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream);
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       Tags: Match.arrayWith([Match.objectLike({
         Key: 'LogDeliveryEnabled',

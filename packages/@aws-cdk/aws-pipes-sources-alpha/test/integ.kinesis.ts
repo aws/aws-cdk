@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
-import { ITarget, Pipe, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { KinesisSource, KinesisStartingPosition, OnPartialBatchItemFailure } from '../lib';

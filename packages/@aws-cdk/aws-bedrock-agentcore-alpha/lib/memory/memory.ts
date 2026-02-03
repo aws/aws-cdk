@@ -11,23 +11,26 @@
  *  and limitations under the License.
  */
 
-import { Arn, ArnFormat, Duration, IResource, Lazy, Resource, ResourceProps, Token, Names } from 'aws-cdk-lib';
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import { CfnMemory, CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
-import {
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Duration, Lazy, Resource, Token, Names } from 'aws-cdk-lib';
+import type { CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CfnMemory } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { IConstruct, Construct } from 'constructs';
+import type { IConstruct, Construct } from 'constructs';
 // Internal Libs
-import { IMemoryStrategy } from './memory-strategy';
+import type { IMemoryStrategy } from './memory-strategy';
 import { MemoryPerms } from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
 
@@ -878,7 +881,7 @@ export class Memory extends MemoryBase {
    * @default - undefined if no strategies are defined or array is empty
    * @internal This is an internal core function and should not be called directly.
    */
-  private _renderMemoryStrategies(): bedrockagentcore.CfnMemory.MemoryStrategyProperty[] | undefined {
+  private _renderMemoryStrategies(): CfnMemory.MemoryStrategyProperty[] | undefined {
     if (!this.memoryStrategies || this.memoryStrategies.length === 0) {
       return undefined;
     }

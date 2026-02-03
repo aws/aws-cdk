@@ -138,6 +138,40 @@
     "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
    ]
   },
+  "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870": {
+   "Type": "AWS::Logs::DeliveryDestination",
+   "Properties": {
+    "DeliveryDestinationType": "S3",
+    "DestinationResourceArn": {
+     "Fn::GetAtt": [
+      "DeliveryBucketA9AE6474",
+      "Arn"
+     ]
+    },
+    "Name": "cdk-s3-info-logs-dest-VendedLogsMixinyBucketE1BC60E4818510B9"
+   },
+   "DependsOn": [
+    "DeliveryBucketPolicyB86375F3"
+   ]
+  },
+  "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Delivery76F6DBB2": {
+   "Type": "AWS::Logs::Delivery",
+   "Properties": {
+    "DeliveryDestinationArn": {
+     "Fn::GetAtt": [
+      "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870",
+      "Arn"
+     ]
+    },
+    "DeliverySourceName": {
+     "Ref": "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
+    }
+   },
+   "DependsOn": [
+    "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870",
+    "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
+   ]
+  },
   "DeliveryLogGroup2A53FD53": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
@@ -146,6 +180,90 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "DeliveryBucketKey146CC85D": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Enabled": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": [
+          {
+           "Ref": "AWS::AccountId"
+          }
+         ]
+        },
+        "ArnLike": {
+         "aws:SourceArn": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":logs:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":delivery-source:*"
+            ]
+           ]
+          }
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "delivery.logs.amazonaws.com"
+       },
+       "Resource": "*",
+       "Sid": "AWS CDK: Allow Logs Delivery to use the key"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "DeliveryBucketA9AE6474": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -153,7 +271,13 @@
      "ServerSideEncryptionConfiguration": [
       {
        "ServerSideEncryptionByDefault": {
-        "SSEAlgorithm": "AES256"
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "DeliveryBucketKey146CC85D",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
        }
       }
      ]

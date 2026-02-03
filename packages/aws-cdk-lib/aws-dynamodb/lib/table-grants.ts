@@ -1,4 +1,4 @@
-import { ITableRef } from './dynamodb.generated';
+import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
 import { Stack } from '../../core';

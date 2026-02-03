@@ -4,7 +4,7 @@ import { Stack } from 'aws-cdk-lib/core';
 import * as vpc from '../lib';
 import * as subnet from '../lib/subnet-v2';
 import { TransitGateway } from '../lib/transit-gateway';
-import { ITransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
+import type { ITransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
 import { TransitGatewayRouteTableAssociation } from '../lib/transit-gateway-route-table-association';
 import { TransitGatewayVpcAttachment } from '../lib/transit-gateway-vpc-attachment';
 

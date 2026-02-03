@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 import { CustomResource, Stack } from '../../core';
 

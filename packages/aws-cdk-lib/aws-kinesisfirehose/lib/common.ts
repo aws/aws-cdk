@@ -1,9 +1,9 @@
-import { ILoggingConfig } from './logging-config';
-import { IDataProcessor } from './processor';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
-import * as cdk from '../../core';
+import type { ILoggingConfig } from './logging-config';
+import type { IDataProcessor } from './processor';
+import type * as iam from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import type * as s3 from '../../aws-s3';
+import type * as cdk from '../../core';
 
 /**
  * Possible compression options Amazon Data Firehose can use to compress data on delivery.

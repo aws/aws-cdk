@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fe7cb5bb370839b0b24bbb694ce5b35accdfdf9311a6eb0f464ebf401dd74aec.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/d3da71eaf3fea5f2b45e40d733e00d525948a688e8c80134ec5b925a463a7667.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,12 +43,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/AdminRole/ImportAdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/AdminRole/Resource": [
@@ -413,12 +407,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Role/Resource": [
@@ -955,12 +943,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1131,12 +1113,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1294,12 +1270,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1338,12 +1308,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/fargate-profile-default/PodExecutionRole/ImportPodExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/fargate-profile-default/PodExecutionRole/Resource": [
@@ -1633,12 +1597,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/Nodes/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodes/InstanceRole/Resource": [
@@ -1971,12 +1929,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceRole/Resource": [
@@ -2312,12 +2264,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -2651,12 +2597,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/spot/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/spot/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -2761,12 +2701,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -2824,12 +2758,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-spot/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-spot/NodeGroupRole/Resource": [
@@ -2891,12 +2819,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -2954,12 +2876,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole/Resource": [
@@ -3031,12 +2947,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-gpu/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-gpu/NodeGroupRole/Resource": [
@@ -3150,12 +3060,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/MyServiceAccount/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/MyServiceAccount/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -3188,16 +3092,57 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/OpenIdConnectProvider/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterOpenIdConnectProviderE7EB0530"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/ConditionJson/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterMyServiceAccountWithOverwriteConditionJson36F53AEB"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterMyServiceAccountWithOverwriteRole751D899A"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/manifest-MyServiceAccountWithOverwriteServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/MyServiceAccountWithOverwrite/manifest-MyServiceAccountWithOverwriteServiceAccountResource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterMyServiceAccountWithOverwritemanifestMyServiceAccountWithOverwriteServiceAccountResource6DEFAA89"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/MyExtendedServiceAccount/ConditionJson/Resource": [
@@ -3225,12 +3170,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/MyExtendedServiceAccount/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/MyExtendedServiceAccount/Role/Resource": [

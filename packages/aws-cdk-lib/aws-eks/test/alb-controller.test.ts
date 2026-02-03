@@ -244,3 +244,24 @@ describe('AlbController AwsAuth creation', () => {
     Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, awsAuthManifest);
   });
 });
+
+test('should pass overwriteServiceAccount to service account', () => {
+  // GIVEN
+  const { stack } = testFixture();
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+  });
+
+  // WHEN
+  AlbController.create(stack, {
+    cluster,
+    version: AlbControllerVersion.V2_6_2,
+    overwriteServiceAccount: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
+    Overwrite: true,
+  });
+});

@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
-import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
+import type { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
+import { ComputeEnvironmentBase } from './compute-environment-base';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';

@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { ArnFormat, Stack, ValidationError } from '../../../core';
-import { IStateMachineRef } from '../../../interfaces/generated/aws-stepfunctions-interfaces.generated';
+import type { IStateMachineRef } from '../../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface StepFunctionsStartExecutionOptions {

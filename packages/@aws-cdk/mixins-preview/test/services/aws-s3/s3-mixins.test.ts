@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Stack, App } from 'aws-cdk-lib/core';
 import { Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Mixins from '../../../lib/services/aws-s3/mixins';
 import { PropertyMergeStrategy } from '../../../lib/mixins';
@@ -45,10 +46,10 @@ describe('S3 Mixins', () => {
     });
   });
 
-  describe('EnableVersioning', () => {
+  describe('BucketVersioning', () => {
     test('applies to S3 bucket', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const mixin = new s3Mixins.EnableVersioning();
+      const mixin = new s3Mixins.BucketVersioning();
 
       expect(mixin.supports(bucket)).toBe(true);
       mixin.applyTo(bucket);
@@ -57,9 +58,19 @@ describe('S3 Mixins', () => {
       expect(versionConfig?.status).toBe('Enabled');
     });
 
+    test('suspends versioning when disabled', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketVersioning(false);
+
+      mixin.applyTo(bucket);
+
+      const versionConfig = bucket.versioningConfiguration as any;
+      expect(versionConfig?.status).toBe('Suspended');
+    });
+
     test('does not support non-S3 constructs', () => {
       const construct = new TestConstruct(stack, 'test');
-      const mixin = new s3Mixins.EnableVersioning();
+      const mixin = new s3Mixins.BucketVersioning();
 
       expect(mixin.supports(construct)).toBe(false);
     });
@@ -140,6 +151,41 @@ describe('S3 Mixins', () => {
       const mixin = new s3Mixins.CfnBucketPropsMixin({ bucketName: 'test' });
 
       expect(mixin.supports(construct)).toBe(false);
+    });
+  });
+
+  describe('BucketPolicyStatementsMixin', () => {
+    test('adds statements to bucket policy', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const bucketPolicy = new s3.CfnBucketPolicy(stack, 'BucketPolicy', {
+        bucket: bucket.ref,
+        policyDocument: new iam.PolicyDocument(),
+      });
+
+      const mixin = new s3Mixins.BucketPolicyStatementsMixin([
+        new iam.PolicyStatement({
+          actions: ['s3:GetObject'],
+          resources: ['*'],
+          principals: [new iam.AnyPrincipal()],
+        }),
+      ]);
+
+      expect(mixin.supports(bucketPolicy)).toBe(true);
+      mixin.applyTo(bucketPolicy);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: [{ Action: 's3:GetObject', Effect: 'Allow', Principal: { AWS: '*' }, Resource: '*' }],
+        },
+      });
+    });
+
+    test('does not support non-bucket-policy constructs', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketPolicyStatementsMixin([]);
+
+      expect(mixin.supports(bucket)).toBe(false);
     });
   });
 });

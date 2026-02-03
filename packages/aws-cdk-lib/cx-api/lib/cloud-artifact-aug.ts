@@ -3,7 +3,7 @@ import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact
 import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
-import { CloudAssembly } from './cloud-assembly';
+import type { CloudAssembly } from './cloud-assembly';
 import * as cxschema from '../../cloud-assembly-schema';
 
 /**

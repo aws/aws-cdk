@@ -10,13 +10,14 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 // for files that are part of this package or part of core, we do import individual classes or functions
-import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, IWaitConditionHandleRef, RemovalPolicy, Resource, Stack, Token, ValidationError, WaitConditionHandleReference } from 'aws-cdk-lib/core';
+import type { IResource, IWaitConditionHandleRef, WaitConditionHandleReference } from 'aws-cdk-lib/core';
+import { CfnWaitCondition, CfnWaitConditionHandle, Fn, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { exampleResourceArnComponents } from './private/example-resource-common';
 
 /**

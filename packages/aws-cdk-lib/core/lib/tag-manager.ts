@@ -1,8 +1,8 @@
 import { TagType } from './cfn-resource';
-import { CfnTag } from './cfn-tag';
+import type { CfnTag } from './cfn-tag';
 import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
-import { IResolvable } from './resolvable';
+import type { IResolvable } from './resolvable';
 
 const TAG_MANAGER_SYM = Symbol.for('@aws-cdk/core.TagManager');
 

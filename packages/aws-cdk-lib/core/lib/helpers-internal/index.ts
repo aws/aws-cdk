@@ -5,5 +5,6 @@ export * from './customize-roles';
 export * from './string-specializer';
 export * from './validate-all-props';
 export * from './strings';
-export { constructInfoFromConstruct, constructInfoFromStack } from '../private/runtime-info';
+export { constructInfoFromConstruct } from '../private/runtime-info';
+export { constructAnalyticsFromScope } from '../private/stack-metadata';
 export * from './memoize';

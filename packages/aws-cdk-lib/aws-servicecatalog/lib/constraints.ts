@@ -1,6 +1,6 @@
-import { MessageLanguage } from './common';
-import * as iam from '../../aws-iam';
-import * as cdk from '../../core';
+import type { MessageLanguage } from './common';
+import type * as iam from '../../aws-iam';
+import type * as cdk from '../../core';
 
 /**
  * Properties for governance mechanisms and constraints.
