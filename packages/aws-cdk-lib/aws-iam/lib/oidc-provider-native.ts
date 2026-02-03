@@ -29,7 +29,7 @@ export interface IOidcProvider extends IResource, IOIDCProviderRef {
    * Alias for `oidcProviderArn` to maintain backwards compatibility for
    * constructs which accept `iam.IOpenIdConnectProvider`.
    *
-   * Use `oidcProviderArn` instead.
+   * Use `oidcProviderArn` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
    */
   readonly openIdConnectProviderArn: string;
 
@@ -37,7 +37,7 @@ export interface IOidcProvider extends IResource, IOIDCProviderRef {
    * Alias for `oidcProviderIssuer` to maintain backwards compatibility for
    * constructs which accept `iam.IOpenIdConnectProvider.
    *
-   * Use `oidcProviderIssuer` instead.
+   * Use `oidcProviderIssuer` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
    */
   readonly openIdConnectProviderIssuer: string;
 }
