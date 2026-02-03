@@ -5091,8 +5091,19 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 
   expect(() => {
-    // WHEN Capacity Provider define capacityProviderName start with Aws.
+    // WHEN Capacity Provider define capacityProviderName start with ecs.
     const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-3', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'fargatecp',
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: fargatecp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with Aws.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-4', {
       autoScalingGroup: autoScalingGroupAl2,
       enableManagedTerminationProtection: false,
       capacityProviderName: 'AwsCp',
@@ -5103,7 +5114,7 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
 
   expect(() => {
     // WHEN Capacity Provider define capacityProviderName start with Ecs.
-    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-4', {
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-5', {
       autoScalingGroup: autoScalingGroupAl2,
       enableManagedTerminationProtection: false,
       capacityProviderName: 'EcsCp',
@@ -5111,6 +5122,17 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: EcsCp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with Ecs.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-6', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'FargateCp',
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: FargateCp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });
 
 test('does not throw and sets a proper capacity provider name when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
