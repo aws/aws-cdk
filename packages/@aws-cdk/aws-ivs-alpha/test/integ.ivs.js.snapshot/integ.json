@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "48.0.0",
   "testCases": {
     "ivs-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ivs-test/DefaultTest/DeployAssert",
       "assertionStackName": "ivstestDefaultTestDeployAssertDCE80D47"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

@@ -1,13 +1,14 @@
 {
-  "version": "36.0.5",
+  "version": "48.0.0",
   "files": {
     "52a6656a6fbac13adc4ee65169cac1f0b58ca4afa982ba3162609a4acf04723f": {
+      "displayName": "aws-cdk-ivs-insecure-ingest Template",
       "source": {
         "path": "aws-cdk-ivs-insecure-ingest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-a46ecc04": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "52a6656a6fbac13adc4ee65169cac1f0b58ca4afa982ba3162609a4acf04723f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
