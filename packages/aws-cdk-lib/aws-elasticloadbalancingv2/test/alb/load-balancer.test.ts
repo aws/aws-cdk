@@ -344,6 +344,51 @@ describe('tests', () => {
     });
   });
 
+  describe('dropInvalidHeaderFields', () => {
+    test('dropInvalidHeaderFields is not set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.not(
+          Match.arrayWith([
+            {
+              Key: 'routing.http.drop_invalid_header_fields.enabled',
+              Value: Match.anyValue(),
+            },
+          ]),
+        ),
+      });
+    });
+
+    test.each([true, false])('dropInvalidHeaderFields is set to %s', (dropInvalidHeaderFields) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        dropInvalidHeaderFields,
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'routing.http.drop_invalid_header_fields.enabled',
+            Value: String(dropInvalidHeaderFields),
+          },
+        ]),
+      });
+    });
+  });
+
   test('Deletion protection false', () => {
     // GIVEN
     const stack = new cdk.Stack();
