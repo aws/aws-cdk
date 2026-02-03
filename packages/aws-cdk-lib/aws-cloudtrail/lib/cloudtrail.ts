@@ -1,14 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnTrail } from './cloudtrail.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
+import type * as kms from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
 import { Annotations, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -235,7 +236,14 @@ export class Trail extends Resource {
    * i.e. arn:aws:cloudtrail:us-east-2:123456789012:trail/myCloudTrail
    * @attribute
    */
-  public readonly trailArn: string;
+  @memoizedGetter
+  get trailArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'cloudtrail',
+      resource: 'trail',
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * ARN of the Amazon SNS topic that's associated with the CloudTrail trail,
@@ -245,6 +253,7 @@ export class Trail extends Resource {
   public readonly trailSnsTopicArn: string;
 
   private readonly _logGroup?: logs.ILogGroupRef;
+  private readonly resource: CfnTrail;
 
   /**
    * The CloudWatch log group to which CloudTrail events are sent.
@@ -372,11 +381,7 @@ export class Trail extends Resource {
       insightSelectors: this.insightTypeValues,
     });
 
-    this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
-      service: 'cloudtrail',
-      resource: 'trail',
-      resourceName: this.physicalName,
-    });
+    this.resource = trail;
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
     // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.

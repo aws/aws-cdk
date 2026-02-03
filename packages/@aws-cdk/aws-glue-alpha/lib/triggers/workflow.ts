@@ -1,21 +1,24 @@
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import {
   ConditionLogicalOperator,
   PredicateLogical,
 } from '../constants';
-import {
+import type {
   Action,
-  TriggerSchedule,
   OnDemandTriggerOptions,
   WeeklyScheduleTriggerOptions,
   DailyScheduleTriggerOptions,
   CustomScheduledTriggerOptions,
   NotifyEventTriggerOptions,
   ConditionalTriggerOptions,
+} from './trigger-options';
+import {
+  TriggerSchedule,
 } from './trigger-options';
 
 /**
@@ -406,8 +409,7 @@ export class Workflow extends WorkflowBase {
     return new Import(scope, id);
   }
 
-  public readonly workflowName: string;
-  public readonly workflowArn: string;
+  private resource: CfnWorkflow;
 
   constructor(scope: constructs.Construct, id: string, props?: WorkflowProps) {
     super(scope, id, {
@@ -416,14 +418,21 @@ export class Workflow extends WorkflowBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const resource = new CfnWorkflow(this, 'Resource', {
+    this.resource = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,
       description: props?.description,
       defaultRunProperties: props?.defaultRunProperties,
       maxConcurrentRuns: props?.maxConcurrentRuns,
     });
+  }
 
-    this.workflowName = this.getResourceNameAttribute(resource.ref);
-    this.workflowArn = this.buildWorkflowArn(this, this.workflowName);
+  @memoizedGetter
+  public get workflowName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get workflowArn(): string {
+    return this.buildWorkflowArn(this, this.workflowName);
   }
 }

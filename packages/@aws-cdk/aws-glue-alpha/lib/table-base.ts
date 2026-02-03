@@ -1,6 +1,7 @@
-import { CfnTable } from 'aws-cdk-lib/aws-glue';
+import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Fn, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';

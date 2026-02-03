@@ -1,11 +1,14 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Template } from '../../assertions';
-import { Alarm, Metric } from '../../aws-cloudwatch';
+import type { Metric } from '../../aws-cloudwatch';
+import { Alarm } from '../../aws-cloudwatch';
 import { User } from '../../aws-iam';
 import { Key } from '../../aws-kms';
-import { Stack, StackProps, App } from '../../core';
-import { TableV2, AttributeType, TableEncryptionV2, ITable, ITableV2, Operation } from '../lib';
+import type { StackProps } from '../../core';
+import { Stack, App } from '../../core';
+import type { ITable, ITableV2 } from '../lib';
+import { TableV2, AttributeType, TableEncryptionV2, Operation } from '../lib';
 
 function testForKey(stack: Stack) {
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
