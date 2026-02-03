@@ -2287,6 +2287,17 @@ describe('instance', () => {
     })).toThrow(/maximum ratio of storage throughput to IOPS is 0.25/);
   });
 
+  test('throws if IOPS is less than 1000', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      allocatedStorage: 200,
+      storageType: rds.StorageType.IO1,
+      iops: 999,
+    })).toThrow('The IOPS value must be at least 1000, got: 999');
+  });
+
   test.each([
     rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
     rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
@@ -2666,6 +2677,22 @@ describe('instance', () => {
           ],
         });
       }).toThrow(`The maximum ratio of storage throughput to IOPS is 0.25 for additionalStorageVolumes[0], got: ${1000 / 3000}`);
+    });
+
+    test('throws if IOPS is less than 1000 for additional volume', () => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            {
+              allocatedStorage: cdk.Size.gibibytes(200),
+              storageType: rds.StorageType.IO2,
+              iops: 999,
+            },
+          ],
+        });
+      }).toThrow('The IOPS value must be at least 1000 for additionalStorageVolumes[0], got: 999');
     });
 
     test('accepts GP3 throughput/IOPS ratio at exactly 0.25', () => {

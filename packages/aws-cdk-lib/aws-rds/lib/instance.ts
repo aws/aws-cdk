@@ -1223,10 +1223,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
-    // Validate additionalStorageVolumes
-    if (props.additionalStorageVolumes) {
       validateAdditionalStorageVolumes(this, engineType, props.additionalStorageVolumes);
-    }
 
     // only Oracle and SQL Server require the import and export Roles to be the same
     const combineRoles = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
@@ -1280,8 +1277,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       licenseModel: props.licenseModel,
       timezone: props.timezone,
       dbParameterGroupName,
-      additionalStorageVolumes: props.additionalStorageVolumes &&
-        renderAdditionalStorageVolumes(props.additionalStorageVolumes),
+      additionalStorageVolumes: renderAdditionalStorageVolumes(props.additionalStorageVolumes),
     };
   }
 
@@ -1729,18 +1725,27 @@ function defaultIops(storageType: StorageType, iops?: number): number | undefine
 }
 
 /**
- * Validates storage throughput configuration.
+ * Validates storage throughput and IOPS configuration.
+ * - IOPS must be at least 1000 when specified
  * - storageThroughput can only be specified with GP3 storage type
  * - throughput/IOPS ratio must be <= 0.25 for GP3
  */
 function validateStorageThroughput(
   scope: Construct,
-  storageType: string,
-  storageThroughputMiBps: number | undefined,
-  iops: number | undefined,
+  storageType: StorageType,
+  storageThroughputMiBps?: number,
+  iops?: number,
   volumeDescription?: string,
 ): void {
   const desc = volumeDescription ? ` for ${volumeDescription}` : '';
+
+  // Validate IOPS minimum value
+  if (iops !== undefined && !Token.isUnresolved(iops) && iops < 1000) {
+    throw new ValidationError(
+      `The IOPS value must be at least 1000${desc}, got: ${iops}`,
+      scope,
+    );
+  }
 
   if (storageThroughputMiBps !== undefined && storageType.toLowerCase() !== 'gp3') {
     throw new ValidationError(
@@ -1765,26 +1770,14 @@ function validateStorageThroughput(
 }
 
 /**
- * Volume names for additional storage volumes.
- */
-const VOLUME_NAMES = ['rdsdbdata2', 'rdsdbdata3', 'rdsdbdata4'];
-
-/**
- * Returns the volume name based on array index.
- */
-function getVolumeName(index: number): string {
-  return VOLUME_NAMES[index];
-}
-
-/**
  * Validates additional storage volumes configuration.
  */
 function validateAdditionalStorageVolumes(
   scope: Construct,
   engineType: string,
-  volumes: AdditionalStorageVolume[],
+  volumes?: AdditionalStorageVolume[],
 ): void {
-  if (volumes.length === 0) {
+  if (!volumes || volumes.length === 0) {
     return;
   }
 
@@ -1850,17 +1843,18 @@ function validateAdditionalStorageVolumes(
  * Renders additional storage volumes to L1 format.
  */
 function renderAdditionalStorageVolumes(
-  volumes: AdditionalStorageVolume[],
+  volumes?: AdditionalStorageVolume[],
 ): CfnDBInstance.AdditionalStorageVolumeProperty[] | undefined {
-  if (volumes.length === 0) {
+  if (!volumes || volumes.length === 0) {
     return undefined;
   }
 
+  const volumeNames = ['rdsdbdata2', 'rdsdbdata3', 'rdsdbdata4'];
   return volumes.map((volume, index) => {
     const allocatedStorageGiB = volume.allocatedStorage.toGibibytes();
     const storageType = volume.storageType ?? StorageType.GP3;
     return {
-      volumeName: getVolumeName(index),
+      volumeName: volumeNames[index],
       storageType,
       // allocatedStorage must be string type in CFN
       allocatedStorage: Token.isUnresolved(allocatedStorageGiB)
