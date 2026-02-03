@@ -1,15 +1,16 @@
-import { Construct, IDependable, Node } from 'constructs';
-import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type { Construct, IDependable } from 'constructs';
+import { Node } from 'constructs';
+import type * as iam from '../../../aws-iam';
+import type * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { undefinedIfAllValuesAreEmpty } from '../../../core/lib/util';
-import { CommonDestinationProps, DestinationS3BackupProps } from '../common';
-import { CfnDeliveryStream } from '../kinesisfirehose.generated';
-import { ILoggingConfig } from '../logging-config';
-import { DataProcessorBindOptions, IDataProcessor } from '../processor';
-import { DynamicPartitioningProps } from '../s3-bucket';
+import type { CommonDestinationProps, DestinationS3BackupProps } from '../common';
+import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
+import type { ILoggingConfig } from '../logging-config';
+import type { DataProcessorBindOptions, IDataProcessor } from '../processor';
+import type { DynamicPartitioningProps } from '../s3-bucket';
 
 export interface DestinationLoggingProps {
   /**

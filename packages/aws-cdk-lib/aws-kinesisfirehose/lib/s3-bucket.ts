@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
-import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
-import { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
+import type { Construct } from 'constructs';
+import type { CommonDestinationProps, CommonDestinationS3Props } from './common';
+import { BackupMode } from './common';
+import type { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import type { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 import * as cdk from '../../core';
 

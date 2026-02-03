@@ -1,13 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnBackupPlan } from './backup.generated';
 import { toIBackupVault } from './private/ref-utils';
-import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
-import { BackupSelection, BackupSelectionOptions } from './selection';
-import { BackupVault, IBackupVault } from './vault';
-import { ArnFormat, IResource, Lazy, Resource, ValidationError } from '../../core';
+import type { BackupPlanCopyActionProps } from './rule';
+import { BackupPlanRule } from './rule';
+import type { BackupSelectionOptions } from './selection';
+import { BackupSelection } from './selection';
+import type { IBackupVault } from './vault';
+import { BackupVault } from './vault';
+import type { IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { BackupPlanReference, IBackupPlanRef, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
+import type { BackupPlanReference, IBackupPlanRef, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * A backup plan

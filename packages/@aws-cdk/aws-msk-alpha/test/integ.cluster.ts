@@ -1,4 +1,5 @@
-import { IntegTest, AssertionsProvider, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+import type { AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import {
   CertificateAuthority,

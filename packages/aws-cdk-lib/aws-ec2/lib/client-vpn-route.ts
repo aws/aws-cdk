@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
-import { CfnClientVpnRoute, ISubnetRef } from './ec2.generated';
+import type { Construct } from 'constructs';
+import type { IClientVpnEndpoint } from './client-vpn-endpoint-types';
+import type { ISubnetRef } from './ec2.generated';
+import { CfnClientVpnRoute } from './ec2.generated';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

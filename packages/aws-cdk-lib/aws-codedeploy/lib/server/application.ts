@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IResource } from '../../../core';
+import { ArnFormat, Resource, Stack, Arn } from '../../../core';
 import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApplicationReference, IApplicationRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { ApplicationReference, IApplicationRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
