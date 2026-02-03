@@ -104,10 +104,11 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
   /**
    * Collection of grant methods for an ApiKey
    */
-  public readonly grants = ApiKeyGrants._fromApiKey(this);
+  public readonly grants = ApiKeyGrants.fromApiKey(this);
 
   /**
    * Permits the IAM principal all read operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -117,6 +118,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all write operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -126,6 +128,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read and write operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */

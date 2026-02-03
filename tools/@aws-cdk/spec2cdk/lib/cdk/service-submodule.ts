@@ -25,23 +25,6 @@ export function relativeImportPath(source: LocatedModule<any> | string, target: 
 }
 
 /**
- * Represents a selective import statement for cross-module type references.
- * Used to import specific types from other CDK modules when relationships
- * are between different modules.
- */
-export interface SelectiveImport {
-  /** The module name to import from */
-  readonly moduleName: string;
-  /** Array of types that need to be imported */
-  readonly types: {
-    /** The original type name in the source module */
-    originalType: string;
-    /** The aliased name to avoid naming conflicts */
-    aliasedType: string;
-  }[];
-}
-
-/**
  * Create a service submodule.
  */
 export interface ServiceSubmoduleProps {
@@ -77,15 +60,10 @@ export class BaseServiceSubmodule {
    */
   public readonly resources: Map<string, TypeDeclaration> = new Map();
 
-  public get imports(): SelectiveImport[] {
-    return this.selectiveImports.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
-  }
-
   public get locatedModules(): LocatedModule<Module>[] {
     return this.modules;
   }
 
-  private selectiveImports: SelectiveImport[] = [];
   private modules: LocatedModule<Module>[] = [];
 
   public constructor(props: ServiceSubmoduleProps) {
@@ -99,30 +77,5 @@ export class BaseServiceSubmodule {
 
   public registerResource(cfnResourceName: string, type: TypeDeclaration) {
     this.resources.set(cfnResourceName, type);
-  }
-
-  public registerSelectiveImports(...selectiveImports: SelectiveImport[]) {
-    for (const theImport of selectiveImports) {
-      const existingModuleImport = this.findSelectiveImport(theImport);
-      if (!existingModuleImport) {
-        this.selectiveImports.push(theImport);
-        return;
-      }
-
-      // We need to avoid importing the same reference multiple times
-      for (const type of theImport.types) {
-        if (!existingModuleImport.types.find((t) =>
-          t.originalType === type.originalType && t.aliasedType === type.aliasedType,
-        )) {
-          existingModuleImport.types.push(type);
-        }
-      }
-    }
-  }
-
-  private findSelectiveImport(selectiveImport: SelectiveImport): SelectiveImport | undefined {
-    return this.selectiveImports.find(
-      (imp) => imp.moduleName === selectiveImport.moduleName,
-    );
   }
 }

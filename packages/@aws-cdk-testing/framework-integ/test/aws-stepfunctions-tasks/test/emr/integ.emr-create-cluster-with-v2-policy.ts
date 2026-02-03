@@ -1,6 +1,6 @@
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { App, Stack, Tags } from 'aws-cdk-lib';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { ENABLE_EMR_SERVICE_POLICY_V2 } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EmrCreateCluster } from 'aws-cdk-lib/aws-stepfunctions-tasks';

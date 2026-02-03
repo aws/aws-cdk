@@ -2,8 +2,10 @@ import { Construct } from 'constructs';
 import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
 import { ArnFormat, Lazy, Names, Stack, Duration, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Properties for creating a Composite Alarm
@@ -41,7 +43,7 @@ export interface CompositeAlarmProps {
    *
    * @default - alarm will not be suppressed.
    */
-  readonly actionsSuppressor?: IAlarm;
+  readonly actionsSuppressor?: IAlarmRef;
 
   /**
    * The maximum duration that the composite alarm waits after suppressor alarm goes out of the ALARM state.
@@ -106,16 +108,28 @@ export class CompositeAlarm extends AlarmBase {
    *
    * @attribute
    */
-  public readonly alarmArn: string;
+  @memoizedGetter
+  get alarmArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * Name of this alarm.
    *
    * @attribute
    */
-  public readonly alarmName: string;
+  @memoizedGetter
+  get alarmName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   private readonly alarmRule: string;
+  private readonly resource: CfnCompositeAlarm;
 
   constructor(scope: Construct, id: string, props: CompositeAlarmProps) {
     super(scope, id, {
@@ -149,18 +163,12 @@ export class CompositeAlarm extends AlarmBase {
       alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
       insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
       okActions: Lazy.list({ produce: () => this.okActionArns }),
-      actionsSuppressor: props.actionsSuppressor?.alarmArn,
+      actionsSuppressor: props.actionsSuppressor?.alarmRef.alarmArn,
       actionsSuppressorExtensionPeriod: extensionPeriod?.toSeconds(),
       actionsSuppressorWaitPeriod: waitPeriod?.toSeconds(),
     });
 
-    this.alarmName = this.getResourceNameAttribute(alarm.ref);
-    this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
-      service: 'cloudwatch',
-      resource: 'alarm',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.resource = alarm;
   }
 
   private generateUniqueId(): string {

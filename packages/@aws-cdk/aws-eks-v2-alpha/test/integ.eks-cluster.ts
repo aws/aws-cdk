@@ -1,18 +1,18 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import * as constructs from 'constructs';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import * as hello from './hello-k8s';
 import * as eks from '../lib';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -109,6 +109,7 @@ class EksClusterStack extends Stack {
   private assertServiceAccount() {
     // add a service account connected to a IAM role
     this.cluster.addServiceAccount('MyServiceAccount');
+    this.cluster.addServiceAccount('MyServiceAccountWithOverwrite', { overwriteServiceAccount: true });
   }
 
   private assertExtendedServiceAccount() {

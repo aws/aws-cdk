@@ -8,6 +8,7 @@ export * from './container-definition';
 export * from './container-image';
 export * from './amis';
 export * from './cluster';
+export * from './cluster-grants';
 export * from './environment-file';
 export * from './credential-spec';
 export * from './firelens-log-router';
@@ -36,6 +37,7 @@ export * from './log-drivers/fluentd-log-driver';
 export * from './log-drivers/gelf-log-driver';
 export * from './log-drivers/journald-log-driver';
 export * from './log-drivers/json-file-log-driver';
+export * from './log-drivers/none-log-driver';
 export * from './log-drivers/splunk-log-driver';
 export * from './log-drivers/syslog-log-driver';
 export * from './log-drivers/log-driver';
@@ -53,4 +55,3 @@ export * from './alternate-target-configuration';
 // AWS::ECS CloudFormation Resources:
 //
 export * from './ecs.generated';
-export * from './ecs-grants.generated';

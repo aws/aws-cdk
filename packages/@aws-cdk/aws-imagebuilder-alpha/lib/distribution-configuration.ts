@@ -5,6 +5,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDistributionConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 
@@ -357,6 +359,7 @@ abstract class DistributionConfigurationBase extends cdk.Resource implements IDi
 
   /**
    * Grant custom actions to the given grantee for the distribution configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -372,6 +375,7 @@ abstract class DistributionConfigurationBase extends cdk.Resource implements IDi
 
   /**
    * Grant read permissions to the given grantee for the distribution configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -477,16 +481,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     return x !== null && typeof x === 'object' && DISTRIBUTION_CONFIGURATION_SYMBOL in x;
   }
 
-  /**
-   * The ARN of the distribution configuration
-   */
-  public readonly distributionConfigurationArn: string;
-
-  /**
-   * The name of the distribution configuration
-   */
-  public readonly distributionConfigurationName: string;
-
+  private readonly resource: CfnDistributionConfiguration;
   private readonly amiDistributionsByRegion: { [region: string]: AmiDistribution } = {};
   private readonly containerDistributionsByRegion: {
     [region: string]: ContainerDistribution;
@@ -505,6 +500,8 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, DISTRIBUTION_CONFIGURATION_SYMBOL, { value: true });
 
@@ -513,15 +510,22 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     this.addAmiDistributions(...(props.amiDistributions ?? []));
     this.addContainerDistributions(...(props.containerDistributions ?? []));
 
-    const distributionConfiguration = new CfnDistributionConfiguration(this, 'Resource', {
+    this.resource = new CfnDistributionConfiguration(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
       distributions: cdk.Lazy.any({ produce: () => this.renderDistributions() }),
       tags: props.tags,
     });
+  }
 
-    this.distributionConfigurationName = this.getResourceNameAttribute(distributionConfiguration.attrName);
-    this.distributionConfigurationArn = this.getResourceArnAttribute(distributionConfiguration.attrArn, {
+  @memoizedGetter
+  public get distributionConfigurationName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get distributionConfigurationArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'distribution-configuration',
       resourceName: this.physicalName,
@@ -533,6 +537,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
    *
    * @param amiDistributions The list of AMI distribution settings to apply
    */
+  @MethodMetadata()
   public addAmiDistributions(...amiDistributions: AmiDistribution[]): void {
     amiDistributions.forEach((amiDistribution) => {
       const region = amiDistribution.region ?? cdk.Stack.of(this).region;
@@ -552,6 +557,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
    *
    * @param containerDistributions The list of container distribution settings to apply
    */
+  @MethodMetadata()
   public addContainerDistributions(...containerDistributions: ContainerDistribution[]): void {
     containerDistributions.forEach((containerDistribution) => {
       const region = containerDistribution.region ?? cdk.Stack.of(this).region;
@@ -588,6 +594,17 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     }
   }
 
+  /**
+   * Renders the AMI and container distributions provided as input to the construct, into the `Distribution[]` structure
+   * that CfnDistributionConfiguration expects to receive. Distributions provided to CfnDistributionConfiguration must
+   * map to a unique region per entry in the list - this render function also handles combining AMI and container
+   * distributions in the same region into a single entry.
+   *
+   * This is rendered at synthesis time, as users can add additional AMI and container distributions with
+   * `addAmiDistributions` and `addContainerDistributions`, after the construct has been instantiated.
+   *
+   * @private
+   */
   private renderDistributions(): CfnDistributionConfiguration.DistributionProperty[] {
     if (
       !Object.keys(this.amiDistributionsByRegion).length &&

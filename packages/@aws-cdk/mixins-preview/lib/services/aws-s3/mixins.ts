@@ -1,2 +1,3 @@
 export * from './bucket';
-export * from './s3.generated';
+export * from './bucket-policy';
+export * from './cfn-props-mixins.generated';

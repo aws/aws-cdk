@@ -276,6 +276,13 @@
       }
     ]
   },
+  "aws-cases": {
+    "scopes": [
+      {
+        "namespace": "AWS::Cases"
+      }
+    ]
+  },
   "aws-cassandra": {
     "scopes": [
       {
@@ -551,6 +558,13 @@
     "scopes": [
       {
         "namespace": "AWS::DeviceFarm"
+      }
+    ]
+  },
+  "aws-devopsagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::DevOpsAgent"
       }
     ]
   },
@@ -1233,6 +1247,13 @@
     "scopes": [
       {
         "namespace": "AWS::MWAA"
+      }
+    ]
+  },
+  "aws-mwaaserverless": {
+    "scopes": [
+      {
+        "namespace": "AWS::MWAAServerless"
       }
     ]
   },

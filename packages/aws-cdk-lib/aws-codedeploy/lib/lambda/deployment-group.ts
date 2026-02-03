@@ -1,22 +1,24 @@
 import { Construct } from 'constructs';
 import { ILambdaApplication, LambdaApplication } from './application';
 import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
-import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
+import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import { IDeploymentConfigRef, IDeploymentGroupRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
+import { toIBaseDeploymentConfig } from '../private/ref-utils';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
 
 /**
  * Interface for a Lambda deployment groups.
  */
-export interface ILambdaDeploymentGroup extends cdk.IResource {
+export interface ILambdaDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    */
@@ -75,7 +77,7 @@ export interface LambdaDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: cloudwatch.IAlarm[];
+  readonly alarms?: IAlarmRef[];
 
   /**
    * The service Role of this Deployment Group.
@@ -154,15 +156,15 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   }
 
   public readonly application: ILambdaApplication;
-  public readonly deploymentConfig: ILambdaDeploymentConfig;
   /**
    * The service Role of this Deployment Group.
    */
   public readonly role: iam.IRole;
 
-  private readonly alarms: cloudwatch.IAlarm[];
+  private readonly alarms: IAlarmRef[];
   private preHook?: lambda.IFunction;
   private postHook?: lambda.IFunction;
+  private readonly _deploymentConfig: IDeploymentConfigRef;
 
   constructor(scope: Construct, id: string, props: LambdaDeploymentGroupProps) {
     super(scope, id, {
@@ -178,7 +180,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
     this.alarms = props.alarms || [];
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambdaLimited'));
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+    this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
 
     const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP);
 
@@ -186,7 +188,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       applicationName: this.application.applicationName,
       serviceRoleArn: this.role.roleArn,
       deploymentGroupName: this.physicalName,
-      deploymentConfigName: this.deploymentConfig.deploymentConfigName,
+      deploymentConfigName: this._deploymentConfig.deploymentConfigRef.deploymentConfigName,
       deploymentStyle: {
         deploymentType: 'BLUE_GREEN',
         deploymentOption: 'WITH_TRAFFIC_CONTROL',
@@ -219,12 +221,6 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
         afterAllowTrafficHook: cdk.Lazy.string({ produce: () => this.postHook && this.postHook.functionName }),
       },
     };
-
-    // If the deployment config is a construct, add a dependency to ensure the deployment config
-    // is created before the deployment group is.
-    if (this.deploymentConfig instanceof Construct) {
-      this.node.addDependency(this.deploymentConfig);
-    }
   }
 
   /**
@@ -233,7 +229,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
    * @param alarm the alarm to associate with this Deployment Group
    */
   @MethodMetadata()
-  public addAlarm(alarm: cloudwatch.IAlarm): void {
+  public addAlarm(alarm: IAlarmRef): void {
     this.alarms.push(alarm);
   }
 
@@ -270,6 +266,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   /**
    * Grant a principal permission to codedeploy:PutLifecycleEventHookExecutionStatus
    * on this deployment group resource.
+   * [disable-awslint:no-grants]
    * @param grantee to grant permission to
    */
   @MethodMetadata()
@@ -279,6 +276,10 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       resourceArns: [this.deploymentGroupArn],
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
     });
+  }
+
+  public get deploymentConfig(): ILambdaDeploymentConfig {
+    return toIBaseDeploymentConfig(this._deploymentConfig);
   }
 }
 
@@ -313,7 +314,7 @@ class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implemen
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedLambdaDeploymentGroup';
   public readonly application: ILambdaApplication;
-  public readonly deploymentConfig: ILambdaDeploymentConfig;
+  private readonly _deploymentConfig: IDeploymentConfigRef;
 
   constructor(scope: Construct, id: string, props: LambdaDeploymentGroupAttributes) {
     super(scope, id, {
@@ -324,6 +325,10 @@ class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implemen
     addConstructMetadata(this, props);
 
     this.application = props.application;
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+    this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+  }
+
+  public get deploymentConfig(): ILambdaDeploymentConfig {
+    return toIBaseDeploymentConfig(this._deploymentConfig);
   }
 }

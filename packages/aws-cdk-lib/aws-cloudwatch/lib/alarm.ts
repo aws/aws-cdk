@@ -12,6 +12,7 @@ import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -192,20 +193,6 @@ export class Alarm extends AlarmBase {
   }
 
   /**
-   * ARN of this alarm
-   *
-   * @attribute
-   */
-  public readonly alarmArn: string;
-
-  /**
-   * Name of this alarm.
-   *
-   * @attribute
-   */
-  public readonly alarmName: string;
-
-  /**
    * The metric object this alarm was based on
    */
   public readonly metric: IMetric;
@@ -214,6 +201,8 @@ export class Alarm extends AlarmBase {
    * This metric as an annotation
    */
   private readonly annotation: HorizontalAnnotation;
+
+  private readonly alarm: CfnAlarm;
 
   constructor(scope: Construct, id: string, props: AlarmProps) {
     super(scope, id, {
@@ -281,7 +270,7 @@ export class Alarm extends AlarmBase {
       thresholdMetricId = rendered.primaryId;
     }
 
-    const alarm = new CfnAlarm(this, 'Resource', {
+    this.alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
       alarmName: this.physicalName,
@@ -305,15 +294,6 @@ export class Alarm extends AlarmBase {
       ...metricProps,
     });
 
-    this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
-      service: 'cloudwatch',
-      resource: 'alarm',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-
-    this.alarmName = this.getResourceNameAttribute(alarm.ref);
-
     this.metric = props.metric;
 
     if (isAnomalyDetection) {
@@ -326,7 +306,7 @@ export class Alarm extends AlarmBase {
     } else {
       const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
       this.annotation = {
-        // eslint-disable-next-line max-len
+
         label: `${props.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
         value: props.threshold,
       };
@@ -335,6 +315,31 @@ export class Alarm extends AlarmBase {
     for (const [i, message] of Object.entries(this.metric.warningsV2 ?? {})) {
       Annotations.of(this).addWarningV2(i, message);
     }
+  }
+
+  /**
+   * ARN of this alarm
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get alarmArn(): string {
+    return this.getResourceArnAttribute(this.alarm.attrArn, {
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  /**
+   * Name of this alarm.
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get alarmName(): string {
+    return this.getResourceNameAttribute(this.alarm.ref);
   }
 
   /**
@@ -599,7 +604,7 @@ export class Alarm extends AlarmBase {
  * of the Alarm. "Modern" metrics are in a `metrics[]` array in the alarm
  * and have more features, like metric math.
  */
-type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>
+type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>;
 
 /**
  * Check if a metric is already an anomaly detection metric

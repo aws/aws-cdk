@@ -64,7 +64,6 @@ describe('Core Mixins Framework', () => {
       const mixin = new TestMixin();
 
       expect(mixin.supports(construct)).toBe(true);
-      expect(mixin.validate(construct)).toEqual([]);
 
       const result = mixin.applyTo(construct);
       expect((result as any).mixinApplied).toBe(true);
@@ -119,34 +118,33 @@ describe('Core Mixins Framework', () => {
       expect((logGroup as any).selectiveMixinApplied).toBeUndefined();
     });
 
-    test('mustApply throws when no constructs match', () => {
-      const logGroup = new logs.CfnLogGroup(stack, 'LogGroup');
-      const mixin = new SelectiveMixin();
-
-      expect(() => {
-        Mixins.of(logGroup).mustApply(mixin);
-      }).toThrow();
-    });
-
-    test('validation errors cause exceptions', () => {
-      const construct = new TestConstruct(stack, 'test');
-      const mixin = new ValidatingMixin();
-
-      expect(() => {
-        Mixins.of(construct).apply(mixin);
-      }).toThrow();
-    });
-
-    test('mustApply succeeds when at least one construct matches', () => {
-      const bucket = new s3.CfnBucket(stack, 'Bucket');
+    test('requireAny throws when no constructs match', () => {
       new logs.CfnLogGroup(stack, 'LogGroup');
       const mixin = new SelectiveMixin();
 
       expect(() => {
-        Mixins.of(stack).mustApply(mixin);
-      }).not.toThrow();
+        Mixins.of(stack).requireAny().apply(mixin);
+      }).toThrow();
+    });
 
-      expect((bucket as any).selectiveMixinApplied).toBe(true);
+    test('requireAll throws when some constructs do not support mixin', () => {
+      new s3.CfnBucket(stack, 'Bucket');
+      new logs.CfnLogGroup(stack, 'LogGroup');
+      const mixin = new SelectiveMixin();
+
+      expect(() => {
+        Mixins.of(stack).requireAll().apply(mixin);
+      }).toThrow();
+    });
+
+    test('report returns successful mixin applications', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      new logs.CfnLogGroup(stack, 'LogGroup');
+      const mixin = new SelectiveMixin();
+
+      const applicator = Mixins.of(stack).apply(mixin);
+
+      expect(applicator.report).toEqual([{ construct: bucket, mixin }]);
     });
   });
 
@@ -162,7 +160,6 @@ describe('Core Mixins Framework', () => {
       const construct = new TestConstruct(stack, 'test');
 
       expect(mixin.supports(construct)).toBe(true);
-      expect(mixin.validate(construct)).toEqual([]);
       expect(mixin.applyTo(construct)).toBe(construct);
     });
   });
