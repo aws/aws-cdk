@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { UnscopedValidationError, ValidationError } from '../../../core';
-import { CfnDeliveryStream } from '../kinesisfirehose.generated';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
+import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
+import type { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
  * Props for MetadataExtractionProcessor
