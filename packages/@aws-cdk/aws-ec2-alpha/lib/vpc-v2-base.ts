@@ -281,6 +281,14 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   public abstract readonly internetConnectivityEstablished: IDependable;
 
   /**
+   * Dependable that can be depended upon to force the VPC's IPv6 CIDR block to be allocated.
+   *
+   * For VPCs with IPv6 enabled, this will be a dependency group containing the IPv6 CIDR blocks.
+   * For IPv4-only VPCs, this will be an empty `DependencyGroup`.
+   */
+  public abstract readonly ipv6CidrBlockCreated: IDependable;
+
+  /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    * Add igw to this if its a public subnet
    * @internal
