@@ -3,16 +3,17 @@ import * as cdk from 'aws-cdk-lib';
 import * as appreg from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-application');
 
 new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
-    applicationName: 'AppRegistryAssociatedApplication',
-    stackName: 'AppRegistryApplicationAssociatorStack',
-    stackId: 'AppRegistryApplicationStack',
+    applicationName: 'AppRegistryAllStacksApplication',
+    stackName: 'AppRegistryAllStacksAssociatorStack',
+    env: { account: cdk.Aws.ACCOUNT_ID, region: cdk.Aws.REGION },
   })],
 });
 
-new cdk.Stack(stack, 'resourcesStack');
+new cdk.Stack(app, 'resourcesStack', {
+  env: { account: cdk.Aws.ACCOUNT_ID, region: cdk.Aws.REGION },
+});
 
 app.synth();

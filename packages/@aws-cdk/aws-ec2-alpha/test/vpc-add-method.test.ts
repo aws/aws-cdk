@@ -546,6 +546,53 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
+  test('createAcceptorVpcRole creates IAM role for cross-account peering', () => {
+    const acceptorVpc = new vpc.VpcV2(stack, 'AcceptorVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+    });
+
+    acceptorVpc.createAcceptorVpcRole('123456789012');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']] },
+            },
+          },
+        ],
+      },
+      RoleName: 'VpcPeeringRole',
+    });
+  });
+
+  test('createPeeringConnection with cross-account uses peerRoleArn', () => {
+    const acceptorVpc = vpc.VpcV2.fromVpcV2Attributes(stack, 'ImportedAcceptorVpc', {
+      vpcId: 'vpc-12345678',
+      vpcCidrBlock: '10.0.0.0/16',
+      region: 'us-east-1',
+      ownerAccountId: '234567890123',
+    });
+
+    myVpc.createPeeringConnection('crossAccountPeering', {
+      acceptorVpc: acceptorVpc,
+      peerRoleArn: 'arn:aws:iam::234567890123:role/VpcPeeringRole',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+      VpcId: {
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
+      },
+      PeerVpcId: 'vpc-12345678',
+      PeerOwnerId: '234567890123',
+      PeerRegion: 'us-east-1',
+      PeerRoleArn: 'arn:aws:iam::234567890123:role/VpcPeeringRole',
+    });
+  });
+
   test('can add multiple NAT gateways to different subnets', () => {
     // Add Internet Gateway first since public NAT gateways require it
     myVpc.addInternetGateway();

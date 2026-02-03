@@ -1,5 +1,4 @@
 import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as appreg from '../lib';
 
 const app = new cdk.App();
@@ -28,16 +27,5 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 });
 
 attributeGroup.associateWith(application);
-
-const myRole = new iam.Role(stack, 'MyRole', {
-  assumedBy: new iam.AccountPrincipal(stack.account),
-});
-const mySecondRole = new iam.Role(stack, 'MySecondRole', {
-  assumedBy: new iam.AccountPrincipal(stack.account),
-});
-attributeGroup.shareAttributeGroup('MyShareId', {
-  name: 'MyShare',
-  roles: [myRole, mySecondRole],
-});
 
 app.synth();

@@ -63,7 +63,7 @@ routeTable.addRoute('eigwRoute', '0.0.0.0/0', { gateway: igw });
 
 new SubnetV2(stack, 'testSubnet2', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.1.128.0/20'),
   routeTable: routeTable,
   subnetType: SubnetType.PUBLIC,
