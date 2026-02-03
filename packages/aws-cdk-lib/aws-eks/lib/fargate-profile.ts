@@ -5,8 +5,8 @@ import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import type { ITaggable } from '../../core';
-import { Annotations, CustomResource, Lazy, TagManager, TagType, ValidationError, RemovalPolicy } from '../../core';
+import type { ITaggable, RemovalPolicy } from '../../core';
+import { Annotations, CustomResource, Lazy, RemovalPolicies, TagManager, TagType, ValidationError } from '../../core';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -235,7 +235,8 @@ export class FargateProfile extends Construct implements ITaggable {
       });
     }
 
-    // apply the removal policy to the custom resource that manages the Fargate profile
-    resource.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 }
