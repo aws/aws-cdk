@@ -94,6 +94,7 @@
       "tools/@aws-cdk/integration-test-deployment",
       "tools/@aws-cdk/lambda-integration-test-updater",
       "tools/@aws-cdk/construct-metadata-updater",
+      "tools/@aws-cdk/enum-updater",
       "scripts/@aws-cdk/script-tests"
     ],
     "nohoist": [
