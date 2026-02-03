@@ -57,6 +57,24 @@ export interface ISecret extends IResource, ISecretRef {
   secretValueFromJson(key: string): SecretValue;
 
   /**
+   * Constructs a connection string by interpolating secret fields into a template.
+   *
+   * This method generates a CloudFormation Fn::Sub expression that dynamically
+   * resolves secret fields at deployment time using CloudFormation dynamic references.
+   *
+   * The template uses `${fieldName}` syntax for placeholders, which will be replaced
+   * with the corresponding secret field values at deployment time.
+   *
+   * This method is optional to maintain backward compatibility with existing
+   * implementations of the ISecret interface. Implementers are encouraged to
+   * provide this method for full functionality.
+   *
+   * @param template - Connection string template with placeholders like ${username}, ${password}, etc.
+   * @returns SecretValue that resolves to the interpolated connection string
+   */
+  connectionStringFromJson?(template: string): SecretValue;
+
+  /**
    * Grants reading the secret value to some role.
    *
    * @param grantee       the principal being granted permission.
@@ -468,6 +486,35 @@ abstract class SecretBase extends Resource implements ISecret {
 
   public secretValueFromJson(jsonField: string) {
     return SecretValue.secretsManager(this.secretArn, { jsonField });
+  }
+
+  public connectionStringFromJson(template: string): SecretValue {
+    // Validate template
+    if (!template || template.trim().length === 0) {
+      throw new UnscopedValidationError('Connection string template cannot be empty');
+    }
+
+    // Extract placeholder names from template (e.g., ${username}, ${password})
+    const placeholderRegex = /\$\{([a-zA-Z0-9_]+)\}/g;
+    const placeholders = new Set<string>();
+    let match;
+    while ((match = placeholderRegex.exec(template)) !== null) {
+      placeholders.add(match[1]);
+    }
+
+    if (placeholders.size === 0) {
+      throw new UnscopedValidationError('Connection string template must contain at least one placeholder (e.g., ${username})');
+    }
+
+    // Build the substitution map for Fn::Sub
+    const substitutions: { [key: string]: string } = {};
+    for (const placeholder of placeholders) {
+      // Use secretValueFromJson to get dynamic references for each field
+      substitutions[placeholder] = this.secretValueFromJson(placeholder).unsafeUnwrap();
+    }
+
+    // Use Fn.sub to construct the connection string with dynamic references
+    return SecretValue.unsafePlainText(Fn.sub(template, substitutions));
   }
 
   public addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule {
