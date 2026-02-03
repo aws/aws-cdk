@@ -1,9 +1,10 @@
-import { Token, Lazy } from 'aws-cdk-lib';
+import { Token, Lazy, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { RuntimeEndpointBase, IRuntimeEndpoint, RuntimeEndpointAttributes } from './runtime-endpoint-base';
+import type { Construct } from 'constructs';
+import type { IRuntimeEndpoint, RuntimeEndpointAttributes } from './runtime-endpoint-base';
+import { RuntimeEndpointBase } from './runtime-endpoint-base';
 import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
 
 /******************************************************************************
@@ -19,8 +20,9 @@ export interface RuntimeEndpointProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * Must start with a letter and can be up to 48 characters long
    * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
+   * @default - auto generate
    */
-  readonly endpointName: string;
+  readonly endpointName?: string;
 
   /**
    * The ID of the agent runtime to associate with this endpoint
@@ -170,13 +172,20 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
   private readonly endpointResource: bedrockagentcore.CfnRuntimeEndpoint;
 
   constructor(scope: Construct, id: string, props: RuntimeEndpointProps) {
-    super(scope, id);
+    super(scope, id, {
+      // Maximum name length of 48 characters
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtimeendpoint.html#cfn-bedrockagentcore-runtimeendpoint-name
+      physicalName: props.endpointName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
+        }),
+    });
 
     // CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // Set and validate properties immediately
-    this.endpointName = props.endpointName;
+    this.endpointName = this.physicalName;
     this.validateEndpointName();
 
     this.agentRuntimeId = props.agentRuntimeId;

@@ -1,5 +1,7 @@
-import { IAlarmAction } from './alarm-action';
-import { IResource, Resource } from '../../core';
+import type { IAlarmAction } from './alarm-action';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
+import type { IAlarmRef, AlarmReference } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Interface for Alarm Rule.
@@ -16,7 +18,7 @@ export interface IAlarmRule {
 /**
  * Represents a CloudWatch Alarm
  */
-export interface IAlarm extends IAlarmRule, IResource {
+export interface IAlarm extends IAlarmRule, IResource, IAlarmRef {
   /**
    * Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
    *
@@ -45,6 +47,13 @@ export abstract class AlarmBase extends Resource implements IAlarm {
   protected alarmActionArns?: string[];
   protected insufficientDataActionArns?: string[];
   protected okActionArns?: string[];
+
+  public get alarmRef(): AlarmReference {
+    return {
+      alarmName: this.alarmName,
+      alarmArn: this.alarmArn,
+    };
+  }
 
   /**
    * AlarmRule indicating ALARM state for Alarm.

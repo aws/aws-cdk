@@ -1,20 +1,26 @@
-import { Construct } from 'constructs';
-import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
+import type { Construct } from 'constructs';
+import type { BaseApplicationListenerProps } from './application-listener';
+import { ApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { PolicyStatement } from '../../../aws-iam/lib/policy-statement';
 import { ServicePrincipal } from '../../../aws-iam/lib/principals';
-import * as s3 from '../../../aws-s3';
+import type * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { CfnResource, Duration, Lazy, Names, Resource, Stack, Token } from '../../../core';
+import type { Duration } from '../../../core';
+import { CfnResource, Lazy, Names, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
-import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
+import type { ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
+import type { BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import { BaseLoadBalancer } from '../shared/base-load-balancer';
+import type { DesyncMitigationMode } from '../shared/enums';
+import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
@@ -181,6 +187,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return new ImportedApplicationLoadBalancer(scope, id, attrs);
   }
 
+  public readonly isApplicationLoadBalancer = true;
   public readonly connections: ec2.Connections;
   public readonly ipAddressType?: IpAddressType;
   public readonly listeners: ApplicationListener[];
@@ -1107,9 +1114,22 @@ export interface IApplicationLoadBalancerMetrics {
 }
 
 /**
+ * Indicates that this resource can be referenced as an Application LoadBalancer.
+ */
+export interface IApplicationLoadBalancerRef extends ILoadBalancerRef {
+  /**
+   * Indicates that this is an Application Load Balancer
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isApplicationLoadBalancer: boolean;
+}
+
+/**
  * An application load balancer
  */
-export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnectable {
+export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnectable, IApplicationLoadBalancerRef {
   /**
    * The ARN of this load balancer
    */
@@ -1209,6 +1229,9 @@ export interface ApplicationLoadBalancerAttributes {
 class ImportedApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationLoadBalancer';
+
+  public readonly isApplicationLoadBalancer = true;
+
   /**
    * Manage connections for this load balancer
    */
@@ -1218,6 +1241,15 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
    * ARN of the load balancer
    */
   public readonly loadBalancerArn: string;
+
+  /**
+   * A reference to this load balancer
+   */
+  public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+    return {
+      loadBalancerArn: this.loadBalancerArn,
+    };
+  }
 
   public get listeners(): ApplicationListener[] {
     throw Error('.listeners can only be accessed if the class was constructed as an owned, not imported, load balancer');
@@ -1273,6 +1305,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
 class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationLoadBalancer';
+  public readonly isApplicationLoadBalancer = true;
   public readonly loadBalancerArn: string;
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;
@@ -1280,6 +1313,15 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly connections: ec2.Connections;
   public readonly vpc?: ec2.IVpc;
   public readonly metrics: IApplicationLoadBalancerMetrics;
+
+  /**
+   * A reference to this load balancer
+   */
+  public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+    return {
+      loadBalancerArn: this.loadBalancerArn,
+    };
+  }
 
   public get listeners(): ApplicationListener[] {
     throw Error('.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer');

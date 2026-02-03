@@ -1,14 +1,17 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { CfnServerlessCache, CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
-import * as events from 'aws-cdk-lib/aws-events';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { ArnFormat, Stack, Size, Lazy, ValidationError, Names, Token } from 'aws-cdk-lib/core';
+import type { CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
+import { CfnServerlessCache } from 'aws-cdk-lib/aws-elasticache';
+import type * as events from 'aws-cdk-lib/aws-events';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type { Size } from 'aws-cdk-lib/core';
+import { ArnFormat, Stack, Lazy, ValidationError, Names, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { IServerlessCache, ServerlessCacheBase, CacheEngine } from './serverless-cache-base';
-import { IUserGroup } from './user-group';
+import type { IServerlessCache } from './serverless-cache-base';
+import { ServerlessCacheBase, CacheEngine } from './serverless-cache-base';
+import type { IUserGroup } from './user-group';
 
 const ELASTICACHE_SERVERLESSCACHE_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.ServerlessCache');
 
@@ -335,6 +338,7 @@ export class ServerlessCache extends ServerlessCacheBase {
               defaultPort = ec2.Port.tcp(6379);
               break;
             case CacheEngine.MEMCACHED_LATEST:
+            case CacheEngine.MEMCACHED_1_6:
               // Document showing the default port
               // https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/set-up.html#elasticache-install-grant-access-VPN
               defaultPort = ec2.Port.tcp(11211);
@@ -417,7 +421,9 @@ export class ServerlessCache extends ServerlessCacheBase {
     addConstructMetadata(this, props);
 
     this.engine = props.engine ?? CacheEngine.VALKEY_LATEST;
-    this.serverlessCacheName = props.serverlessCacheName ?? Lazy.string({ produce: () => Names.uniqueId(this) });
+    this.serverlessCacheName = props.serverlessCacheName ?? Lazy.string({
+      produce: () => Names.uniqueResourceName(this, { maxLength: 40 }),
+    });
     this.kmsKey = props.kmsKey;
     this.vpc = props.vpc;
     this.userGroup = props.userGroup;
@@ -469,7 +475,7 @@ export class ServerlessCache extends ServerlessCacheBase {
 
     this.connections = new ec2.Connections({
       securityGroups: this.securityGroups,
-      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => parseInt(this.serverlessCacheEndpointPort) })),
+      defaultPort: ec2.Port.tcp(Token.asNumber(this.serverlessCacheEndpointPort)),
     });
 
     Object.defineProperty(this, ELASTICACHE_SERVERLESSCACHE_SYMBOL, { value: true });

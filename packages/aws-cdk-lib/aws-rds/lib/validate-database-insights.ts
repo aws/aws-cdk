@@ -1,9 +1,12 @@
-import { Construct } from 'constructs';
-import { ClusterScailabilityType, DatabaseCluster, DatabaseClusterProps, DBClusterStorageType } from './cluster';
+import type { Construct } from 'constructs';
+import type { DatabaseClusterProps } from './cluster';
+import { ClusterScailabilityType, DatabaseCluster, DBClusterStorageType } from './cluster';
 import { DatabaseInsightsMode } from './database-insights-mode';
-import { DatabaseInstance, DatabaseInstanceProps } from './instance';
+import type { DatabaseInstanceProps } from './instance';
+import { DatabaseInstance } from './instance';
 import { PerformanceInsightRetention } from './props';
-import { validateAllProps, ValidationRule } from '../../core/lib/helpers-internal';
+import type { ValidationRule } from '../../core/lib/helpers-internal';
+import { validateAllProps } from '../../core/lib/helpers-internal';
 
 /**
  * Common validation rules for database insights

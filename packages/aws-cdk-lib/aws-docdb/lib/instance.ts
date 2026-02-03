@@ -1,18 +1,19 @@
-import { Construct } from 'constructs';
-import { IDatabaseCluster } from './cluster-ref';
+import type { Construct } from 'constructs';
+import type { IDatabaseCluster } from './cluster-ref';
 import { CfnDBInstance } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import * as ec2 from '../../aws-ec2';
-import { CaCertificate } from '../../aws-rds';
+import type { CaCertificate } from '../../aws-rds';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IDBClusterRef, IDBInstanceRef, DBInstanceReference } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
 /**
  * A database instance
  */
-export interface IDatabaseInstance extends cdk.IResource {
+export interface IDatabaseInstance extends cdk.IResource, IDBInstanceRef {
   /**
    * The instance identifier.
    */
@@ -110,6 +111,15 @@ abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseIns
       resourceName: this.instanceIdentifier,
     });
   }
+
+  /**
+   * A reference to this instance.
+   */
+  public get dbInstanceRef(): DBInstanceReference {
+    return {
+      dbInstanceId: this.instanceIdentifier,
+    };
+  }
 }
 
 /**
@@ -119,7 +129,7 @@ export interface DatabaseInstanceProps {
   /**
    * The DocumentDB database cluster the instance should launch into.
    */
-  readonly cluster: IDatabaseCluster;
+  readonly cluster: IDBClusterRef;
 
   /**
    * The name of the compute and memory capacity classes.
@@ -197,10 +207,11 @@ export interface DatabaseInstanceProps {
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.DatabaseInstance';
+
   /**
-   * The instance's database cluster
+   * The instance's database cluster (private storage)
    */
-  public readonly cluster: IDatabaseCluster;
+  private readonly _cluster: IDBClusterRef;
 
   /**
    * @inheritdoc
@@ -222,13 +233,20 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
    */
   public readonly instanceEndpoint: Endpoint;
 
+  /**
+   * The instance's database cluster
+   */
+  public get cluster(): IDatabaseCluster {
+    return toIDatabaseCluster(this._cluster);
+  }
+
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     const instance = new CfnDBInstance(this, 'Resource', {
-      dbClusterIdentifier: props.cluster.clusterIdentifier,
+      dbClusterIdentifier: props.cluster.dbClusterRef.dbClusterId,
       dbInstanceClass: `db.${props.instanceType}`,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade ?? true,
       availabilityZone: props.availabilityZone,
@@ -238,7 +256,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
       enablePerformanceInsights: props.enablePerformanceInsights,
     });
 
-    this.cluster = props.cluster;
+    this._cluster = props.cluster;
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpoint;
     this.dbInstanceEndpointPort = instance.attrPort;
@@ -251,4 +269,11 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
       applyToUpdateReplacePolicy: true,
     });
   }
+}
+
+function toIDatabaseCluster(cluster: IDBClusterRef): IDatabaseCluster {
+  if (!('clusterIdentifier' in cluster) || !('connections' in cluster)) {
+    throw new cdk.UnscopedValidationError(`'cluster' instance should implement IDatabaseCluster, but doesn't: ${cluster.constructor.name}`);
+  }
+  return cluster as IDatabaseCluster;
 }

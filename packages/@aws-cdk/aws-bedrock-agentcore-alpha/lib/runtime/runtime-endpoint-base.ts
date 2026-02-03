@@ -11,8 +11,9 @@
  *  and limitations under the License.
  */
 
-import { IResource, Resource } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 
 /******************************************************************************
  *                                Interface
@@ -87,8 +88,8 @@ export abstract class RuntimeEndpointBase extends Resource implements IRuntimeEn
   public abstract readonly createdAt?: string;
   public abstract readonly description?: string;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 }
 

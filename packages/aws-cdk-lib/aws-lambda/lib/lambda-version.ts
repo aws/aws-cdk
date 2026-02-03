@@ -1,13 +1,15 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
-import { Construct } from 'constructs';
-import { Alias, AliasOptions } from './alias';
-import { Architecture } from './architecture';
-import { EventInvokeConfigOptions } from './event-invoke-config';
+import type { Construct } from 'constructs';
+import type { Alias, AliasOptions } from './alias';
+import type { Architecture } from './architecture';
+import type { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
-import { IFunction, QualifiedFunctionBase } from './function-base';
-import { CfnVersion, IVersionRef, VersionReference } from './lambda.generated';
+import type { IFunction } from './function-base';
+import { QualifiedFunctionBase } from './function-base';
+import type { IVersionRef, VersionReference } from './lambda.generated';
+import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -355,13 +357,16 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       return undefined;
     }
 
-    if (minExecutionEnvironments && minExecutionEnvironments < 0) {
+    const minDefined = minExecutionEnvironments !== undefined && !Token.isUnresolved(minExecutionEnvironments);
+    const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
+
+    if (minDefined && minExecutionEnvironments < 0) {
       throw new ValidationError('minExecutionEnvironments must be a non-negative integer.', this);
     }
-    if (maxExecutionEnvironments && maxExecutionEnvironments < 0) {
+    if (maxDefined && maxExecutionEnvironments < 0) {
       throw new ValidationError('maxExecutionEnvironments must be a non-negative integer.', this);
     }
-    if (minExecutionEnvironments && maxExecutionEnvironments && minExecutionEnvironments > maxExecutionEnvironments) {
+    if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
       throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments', this);
     }
 

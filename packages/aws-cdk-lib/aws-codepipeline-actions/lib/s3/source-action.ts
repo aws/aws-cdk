@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as targets from '../../../aws-events-targets';
-import * as s3 from '../../../aws-s3';
+import type * as s3 from '../../../aws-s3';
 import { Names, Token, UnscopedValidationError } from '../../../core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';

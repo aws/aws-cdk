@@ -3,7 +3,8 @@ import * as path from 'path';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import type { CloudAssembly } from '../cloud-assembly';
-import { Environment, EnvironmentUtils } from '../environment';
+import type { Environment } from '../environment';
+import { EnvironmentUtils } from '../environment';
 import { CloudAssemblyError } from '../private/error';
 const CLOUDFORMATION_STACK_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.CloudFormationStackArtifact');
 
@@ -26,7 +27,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    * this type-testing method instead.
    */
   public static isCloudFormationStackArtifact(art: any): art is CloudFormationStackArtifact {
-    return art && typeof art === 'object' && art[CLOUDFORMATION_STACK_ARTIFACT_SYM];
+    return art && typeof art === 'object' && CLOUDFORMATION_STACK_ARTIFACT_SYM in art;
   }
 
   /**

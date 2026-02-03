@@ -1,12 +1,18 @@
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
+import type { ISecurityGroup, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { InstanceType, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
-import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cxapi from 'aws-cdk-lib/cx-api';
-import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster, IpFamily } from './cluster';
 import { isGpuInstanceType } from './private/nodegroup';
 
 /**
@@ -253,7 +259,7 @@ export interface NodegroupOptions {
   /**
    * The maximum number of worker nodes that the managed node group can scale out to. Managed node groups can support up to 100 nodes by default.
    *
-   * @default - desiredSize
+   * @default - same as desiredSize property
    */
   readonly maxSize?: number;
   /**
@@ -326,7 +332,7 @@ export interface NodegroupOptions {
    * a key and an optional value, both of which you define. Node group tags do not propagate to any other resources
    * associated with the node group, such as the Amazon EC2 instances or subnets.
    *
-   * @default - None
+   * @default None
    */
   readonly tags?: { [name: string]: string };
   /**
@@ -338,7 +344,7 @@ export interface NodegroupOptions {
   /**
    * The capacity type of the nodegroup.
    *
-   * @default - ON_DEMAND
+   * @default CapacityType.ON_DEMAND
    */
   readonly capacityType?: CapacityType;
 
@@ -368,7 +374,7 @@ export interface NodegroupOptions {
    * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair
-   * @default - disabled
+   * @default false
    */
   readonly enableNodeAutoRepair?: boolean;
 }
@@ -402,18 +408,6 @@ export class Nodegroup extends Resource implements INodegroup {
     return new Import(scope, id);
   }
   /**
-   * ARN of the nodegroup
-   *
-   * @attribute
-   */
-  public readonly nodegroupArn: string;
-  /**
-   * Nodegroup name
-   *
-   * @attribute
-   */
-  public readonly nodegroupName: string;
-  /**
    * the Amazon EKS cluster resource
    *
    * @attribute ClusterName
@@ -423,6 +417,8 @@ export class Nodegroup extends Resource implements INodegroup {
    * IAM role of the instance profile for the nodegroup
    */
   public readonly role: IRole;
+
+  private readonly resource: CfnNodegroup;
 
   private readonly desiredSize: number;
   private readonly maxSize: number;
@@ -523,7 +519,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
     this.validateUpdateConfig(props.maxUnavailable, props.maxUnavailablePercentage);
 
-    const resource = new CfnNodegroup(this, 'Resource', {
+    this.resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
@@ -577,17 +573,33 @@ export class Nodegroup extends Resource implements INodegroup {
         Node.of(this.cluster.albController).addDependency(this);
       }
     }
+  }
 
-    this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
+  /**
+   * ARN of the nodegroup
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get nodegroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'eks',
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
+  }
 
+  /**
+   * Nodegroup name
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get nodegroupName(): string {
     if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
-      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
+      return this.getResourceNameAttribute(this.resource.attrNodegroupName);
     } else {
-      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+      return this.getResourceNameAttribute(this.resource.ref);
     }
   }
 
