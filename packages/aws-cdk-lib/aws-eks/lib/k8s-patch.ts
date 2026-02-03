@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
-import { CustomResource, RemovalPolicy, Stack } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { CustomResource, Stack } from '../../core';
 
 /**
  * Properties for KubernetesPatch

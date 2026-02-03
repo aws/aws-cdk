@@ -2,7 +2,8 @@ import { Construct, Node } from 'constructs';
 import { AlbScheme } from './alb-controller';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
-import { CustomResource, RemovalPolicy, Stack } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { CustomResource, Stack } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';

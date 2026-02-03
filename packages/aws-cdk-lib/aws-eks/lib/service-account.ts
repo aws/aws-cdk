@@ -7,7 +7,8 @@ import {
   OpenIdConnectPrincipal, PolicyStatement, Role,
   ServicePrincipal,
 } from '../../aws-iam';
-import { CfnJson, Names, RemovalPolicy, RemovalPolicies } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { CfnJson, Names, RemovalPolicies } from '../../core';
 
 /**
  * Enum representing the different identity types that can be used for a Kubernetes service account.

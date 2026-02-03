@@ -1,5 +1,5 @@
 import type { RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, RemovalPolicies, Stack } from 'aws-cdk-lib/core';
+import { CustomResource, RemovalPolicies, Stack, ValidationError } from 'aws-cdk-lib/core';
 import { Construct, Node } from 'constructs';
 import { AlbScheme } from './alb-controller';
 import type { ICluster } from './cluster';
@@ -140,7 +140,7 @@ export class KubernetesManifest extends Construct {
     const stack = Stack.of(this);
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
     if (!provider) {
-      throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
+      throw new ValidationError('Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     const prune = props.prune ?? props.cluster.prune;

@@ -1,5 +1,5 @@
 import type { RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, RemovalPolicies, Stack } from 'aws-cdk-lib/core';
+import { CustomResource, RemovalPolicies, Stack, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
@@ -90,7 +90,7 @@ export class KubernetesPatch extends Construct {
 
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
     if (!provider) {
-      throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
+      throw new ValidationError('Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     new CustomResource(this, 'Resource', {

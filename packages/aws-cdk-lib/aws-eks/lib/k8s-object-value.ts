@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
-import { CustomResource, Duration, RemovalPolicy, Token } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { CustomResource, Duration, Token } from '../../core';
 
 /**
  * Properties for KubernetesObjectValue.

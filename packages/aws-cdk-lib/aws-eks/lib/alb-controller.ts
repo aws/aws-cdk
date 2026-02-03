@@ -9,7 +9,8 @@ import * as iam from '../../aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 
-import { Aws, Duration, Names, RemovalPolicy, Stack, ValidationError } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { Aws, Duration, Names, Stack, ValidationError } from '../../core';
 
 /**
  * Controller version.
