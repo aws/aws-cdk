@@ -86,6 +86,14 @@ interface CallAwsServiceCrossRegionOptions {
    * @default true
    */
   readonly retryOnServiceExceptions?: boolean;
+
+  /**
+   * Timeout for the Lambda function that performs the cross-region AWS API call.
+   * Lambda allows 1 to 900 seconds.
+   *
+   * @default Duration.seconds(30)
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -164,7 +172,7 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
     this.lambdaFunction = new CrossRegionAwsSdkSingletonFunction(this, 'Handler', {
       uuid: '8a0c93f3-dbef-4b71-ac13-7aaf2048ce7e',
       lambdaPurpose: 'CrossRegionAwsSdk',
-      timeout: Duration.seconds(30),
+      timeout: props.timeout ?? Duration.seconds(30),
     });
 
     [
