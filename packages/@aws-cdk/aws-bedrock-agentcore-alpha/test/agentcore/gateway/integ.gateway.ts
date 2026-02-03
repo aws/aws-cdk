@@ -131,6 +131,10 @@ const lambdaTarget = gateway.addLambdaTarget('LambdaTarget', {
   toolSchema: lambdaToolSchema,
 });
 
+// Ensure the gateway resource is created before the target
+// This gives time for IAM permissions to propagate
+lambdaTarget.node.addDependency(gateway);
+
 // ===== OpenAPI Target =====
 // NOTE: OpenAPI targets are NOT included in this integration test because they require
 // either API_KEY or OAUTH credential providers (IAM is not supported for OpenAPI targets).
