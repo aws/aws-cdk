@@ -509,7 +509,9 @@
           "error": "Assertion error: Expected tag 'CDKIntegTestTagIGW' but received 'CDKintegTestVPC'"
         }
       ],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.vpc-v2-alpha-integtest-model",
@@ -524,7 +526,9 @@
           "error": null
         }
       ],
-      "fixSummary": "Fixed hardcoded AZs to use dynamic AZ selection via Fn.select and Fn.getAzs"
+      "fixSummary": "Fixed hardcoded AZs to use dynamic AZ selection via Fn.select and Fn.getAzs",
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.vpc-shared-route-table",
@@ -532,7 +536,9 @@
       "originalError": null,
       "originalPR": null,
       "attempts": [],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.vpc-migration-feature-flag",
@@ -540,7 +546,9 @@
       "originalError": null,
       "originalPR": null,
       "attempts": [],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.transit-gateway-integtest-model",
@@ -555,7 +563,9 @@
           "error": null
         }
       ],
-      "fixSummary": "Fixed hardcoded AZ to use dynamic AZ selection"
+      "fixSummary": "Fixed hardcoded AZ to use dynamic AZ selection",
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.vpc-add-gateways",
@@ -563,7 +573,9 @@
       "originalError": null,
       "originalPR": null,
       "attempts": [],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.test-import-integtest-model",
@@ -571,7 +583,9 @@
       "originalError": "Test imports VPCs with hardcoded IDs that don't exist. Requires pre-existing infrastructure.",
       "originalPR": null,
       "attempts": [],
-      "fixSummary": "Test requires manual setup with pre-existing VPCs. Cannot be automated."
+      "fixSummary": "Test requires manual setup with pre-existing VPCs. Cannot be automated.",
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.peering-cross-account",
@@ -579,7 +593,9 @@
       "originalError": null,
       "originalPR": null,
       "attempts": [],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.subnet-map-public-ip",
@@ -587,7 +603,9 @@
       "originalError": null,
       "originalPR": null,
       "attempts": [],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-cloud9-alpha/test/integ.owner",
@@ -610,7 +628,9 @@
           "error": null
         }
       ],
-      "fixSummary": "Fixed hardcoded AZ to use dynamic AZ selection"
+      "fixSummary": "Fixed hardcoded AZ to use dynamic AZ selection",
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-ec2-alpha/test/integ.route-v2-integtest-model-8",
@@ -618,7 +638,9 @@
       "originalError": null,
       "originalPR": null,
       "attempts": [],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-cloud9-alpha/test/integ.connection-type-cloud-9-connection-type",
@@ -634,7 +656,9 @@
       "originalError": null,
       "originalPR": null,
       "attempts": [],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-cloud9-alpha/test/integ.image-id",
@@ -650,7 +674,9 @@
       "originalError": null,
       "originalPR": null,
       "attempts": [],
-      "fixSummary": null
+      "fixSummary": null,
+      "branch": "fix/integ-ec2-alpha-1770075103",
+      "pushed": true
     },
     {
       "path": "aws-cloud9-alpha/test/integ.cloud9-integ.cloud9",
