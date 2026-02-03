@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
-import { CfnDestination, ILogGroupRef } from './logs.generated';
-import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
+import type { Construct } from 'constructs';
+import type { ILogGroupRef } from './logs.generated';
+import { CfnDestination } from './logs.generated';
+import type { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -55,21 +57,32 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
   public readonly policyDocument: iam.PolicyDocument = new iam.PolicyDocument();
 
   /**
+   * The inner resource
+   */
+  private readonly resource: CfnDestination;
+
+  /**
    * The name of this CrossAccountDestination object
    * @attribute
    */
-  public readonly destinationName: string;
+  @memoizedGetter
+  public get destinationName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * The ARN of this CrossAccountDestination object
    * @attribute
    */
-  public readonly destinationArn: string;
-
-  /**
-   * The inner resource
-   */
-  private readonly resource: CfnDestination;
+  @memoizedGetter
+  public get destinationArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'destination',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: CrossAccountDestinationProps) {
     super(scope, id, {
@@ -87,14 +100,6 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
       roleArn: props.role.roleRef.roleArn,
       targetArn: props.targetArn,
     });
-
-    this.destinationArn = this.getResourceArnAttribute(this.resource.attrArn, {
-      service: 'logs',
-      resource: 'destination',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-    this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }
 
   @MethodMetadata()

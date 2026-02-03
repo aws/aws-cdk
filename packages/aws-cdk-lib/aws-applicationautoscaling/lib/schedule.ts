@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { Annotations, Duration } from '../../core';
+import type { Construct } from 'constructs';
+import type { Duration } from '../../core';
+import { Annotations } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**

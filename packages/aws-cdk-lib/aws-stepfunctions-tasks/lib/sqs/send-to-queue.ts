@@ -1,7 +1,8 @@
 import * as iam from '../../../aws-iam';
-import * as sqs from '../../../aws-sqs';
+import type * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
-import { Duration, ValidationError } from '../../../core';
+import type { Duration } from '../../../core';
+import { ValidationError } from '../../../core';
 import { getResourceArn } from '../resource-arn-suffix';
 
 /**

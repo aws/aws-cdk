@@ -5,7 +5,7 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as sagemaker from '../lib';
 
 describe('When instantiating SageMaker Model', () => {
