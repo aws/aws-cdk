@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import { Guardrail } from './guardrail';
-import * as bedrock from '../../../aws-bedrock';
+import type { Construct } from 'constructs';
+import type { Guardrail } from './guardrail';
+import type * as bedrock from '../../../aws-bedrock';
 import * as iam from '../../../aws-iam';
-import * as s3 from '../../../aws-s3';
+import type * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { Annotations, Stack, FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';

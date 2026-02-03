@@ -1,11 +1,13 @@
-import { IConstruct, Construct, Node } from 'constructs';
-import { Environment } from './environment';
+import type { IConstruct } from 'constructs';
+import { Construct, Node } from 'constructs';
+import type { Environment } from './environment';
 import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
-import { PermissionsBoundary } from './permissions-boundary';
+import type { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
-import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import { IPolicyValidationPluginBeta1 } from './validation';
+import type { IPropertyInjector } from './prop-injectors';
+import { PropertyInjectors } from './prop-injectors';
+import type { IPolicyValidationPluginBeta1 } from './validation';
 import * as cxapi from '../../cx-api';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');

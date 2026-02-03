@@ -1,6 +1,7 @@
-import { IResource, Resource, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { UserEngine } from './common';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib/core';
+import type { Construct } from 'constructs';
+import type { UserEngine } from './common';
 
 /**
  * Access control configuration for ElastiCache users.

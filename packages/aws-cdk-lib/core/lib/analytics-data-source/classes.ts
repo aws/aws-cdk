@@ -5305,7 +5305,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': '*',
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'tags': '*',
@@ -5859,7 +5861,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': '*',
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'tags': '*',
@@ -6058,7 +6062,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableNodeAutoRepair': 'boolean'
     },
     'OpenIdConnectProvider': {
-      'url': '*'
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OidcProviderNative': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   'aws-cdk-lib.aws-apigateway': {
@@ -15113,7 +15122,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'additionalHelmChartValues': {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
-        }
+        },
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15698,7 +15708,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'additionalHelmChartValues': {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
-        }
+        },
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15942,7 +15953,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableNodeAutoRepair': 'boolean'
     },
     'OpenIdConnectProvider': {
-      'url': '*'
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OidcProviderNative': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   'aws-cdk-lib.aws-elasticloadbalancing': {
@@ -16690,12 +16706,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'oidcProviderName': '*',
       'url': '*',
       'clientIds': '*',
-      'thumbprints': '*'
+      'thumbprints': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'OpenIdConnectProvider': {
       'url': '*',
       'clientIds': '*',
-      'thumbprints': '*'
+      'thumbprints': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Policy': {
       'policyName': '*',
@@ -17435,6 +17453,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'metricsConfig': {
         'metrics': 'MetricType'
       },
+      'logLevel': 'EventSourceMappingLogLevel',
       'schemaRegistryConfig': '*'
     },
     'LatestVersion': {
@@ -26123,6 +26142,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'metricsConfig': {
             'metrics': 'MetricType'
           },
+          'logLevel': 'EventSourceMappingLogLevel',
           'schemaRegistryConfig': '*'
         }
       ],

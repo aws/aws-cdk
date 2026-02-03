@@ -1,4 +1,4 @@
-import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 
 /**
  * Interface for listener actions

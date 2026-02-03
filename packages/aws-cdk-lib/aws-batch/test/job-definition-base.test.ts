@@ -1,6 +1,6 @@
 import { capitalizePropertyNames } from './utils';
 import { Template } from '../../assertions';
-import { CfnJobDefinitionProps } from '../../aws-batch';
+import type { CfnJobDefinitionProps } from '../../aws-batch';
 import { InstanceClass, InstanceSize, InstanceType } from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import { Duration, Size, Stack } from '../../core';

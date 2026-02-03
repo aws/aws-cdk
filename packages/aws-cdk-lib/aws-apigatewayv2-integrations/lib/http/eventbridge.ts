@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import * as apigwv2 from '../../../aws-apigatewayv2';
-import * as events from '../../../aws-events';
+import type * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import { ValidationError } from '../../../core';
 

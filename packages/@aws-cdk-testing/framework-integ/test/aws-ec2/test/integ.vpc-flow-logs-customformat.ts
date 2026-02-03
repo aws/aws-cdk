@@ -1,6 +1,7 @@
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Cluster } from 'aws-cdk-lib/aws-ecs';
-import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, LogFormat } from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';

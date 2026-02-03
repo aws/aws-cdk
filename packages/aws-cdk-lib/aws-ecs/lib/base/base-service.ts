@@ -1,19 +1,21 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { ScalableTaskCount } from './scalable-task-count';
-import { ServiceManagedVolume } from './service-managed-volume';
+import type { ServiceManagedVolume } from './service-managed-volume';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
-import * as elb from '../../../aws-elasticloadbalancing';
+import type * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
+import type {
+  IResolvable,
+  IResource,
+} from '../../../core';
 import {
   Annotations,
   Duration,
-  IResolvable,
-  IResource,
   Lazy,
   Resource,
   Stack,
@@ -26,20 +28,23 @@ import {
 } from '../../../core';
 import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import * as cxapi from '../../../cx-api';
-import { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
+import type { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
-import { IAlternateTarget } from '../alternate-target-configuration';
-import {
+import type { IAlternateTarget } from '../alternate-target-configuration';
+import type {
   LoadBalancerTargetOptions,
-  NetworkMode,
   TaskDefinition,
+} from '../base/task-definition';
+import {
+  NetworkMode,
   TaskDefinitionRevision,
 } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
-import { ContainerDefinition, Protocol } from '../container-definition';
-import { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
+import type { ICluster, CapacityProviderStrategy } from '../cluster';
+import { ExecuteCommandLogging, Cluster } from '../cluster';
+import type { ContainerDefinition, Protocol } from '../container-definition';
+import type { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
-import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
+import type { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 
 /**
  * The interface for a service.

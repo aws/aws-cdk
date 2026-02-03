@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { extractApiIdFromGraphQLApiRef } from './private/ref-utils';
-import { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Configuration for bound graphql schema
