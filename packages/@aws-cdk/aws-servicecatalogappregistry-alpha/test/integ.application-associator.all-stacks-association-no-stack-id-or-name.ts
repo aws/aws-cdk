@@ -7,11 +7,14 @@ const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-application');
 
 new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
-    applicationName: 'AppRegistryAssociatedApplication',
+    applicationName: 'AppRegistryNoStackIdApplication',
+    env: { account: cdk.Aws.ACCOUNT_ID, region: cdk.Aws.REGION },
   })],
 });
 
-new cdk.Stack(stack, 'resourcesStack');
+new cdk.Stack(app, 'resourcesStack', {
+  env: { account: cdk.Aws.ACCOUNT_ID, region: cdk.Aws.REGION },
+});
 
 new integ.IntegTest(app, 'ApplicationAssociatorTest', {
   testCases: [stack],

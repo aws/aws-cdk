@@ -1,5 +1,4 @@
 import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as appreg from '../lib';
 
 const app = new cdk.App();
@@ -52,13 +51,6 @@ application.addAttributeGroup('myAnotherAttributeGroup', {
     },
   },
   description: 'my another attribute group description',
-});
-const myRole = new iam.Role(stack, 'MyRole', {
-  assumedBy: new iam.AccountPrincipal(stack.account),
-});
-application.shareApplication('MyShareId', {
-  name: 'MyShare',
-  roles: [myRole],
 });
 
 app.synth();
