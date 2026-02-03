@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7": {
+      "source": {
+        "path": "asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-5c579aed": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "9d890d4c7630e195e8574c02403c1740bd7a5e55b0b708a1013d22b73edf14de": {
+      "displayName": "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886 Template",
+      "source": {
+        "path": "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d5ade6a2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9d890d4c7630e195e8574c02403c1740bd7a5e55b0b708a1013d22b73edf14de.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

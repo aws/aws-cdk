@@ -21,7 +21,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPC', {
 });
 
 // Create a public subnet with mapPublicIpOnLaunch explicitly set to true
-new SubnetV2(stack, 'PublicSubnetWithIp', {
+const publicSubnetWithIp = new SubnetV2(stack, 'PublicSubnetWithIp', {
   vpc,
   availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.0.1.0/24'),
@@ -31,7 +31,7 @@ new SubnetV2(stack, 'PublicSubnetWithIp', {
 });
 
 // Create a public subnet with mapPublicIpOnLaunch explicitly set to false
-new SubnetV2(stack, 'PublicSubnetWithoutIp', {
+const publicSubnetWithoutIp = new SubnetV2(stack, 'PublicSubnetWithoutIp', {
   vpc,
   availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.0.2.0/24'),
@@ -41,7 +41,7 @@ new SubnetV2(stack, 'PublicSubnetWithoutIp', {
 });
 
 // Create a private subnet with default mapPublicIpOnLaunch (should be false)
-new SubnetV2(stack, 'PrivateSubnetDefault', {
+const privateSubnetDefault = new SubnetV2(stack, 'PrivateSubnetDefault', {
   vpc,
   availabilityZone: cdk.Fn.select(2, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.0.3.0/24'),
@@ -54,13 +54,9 @@ const integ = new IntegTest(app, 'SubnetMapPublicIpInteg', {
 });
 
 // Verify that the mapPublicIpOnLaunch property is correctly set on the subnets
-const publicWithIpAssertion = integ.assertions.awsApiCall('ec2', 'describeSubnets', {
-  Filters: [
-    {
-      Name: 'tag:Name',
-      Values: ['PublicSubnetWithIp'],
-    },
-  ],
+// Use subnet IDs directly instead of filtering by tag
+const publicWithIpAssertion = integ.assertions.awsApiCall('EC2', 'describeSubnets', {
+  SubnetIds: [publicSubnetWithIp.subnetId],
 });
 
 publicWithIpAssertion.expect(ExpectedResult.objectLike({
@@ -71,13 +67,8 @@ publicWithIpAssertion.expect(ExpectedResult.objectLike({
   ],
 }));
 
-const publicWithoutIpAssertion = integ.assertions.awsApiCall('ec2', 'describeSubnets', {
-  Filters: [
-    {
-      Name: 'tag:Name',
-      Values: ['PublicSubnetWithoutIp'],
-    },
-  ],
+const publicWithoutIpAssertion = integ.assertions.awsApiCall('EC2', 'describeSubnets', {
+  SubnetIds: [publicSubnetWithoutIp.subnetId],
 });
 
 publicWithoutIpAssertion.expect(ExpectedResult.objectLike({
@@ -88,13 +79,8 @@ publicWithoutIpAssertion.expect(ExpectedResult.objectLike({
   ],
 }));
 
-const privateDefaultAssertion = integ.assertions.awsApiCall('ec2', 'describeSubnets', {
-  Filters: [
-    {
-      Name: 'tag:Name',
-      Values: ['PrivateSubnetDefault'],
-    },
-  ],
+const privateDefaultAssertion = integ.assertions.awsApiCall('EC2', 'describeSubnets', {
+  SubnetIds: [privateSubnetDefault.subnetId],
 });
 
 privateDefaultAssertion.expect(ExpectedResult.objectLike({

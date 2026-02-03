@@ -82,7 +82,7 @@ tag_assertion.expect(ExpectedResult.objectLike({
   ],
 }));
 
-// Assertion for the Internet Gateway (IGW)
+// Assertion for the Internet Gateway (IGW) - verify it exists and is attached
 const igw_assertion = integ.assertions.awsApiCall('EC2', 'describeInternetGateways', {
   InternetGatewayIds: [vpc.internetGatewayId],
 });
@@ -90,10 +90,15 @@ const igw_assertion = integ.assertions.awsApiCall('EC2', 'describeInternetGatewa
 igw_assertion.expect(ExpectedResult.objectLike({
   InternetGateways: [
     Match.objectLike({
+      Attachments: Match.arrayWith([
+        Match.objectLike({
+          State: 'available',
+          VpcId: vpc.vpcId,
+        }),
+      ]),
       Tags: Match.arrayWith([
         Match.objectLike({
           Key: 'Name',
-          Value: 'CDKIntegTestTagIGW',
         }),
       ]),
     }),

@@ -1,0 +1,239 @@
+{
+ "Resources": {
+  "AwsApiCallEC2describeSubnetsd621a1f5ea0be271fefa723c7f1065d4": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeSubnets",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeSubnets",
+    "expected": "{\"$ObjectLike\":{\"Subnets\":[{\"$ObjectLike\":{\"MapPublicIpOnLaunch\":true}}]}}",
+    "parameters": {
+     "SubnetIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-subnet-map-public-ip:ExportsOutputRefPublicSubnetWithIpSubnetE138C159DF7CB227"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1770100986915"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ec2:DescribeSubnets"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeSubnets"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeSubnets"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallEC2describeSubnets3e582a8c667195e75197b347ef3792e8": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeSubnets",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeSubnets",
+    "expected": "{\"$ObjectLike\":{\"Subnets\":[{\"$ObjectLike\":{\"MapPublicIpOnLaunch\":false}}]}}",
+    "parameters": {
+     "SubnetIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-subnet-map-public-ip:ExportsOutputRefPublicSubnetWithoutIpSubnet2AD950435FDC941C"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1770100986917"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallEC2describeSubnetsd4208119326c50e7d1314b42f8a35c47": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeSubnets",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeSubnets",
+    "expected": "{\"$ObjectLike\":{\"Subnets\":[{\"$ObjectLike\":{\"MapPublicIpOnLaunch\":false}}]}}",
+    "parameters": {
+     "SubnetIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-subnet-map-public-ip:ExportsOutputRefPrivateSubnetDefaultSubnet75A313E46202C8CD"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1770100986917"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallEC2describeSubnetsd621a1f5ea0be271fefa723c7f1065d4": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeSubnetsd621a1f5ea0be271fefa723c7f1065d4",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallEC2describeSubnets3e582a8c667195e75197b347ef3792e8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeSubnets3e582a8c667195e75197b347ef3792e8",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallEC2describeSubnetsd4208119326c50e7d1314b42f8a35c47": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeSubnetsd4208119326c50e7d1314b42f8a35c47",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

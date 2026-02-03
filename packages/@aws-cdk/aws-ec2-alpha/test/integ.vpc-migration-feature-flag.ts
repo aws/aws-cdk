@@ -15,16 +15,14 @@ import * as ec2alpha from '../lib';
  * Each stack creates a VPC with an Internet Gateway, NAT Gateway, and Route Table.
  */
 
-// Stack with feature flag enabled
-const app = new cdk.App({
-  context: {
-    [cdk.cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: true,
-  },
-});
+const app = new cdk.App();
 
 class VpcMigrationFeatureFlagEnabledStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    // Enable feature flag for this stack
+    this.node.setContext(cdk.cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION, true);
 
     // Create a VPC
     const vpc = new ec2alpha.VpcV2(this, 'VpcWithFeatureFlagEnabled', {
@@ -66,16 +64,12 @@ class VpcMigrationFeatureFlagEnabledStack extends cdk.Stack {
   }
 }
 
-// Stack with feature flag disabled
-const appDisabled = new cdk.App({
-  context: {
-    [cdk.cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
-  },
-});
-
 class VpcMigrationFeatureFlagDisabledStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    // Disable feature flag for this stack
+    this.node.setContext(cdk.cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION, false);
 
     // Create a VPC
     const vpc = new ec2alpha.VpcV2(this, 'VpcWithFeatureFlagDisabled', {
@@ -119,7 +113,7 @@ class VpcMigrationFeatureFlagDisabledStack extends cdk.Stack {
 
 // Create the stacks
 const enabledStack = new VpcMigrationFeatureFlagEnabledStack(app, 'VpcMigrationFeatureFlagEnabledStack');
-const disabledStack = new VpcMigrationFeatureFlagDisabledStack(appDisabled, 'VpcMigrationFeatureFlagDisabledStack');
+const disabledStack = new VpcMigrationFeatureFlagDisabledStack(app, 'VpcMigrationFeatureFlagDisabledStack');
 
 // Create the integration test
 new IntegTest(app, 'VpcMigrationFeatureFlagTest', {

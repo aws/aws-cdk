@@ -31,13 +31,13 @@ const ipam = new Ipam(stack, 'IpamTest', {
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
   ipv4ProvisionedCidrs: ['10.2.0.0/16'],
-  locale: 'us-west-2',
+  locale: cdk.Stack.of(stack).region,
 });
 
 const pool2 = ipam.publicScope.addPool('PublicPool0', {
   addressFamily: AddressFamily.IP_V6,
   awsService: AwsServiceName.EC2,
-  locale: 'us-west-2',
+  locale: cdk.Stack.of(stack).region,
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
 pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 } );

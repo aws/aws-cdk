@@ -92,14 +92,13 @@ const integ = new IntegTest(app, 'VpcSameAccountInteg', {
 });
 
 // Verify that IGW is attached to VPC
-const igwassertion = integ.assertions.awsApiCall('ec2', 'DescribeInternetGatewaysCommand', {
-  InternetGatewayId: [vpc.internetGatewayId],
+const igwassertion = integ.assertions.awsApiCall('EC2', 'describeInternetGateways', {
+  InternetGatewayIds: [vpc.internetGatewayId],
 });
 
 igwassertion.expect(ExpectedResult.objectLike({
   InternetGateways: [
     Match.objectLike({
-      InternetGatewayId: vpc.internetGatewayId,
       Attachments: Match.arrayWith([
         Match.objectLike({
           State: 'available',
@@ -111,14 +110,13 @@ igwassertion.expect(ExpectedResult.objectLike({
 }));
 
 // Verify that EIGW is attached to VPC
-const eigwassertion = integ.assertions.awsApiCall('ec2', 'DescribeEgressOnlyInternetGatewaysCommand', {
-  EgressOnlyInternetGatewayId: [vpc.egressOnlyInternetGatewayId],
+const eigwassertion = integ.assertions.awsApiCall('EC2', 'describeEgressOnlyInternetGateways', {
+  EgressOnlyInternetGatewayIds: [vpc.egressOnlyInternetGatewayId],
 });
 
 eigwassertion.expect(ExpectedResult.objectLike({
   EgressOnlyInternetGateways: [
     Match.objectLike({
-      EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
       Attachments: Match.arrayWith([
         Match.objectLike({
           State: 'attached',
@@ -130,14 +128,14 @@ eigwassertion.expect(ExpectedResult.objectLike({
 }));
 
 // Verify that the Gateways route is restricted to destination and given subnet's route table.
-const rtbassertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
-  RouteTableIds: [routeTable1.routeTableId, routeTable2.routeTableId],
+// Check each route table individually to avoid order dependency
+const rtb1assertion = integ.assertions.awsApiCall('EC2', 'describeRouteTables', {
+  RouteTableIds: [routeTable1.routeTableId],
 });
 
-rtbassertion.expect(ExpectedResult.objectLike({
+rtb1assertion.expect(ExpectedResult.objectLike({
   RouteTables: [
     Match.objectLike({
-      RouteTableId: routeTable2.routeTableId,
       Routes: Match.arrayWith([
         Match.objectLike({
           DestinationCidrBlock: '192.168.0.0/16',
@@ -149,8 +147,16 @@ rtbassertion.expect(ExpectedResult.objectLike({
         }),
       ]),
     }),
+  ],
+}));
+
+const rtb2assertion = integ.assertions.awsApiCall('EC2', 'describeRouteTables', {
+  RouteTableIds: [routeTable2.routeTableId],
+});
+
+rtb2assertion.expect(ExpectedResult.objectLike({
+  RouteTables: [
     Match.objectLike({
-      RouteTableId: routeTable1.routeTableId,
       Routes: Match.arrayWith([
         Match.objectLike({
           DestinationCidrBlock: '192.168.0.0/16',
