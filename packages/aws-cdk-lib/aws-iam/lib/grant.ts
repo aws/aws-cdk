@@ -2,9 +2,12 @@ import type { IConstruct, IDependable } from 'constructs';
 import { Dependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import type { IGrantable, IPrincipal } from './principals';
-import * as cdk from '../../core';
 import type { IEnvironmentAware } from '../../core';
+import * as cdk from '../../core';
+import { CfnResource } from '../../core';
 import type * as iam from '../index';
+
+const POLICY_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-resource-policy-decorator');
 
 /**
  * Basic options for a grant operation
@@ -431,6 +434,80 @@ export interface GrantOnKeyResult {
    * @default No grant
    */
   readonly grant?: Grant;
+}
+
+export class ResourceWithPolicies {
+  /**
+   * Retrieve an `IResourceWithPolicyV2` adapter for a resource if one is available.
+   *
+   * - If the resource already implements `IResourceWithPolicyV2`, it is returned.
+   * - If the resource is a CloudFormation `CfnResource`, walk up the construct
+   *   scope chain to find a registered resource policy decorator (via
+   *   `ResourceWithPolicies.register`) for the resource's `cfnResourceType` and
+   *   use it to produce an `IResourceWithPolicyV2` adapter.
+   *
+   * Returns `undefined` when no resource policy support (neither direct nor via
+   * decorator) can be found.
+   *
+   * @param resource the environment-aware construct to inspect
+   * @returns an `IResourceWithPolicyV2` adapter for the resource, or `undefined`
+   */
+  public static of(resource: IEnvironmentAware): IResourceWithPolicyV2 | undefined {
+    if (GrantableResources.isResourceWithPolicy(resource)) {
+      return resource;
+    }
+
+    if (!(resource instanceof CfnResource)) {
+      return undefined;
+    }
+
+    let decoratorMap = (resource as any)[POLICY_DECORATOR_MAP_SYMBOL];
+    // Walk up the construct scope chain until we find a decorator map or run out of scopes.
+    let current: any = resource;
+    while (!decoratorMap && current) {
+      decoratorMap = current[POLICY_DECORATOR_MAP_SYMBOL];
+      current = (current && current.node && current.node.scope) ? current.node.scope : undefined;
+    }
+    if (!decoratorMap) {
+      return undefined;
+    }
+    const decorator = decoratorMap.get((resource as CfnResource).cfnResourceType);
+    if (!decorator) {
+      return undefined;
+    }
+    return (decorator as ResourcePolicyDecorator).decorate(resource);
+  }
+
+  /**
+   * Registers a resource policy decorator for a specific CloudFormation resource type.
+   *
+   * This method associates a decorator with a CloudFormation resource type (`cfnType`)
+   * within the given construct scope. The decorator can later be used to adapt the
+   * resource into an `IResourceWithPolicyV2` interface.
+   *
+   * @param scope - The construct scope in which to register the decorator.
+   * @param cfnType - The CloudFormation resource type to associate with the decorator.
+   * @param decorator - The `ResourcePolicyDecorator` instance that will be used to
+   *                    decorate the resource.
+   */
+  public static register(scope: IConstruct, cfnType: string, decorator: ResourcePolicyDecorator) {
+    let decoratorMap = (scope as any)[POLICY_DECORATOR_MAP_SYMBOL];
+    if (!decoratorMap) {
+      decoratorMap = new Map<string, ResourcePolicyDecorator>();
+
+      Object.defineProperty(scope, POLICY_DECORATOR_MAP_SYMBOL, {
+        value: decoratorMap,
+        configurable: false,
+        enumerable: false,
+      });
+    }
+
+    decoratorMap.set(cfnType, decorator);
+  }
+}
+
+export interface ResourcePolicyDecorator {
+  decorate(resource: IConstruct): IResourceWithPolicyV2;
 }
 
 /**

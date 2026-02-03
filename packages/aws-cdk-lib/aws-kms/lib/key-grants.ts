@@ -1,7 +1,16 @@
+import type { IConstruct } from 'constructs';
+import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
+import type {
+  AddToResourcePolicyResult,
+  IGrantable,
+  IResourceWithPolicyV2,
+  PolicyStatement,
+  ResourcePolicyDecorator,
+} from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import type { IGrantable } from '../../aws-iam';
-import { FeatureFlags, Stack } from '../../core';
+import type { ResourceEnvironment } from '../../core';
+import { FeatureFlags, Stack, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
 
@@ -28,7 +37,7 @@ export class KeyGrants {
   private constructor(props: KeyGrantsProps) {
     this.resource = props.resource;
     this.trustAccountIdentities = props.trustAccountIdentities ?? FeatureFlags.of(this.resource).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
-    this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
+    this.policyResource = iam.ResourceWithPolicies.of(this.resource);
   }
 
   /**
@@ -172,5 +181,31 @@ export class KeyGrants {
       return keyStack.account !== identityStack.account && this.resource.env.account !== identityStack.account;
     }
     return keyStack.account !== identityStack.account;
+  }
+}
+
+export class KeyPolicyDecorator implements ResourcePolicyDecorator {
+  public decorate(resource: IConstruct): IResourceWithPolicyV2 {
+    if (!CfnKey.isCfnKey(resource)) {
+      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnKey`, resource);
+    }
+    return new CfnKeyWithPolicy(resource);
+  }
+}
+
+class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+
+  constructor(private readonly key: CfnKey) {
+    this.env = key.env;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    const currentPolicy = this.key.keyPolicy ?? { Statement: [] };
+    const policyDocument = iam.PolicyDocument.fromJson(currentPolicy);
+    policyDocument.addStatements(statement);
+    this.key.keyPolicy = policyDocument.toJSON();
+
+    return { statementAdded: true, policyDependable: policyDocument };
   }
 }
