@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "5df30f719141a44d9dc0b3204385031b2f224c31827fc01d196719dcdd64a4c7": {
       "displayName": "BedrockAgentCoreApiGatewayTargetIntegTest Template",

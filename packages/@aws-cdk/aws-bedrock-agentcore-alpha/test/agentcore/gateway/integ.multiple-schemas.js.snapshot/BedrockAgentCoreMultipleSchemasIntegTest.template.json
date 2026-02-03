@@ -525,6 +525,25 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
+  "LambdaTarget1BedrockAgentCoreInvoke51DAB573": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Lambda1DB8E9965",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock-agentcore.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayArn"
+     ]
+    }
+   }
+  },
   "LambdaTarget1DF82CB67": {
    "Type": "AWS::BedrockAgentCore::GatewayTarget",
    "Properties": {
@@ -568,6 +587,28 @@
        }
       }
      }
+    }
+   },
+   "DependsOn": [
+    "LambdaTarget1BedrockAgentCoreInvoke51DAB573"
+   ]
+  },
+  "LambdaTarget2BedrockAgentCoreInvoke87B2031C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Lambda217CFB423",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock-agentcore.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayArn"
+     ]
     }
    }
   },
@@ -615,7 +656,10 @@
       }
      }
     }
-   }
+   },
+   "DependsOn": [
+    "LambdaTarget2BedrockAgentCoreInvoke87B2031C"
+   ]
   }
  },
  "Parameters": {
