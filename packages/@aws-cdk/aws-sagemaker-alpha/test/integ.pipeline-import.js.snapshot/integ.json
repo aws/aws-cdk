@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "sagemaker-alpha-pipeline-import-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sagemaker-alpha-pipeline-import"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "sagemaker-alpha-pipeline-import-test/DefaultTest/DeployAssert",
+      "assertionStackName": "sagemakeralphapipelineimporttestDefaultTestDeployAssert6B940F5C"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}
