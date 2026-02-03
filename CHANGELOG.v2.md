@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.237.1](https://github.com/aws/aws-cdk/compare/v2.237.0...v2.237.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* **core:** intrinsic cfn function tokens are not detected as such in java ([#36843](https://github.com/aws/aws-cdk/issues/36843)) ([89cd54f](https://github.com/aws/aws-cdk/commit/89cd54f6097025bc3e98f2c4bc3caea7c22a61ab))
+
 ## [2.237.0](https://github.com/aws/aws-cdk/compare/v2.236.0...v2.237.0) (2026-02-02)
 
 
