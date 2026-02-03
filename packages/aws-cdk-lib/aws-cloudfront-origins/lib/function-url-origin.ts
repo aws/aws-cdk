@@ -143,12 +143,23 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
 
   private addInvokePermission(scope: Construct, options: cloudfront.OriginBindOptions) {
     const distributionId = options.distributionId;
+    const sourceArn = `arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${distributionId}`;
 
-    new lambda.CfnPermission(scope, `InvokeFromApiFor${options.originId}`, {
+    // Grant lambda:InvokeFunctionUrl permission
+    new lambda.CfnPermission(scope, `InvokeFunctionUrlFor${options.originId}`, {
       principal: 'cloudfront.amazonaws.com',
       action: 'lambda:InvokeFunctionUrl',
       functionName: this.functionUrl.functionArn,
-      sourceArn: `arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${distributionId}`,
+      sourceArn,
+    });
+
+    // Grant lambda:InvokeFunction permission for Dual Auth requirement
+    // See: https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html
+    new lambda.CfnPermission(scope, `InvokeFunctionFor${options.originId}`, {
+      principal: 'cloudfront.amazonaws.com',
+      action: 'lambda:InvokeFunction',
+      functionName: this.functionUrl.functionArn,
+      sourceArn,
     });
   }
 
