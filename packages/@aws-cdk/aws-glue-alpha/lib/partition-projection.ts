@@ -330,7 +330,7 @@ export class PartitionProjectionConfiguration {
       );
     }
 
-    // Validate no empty strings (skip tokens)
+    // Validate no empty strings
     for (let i = 0; i < props.values.length; i++) {
       const value = props.values[i];
       if (!Token.isUnresolved(value) && value.trim() === '') {
