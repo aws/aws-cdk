@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { MetricFilterOptions } from './log-group';
+import type { Construct } from 'constructs';
+import type { MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
-import { Metric, MetricOptions } from '../../aws-cloudwatch';
+import type { MetricOptions } from '../../aws-cloudwatch';
+import { Metric } from '../../aws-cloudwatch';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Properties for a MetricFilter

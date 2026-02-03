@@ -4,9 +4,12 @@ import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import type {
+  GlobalSecondaryIndexPropsV2,
+  LocalSecondaryIndexProps,
+} from '../lib';
 import {
-  AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
-  LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
+  AttributeType, Billing, Capacity, TableV2, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
   MultiRegionConsistency,
   ContributorInsightsMode,
 } from '../lib';

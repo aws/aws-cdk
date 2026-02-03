@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { ValidationError } from '../../../core/lib/errors';
-import { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
-import { IListenerCertificate } from '../shared/listener-certificate';
+import type { IListenerCertificate } from '../shared/listener-certificate';
 
 /**
  * Properties for adding a set of certificates to a listener
