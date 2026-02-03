@@ -1,7 +1,7 @@
-import { ApiGatewayProps } from './api-gateway';
+import type { ApiGatewayProps } from './api-gateway';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as apigwv2 from '../../aws-apigatewayv2';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { ValidationError } from '../../core';
 

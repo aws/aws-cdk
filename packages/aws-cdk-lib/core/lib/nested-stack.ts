@@ -3,14 +3,14 @@ import { Construct, Node } from 'constructs';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
-import { CfnResource } from './cfn-resource';
+import type { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
-import { Duration } from './duration';
+import type { Duration } from './duration';
 import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { Names } from './names';
 import { RemovalPolicy } from './removal-policy';
-import { IResolveContext } from './resolvable';
+import type { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
@@ -76,6 +76,17 @@ export interface NestedStackProps {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * Enable this flag to suppress indentation in generated CloudFormation templates.
+   *
+   * If not specified, the value of the `@aws-cdk/core:suppressTemplateIndentation`
+   * context key will be used. If that is not specified, then the
+   * default value `false` will be used.
+   *
+   * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
+   */
+  readonly suppressTemplateIndentation?: boolean;
 }
 
 /**
@@ -121,6 +132,7 @@ export class NestedStack extends Stack {
       synthesizer: new NestedStackSynthesizer(parentStack.synthesizer),
       description: props.description,
       crossRegionReferences: parentStack._crossRegionReferences,
+      suppressTemplateIndentation: props.suppressTemplateIndentation,
     });
 
     this._parentStack = parentStack;

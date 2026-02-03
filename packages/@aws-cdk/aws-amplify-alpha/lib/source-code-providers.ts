@@ -1,6 +1,6 @@
-import * as codecommit from 'aws-cdk-lib/aws-codecommit';
-import { SecretValue } from 'aws-cdk-lib/core';
-import { App, ISourceCodeProvider, SourceCodeProviderConfig } from './app';
+import type * as codecommit from 'aws-cdk-lib/aws-codecommit';
+import type { SecretValue } from 'aws-cdk-lib/core';
+import type { App, ISourceCodeProvider, SourceCodeProviderConfig } from './app';
 
 /**
  * Properties for a GitHub source code provider

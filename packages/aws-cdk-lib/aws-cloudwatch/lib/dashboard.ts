@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
-import { IVariable } from './variable';
-import { IWidget } from './widget';
-import { Lazy, Resource, Stack, Token, Annotations, Duration, ValidationError } from '../../core';
+import type { IVariable } from './variable';
+import type { IWidget } from './widget';
+import type { Duration } from '../../core';
+import { Lazy, Resource, Stack, Token, Annotations, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

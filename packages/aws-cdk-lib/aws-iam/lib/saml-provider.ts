@@ -1,7 +1,9 @@
 import * as fs from 'fs';
-import { Construct } from 'constructs';
-import { CfnSAMLProvider, ISAMLProviderRef, SAMLProviderReference } from './iam.generated';
-import { IResource, Resource, Token, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { ISAMLProviderRef, SAMLProviderReference } from './iam.generated';
+import { CfnSAMLProvider } from './iam.generated';
+import type { IResource } from '../../core';
+import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
