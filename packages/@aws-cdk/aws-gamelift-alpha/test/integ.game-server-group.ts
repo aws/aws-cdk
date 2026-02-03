@@ -14,7 +14,7 @@ class TestStack extends cdk.Stack {
 
     // Create default launch template
     const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-      machineImage: ec2.MachineImage.latestAmazonLinux(),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
     });
 
     new gamelift.GameServerGroup(this, 'MyGameServerGroup', {

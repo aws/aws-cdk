@@ -21,8 +21,8 @@ class TestStack extends cdk.Stack {
 
 // Beginning of the test suite
 const app = new cdk.App();
-const stack = new TestStack(app, 'aws-gamelift-build');
-new IntegTest(app, 'Build', {
+const stack = new TestStack(app, 'aws-gamelift-matchmaking-ruleset');
+new IntegTest(app, 'MatchmakingRuleSet', {
   testCases: [stack],
 });
 

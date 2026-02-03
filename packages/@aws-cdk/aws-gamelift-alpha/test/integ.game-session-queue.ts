@@ -41,7 +41,7 @@ class TestStack extends cdk.Stack {
     const queue = new gamelift.GameSessionQueue(this, 'MyGameSessionQueue', {
       gameSessionQueueName: 'test-gameSessionQueue',
       customEventData: 'test-event-data',
-      allowedLocations: ['eu-west-1', 'eu-west-2'],
+      allowedLocations: [this.region],
       destinations: [fleet],
       notificationTarget: topic,
       playerLatencyPolicies: [{
@@ -50,8 +50,7 @@ class TestStack extends cdk.Stack {
       }],
       priorityConfiguration: {
         locationOrder: [
-          'eu-west-1',
-          'eu-west-2',
+          this.region,
         ],
         priorityOrder: [
           gamelift.PriorityType.LATENCY,
