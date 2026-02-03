@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { Cluster, AuthenticationMode } from './cluster';
+import type { Cluster } from './cluster';
+import { AuthenticationMode } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
 import * as iam from '../../aws-iam';

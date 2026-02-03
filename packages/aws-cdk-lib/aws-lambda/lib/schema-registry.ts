@@ -1,5 +1,5 @@
-import { IEventSourceMapping } from './event-source-mapping';
-import { IFunction } from './function-base';
+import type { IEventSourceMapping } from './event-source-mapping';
+import type { IFunction } from './function-base';
 
 /**
  * The format target function should recieve record in.

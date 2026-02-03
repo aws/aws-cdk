@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.237.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.0-alpha.0...v2.237.1-alpha.0) (2026-02-03)
+
+## [2.237.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.236.0-alpha.0...v2.237.0-alpha.0) (2026-02-02)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add support for custom claims and scopes to runtime/gateway authorizers ([#36810](https://github.com/aws/aws-cdk/issues/36810)) ([a3abcd0](https://github.com/aws/aws-cdk/commit/a3abcd010648e83bed273dff8f581291b5b3c902))
+* **eks-v2-alpha:** pass additional helm chart values to aws-load-balancer-controller ([#36754](https://github.com/aws/aws-cdk/issues/36754)) ([cf61814](https://github.com/aws/aws-cdk/commit/cf61814ac58448ddd70682e45c07dd8ca58c4fd1)), closes [/github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml#L199](https://github.com/aws//github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml/issues/L199)
+* **mixins-preview:** align Mixins API with latest RFC proposal ([#36825](https://github.com/aws/aws-cdk/issues/36825)) ([82c2fdb](https://github.com/aws/aws-cdk/commit/82c2fdb246557fa4804e2dc88ce16c28db52956c))
+* **mixins-preview:** handle destination bucket with KMS keys ([#36776](https://github.com/aws/aws-cdk/issues/36776)) ([950401f](https://github.com/aws/aws-cdk/commit/950401f405751a7634927af0d7667c97ddddd73d))
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** construct ID collision when multiple schemas are set ([#36565](https://github.com/aws/aws-cdk/issues/36565)) ([9ebfb62](https://github.com/aws/aws-cdk/commit/9ebfb62d6c6599bee2bf477cdc6b4b6da0a4030a)), closes [#36559](https://github.com/aws/aws-cdk/issues/36559)
+
 ## [2.236.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.235.1-alpha.0...v2.236.0-alpha.0) (2026-01-23)
 
 

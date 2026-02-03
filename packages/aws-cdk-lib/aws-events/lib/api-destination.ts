@@ -1,12 +1,15 @@
-import { Construct } from 'constructs';
-import { HttpMethod, IConnection } from './connection';
-import { CfnApiDestination, IConnectionRef } from './events.generated';
+import type { Construct } from 'constructs';
+import type { IConnection } from './connection';
+import { HttpMethod } from './connection';
+import type { IConnectionRef } from './events.generated';
+import { CfnApiDestination } from './events.generated';
 import { toIConnection } from './private/ref-utils';
-import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ApiDestinationReference, IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import type { ApiDestinationReference, IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The event API Destination properties

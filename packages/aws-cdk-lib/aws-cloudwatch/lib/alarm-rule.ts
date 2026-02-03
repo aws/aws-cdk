@@ -1,6 +1,6 @@
 import { IAlarm, IAlarmRule } from './alarm-base';
 import { Token, UnscopedValidationError } from '../../core';
-import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Enumeration indicates state of Alarm used in building Alarm Rule.

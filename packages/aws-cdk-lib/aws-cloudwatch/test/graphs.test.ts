@@ -1,4 +1,5 @@
 import { Duration, Stack, UnscopedValidationError } from '../../core';
+import type { GraphWidgetProps } from '../lib';
 import {
   Alarm,
   AlarmWidget,
@@ -6,7 +7,6 @@ import {
   CustomWidget,
   GaugeWidget,
   GraphWidget,
-  GraphWidgetProps,
   GraphWidgetView,
   LegendPosition,
   LogQueryLanguage,

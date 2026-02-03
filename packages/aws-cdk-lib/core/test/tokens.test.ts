@@ -4,7 +4,7 @@ import { CfnResource, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization }
 import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens, STRINGIFIED_NUMBER_PATTERN } from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
-import { IResolvable } from '../lib/resolvable';
+import type { IResolvable } from '../lib/resolvable';
 
 describe('tokens', () => {
   test('resolve a plain old object should just return the object', () => {

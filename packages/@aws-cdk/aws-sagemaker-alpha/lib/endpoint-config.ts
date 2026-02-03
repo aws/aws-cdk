@@ -1,15 +1,15 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
 import { EOL } from 'os';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { AcceleratorType } from './accelerator-type';
+import type { Construct } from 'constructs';
+import type { AcceleratorType } from './accelerator-type';
 import { InstanceType } from './instance-type';
-import { IModel } from './model';
+import type { IModel } from './model';
 import { sameEnv } from './private/util';
 
 /**

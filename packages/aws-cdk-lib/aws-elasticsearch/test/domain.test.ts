@@ -2,7 +2,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, Statistic } from '../../aws-cloudwatch';
+import type { Metric } from '../../aws-cloudwatch';
+import { Statistic } from '../../aws-cloudwatch';
 import { Vpc, EbsDeviceVolumeType, SecurityGroup } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';

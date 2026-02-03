@@ -1,7 +1,8 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
 import * as fs from 'fs';
 import * as path from 'path';
-import { IntegManifest, Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
+import type { IntegManifest } from 'aws-cdk-lib/cloud-assembly-schema';
+import { Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
 
 export class IntegManifestWriter {
   public static readonly DEFAULT_FILENAME = 'integ.json';

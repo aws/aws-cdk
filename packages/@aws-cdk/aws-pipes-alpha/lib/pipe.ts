@@ -1,15 +1,19 @@
-import { IResource, Resource, Stack, ValidationError } from 'aws-cdk-lib';
-import { ArnPrincipal, IRole, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource, Stack, ValidationError } from 'aws-cdk-lib';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { ArnPrincipal, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IEnrichment } from './enrichment';
-import { IFilter } from './filter';
-import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
-import { ISource, SourceWithDeadLetterTarget } from './source';
-import { ITarget } from './target';
+import type { Construct } from 'constructs';
+import type { IEnrichment } from './enrichment';
+import type { IFilter } from './filter';
+import type { ILogDestination, IncludeExecutionData } from './logs';
+import { LogLevel } from './logs';
+import type { ISource } from './source';
+import { SourceWithDeadLetterTarget } from './source';
+import type { ITarget } from './target';
 
 /**
  * Interface representing a created or an imported `Pipe`.

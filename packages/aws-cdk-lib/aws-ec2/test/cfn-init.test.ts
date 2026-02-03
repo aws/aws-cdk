@@ -6,7 +6,8 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { Asset } from '../../aws-s3-assets';
-import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '../../core';
+import type { IStackSynthesizer, FileAssetSource, FileAssetLocation } from '../../core';
+import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ec2 from '../lib';
 
