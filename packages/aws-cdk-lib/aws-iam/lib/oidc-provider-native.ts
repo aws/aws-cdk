@@ -26,16 +26,14 @@ export interface IOidcProvider extends IResource, IOIDCProviderRef {
   readonly oidcProviderIssuer: string;
 
   /**
-   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
-   *
-   * @deprecated Use `oidcProviderArn` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
+   * Alias for `oidcProviderArn` to maintain backwards compatibility for
+   * constructs which expect IOpenIdConnectProvider.
    */
   readonly openIdConnectProviderArn: string;
 
   /**
-   * The issuer for OIDC Provider
-   *
-   * @deprecated Use `oidcProviderIssuer` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
+   * Alias for `oidcProviderIssuer` to maintain backwards compatibility for
+   * constructs which expect IOpenIdConnectProvider.
    */
   readonly openIdConnectProviderIssuer: string;
 }
@@ -158,22 +156,10 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
       public readonly oidcProviderArn = oidcProviderArn;
       public readonly oidcProviderIssuer = resourceName;
 
-      /**
-       * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
-       * This is an alias for oidcProviderArn to maintain compatibility with IOpenIdConnectProvider.
-       *
-       * @deprecated Use `oidcProviderArn` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
-       */
       public get openIdConnectProviderArn(): string {
         return this.oidcProviderArn;
       }
 
-      /**
-       * The issuer for OIDC Provider.
-       * This is an alias for oidcProviderIssuer to maintain compatibility with IOpenIdConnectProvider.
-       *
-       * @deprecated Use `oidcProviderIssuer` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
-       */
       public get openIdConnectProviderIssuer(): string {
         return this.oidcProviderIssuer;
       }
@@ -190,20 +176,10 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
 
   private readonly resource: CfnOIDCProvider;
 
-  /**
-   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
-   *
-   * @deprecated Use `oidcProviderArn` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
-   */
   public get openIdConnectProviderArn(): string {
     return this.oidcProviderArn;
   }
 
-  /**
-   * The issuer for OIDC Provider.
-   *
-   * @deprecated use `oidcProviderIssuer` instead. This property exists for backward compatibility with existing constructs as migrating between the 2 constructs (OpenIdConnectProvider and OidcProviderNative) is not reasonably feasible as it requires a manual step (cdk import) since the resource type is changing between OpenIdConnectProvider and OidcProviderNative.
-   */
   public get openIdConnectProviderIssuer(): string {
     return this.oidcProviderIssuer;
   }
