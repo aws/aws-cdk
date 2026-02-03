@@ -782,6 +782,66 @@ describe('Partition Projection', () => {
       },
     });
   });
+
+  test('throws when partition projection conflicts with manual parameters', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+
+    expect(() => {
+      new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+        partitionKeys: [{
+          name: 'year',
+          type: glue.Schema.INTEGER,
+        }],
+        dataFormat: glue.DataFormat.JSON,
+        parameters: {
+          'projection.year.type': 'integer',
+        },
+        partitionProjection: {
+          year: glue.PartitionProjectionConfiguration.integer({
+            min: 2020,
+            max: 2023,
+          }),
+        },
+      });
+    }).toThrow('Partition projection parameters conflict with manually specified parameters: projection.year.type. Use the partitionProjection property instead of manually specifying projection parameters.');
+  });
+
+  test('throws when projection.enabled conflicts with partitionProjection', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+
+    expect(() => {
+      new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+        partitionKeys: [{
+          name: 'year',
+          type: glue.Schema.INTEGER,
+        }],
+        dataFormat: glue.DataFormat.JSON,
+        parameters: {
+          'projection.enabled': 'true',
+        },
+        partitionProjection: {
+          year: glue.PartitionProjectionConfiguration.integer({
+            min: 2020,
+            max: 2023,
+          }),
+        },
+      });
+    }).toThrow('Parameter "projection.enabled" conflicts with partitionProjection configuration. Use the partitionProjection property instead of manually specifying projection.enabled.');
+  });
 });
 
 test('storage descriptor parameters', () => {

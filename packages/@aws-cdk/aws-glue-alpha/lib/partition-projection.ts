@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from 'aws-cdk-lib';
+import { Token, UnscopedValidationError } from 'aws-cdk-lib';
 
 /**
  * Partition projection type.
@@ -232,35 +232,41 @@ export class PartitionProjectionConfiguration {
    */
   public static integer(props: IntegerPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
     // Validate min/max are integers
-    if (!Number.isInteger(props.min) || !Number.isInteger(props.max)) {
-      throw new UnscopedValidationError(
-        `INTEGER partition projection range must contain integers, but got [${props.min}, ${props.max}]`,
-      );
-    }
+    if (!Token.isUnresolved(props.min) && !Token.isUnresolved(props.max)) {
+      if (!Number.isInteger(props.min) || !Number.isInteger(props.max)) {
+        throw new UnscopedValidationError(
+          `INTEGER partition projection range must contain integers, but got [${props.min}, ${props.max}]`,
+        );
+      }
 
-    // Validate min <= max
-    if (props.min > props.max) {
-      throw new UnscopedValidationError(
-        `INTEGER partition projection range must be [min, max] where min <= max, but got [${props.min}, ${props.max}]`,
-      );
+      // Validate min <= max
+      if (props.min > props.max) {
+        throw new UnscopedValidationError(
+          `INTEGER partition projection range must be [min, max] where min <= max, but got [${props.min}, ${props.max}]`,
+        );
+      }
     }
 
     // Validate interval
-    if (props.interval !== undefined) {
-      if (!Number.isInteger(props.interval) || props.interval <= 0) {
-        throw new UnscopedValidationError(
-          `INTEGER partition projection interval must be a positive integer, but got ${props.interval}`,
-        );
-      }
+    if (
+      props.interval !== undefined &&
+      !Token.isUnresolved(props.interval) &&
+      (!Number.isInteger(props.interval) || props.interval <= 0)
+    ) {
+      throw new UnscopedValidationError(
+        `INTEGER partition projection interval must be a positive integer, but got ${props.interval}`,
+      );
     }
 
     // Validate digits
-    if (props.digits !== undefined) {
-      if (!Number.isInteger(props.digits) || props.digits < 1) {
-        throw new UnscopedValidationError(
-          `INTEGER partition projection digits must be an integer >= 1, but got ${props.digits}`,
-        );
-      }
+    if (
+      props.digits !== undefined &&
+      !Token.isUnresolved(props.digits) &&
+      (!Number.isInteger(props.digits) || props.digits < 1)
+    ) {
+      throw new UnscopedValidationError(
+        `INTEGER partition projection digits must be an integer >= 1, but got ${props.digits}`,
+      );
     }
 
     return new PartitionProjectionConfiguration({
@@ -276,26 +282,32 @@ export class PartitionProjectionConfiguration {
    */
   public static date(props: DatePartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
     // Validate min/max are not empty
-    if (props.min.trim() === '' || props.max.trim() === '') {
+    if (
+      !Token.isUnresolved(props.min) &&
+      !Token.isUnresolved(props.max) &&
+      (props.min.trim() === '' || props.max.trim() === '')
+    ) {
       throw new UnscopedValidationError(
         'DATE partition projection range must not contain empty strings',
       );
     }
 
     // Validate format is not empty
-    if (props.format.trim() === '') {
+    if (!Token.isUnresolved(props.format) && props.format.trim() === '') {
       throw new UnscopedValidationError(
         'DATE partition projection format must be a non-empty string',
       );
     }
 
     // Validate interval
-    if (props.interval !== undefined) {
-      if (!Number.isInteger(props.interval) || props.interval <= 0) {
-        throw new UnscopedValidationError(
-          `DATE partition projection interval must be a positive integer, but got ${props.interval}`,
-        );
-      }
+    if (
+      props.interval !== undefined &&
+      !Token.isUnresolved(props.interval) &&
+      (!Number.isInteger(props.interval) || props.interval <= 0)
+    ) {
+      throw new UnscopedValidationError(
+        `DATE partition projection interval must be a positive integer, but got ${props.interval}`,
+      );
     }
 
     return new PartitionProjectionConfiguration({
@@ -318,10 +330,10 @@ export class PartitionProjectionConfiguration {
       );
     }
 
-    // Validate no empty strings
+    // Validate no empty strings (skip tokens)
     for (let i = 0; i < props.values.length; i++) {
       const value = props.values[i];
-      if (value.trim() === '') {
+      if (!Token.isUnresolved(value) && value.trim() === '') {
         throw new UnscopedValidationError(
           'ENUM partition projection values must not contain empty strings',
         );

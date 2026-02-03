@@ -381,8 +381,27 @@ export abstract class TableBase extends Resource implements ITable {
       // Generate CloudFormation parameters
       const generatedParams = generatePartitionProjectionParameters(columnName, config);
 
+      // Check for conflicts with manually specified parameters
+      const conflictingKeys = Object.keys(generatedParams).filter(key => key in this.parameters);
+      if (conflictingKeys.length > 0) {
+        throw new ValidationError(
+          `Partition projection parameters conflict with manually specified parameters: ${conflictingKeys.join(', ')}. ` +
+          'Use the partitionProjection property instead of manually specifying projection parameters.',
+          this,
+        );
+      }
+
       // Merge into this.parameters
       Object.assign(this.parameters, generatedParams);
+    }
+
+    // Check for conflict with projection.enabled
+    if ('projection.enabled' in this.parameters) {
+      throw new ValidationError(
+        'Parameter "projection.enabled" conflicts with partitionProjection configuration. ' +
+        'Use the partitionProjection property instead of manually specifying projection.enabled.',
+        this,
+      );
     }
 
     // Enable partition projection globally
