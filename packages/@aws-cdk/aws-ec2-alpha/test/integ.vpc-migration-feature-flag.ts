@@ -34,7 +34,7 @@ class VpcMigrationFeatureFlagEnabledStack extends cdk.Stack {
     // Create a public subnet
     const publicSubnet = new ec2alpha.SubnetV2(this, 'PublicSubnet', {
       vpc,
-      availabilityZone: 'us-east-1a',
+      availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
       ipv4CidrBlock: new ec2alpha.IpCidr('10.0.0.0/24'),
       subnetType: ec2.SubnetType.PUBLIC,
     });
@@ -85,7 +85,7 @@ class VpcMigrationFeatureFlagDisabledStack extends cdk.Stack {
     // Create a public subnet
     const publicSubnet = new ec2alpha.SubnetV2(this, 'PublicSubnet', {
       vpc,
-      availabilityZone: 'us-east-1a',
+      availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
       ipv4CidrBlock: new ec2alpha.IpCidr('10.0.0.0/24'),
       subnetType: ec2.SubnetType.PUBLIC,
     });

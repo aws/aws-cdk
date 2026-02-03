@@ -1,10 +1,7 @@
 /*
- * This integration test deploys a VPC that contains a BYOIP IPv6 address.
- * The address is owned by the CDK maintainers, who are able to run and
- * update the test if need be for future changes.
- *
- * Notes on how to run this integ test
- * Replace the ipv6PoolId and ipv6CidrBlock for VPC with the one that is owned by your account.
+ * This integration test deploys a VPC that contains IPv6 addresses.
+ * Modified to use Amazon-provided IPv6 instead of BYOIP since the original
+ * BYOIP pool is not available in test environments.
  */
 
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -20,10 +17,8 @@ const stack = new cdk.Stack(app, 'vpc-byoip-ipv6');
 const myVpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.ipv6ByoipPool({
-      ipv6PoolId: 'ipv6pool-ec2-0a95217e154b65493', // To Be Replaced
-      cidrBlockName: 'MyByoipIpv6Block',
-      ipv6CidrBlock: '2600:f0f0:8::/56', // To Be Replaced
+    vpc_v2.IpAddresses.amazonProvidedIpv6({
+      cidrBlockName: 'AmazonProvidedIpv6Block',
     }),
   ],
   enableDnsHostnames: true,
@@ -33,19 +28,17 @@ const myVpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
 new SubnetV2(stack, 'Subnet-integ-test-1', {
   vpc: myVpc,
   ipv4CidrBlock: new IpCidr('10.1.1.0/24'),
-  ipv6CidrBlock: new IpCidr('2600:f0f0:8:1::/64'), // To Be Replaced
-  availabilityZone: 'us-west-2a',
+  availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
 /**
- * Check for non-ovelapping subnet range
+ * Check for non-overlapping subnet range
  */
 new SubnetV2(stack, 'Subnet-integ-test-2', {
   vpc: myVpc,
   ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-  ipv6CidrBlock: new IpCidr('2600:f0f0:8:0::/64'), // To Be Replaced
-  availabilityZone: 'us-west-2a',
+  availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 

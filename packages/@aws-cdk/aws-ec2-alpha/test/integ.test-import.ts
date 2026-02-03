@@ -1,26 +1,64 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { IpCidr, SubnetV2 } from '../lib';
+import { IpCidr, SubnetV2, RouteTable } from '../lib';
 import * as VpcV2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'vpcv2-import-integ-test', {
-  env: {
-    region: 'us-west-2',
-  },
-});
+const stack = new cdk.Stack(app, 'vpcv2-import-integ-test');
 
 /**
- * To deploy these test for importing VPCs
- * Create VPC in account using integ.vpc-v2-alpha
- * and integ.ipam.ts for IPAM related test
- * Once created, change the subnet and VPCID
- * according to the one alloted on creation
+ * Create a VPC first, then import it to test the import functionality
  */
+const vpc = new VpcV2.VpcV2(stack, 'TestVPC', {
+  primaryAddressBlock: VpcV2.IpAddresses.ipv4('10.1.0.0/16'),
+  secondaryAddressBlocks: [
+    VpcV2.IpAddresses.ipv4('10.2.0.0/16', {
+      cidrBlockName: 'SecondaryBlock1',
+    }),
+    VpcV2.IpAddresses.ipv4('10.3.0.0/16', {
+      cidrBlockName: 'SecondaryBlock2',
+    }),
+    VpcV2.IpAddresses.amazonProvidedIpv6({
+      cidrBlockName: 'AmazonProvided',
+    }),
+  ],
+  enableDnsHostnames: true,
+  enableDnsSupport: true,
+});
+
+const routeTable1 = new RouteTable(stack, 'RouteTable1', {
+  vpc: vpc,
+  routeTableName: 'RouteTable1',
+});
+
+const routeTable2 = new RouteTable(stack, 'RouteTable2', {
+  vpc: vpc,
+  routeTableName: 'RouteTable2',
+});
+
+const subnet1 = new SubnetV2(stack, 'TestSubnet1', {
+  vpc,
+  availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
+  ipv4CidrBlock: new IpCidr('10.2.0.0/24'),
+  subnetType: SubnetType.PRIVATE_ISOLATED,
+  subnetName: 'TestSubnet1',
+  routeTable: routeTable1,
+});
+
+const subnet2 = new SubnetV2(stack, 'TestSubnet2', {
+  vpc,
+  availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs()),
+  ipv4CidrBlock: new IpCidr('10.3.0.0/24'),
+  subnetType: SubnetType.PUBLIC,
+  subnetName: 'TestSubnet2',
+  routeTable: routeTable2,
+});
+
+// Now test importing the VPC we just created
 const imported_new_vpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedNewVPC', {
-  vpcId: 'vpc-08193db3ccc4f909f', // VPC id
+  vpcId: vpc.vpcId,
   vpcCidrBlock: '10.1.0.0/16',
   secondaryCidrBlocks: [{
     cidrBlock: '10.2.0.0/16',
@@ -33,18 +71,18 @@ const imported_new_vpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedNewVPC'
     amazonProvidedIpv6CidrBlock: true,
   }],
   subnets: [{
-    subnetName: 'IsolatedSubnet2',
-    subnetId: 'subnet-03cd773c0fe08ed26', // Subnet Id
+    subnetName: 'TestSubnet1',
+    subnetId: subnet1.subnetId,
     subnetType: SubnetType.PRIVATE_ISOLATED,
-    availabilityZone: 'us-west-2a',
+    availabilityZone: subnet1.availabilityZone,
     ipv4CidrBlock: '10.2.0.0/24',
-    routeTableId: 'rtb-0871c310f98da2cbb', // RouteTable id
+    routeTableId: routeTable1.routeTableId,
   }, {
-    subnetId: 'subnet-0fa477e01db27d820',
+    subnetId: subnet2.subnetId,
     subnetType: SubnetType.PUBLIC,
-    availabilityZone: 'us-west-2b',
+    availabilityZone: subnet2.availabilityZone,
     ipv4CidrBlock: '10.3.0.0/24',
-    routeTableId: 'rtb-014f3043098fe4b96',
+    routeTableId: routeTable2.routeTableId,
   }],
 });
 
