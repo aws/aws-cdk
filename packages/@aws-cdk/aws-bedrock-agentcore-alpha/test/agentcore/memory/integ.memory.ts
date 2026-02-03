@@ -98,6 +98,7 @@ new agentcore.Memory(stack, 'MemoryWithBuiltinEpisodicEx', {
 
 new integ.IntegTest(app, 'BedrockAgentCoreMemory', {
   testCases: [stack],
+  regions: ['us-west-2', 'eu-central-1', 'eu-west-1', 'eu-west-2', 'ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
 });
 
 app.synth();

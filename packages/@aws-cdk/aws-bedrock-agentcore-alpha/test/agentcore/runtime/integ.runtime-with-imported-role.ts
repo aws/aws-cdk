@@ -68,4 +68,5 @@ const stack = new TestStack(app, 'aws-cdk-bedrock-agentcore-runtime-with-importe
 
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeWithImportedRole', {
   testCases: [stack], // don't need to check preStack
+  regions: ['us-west-2', 'eu-central-1', 'eu-west-1', 'eu-west-2', 'ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
 });

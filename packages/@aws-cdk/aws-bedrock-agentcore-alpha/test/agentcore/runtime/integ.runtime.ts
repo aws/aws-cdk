@@ -60,12 +60,12 @@ const taggedEndpoint = new agentcore.RuntimeEndpoint(stack, 'TaggedEndpoint', {
   },
 });
 
-// Create version 2 endpoint
-const v2Endpoint = new agentcore.RuntimeEndpoint(stack, 'V2Endpoint', {
-  endpointName: 'v2_endpoint',
+// Create version 1 endpoint (second endpoint)
+const v1Endpoint2 = new agentcore.RuntimeEndpoint(stack, 'V1Endpoint2', {
+  endpointName: 'v1_endpoint_2',
   agentRuntimeId: runtime.agentRuntimeId,
-  agentRuntimeVersion: '2',
-  description: 'Version 2 endpoint',
+  agentRuntimeVersion: '1',
+  description: 'Second version 1 endpoint',
 });
 
 // Test grant methods to verify sub-resource permissions
@@ -100,11 +100,12 @@ new cdk.CfnOutput(stack, 'TaggedEndpointId', {
   description: 'Tagged endpoint ID',
 });
 
-new cdk.CfnOutput(stack, 'V2EndpointId', {
-  value: v2Endpoint.endpointId,
-  description: 'Version 2 endpoint ID',
+new cdk.CfnOutput(stack, 'V1Endpoint2Id', {
+  value: v1Endpoint2.endpointId,
+  description: 'Second version 1 endpoint ID',
 });
 
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeTest', {
   testCases: [stack],
+  regions: ['us-west-2', 'eu-central-1', 'eu-west-1', 'eu-west-2', 'ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
 });
