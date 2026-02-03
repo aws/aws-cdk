@@ -1,5 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as s3 from 'aws-cdk-lib/aws-s3';
