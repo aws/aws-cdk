@@ -10,10 +10,6 @@ export class CfnUtilsProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     return _CfnUtilsProvider.getOrCreate(scope, 'AWSCDKCfnUtilsProvider');
   }
-
-  public static getOrCreateProvider(scope: Construct) {
-    return _CfnUtilsProvider.getOrCreateProvider(scope, 'AWSCDKCfnUtilsProvider');
-  }
 }
 
 /**
