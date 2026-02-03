@@ -1,7 +1,8 @@
-import { Resource, IResource } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IGateway } from '../gateway-base';
-import { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
+import type { IGateway } from '../gateway-base';
+import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 
 /******************************************************************************
  *                                 ENUM
@@ -154,6 +155,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
   /**
    * Grants IAM actions to the IAM Principal
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant permissions to
    * @param actions The IAM actions to grant
    */
@@ -167,6 +170,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants `Get` and `List` actions on the Gateway Target
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant read permissions to
    */
@@ -184,6 +189,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants `Create`, `Update`, and `Delete` actions on the Gateway Target
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant manage permissions to
    */

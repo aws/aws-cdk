@@ -1,4 +1,4 @@
-import * as cxschema from '../../cloud-assembly-schema';
+import type * as cxschema from '../../cloud-assembly-schema';
 
 /**
  * The key used when CDK path is embedded in **CloudFormation template** metadata (not cdk metadata).

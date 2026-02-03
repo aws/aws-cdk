@@ -1,13 +1,14 @@
-import { CfnTable } from 'aws-cdk-lib/aws-glue';
+import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Fn, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
-import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
-import { DataFormat } from './data-format';
-import { IDatabase } from './database';
-import { Column } from './schema';
-import { StorageParameter } from './storage-parameter';
+import type { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
+import type { Construct } from 'constructs';
+import type { DataFormat } from './data-format';
+import type { IDatabase } from './database';
+import type { Column } from './schema';
+import type { StorageParameter } from './storage-parameter';
 
 /**
  * Properties of a Partition Index.
@@ -329,6 +330,7 @@ export abstract class TableBase extends Resource implements ITable {
 
   /**
    * Grant the given identity custom permissions.
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
@@ -341,6 +343,7 @@ export abstract class TableBase extends Resource implements ITable {
   /**
    * Grant the given identity custom permissions to ALL underlying resources of the table.
    * Permissions will be granted to the catalog, the database, and the table.
+   * [disable-awslint:no-grants]
    */
   public grantToUnderlyingResources(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({

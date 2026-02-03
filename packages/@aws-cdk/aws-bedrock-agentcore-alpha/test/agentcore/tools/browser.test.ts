@@ -1579,3 +1579,22 @@ describe('BrowserCustom browser signing configuration tests', () => {
     });
   });
 });
+
+describe('Browser Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create BrowserCustom without browserCustomName (auto-generated)', () => {
+    const browser = new BrowserCustom(stack, 'TestBrowser', {
+    });
+
+    expect(browser.name).toBeDefined();
+    expect(browser.name).not.toBe('');
+  });
+});

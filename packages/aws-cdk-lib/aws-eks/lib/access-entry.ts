@@ -1,9 +1,12 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import type { AccessEntryReference, IAccessEntryRef } from './eks.generated';
 import { CfnAccessEntry } from './eks.generated';
+import type { IResource } from '../../core';
 import {
-  Resource, IResource, Aws, Lazy,
+  Resource, Aws, Lazy,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -17,7 +20,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * @property {string} accessEntryName - The name of the access entry.
  * @property {string} accessEntryArn - The Amazon Resource Name (ARN) of the access entry.
  */
-export interface IAccessEntry extends IResource {
+export interface IAccessEntry extends IResource, IAccessEntryRef {
   /**
    * The name of the access entry.
    * @attribute
@@ -313,20 +316,40 @@ export class AccessEntry extends Resource implements IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
+
+      public get accessEntryRef(): AccessEntryReference {
+        return {
+          accessEntryArn: this.accessEntryArn,
+          // eslint-disable-next-line @cdklabs/no-throw-default-error
+          get clusterName(): string { throw new Error('Cannot access clusterName from this AccessEntry; it has been created without knowledge of it'); },
+          // eslint-disable-next-line @cdklabs/no-throw-default-error
+          get principalArn():string { throw new Error('Cannot access clusterName from this AccessEntry; it has been created without knowledge of it'); },
+        };
+      }
     }
     return new Import(scope, id);
   }
   /**
    * The name of the access entry.
    */
-  public readonly accessEntryName: string;
-  /**
-   * The Amazon Resource Name (ARN) of the access entry.
-   */
-  public readonly accessEntryArn: string;
   private cluster: ICluster;
   private principal: string;
   private accessPolicies: IAccessPolicy[];
+  private readonly resource: CfnAccessEntry;
+
+  @memoizedGetter
+  public get accessEntryName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get accessEntryArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrAccessEntryArn, {
+      service: 'eks',
+      resource: 'accessentry',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
@@ -337,7 +360,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     this.principal = props.principal;
     this.accessPolicies = props.accessPolicies;
 
-    const resource = new CfnAccessEntry(this, 'Resource', {
+    this.resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
       type: props.accessEntryType,
@@ -352,12 +375,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
       }),
 
     });
-    this.accessEntryName = this.getResourceNameAttribute(resource.ref);
-    this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
-      service: 'eks',
-      resource: 'accessentry',
-      resourceName: this.physicalName,
-    });
   }
   /**
    * Add the access policies for this entry.
@@ -367,5 +384,13 @@ export class AccessEntry extends Resource implements IAccessEntry {
   public addAccessPolicies(newAccessPolicies: IAccessPolicy[]): void {
     // add newAccessPolicies to this.accessPolicies
     this.accessPolicies.push(...newAccessPolicies);
+  }
+
+  public get accessEntryRef(): AccessEntryReference {
+    return {
+      accessEntryArn: this.accessEntryArn,
+      clusterName: this.cluster.clusterName,
+      principalArn: this.principal,
+    };
   }
 }

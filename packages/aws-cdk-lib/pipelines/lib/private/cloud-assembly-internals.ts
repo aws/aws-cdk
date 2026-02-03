@@ -1,4 +1,4 @@
-import * as cxapi from '../../../cx-api';
+import type * as cxapi from '../../../cx-api';
 
 export function isAssetManifest(s: cxapi.CloudArtifact): s is cxapi.AssetManifestArtifact {
   // instanceof is too risky, and we're at a too late stage to properly fix.

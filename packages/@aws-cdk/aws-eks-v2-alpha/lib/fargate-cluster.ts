@@ -1,8 +1,9 @@
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Cluster, ClusterCommonOptions, CoreDnsComputeType, DefaultCapacityType } from './cluster';
-import { FargateProfile, FargateProfileOptions } from './fargate-profile';
+import type { Construct } from 'constructs';
+import type { ClusterCommonOptions } from './cluster';
+import { Cluster, CoreDnsComputeType, DefaultCapacityType } from './cluster';
+import type { FargateProfile, FargateProfileOptions } from './fargate-profile';
 
 /**
  * Configuration props for EKS Fargate.

@@ -3147,16 +3147,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'durableConfig': {
         'executionTimeout': '*'
       },
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logFormat': '*',
       'loggingFormat': 'LoggingFormat',
       'recursiveLoop': 'RecursiveLoop',
@@ -3410,16 +3401,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'durableConfig': {
         'executionTimeout': '*'
       },
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logFormat': '*',
       'loggingFormat': 'LoggingFormat',
       'recursiveLoop': 'RecursiveLoop',
@@ -4681,6 +4663,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'acceleratorType': '*',
         'initialInstanceCount': '*',
         'instanceType': '*',
+        'containerStartupHealthCheckTimeout': '*',
         'initialVariantWeight': '*',
         'model': {
           'modelArn': '*',
@@ -4740,6 +4723,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'acceleratorType': '*',
           'initialInstanceCount': '*',
           'instanceType': '*',
+          'containerStartupHealthCheckTimeout': '*',
           'initialVariantWeight': '*',
           'model': {
             'modelArn': '*',
@@ -5321,7 +5305,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': '*',
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'tags': '*',
@@ -5875,7 +5861,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': '*',
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'tags': '*',
@@ -6074,7 +6062,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableNodeAutoRepair': 'boolean'
     },
     'OpenIdConnectProvider': {
-      'url': '*'
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OidcProviderNative': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   'aws-cdk-lib.aws-apigateway': {
@@ -6600,15 +6593,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'domainName': '*',
-      'certificate': {
-        'certificateArn': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'certificate': '*',
       'endpointType': 'EndpointType',
       'securityPolicy': 'SecurityPolicy',
       'mtls': {
@@ -6878,9 +6863,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'failOnWarnings': 'boolean',
         'domainName': {
           'domainName': '*',
-          'certificate': {
-            'certificateArn': '*'
-          },
+          'certificate': '*',
           'endpointType': 'EndpointType',
           'securityPolicy': 'SecurityPolicy',
           'mtls': {
@@ -7006,15 +6989,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'failOnWarnings': 'boolean',
       'domainName': {
         'domainName': '*',
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
         'mtls': {
@@ -7029,7 +7004,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'isWebsite': 'boolean',
             'encryptionKey': {
               'keyArn': '*',
-              'keyId': '*'
+              'keyId': '*',
+              'stack': '*',
+              'node': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              }
             },
             'policy': '*',
             'replicationRoleArn': '*'
@@ -7767,15 +7748,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'failOnWarnings': 'boolean',
       'domainName': {
         'domainName': '*',
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
         'mtls': {
@@ -7790,7 +7763,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'isWebsite': 'boolean',
             'encryptionKey': {
               'keyArn': '*',
-              'keyId': '*'
+              'keyId': '*',
+              'stack': '*',
+              'node': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              }
             },
             'policy': '*',
             'replicationRoleArn': '*'
@@ -7911,15 +7890,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'failOnWarnings': 'boolean',
       'domainName': {
         'domainName': '*',
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
         'mtls': {
@@ -7934,7 +7905,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'isWebsite': 'boolean',
             'encryptionKey': {
               'keyArn': '*',
-              'keyId': '*'
+              'keyId': '*',
+              'stack': '*',
+              'node': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              }
             },
             'policy': '*',
             'replicationRoleArn': '*'
@@ -8229,15 +8206,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'failOnWarnings': 'boolean',
       'domainName': {
         'domainName': '*',
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
         'mtls': {
@@ -8252,7 +8221,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'isWebsite': 'boolean',
             'encryptionKey': {
               'keyArn': '*',
-              'keyId': '*'
+              'keyId': '*',
+              'stack': '*',
+              'node': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              }
             },
             'policy': '*',
             'replicationRoleArn': '*'
@@ -8949,15 +8924,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'ownerContact': '*',
       'domainName': {
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'certificate': '*',
         'domainName': '*'
       }
     },
@@ -9040,15 +9007,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'xrayEnabled': 'boolean',
       'visibility': 'Visibility',
       'domainName': {
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'certificate': '*',
         'domainName': '*'
       },
       'introspectionConfig': 'IntrospectionConfig',
@@ -10308,15 +10267,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'enableGrpc': 'boolean'
       },
       'additionalBehaviors': '*',
-      'certificate': {
-        'certificateArn': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'certificate': '*',
       'comment': '*',
       'defaultRootObject': '*',
       'domainNames': '*',
@@ -10957,16 +10908,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableFileValidation': 'boolean',
       'sendToCloudWatchLogs': 'boolean',
       'cloudWatchLogsRetention': 'RetentionDays',
-      'cloudWatchLogGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'cloudWatchLogGroup': '*',
       'kmsKey': '*',
       'encryptionKey': {
         'keyArn': '*',
@@ -11990,20 +11932,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   },
   'aws-cdk-lib.aws-cognito': {
     'UserPoolClient': {
-      'userPool': {
-        'userPoolId': '*',
-        'userPoolArn': '*',
-        'userPoolProviderName': '*',
-        'identityProviders': {
-          'providerName': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
+      'userPool': '*',
       'userPoolClientName': '*',
       'generateSecret': 'boolean',
       'authFlows': {
@@ -12045,31 +11974,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       }
     },
     'UserPoolDomain': {
-      'userPool': {
-        'userPoolId': '*',
-        'userPoolArn': '*',
-        'userPoolProviderName': '*',
-        'identityProviders': {
-          'providerName': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
+      'userPool': '*',
       'customDomain': {
         'domainName': '*',
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
+        'certificate': '*'
       },
       'cognitoDomain': {
         'domainPrefix': '*'
@@ -12090,40 +11998,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     },
     'UserPoolGroup': {
-      'userPool': {
-        'userPoolId': '*',
-        'userPoolArn': '*',
-        'userPoolProviderName': '*',
-        'identityProviders': {
-          'providerName': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
+      'userPool': '*',
       'description': '*',
       'groupName': '*',
       'precedence': '*',
       'role': '*'
     },
     'UserPoolResourceServer': {
-      'userPool': {
-        'userPoolId': '*',
-        'userPoolArn': '*',
-        'userPoolProviderName': '*',
-        'identityProviders': {
-          'providerName': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
+      'userPool': '*',
       'identifier': '*',
       'userPoolResourceServerName': '*',
       'scopes': '*'
@@ -12634,15 +12516,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'uniqueId': '*',
         'connections': '*'
       },
-      'parameterGroup': {
-        'parameterGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'parameterGroup': '*',
       'preferredMaintenanceWindow': '*',
       'removalPolicy': 'RemovalPolicy',
       'deletionProtection': 'boolean',
@@ -12744,19 +12618,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'excludeCharacters': '*'
     },
     'DatabaseInstance': {
-      'cluster': {
-        'clusterIdentifier': '*',
-        'instanceIdentifiers': '*',
-        'clusterEndpoint': '*',
-        'securityGroupId': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'connections': '*'
-      },
+      'cluster': '*',
       'instanceType': '*',
       'availabilityZone': '*',
       'dbInstanceName': '*',
@@ -13252,25 +13114,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'clientCertificateArn': '*',
       'userBasedAuthentication': '*',
       'logging': 'boolean',
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
-      'logStream': {
-        'logStreamName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'logGroup': '*',
+      'logStream': '*',
       'clientConnectionHandler': {
         'functionName': '*',
         'functionArn': '*'
@@ -14483,10 +14328,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'logConfiguration': {
           'cloudWatchEncryptionEnabled': 'boolean',
-          'cloudWatchLogGroup': {
-            'logGroupArn': '*',
-            'logGroupName': '*'
-          },
+          'cloudWatchLogGroup': '*',
           's3Bucket': {
             'bucketArn': '*',
             'bucketName': '*',
@@ -14860,10 +14702,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'logConfiguration': {
           'cloudWatchEncryptionEnabled': 'boolean',
-          'cloudWatchLogGroup': {
-            'logGroupArn': '*',
-            'logGroupName': '*'
-          },
+          'cloudWatchLogGroup': '*',
           's3Bucket': {
             'bucketArn': '*',
             'bucketName': '*',
@@ -15283,7 +15122,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'additionalHelmChartValues': {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
-        }
+        },
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15868,7 +15708,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'additionalHelmChartValues': {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
-        }
+        },
+        'overwriteServiceAccount': 'boolean'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -16112,7 +15953,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableNodeAutoRepair': 'boolean'
     },
     'OpenIdConnectProvider': {
-      'url': '*'
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OidcProviderNative': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   'aws-cdk-lib.aws-elasticloadbalancing': {
@@ -16263,19 +16109,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'logging': {
         'slowSearchLogEnabled': 'boolean',
-        'slowSearchLogGroup': {
-          'logGroupArn': '*',
-          'logGroupName': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'stack': '*',
-          'node': '*'
-        },
+        'slowSearchLogGroup': '*',
         'slowIndexLogEnabled': 'boolean',
+        'slowIndexLogGroup': '*',
         'appLogEnabled': 'boolean',
-        'auditLogEnabled': 'boolean'
+        'appLogGroup': '*',
+        'auditLogEnabled': 'boolean',
+        'auditLogGroup': '*'
       },
       'nodeToNodeEncryption': 'boolean',
       'automatedSnapshotStartHour': '*',
@@ -16349,20 +16189,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'removalPolicy': 'RemovalPolicy',
       'customEndpoint': {
         'domainName': '*',
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'certificate': '*',
         'hostedZone': {
           'hostedZoneId': '*',
           'zoneName': '*',
           'hostedZoneArn': '*',
           'hostedZoneNameServers': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
           'name': '*'
         }
       },
@@ -16375,34 +16213,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'ApiDestination': {
       'apiDestinationName': '*',
       'description': '*',
-      'connection': {
-        'connectionName': '*',
-        'connectionArn': '*',
-        'connectionSecretArn': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'connection': '*',
       'endpoint': '*',
       'httpMethod': 'HttpMethod',
       'rateLimitPerSecond': '*'
     },
     'Archive': {
-      'sourceEventBus': {
-        'eventBusName': '*',
-        'eventBusArn': '*',
-        'eventBusPolicy': '*',
-        'eventSourceName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'sourceEventBus': '*',
       'archiveName': '*',
       'description': '*',
       'eventPattern': {
@@ -16475,18 +16292,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enabled': 'boolean',
       'schedule': '*',
       'targets': '*',
-      'eventBus': {
-        'eventBusName': '*',
-        'eventBusArn': '*',
-        'eventBusPolicy': '*',
-        'eventSourceName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'eventBus': '*',
       'role': '*',
       'description': '*',
       'ruleName': '*',
@@ -16524,18 +16330,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enabled': 'boolean',
       'schedule': '*',
       'targets': '*',
-      'eventBus': {
-        'eventBusName': '*',
-        'eventBusArn': '*',
-        'eventBusPolicy': '*',
-        'eventSourceName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'eventBus': '*',
       'role': '*',
       'description': '*',
       'ruleName': '*',
@@ -16911,12 +16706,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'oidcProviderName': '*',
       'url': '*',
       'clientIds': '*',
-      'thumbprints': '*'
+      'thumbprints': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'OpenIdConnectProvider': {
       'url': '*',
       'clientIds': '*',
-      'thumbprints': '*'
+      'thumbprints': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Policy': {
       'policyName': '*',
@@ -17656,6 +17453,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'metricsConfig': {
         'metrics': 'MetricType'
       },
+      'logLevel': 'EventSourceMappingLogLevel',
       'schemaRegistryConfig': '*'
     },
     'LatestVersion': {
@@ -17974,16 +17772,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'durableConfig': {
         'executionTimeout': '*'
       },
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logFormat': '*',
       'loggingFormat': 'LoggingFormat',
       'recursiveLoop': 'RecursiveLoop',
@@ -18287,16 +18076,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'durableConfig': {
         'executionTimeout': '*'
       },
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logFormat': '*',
       'loggingFormat': 'LoggingFormat',
       'recursiveLoop': 'RecursiveLoop',
@@ -18643,16 +18423,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'durableConfig': {
         'executionTimeout': '*'
       },
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logFormat': '*',
       'loggingFormat': 'LoggingFormat',
       'recursiveLoop': 'RecursiveLoop',
@@ -18982,16 +18753,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'durableConfig': {
         'executionTimeout': '*'
       },
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logFormat': '*',
       'loggingFormat': 'LoggingFormat',
       'recursiveLoop': 'RecursiveLoop',
@@ -19015,52 +18777,26 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ],
       'bind': [
         '*',
-        {
-          'logGroupArn': '*',
-          'logGroupName': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'stack': '*',
-          'node': '*'
-        }
+        '*'
       ]
     },
     'LogGroup': {
       'encryptionKey': '*',
       'logGroupName': '*',
       'dataProtectionPolicy': '*',
+      'deletionProtectionEnabled': 'boolean',
       'fieldIndexPolicies': '*',
       'retention': 'RetentionDays',
       'logGroupClass': 'LogGroupClass',
       'removalPolicy': 'RemovalPolicy'
     },
     'LogStream': {
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logStreamName': '*',
       'removalPolicy': 'RemovalPolicy'
     },
     'MetricFilter': {
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'filterPattern': {
         'logPatternString': '*'
       },
@@ -19094,28 +18830,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'QueryDefinition': {
       'queryDefinitionName': '*',
       'queryString': '*',
-      'logGroups': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      }
+      'logGroups': '*'
     },
     'SubscriptionFilter': {
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'destination': '*',
       'filterPattern': {
         'logPatternString': '*'
@@ -19125,16 +18843,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'Transformer': {
       'transformerName': '*',
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'transformerConfig': '*'
     }
   },
@@ -19183,19 +18892,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'logging': {
         'slowSearchLogEnabled': 'boolean',
-        'slowSearchLogGroup': {
-          'logGroupArn': '*',
-          'logGroupName': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'stack': '*',
-          'node': '*'
-        },
+        'slowSearchLogGroup': '*',
         'slowIndexLogEnabled': 'boolean',
+        'slowIndexLogGroup': '*',
         'appLogEnabled': 'boolean',
-        'auditLogEnabled': 'boolean'
+        'appLogGroup': '*',
+        'auditLogEnabled': 'boolean',
+        'auditLogGroup': '*'
       },
       'nodeToNodeEncryption': 'boolean',
       'automatedSnapshotStartHour': '*',
@@ -19279,20 +18982,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'removalPolicy': 'RemovalPolicy',
       'customEndpoint': {
         'domainName': '*',
-        'certificate': {
-          'certificateArn': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'certificate': '*',
         'hostedZone': {
           'hostedZoneId': '*',
           'zoneName': '*',
           'hostedZoneArn': '*',
           'hostedZoneNameServers': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
           'name': '*'
         }
       },
@@ -19374,15 +19075,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'monitoringInterval': '*',
       'monitoringRole': '*',
       'removalPolicy': 'RemovalPolicy',
-      'subnetGroup': {
-        'subnetGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      }
+      'subnetGroup': '*'
     },
     'ImportedDatabaseCluster': {
       'clusterIdentifier': '*',
@@ -19707,15 +19400,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'policy': '*',
         'replicationRoleArn': '*'
       },
-      'subnetGroup': {
-        'subnetGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'subnetGroup': '*',
       'iamAuthentication': 'boolean',
       'storageEncrypted': 'boolean',
       'storageEncryptionKey': '*',
@@ -20033,15 +19718,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'policy': '*',
         'replicationRoleArn': '*'
       },
-      'subnetGroup': {
-        'subnetGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'subnetGroup': '*',
       'iamAuthentication': 'boolean',
       'storageEncrypted': 'boolean',
       'storageEncryptionKey': '*',
@@ -20303,15 +19980,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'maxAllocatedStorage': '*',
       'domain': '*',
       'domainRole': '*',
-      'subnetGroup': {
-        'subnetGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'subnetGroup': '*',
       's3ImportRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -20565,15 +20234,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'maxAllocatedStorage': '*',
       'domain': '*',
       'domainRole': '*',
-      'subnetGroup': {
-        'subnetGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'subnetGroup': '*',
       's3ImportRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -20836,15 +20497,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'maxAllocatedStorage': '*',
       'domain': '*',
       'domainRole': '*',
-      'subnetGroup': {
-        'subnetGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'subnetGroup': '*',
       's3ImportRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -21044,17 +20697,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     },
     'DatabaseProxyEndpoint': {
-      'dbProxy': {
-        'dbProxyName': '*',
-        'dbProxyArn': '*',
-        'endpoint': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'dbProxy': '*',
       'dbProxyEndpointName': '*',
       'vpc': {
         'vpcId': '*',
@@ -21220,6 +20863,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'vpnGatewayId': '*'
       },
       'clientPasswordAuthType': 'ClientPasswordAuthType',
+      'defaultAuthScheme': 'DefaultAuthScheme',
       'addEndpoint': [
         '*',
         {
@@ -21379,15 +21023,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'subnetGroup': {
-        'subnetGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'subnetGroup': '*',
       'copyTagsToSnapshot': 'boolean',
       'addRotationSingleUser': [
         {
@@ -21610,15 +21246,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'subnetGroup': {
-        'subnetGroupName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'subnetGroup': '*',
       'copyTagsToSnapshot': 'boolean'
     },
     'SubnetGroup': {
@@ -23207,15 +22835,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   },
   'aws-cdk-lib.aws-ses': {
     'ConfigurationSetEventDestination': {
-      'configurationSet': {
-        'configurationSetName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'configurationSet': '*',
       'configurationSetEventDestinationName': '*',
       'enabled': 'boolean',
       'destination': '*',
@@ -23223,15 +22843,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'ConfigurationSet': {
       'configurationSetName': '*',
-      'dedicatedIpPool': {
-        'dedicatedIpPoolName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'dedicatedIpPool': '*',
       'tlsPolicy': 'ConfigurationSetTlsPolicy',
       'reputationMetrics': 'boolean',
       'sendingEnabled': 'boolean',
@@ -23260,15 +22872,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'EmailIdentity': {
       'identity': '*',
-      'configurationSet': {
-        'configurationSetName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'configurationSet': '*',
       'dkimSigning': 'boolean',
       'dkimIdentity': '*',
       'feedbackForwarding': 'boolean',
@@ -23284,15 +22888,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'receiptRuleSetName': '*',
       'rules': {
         'actions': '*',
-        'after': {
-          'receiptRuleName': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
+        'after': '*',
         'enabled': 'boolean',
         'receiptRuleName': '*',
         'recipients': '*',
@@ -23302,25 +22898,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'dropSpam': 'boolean'
     },
     'ReceiptRule': {
-      'ruleSet': {
-        'receiptRuleSetName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'ruleSet': '*',
       'actions': '*',
-      'after': {
-        'receiptRuleName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'after': '*',
       'enabled': 'boolean',
       'receiptRuleName': '*',
       'recipients': '*',
@@ -23781,16 +23361,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'queryLanguage': 'QueryLanguage',
       'stateMachineType': 'StateMachineType',
       'logs': {
-        'destination': {
-          'logGroupArn': '*',
-          'logGroupName': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'stack': '*',
-          'node': '*'
-        },
+        'destination': '*',
         'includeExecutionData': 'boolean',
         'level': 'LogLevel'
       },
@@ -24238,16 +23809,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'durableConfig': {
         'executionTimeout': '*'
       },
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logFormat': '*',
       'loggingFormat': 'LoggingFormat',
       'recursiveLoop': 'RecursiveLoop',
@@ -24307,6 +23869,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'tags': '*',
+      'interceptorConfigurations': {
+        'interceptionPoint': 'InterceptionPoint'
+      },
       'addLambdaTarget': [
         '*',
         {
@@ -24384,6 +23949,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'credentialProviderConfigurations': {
             'credentialProviderType': 'CredentialProviderType'
           }
+        }
+      ],
+      'addInterceptor': [
+        {
+          'interceptionPoint': 'InterceptionPoint'
         }
       ]
     },
@@ -25851,42 +25421,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'key': '*',
         'version': '*'
       },
-      'certificate': {
-        'certificateArn': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'certificate': '*',
       'certificateName': '*',
       'endpointType': 'EndpointType',
       'securityPolicy': 'SecurityPolicy',
-      'ownershipCertificate': {
-        'certificateArn': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'ownershipCertificate': '*',
       'ipAddressType': 'IpAddressType',
       'addEndpoint': [
         {
-          'certificate': {
-            'certificateArn': '*',
-            'stack': '*',
-            'node': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            }
-          },
+          'certificate': '*',
           'certificateName': '*',
           'endpointType': 'EndpointType',
           'securityPolicy': 'SecurityPolicy',
+          'ownershipCertificate': '*',
           'ipAddressType': 'IpAddressType'
         }
       ]
@@ -26494,16 +26041,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'durableConfig': {
         'executionTimeout': '*'
       },
-      'logGroup': {
-        'logGroupArn': '*',
-        'logGroupName': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'stack': '*',
-        'node': '*'
-      },
+      'logGroup': '*',
       'logFormat': '*',
       'loggingFormat': 'LoggingFormat',
       'recursiveLoop': 'RecursiveLoop',
@@ -26604,6 +26142,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'metricsConfig': {
             'metrics': 'MetricType'
           },
+          'logLevel': 'EventSourceMappingLogLevel',
           'schemaRegistryConfig': '*'
         }
       ],
@@ -26819,21 +26358,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'EcsDeploymentConfig': {},
     'EcsDeploymentGroup': {
-      'application': {
-        'applicationArn': '*',
-        'applicationName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'application': '*',
       'deploymentGroupName': '*',
-      'deploymentConfig': {
-        'deploymentConfigName': '*',
-        'deploymentConfigArn': '*'
-      },
+      'deploymentConfig': '*',
       'alarms': '*',
       'role': {
         'roleArn': '*',
@@ -26903,10 +26430,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             },
             'logConfiguration': {
               'cloudWatchEncryptionEnabled': 'boolean',
-              'cloudWatchLogGroup': {
-                'logGroupArn': '*',
-                'logGroupName': '*'
-              },
+              'cloudWatchLogGroup': '*',
               's3Bucket': {
                 'bucketArn': '*',
                 'bucketName': '*',
@@ -26952,21 +26476,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     },
     'ImportedEcsDeploymentGroup': {
-      'application': {
-        'applicationArn': '*',
-        'applicationName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'application': '*',
       'deploymentGroupName': '*',
-      'deploymentConfig': {
-        'deploymentConfigName': '*',
-        'deploymentConfigArn': '*'
-      }
+      'deploymentConfig': '*'
     },
     'LambdaApplication': {
       'applicationName': '*'
@@ -26975,7 +26487,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'type': 'CustomLambdaDeploymentConfigType',
       'percentage': '*',
       'interval': '*',
-      'deploymentConfigName': '*'
+      'deploymentConfigName': '*',
+      'bindEnvironment': [
+        '*'
+      ]
     },
     'LambdaDeploymentConfig': {},
     'LambdaDeploymentGroup': {
@@ -27191,16 +26706,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       }
     },
     'ImportedDeploymentGroupBase': {
-      'application': {
-        'applicationArn': '*',
-        'applicationName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'application': '*',
       'deploymentGroupName': '*'
     },
     'DeploymentGroupBase': {
@@ -27236,33 +26742,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentConfigName': '*'
     },
     'ImportedServerDeploymentGroup': {
-      'application': {
-        'applicationArn': '*',
-        'applicationName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'application': '*',
       'deploymentGroupName': '*',
-      'deploymentConfig': {
-        'deploymentConfigName': '*',
-        'deploymentConfigArn': '*'
-      }
+      'deploymentConfig': '*'
     },
     'ServerDeploymentGroup': {
-      'application': {
-        'applicationArn': '*',
-        'applicationName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'application': '*',
       'role': {
         'roleArn': '*',
         'roleName': '*',
@@ -27281,10 +26766,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'deploymentGroupName': '*',
-      'deploymentConfig': {
-        'deploymentConfigName': '*',
-        'deploymentConfigArn': '*'
-      },
+      'deploymentConfig': '*',
       'autoScalingGroups': {
         'autoScalingGroupName': '*',
         'autoScalingGroupArn': '*',
@@ -27917,10 +27399,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'logConfiguration': {
             'cloudWatchEncryptionEnabled': 'boolean',
-            'cloudWatchLogGroup': {
-              'logGroupArn': '*',
-              'logGroupName': '*'
-            },
+            'cloudWatchLogGroup': '*',
             's3Bucket': {
               'bucketArn': '*',
               'bucketName': '*',
@@ -28022,6 +27501,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'addPlacementStrategies': [
         '*'
       ],
@@ -28169,10 +27656,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'logConfiguration': {
             'cloudWatchEncryptionEnabled': 'boolean',
-            'cloudWatchLogGroup': {
-              'logGroupArn': '*',
-              'logGroupName': '*'
-            },
+            'cloudWatchLogGroup': '*',
             's3Bucket': {
               'bucketArn': '*',
               'bucketName': '*',
@@ -28274,6 +27758,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'attachToApplicationTargetGroup': [
         {
           'metrics': '*',
@@ -28530,10 +28022,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'logConfiguration': {
             'cloudWatchEncryptionEnabled': 'boolean',
-            'cloudWatchLogGroup': {
-              'logGroupArn': '*',
-              'logGroupName': '*'
-            },
+            'cloudWatchLogGroup': '*',
             's3Bucket': {
               'bucketArn': '*',
               'bucketName': '*',
@@ -28635,6 +28124,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
       'attachToClassicLB': [
         '*'
       ]
