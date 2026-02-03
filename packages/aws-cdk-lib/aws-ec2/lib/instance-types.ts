@@ -783,6 +783,16 @@ export enum InstanceClass {
   C8I_FLEX = 'c8i-flex',
 
   /**
+   * Compute optimized instances based on 5th generation AMD EPYC (codename Turin), 8th generation
+   */
+  COMPUTE8_AMD = 'compute8-amd',
+
+  /**
+   * Compute optimized instances based on 5th generation AMD EPYC (codename Turin), 8th generation
+   */
+  C8A = 'c8a',
+
+  /**
    * Compute optimized instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
    */
   COMPUTE7_AMD = 'compute7-amd',
