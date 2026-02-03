@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
 import { ArnFormat, IResource, Resource, Stack, Fn } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -120,15 +121,8 @@ export class Addon extends Resource implements IAddon {
     return new Import(scope, id);
   }
 
-  /**
-   * Name of the addon.
-   */
-  public readonly addonName: string;
-  /**
-   * Arn of the addon.
-   */
-  public readonly addonArn: string;
   private readonly clusterName: string;
+  private resource: CfnAddon;
 
   /**
    * Creates a new Amazon EKS Add-On.
@@ -144,18 +138,27 @@ export class Addon extends Resource implements IAddon {
     addConstructMetadata(this, props);
 
     this.clusterName = props.cluster.clusterName;
-    this.addonName = props.addonName;
 
-    const resource = new CfnAddon(this, 'Resource', {
+    this.resource = new CfnAddon(this, 'Resource', {
       addonName: props.addonName,
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
       configurationValues: this.stack.toJsonString(props.configurationValues),
     });
+  }
 
-    this.addonName = this.getResourceNameAttribute(resource.ref);
-    this.addonArn = this.getResourceArnAttribute(resource.attrArn, {
+  /**
+   * Name of the addon.
+   */
+  @memoizedGetter
+  public get addonName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get addonArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'eks',
       resource: 'addon',
       resourceName: `${this.clusterName}/${this.addonName}/`,

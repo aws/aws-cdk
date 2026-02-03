@@ -1,10 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cdk8s from 'cdk8s';
-import { Construct } from 'constructs';
-import * as YAML from 'yaml';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
-import { testFixture, testFixtureNoVpc } from './util';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as asg from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -12,12 +8,14 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
+import * as cdk8s from 'cdk8s';
+import { Construct } from 'constructs';
+import * as YAML from 'yaml';
+import { testFixture, testFixtureNoVpc } from './util';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
-
-/* eslint-disable max-len */
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
 const commonProps = {
@@ -1382,6 +1380,81 @@ describe('cluster', () => {
         },
       });
     });
+
+    test('if EKS_USE_NATIVE_OIDC_PROVIDER feature flag is enabled, uses native OIDC provider', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      stack.node.setContext('@aws-cdk/aws-eks:useNativeOidcProvider', true);
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        prune: false,
+      });
+
+      // WHEN
+      cluster.openIdConnectProvider;
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::OIDCProvider', {
+        ClientIdList: [
+          'sts.amazonaws.com',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'ClusterEB0386A7',
+            'OpenIdConnectIssuerUrl',
+          ],
+        },
+      });
+    });
+
+    test('if EKS_USE_NATIVE_OIDC_PROVIDER feature flag is disabled, uses custom resource OIDC provider', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        prune: false,
+      });
+
+      // WHEN
+      cluster.openIdConnectProvider;
+
+      // THEN
+
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
+        ClientIDList: [
+          'sts.amazonaws.com',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'ClusterEB0386A7',
+            'OpenIdConnectIssuerUrl',
+          ],
+        },
+      });
+    });
+
+    test('cluster can be used with both OidcProviderNative and OpenIdConnectProvider', () => {
+      const { stack } = testFixtureNoVpc();
+
+      const importedClusterOldProvider = eks.Cluster.fromClusterAttributes(stack, 'ImportedClusterOld', {
+        clusterName: 'my-cluster',
+        openIdConnectProvider: eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'ImportedOidcProviderOld', 'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E'),
+      });
+
+      expect(importedClusterOldProvider.openIdConnectProvider.oidcProviderRef.oidcProviderArn).toBeDefined();
+      expect(importedClusterOldProvider.openIdConnectProvider.openIdConnectProviderIssuer).toBeDefined();
+      expect(importedClusterOldProvider.openIdConnectProvider.openIdConnectProviderArn).toBeDefined();
+
+      const importedClusterNativeProvider = eks.Cluster.fromClusterAttributes(stack, 'ImportedClusterNative', {
+        clusterName: 'my-cluster',
+        openIdConnectProvider: eks.OidcProviderNative.fromOidcProviderArn(stack, 'ImportedOidcProviderNative', 'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E'),
+      });
+
+      expect(importedClusterNativeProvider.openIdConnectProvider.oidcProviderRef.oidcProviderArn).toBeDefined();
+      expect(importedClusterNativeProvider.openIdConnectProvider.openIdConnectProviderIssuer).toBeDefined();
+      expect(importedClusterNativeProvider.openIdConnectProvider.openIdConnectProviderArn).toBeDefined();
+    });
+
     test('inf1 instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
@@ -1554,25 +1627,43 @@ describe('cluster', () => {
       // THEN
       const template = app.synth().getStackArtifact(stack.artifactId).template;
 
-      const barrier = template.Resources.ClusterKubectlReadyBarrier200052AF;
+      const kubectlReadyBarrier = 'ClusterKubectlReadyBarrier200052AF';
+      const barrier = template.Resources[kubectlReadyBarrier];
 
-      expect(barrier.DependsOn).toEqual([
-        'Clusterfargateprofileprofile1PodExecutionRoleE85F87B5',
-        'Clusterfargateprofileprofile129AEA3C6',
-        'Clusterfargateprofileprofile2PodExecutionRole22670AF8',
-        'Clusterfargateprofileprofile233B9A117',
-        'Clusterfargateprofileprofile3PodExecutionRole475C0D8F',
-        'Clusterfargateprofileprofile3D06F3076',
-        'Clusterfargateprofileprofile4PodExecutionRole086057FB',
-        'Clusterfargateprofileprofile4A0E3BBE8',
-        'ClusterEB0386A7',
-      ]);
+      const adminRoleAccess = 'ClusterClusterAdminRoleAccessF2BFF759';
+      const profile1PodExecutionRole = 'Clusterfargateprofileprofile1PodExecutionRoleE85F87B5';
+      const profile1 = 'Clusterfargateprofileprofile129AEA3C6';
+      const profile2PodExecutionRole = 'Clusterfargateprofileprofile2PodExecutionRole22670AF8';
+      const profile2 = 'Clusterfargateprofileprofile233B9A117';
+      const profile3PodExecutionRole = 'Clusterfargateprofileprofile3PodExecutionRole475C0D8F';
+      const profile3 = 'Clusterfargateprofileprofile3D06F3076';
+      const profile4PodExecutionRole = 'Clusterfargateprofileprofile4PodExecutionRole086057FB';
+      const profile4 = 'Clusterfargateprofileprofile4A0E3BBE8';
+      const clusterResource = 'ClusterEB0386A7';
 
-      const kubectlResources = ['chartF2447AFC', 'patch1B964AC93', 'Clustermanifestresource10B1C9505'];
+      const expectedBarrierDependencies = [
+        adminRoleAccess,
+        profile1PodExecutionRole,
+        profile1,
+        profile2PodExecutionRole,
+        profile2,
+        profile3PodExecutionRole,
+        profile3,
+        profile4PodExecutionRole,
+        profile4,
+        clusterResource,
+      ];
+
+      expect(barrier.DependsOn).toEqual(expectedBarrierDependencies);
+
+      const helmChart = 'chartF2447AFC';
+      const kubernetesPatch = 'patch1B964AC93';
+      const kubernetesManifest = 'Clustermanifestresource10B1C9505';
+      const kubectlResources = [helmChart, kubernetesPatch, kubernetesManifest];
 
       // check that all kubectl resources depend on the barrier
-      for (const r of kubectlResources) {
-        expect(template.Resources[r].DependsOn).toEqual(['ClusterKubectlReadyBarrier200052AF']);
+      for (const resource of kubectlResources) {
+        expect(template.Resources[resource].DependsOn).toEqual([kubectlReadyBarrier]);
       }
     });
 

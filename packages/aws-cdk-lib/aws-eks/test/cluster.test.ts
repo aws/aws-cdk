@@ -17,8 +17,6 @@ import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 
-/* eslint-disable max-len */
-
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
 
 describe('cluster', () => {
@@ -1510,7 +1508,7 @@ describe('cluster', () => {
 
     test('throws warning when `outputConfigCommand=true` and `mastersRole` is not specified', () => {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'Cluster', {
@@ -2358,6 +2356,75 @@ describe('cluster', () => {
         },
       });
     });
+
+    test('if EKS_USE_NATIVE_OIDC_PROVIDER feature flag is enabled, uses native OIDC provider', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      stack.node.setContext('@aws-cdk/aws-eks:useNativeOidcProvider', true);
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false, kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer') });
+
+      // WHEN
+      cluster.openIdConnectProvider;
+
+      // THEN
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::OIDCProvider', {
+        ClientIdList: [
+          'sts.amazonaws.com',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'Cluster9EE0221C',
+            'OpenIdConnectIssuerUrl',
+          ],
+        },
+      });
+    });
+
+    test('cluster can be used with both OidcProviderNative and OpenIdConnectProvider', () => {
+      const { stack } = testFixtureNoVpc();
+
+      const importedClusterOldProvider = eks.Cluster.fromClusterAttributes(stack, 'ImportedClusterOld', {
+        clusterName: 'my-cluster',
+        openIdConnectProvider: eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'ImportedOidcProviderOld', 'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E'),
+      });
+
+      expect(importedClusterOldProvider.openIdConnectProvider.oidcProviderRef.oidcProviderArn).toBeDefined();
+      expect(importedClusterOldProvider.openIdConnectProvider.openIdConnectProviderIssuer).toBeDefined();
+      expect(importedClusterOldProvider.openIdConnectProvider.openIdConnectProviderArn).toBeDefined();
+
+      const importedClusterNativeProvider = eks.Cluster.fromClusterAttributes(stack, 'ImportedClusterNative', {
+        clusterName: 'my-cluster',
+        openIdConnectProvider: eks.OidcProviderNative.fromOidcProviderArn(stack, 'ImportedOidcProviderNative', 'arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E'),
+      });
+
+      expect(importedClusterNativeProvider.openIdConnectProvider.oidcProviderRef.oidcProviderArn).toBeDefined();
+      expect(importedClusterNativeProvider.openIdConnectProvider.openIdConnectProviderIssuer).toBeDefined();
+      expect(importedClusterNativeProvider.openIdConnectProvider.openIdConnectProviderArn).toBeDefined();
+    });
+
+    test('if EKS_USE_NATIVE_OIDC_PROVIDER feature flag is disabled, uses custom resource OIDC provider', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false, kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer') });
+
+      // WHEN
+      cluster.openIdConnectProvider;
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
+        ClientIDList: [
+          'sts.amazonaws.com',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'Cluster9EE0221C',
+            'OpenIdConnectIssuerUrl',
+          ],
+        },
+      });
+    });
+
     test('inf1 instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
@@ -3508,16 +3575,6 @@ describe('cluster', () => {
     });
   });
 
-  describe('kubectlLayer annotation', () => {
-    function message(version: string) {
-      return [
-        `You created a cluster with Kubernetes Version 1.${version} without specifying the kubectlLayer property.`,
-        'The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer.',
-        '[ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]',
-      ].join(' ');
-    }
-  });
-
   test('custom awscli layer can be provided', () => {
     // GIVEN
     const { stack } = testFixture();
@@ -3789,6 +3846,7 @@ describe('cluster', () => {
             cidrs: remoteNodeNetworkCidrs,
           },
         ],
+        kubectlLayer: undefined as any,
       });
 
       // THEN
@@ -3824,6 +3882,7 @@ describe('cluster', () => {
             cidrs: remotePodNetworkCidrs,
           },
         ],
+        kubectlLayer: undefined as any,
       });
 
       // THEN
@@ -3866,6 +3925,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`Remote node network CIDR block ${overlappingCidr} should not overlap with remote pod network CIDR block ${overlappingCidr}`);
     });
@@ -3889,6 +3949,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs2,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote node network #1 should not overlap with CIDR block ${overlappingCidr} in remote node network #2`);
     });
@@ -3918,6 +3979,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs2,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote pod network #1 should not overlap with CIDR block ${overlappingCidr} in remote pod network #2`);
     });
@@ -3937,6 +3999,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
     });
@@ -3962,6 +4025,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote pod network #1`);
     });

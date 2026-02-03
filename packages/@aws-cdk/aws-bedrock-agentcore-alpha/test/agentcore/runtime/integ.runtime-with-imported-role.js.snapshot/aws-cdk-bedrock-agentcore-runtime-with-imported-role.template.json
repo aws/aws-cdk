@@ -267,6 +267,7 @@
      }
     },
     "AgentRuntimeName": "integ_test_runtime",
+    "LifecycleConfiguration": {},
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },

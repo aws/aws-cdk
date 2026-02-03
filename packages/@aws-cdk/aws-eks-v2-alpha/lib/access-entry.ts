@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
 import { Resource, IResource, Aws, Lazy } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -315,14 +316,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     }
     return new Import(scope, id);
   }
-  /**
-   * The name of the access entry.
-   */
-  public readonly accessEntryName: string;
-  /**
-   * The Amazon Resource Name (ARN) of the access entry.
-   */
-  public readonly accessEntryArn: string;
+  private resource: CfnAccessEntry;
   private cluster: ICluster;
   private principal: string;
   private accessPolicies: IAccessPolicy[];
@@ -336,7 +330,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     this.principal = props.principal;
     this.accessPolicies = props.accessPolicies;
 
-    const resource = new CfnAccessEntry(this, 'Resource', {
+    this.resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
       type: props.accessEntryType,
@@ -350,13 +344,22 @@ export class AccessEntry extends Resource implements IAccessEntry {
         })),
       }),
     });
-    this.accessEntryName = this.getResourceNameAttribute(resource.ref);
-    this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
+  }
+
+  @memoizedGetter
+  public get accessEntryName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get accessEntryArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrAccessEntryArn, {
       service: 'eks',
       resource: 'accessentry',
       resourceName: this.physicalName,
     });
   }
+
   /**
    * Add the access policies for this entry.
    * @param newAccessPolicies - The new access policies to add.

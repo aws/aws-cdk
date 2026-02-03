@@ -8,8 +8,8 @@
  * * rm testfile.txt
  */
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
+import * as sns from 'aws-cdk-lib/aws-sns';
 import * as actions from '../../lib';
 
 class TestStack extends cdk.Stack {

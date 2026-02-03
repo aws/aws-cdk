@@ -7,12 +7,10 @@ import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import {
-  AccountPrincipal,
   AddToPrincipalPolicyResult,
   ArnPrincipal,
   IPrincipal,
   PrincipalPolicyFragment,
-  ServicePrincipal,
 } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
@@ -20,6 +18,7 @@ import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
+import { RoleGrants } from './role-grants';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   Annotations,
@@ -39,6 +38,7 @@ import {
   CustomizeRoleConfig,
   getCustomizeRolesConfig,
   getPrecreatedRoleConfig,
+  memoizedGetter,
 } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
@@ -462,14 +462,43 @@ export class Role extends Resource implements IRole {
   public readonly assumeRolePolicy?: PolicyDocument;
 
   /**
+   * The CfnRole resource
+   */
+  private readonly _resource?: CfnRole;
+
+  /**
    * Returns the ARN of this role.
    */
-  public readonly roleArn: string;
+  @memoizedGetter
+  public get roleArn(): string {
+    if (this._precreatedRole) {
+      return this._precreatedRole.roleArn;
+    }
+    if (!this._resource) {
+      throw new ValidationError('Cannot access roleArn when synthesis is prevented', this);
+    }
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'role',
+      // Removes leading slash from path
+      resourceName: `${this._path ? this._path.substr(this._path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
+    });
+  }
 
   /**
    * Returns the name of the role.
    */
-  public readonly roleName: string;
+  @memoizedGetter
+  public get roleName(): string {
+    if (this._precreatedRole) {
+      return this._precreatedRole.roleName;
+    }
+    if (!this._resource) {
+      throw new ValidationError('Cannot access roleName when synthesis is prevented', this);
+    }
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * Returns the role.
@@ -481,6 +510,11 @@ export class Role extends Resource implements IRole {
    */
   public readonly permissionsBoundary?: IManagedPolicy;
 
+  /**
+   * Collection of grant methods for a Role
+   */
+  public readonly grants = RoleGrants.fromRole(this);
+
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -489,6 +523,7 @@ export class Role extends Resource implements IRole {
   private immutableRole?: IRole;
   private _didSplit = false;
   private readonly _roleId?: string;
+  private readonly _path?: string;
 
   private readonly _precreatedRole?: IRole;
 
@@ -512,6 +547,7 @@ export class Role extends Resource implements IRole {
     this.managedPolicies.push(...props.managedPolicies || []);
     this.inlinePolicies = props.inlinePolicies || {};
     this.permissionsBoundary = props.permissionsBoundary;
+    this._path = props.path;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(this, maxSessionDuration);
     const description = (props.description && props.description?.length > 0) ? props.description : undefined;
@@ -523,20 +559,18 @@ export class Role extends Resource implements IRole {
     validateRolePath(this, props.path);
 
     const config = this.getPrecreatedRoleConfig();
-    const roleArn = Stack.of(scope).formatArn({
-      region: '',
-      service: 'iam',
-      resource: 'role',
-      resourceName: config.precreatedRoleName,
-    });
-    const importedRole = new ImportedRole(this, 'Import'+id, {
-      roleArn,
-      roleName: config.precreatedRoleName ?? id,
-      account: Stack.of(this).account,
-    });
-    this.roleName = importedRole.roleName;
-    this.roleArn = importedRole.roleArn;
     if (config.enabled) {
+      const roleArn = Stack.of(scope).formatArn({
+        region: '',
+        service: 'iam',
+        resource: 'role',
+        resourceName: config.precreatedRoleName,
+      });
+      const importedRole = new ImportedRole(this, 'Import'+id, {
+        roleArn,
+        roleName: config.precreatedRoleName ?? id,
+        account: Stack.of(this).account,
+      });
       const role = new PrecreatedRole(this, 'PrecreatedRole'+id, {
         rolePath: this.node.path,
         role: importedRole,
@@ -553,7 +587,7 @@ export class Role extends Resource implements IRole {
 
     // synthesize the resource if preventSynthesis=false
     if (!config.preventSynthesis) {
-      const role = new CfnRole(this, 'Resource', {
+      this._resource = new CfnRole(this, 'Resource', {
         assumeRolePolicyDocument: this.assumeRolePolicy as any,
         managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map(p => p.managedPolicyArn)),
         policies: _flatten(this.inlinePolicies),
@@ -564,15 +598,7 @@ export class Role extends Resource implements IRole {
         description,
       });
 
-      this._roleId = role.attrRoleId;
-      this.roleArn = this.getResourceArnAttribute(role.attrArn, {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'role',
-        // Removes leading slash from path
-        resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
-      });
-      this.roleName = this.getResourceNameAttribute(role.ref);
+      this._roleId = this._resource.attrRoleId;
       Aspects.of(this).add({
         visit: (c) => {
           if (c === this) {
@@ -687,7 +713,7 @@ export class Role extends Resource implements IRole {
    */
   @MethodMetadata()
   public grantPassRole(identity: IPrincipal) {
-    return this.grant(identity, 'iam:PassRole');
+    return this.grants.passRole(identity);
   }
 
   /**
@@ -695,11 +721,7 @@ export class Role extends Resource implements IRole {
    */
   @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal) {
-    // Service and account principals must use assumeRolePolicy
-    if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new ValidationError('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this);
-    }
-    return this.grant(identity, 'sts:AssumeRole');
+    return this.grants.assumeRole(identity);
   }
 
   /**

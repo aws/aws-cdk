@@ -353,7 +353,7 @@ test('when query limits are set, they should be used on API', () => {
 test('when query depth limit is out of range, it throws an error', () => {
   const errorString = 'You must specify a query depth limit between 0 and 75.';
 
-  const buildWithLimit = (name, queryDepthLimit) => {
+  const buildWithLimit = (name: string, queryDepthLimit: number) => {
     new appsync.GraphqlApi(stack, name, {
       authorizationConfig: {},
       name: 'query-limits',
@@ -371,7 +371,7 @@ test('when query depth limit is out of range, it throws an error', () => {
 test('when resolver limit is out of range, it throws an error', () => {
   const errorString = 'You must specify a resolver count limit between 0 and 10000.';
 
-  const buildWithLimit = (name, resolverCountLimit) => {
+  const buildWithLimit = (name: string, resolverCountLimit: number) => {
     new appsync.GraphqlApi(stack, name, {
       authorizationConfig: {},
       name: 'query-limits',

@@ -1,4 +1,4 @@
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import {
   CfnManagedPolicy,
   IGroupRef,
@@ -13,9 +13,10 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IGrantable, IPrincipal, Princ
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { Arn, ArnFormat, Aws, Resource, ResourceEnvironment, Stack, UnscopedValidationError, ValidationError, Lazy } from '../../core';
-import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
+import { Arn, ArnFormat, Aws, Resource, Stack, ValidationError, Lazy } from '../../core';
+import { getCustomizeRolesConfig, memoizedGetter, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -179,7 +180,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * prefix when constructing this object.
    */
   public static fromAwsManagedPolicyName(managedPolicyName: string): IManagedPolicy {
-    class AwsManagedPolicy implements IManagedPolicy {
+    class AwsManagedPolicy extends DetachedConstruct implements IManagedPolicy {
       public readonly managedPolicyArn = Arn.format({
         partition: Aws.PARTITION,
         service: 'iam',
@@ -188,27 +189,43 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      constructor() {
+        super('The result of fromAwsManagedPolicyName can not be used in this API');
+      }
       public get managedPolicyRef(): ManagedPolicyReference {
         return {
           policyArn: this.managedPolicyArn,
         };
-      }
-      public get node(): Node {
-        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
-      }
-      public get env(): ResourceEnvironment {
-        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
       }
     }
     return new AwsManagedPolicy();
   }
 
   /**
+   * The CfnManagedPolicy resource
+   */
+  private readonly _resource?: CfnManagedPolicy;
+
+  /**
    * Returns the ARN of this managed policy.
    *
    * @attribute
    */
-  public readonly managedPolicyArn: string;
+  @memoizedGetter
+  public get managedPolicyArn(): string {
+    if (this._precreatedPolicy) {
+      return this._precreatedPolicy.managedPolicyArn;
+    }
+    if (!this._resource) {
+      throw new ValidationError('Cannot access managedPolicyArn when synthesis is prevented', this);
+    }
+    return this.getResourceArnAttribute(this._resource.ref, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'policy',
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The policy document.
@@ -220,7 +237,16 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    *
    * @attribute
    */
-  public readonly managedPolicyName: string;
+  @memoizedGetter
+  public get managedPolicyName(): string {
+    if (this._precreatedPolicy) {
+      return this.node.id;
+    }
+    if (!this._resource) {
+      throw new ValidationError('Cannot access managedPolicyName when synthesis is prevented', this);
+    }
+    return this.getResourceNameAttribute(Stack.of(this).splitArn(this._resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+  }
 
   /**
    * The description of this policy.
@@ -258,14 +284,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     }
 
     const config = getCustomizeRolesConfig(this);
-    const _precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported'+id, id);
-    this.managedPolicyName = id;
-    this.managedPolicyArn = _precreatedPolicy.managedPolicyArn;
     if (config.enabled) {
-      this._precreatedPolicy = _precreatedPolicy;
+      this._precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported'+id, id);
     }
     if (!config.preventSynthesis) {
-      const resource = new CfnManagedPolicy(this, 'Resource', {
+      this._resource = new CfnManagedPolicy(this, 'Resource', {
         policyDocument: this.document,
         managedPolicyName: this.physicalName,
         description: this.description,
@@ -273,15 +296,6 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         roles: undefinedIfEmpty(() => this.roles.map(r => r.roleRef.roleName)),
         users: undefinedIfEmpty(() => this.users.map(u => u.userRef.userName)),
         groups: undefinedIfEmpty(() => this.groups.map(g => g.groupRef.groupName)),
-      });
-
-      // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
-      this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
-      this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'policy',
-        resourceName: this.physicalName,
       });
     }
 

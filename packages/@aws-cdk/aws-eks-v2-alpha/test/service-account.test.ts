@@ -1,9 +1,7 @@
-import { testFixture, testFixtureCluster } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { testFixture, testFixtureCluster } from './util';
 import * as eks from '../lib';
-
-/* eslint-disable max-len */
 
 describe('service account', () => {
   describe('add Service Account', () => {
@@ -417,6 +415,24 @@ describe('service account', () => {
       }, 0);
       // should not have pod identity association
       t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 0);
+    });
+  });
+
+  describe('Service Account with overwrite option', () => {
+    test('should pass overwrite to KubernetesManifest', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        overwriteServiceAccount: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Overwrite: true,
+      });
     });
   });
 });

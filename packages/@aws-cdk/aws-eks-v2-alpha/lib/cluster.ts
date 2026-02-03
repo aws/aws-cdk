@@ -1,5 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { CfnCluster } from 'aws-cdk-lib/aws-eks';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack, UnscopedValidationError, FeatureFlags } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
@@ -13,19 +24,10 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { OpenIdConnectProvider } from './oidc-provider';
+import { OpenIdConnectProvider, OidcProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
-import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
-import { CfnCluster } from 'aws-cdk-lib/aws-eks';
-import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -376,7 +378,7 @@ export interface ClusterCommonOptions {
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
    *
-   * @default - IpFamily.IP_V4
+   * @default IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
   readonly ipFamily?: IpFamily;
@@ -490,7 +492,7 @@ export class EndpointAccess {
      */
     public readonly _config: EndpointAccessConfig) {
     if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
-      throw new Error('CIDR blocks can only be configured when public access is enabled');
+      throw new UnscopedValidationError('CIDR blocks can only be configured when public access is enabled');
     }
   }
 
@@ -504,7 +506,7 @@ export class EndpointAccess {
     if (!this._config.privateAccess) {
       // when private access is disabled, we can't restric public
       // access since it will render the kubectl provider unusable.
-      throw new Error('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+      throw new UnscopedValidationError('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
     }
     return new EndpointAccess({
       ...this._config,
@@ -686,6 +688,15 @@ export class KubernetesVersion {
   public static readonly V1_33 = KubernetesVersion.of('1.33');
 
   /**
+   * Kubernetes version 1.34
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV34Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v34`.
+   */
+  public static readonly V1_34 = KubernetesVersion.of('1.34');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -788,7 +799,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
     if (typeof cdk8sChart.toJson !== 'function') {
-      throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
+      throw new UnscopedValidationError(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
     }
 
     const manifest = new KubernetesManifest(this, id, {
@@ -842,7 +853,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
-      throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
+      throw new UnscopedValidationError('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
 
     if (bootstrapEnabled) {
@@ -938,14 +949,20 @@ export class Cluster extends ClusterBase {
   /**
    * The Name of the created EKS Cluster
    */
-  public readonly clusterName: string;
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * The AWS generated ARN for the Cluster resource
    *
    * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
    */
-  public readonly clusterArn: string;
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, clusterArnComponents(this.physicalName));
+  }
 
   /**
    * The endpoint URL for the Cluster
@@ -1006,7 +1023,7 @@ export class Cluster extends ClusterBase {
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
    *
-   * @default - IpFamily.IP_V4
+   * @default IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
   public readonly ipFamily?: IpFamily;
@@ -1038,7 +1055,7 @@ export class Cluster extends ClusterBase {
    */
   public readonly albController?: AlbController;
 
-  private readonly _clusterResource: CfnCluster;
+  private readonly resource: CfnCluster;
 
   private _neuronDevicePlugin?: KubernetesManifest;
 
@@ -1137,7 +1154,7 @@ export class Cluster extends ClusterBase {
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
-      throw new Error('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
+      throw new UnscopedValidationError('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
     }
 
     // Get subnetIds for all selected subnets
@@ -1162,19 +1179,19 @@ export class Cluster extends ClusterBase {
 
     if (privateSubnets.length === 0 && publicAccessDisabled) {
       // no private subnets and no public access at all, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+      throw new UnscopedValidationError('Vpc must contain private subnets when public endpoint access is disabled');
     }
 
     if (privateSubnets.length === 0 && publicAccessRestricted) {
       // no private subnets and public access is restricted, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+      throw new UnscopedValidationError('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
-      throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
+      throw new UnscopedValidationError('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
-    const resource = this._clusterResource = new CfnCluster(this, 'Resource', {
+    const resource = this.resource = new CfnCluster(this, 'Resource', {
       name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version.version,
@@ -1231,14 +1248,14 @@ export class Cluster extends ClusterBase {
 
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
       if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
-        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+        throw new UnscopedValidationError('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
       }
 
       kubectlSubnets = privateSubnets;
 
       // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
-      this._clusterResource.node.addDependency(this.vpc);
+      this.resource.node.addDependency(this.vpc);
     }
 
     // we use an SSM parameter as a barrier because it's free and fast.
@@ -1251,10 +1268,7 @@ export class Cluster extends ClusterBase {
     });
 
     // add the cluster resource itself as a dependency of the barrier
-    this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
-
-    this.clusterName = this.getResourceNameAttribute(resource.ref);
-    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
+    this._kubectlReadyBarrier.node.addDependency(this.resource);
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
@@ -1287,6 +1301,9 @@ export class Cluster extends ClusterBase {
       // give the handler role admin access to the cluster
       // so it can deploy/query any resource.
       this._clusterAdminAccess = this.grantClusterAdmin('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn);
+
+      // Ensure kubectl is marked as ready only after admin access has been granted
+      this._kubectlReadyBarrier.node.addDependency(this._clusterAdminAccess);
     }
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
@@ -1344,6 +1361,7 @@ export class Cluster extends ClusterBase {
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the access permissions
    * defined by the provided `IAccessPolicy` array. This allows the IAM principal to perform the actions permitted
    * by the access policies within the EKS cluster.
+   * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
@@ -1360,6 +1378,7 @@ export class Cluster extends ClusterBase {
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
    * access permissions. This allows the IAM principal to perform the actions permitted
    * by the cluster admin acces.
+   * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
@@ -1434,7 +1453,7 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
-      throw new Error('bootstrapOptions is not supported for Bottlerocket');
+      throw new UnscopedValidationError('bootstrapOptions is not supported for Bottlerocket');
     }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
@@ -1497,7 +1516,7 @@ export class Cluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
-    return this._clusterResource.attrOpenIdConnectIssuerUrl;
+    return this.resource.attrOpenIdConnectIssuerUrl;
   }
 
   /**
@@ -1505,12 +1524,19 @@ export class Cluster extends ClusterBase {
    * to link this cluster to AWS IAM.
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
+   *
    */
-  public get openIdConnectProvider() {
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.clusterOpenIdConnectIssuerUrl,
-      });
+      if (FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)) {
+        this._openIdConnectProvider = new OidcProviderNative(this, 'OidcProviderNative', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+        });
+      } else {
+        this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+        });
+      }
     }
 
     return this._openIdConnectProvider;
@@ -1588,19 +1614,19 @@ export class Cluster extends ClusterBase {
         const validNodePools = ['general-purpose', 'system'];
         const invalidPools = props.compute.nodePools.filter(pool => !validNodePools.includes(pool));
         if (invalidPools.length > 0) {
-          throw new Error(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
+          throw new UnscopedValidationError(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
         }
       }
 
       // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
       if (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined) {
-        throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
+        throw new UnscopedValidationError('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
       }
     } else {
       // if NOT using AUTOMODE
       if (props.compute) {
         // When not using AUTOMODE, compute must be undefined
-        throw new Error('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
+        throw new UnscopedValidationError('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
       }
     }
 
@@ -1941,49 +1967,49 @@ class ImportedCluster extends ClusterBase {
 
   public get vpc() {
     if (!this.props.vpc) {
-      throw new Error('"vpc" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"vpc" is not defined for this imported cluster');
     }
     return this.props.vpc;
   }
 
   public get clusterSecurityGroup(): ec2.ISecurityGroup {
     if (!this._clusterSecurityGroup) {
-      throw new Error('"clusterSecurityGroup" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterSecurityGroup" is not defined for this imported cluster');
     }
     return this._clusterSecurityGroup;
   }
 
   public get clusterSecurityGroupId(): string {
     if (!this.props.clusterSecurityGroupId) {
-      throw new Error('"clusterSecurityGroupId" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterSecurityGroupId" is not defined for this imported cluster');
     }
     return this.props.clusterSecurityGroupId;
   }
 
   public get clusterEndpoint(): string {
     if (!this.props.clusterEndpoint) {
-      throw new Error('"clusterEndpoint" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterEndpoint" is not defined for this imported cluster');
     }
     return this.props.clusterEndpoint;
   }
 
   public get clusterCertificateAuthorityData(): string {
     if (!this.props.clusterCertificateAuthorityData) {
-      throw new Error('"clusterCertificateAuthorityData" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterCertificateAuthorityData" is not defined for this imported cluster');
     }
     return this.props.clusterCertificateAuthorityData;
   }
 
   public get clusterEncryptionConfigKeyArn(): string {
     if (!this.props.clusterEncryptionConfigKeyArn) {
-      throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
     }
     return this.props.clusterEncryptionConfigKeyArn;
   }
 
   public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this.props.openIdConnectProvider) {
-      throw new Error('"openIdConnectProvider" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"openIdConnectProvider" is not defined for this imported cluster');
     }
     return this.props.openIdConnectProvider;
   }

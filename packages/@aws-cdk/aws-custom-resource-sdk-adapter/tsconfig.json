@@ -14,14 +14,13 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "esModuleInterop": false,
+    "isolatedModules": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "composite": true,
     "incremental": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.d.ts"
-  ]
+  "include": [ "**/*.ts" ],
+  "exclude": [ "**/*.d.ts" ]
 }

@@ -11,6 +11,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -125,13 +126,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * @attribute
    */
   public readonly aliasName: string;
-  /**
-   * ARN of this alias
-   *
-   * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
-   * ARNs everywhere it accepts function names.
-   */
-  public readonly functionName: string;
+
+  private readonly alias: CfnAlias;
 
   public readonly lambda: IFunction;
 
@@ -145,7 +141,29 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
    * ARNs everywhere it accepts function names.
    */
-  public readonly functionArn: string;
+  @memoizedGetter
+  public get functionArn(): string {
+    return this.getResourceArnAttribute(this.alias.ref, {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: `${this.lambda.functionName}:${this.physicalName}`,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  /**
+   * ARN of this alias
+   *
+   * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
+   * ARNs everywhere it accepts function names.
+   */
+  @memoizedGetter
+  public get functionName(): string {
+    // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
+    // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
+    // an implicit dependency on the resource.
+    return `${this.stack.splitArn(this.functionArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!}:${this.aliasName}`;
+  }
 
   protected readonly qualifier: string;
 
@@ -166,7 +184,11 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.version = props.version;
     this.architecture = this.lambda.architecture;
 
-    const alias = new CfnAlias(this, 'Resource', {
+    if (props.provisionedConcurrentExecutions && this.version.lambda.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
+      throw new ValidationError('Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+    }
+
+    this.alias = new CfnAlias(this, 'Resource', {
       name: this.aliasName,
       description: props.description,
       functionName: this.version.lambda.functionName,
@@ -184,14 +206,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency',
     }));
 
-    this.functionArn = this.getResourceArnAttribute(alias.ref, {
-      service: 'lambda',
-      resource: 'function',
-      resourceName: `${this.lambda.functionName}:${this.physicalName}`,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-
-    this.qualifier = extractQualifierFromArn(alias.ref);
+    this.qualifier = extractQualifierFromArn(this.alias.ref);
 
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       this.configureAsyncInvoke({
@@ -201,11 +216,6 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
         retryAttempts: props.retryAttempts,
       });
     }
-
-    // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
-    // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
-    // an implicit dependency on the resource.
-    this.functionName = `${this.stack.splitArn(this.functionArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!}:${this.aliasName}`;
   }
 
   public get aliasRef(): AliasReference {

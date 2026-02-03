@@ -6,8 +6,6 @@ import { App, Stack } from '../../core';
 import * as eks from '../lib';
 import { Cluster, KubernetesVersion } from '../lib';
 
-/* eslint-disable max-len */
-
 describe('service account', () => {
   describe('add Service Account', () => {
     test('should have unique resource name', () => {
@@ -327,6 +325,29 @@ describe('service account', () => {
       }, 0);
       // should not have pod identity association
       t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 0);
+    });
+  });
+
+  describe('Service Account with overwrite option', () => {
+    test('should pass overwrite to KubernetesManifest', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        overwriteServiceAccount: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Overwrite: true,
+      });
     });
   });
 });

@@ -1,7 +1,8 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { detectChangedTemplates } from './get-changed-files';
-import { runScan } from './check-intrinsics';
+import { preprocessTemplates } from './template-preprocessor';
+import { runCfnGuardValidation } from './cfn-guard-runner';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -53,65 +54,71 @@ function getInput(name: string, options?: { required?: boolean, default?: string
 }
 
 async function run(): Promise<void> {
-  const errors: string[] = [];
   let workingDir: string = './changed_templates';
+  let resolvedDir: string = './changed_templates_resolved';
+  const testResultsDir = './test-results';
 
   try {
     const ruleSetPath = getInput('rule_set_path', { default: './rules' });
     const baseSha = getInput('base_sha', { default: 'origin/main' });
     const headSha = getInput('head_sha', { default: 'HEAD' });
-    const outputFormat = getInput('output_format', { default: 'json' });
-    const showSummary = getInput('show_summary', { default: 'fail' });
-    setupWorkingDir(workingDir);
+    const enhanceXml = getInput('enhance_xml', { default: 'false' }) === 'true';
     
-    const filesChanged = await detectChangedTemplates(baseSha, headSha, workingDir);
-    if (!filesChanged) {
+    setupWorkingDir(workingDir);
+    setupWorkingDir(resolvedDir);
+    setupWorkingDir(testResultsDir);
+    
+    const fileMapping = await detectChangedTemplates(baseSha, headSha, workingDir);
+    if (fileMapping.size === 0) {
       core.info('No template files changed. Skipping validation.');
       return;
     }
 
     if (!ruleSetPath) throw new Error("Input 'rule_set_path' must be provided.");
 
-    core.info(`Running cfn-guard with rule set: ${ruleSetPath}`);
-    try {
-      await exec.exec('cfn-guard', [
-        'validate',
-        '--data', workingDir,
-        '--rules', ruleSetPath,
-        '--show-summary', showSummary,
-        '--output-format', outputFormat
-      ]);
-    } catch (err) {
-      const message = `cfn-guard validation failed: ${(err as Error).message}`;
-      core.warning(message);
-      errors.push(message);
-    }
+    // Preprocess templates (resolve intrinsics and normalize policies)
+    core.info('Preprocessing templates (resolving intrinsics and normalizing policies)');
+    const { files: processedFiles, mapping: resolvedMapping } = preprocessTemplates(workingDir, resolvedDir);
+    core.info(`Processed ${processedFiles.length} template(s)`);
 
-    core.info(`Running scanner for intrinsics`);
-    try {
-      const issuesFound = await runScan(workingDir);
-      if (issuesFound > 0) {
-        const msg = `Intrinsic scan found ${issuesFound} issue(s).`;
-        core.warning(msg);
-        core.setOutput('issues_found', issuesFound);
-        errors.push(msg);
-      }
-    } catch (err) {
-      const message = `Intrinsic scan failed: ${(err as Error).message}`;
-      core.warning(message);
-      errors.push(message);
-    }
+    // Generate XML output files
+    const staticXmlFile = path.join(testResultsDir, 'cfn-guard-static.xml');
+    const resolvedXmlFile = path.join(testResultsDir, 'cfn-guard-resolved.xml');
 
-    if (errors.length > 0) {
-      core.setFailed(`Action completed with issues: ${errors}`);
+    //Combine file mappings
+    const combinedMapping = new Map([...fileMapping, ...resolvedMapping]);
+
+
+    // Run CFN-Guard validation and generate XML
+    core.info(`Running cfn-guard (static) with rule set: ${ruleSetPath}`);
+    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static', combinedMapping, enhanceXml);
+
+    core.info(`Running cfn-guard (resolved) with rule set: ${ruleSetPath}`);
+    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved', combinedMapping, enhanceXml);
+
+    // Generate Summary Report
+    core.info('\n' + '='.repeat(60));
+    core.info('🛡️  SECURITY GUARDIAN SUMMARY REPORT');
+    core.info('='.repeat(60));
+    core.info(`📊 CFN-Guard (Static): ${staticPassed ? '✅ Passed' : '❌ Failed'}`);
+    core.info(`🔧 CFN-Guard (Resolved): ${resolvedPassed ? '✅ Passed' : '❌ Failed'}`);
+    core.info('='.repeat(60));
+
+    // Set outputs for GitHub Actions
+    core.setOutput('junit_files', `${staticXmlFile},${resolvedXmlFile}`);
+    core.setOutput('all_passed', staticPassed && resolvedPassed);
+
+    if (!staticPassed || !resolvedPassed) {
+      core.setFailed('Security validation failed. Check JUnit report for details.');
     } else {
-      core.info('All validations passed.');
+      core.info('🎉 All security validations passed!');
     }
 
   } catch (fatal) {
     core.setFailed(`Fatal error: ${(fatal as Error).message}`);
   } finally {
     cleanupWorkingDir(workingDir);
+    cleanupWorkingDir(resolvedDir);
   }
 }
 

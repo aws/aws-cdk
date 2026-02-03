@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import {
   Duration,
   CfnResource,
@@ -10,9 +11,9 @@ import {
   Reference,
   determineLatestNodeRuntimeName,
 } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-internal';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { Construct } from 'constructs';
 
 /**
  * Properties for a lambda function provider
@@ -40,17 +41,13 @@ export interface LambdaFunctionProviderProps {
  */
 class LambdaFunctionProvider extends Construct {
   /**
-   * The ARN of the lambda function which can be used
-   * as a serviceToken to a CustomResource
-   */
-  public readonly serviceToken: string;
-
-  /**
    * A Reference to the provider lambda exeuction role ARN
    */
   public readonly roleArn: Reference;
 
   private readonly policies: any[] = [];
+
+  private readonly handler: CfnResource;
 
   constructor(scope: Construct, id: string, props?: LambdaFunctionProviderProps) {
     super(scope, id);
@@ -118,13 +115,21 @@ class LambdaFunctionProvider extends Construct {
       };
     }
 
-    const handler = new CfnResource(this, 'Handler', {
+    this.handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: functionProperties,
     });
 
-    this.serviceToken = Token.asString(handler.getAtt('Arn'));
     this.roleArn = role.getAtt('Arn');
+  }
+
+  /**
+   * The ARN of the lambda function which can be used
+   * as a serviceToken to a CustomResource
+   */
+  @memoizedGetter
+  public get serviceToken(): string {
+    return Token.asString(this.handler.getAtt('Arn'));
   }
 
   public addPolicies(policies: any[]): void {
@@ -224,6 +229,7 @@ export class AssertionsProvider extends Construct {
    * as a serviceToken to a CustomResource
    */
   public readonly serviceToken: string;
+
   /**
    * A reference to the provider Lambda Function
    * execution Role ARN
@@ -300,6 +306,7 @@ export class AssertionsProvider extends Construct {
   /**
    * Grant a principal access to invoke the assertion provider
    * lambda function
+   * [disable-awslint:no-grants]
    *
    * @param principalArn the ARN of the principal that should be given
    *  permission to invoke the assertion provider

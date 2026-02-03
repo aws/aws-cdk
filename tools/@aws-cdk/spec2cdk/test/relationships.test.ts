@@ -1,15 +1,10 @@
 import { Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import { AstBuilder } from '../lib/cdk/ast';
-import { RELATIONSHIP_SERVICES } from '../lib/cdk/relationship-decider';
+import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
 let service: Service;
-
-// Only run these tests if we're rendering relationships for IAM
-const iamHasRelationships = RELATIONSHIP_SERVICES.includes('iam');
-const maybeTest = iamHasRelationships ? test : test.skip;
 
 beforeEach(() => {
   db = emptyDatabase();
@@ -22,7 +17,7 @@ beforeEach(() => {
   });
 });
 
-maybeTest('resource with relationship reference', () => {
+test('resource with relationship reference', () => {
   // Target resource
   const targetResource = db.allocate('resource', {
     name: 'Role',
@@ -53,14 +48,14 @@ maybeTest('resource with relationship reference', () => {
   });
   db.link('hasResource', service, sourceResource);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
+  const module = new AwsCdkLibBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('resource with multiple relationship references', () => {
+test('resource with multiple relationship references', () => {
   // Target resource 1
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -110,14 +105,14 @@ maybeTest('resource with multiple relationship references', () => {
   });
   db.link('hasResource', service, policyResource);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
+  const module = new AwsCdkLibBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('resource with nested relationship requiring flattening', () => {
+test('resource with nested relationship requiring flattening', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -159,14 +154,14 @@ maybeTest('resource with nested relationship requiring flattening', () => {
   db.link('hasResource', service, taskResource);
   db.link('usesType', taskResource, configType);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
+  const module = new AwsCdkLibBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('resource with array of nested properties with relationship', () => {
+test('resource with array of nested properties with relationship', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -208,14 +203,14 @@ maybeTest('resource with array of nested properties with relationship', () => {
   db.link('hasResource', service, resourceResource);
   db.link('usesType', resourceResource, permissionType);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
+  const module = new AwsCdkLibBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('resource with nested relationship with type history', () => {
+test('resource with nested relationship with type history', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -276,14 +271,14 @@ maybeTest('resource with nested relationship with type history', () => {
   db.link('usesType', jobResource, configType);
   db.link('usesType', jobResource, oldConfigType);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
+  const module = new AwsCdkLibBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('relationship have arns appear first in the constructor chain', () => {
+test('relationship have arns appear first in the constructor chain', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -298,9 +293,10 @@ maybeTest('relationship have arns appear first in the constructor chain', () => 
   });
   db.link('hasResource', service, roleResource);
 
-  // Type definition with relationship
-  const configType = db.allocate('typeDefinition', {
-    name: 'ExecutionConfig',
+  // Source resource with relationship
+  const sourceResource = db.allocate('resource', {
+    name: 'Function',
+    attributes: {},
     properties: {
       RoleArn: {
         type: { type: 'string' },
@@ -316,27 +312,15 @@ maybeTest('relationship have arns appear first in the constructor chain', () => 
         }],
       },
     },
+    cloudFormationType: 'AWS::IAM::Function',
   });
 
-  // Source resource with nested property
-  const taskResource = db.allocate('resource', {
-    name: 'Task',
-    attributes: {},
-    properties: {
-      ExecutionConfig: {
-        type: { type: 'ref', reference: { $ref: configType.$id } },
-      },
-    },
-    cloudFormationType: 'AWS::IAM::Task',
-  });
-  db.link('hasResource', service, taskResource);
-  db.link('usesType', taskResource, configType);
+  db.link('hasResource', service, sourceResource);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
+  const module = new AwsCdkLibBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
-  const chain = '"roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? props.roleArn';
-
+  const chain = 'this.roleArn = (props.roleArn as iamRefs.IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as iamRefs.IRoleRef)?.roleRef?.roleName ?? (props.roleArn as iamRefs.IRoleRef)?.roleRef?.otherPrimaryId ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")';
   expect(rendered).toContain(chain);
 });
