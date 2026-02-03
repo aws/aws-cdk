@@ -1,6 +1,6 @@
-import * as iam from '../../aws-iam';
-import { IResource } from '../../core';
-import { IEndpointRef } from '../../interfaces/generated/aws-sagemaker-interfaces.generated';
+import type * as iam from '../../aws-iam';
+import type { IResource } from '../../core';
+import type { IEndpointRef } from '../../interfaces/generated/aws-sagemaker-interfaces.generated';
 
 /**
  * The interface for a SageMaker Endpoint resource.

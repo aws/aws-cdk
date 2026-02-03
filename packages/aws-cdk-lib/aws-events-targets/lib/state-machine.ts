@@ -1,7 +1,8 @@
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as sfn from '../../aws-stepfunctions';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
+import type * as events from '../../aws-events';
+import type * as iam from '../../aws-iam';
+import type * as sfn from '../../aws-stepfunctions';
 
 /**
  * Customize the Step Functions State Machine target

@@ -12,10 +12,10 @@
  */
 
 import { Token } from 'aws-cdk-lib';
-import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
-import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import type { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { ValidationError } from '../validation-helpers';
-import { RuntimeCustomClaim } from './custom-claim';
+import type { RuntimeCustomClaim } from './custom-claim';
 
 /**
  * Abstract base class for runtime authorizer configurations.

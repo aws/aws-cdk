@@ -1,6 +1,6 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
-import { SpecDatabase } from '@aws-cdk/service-spec-types';
-import { IScope } from '@cdklabs/typewriter';
+import type { SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { IScope } from '@cdklabs/typewriter';
 import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 
 let db: SpecDatabase;
