@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-grant-access-with-type-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-grant-access-with-type"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-grant-access-with-type-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksgrantaccesswithtypeintegDefaultTestDeployAssert42F6BF4A"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
