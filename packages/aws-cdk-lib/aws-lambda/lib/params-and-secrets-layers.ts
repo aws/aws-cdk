@@ -1,6 +1,7 @@
-import { Construct, IConstruct } from 'constructs';
-import { IFunction } from './function-base';
-import { Token, Stack, Duration } from '../../core';
+import type { Construct, IConstruct } from 'constructs';
+import type { IFunction } from './function-base';
+import type { Duration } from '../../core';
+import { Token, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { RegionInfo, FactName } from '../../region-info';
 

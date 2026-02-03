@@ -1,7 +1,8 @@
 import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, Statistic } from '../../aws-cloudwatch';
+import type { Metric } from '../../aws-cloudwatch';
+import { Statistic } from '../../aws-cloudwatch';
 import { Vpc, EbsDeviceVolumeType, Port, SecurityGroup, SubnetType } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -9,7 +10,8 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, NodeType, TLSSecurityPolicy } from '../lib';
+import type { DomainProps, NodeOptions } from '../lib';
+import { Domain, EngineVersion, IpAddressType, NodeType, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -2081,6 +2083,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     'i8g.4xlarge.search',
     'r7gd.xlarge.search',
     'r8gd.medium.search',
+    'oi2.large.search',
   ])('error when %s instance type is specified with EBS enabled', (dataNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
@@ -2091,7 +2094,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD and R8GD instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD and OI2 instance types do not support EBS storage volumes./);
   });
 
   test.each([
@@ -2103,6 +2106,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     'i8g.4xlarge.search',
     'r7gd.xlarge.search',
     'r8gd.medium.search',
+    'oi2.large.search',
   ])('should not throw when %s instance type is specified without EBS enabled', (dataNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
@@ -2142,7 +2146,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
   test.each([
     'm5.large.search',
     'r5.large.search',
-  ])('error when any instance type other than R3, I3, R6GD, I4I, I4G, IM4GN or R7GD are specified without EBS enabled', (masterNodeInstanceType) => {
+  ])('error when any instance type other than R3, I3, R6GD, I4I, I4G, I8G, IM4GN, R7GD, R8GD or OI2 are specified without EBS enabled', (masterNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       ebs: {
@@ -2151,7 +2155,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       capacity: {
         masterNodeInstanceType,
       },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD or R8GD./);
+    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD or OI2./);
   });
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {

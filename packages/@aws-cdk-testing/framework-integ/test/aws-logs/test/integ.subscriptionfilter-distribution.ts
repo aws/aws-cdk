@@ -1,4 +1,5 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LogGroup, FilterPattern, Distribution } from 'aws-cdk-lib/aws-logs';
 import { KinesisDestination } from 'aws-cdk-lib/aws-logs-destinations';

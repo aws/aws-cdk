@@ -11,17 +11,20 @@
  *  and limitations under the License.
  */
 
-import { IResource, Resource } from 'aws-cdk-lib';
-import {
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
 import { ValidationError } from './validation-helpers';
 
@@ -219,8 +222,8 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    */
   protected _connections: ec2.Connections | undefined;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**

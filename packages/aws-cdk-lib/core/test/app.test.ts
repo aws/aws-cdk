@@ -4,9 +4,11 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { ContextProvider } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { CfnResource, DefaultStackSynthesizer, Stack, StackProps, Stage } from '../lib';
+import type { StackProps } from '../lib';
+import { CfnResource, DefaultStackSynthesizer, Stack, Stage } from '../lib';
 import { Annotations } from '../lib/annotations';
-import { App, AppProps } from '../lib/app';
+import type { AppProps } from '../lib/app';
+import { App } from '../lib/app';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({

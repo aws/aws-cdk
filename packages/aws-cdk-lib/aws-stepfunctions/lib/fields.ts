@@ -1,5 +1,6 @@
 import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, renderInExpression, jsonPathFromAny } from './private/json-path';
-import { Token, IResolvable, JsonNull, UnscopedValidationError } from '../../core';
+import type { IResolvable } from '../../core';
+import { Token, JsonNull, UnscopedValidationError } from '../../core';
 import { findJsonataExpressions } from './private/jsonata';
 
 /**

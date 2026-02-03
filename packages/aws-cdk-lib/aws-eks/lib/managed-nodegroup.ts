@@ -1,11 +1,18 @@
-import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
-import { CfnNodegroup, INodegroupRef, NodegroupReference } from './eks.generated';
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
-import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved, FeatureFlags, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster, IpFamily, AuthenticationMode } from './cluster';
+import type { INodegroupRef, NodegroupReference } from './eks.generated';
+import { CfnNodegroup } from './eks.generated';
+import type { ISecurityGroup, SubnetSelection } from '../../aws-ec2';
+import { InstanceType, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
+import type { IRole } from '../../aws-iam';
+import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Annotations, withResolved, FeatureFlags, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -406,18 +413,6 @@ export class Nodegroup extends Resource implements INodegroup {
     return new Import(scope, id);
   }
   /**
-   * ARN of the nodegroup
-   *
-   * @attribute
-   */
-  public readonly nodegroupArn: string;
-  /**
-   * Nodegroup name
-   *
-   * @attribute
-   */
-  public readonly nodegroupName: string;
-  /**
    * the Amazon EKS cluster resource
    *
    * @attribute ClusterName
@@ -431,6 +426,16 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly desiredSize: number;
   private readonly maxSize: number;
   private readonly minSize: number;
+  private readonly resource: CfnNodegroup;
+
+  @memoizedGetter
+  public get nodegroupName(): string {
+    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
+      return this.getResourceNameAttribute(this.resource.attrNodegroupName);
+    } else {
+      return this.getResourceNameAttribute(this.resource.ref);
+    }
+  }
 
   constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
@@ -595,18 +600,21 @@ export class Nodegroup extends Resource implements INodegroup {
         Node.of(this.cluster.albController).addDependency(this);
       }
     }
+    this.resource = resource;
+  }
 
-    this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
+  /**
+   * ARN of the nodegroup
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get nodegroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'eks',
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
-      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
-    } else {
-      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
-    }
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {

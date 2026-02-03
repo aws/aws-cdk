@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IdentityPoolReference, IIdentityPoolRef, IUserPool, IUserPoolClient } from '../../aws-cognito';
-import { Role, FederatedPrincipal, IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../aws-iam';
-import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
+import type { IdentityPoolReference, IIdentityPoolRef, IUserPool, IUserPoolClient } from '../../aws-cognito';
+import { CfnIdentityPool, CfnIdentityPoolRoleAttachment } from '../../aws-cognito';
+import type { IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../aws-iam';
+import { Role, FederatedPrincipal } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

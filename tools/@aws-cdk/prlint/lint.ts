@@ -1,11 +1,14 @@
-/* eslint-disable no-console */
+
 import * as path from 'path';
 import { CODE_BUILD_WORKFLOW_FILE, CODECOV_CHECKS, Exemption } from './constants';
-import { CheckRun, GitHubFile, GitHubPr, Review, sumChanges, summarizeRunConclusions } from './github';
-import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
+import type { CheckRun, GitHubFile, GitHubPr, Review } from './github';
+import { sumChanges, summarizeRunConclusions } from './github';
+import type { LinterActions } from './linter-base';
+import { mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
-import { PrPred, TestResult, ValidationCollector } from './results';
+import type { PrPred } from './results';
+import { TestResult, ValidationCollector } from './results';
 
 /**
  * This class provides functionality to run lint checks against a pull request, request changes with the lint failures
