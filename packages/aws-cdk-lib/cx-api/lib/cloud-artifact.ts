@@ -1,5 +1,6 @@
 import type { CloudAssembly } from './cloud-assembly';
-import { MetadataEntryResult, SynthesisMessage, SynthesisMessageLevel } from './metadata';
+import type { MetadataEntryResult, SynthesisMessage } from './metadata';
+import { SynthesisMessageLevel } from './metadata';
 import * as cxschema from '../../cloud-assembly-schema';
 import { CloudAssemblyError } from './private/error';
 

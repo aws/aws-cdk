@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { DestinationType, IDestination } from './destination';
-import { IFunction } from './function-base';
+import type { Construct } from 'constructs';
+import type { IDestination } from './destination';
+import { DestinationType } from './destination';
+import type { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
-import { Duration, Resource } from '../../core';
+import type { Duration } from '../../core';
+import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

@@ -469,15 +469,33 @@ const repository = new ecr.Repository(this, "TestRepository", {
 });
 const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
 
+// Optional: Create custom claims for additional validation
+const customClaims = [
+  agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+];
+
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
     userPool, // User Pool (required)
     [userPoolClient, anotherUserPoolClient], // User Pool Clients
+    ["audience1"], // Allowed Audiences (optional)
+    ["read", "write"], // Allowed Scopes (optional)
+    customClaims, // Custom claims (optional) - see Custom Claims Validation section
   ),
 });
 ```
+
+You can configure:
+
+- User Pool: The Cognito User Pool that issues JWT tokens
+- User Pool Clients: One or more Cognito User Pool App Clients that are allowed to access the runtime
+- Allowed audiences: Used to validate that the audiences specified in the Cognito token match or are a subset of the audiences specified in the AgentCore Runtime
+- Allowed scopes: Allow access only if the token contains at least one of the required scopes configured here
+- Custom claims: A set of rules to match specific claims in the incoming token against predefined values for validating JWT tokens
 
 #### JWT Authentication
 
@@ -495,12 +513,76 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingJWT(
     "https://example.com/.well-known/openid-configuration",  // Discovery URL (required)
     ["client1", "client2"],  // Allowed Client IDs (optional)
-    ["audience1"]           // Allowed Audiences (optional)
+    ["audience1"],           // Allowed Audiences (optional)
+    ["read", "write"],       // Allowed Scopes (optional)
+    // Custom claims (optional) - see Custom Claims Validation section below
   ),
 });
 ```
 
+You can configure:
+
+- Discovery URL: Enter the Discovery URL from your identity provider (e.g. Okta, Cognito, etc.), typically found in that provider's documentation. This allows your Agent or Tool to fetch login, downstream resource token, and verification settings.
+- Allowed audiences: This is used to validate that the audiences specified for the OAuth token matches or are a subset of the audiences specified in the AgentCore Runtime.
+- Allowed clients: This is used to validate that the public identifier of the client, as specified in the authorization token, is allowed to access the AgentCore Runtime.
+- Allowed scopes: Allow access only if the token contains at least one of the required scopes configured here.
+- Custom claims: A set of rules to match specific claims in the incoming token against predefined values for validating JWT tokens.
+
 **Note**: The discovery URL must end with `/.well-known/openid-configuration`.
+
+##### Custom Claims Validation
+
+Custom claims allow you to validate additional fields in JWT tokens beyond the standard audience, client, and scope validations. You can create custom claims using the `RuntimeCustomClaim` class:
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// String claim - validates that the claim exactly equals the specified value
+// Uses EQUALS operator automatically
+const departmentClaim = agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering');
+
+// String array claim with CONTAINS operator (default)
+// Validates that the claim array contains a specific string value
+// IMPORTANT: CONTAINS requires exactly one value in the array parameter
+const rolesClaim = agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin']);
+
+// String array claim with CONTAINS_ANY operator
+// Validates that the claim array contains at least one of the specified values
+// Use this when you want to check for multiple possible values
+const permissionsClaim = agentcore.RuntimeCustomClaim.withStringArrayValue(
+  'permissions',
+  ['read', 'write'],
+  agentcore.CustomClaimOperator.CONTAINS_ANY
+);
+
+// Use custom claims in authorizer configuration
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingJWT(
+    "https://example.com/.well-known/openid-configuration",
+    ["client1", "client2"],
+    ["audience1"],
+    ["read", "write"],
+    [departmentClaim, rolesClaim, permissionsClaim] // Custom claims
+  ),
+});
+```
+
+**Custom Claim Rules**:
+
+- **String claims**: Must use the `EQUALS` operator (automatically set). The claim value must exactly match the specified string.
+- **String array claims**: Can use `CONTAINS` (default) or `CONTAINS_ANY` operators:
+  - **`CONTAINS`**: Checks if the claim array contains a specific string value. **Requires exactly one value** in the array parameter. For example, `['admin']` will check if the token's claim array contains the string `'admin'`.
+  - **`CONTAINS_ANY`**: Checks if the claim array contains at least one of the provided string values. Use this when you want to validate against multiple possible values. For example, `['read', 'write']` will check if the token's claim array contains either `'read'` or `'write'`.
+
+**Example Use Cases**:
+
+- Use `CONTAINS` when you need to verify a user has a specific role: `RuntimeCustomClaim.withStringArrayValue('roles', ['admin'])`
+- Use `CONTAINS_ANY` when you need to verify a user has any of several permissions: `RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY)`
 
 #### OAuth Authentication
 
@@ -516,8 +598,11 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingOAuth(
-    "https://github.com/.well-known/openid-configuration",  
-    "oauth_client_123",  
+    "https://github.com/.well-known/openid-configuration",  // Discovery URL (required)
+    "oauth_client_123",  // OAuth Client ID (required)
+    ["audience1"],       // Allowed Audiences (optional)
+    ["openid", "profile"], // Allowed Scopes (optional)
+    // Custom claims (optional) - see Custom Claims Validation section
   ),
 });
 ```
@@ -1178,21 +1263,33 @@ your AgentCore gateway. By default, if not provided, the construct will create a
 **JSON Web Token (JWT)** – A secure and compact token used for authorization. After creating the JWT, you specify it as the authorization
 configuration when you create the gateway. You can create a JWT with any of the identity providers at Provider setup and configuration.
 
-You can configure a custom authorization provider using the `inboundAuthorizer` property with `GatewayAuthorizer.usingCustomJwt()`.
+You can configure a custom authorization provider using the `authorizerConfiguration` property with `GatewayAuthorizer.usingCustomJwt()`.
 You need to specify an OAuth discovery server and client IDs/audiences when you create the gateway. You can specify the following:
 
 - Discovery Url — String that must match the pattern ^.+/\.well-known/openid-configuration$ for OpenID Connect discovery URLs
 - At least one of the below options depending on the chosen identity provider.
 - Allowed audiences — List of allowed audiences for JWT tokens
 - Allowed clients — List of allowed client identifiers
+- Allowed scopes — List of allowed scopes for JWT tokens
+- Custom claims — Optional custom claim validations (see Custom Claims Validation section below)
 
 ```typescript fixture=default
+
+// Optional: Create custom claims (CustomClaimOperator and GatewayCustomClaim from agentcore)
+const customClaims = [
+  agentcore.GatewayCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+];
+
 const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
   authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
+    customClaims: customClaims, // Optional custom claims
   }),
 });
 ```
@@ -1234,6 +1331,31 @@ const oauthScopes = gateway.oauthScopes;
 // oauthScopes are in the format: ['{resourceServerId}/read', '{resourceServerId}/write']
 ```
 
+**Using Cognito User Pool Explicitly with Custom Claims** – You can also use an existing Cognito User Pool with custom claims:
+
+```typescript fixture=default
+declare const userPool: cognito.UserPool;
+declare const userPoolClient: cognito.UserPoolClient;
+
+// Optional: Create custom claims (CustomClaimOperator and GatewayCustomClaim from agentcore)
+const customClaims = [
+  agentcore.GatewayCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+];
+
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCognito({
+    userPool: userPool,
+    allowedClients: [userPoolClient],
+    allowedAudiences: ["audience1"],
+    allowedScopes: ["read", "write"],
+    customClaims: customClaims, // Optional custom claims
+  }),
+});
+```
+
 To authenticate with the gateway, request an access token using the client credentials flow and use it to call Gateway endpoints. For more information about the token endpoint, see [The token issuer endpoint](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html).
 
 The following is an example of a token request using curl:
@@ -1271,6 +1393,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
   kmsKey: encryptionKey,
   exceptionLevel: agentcore.GatewayExceptionLevel.DEBUG,
@@ -1301,6 +1424,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
   role: executionRole,
 });
@@ -1324,6 +1448,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
 });
 

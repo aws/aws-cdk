@@ -1,25 +1,28 @@
+import type { AwsIamConfig } from './data-source';
 import {
   DynamoDbDataSource,
   HttpDataSource,
   LambdaDataSource,
   NoneDataSource,
   RdsDataSource,
-  AwsIamConfig,
   ElasticsearchDataSource,
   OpenSearchDataSource,
   EventBridgeDataSource,
 } from './data-source';
-import { Resolver, ExtendedResolverProps } from './resolver';
-import { ITable } from '../../aws-dynamodb';
-import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
-import { IEventBus } from '../../aws-events';
-import { Grant, IGrantable } from '../../aws-iam';
-import { IFunction } from '../../aws-lambda';
-import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
-import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
-import { ISecret } from '../../aws-secretsmanager';
-import { ArnFormat, CfnResource, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
-import { IGraphQLApiRef, GraphQLApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { ExtendedResolverProps } from './resolver';
+import { Resolver } from './resolver';
+import type { ITable } from '../../aws-dynamodb';
+import type { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
+import type { IEventBus } from '../../aws-events';
+import type { IGrantable } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
+import type { IFunction } from '../../aws-lambda';
+import type { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
+import type { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
+import type { ISecret } from '../../aws-secretsmanager';
+import type { CfnResource, IResource } from '../../core';
+import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
+import type { IGraphQLApiRef, GraphQLApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Optional configuration for data sources

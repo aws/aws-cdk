@@ -1,8 +1,9 @@
-import { IConstruct, MetadataEntry } from 'constructs';
-import * as cloudformation from '../../../aws-cloudformation';
-import * as lambda from '../../../aws-lambda';
+import type { IConstruct, MetadataEntry } from 'constructs';
+import type * as cloudformation from '../../../aws-cloudformation';
+import type * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
-import { Aspects, IAspect, RemovalPolicy } from '../../../core/lib';
+import type { IAspect, RemovalPolicy } from '../../../core/lib';
+import { Aspects } from '../../../core/lib';
 import { mutatingAspectPrio32333 } from '../../../core/lib/private/aspect-prio';
 
 /* This is duplicated in @aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts */
