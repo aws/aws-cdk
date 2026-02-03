@@ -1,6 +1,6 @@
 import type { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import type { Duration, RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, Names, RemovalPolicies, Stack, ValidationError } from 'aws-cdk-lib/core';
+import { CustomResource, Names, Stack, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
@@ -200,9 +200,5 @@ export class HelmChart extends Construct {
         Atomic: atomic || undefined, // props are stringified so we encode “false” as undefined
       },
     });
-
-    if (props.removalPolicy) {
-      RemovalPolicies.of(this).apply(props.removalPolicy);
-    }
   }
 }

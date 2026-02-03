@@ -1,5 +1,5 @@
 import type { RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, RemovalPolicies, Stack, ValidationError } from 'aws-cdk-lib/core';
+import { CustomResource, Stack, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
@@ -106,9 +106,5 @@ export class KubernetesPatch extends Construct {
         PatchType: props.patchType ?? PatchType.STRATEGIC,
       },
     });
-
-    if (props.removalPolicy) {
-      RemovalPolicies.of(this).apply(props.removalPolicy);
-    }
   }
 }

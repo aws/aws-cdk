@@ -1,5 +1,5 @@
 import type { RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, Token, Duration, RemovalPolicies, ValidationError } from 'aws-cdk-lib/core';
+import { CustomResource, Token, Duration, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
@@ -96,10 +96,6 @@ export class KubernetesObjectValue extends Construct {
         TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),
       },
     });
-
-    if (props.removalPolicy) {
-      RemovalPolicies.of(this).apply(props.removalPolicy);
-    }
   }
 
   /**

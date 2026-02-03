@@ -1,5 +1,5 @@
 import type { RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, RemovalPolicies, Stack, ValidationError } from 'aws-cdk-lib/core';
+import { CustomResource, Stack, ValidationError } from 'aws-cdk-lib/core';
 import { Construct, Node } from 'constructs';
 import { AlbScheme } from './alb-controller';
 import type { ICluster } from './cluster';
@@ -169,10 +169,6 @@ export class KubernetesManifest extends Construct {
     });
 
     this.node.defaultChild = customResource.node.defaultChild;
-
-    if (props.removalPolicy) {
-      RemovalPolicies.of(this).apply(props.removalPolicy);
-    }
   }
 
   /**
