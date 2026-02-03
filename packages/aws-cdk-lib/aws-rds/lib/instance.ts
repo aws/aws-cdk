@@ -1228,7 +1228,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
-      validateAdditionalStorageVolumes(this, engineType, props.additionalStorageVolumes);
+    validateAdditionalStorageVolumes(this, engineType, props.additionalStorageVolumes);
 
     // only Oracle and SQL Server require the import and export Roles to be the same
     const combineRoles = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
