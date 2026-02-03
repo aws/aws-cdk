@@ -278,6 +278,45 @@ describe('function hash', () => {
 
       expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
     });
+
+    test('adding layer to one function does not affect hash of unrelated functions', () => {
+      const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+      const stack = new Stack(app, 'Stack');
+
+      // Create a layer
+      const layer = new lambda.LayerVersion(stack, 'Layer', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+        compatibleRuntimes: [THE_RUNTIME],
+      });
+
+      // Create function 1 without any layers
+      const fn1 = new lambda.Function(stack, 'Function1', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+      });
+
+      // Calculate hash before adding layer to another function
+      const fn1HashBefore = calculateFunctionHash(fn1);
+
+      // Create function 2 with the layer
+      const fn2 = new lambda.Function(stack, 'Function2', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('bar'),
+        handler: 'index.handler',
+        layers: [layer],
+      });
+
+      // Calculate hash after adding layer to another function
+      const fn1HashAfter = calculateFunctionHash(fn1);
+      const fn2Hash = calculateFunctionHash(fn2);
+
+      // Function 1's hash should not change when function 2 adds a layer
+      expect(fn1HashBefore).toEqual(fn1HashAfter);
+
+      // Function 2's hash should include the layer
+      expect(fn2Hash).not.toEqual(fn1HashAfter);
+    });
   });
 
   describe('impact of env variables order on hash', () => {
