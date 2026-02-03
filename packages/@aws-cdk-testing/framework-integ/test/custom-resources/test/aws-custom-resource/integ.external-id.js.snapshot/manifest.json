@@ -14,13 +14,13 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616",
-              "id": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616",
+              "path": "asset.92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
+              "id": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
               "packaging": "zip",
-              "sourceHash": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616",
-              "s3BucketParameter": "AssetParameters89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616S3BucketA9BB5940",
-              "s3KeyParameter": "AssetParameters89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616S3VersionKey75AB9824",
-              "artifactHashParameter": "AssetParameters89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616ArtifactHash74F188A4"
+              "sourceHash": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
+              "s3BucketParameter": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268S3Bucket7B30F1E5",
+              "s3KeyParameter": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268S3VersionKeyD9D1CE3A",
+              "artifactHashParameter": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268ArtifactHash5E4FB476"
             }
           }
         ],
@@ -258,22 +258,22 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/aws-custom-resource-external-id-test/AssetParameters/89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616/S3Bucket": [
+        "/aws-custom-resource-external-id-test/AssetParameters/92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616S3BucketA9BB5940"
+            "data": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268S3Bucket7B30F1E5"
           }
         ],
-        "/aws-custom-resource-external-id-test/AssetParameters/89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616/S3VersionKey": [
+        "/aws-custom-resource-external-id-test/AssetParameters/92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616S3VersionKey75AB9824"
+            "data": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268S3VersionKeyD9D1CE3A"
           }
         ],
-        "/aws-custom-resource-external-id-test/AssetParameters/89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616/ArtifactHash": [
+        "/aws-custom-resource-external-id-test/AssetParameters/92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616ArtifactHash74F188A4"
+            "data": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268ArtifactHash5E4FB476"
           }
         ]
       },
@@ -587,6 +587,10 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
+          },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,

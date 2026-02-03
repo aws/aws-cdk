@@ -1,4 +1,5 @@
-import { spawnSync, SpawnSyncOptions } from 'child_process';
+import type { SpawnSyncOptions } from 'child_process';
+import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Runtime } from '../../aws-lambda';

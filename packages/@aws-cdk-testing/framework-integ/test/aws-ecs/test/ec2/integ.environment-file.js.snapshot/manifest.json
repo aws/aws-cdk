@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca4277020482d74726ec24a2144f1fd618c0e05c2ebb6165afac499d3cef4bf9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/70269ce943c0314ec15f5156127afa19026cdbd73ed3671f3b3de5e98dd3610e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -515,12 +515,6 @@
             }
           }
         ],
-        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -707,12 +701,6 @@
             }
           }
         ],
-        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -880,12 +868,6 @@
             }
           }
         ],
-        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -952,12 +934,6 @@
             }
           }
         ],
-        "/aws-ecs-integ/ExecutionRole/ImportExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-ecs-integ/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -983,12 +959,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/aws-ecs-integ/TaskDefinition/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-ecs-integ/TaskDefinition/TaskRole/Resource": [
@@ -1167,12 +1137,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
@@ -1822,5 +1786,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

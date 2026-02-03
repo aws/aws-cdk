@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { createRole } from './common';
-import * as autoscaling from '../../aws-autoscaling';
-import * as sqs from '../../aws-sqs';
+import type * as autoscaling from '../../aws-autoscaling';
+import type * as sqs from '../../aws-sqs';
 
 /**
  * Use an SQS queue as a hook target

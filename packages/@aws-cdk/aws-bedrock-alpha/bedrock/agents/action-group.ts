@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
-import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import { ActionGroupExecutor } from './api-executor';
-import { ApiSchema } from './api-schema';
-import { FunctionSchema } from './function-schema';
+import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import type { ActionGroupExecutor } from './api-executor';
+import type { ApiSchema } from './api-schema';
+import type { FunctionSchema } from './function-schema';
 import { ValidationError } from './validation-helpers';
 
 /******************************************************************************

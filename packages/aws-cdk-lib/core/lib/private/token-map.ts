@@ -3,8 +3,8 @@ import {
   END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS,
 } from './encoding';
 import { UnscopedValidationError } from '../errors';
-import { IResolvable } from '../resolvable';
-import { TokenizedStringFragments } from '../string-fragments';
+import type { IResolvable } from '../resolvable';
+import type { TokenizedStringFragments } from '../string-fragments';
 import { isResolvableObject, Token } from '../token';
 
 const glob = global as any;

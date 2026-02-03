@@ -1,14 +1,18 @@
-import { Construct } from 'constructs';
-import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
+import type { Construct } from 'constructs';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
+import type { IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
+import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
-import { ISecurityGroup, SecurityGroup } from './security-group';
+import type { ISecurityGroup } from './security-group';
+import { SecurityGroup } from './security-group';
 import { allRouteTableIds, flatten } from './util';
-import { ISubnet, IVpc, SubnetSelection } from './vpc';
+import type { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Aws, ContextProvider, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

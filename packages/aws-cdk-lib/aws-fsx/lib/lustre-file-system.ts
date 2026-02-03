@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
-import { DailyAutomaticBackupStartTime } from './daily-automatic-backup-start-time';
-import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem, StorageType } from './file-system';
+import type { Construct } from 'constructs';
+import type { DailyAutomaticBackupStartTime } from './daily-automatic-backup-start-time';
+import type { FileSystemAttributes, FileSystemProps, IFileSystem } from './file-system';
+import { FileSystemBase, StorageType } from './file-system';
 import { CfnFileSystem } from './fsx.generated';
-import { LustreMaintenanceTime } from './maintenance-time';
-import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
+import type { LustreMaintenanceTime } from './maintenance-time';
+import type { ISecurityGroup, ISubnet } from '../../aws-ec2';
+import { Connections, Port, SecurityGroup } from '../../aws-ec2';
 import { Aws, Duration, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
