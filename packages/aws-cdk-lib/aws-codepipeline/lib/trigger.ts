@@ -1,5 +1,5 @@
-import { IAction } from './action';
-import { CfnPipeline } from './codepipeline.generated';
+import type { IAction } from './action';
+import type { CfnPipeline } from './codepipeline.generated';
 import { validateTriggers } from './private/validation';
 
 /**

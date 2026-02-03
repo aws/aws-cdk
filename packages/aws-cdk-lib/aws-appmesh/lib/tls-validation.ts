@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnVirtualNode } from './appmesh.generated';
-import * as acmpca from '../../aws-acmpca';
+import type { Construct } from 'constructs';
+import type { CfnVirtualNode } from './appmesh.generated';
+import type * as acmpca from '../../aws-acmpca';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
 /**

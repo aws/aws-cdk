@@ -1,10 +1,11 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnInput } from 'aws-cdk-lib/aws-iotevents';
-import { Resource, IResource, Aws } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, Aws } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Represents an AWS IoT Events input.

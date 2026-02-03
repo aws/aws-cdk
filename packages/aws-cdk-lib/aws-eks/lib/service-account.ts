@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { CfnPodIdentityAssociation, FargateCluster } from './index';
 import { KubernetesManifest } from './k8s-manifest';
+import type { AddToPrincipalPolicyResult, IPrincipal, IRole, PrincipalPolicyFragment } from '../../aws-iam';
 import {
-  AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
+  OpenIdConnectPrincipal, PolicyStatement, Role,
   ServicePrincipal,
 } from '../../aws-iam';
 import { CfnJson, Names } from '../../core';

@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { DeployTimeSubstitutedFile } from 'aws-cdk-lib/aws-s3-deployment';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Integration test for DeployTimeSubstitutedFile with custom execution role:

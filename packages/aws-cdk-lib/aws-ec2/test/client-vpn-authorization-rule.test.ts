@@ -1,7 +1,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { App, Stack } from '../../core';
-import { Connections, IClientVpnEndpoint } from '../lib';
+import type { IClientVpnEndpoint } from '../lib';
+import { Connections } from '../lib';
 import { ClientVpnAuthorizationRule } from '../lib/client-vpn-authorization-rule';
 
 let stack: Stack;

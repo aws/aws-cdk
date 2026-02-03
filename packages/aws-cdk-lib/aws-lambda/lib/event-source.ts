@@ -1,4 +1,4 @@
-import { IFunction } from './function-base';
+import type { IFunction } from './function-base';
 
 /**
  * An abstract class which represents an AWS Lambda event source.

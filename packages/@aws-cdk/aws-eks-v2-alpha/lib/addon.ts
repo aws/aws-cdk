@@ -1,11 +1,12 @@
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Resource, Stack, Fn } from 'aws-cdk-lib/core';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Resource, Stack, Fn } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { Construct } from 'constructs';
+import type { ICluster } from './cluster';
 
 /**
  * Represents an Amazon EKS Add-On.

@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { CfnCodeSigningConfig, CodeSigningConfigReference, ICodeSigningConfigRef } from './lambda.generated';
-import { ISigningProfile } from '../../aws-signer';
-import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import type { Construct } from 'constructs';
+import type { CodeSigningConfigReference, ICodeSigningConfigRef } from './lambda.generated';
+import { CfnCodeSigningConfig } from './lambda.generated';
+import type { ISigningProfile } from '../../aws-signer';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
