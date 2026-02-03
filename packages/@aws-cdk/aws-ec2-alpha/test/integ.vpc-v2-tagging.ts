@@ -30,7 +30,7 @@ const routeTable = new RouteTable(stack, 'TestRouteTable', {
 
 const subnet = new SubnetV2(stack, 'testsubnet', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'CDKIntegTestSubnet',
@@ -53,7 +53,7 @@ const natgw = vpc.addNatGateway({
 natgw.node.addDependency(vpnGateway);
 
 const ipam = new Ipam(stack, 'IpamIntegTest', {
-  operatingRegions: ['us-west-2'],
+  operatingRegions: [cdk.Stack.of(stack).region],
   ipamName: 'CDKIpamTestTag',
 });
 

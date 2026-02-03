@@ -74,7 +74,6 @@ class RequestorStack extends cdk.Stack {
       // Replace VPC Id before running integ test again
       vpcId: 'vpc-09b9235d8a3195ba3',
       vpcCidrBlock: '10.0.0.0/16',
-      region: 'us-east-1',
       ownerAccountId: acceptorAccount,
     });
 
@@ -98,14 +97,12 @@ class RequestorStack extends cdk.Stack {
 const acceptorStack = new AcceptorStack(app, 'acceptor-stack', {
   env: {
     account: acceptorAccount,
-    region: 'us-east-1',
   },
 });
 
 const requestorStack = new RequestorStack(app, 'requestor-stack', {
   env: {
     account: account,
-    region: 'us-east-1',
   },
 });
 
