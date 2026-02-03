@@ -1,6 +1,6 @@
 import { Duration, UnscopedValidationError } from '../../../core';
-import { MathExpression, SearchExpression } from '../metric';
-import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from '../metric-types';
+import type { MathExpression, SearchExpression } from '../metric';
+import type { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from '../metric-types';
 
 const METRICKEY_SYMBOL = Symbol('@aws-cdk/aws-cloudwatch.MetricKey');
 

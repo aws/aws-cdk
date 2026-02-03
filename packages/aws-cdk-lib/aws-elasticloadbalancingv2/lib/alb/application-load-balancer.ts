@@ -1,22 +1,26 @@
-import { Construct } from 'constructs';
-import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
+import type { Construct } from 'constructs';
+import type { BaseApplicationListenerProps } from './application-listener';
+import { ApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { PolicyStatement } from '../../../aws-iam/lib/policy-statement';
 import { ServicePrincipal } from '../../../aws-iam/lib/principals';
-import * as s3 from '../../../aws-s3';
+import type * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { CfnResource, Duration, Lazy, Names, Resource, Stack, Token } from '../../../core';
+import type { Duration } from '../../../core';
+import { CfnResource, Lazy, Names, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import { ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
-import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
-import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
+import type { ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
+import type { BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import { BaseLoadBalancer } from '../shared/base-load-balancer';
+import type { DesyncMitigationMode } from '../shared/enums';
+import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
 /**

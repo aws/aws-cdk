@@ -1,12 +1,13 @@
-import { Construct } from 'constructs';
-import { IHostedZone } from './hosted-zone-ref';
+import type { Construct } from 'constructs';
+import type { IHostedZone } from './hosted-zone-ref';
 import { CfnKeySigningKey } from './route53.generated';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Resource, IResource, Lazy, Names } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { IResource } from '../../core';
+import { Resource, Lazy, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IKeySigningKeyRef, KeySigningKeyReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
+import type { IKeySigningKeyRef, KeySigningKeyReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 /**
  * Properties for constructing a Key Signing Key.

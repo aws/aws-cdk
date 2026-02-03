@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import { Construct } from 'constructs';
-import { ImageProps } from '../image';
-import { ImagePipelineProps } from '../image-pipeline';
-import { WorkflowConfiguration } from '../workflow';
+import type * as logs from 'aws-cdk-lib/aws-logs';
+import type { Construct } from 'constructs';
+import type { ImageProps } from '../image';
+import type { ImagePipelineProps } from '../image-pipeline';
+import type { WorkflowConfiguration } from '../workflow';
 
 /**
  * Returns the default execution role policy, for auto-generated execution roles.

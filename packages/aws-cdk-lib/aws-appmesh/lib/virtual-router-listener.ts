@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { CfnVirtualRouter } from './appmesh.generated';
+import type { Construct } from 'constructs';
+import type { CfnVirtualRouter } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 
 /**

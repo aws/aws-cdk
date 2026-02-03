@@ -1,4 +1,4 @@
-import * as appscaling from '../../aws-applicationautoscaling';
+import type * as appscaling from '../../aws-applicationautoscaling';
 
 /**
  * Interface for scalable attributes

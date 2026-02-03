@@ -1,6 +1,8 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IRole, PolicyStatement } from '../../aws-iam';
-import { IScheduleTarget } from '../../aws-scheduler';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IRole } from '../../aws-iam';
+import { PolicyStatement } from '../../aws-iam';
+import type { IScheduleTarget } from '../../aws-scheduler';
 import { Annotations, Aws, Token, UnscopedValidationError } from '../../core';
 import { awsSdkToIamAction } from '../../custom-resources/lib/helpers-internal';
 

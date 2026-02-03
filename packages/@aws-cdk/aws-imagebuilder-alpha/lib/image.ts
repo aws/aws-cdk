@@ -1,15 +1,16 @@
 import * as cdk from 'aws-cdk-lib';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
+import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImage } from 'aws-cdk-lib/aws-imagebuilder';
-import * as logs from 'aws-cdk-lib/aws-logs';
+import type * as logs from 'aws-cdk-lib/aws-logs';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { BaseContainerImage, BaseImage } from './base-image';
-import { IDistributionConfiguration } from './distribution-configuration';
-import { IInfrastructureConfiguration, InfrastructureConfiguration } from './infrastructure-configuration';
+import type { IDistributionConfiguration } from './distribution-configuration';
+import type { IInfrastructureConfiguration } from './infrastructure-configuration';
+import { InfrastructureConfiguration } from './infrastructure-configuration';
 import { LATEST_VERSION } from './private/constants';
 import {
   buildImageScanningConfiguration,
@@ -17,8 +18,8 @@ import {
   buildWorkflows,
 } from './private/image-and-pipeline-props-helper';
 import { defaultExecutionRolePolicy, getExecutionRole } from './private/policy-helper';
-import { IRecipeBase } from './recipe-base';
-import { WorkflowConfiguration } from './workflow';
+import type { IRecipeBase } from './recipe-base';
+import type { WorkflowConfiguration } from './workflow';
 
 const IMAGE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Image');
 

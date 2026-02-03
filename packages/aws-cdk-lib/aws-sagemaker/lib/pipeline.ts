@@ -1,6 +1,6 @@
-import { Grant, IGrantable } from '../../aws-iam';
-import { IResource } from '../../core';
-import { IPipelineRef } from '../../interfaces/generated/aws-sagemaker-interfaces.generated';
+import type { Grant, IGrantable } from '../../aws-iam';
+import type { IResource } from '../../core';
+import type { IPipelineRef } from '../../interfaces/generated/aws-sagemaker-interfaces.generated';
 
 /**
  * The interface for a SageMaker Pipeline resource.

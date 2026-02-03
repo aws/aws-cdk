@@ -1,6 +1,6 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IQueue } from 'aws-cdk-lib/aws-sqs';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IQueue } from 'aws-cdk-lib/aws-sqs';
 
 /**
  * SQS target properties.

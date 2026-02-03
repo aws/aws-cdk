@@ -1,11 +1,12 @@
 import * as crypto from 'crypto';
-import { Construct } from 'constructs';
-import { Code } from './code';
+import type { Construct } from 'constructs';
+import type { Code } from './code';
 import { Runtime, RuntimeFamily } from './runtime';
-import { Schedule } from './schedule';
+import type { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
-import { Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
+import type { MetricOptions, MetricProps } from '../../aws-cloudwatch';
+import { Metric } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';

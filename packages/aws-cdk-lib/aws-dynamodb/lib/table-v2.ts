@@ -1,37 +1,44 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
-import { Billing } from './billing';
-import { Capacity } from './capacity';
+import type { Billing } from './billing';
+import type { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
-import { TableEncryptionV2 } from './encryption';
+import type { TableEncryptionV2 } from './encryption';
 
-import {
+import type {
   Attribute,
-  BillingMode,
   LocalSecondaryIndexProps,
-  ProjectionType,
   SecondaryIndexProps,
-  StreamViewType,
   PointInTimeRecoverySpecification,
   TableClass,
   WarmThroughput,
-  MultiRegionConsistency,
   ContributorInsightsSpecification,
-  validateContributorInsights,
   KeySchema,
+} from './shared';
+import {
+  BillingMode,
+  ProjectionType,
+  StreamViewType,
+  MultiRegionConsistency,
+  validateContributorInsights,
   parseKeySchema,
 } from './shared';
-import { ITableV2, TableBaseV2 } from './table-v2-base';
-import { AddToResourcePolicyResult, PolicyDocument, PolicyStatement } from '../../aws-iam';
-import { IStream } from '../../aws-kinesis';
-import { IKey, Key } from '../../aws-kms';
+import type { ITableV2 } from './table-v2-base';
+import { TableBaseV2 } from './table-v2-base';
+import type { AddToResourcePolicyResult, PolicyStatement } from '../../aws-iam';
+import { PolicyDocument } from '../../aws-iam';
+import type { IStream } from '../../aws-kinesis';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
+import type {
+  CfnTag,
+  RemovalPolicy,
+} from '../../core';
 import {
   ArnFormat,
-  CfnTag,
   FeatureFlags,
   Lazy,
   PhysicalName,
-  RemovalPolicy,
   Stack,
   TagManager,
   TagType,

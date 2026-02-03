@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { IQueue, QueueAttributes, QueueBase, QueueEncryption } from './queue-base';
+import type { Construct } from 'constructs';
+import type { IQueue, QueueAttributes } from './queue-base';
+import { QueueBase, QueueEncryption } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateQueueProps, validateRedriveAllowPolicy } from './validate-queue-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
+import type { Duration } from '../../core';
+import { RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

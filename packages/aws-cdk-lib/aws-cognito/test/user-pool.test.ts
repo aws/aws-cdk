@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';

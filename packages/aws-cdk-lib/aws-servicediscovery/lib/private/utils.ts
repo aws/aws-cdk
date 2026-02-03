@@ -1,4 +1,5 @@
-import { INamespace, NamespaceType } from '../namespace';
+import type { INamespace } from '../namespace';
+import { NamespaceType } from '../namespace';
 import { DiscoveryType } from '../service';
 
 export function defaultDiscoveryType(namespace : INamespace): DiscoveryType {

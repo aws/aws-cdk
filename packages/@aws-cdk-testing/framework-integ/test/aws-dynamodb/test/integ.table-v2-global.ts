@@ -1,8 +1,9 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack, Tags } from 'aws-cdk-lib';
 import { AttributeType, Billing, Capacity, TableV2, TableClass, TableEncryptionV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class TestStack extends Stack {
   public constructor(scope: Construct, id: string, props: StackProps) {

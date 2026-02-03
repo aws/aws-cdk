@@ -1,7 +1,7 @@
-import * as ka from 'aws-cdk-lib/aws-kinesisanalytics';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as ka from 'aws-cdk-lib/aws-kinesisanalytics';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * The return type of `ApplicationCode.bind`. This represents

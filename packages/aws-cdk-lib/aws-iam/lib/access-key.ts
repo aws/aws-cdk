@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { AccessKeyReference, CfnAccessKey, IAccessKeyRef } from './iam.generated';
-import { IUser } from './user';
-import { IResource, Resource, SecretValue } from '../../core';
+import type { Construct } from 'constructs';
+import type { AccessKeyReference, IAccessKeyRef } from './iam.generated';
+import { CfnAccessKey } from './iam.generated';
+import type { IUser } from './user';
+import type { IResource } from '../../core';
+import { Resource, SecretValue } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

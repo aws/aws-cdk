@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
-import * as logs from '../../aws-logs';
+import type * as firehose from '../../aws-kinesisfirehose';
+import type * as logs from '../../aws-logs';
 import { Stack } from '../../core';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Customize the Amazon Data Firehose Logs Destination

@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import { TaskDefinition } from '../base/task-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
+import type { Construct } from 'constructs';
+import type { TaskDefinition } from '../base/task-definition';
+import type { CfnTaskDefinition } from '../ecs.generated';
 
 /**
  * The base class for proxy configurations.

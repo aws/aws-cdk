@@ -1,5 +1,5 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as EKS from '@aws-sdk/client-eks';
+
+import type * as EKS from '@aws-sdk/client-eks';
 import { ResourceHandler } from './common';
 
 const MAX_NAME_LEN = 63;

@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
+import type { IConnectable, Instance, ISecurityGroup, IVpc, SelectedSubnets, SubnetSelection } from '../../aws-ec2';
 import {
-  Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
-  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
+  Connections, Peer, Port,
+  SecurityGroup, SubnetType,
 } from '../../aws-ec2';
-import { Duration, Lazy, Resource, IResource } from '../../core';
+import type { IResource } from '../../core';
+import { Duration, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { aws_elasticloadbalancing } from '../../interfaces';
+import type { aws_elasticloadbalancing } from '../../interfaces';
 
 /**
  * Represents a load balancer

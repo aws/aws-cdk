@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import { IEngine } from './engine';
-import { EngineVersion } from './engine-version';
-import { IOptionGroup, OptionGroup } from './option-group';
-import * as iam from '../../aws-iam';
+import type { Construct } from 'constructs';
+import type { IEngine } from './engine';
+import type { EngineVersion } from './engine-version';
+import type { IOptionGroup } from './option-group';
+import { OptionGroup } from './option-group';
+import type * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ValidationError } from '../../core/lib/errors';
 

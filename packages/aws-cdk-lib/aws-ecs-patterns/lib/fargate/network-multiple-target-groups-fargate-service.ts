@@ -1,13 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
-import { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import type { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags, ValidationError } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { NetworkMultipleTargetGroupsServiceBaseProps } from '../base/network-multiple-target-groups-service-base';
 import {
   NetworkMultipleTargetGroupsServiceBase,
-  NetworkMultipleTargetGroupsServiceBaseProps,
 } from '../base/network-multiple-target-groups-service-base';
 
 /**

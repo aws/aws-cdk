@@ -1,8 +1,8 @@
-import { Endpoint } from './endpoint';
-import { IConnectable, ISecurityGroup } from '../../aws-ec2';
-import { ISecretAttachmentTarget } from '../../aws-secretsmanager';
-import { IResource } from '../../core';
-import { IDBClusterRef } from '../../interfaces/generated/aws-docdb-interfaces.generated';
+import type { Endpoint } from './endpoint';
+import type { IConnectable, ISecurityGroup } from '../../aws-ec2';
+import type { ISecretAttachmentTarget } from '../../aws-secretsmanager';
+import type { IResource } from '../../core';
+import type { IDBClusterRef } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
 /**
  * Create a clustered database with a given number of instances.

@@ -1,5 +1,6 @@
-import { IResource, Resource } from '../../core';
-import { IApiRef, ApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
+import type { IApiRef, ApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Interface for an API

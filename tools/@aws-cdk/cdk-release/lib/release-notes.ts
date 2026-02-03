@@ -1,8 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import parseChangelog = require('changelog-parser');
-import { WriteFileOpts, writeFile } from './private/files';
-import { debugObject, LoggingOptions } from './private/print';
-import { Versions } from './types';
+import type { WriteFileOpts } from './private/files';
+import { writeFile } from './private/files';
+import type { LoggingOptions } from './private/print';
+import { debugObject } from './private/print';
+import type { Versions } from './types';
 import { readVersion } from './versions';
 
 export interface ReleaseNotesOpts {

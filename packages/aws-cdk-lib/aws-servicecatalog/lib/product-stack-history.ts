@@ -3,8 +3,8 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
 import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
-import { CloudFormationProductVersion } from './product';
-import { ProductStack } from './product-stack';
+import type { CloudFormationProductVersion } from './product';
+import type { ProductStack } from './product-stack';
 import { Names, ValidationError } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

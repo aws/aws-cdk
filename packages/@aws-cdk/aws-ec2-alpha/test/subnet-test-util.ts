@@ -1,8 +1,8 @@
-import * as cdk from 'aws-cdk-lib';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { AddressFamily } from '../lib';
+import type * as cdk from 'aws-cdk-lib';
+import type { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import type { AddressFamily } from '../lib';
 import * as subnet from '../lib/subnet-v2';
-import * as vpc from '../lib/vpc-v2';
+import type * as vpc from '../lib/vpc-v2';
 
 export function createTestSubnet(
   stack: cdk.Stack,

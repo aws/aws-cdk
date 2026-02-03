@@ -1,4 +1,5 @@
-import { AssertionRequest, AssertionResult, ExpectedResult } from '../../../../lib/assertions';
+import type { AssertionRequest, AssertionResult } from '../../../../lib/assertions';
+import { ExpectedResult } from '../../../../lib/assertions';
 import { Match } from '../../../../lib/assertions/match';
 import { AssertionHandler } from '../../../../lib/assertions/providers/lambda-handler/assertion';
 

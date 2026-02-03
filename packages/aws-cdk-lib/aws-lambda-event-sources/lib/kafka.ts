@@ -1,12 +1,14 @@
 import { Construct } from 'constructs';
-import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
-import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
+import type { BaseStreamEventSourceProps } from './stream';
+import { StreamEventSource } from './stream';
+import type { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Stack, Names, Annotations, UnscopedValidationError, ValidationError, Duration } from '../../core';
+import type { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration } from '../../core';
+import { Stack, Names, Annotations, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
 /**

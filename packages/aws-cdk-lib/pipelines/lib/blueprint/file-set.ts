@@ -1,4 +1,4 @@
-import { Step } from './step';
+import type { Step } from './step';
 import { UnscopedValidationError } from '../../../core';
 
 /**

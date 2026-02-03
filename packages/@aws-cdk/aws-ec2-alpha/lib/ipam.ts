@@ -2,7 +2,7 @@ import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.

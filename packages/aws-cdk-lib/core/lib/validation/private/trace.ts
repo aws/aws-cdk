@@ -1,4 +1,4 @@
-import { ConstructTree, ConstructTrace } from './construct-tree';
+import type { ConstructTree, ConstructTrace } from './construct-tree';
 
 const STARTER_LINE = '└── ';
 const VERTICAL_LINE = '│';

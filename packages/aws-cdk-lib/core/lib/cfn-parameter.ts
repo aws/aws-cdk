@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
 import { ValidationError } from './errors';
 import { CfnReference } from './private/cfn-reference';
-import { IResolvable, IResolveContext } from './resolvable';
+import type { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
 import { ResolutionTypeHint } from './type-hints';
 

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as gamelift from '../lib';
 
 class TestStack extends cdk.Stack {

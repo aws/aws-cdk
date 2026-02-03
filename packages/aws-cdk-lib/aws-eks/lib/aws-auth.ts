@@ -1,8 +1,10 @@
-import { Construct, IConstruct } from 'constructs';
-import { AwsAuthMapping } from './aws-auth-mapping';
-import { Cluster, AuthenticationMode } from './cluster';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { AwsAuthMapping } from './aws-auth-mapping';
+import type { Cluster } from './cluster';
+import { AuthenticationMode } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
-import * as iam from '../../aws-iam';
+import type * as iam from '../../aws-iam';
 import { Lazy, Stack, ValidationError } from '../../core';
 
 /**

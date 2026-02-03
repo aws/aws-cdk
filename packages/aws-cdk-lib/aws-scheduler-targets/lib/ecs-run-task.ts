@@ -1,8 +1,10 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
 import * as ec2 from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
-import { IRole, PolicyStatement } from '../../aws-iam';
-import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
+import type { IRole } from '../../aws-iam';
+import { PolicyStatement } from '../../aws-iam';
+import type { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
 import { Lazy, ValidationError } from '../../core';
 
 /**

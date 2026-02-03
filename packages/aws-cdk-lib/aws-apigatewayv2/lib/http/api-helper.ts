@@ -1,4 +1,4 @@
-import { IHttpApiRef } from './api';
+import type { IHttpApiRef } from './api';
 import { ArnFormat, Stack, Token, ValidationError } from '../../../core';
 
 /**

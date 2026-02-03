@@ -1,8 +1,9 @@
-import { BaseLogDriverProps } from './base-log-driver';
-import { Duration, SecretValue, Token, UnscopedValidationError } from '../../../core';
-import { TaskDefinition } from '../base/task-definition';
-import { Secret } from '../container-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
+import type { BaseLogDriverProps } from './base-log-driver';
+import type { Duration } from '../../../core';
+import { SecretValue, Token, UnscopedValidationError } from '../../../core';
+import type { TaskDefinition } from '../base/task-definition';
+import type { Secret } from '../container-definition';
+import type { CfnTaskDefinition } from '../ecs.generated';
 
 /**
  * Remove undefined values from a dictionary

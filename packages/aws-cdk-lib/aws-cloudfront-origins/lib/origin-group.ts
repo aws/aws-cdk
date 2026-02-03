@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as cloudfront from '../../aws-cloudfront';
+import type { Construct } from 'constructs';
+import type * as cloudfront from '../../aws-cloudfront';
 import { ValidationError } from '../../core';
 
 /** Construction properties for `OriginGroup`. */

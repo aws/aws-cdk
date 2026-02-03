@@ -1,14 +1,19 @@
-import { Construct } from 'constructs';
-import { CfnVolume, IInstanceRef, IVolumeRef, VolumeReference } from './ec2.generated';
-import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
-import { IKey, ViaServicePrincipal } from '../../aws-kms';
+import type { Construct } from 'constructs';
+import type { IInstanceRef, IVolumeRef, VolumeReference } from './ec2.generated';
+import { CfnVolume } from './ec2.generated';
+import type { IGrantable } from '../../aws-iam';
+import { AccountRootPrincipal, Grant } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
+import { ViaServicePrincipal } from '../../aws-kms';
+import type {
+  IResource,
+  RemovalPolicy,
+  Size,
+} from '../../core';
 import {
   FeatureFlags,
-  IResource,
   Names,
-  RemovalPolicy,
   Resource,
-  Size,
   SizeRoundingBehavior,
   Stack,
   Tags,

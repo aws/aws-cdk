@@ -1,10 +1,10 @@
 import * as fs from 'fs';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
 import * as cdk from 'aws-cdk-lib/core';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 
 /**
  * Represents a Glue Job's Code assets (an asset can be a scripts, a jar, a python file or any other file).

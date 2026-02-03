@@ -1,7 +1,7 @@
-import { CfnRegistry } from '../../aws-glue';
+import type { CfnRegistry } from '../../aws-glue';
 import * as iam from '../../aws-iam';
-import { IEventSourceMapping, IFunction } from '../../aws-lambda/lib';
-import { ISchemaRegistry, KafkaSchemaRegistryConfig, SchemaRegistryProps } from '../../aws-lambda/lib/schema-registry';
+import type { IEventSourceMapping, IFunction } from '../../aws-lambda/lib';
+import type { ISchemaRegistry, KafkaSchemaRegistryConfig, SchemaRegistryProps } from '../../aws-lambda/lib/schema-registry';
 import { Fn, ValidationError } from '../../core';
 
 const GLUE_SCHEMA_REGISTRY_ARN_REGEX = /^arn:[^:]+:glue:[^:]+:[^:]+:registry\/([^\/]+)$/;

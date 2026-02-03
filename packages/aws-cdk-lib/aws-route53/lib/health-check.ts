@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnHealthCheck } from './route53.generated';
-import { Duration, IResource, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Duration, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { HealthCheckReference, IHealthCheckRef } from '../../interfaces/generated/aws-route53-interfaces.generated';
+import type { HealthCheckReference, IHealthCheckRef } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 /**
  * Imported or created health check

@@ -1,4 +1,4 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
 import { constructInfoFromConstruct } from '../../private/runtime-info';

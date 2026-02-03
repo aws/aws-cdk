@@ -1,21 +1,23 @@
-import { Construct } from 'constructs';
-import { CaCertificate } from './ca-certificate';
-import { DatabaseCluster } from './cluster';
-import { IDatabaseCluster } from './cluster-ref';
-import { IParameterGroup, ParameterGroup } from './parameter-group';
+import type { Construct } from 'constructs';
+import type { CaCertificate } from './ca-certificate';
+import type { DatabaseCluster } from './cluster';
+import type { IDatabaseCluster } from './cluster-ref';
+import type { IParameterGroup } from './parameter-group';
+import { ParameterGroup } from './parameter-group';
 import { helperRemovalPolicy } from './private/util';
 import { PerformanceInsightRetention } from './props';
 import { CfnDBInstance } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
-import { IRoleRef } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
+import type { IRoleRef } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import type { IResource, Duration, RemovalPolicy } from '../../core';
+import { Resource, ArnFormat, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
-import { aws_rds } from '../../interfaces';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * Options for binding the instance to the cluster

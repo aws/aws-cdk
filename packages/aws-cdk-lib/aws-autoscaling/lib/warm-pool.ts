@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnWarmPool } from './autoscaling.generated';
 import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
+import type { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Options for a warm pool

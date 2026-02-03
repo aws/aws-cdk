@@ -1,7 +1,8 @@
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as appsync from '../../aws-appsync';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
+import type * as events from '../../aws-events';
+import type * as iam from '../../aws-iam';
 import { ValidationError } from '../../core';
 
 /**

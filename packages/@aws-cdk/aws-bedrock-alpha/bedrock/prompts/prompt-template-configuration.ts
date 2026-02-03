@@ -1,6 +1,6 @@
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-import { ChatMessage } from './chat-prompt-variant';
-import { ToolConfiguration } from './tool-choice';
+import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import type { ChatMessage } from './chat-prompt-variant';
+import type { ToolConfiguration } from './tool-choice';
 
 /**
  * Properties for creating a text template configuration.

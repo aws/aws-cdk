@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnFunctionConfiguration } from './appsync.generated';
-import { Code } from './code';
-import { BaseDataSource, LambdaDataSource } from './data-source';
-import { IGraphqlApi } from './graphqlapi-base';
-import { MappingTemplate } from './mapping-template';
-import { FunctionRuntime } from './runtime';
-import { Resource, IResource, Lazy, Fn, ValidationError } from '../../core';
+import type { Code } from './code';
+import type { BaseDataSource } from './data-source';
+import { LambdaDataSource } from './data-source';
+import type { IGraphqlApi } from './graphqlapi-base';
+import type { MappingTemplate } from './mapping-template';
+import type { FunctionRuntime } from './runtime';
+import type { IResource } from '../../core';
+import { Resource, Lazy, Fn, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IFunctionConfigurationRef, FunctionConfigurationReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IFunctionConfigurationRef, FunctionConfigurationReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * the base properties for AppSync Functions

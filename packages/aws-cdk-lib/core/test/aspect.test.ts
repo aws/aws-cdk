@@ -1,9 +1,11 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, CfnResource, Stack, Tag, Tags } from '../lib';
-import { IAspect, Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
+import type { IAspect } from '../lib/aspect';
+import { Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
 import { MissingRemovalPolicies, RemovalPolicies } from '../lib/removal-policies';
 import { RemovalPolicy } from '../lib/removal-policy';
 

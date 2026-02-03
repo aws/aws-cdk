@@ -3,7 +3,7 @@ import { DescribeTableCommand, DynamoDBClient, UpdateTableCommand } from '@aws-s
 import { mockClient } from 'aws-sdk-client-mock';
 import * as sinon from 'sinon';
 import { isCompleteHandler, onEventHandler } from '../../../lib/aws-dynamodb/replica-handler/index';
-import { OnEventRequest } from '../../../lib/copied-from-aws-cdk-lib/provider-framework-types';
+import type { OnEventRequest } from '../../../lib/copied-from-aws-cdk-lib/provider-framework-types';
 
 let oldConsoleLog: any;
 

@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
+import type { Construct } from 'constructs';
+import type { ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
+import { ConfigurationSetEventDestination } from './configuration-set-event-destination';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
-import { Duration, IResource, Resource, Token, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Duration, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IDedicatedIpPoolRef, IConfigurationSetRef, ConfigurationSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IDedicatedIpPoolRef, IConfigurationSetRef, ConfigurationSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A configuration set

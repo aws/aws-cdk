@@ -1,21 +1,24 @@
 import { Annotations } from './annotations';
-import { CfnCondition } from './cfn-condition';
+import type { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
-import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, Node } from 'constructs';
+import type { CfnCreationPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
+import { CfnDeletionPolicy } from './cfn-resource-policy';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
-import { Reference } from './reference';
-import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
+import type { Reference } from './reference';
+import type { RemovalPolicyOptions } from './removal-policy';
+import { RemovalPolicy } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
-import { ResolutionTypeHint } from './type-hints';
+import type { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
 import { AssumptionError, ValidationError } from './errors';
-import { ResourceEnvironment } from './environment';
+import type { ResourceEnvironment } from './environment';
 
 export interface CfnResourceProps {
   /**

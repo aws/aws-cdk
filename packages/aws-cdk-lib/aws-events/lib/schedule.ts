@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { Annotations, Duration, UnscopedValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { Duration } from '../../core';
+import { Annotations, UnscopedValidationError } from '../../core';
 
 /**
  * Schedule for scheduled event rules

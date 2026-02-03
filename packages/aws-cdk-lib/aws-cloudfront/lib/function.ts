@@ -1,7 +1,9 @@
 import * as fs from 'fs';
-import { Construct } from 'constructs';
-import { CfnFunction, FunctionReference, IFunctionRef, IKeyValueStoreRef } from './cloudfront.generated';
-import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { FunctionReference, IFunctionRef, IKeyValueStoreRef } from './cloudfront.generated';
+import { CfnFunction } from './cloudfront.generated';
+import type { IResource } from '../../core';
+import { Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

@@ -1,10 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
+import type { InterfaceType } from '@cdklabs/typewriter';
+import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
-import { ComponentType, ComponentProps } from './config';
-import { ModuleImportOptions, ModuleImporter } from './module-importer';
-import { ImportableModule } from './modules';
+import type { HandlerFrameworkClassProps } from './classes';
+import { HandlerFrameworkClass } from './classes';
+import type { ComponentProps } from './config';
+import { ComponentType } from './config';
+import type { ModuleImportOptions } from './module-importer';
+import { ModuleImporter } from './module-importer';
+import type { ImportableModule } from './modules';
 import { buildComponentName } from './utils/framework-utils';
 
 export class HandlerFrameworkModule extends Module {

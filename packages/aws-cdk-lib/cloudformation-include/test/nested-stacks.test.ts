@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '../../assertions';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import * as core from '../../core';
 import * as cxapi from '../../cx-api';
 import * as inc from '../lib';

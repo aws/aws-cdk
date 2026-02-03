@@ -1,11 +1,11 @@
-import { Construct, Node } from 'constructs';
-import * as cloudwatch from '../../../aws-cloudwatch';
-import * as ec2 from '../../../aws-ec2';
+import type { Construct, Node } from 'constructs';
+import type * as cloudwatch from '../../../aws-cloudwatch';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as ssm from '../../../aws-ssm';
+import type { CfnResource } from '../../../core';
 import {
-  CfnResource,
   CustomResource,
   Lazy,
   Resource,

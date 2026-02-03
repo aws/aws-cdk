@@ -4,7 +4,7 @@ import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { QueueHook } from 'aws-cdk-lib/aws-autoscaling-hooktargets';
 
 const app = new cdk.App();

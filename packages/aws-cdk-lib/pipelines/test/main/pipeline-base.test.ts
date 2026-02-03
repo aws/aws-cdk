@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import * as cdk from '../../../core';
 import { App } from '../../../core/lib';
-import { PipelineBase, IFileSetProducer, FileSet } from '../../lib';
+import type { IFileSetProducer } from '../../lib';
+import { PipelineBase, FileSet } from '../../lib';
 import { PIPELINE_ENV } from '../testhelpers';
 
 describe('pipeline base', () => {

@@ -1,4 +1,4 @@
-import { FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
+import type { FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
 
 export interface FargateServiceBaseProps {
   /**

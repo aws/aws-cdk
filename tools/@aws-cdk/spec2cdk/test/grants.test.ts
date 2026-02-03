@@ -1,6 +1,7 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
-import { SpecDatabase } from '@aws-cdk/service-spec-types';
-import { InterfaceType, Module, Stability, StructType, TypeScriptRenderer } from '@cdklabs/typewriter';
+import type { SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { StructType } from '@cdklabs/typewriter';
+import { InterfaceType, Module, Stability, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from '../lib/cdk/cdk';
 import { GrantsModule } from '../lib/cdk/grants-module';
 

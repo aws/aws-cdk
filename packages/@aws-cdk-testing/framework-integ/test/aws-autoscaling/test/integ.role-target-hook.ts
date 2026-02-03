@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 
 export class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {

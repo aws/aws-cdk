@@ -1,5 +1,5 @@
-import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '../../aws-lambda';
-import * as s3 from '../../aws-s3';
+import type { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '../../aws-lambda';
+import type * as s3 from '../../aws-s3';
 
 /**
  * An S3 dead letter bucket destination configuration for a Lambda event source

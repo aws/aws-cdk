@@ -1,6 +1,6 @@
-import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { IImage } from './image';
+import type * as ecr from 'aws-cdk-lib/aws-ecr';
+import type * as ssm from 'aws-cdk-lib/aws-ssm';
+import type { IImage } from './image';
 
 /**
  * Represents a base image that is used to start from in EC2 Image Builder image builds

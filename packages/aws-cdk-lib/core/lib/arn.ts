@@ -1,6 +1,6 @@
 import { Fn } from './cfn-fn';
 import { UnscopedValidationError } from './errors';
-import { Stack } from './stack';
+import type { Stack } from './stack';
 import { Token } from './token';
 import { filterUndefined } from './util';
 

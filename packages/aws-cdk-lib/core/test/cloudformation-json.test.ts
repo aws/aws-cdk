@@ -1,5 +1,6 @@
 import { evaluateCFN } from './evaluate-cfn';
-import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
+import type { IPostProcessor, IResolvable, IResolveContext } from '../lib';
+import { App, Aws, CfnOutput, CfnResource, Fn, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
 let app: App;

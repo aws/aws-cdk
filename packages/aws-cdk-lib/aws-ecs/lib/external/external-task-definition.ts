@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
-import {
+import type {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
-  Compatibility,
   InferenceAccelerator,
   ITaskDefinition,
+} from '../base/task-definition';
+import {
+  Compatibility,
   NetworkMode,
   TaskDefinition,
 } from '../base/task-definition';

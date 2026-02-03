@@ -1,8 +1,9 @@
-import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import type { TargetBaseProps } from './util';
+import { bindBaseTargetConfig, singletonEventRole } from './util';
 import { CfnPipeline } from '../../aws-codepipeline/lib/codepipeline.generated';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
+import type { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
 
 /**
  * Customization options when creating a `CodePipeline` event target.

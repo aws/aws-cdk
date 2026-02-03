@@ -1,11 +1,11 @@
-import { IClusterEngine } from './cluster-engine';
-import { Endpoint } from './endpoint';
-import { DatabaseProxy, DatabaseProxyOptions } from './proxy';
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { IResource } from '../../core';
-import { aws_rds } from '../../interfaces';
+import type { IClusterEngine } from './cluster-engine';
+import type { Endpoint } from './endpoint';
+import type { DatabaseProxy, DatabaseProxyOptions } from './proxy';
+import type * as ec2 from '../../aws-ec2';
+import type * as iam from '../../aws-iam';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { IResource } from '../../core';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * Create a clustered database with a given number of instances.

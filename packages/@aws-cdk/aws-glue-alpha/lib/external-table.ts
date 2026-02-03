@@ -1,13 +1,14 @@
 import { ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IConnection } from './connection';
-import { Column } from './schema';
-import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
+import type { Construct } from 'constructs';
+import type { IConnection } from './connection';
+import type { Column } from './schema';
+import type { PartitionIndex, TableBaseProps } from './table-base';
+import { TableBase } from './table-base';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**

@@ -1,12 +1,12 @@
 import { UnscopedValidationError } from '../../../core';
-import { IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
-import { IBaseDeploymentConfig } from '../base-deployment-config';
-import { IEcsApplication } from '../ecs/application';
-import { IEcsDeploymentConfig } from '../ecs/deployment-config';
-import { ILambdaApplication } from '../lambda/application';
-import { ILambdaDeploymentConfig } from '../lambda/deployment-config';
-import { IServerApplication } from '../server/application';
-import { IServerDeploymentConfig } from '../server/deployment-config';
+import type { IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { IBaseDeploymentConfig } from '../base-deployment-config';
+import type { IEcsApplication } from '../ecs/application';
+import type { IEcsDeploymentConfig } from '../ecs/deployment-config';
+import type { ILambdaApplication } from '../lambda/application';
+import type { ILambdaDeploymentConfig } from '../lambda/deployment-config';
+import type { IServerApplication } from '../server/application';
+import type { IServerDeploymentConfig } from '../server/deployment-config';
 
 /**
  * Convert an IApplicationRef to IServerApplication, validating it has the required properties

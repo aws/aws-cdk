@@ -1,8 +1,9 @@
-import * as constructs from 'constructs';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
-import * as iam from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
-import * as lambda from '../../aws-lambda';
+import type * as constructs from 'constructs';
+import type { StreamEventSourceProps } from './stream';
+import { StreamEventSource } from './stream';
+import type * as iam from '../../aws-iam';
+import type * as kinesis from '../../aws-kinesis';
+import type * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core';
 

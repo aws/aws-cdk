@@ -1,7 +1,8 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';

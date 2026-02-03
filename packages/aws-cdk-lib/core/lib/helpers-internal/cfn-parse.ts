@@ -1,21 +1,22 @@
 import { CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS } from '../../../cx-api';
-import { CfnCondition } from '../cfn-condition';
-import { CfnElement } from '../cfn-element';
+import type { CfnCondition } from '../cfn-condition';
+import type { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
-import { CfnMapping } from '../cfn-mapping';
+import type { CfnMapping } from '../cfn-mapping';
 import { Aws } from '../cfn-pseudo';
-import { CfnResource } from '../cfn-resource';
-import {
+import type { CfnResource } from '../cfn-resource';
+import type {
   CfnAutoScalingReplacingUpdate, CfnAutoScalingRollingUpdate, CfnAutoScalingScheduledAction, CfnCodeDeployLambdaAliasUpdate,
-  CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
+  CfnCreationPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
 } from '../cfn-resource-policy';
-import { CfnTag } from '../cfn-tag';
+import { CfnDeletionPolicy } from '../cfn-resource-policy';
+import type { CfnTag } from '../cfn-tag';
 import { UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
-import { IResolvable } from '../resolvable';
-import { Validator } from '../runtime';
+import type { IResolvable } from '../resolvable';
+import type { Validator } from '../runtime';
 import { Stack } from '../stack';
 import { isResolvableObject, Token } from '../token';
 import { undefinedIfAllValuesAreEmpty } from '../util';

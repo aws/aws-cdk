@@ -1,6 +1,7 @@
-import { IService } from './service';
-import { IResource, Names, Resource } from '../../core';
-import { IInstanceRef, InstanceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
+import type { IService } from './service';
+import type { IResource } from '../../core';
+import { Names, Resource } from '../../core';
+import type { IInstanceRef, InstanceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface IInstance extends IResource, IInstanceRef {
   /**

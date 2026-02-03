@@ -5,7 +5,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { DeployTimeSubstitutedFile } from 'aws-cdk-lib/aws-s3-deployment';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /**

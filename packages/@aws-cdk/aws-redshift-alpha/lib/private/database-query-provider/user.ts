@@ -4,9 +4,9 @@ import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 import type * as AWSLambda from 'aws-lambda';
 
 import { executeStatement } from './redshift-data';
-import { ClusterProps } from './types';
+import type { ClusterProps } from './types';
 import { makePhysicalId } from './util';
-import { UserHandlerProps } from '../handler-props';
+import type { UserHandlerProps } from '../handler-props';
 
 const secretsManager = new SecretsManager({});
 

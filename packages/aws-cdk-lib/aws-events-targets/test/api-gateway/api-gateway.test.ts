@@ -1,4 +1,4 @@
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { Template } from '../../../assertions';
 import * as api from '../../../aws-apigateway';
 import * as events from '../../../aws-events';

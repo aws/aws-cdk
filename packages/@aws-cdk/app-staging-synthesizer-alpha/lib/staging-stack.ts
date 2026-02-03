@@ -1,5 +1,5 @@
-import { DockerImageAssetSource, FileAssetSource, Stack } from 'aws-cdk-lib/core';
-import { IConstruct } from 'constructs';
+import type { DockerImageAssetSource, FileAssetSource, Stack } from 'aws-cdk-lib/core';
+import type { IConstruct } from 'constructs';
 
 /**
  * Information returned by the Staging Stack for each file asset.

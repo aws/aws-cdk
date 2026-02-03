@@ -16,12 +16,12 @@
  *   This follows a direct implementation pattern where concrete classes implement the interface directly without a shared base class.
  */
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnTransformer } from '.';
 import { Resource, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Valid data types for type conversion in the TypeConverter processor.

@@ -1,4 +1,4 @@
-import * as ec2 from '../../aws-ec2';
+import type * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 
 /**

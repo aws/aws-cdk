@@ -1,11 +1,13 @@
 import { Arn, ArnFormat, ValidationError } from 'aws-cdk-lib';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IInferenceProfile, InferenceProfileBase, InferenceProfileType } from './inference-profile';
-import { IBedrockInvokable } from '../models';
+import type { Construct } from 'constructs';
+import type { IInferenceProfile } from './inference-profile';
+import { InferenceProfileBase, InferenceProfileType } from './inference-profile';
+import type { IBedrockInvokable } from '../models';
 
 /******************************************************************************
  *                        PROPS FOR NEW CONSTRUCT

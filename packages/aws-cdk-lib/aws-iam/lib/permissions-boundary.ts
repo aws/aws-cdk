@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { CfnRole, CfnUser } from './iam.generated';
-import { IManagedPolicy } from './managed-policy';
+import type { IManagedPolicy } from './managed-policy';
 import { Aspects, CfnResource } from '../../core';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 

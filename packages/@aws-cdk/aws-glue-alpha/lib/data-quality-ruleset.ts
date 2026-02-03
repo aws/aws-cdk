@@ -1,10 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnDataQualityRuleset } from 'aws-cdk-lib/aws-glue';
-import { IResource, Resource } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 
 /**
  * Properties of a DataQualityTargetTable.

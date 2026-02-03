@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as yaml_cfn from './private/yaml-cfn';
-import { Project } from './project';
+import type { Project } from './project';
 import * as s3_assets from '../../aws-s3-assets';
-import { IResolveContext, Lazy, Stack, UnscopedValidationError } from '../../core';
+import type { IResolveContext } from '../../core';
+import { Lazy, Stack, UnscopedValidationError } from '../../core';
 
 /**
  * BuildSpec for CodeBuild projects

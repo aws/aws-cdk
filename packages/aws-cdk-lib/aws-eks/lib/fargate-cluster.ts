@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
-import { FargateProfile, FargateProfileOptions } from './fargate-profile';
+import type { Construct } from 'constructs';
+import type { ClusterOptions } from './cluster';
+import { Cluster, CoreDnsComputeType } from './cluster';
+import type { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

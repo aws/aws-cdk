@@ -1,20 +1,25 @@
 import { Construct } from 'constructs';
-import { Certificate, CertificateValidation, ICertificate } from '../../../aws-certificatemanager';
-import { IVpc } from '../../../aws-ec2';
+import type { ICertificate } from '../../../aws-certificatemanager';
+import { Certificate, CertificateValidation } from '../../../aws-certificatemanager';
+import type { IVpc } from '../../../aws-ec2';
+import type { BaseService, CloudMapOptions, ContainerDefinition, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '../../../aws-ecs';
 import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver, PropagatedTagSource,
-  Protocol, Secret,
+  AwsLogDriver, Cluster,
+  Protocol,
 } from '../../../aws-ecs';
-import {
+import type {
   ApplicationListener,
-  ApplicationLoadBalancer,
-  ApplicationProtocol,
-  ApplicationTargetGroup, ListenerCertificate,
-  ListenerCondition,
+  ApplicationTargetGroup,
   SslPolicy,
 } from '../../../aws-elasticloadbalancingv2';
-import { IRole } from '../../../aws-iam';
-import { ARecord, IHostedZone, RecordTarget } from '../../../aws-route53';
+import {
+  ApplicationLoadBalancer,
+  ApplicationProtocol, ListenerCertificate,
+  ListenerCondition,
+} from '../../../aws-elasticloadbalancingv2';
+import type { IRole } from '../../../aws-iam';
+import type { IHostedZone } from '../../../aws-route53';
+import { ARecord, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import { CfnOutput, Duration, Stack, ValidationError } from '../../../core';
 

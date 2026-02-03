@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { GrantDelegationOptions, IHostedZone, INamedHostedZoneRef } from './hosted-zone-ref';
+import type { Construct } from 'constructs';
+import type { GrantDelegationOptions, IHostedZone, INamedHostedZoneRef } from './hosted-zone-ref';
 import * as iam from '../../aws-iam';
 import { Stack, Token, UnscopedValidationError } from '../../core';
 

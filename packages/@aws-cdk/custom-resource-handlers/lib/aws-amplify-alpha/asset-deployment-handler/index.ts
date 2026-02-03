@@ -2,9 +2,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Amplify } from '@aws-sdk/client-amplify';
 import { S3 } from '@aws-sdk/client-s3';
-import { ResourceEvent } from './common';
+import type { ResourceEvent } from './common';
 import { AmplifyAssetDeploymentHandler } from './handler';
-import { IsCompleteResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
+import type { IsCompleteResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 const AMPLIFY_ASSET_DEPLOYMENT_RESOURCE_TYPE = 'Custom::AmplifyAssetDeployment';
 

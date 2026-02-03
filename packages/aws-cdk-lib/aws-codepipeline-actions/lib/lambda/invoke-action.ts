@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
+import type * as lambda from '../../../aws-lambda';
 import { Stack, UnscopedValidationError } from '../../../core';
 import { Action } from '../action';
 

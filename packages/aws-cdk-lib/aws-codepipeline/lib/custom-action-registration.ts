@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ActionCategory, ActionArtifactBounds } from './action';
+import type { ActionCategory, ActionArtifactBounds } from './action';
 import { CfnCustomActionType } from './codepipeline.generated';
 
 /**

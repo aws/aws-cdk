@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as route53 from '../../aws-route53';
 import { App, Stack } from '../../core';
 import * as certmgr from '../lib';

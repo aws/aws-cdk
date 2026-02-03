@@ -1,8 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { toCloudFormation } from './util';
+import type {
+  CfnResourceProps,
+  ITaggable,
+  ITaggableV2,
+} from '../lib';
 import {
   CfnResource,
-  CfnResourceProps,
   RemoveTag,
   Stack,
   Tag,
@@ -10,8 +14,6 @@ import {
   TagType,
   Aspects,
   Tags,
-  ITaggable,
-  ITaggableV2,
   AspectPriority,
   UnscopedValidationError,
 } from '../lib';

@@ -1,12 +1,12 @@
 import * as databrew from 'aws-cdk-lib/aws-databrew';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
+import type { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { UnscopedValidationError } from 'aws-cdk-lib';
 import { GlueDataBrewStartJobRun } from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { Node } from 'constructs';
+import type { Node } from 'constructs';
 
 /*
  * Stack verification steps:

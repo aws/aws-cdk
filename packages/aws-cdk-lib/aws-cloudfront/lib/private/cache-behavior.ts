@@ -1,8 +1,9 @@
 import * as iam from '../../../aws-iam';
 import { UnscopedValidationError } from '../../../core';
 import { CachePolicy } from '../cache-policy';
-import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, AllowedMethods, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
+import type { CfnDistribution } from '../cloudfront.generated';
+import type { AddBehaviorOptions, EdgeLambda } from '../distribution';
+import { AllowedMethods, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
