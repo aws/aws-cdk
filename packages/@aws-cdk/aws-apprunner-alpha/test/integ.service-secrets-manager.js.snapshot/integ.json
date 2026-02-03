@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "48.0.0",
   "testCases": {
     "AppRunnerSecretsManger/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "AppRunnerSecretsManger/DefaultTest/DeployAssert",
       "assertionStackName": "AppRunnerSecretsMangerDefaultTestDeployAssert6B977D95"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
