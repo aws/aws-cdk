@@ -14,11 +14,12 @@ declare module 'constructs' {
 }
 
 // Hack the prototype to add .with() method
-(Construct.prototype as any).with = function(this: IConstruct, ...mixin: IMixin[]): IConstruct {
-  for (const c of this.node.findAll()) {
-    for (const m of mixin) {
-      if (m.supports(c)) {
-        applyMixin(c, m);
+(Construct.prototype as any).with = function(this: IConstruct, ...mixins: IMixin[]): IConstruct {
+  const allConstructs = this.node.findAll();
+  for (const mixin of mixins) {
+    for (const construct of allConstructs) {
+      if (mixin.supports(construct)) {
+        applyMixin(construct, mixin);
       }
     }
   }
