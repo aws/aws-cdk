@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29ed3acc6ec00a84d6f3230d7be5eb79385342bcdb19315d8e66e9a9c94b3651.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fb74b810fc928d6737e8b6543ca9034775233d2458278f04047fec51ed2f80ca.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -62,22 +62,12 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0/PublicPool0": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IpamTestPublicPool0C44B7C49"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0/PublicPool0Cidr": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0PublicPool0CidrC57CE00C"
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1": [
@@ -156,6 +146,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "IpamTestPublicPool0PublicPool0CidrC57CE00C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamTestPublicPool0PublicPool0CidrC57CE00C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

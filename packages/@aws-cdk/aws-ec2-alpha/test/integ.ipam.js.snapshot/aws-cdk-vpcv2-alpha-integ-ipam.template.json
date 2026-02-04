@@ -49,18 +49,6 @@
     "PublicIpSource": "amazon"
    }
   },
-  "IpamTestPublicPool0PublicPool0CidrC57CE00C": {
-   "Type": "AWS::EC2::IPAMPoolCidr",
-   "Properties": {
-    "IpamPoolId": {
-     "Fn::GetAtt": [
-      "IpamTestPublicPool0C44B7C49",
-      "IpamPoolId"
-     ]
-    },
-    "NetmaskLength": 52
-   }
-  },
   "VPCintegtest1EBA1CB75": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -110,10 +98,7 @@
       "VpcId"
      ]
     }
-   },
-   "DependsOn": [
-    "IpamTestPublicPool0PublicPool0CidrC57CE00C"
-   ]
+   }
   },
   "testsbubnetSubnet77337845": {
    "Type": "AWS::EC2::Subnet",
