@@ -30,7 +30,7 @@ experience across the entire AWS surface area.
     * [Prefer Additions](#prefer-additions)
     * [Dropped Mutations](#dropped-mutations)
   * [Factories](#factories)
-  * [Imports](#imports)
+  * [References](#references)
     * [“from” Methods](#from-methods)
     * [From-attributes](#from-attributes)
   * [Roles](#roles)
@@ -930,7 +930,9 @@ export interface ILogGroup {
 }
 ```
 
-### Imports
+### References
+
+> References create a read-only pointer to the unowned resources
 
 Construct classes should expose a set of static factory methods with a
 “**from**” prefix that will allow users to import *unowned* constructs into
@@ -987,6 +989,10 @@ class Foo {
 <!-- markdownlint-enable MD013 -->
 
 #### From-attributes
+
+> To determine the set of attributes needed to reference an unowned resource, refer to Cloudformation templtate reference for the return types
+
+> Example : [Batch::JobDefinition](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-batch-jobdefinition.html#aws-resource-batch-jobdefinition-return-values) can be identified using `jobDefinitionArn` and the same is used in [`fromEksJobDefinitionArn`](https://github.com/aws/aws-cdk/blob/89bd72464be33bf3247491fbabbc08b2a44dc5fa/packages/aws-cdk-lib/aws-batch/lib/eks-job-definition.ts#L135)
 
 If a resource has more than a single attribute (“ARN” and “name” are usually
 considered a single attribute since it's usually possible to convert one to the
