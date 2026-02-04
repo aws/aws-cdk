@@ -55,10 +55,7 @@
         "/VpcMigrationFeatureFlagDisabledStack/PublicSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnet1C95672B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnet1C95672B"
           }
         ],
         "/VpcMigrationFeatureFlagDisabledStack/PublicSubnet/RouteTable": [
@@ -76,10 +73,7 @@
         "/VpcMigrationFeatureFlagDisabledStack/PublicSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnetRouteTableAssociation0984B11D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnetRouteTableAssociation0984B11D"
           }
         ],
         "/VpcMigrationFeatureFlagDisabledStack/InternetGateway": [
@@ -109,10 +103,7 @@
         "/VpcMigrationFeatureFlagDisabledStack/NatGateway/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NatGatewayNATGateway7D1360DD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "NatGatewayNATGateway7D1360DD"
           }
         ],
         "/VpcMigrationFeatureFlagDisabledStack/RouteTable": [
@@ -191,6 +182,54 @@
         ]
       },
       "displayName": "VpcMigrationFeatureFlagDisabledStack"
+    },
+    "VpcMigrationFeatureFlagTestDisabledDefaultTestDeployAssertF7555032.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "VpcMigrationFeatureFlagTestDisabledDefaultTestDeployAssertF7555032.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "VpcMigrationFeatureFlagTestDisabledDefaultTestDeployAssertF7555032": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "VpcMigrationFeatureFlagTestDisabledDefaultTestDeployAssertF7555032.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "VpcMigrationFeatureFlagTestDisabledDefaultTestDeployAssertF7555032.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "VpcMigrationFeatureFlagTestDisabledDefaultTestDeployAssertF7555032.assets"
+      ],
+      "metadata": {
+        "/VpcMigrationFeatureFlagTestDisabled/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/VpcMigrationFeatureFlagTestDisabled/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "VpcMigrationFeatureFlagTestDisabled/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

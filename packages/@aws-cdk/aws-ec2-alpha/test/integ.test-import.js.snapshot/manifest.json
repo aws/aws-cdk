@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b8cd5ea28a2895124a11fd82bb03330cbc76c285a6a3bf07d42a43ccc6292140.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a3c47fa2c790de449c72bace6e9365738b000172628155f67bb4b5a6ee74d3ef.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -115,7 +115,10 @@
         "/vpcv2-import-integ-test/NewSubnetOnImported/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NewSubnetOnImportedSubnet83F65B72"
+            "data": "NewSubnetOnImportedSubnet83F65B72",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/vpcv2-import-integ-test/NewSubnetOnImported/RouteTable": [
@@ -133,7 +136,10 @@
         "/vpcv2-import-integ-test/NewSubnetOnImported/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NewSubnetOnImportedRouteTableAssociation52AC6604"
+            "data": "NewSubnetOnImportedRouteTableAssociation52AC6604",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/vpcv2-import-integ-test/BootstrapVersion": [
@@ -146,168 +152,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ImportedNewVPCInternetGatewayIGWA7EB1B6C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedNewVPCInternetGatewayGWAttachment5928F3D0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedNewVPCImportedPublicSubnetDefaultRoute56DCABA4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCImportedPublicSubnetDefaultRoute56DCABA4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedNewVPCAddnewImportedSubnetDefaultRoute40344A0C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCAddnewImportedSubnetDefaultRoute40344A0C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedNewVPCAddnewImportedSubnet2DefaultRouteE8630009": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCAddnewImportedSubnet2DefaultRouteE8630009",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedNewVPCNATGatewayIsolatedSubnet1NATGatewayC32B9442": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCNATGatewayIsolatedSubnet1NATGatewayC32B9442",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedNewVPCEgressOnlyGWEIGWF9D837A6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCEgressOnlyGWEIGWF9D837A6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewImportedSubnet53655C69": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewImportedSubnet53655C69",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewImportedSubnetRouteTable73C1E1B7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewImportedSubnetRouteTable73C1E1B7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewImportedSubnetRouteTableAssociationE5634175": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewImportedSubnetRouteTableAssociationE5634175",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewImportedSubnet2SubnetD9533DC5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewImportedSubnet2SubnetD9533DC5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewImportedSubnet2RouteTable2F07FB4F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewImportedSubnet2RouteTable2F07FB4F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewImportedSubnet2RouteTableAssociationA2C6CDF7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewImportedSubnet2RouteTableAssociationA2C6CDF7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedIPAMVPCEgressOnlyGWEIGW52C5892F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedIPAMVPCEgressOnlyGWEIGW52C5892F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewSubnettoImportedIpamSubnet0F5C302A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewSubnettoImportedIpamSubnet0F5C302A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewSubnettoImportedIpamRouteTable1AE0FBA3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewSubnettoImportedIpamRouteTable1AE0FBA3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AddnewSubnettoImportedIpamRouteTableAssociation20268806": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AddnewSubnettoImportedIpamRouteTableAssociation20268806",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "e71c2b64721fd36fc92f5b02a1d9c34ed275c8cab4c88a21bf02c81d9af81bb1": {
+    "d483406c82a3c6395f667ee0f0f1684bc0ccd1099f388bda12c792daa68f9533": {
       "displayName": "aws-cdk-ec2-alpha-subnet-map-public-ip Template",
       "source": {
         "path": "aws-cdk-ec2-alpha-subnet-map-public-ip.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-984cd6d4": {
+        "current_account-current_region-11ce7557": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e71c2b64721fd36fc92f5b02a1d9c34ed275c8cab4c88a21bf02c81d9af81bb1.json",
+          "objectKey": "d483406c82a3c6395f667ee0f0f1684bc0ccd1099f388bda12c792daa68f9533.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

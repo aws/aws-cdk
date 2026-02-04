@@ -128,7 +128,7 @@
       }
      ]
     },
-    "CidrBlock": "10.2.1.0/24",
+    "CidrBlock": "10.1.2.0/24",
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e71c2b64721fd36fc92f5b02a1d9c34ed275c8cab4c88a21bf02c81d9af81bb1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d483406c82a3c6395f667ee0f0f1684bc0ccd1099f388bda12c792daa68f9533.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,10 +55,7 @@
         "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnetWithIpSubnetE138C159",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnetWithIpSubnetE138C159"
           }
         ],
         "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/RouteTable": [
@@ -76,10 +73,7 @@
         "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnetWithIpRouteTableAssociationDE6A8683",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnetWithIpRouteTableAssociationDE6A8683"
           }
         ],
         "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp": [
@@ -91,10 +85,7 @@
         "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnetWithoutIpSubnet2AD95043",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnetWithoutIpSubnet2AD95043"
           }
         ],
         "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/RouteTable": [
@@ -112,10 +103,7 @@
         "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnetWithoutIpRouteTableAssociation94BDCA57",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnetWithoutIpRouteTableAssociation94BDCA57"
           }
         ],
         "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault": [
@@ -186,7 +174,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3f3de0c5ce91ea771f7f0b8a106003bcc468e2f9442cd2825d26f8f0c36782f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2634d8f7f3abcaa69dadbed3c954733d3e2a948dc7f0ff0ed07a4e4a8d918919.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

@@ -144,7 +144,7 @@
    "Properties": {
     "AvailabilityZone": {
      "Fn::Select": [
-      2,
+      1,
       {
        "Fn::GetAZs": ""
       }
