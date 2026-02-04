@@ -34,11 +34,9 @@ import {
   ArnFormat,
   CfnOutput,
   FeatureFlags,
-  IResource as IResourceBase,
   Lazy,
   RemovalPolicy,
   Resource,
-  Size,
   Stack,
   Token,
 } from '../../core';
