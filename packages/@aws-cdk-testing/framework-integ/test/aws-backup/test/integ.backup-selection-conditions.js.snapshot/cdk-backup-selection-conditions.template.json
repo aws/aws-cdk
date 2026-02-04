@@ -1,0 +1,296 @@
+{
+ "Resources": {
+  "Vault23237E5B": {
+   "Type": "AWS::Backup::BackupVault",
+   "Properties": {
+    "BackupVaultName": "cdkbackupselectionconditionsVault25DAD9E3",
+    "LockConfiguration": {
+     "MinRetentionDays": 5
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PlanDAF4E53A": {
+   "Type": "AWS::Backup::BackupPlan",
+   "Properties": {
+    "BackupPlan": {
+     "BackupPlanName": "Plan",
+     "BackupPlanRule": [
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 35
+       },
+       "RuleName": "Daily",
+       "ScheduleExpression": "cron(0 5 * * ? *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      },
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 90
+       },
+       "RuleName": "Weekly",
+       "ScheduleExpression": "cron(0 5 ? * SAT *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      },
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 1825,
+        "MoveToColdStorageAfterDays": 90
+       },
+       "RuleName": "Monthly5Year",
+       "ScheduleExpression": "cron(0 5 1 * ? *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  },
+  "PlanSelectionWithConditionsRoleDC49D02C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "backup.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PlanSelectionWithConditionsDA30328A": {
+   "Type": "AWS::Backup::BackupSelection",
+   "Properties": {
+    "BackupPlanId": {
+     "Fn::GetAtt": [
+      "PlanDAF4E53A",
+      "BackupPlanId"
+     ]
+    },
+    "BackupSelection": {
+     "Conditions": {
+      "StringEquals": [
+       {
+        "ConditionKey": "aws:ResourceTag/backup-enabled",
+        "ConditionValue": "true"
+       }
+      ]
+     },
+     "IamRoleArn": {
+      "Fn::GetAtt": [
+       "PlanSelectionWithConditionsRoleDC49D02C",
+       "Arn"
+      ]
+     },
+     "Resources": [
+      "arn:aws:ec2:*:*:volume/*"
+     ],
+     "SelectionName": "SelectionWithConditions"
+    }
+   }
+  },
+  "PlanSelectionWithMultipleConditionsRoleF9095871": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "backup.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PlanSelectionWithMultipleConditionsACE7F0BB": {
+   "Type": "AWS::Backup::BackupSelection",
+   "Properties": {
+    "BackupPlanId": {
+     "Fn::GetAtt": [
+      "PlanDAF4E53A",
+      "BackupPlanId"
+     ]
+    },
+    "BackupSelection": {
+     "Conditions": {
+      "StringEquals": [
+       {
+        "ConditionKey": "aws:ResourceTag/environment",
+        "ConditionValue": "production"
+       }
+      ],
+      "StringLike": [
+       {
+        "ConditionKey": "aws:ResourceTag/project",
+        "ConditionValue": "myproject-*"
+       }
+      ],
+      "StringNotEquals": [
+       {
+        "ConditionKey": "aws:ResourceTag/temporary",
+        "ConditionValue": "true"
+       }
+      ]
+     },
+     "IamRoleArn": {
+      "Fn::GetAtt": [
+       "PlanSelectionWithMultipleConditionsRoleF9095871",
+       "Arn"
+      ]
+     },
+     "Resources": [
+      "arn:aws:rds:*:*:db:*"
+     ],
+     "SelectionName": "SelectionWithMultipleConditions"
+    }
+   }
+  },
+  "PlanSelectionWithFromTagRoleC729FD72": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "backup.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PlanSelectionWithFromTag013D292A": {
+   "Type": "AWS::Backup::BackupSelection",
+   "Properties": {
+    "BackupPlanId": {
+     "Fn::GetAtt": [
+      "PlanDAF4E53A",
+      "BackupPlanId"
+     ]
+    },
+    "BackupSelection": {
+     "IamRoleArn": {
+      "Fn::GetAtt": [
+       "PlanSelectionWithFromTagRoleC729FD72",
+       "Arn"
+      ]
+     },
+     "ListOfTags": [
+      {
+       "ConditionKey": "backup",
+       "ConditionType": "STRINGEQUALS",
+       "ConditionValue": "daily"
+      }
+     ],
+     "Resources": [
+      "arn:aws:dynamodb:*:*:table/*"
+     ],
+     "SelectionName": "SelectionWithFromTag"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

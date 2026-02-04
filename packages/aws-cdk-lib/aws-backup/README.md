@@ -81,6 +81,93 @@ plan.addSelection('Selection', {
 });
 ```
 
+### Advanced resource selection with conditions
+
+When you need to select resources that match both an ARN pattern AND specific tag conditions,
+use the `conditions` property. This uses AND logic (intersection) instead of the OR logic
+used by `BackupResource.fromTag()`.
+
+For example, to back up only EC2 volumes that have a specific tag:
+
+```ts
+declare const plan: backup.BackupPlan;
+
+plan.addSelection('Selection', {
+  resources: [
+    backup.BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+  ],
+  conditions: {
+    stringEquals: [
+      { key: 'aws-backup', value: '1' },
+    ],
+  },
+});
+```
+
+This will back up only EC2 volumes that have the tag `aws-backup=1`, rather than backing up
+all EC2 volumes OR all resources with that tag (which is what would happen with `BackupResource.fromTag()`).
+
+You can also use multiple conditions with different operators:
+
+```ts
+declare const plan: backup.BackupPlan;
+
+plan.addSelection('Selection', {
+  resources: [
+    backup.BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+  ],
+  conditions: {
+    stringEquals: [
+      { key: 'environment', value: 'production' },
+    ],
+    stringLike: [
+      { key: 'project', value: 'my-project-*' },
+    ],
+    stringNotEquals: [
+      { key: 'temporary', value: 'true' },
+    ],
+  },
+});
+```
+
+This selects EC2 volumes that:
+- Have `environment=production` AND
+- Have a `project` tag starting with `my-project-` AND
+- Do NOT have `temporary=true`
+
+#### Understanding ListOfTags vs Conditions
+
+When using both `BackupResource.fromTag()` and `conditions` together, it's important to understand how they interact:
+
+- **`BackupResource.fromTag()`** uses the CloudFormation `ListOfTags` property with **OR logic** - resources matching ANY of the specified tags are selected
+- **`conditions`** uses the CloudFormation `Conditions` property with **AND logic** - resources must match ALL specified conditions
+
+When both are used together, AWS Backup applies them as follows:
+1. Resources must match the ARN patterns in `resources`
+2. AND resources must match ALL conditions in `conditions` (if specified)
+3. OR resources must match ANY tag in `ListOfTags` (from `fromTag()`)
+
+```ts
+declare const plan: backup.BackupPlan;
+
+// This selects:
+// - EC2 volumes with aws-backup=1 tag, OR
+// - Any resource with legacy-backup=yes tag
+plan.addSelection('Selection', {
+  resources: [
+    backup.BackupResource.fromArn('arn:aws:ec2:*:*:volume/*'),
+    backup.BackupResource.fromTag('legacy-backup', 'yes'), // OR logic via ListOfTags
+  ],
+  conditions: {
+    stringEquals: [
+      { key: 'aws-backup', value: '1' }, // AND logic via Conditions
+    ],
+  },
+});
+```
+
+> **Note:** Condition keys must be static strings. Dynamic values (CDK Tokens) are not supported for condition keys because AWS Backup requires literal tag key names. Condition values can be tokens.
+
 To add rules to a plan, use `addRule()`:
 
 ```ts
