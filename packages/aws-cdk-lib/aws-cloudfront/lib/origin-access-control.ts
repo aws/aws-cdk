@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
-import { IResource, Resource, Names } from '../../core';
+import type { IResource } from '../../core';
+import { Resource, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IOriginAccessControlRef, OriginAccessControlReference } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
+import type { IOriginAccessControlRef, OriginAccessControlReference } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 /**
  * Represents a CloudFront Origin Access Control

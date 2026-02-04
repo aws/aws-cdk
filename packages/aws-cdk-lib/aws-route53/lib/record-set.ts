@@ -1,19 +1,20 @@
 import { Construct } from 'constructs';
-import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
-import { CidrRoutingConfig } from './cidr-routing-config';
-import { GeoLocation } from './geo-location';
-import { IHealthCheck } from './health-check';
-import { IHostedZone } from './hosted-zone-ref';
+import type { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
+import type { CidrRoutingConfig } from './cidr-routing-config';
+import type { GeoLocation } from './geo-location';
+import type { IHealthCheck } from './health-check';
+import type { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { Annotations, CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Annotations, CustomResource, Duration, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
-import { IRecordSetRef, RecordSetReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
+import type { IRecordSetRef, RecordSetReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';

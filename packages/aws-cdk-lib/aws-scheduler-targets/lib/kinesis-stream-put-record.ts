@@ -1,7 +1,8 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IRole } from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
-import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IRole } from '../../aws-iam';
+import type * as kinesis from '../../aws-kinesis';
+import type { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
 import { Token, ValidationError } from '../../core';
 
 /**

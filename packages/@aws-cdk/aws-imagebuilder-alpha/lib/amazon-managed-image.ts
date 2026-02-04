@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { IImage, Image, ImageArchitecture, ImageType } from './image';
+import type { Construct } from 'constructs';
+import type { IImage } from './image';
+import { Image, ImageArchitecture, ImageType } from './image';
 import { LATEST_VERSION } from './private/constants';
 
 /**

@@ -1,5 +1,6 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
-import { App, Stack, Duration } from '../../core';
+import type { App } from '../../core';
+import { Stack, Duration } from '../../core';
 import * as eks from '../lib';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';
 

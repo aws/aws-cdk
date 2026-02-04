@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { RuntimeFamily } from './runtime';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { Stage, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
