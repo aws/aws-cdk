@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { Cluster, AuthenticationMode } from './cluster';
+import type { Cluster } from './cluster';
+import { AuthenticationMode } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
 import * as iam from '../../aws-iam';
@@ -299,6 +300,17 @@ export interface AlbControllerOptions {
    * @default - no additional helm chart values
    */
   readonly additionalHelmChartValues?: AlbControllerHelmChartOptions;
+
+  /**
+   * Overwrite any existing ALB controller service account.
+   *
+   * If this is set, we will use `kubectl apply` instead of `kubectl create`
+   * when the ALB controller service account is created. Otherwise, if there is already a service account
+   * named 'aws-load-balancer-controller' in the kube-system namespace, the operation will fail.
+   *
+   * @default false
+   */
+  readonly overwriteServiceAccount?: boolean;
 }
 
 /**
@@ -341,7 +353,12 @@ export class AlbController extends Construct {
     super(scope, id);
 
     const namespace = 'kube-system';
-    const serviceAccount = new ServiceAccount(this, 'alb-sa', { namespace, name: 'aws-load-balancer-controller', cluster: props.cluster });
+    const serviceAccount = new ServiceAccount(this, 'alb-sa', {
+      namespace,
+      name: 'aws-load-balancer-controller',
+      cluster: props.cluster,
+      overwriteServiceAccount: props.overwriteServiceAccount,
+    });
 
     if (props.version.custom && !props.policy) {
       throw new ValidationError("'albControllerOptions.policy' is required when using a custom controller version", this);

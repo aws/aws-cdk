@@ -1,6 +1,6 @@
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 

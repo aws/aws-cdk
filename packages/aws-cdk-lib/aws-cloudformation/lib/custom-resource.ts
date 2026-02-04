@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import * as lambda from '../../aws-lambda';
-import * as sns from '../../aws-sns';
+import type { Construct } from 'constructs';
+import type * as lambda from '../../aws-lambda';
+import type * as sns from '../../aws-sns';
 import * as core from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
