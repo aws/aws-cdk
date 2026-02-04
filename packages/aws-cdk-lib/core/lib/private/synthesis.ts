@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
@@ -12,12 +12,14 @@ import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects }
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
-import { ISynthesisSession } from '../stack-synthesizers/types';
-import { Stage, StageSynthesisOptions } from '../stage';
-import { IPolicyValidationPluginBeta1 } from '../validation';
+import type { ISynthesisSession } from '../stack-synthesizers/types';
+import type { StageSynthesisOptions } from '../stage';
+import { Stage } from '../stage';
+import type { IPolicyValidationPluginBeta1 } from '../validation';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
+import type { NamedValidationPluginReport } from '../validation/private/report';
+import { PolicyValidationReportFormatter } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';

@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cloud-assembly-api';
-import { FeatureFlagReportProperties } from '@aws-cdk/cloud-assembly-schema';
+import type { FeatureFlagReportProperties } from '@aws-cdk/cloud-assembly-schema';
 import { App } from '../lib';
 import { generateFeatureFlagReport } from '../lib/private/feature-flag-report';
 

@@ -1,4 +1,4 @@
-import { IFragmentConcatenator, IResolvable } from './resolvable';
+import type { IFragmentConcatenator, IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
 
 /**

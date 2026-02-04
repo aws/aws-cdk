@@ -3,20 +3,22 @@ import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import {
   ConditionLogicalOperator,
   PredicateLogical,
 } from '../constants';
-import {
+import type {
   Action,
-  TriggerSchedule,
   OnDemandTriggerOptions,
   WeeklyScheduleTriggerOptions,
   DailyScheduleTriggerOptions,
   CustomScheduledTriggerOptions,
   NotifyEventTriggerOptions,
   ConditionalTriggerOptions,
+} from './trigger-options';
+import {
+  TriggerSchedule,
 } from './trigger-options';
 
 /**

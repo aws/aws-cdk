@@ -1,12 +1,13 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Stack } from '../stack';
-import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
+import type { ConstructInfo } from './runtime-info';
+import { constructInfoFromConstruct } from './runtime-info';
 import { App } from '../app';
 import { RESOURCE_SYMBOL } from '../constants';
 import { MetadataType } from '../metadata-type';
 import type { Resource } from '../resource';
 import { Stage } from '../stage';
-import { IPolicyValidationPluginBeta1 } from '../validation';
+import type { IPolicyValidationPluginBeta1 } from '../validation';
 
 // We filter to only ever report on these constructs
 const ALLOWED_FQN_PREFIXES: ReadonlyArray<string> = [
@@ -16,8 +17,13 @@ const ALLOWED_FQN_PREFIXES: ReadonlyArray<string> = [
   'aws-rfdk.', 'aws-cdk-lib.', 'cdk8s.',
 ];
 
+// These metadata types are always included
+const ALLOWED_METADATA_TYPES: ReadonlySet<MetadataType> = new Set([
+  MetadataType.MIXIN,
+]);
+
 // These metadata types are included based on a Feature Flag
-const TELEMETRY_METADATA_TYPES: ReadonlySet<MetadataType> = new Set([
+const ADDITIONAL_TELEMETRY_METADATA_TYPES: ReadonlySet<MetadataType> = new Set([
   MetadataType.CONSTRUCT,
   MetadataType.METHOD,
   MetadataType.FEATURE_FLAG,
@@ -27,7 +33,14 @@ const TELEMETRY_METADATA_TYPES: ReadonlySet<MetadataType> = new Set([
  * The analytics metadata for a construct
  */
 export interface ConstructAnalytics extends ConstructInfo {
-  telemetryMetadata?: Record<string, any>[];
+  /**
+   * Metadata that is always collected.
+   */
+  metadata?: unknown[];
+  /**
+   * Additional telemetry that is conditionally collected based on a feature flag.
+   */
+  additionalTelemetry?: Record<string, any>[];
 }
 
 /**
@@ -60,8 +73,11 @@ export function constructAnalyticsFromScope(scope: IConstruct): ConstructAnalyti
     const key = `${info.fqn}@${info.version}`;
     if (uniqueMap.has(key)) {
       const existingInfo = uniqueMap.get(key);
-      if (existingInfo && existingInfo.telemetryMetadata && info.telemetryMetadata) {
-        existingInfo.telemetryMetadata.push(...info.telemetryMetadata);
+      if (existingInfo && existingInfo.additionalTelemetry && info.additionalTelemetry) {
+        existingInfo.additionalTelemetry.push(...info.additionalTelemetry);
+      }
+      if (existingInfo && existingInfo.metadata && info.metadata) {
+        existingInfo.metadata.push(...info.metadata);
       }
     } else {
       uniqueMap.set(key, info);
@@ -76,17 +92,21 @@ export function constructAnalyticsFromScope(scope: IConstruct): ConstructAnalyti
  * Filters the metadata for Construct, Method, and Feature flag metadata.
  */
 function injectAnalytics(construct: IConstruct, info: ConstructInfo): ConstructAnalytics {
-  if (!isResource(construct)) {
-    return info;
-  }
+  const metadata = new Array<unknown>();
+  const additionalTelemetry = new Array<Record<string, any>>();
 
-  const telemetryMetadata = construct.node.metadata
-    .filter((entry) => TELEMETRY_METADATA_TYPES.has(entry.type as MetadataType))
-    .map((entry) => entry.data as Record<string, any>);
+  for (const entry of construct.node.metadata) {
+    if (isResource(construct) && ADDITIONAL_TELEMETRY_METADATA_TYPES.has(entry.type as MetadataType)) {
+      additionalTelemetry.push(entry.data);
+    } else if (ALLOWED_METADATA_TYPES.has(entry.type as MetadataType)) {
+      metadata.push(entry.data);
+    }
+  }
 
   return {
     ...info,
-    telemetryMetadata,
+    metadata: metadata.length ? metadata : undefined,
+    additionalTelemetry: additionalTelemetry.length ? additionalTelemetry : undefined,
   };
 }
 

@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Resource } from '../../../../core';
-import { UserPoolIdentityProviderReference } from '../../../../interfaces/generated/aws-cognito-interfaces.generated';
+import type { UserPoolIdentityProviderReference } from '../../../../interfaces/generated/aws-cognito-interfaces.generated';
 import { StandardAttributeNames } from '../../private/attr-names';
-import { IUserPoolIdentityProvider } from '../../user-pool-idp';
-import { UserPoolIdentityProviderProps, AttributeMapping } from '../base';
+import type { IUserPoolIdentityProvider } from '../../user-pool-idp';
+import type { UserPoolIdentityProviderProps, AttributeMapping } from '../base';
 
 /**
  * Options to integrate with the various social identity providers.

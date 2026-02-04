@@ -9,10 +9,11 @@ import { CfnResource } from '../cfn-resource';
 import { AssumptionError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
-import { ConstructInfo } from './runtime-info';
-import { ConstructAnalytics, constructAnalyticsFromScope } from './stack-metadata';
+import type { ConstructInfo } from './runtime-info';
+import type { ConstructAnalytics } from './stack-metadata';
+import { constructAnalyticsFromScope } from './stack-metadata';
 
 /**
  * Construct that will render the metadata resource
@@ -22,7 +23,7 @@ export class MetadataResource extends Construct {
     super(scope, id);
     const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
     if (metadataServiceExists) {
-      const constructAnalytics = safeConstructAnalyticsFromStack(scope);
+      const constructAnalytics = filteredConstructAnalyticsFromStack(scope);
       const resource = new CfnResource(this, 'Default', {
         type: 'AWS::CDK::Metadata',
         properties: {
@@ -49,7 +50,7 @@ export class MetadataResource extends Construct {
  * For a given stack, walks the tree and finds the runtime info for all constructs within the tree.
  * Will remove certain telemetry data based on the ENABLE_ADDITIONAL_METADATA_COLLECTION feature flag.
  */
-function safeConstructAnalyticsFromStack(scope: Stack ) {
+function filteredConstructAnalyticsFromStack(scope: Stack ) {
   const includeAdditionalTelemetry = FeatureFlags.of(scope).isEnabled(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
   const constructAnalytics = constructAnalyticsFromScope(scope);
 
@@ -60,12 +61,13 @@ function safeConstructAnalyticsFromStack(scope: Stack ) {
   }
 
   // otherwise we filter it out now
-  return constructAnalytics.map(retainOnlyConstructInfo);
+  return constructAnalytics.map(retainAlwaysReportedAnalytics);
 
-  function retainOnlyConstructInfo(analytics: ConstructAnalytics): ConstructAnalytics {
+  function retainAlwaysReportedAnalytics(analytics: ConstructAnalytics): ConstructAnalytics {
     return {
       fqn: analytics.fqn,
       version: analytics.version,
+      metadata: analytics.metadata,
     };
   }
 }
@@ -109,7 +111,7 @@ class Trie extends Map<string, Trie> { }
 export function formatAnalytics(infos: ConstructAnalytics[]) {
   const trie = new Trie();
 
-  infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie, info.telemetryMetadata));
+  infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie, [info.metadata, info.additionalTelemetry].flatMap(a => a ?? [])));
 
   const plaintextEncodedConstructs = prefixEncodeTrie(trie);
   const compressedConstructsBuffer = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs));
@@ -171,7 +173,7 @@ function trieToConstructInfos(trie: Trie): ConstructInfo[] {
  * Splits after non-alphanumeric characters (e.g., '.', '/') in the FQN
  * and insert each piece of the FQN in nested map (i.e., simple trie).
  */
-function insertFqnInTrie(fqn: string, trie: Trie, metadata?: Record<string, any>[]) {
+function insertFqnInTrie(fqn: string, trie: Trie, metadata?: unknown[]) {
   for (const fqnPart of fqn.replace(/[^a-z0-9]/gi, '$& ').split(' ')) {
     const nextLevelTreeRef = trie.get(fqnPart) ?? new Trie();
     trie.set(fqnPart, nextLevelTreeRef);

@@ -1,6 +1,7 @@
-import { IAlarmAction } from './alarm-action';
-import { IResource, Resource } from '../../core';
-import { IAlarmRef, AlarmReference } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IAlarmAction } from './alarm-action';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
+import type { IAlarmRef, AlarmReference } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Interface for Alarm Rule.

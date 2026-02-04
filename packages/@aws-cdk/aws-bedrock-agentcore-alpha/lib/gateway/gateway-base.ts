@@ -1,12 +1,14 @@
-import { IResource, Resource, ResourceProps } from 'aws-cdk-lib';
-import { DimensionsMap, Metric, MetricOptions, MetricProps, Stats } from 'aws-cdk-lib/aws-cloudwatch';
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { DimensionsMap, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
+import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type { Construct } from 'constructs';
 // Internal imports
-import { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
+import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
 import { GATEWAY_GET_PERMS, GATEWAY_LIST_PERMS, GATEWAY_MANAGE_PERMS, GATEWAY_INVOKE_PERMS } from './perms';
-import { IGatewayProtocolConfig } from './protocol';
+import type { IGatewayProtocolConfig } from './protocol';
 
 /******************************************************************************
  *                                 Enums

@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
+import type { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import * as cdk from 'aws-cdk-lib/core';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { testFixture } from './util';
