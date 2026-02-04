@@ -242,6 +242,7 @@
       }
      ]
     },
+    "FilterPolicyScope": "MessageAttributes",
     "Protocol": "lambda",
     "TopicArn": {
      "Ref": "MyTopic86869434"

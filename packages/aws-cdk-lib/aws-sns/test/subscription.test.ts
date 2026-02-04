@@ -153,6 +153,32 @@ describe('Subscription', () => {
     });
   });
 
+  test('with filter policy sets FilterPolicyScope to MessageAttributes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        color: sns.SubscriptionFilter.stringFilter({
+          allowlist: ['red'],
+        }),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      FilterPolicy: {
+        color: ['red'],
+      },
+      FilterPolicyScope: 'MessageAttributes',
+    });
+  });
+
   test('with filter policy and filter policy scope MessageBody', () => {
     // GIVEN
     const stack = new cdk.Stack();
