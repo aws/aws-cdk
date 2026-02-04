@@ -67,10 +67,7 @@
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/testSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1Subnet72087287",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testSubnet1Subnet72087287"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/testSubnet1/RouteTable": [
@@ -88,10 +85,7 @@
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/testSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1RouteTableAssociation1DA9E185",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testSubnet1RouteTableAssociation1DA9E185"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway": [

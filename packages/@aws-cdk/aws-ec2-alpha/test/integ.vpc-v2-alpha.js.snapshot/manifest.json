@@ -242,10 +242,7 @@
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/NATGateway-testsbubnet/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1NATGatewaytestsbubnetNATGateway3A015DE6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VPCintegtest1NATGatewaytestsbubnetNATGateway3A015DE6"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsbubnet": [
@@ -257,10 +254,7 @@
         "/aws-cdk-vpcv2-alpha/testsbubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetSubnet77337845",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsbubnetSubnet77337845"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTable": [
@@ -278,10 +272,7 @@
         "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetRouteTableAssociationD6D083FA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsbubnetRouteTableAssociationD6D083FA"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsubnet": [
@@ -293,10 +284,7 @@
         "/aws-cdk-vpcv2-alpha/testsubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetSubnetDD417829",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnetSubnetDD417829"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsubnet/RouteTable": [
@@ -314,10 +302,7 @@
         "/aws-cdk-vpcv2-alpha/testsubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetRouteTableAssociationC106676D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnetRouteTableAssociationC106676D"
           }
         ],
         "/aws-cdk-vpcv2-alpha/validateIpv6": [
@@ -329,10 +314,7 @@
         "/aws-cdk-vpcv2-alpha/validateIpv6/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "validateIpv6Subnet07BD40AE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "validateIpv6Subnet07BD40AE"
           }
         ],
         "/aws-cdk-vpcv2-alpha/validateIpv6/RouteTable": [
@@ -350,10 +332,7 @@
         "/aws-cdk-vpcv2-alpha/validateIpv6/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "validateIpv6RouteTableAssociationD6330457",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "validateIpv6RouteTableAssociationD6330457"
           }
         ],
         "/aws-cdk-vpcv2-alpha/routeTable": [

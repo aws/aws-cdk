@@ -123,6 +123,13 @@ const disabledStack = new VpcMigrationFeatureFlagDisabledStack(appDisabled, 'Vpc
 
 // Create the integration test
 new IntegTest(app, 'VpcMigrationFeatureFlagTest', {
-  testCases: [enabledStack, disabledStack],
+  testCases: [enabledStack],
   diffAssets: true,
+  stackUpdateWorkflow: false,
+});
+
+new IntegTest(appDisabled, 'VpcMigrationFeatureFlagTestDisabled', {
+  testCases: [disabledStack],
+  diffAssets: true,
+  stackUpdateWorkflow: false,
 });

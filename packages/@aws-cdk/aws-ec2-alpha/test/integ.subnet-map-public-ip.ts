@@ -41,9 +41,10 @@ new SubnetV2(stack, 'PublicSubnetWithoutIp', {
 });
 
 // Create a private subnet with default mapPublicIpOnLaunch (should be false)
+// Use same AZ as second subnet to avoid regions with only 2 AZs
 new SubnetV2(stack, 'PrivateSubnetDefault', {
   vpc,
-  availabilityZone: cdk.Fn.select(2, cdk.Fn.getAzs()),
+  availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs()),
   ipv4CidrBlock: new IpCidr('10.0.3.0/24'),
   subnetType: SubnetType.PRIVATE_WITH_EGRESS,
   subnetName: 'PrivateSubnetDefault',

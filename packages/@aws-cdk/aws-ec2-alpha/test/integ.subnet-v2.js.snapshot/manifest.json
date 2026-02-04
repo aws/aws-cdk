@@ -67,10 +67,7 @@
         "/aws-cdk-vpcv2-alpha-new/testSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1Subnet72087287",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testSubnet1Subnet72087287"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testSubnet1/RouteTable": [
@@ -88,10 +85,7 @@
         "/aws-cdk-vpcv2-alpha-new/testSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1RouteTableAssociation1DA9E185",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testSubnet1RouteTableAssociation1DA9E185"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/Instance": [
@@ -146,10 +140,7 @@
         "/aws-cdk-vpcv2-alpha-new/Instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "InstanceC1063A87"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -213,19 +204,13 @@
         "/aws-cdk-vpcv2-alpha-new/testSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet2Subnet4681911A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testSubnet2Subnet4681911A"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet2RouteTableAssociation40DCE4CD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testSubnet2RouteTableAssociation40DCE4CD"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/BootstrapVersion": [

@@ -45,7 +45,7 @@ const importedVpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedVPC', {
 // Test adding a new subnet to the imported VPC
 new SubnetV2(stack, 'NewSubnetOnImported', {
   availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs()),
-  ipv4CidrBlock: new IpCidr('10.2.1.0/24'),
+  ipv4CidrBlock: new IpCidr('10.1.2.0/24'),
   vpc: importedVpc,
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'NewSubnetOnImported',

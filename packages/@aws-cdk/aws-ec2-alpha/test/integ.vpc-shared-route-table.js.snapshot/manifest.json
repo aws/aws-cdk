@@ -133,19 +133,13 @@
         "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnet1Subnet03067927",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnet1Subnet03067927"
           }
         ],
         "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnet1RouteTableAssociation0E73B917",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnet1RouteTableAssociation0E73B917"
           }
         ],
         "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet2": [
@@ -157,19 +151,13 @@
         "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnet2Subnet78B4B4BD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnet2Subnet78B4B4BD"
           }
         ],
         "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicSubnet2RouteTableAssociation1339F17B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublicSubnet2RouteTableAssociation1339F17B"
           }
         ],
         "/aws-cdk-ec2-alpha-shared-route-table/Exports/Output{\"Fn::GetAtt\":[\"VPCInternetGatewayIGW3C1F5485\",\"InternetGatewayId\"]}": [
@@ -222,7 +210,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a2edd0c90f99508eeb15363f040225d2aed1a26a82ec0edebe17522c9dcc371.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10970395c69d7a01502454843c3d14ad5f7bea9af7a41e4a1732f74e71a1b015.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

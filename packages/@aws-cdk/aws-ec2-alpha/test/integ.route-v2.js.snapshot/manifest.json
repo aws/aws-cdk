@@ -1118,19 +1118,13 @@
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "dynamodbSubnet81957A26",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "dynamodbSubnet81957A26"
           }
         ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "dynamodbSubnetRouteTableAssociationC38B30F3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "dynamodbSubnetRouteTableAssociationC38B30F3"
           }
         ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/testDynamoEndpoint": [
