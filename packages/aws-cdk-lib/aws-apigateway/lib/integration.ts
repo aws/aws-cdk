@@ -5,7 +5,6 @@ import * as apigwv2 from '../../aws-apigatewayv2';
 import type * as iam from '../../aws-iam';
 import { Lazy, type Duration } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { IVpcLinkRef } from '../../interfaces/generated/aws-apigateway-interfaces.generated';
 
 /**
  * The response transfer mode of the integration
