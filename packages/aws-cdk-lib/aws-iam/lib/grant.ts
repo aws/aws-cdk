@@ -2,10 +2,11 @@ import type { IConstruct, IDependable } from 'constructs';
 import { Dependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import type { IGrantable, IPrincipal } from './principals';
+import type { IEnvironmentAware } from '../../core';
 import * as cdk from '../../core';
-import { CfnResource, FeatureFlags, IEnvironmentAware, UnscopedValidationError, ValidationError } from '../../core';
+import { CfnResource, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
+import * as cxapi from '../../cx-api/index';
 import type * as iam from '../index';
-import * as cxapi from "../../cx-api/index";
 
 const POLICY_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-resource-policy-decorator');
 
@@ -436,16 +437,22 @@ export interface GrantOnKeyResult {
   readonly grant?: Grant;
 }
 
-// FIXME: look for the decorator itself, not the map
-// TODO use prop test (see aspect tests)
-function lookupDecoratorMap(scope: IConstruct): Map<string, ResourcePolicyDecorator> | undefined {
-  let decoratorMap = (scope as any)[POLICY_DECORATOR_MAP_SYMBOL];
-  let current: any = scope;
-  while (!decoratorMap && current) {
-    decoratorMap = current[POLICY_DECORATOR_MAP_SYMBOL];
-    current = (current && current.node && current.node.scope) ? current.node.scope : undefined;
+function lookupDecorator(scope: IConstruct, cfnResourceType: string): ResourcePolicyDecorator | undefined {
+  for (
+    let current: any = scope;
+    current != null;
+    current = (current.node && current.node.scope) ? current.node.scope : undefined
+  ) {
+    const decoratorMap = current[POLICY_DECORATOR_MAP_SYMBOL];
+    if (decoratorMap) {
+      const decorator = decoratorMap.get(cfnResourceType);
+      if (decorator) {
+        return decorator;
+      }
+    }
   }
-  return decoratorMap;
+
+  return undefined;
 }
 
 export class ResourceWithPolicies {
@@ -478,16 +485,15 @@ export class ResourceWithPolicies {
       return undefined;
     }
 
-    let decoratorMap = lookupDecoratorMap(resource);
-    if (decoratorMap == null) {
+    const cfnResourceType = (resource as CfnResource).cfnResourceType;
+    let decorator = lookupDecorator(resource, cfnResourceType);
+    if (decorator == null) {
       if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
         const msg = `Couldn't find ResourceWithPolicies trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
         throw new ValidationError(msg, resource);
       }
-      decoratorMap = DefaultPolicyDecorators.INSTANCE;
+      decorator = DefaultPolicyDecorators.INSTANCE.get(cfnResourceType);
     }
-
-    const decorator = decoratorMap.get((resource as CfnResource).cfnResourceType);
     if (decorator != null) {
       const resourceWithPolicy = (decorator as ResourcePolicyDecorator).decorate(resource);
       ResourceWithPolicies.instances.set(resource, resourceWithPolicy);
