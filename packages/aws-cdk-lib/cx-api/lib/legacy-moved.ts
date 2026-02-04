@@ -33,9 +33,8 @@ import {
   CloudAssemblyBuilder as CloudAssemblyBuilder_,
   CloudFormationStackArtifact as CloudFormationStackArtifact_,
   ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
-  EnvironmentPlaceholders,
-  EnvironmentUtils,
-  LoadBalancerIpAddressType,
+  EnvironmentUtils as EnvironmentUtils_,
+  EnvironmentPlaceholders as EnvironmentPlaceholders_,
   NestedCloudAssemblyArtifact as NestedCloudAssemblyArtifact_,
   PATH_METADATA_KEY,
   PROVIDER_ERROR_KEY,
@@ -43,22 +42,10 @@ import {
   TreeCloudArtifact as TreeCloudArtifact_,
   UNKNOWN_ACCOUNT,
   UNKNOWN_REGION,
-  VpcSubnetGroupType,
   type AmiContextResponse,
   type AvailabilityZonesContextResponse,
-  type EndpointServiceAvailabilityZonesContextQuery,
   type EndpointServiceAvailabilityZonesContextResponse,
-  type EnvironmentPlaceholderValues,
-  type IEnvironmentPlaceholderProvider,
-  type KeyContextResponse,
-  type LoadBalancerContextResponse,
-  type LoadBalancerListenerContextResponse,
-  type MetadataEntry,
-  type SecurityGroupContextResponse,
   type StackMetadata,
-  type VpcContextResponse,
-  type VpcSubnet,
-  type VpcSubnetGroup,
 } from '@aws-cdk/cloud-assembly-api';
 import type * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
@@ -79,30 +66,15 @@ export {
   ASSET_RESOURCE_METADATA_PROPERTY_KEY,
   AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY,
   ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
-  EnvironmentPlaceholders,
-  EnvironmentUtils,
-  LoadBalancerIpAddressType,
   PATH_METADATA_KEY,
   PROVIDER_ERROR_KEY,
   SSMPARAM_NO_INVALIDATE,
   UNKNOWN_ACCOUNT,
   UNKNOWN_REGION,
-  VpcSubnetGroupType,
   AmiContextResponse,
   AvailabilityZonesContextResponse,
-  EndpointServiceAvailabilityZonesContextQuery,
   EndpointServiceAvailabilityZonesContextResponse,
-  EnvironmentPlaceholderValues,
-  IEnvironmentPlaceholderProvider,
-  KeyContextResponse,
-  LoadBalancerContextResponse,
-  LoadBalancerListenerContextResponse,
-  MetadataEntry,
-  SecurityGroupContextResponse,
   StackMetadata,
-  VpcContextResponse,
-  VpcSubnet,
-  VpcSubnetGroup,
 };
 
 // ----------------------------------------------------------------------
@@ -125,12 +97,18 @@ export {
 // This is an indication of a missing jsii feature, that we might or might not build.
 // For now, this'll do (pig).
 
+/**
+ * @deprecated The official definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
 export interface SynthesisMessage {
   readonly level: SynthesisMessageLevel;
   readonly id: string;
   readonly entry: cxschema.MetadataEntry;
 }
 
+/**
+ * @deprecated The official definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
 export enum SynthesisMessageLevel {
   INFO = 'info',
   WARNING = 'warning',
@@ -573,6 +551,10 @@ export declare class NestedCloudAssemblyArtifact extends CloudArtifact {
    * Display name
    */
   readonly displayName: string;
+  /**
+   * The nested Assembly
+   */
+  readonly nestedAssembly: CloudAssembly;
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest);
   /**
    * Full path to the nested assembly directory
@@ -605,6 +587,9 @@ export declare class TreeCloudArtifact extends CloudArtifact {
 }
 exports.TreeCloudArtifact = TreeCloudArtifact_;
 
+/**
+ * @deprecated The official definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
 export interface MetadataEntryResult extends cxschema.MetadataEntry {
   /**
    * The path in which this entry was defined.
@@ -614,6 +599,8 @@ export interface MetadataEntryResult extends cxschema.MetadataEntry {
 
 /**
  * Models an AWS execution environment, for use within the CDK toolkit.
+ *
+ * @deprecated The official definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
  */
 export interface Environment {
   /** The arbitrary name of this environment (user-set, or at least user-meaningful) */
@@ -730,4 +717,416 @@ export interface AssemblyBuildOptions {
  * @see core.ConstructNode.synth
  */
 export interface RuntimeInfo extends cxschema.RuntimeInfo {
+}
+
+/**
+ * Placeholders which can be used manifests
+ *
+ * These can occur both in the Asset Manifest as well as the general
+ * Cloud Assembly manifest.
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export declare class EnvironmentPlaceholders {
+  /**
+   * Insert this into the destination fields to be replaced with the current region
+   */
+  static readonly CURRENT_REGION = '${AWS::Region}';
+  /**
+   * Insert this into the destination fields to be replaced with the current account
+   */
+  static readonly CURRENT_ACCOUNT = '${AWS::AccountId}';
+  /**
+   * Insert this into the destination fields to be replaced with the current partition
+   */
+  static readonly CURRENT_PARTITION = '${AWS::Partition}';
+  /**
+   * Replace the environment placeholders in all strings found in a complex object.
+   *
+   * Duplicated between cdk-assets and aws-cdk CLI because we don't have a good single place to put it
+   * (they're nominally independent tools).
+   */
+  static replace(object: any, values: EnvironmentPlaceholderValues): any;
+  /**
+   * Like 'replace', but asynchronous
+   */
+  static replaceAsync(object: any, provider: IEnvironmentPlaceholderProvider): Promise<any>;
+  private static recurse;
+}
+exports.EnvironmentPlaceholders = EnvironmentPlaceholders_;
+
+/**
+ * Return the appropriate values for the environment placeholders
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface EnvironmentPlaceholderValues {
+  /**
+   * Return the region
+   */
+  readonly region: string;
+  /**
+   * Return the account
+   */
+  readonly accountId: string;
+  /**
+   * Return the partition
+   */
+  readonly partition: string;
+}
+/**
+ * Return the appropriate values for the environment placeholders
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface IEnvironmentPlaceholderProvider {
+  /**
+   * Return the region
+   */
+  region(): Promise<string>;
+  /**
+   * Return the account
+   */
+  accountId(): Promise<string>;
+  /**
+   * Return the partition
+   */
+  partition(): Promise<string>;
+}
+
+/**
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export declare class EnvironmentUtils {
+  static parse(environment: string): Environment;
+  /**
+   * Build an environment object from an account and region
+   */
+  static make(account: string, region: string): Environment;
+  /**
+   * Format an environment string from an account and region
+   */
+  static format(account: string, region: string): string;
+}
+exports.EnvironmentUtils = EnvironmentUtils_;
+
+/**
+ * Properties of a discovered SecurityGroup.
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface SecurityGroupContextResponse {
+  /**
+   * The security group's id.
+   */
+  readonly securityGroupId: string;
+  /**
+   * Whether the security group allows all outbound traffic. This will be true
+   * when the security group has all-protocol egress permissions to access both
+   * `0.0.0.0/0` and `::/0`.
+   */
+  readonly allowAllOutbound: boolean;
+}
+
+/**
+ * The type of subnet group.
+ * Same as SubnetType in the aws-cdk-lib/aws-ec2 package,
+ * but we can't use that because of cyclical dependencies.
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export declare enum VpcSubnetGroupType {
+  /** Public subnet group type. */
+  PUBLIC = 'Public',
+  /** Private subnet group type. */
+  PRIVATE = 'Private',
+  /** Isolated subnet group type. */
+  ISOLATED = 'Isolated',
+}
+/**
+ * A subnet representation that the VPC provider uses.
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface VpcSubnet {
+  /** The identifier of the subnet. */
+  readonly subnetId: string;
+  /**
+   * The code of the availability zone this subnet is in
+   * (for example, 'us-west-2a').
+   */
+  readonly availabilityZone: string;
+  /** The identifier of the route table for this subnet. */
+  readonly routeTableId: string;
+  /**
+   * CIDR range of the subnet
+   *
+   * @default - CIDR information not available
+   */
+  readonly cidr?: string;
+}
+/**
+ * A group of subnets returned by the VPC provider.
+ * The included subnets do NOT have to be symmetric!
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface VpcSubnetGroup {
+  /**
+   * The name of the subnet group,
+   * determined by looking at the tags of of the subnets
+   * that belong to it.
+   */
+  readonly name: string;
+  /** The type of the subnet group. */
+  readonly type: VpcSubnetGroupType;
+  /**
+   * The subnets that are part of this group.
+   * There is no condition that the subnets have to be symmetric
+   * in the group.
+   */
+  readonly subnets: VpcSubnet[];
+}
+/**
+ * Properties of a discovered VPC
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface VpcContextResponse {
+  /**
+   * VPC id
+   */
+  readonly vpcId: string;
+  /**
+   * VPC cidr
+   *
+   * @default - CIDR information not available
+   */
+  readonly vpcCidrBlock?: string;
+  /**
+   * AZs
+   */
+  readonly availabilityZones: string[];
+  /**
+   * IDs of all public subnets
+   *
+   * Element count: #(availabilityZones) · #(publicGroups)
+   */
+  readonly publicSubnetIds?: string[];
+  /**
+   * Name of public subnet groups
+   *
+   * Element count: #(publicGroups)
+   */
+  readonly publicSubnetNames?: string[];
+  /**
+   * Route Table IDs of public subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(publicGroups)
+   */
+  readonly publicSubnetRouteTableIds?: string[];
+  /**
+   * IDs of all private subnets
+   *
+   * Element count: #(availabilityZones) · #(privateGroups)
+   */
+  readonly privateSubnetIds?: string[];
+  /**
+   * Name of private subnet groups
+   *
+   * Element count: #(privateGroups)
+   */
+  readonly privateSubnetNames?: string[];
+  /**
+   * Route Table IDs of private subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(privateGroups)
+   */
+  readonly privateSubnetRouteTableIds?: string[];
+  /**
+   * IDs of all isolated subnets
+   *
+   * Element count: #(availabilityZones) · #(isolatedGroups)
+   */
+  readonly isolatedSubnetIds?: string[];
+  /**
+   * Name of isolated subnet groups
+   *
+   * Element count: #(isolatedGroups)
+   */
+  readonly isolatedSubnetNames?: string[];
+  /**
+   * Route Table IDs of isolated subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(isolatedGroups)
+   */
+  readonly isolatedSubnetRouteTableIds?: string[];
+  /**
+   * The VPN gateway ID
+   */
+  readonly vpnGatewayId?: string;
+  /**
+   * The subnet groups discovered for the given VPC.
+   * Unlike the above properties, this will include asymmetric subnets,
+   * if the VPC has any.
+   * This property will only be populated if `VpcContextQuery.returnAsymmetricSubnets`
+   * is true.
+   *
+   * @default - no subnet groups will be returned unless `VpcContextQuery.returnAsymmetricSubnets` is true
+   */
+  readonly subnetGroups?: VpcSubnetGroup[];
+  /**
+   * The region in which the VPC is in.
+   *
+   * @default - Region of the parent stack
+   */
+  readonly region?: string;
+  /**
+   * The ID of the AWS account that owns the VPC.
+   *
+   * @default the account id of the parent stack
+   */
+  readonly ownerAccountId?: string;
+}
+
+/**
+ * Load balancer ip address type.
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export declare enum LoadBalancerIpAddressType {
+  /**
+   * IPV4 ip address
+   */
+  IPV4 = 'ipv4',
+  /**
+   * Dual stack address
+   */
+  DUAL_STACK = 'dualstack',
+  /**
+   * IPv6 only public addresses, with private IPv4 and IPv6 addresses
+   */
+  DUAL_STACK_WITHOUT_PUBLIC_IPV4 = 'dualstack-without-public-ipv4',
+}
+/**
+ * Properties of a discovered load balancer
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface LoadBalancerContextResponse {
+  /**
+   * The ARN of the load balancer.
+   */
+  readonly loadBalancerArn: string;
+  /**
+   * The hosted zone ID of the load balancer's name.
+   */
+  readonly loadBalancerCanonicalHostedZoneId: string;
+  /**
+   * Load balancer's DNS name
+   */
+  readonly loadBalancerDnsName: string;
+  /**
+   * Type of IP address
+   */
+  readonly ipAddressType: LoadBalancerIpAddressType;
+  /**
+   * Load balancer's security groups
+   */
+  readonly securityGroupIds: string[];
+  /**
+   * Load balancer's VPC
+   */
+  readonly vpcId: string;
+}
+/**
+ * Properties of a discovered load balancer listener.
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface LoadBalancerListenerContextResponse {
+  /**
+   * The ARN of the listener.
+   */
+  readonly listenerArn: string;
+  /**
+   * The port the listener is listening on.
+   */
+  readonly listenerPort: number;
+  /**
+   * The security groups of the load balancer.
+   */
+  readonly securityGroupIds: string[];
+}
+
+/**
+ * Properties of a discovered key
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface KeyContextResponse {
+  /**
+   * Id of the key
+   */
+  readonly keyId: string;
+}
+
+/**
+ * Query to hosted zone context provider
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface EndpointServiceAvailabilityZonesContextQuery {
+  /**
+   * Query account
+   */
+  readonly account?: string;
+  /**
+   * Query region
+   */
+  readonly region?: string;
+  /**
+   * Query service name
+   */
+  readonly serviceName?: string;
+}
+
+/**
+ * Backwards compatibility for when `MetadataEntry`
+ * was defined here. This is necessary because its used as an input in the stable
+ * @aws-cdk/core library.
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ * @see core.ConstructNode.metadata
+ */
+export interface MetadataEntry extends cxschema.MetadataEntry {
+}
+
+/**
+ * Artifact properties for CloudFormation stacks.
+ *
+ * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
+ */
+export interface AwsCloudFormationStackProperties {
+  /**
+   * A file relative to the assembly root which contains the CloudFormation template for this stack.
+   */
+  readonly templateFile: string;
+  /**
+   * Values for CloudFormation stack parameters that should be passed when the stack is deployed.
+   */
+  readonly parameters?: {
+    [id: string]: string;
+  };
+  /**
+   * The name to use for the CloudFormation stack.
+   * @default - name derived from artifact ID
+   */
+  readonly stackName?: string;
+  /**
+   * Whether to enable termination protection for this stack.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
 }
