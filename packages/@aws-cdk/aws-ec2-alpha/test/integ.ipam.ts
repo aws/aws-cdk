@@ -40,8 +40,7 @@ const pool2 = ipam.publicScope.addPool('PublicPool0', {
   locale: cdk.Stack.of(stack).region,
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
-// Don't pre-provision CIDR - let VPC allocate directly from Amazon's pool
-// This avoids the CIDR deallocation timing issue on cleanup
+pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 } );
 
 /** Test Ipv4 Primary and Secondary address IpvIPAM */
 const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
@@ -78,7 +77,9 @@ new SubnetV2(stack, 'testsbubnet', {
 
 /**
  * Integ test for VPC with IPAM pool
+ * Note: This test should NOT auto-cleanup due to IPAM CIDR deallocation timing issues
  */
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
+  stackUpdateWorkflow: false,
 });
