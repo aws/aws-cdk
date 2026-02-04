@@ -18,7 +18,10 @@ class SnsToLambda extends cdk.Stack {
     });
 
     topic.addSubscription(new subs.LambdaSubscription(func, {
-      deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue'),
+      // Security Guardian compliant - using SQS managed encryption for dead letter queue
+      deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue', {
+        encryption: sqs.QueueEncryption.SQS_MANAGED,
+      }),
     }));
 
     const funcFiltered = new lambda.Function(this, 'Filtered', {
