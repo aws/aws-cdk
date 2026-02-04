@@ -6,8 +6,8 @@ import type { Duration, SecretValue } from '../../../core';
 import { Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
-import type { IListenerAction } from '../shared/listener-action';
 import { ApplicationProtocol } from '../shared/enums';
+import type { IListenerAction } from '../shared/listener-action';
 
 /**
  * What to do when a client makes a request to a listener
