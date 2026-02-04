@@ -1,8 +1,8 @@
 import { Lazy, Names, Stack, Tags } from 'aws-cdk-lib';
 import { Effect, PolicyStatement, ServicePrincipal, PolicyDocument } from 'aws-cdk-lib/aws-iam';
-import { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as xray from 'aws-cdk-lib/aws-xray';
 import { Construct } from 'constructs';
 

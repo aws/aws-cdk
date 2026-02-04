@@ -5,9 +5,10 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { LoggingConfig, configureTracingDelivery, configureLoggingDelivery } from './observability';
 import type { Construct } from 'constructs';
 import type { RuntimeAuthorizerConfiguration } from './inbound-auth/runtime-authorizer-configuration';
+import type { LoggingConfig } from './observability';
+import { configureTracingDelivery, configureLoggingDelivery } from './observability';
 import {
   RUNTIME_LOGS_GROUP_ACTIONS,
   RUNTIME_LOGS_DESCRIBE_ACTIONS,
