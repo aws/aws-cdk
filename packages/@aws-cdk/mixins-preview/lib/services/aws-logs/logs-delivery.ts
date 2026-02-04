@@ -1,4 +1,4 @@
-import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Aws, Names, Stack, Tags, Token } from 'aws-cdk-lib/core';
 import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -9,6 +9,7 @@ import { ConstructSelector, Mixins } from '../../core';
 import * as xray from '../aws-xray/policy';
 import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
 import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The individual elements of a logs delivery integration.
@@ -21,7 +22,7 @@ export interface ILogsDeliveryConfig {
   /**
    *  The logs delivery destination.
    */
-  readonly deliveryDestination: logs.IDeliveryDestinationRef;
+  readonly deliveryDestination?: logs.IDeliveryDestinationRef;
   /**
    *  The logs delivery
    */
@@ -471,6 +472,41 @@ export class XRayLogsDelivery implements ILogsDelivery {
         },
       },
     }));
+  }
+}
+
+/**
+ * Delivers vended logs to a CfnDeliveryDestination specified by an arn.
+ */
+export class DestinationLogsDelivery implements ILogsDelivery {
+  /**
+   * Creates a new Destination delivery.
+   */
+  private readonly destinationArn: string;
+  constructor(destinationArn: string) {
+    this.destinationArn = destinationArn;
+  }
+
+  /**
+   * Binds Delivery Destination to a source resource for the purposes of log delivery and creates a delivery source and a connection between the source and the destination.
+   */
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const destName = Arn.split(this.destinationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
+    const uniqueName = destName && !Token.isUnresolved(destName) ? destName : `Dest${md5hash(this.destinationArn)}`;
+    const container = new Construct(scope, deliveryId(uniqueName, logType, scope, deliverySource));
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: this.destinationArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(deliverySource);
+
+    return {
+      deliverySource,
+      delivery,
+    };
   }
 }
 

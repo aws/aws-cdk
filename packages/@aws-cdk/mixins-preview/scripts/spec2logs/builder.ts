@@ -137,6 +137,24 @@ class LogsHelper extends ClassType {
   }
 
   public build(mixin: LogsMixin) {
+    const toDest = this.addMethod({
+      name: 'toDestination',
+      returnType: mixin.type,
+      docs: {
+        summary: 'Send logs to a destination with a specified arn',
+      },
+    });
+
+    const paramDest = toDest.addParameter({
+      name: 'destinationArn',
+      type: Type.STRING,
+    });
+
+    toDest.addBody(stmt.block(
+      stmt.ret(
+        mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.DestLogsDelivery, paramDest)),
+      ),
+    ));
     for (const dest of this.log.destinations) {
       switch (dest.destinationType) {
         case 'S3':

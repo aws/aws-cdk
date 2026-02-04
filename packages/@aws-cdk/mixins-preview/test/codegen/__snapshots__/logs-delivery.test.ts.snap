@@ -18,6 +18,15 @@ import * as service from "aws-cdk-lib/aws-some";
  */
 export class CfnThingApplicationLogs {
   /**
+   * Send logs to a destination with a specified arn
+   */
+  public toDestination(destinationArn: string): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.DestinationLogsDelivery(destinationArn));
+    }
+  }
+
+  /**
    * Send logs to an S3 Bucket
    */
   public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: logsDelivery.IS3LogsDestinationProps): CfnThingLogsMixin {
@@ -56,6 +65,15 @@ export class CfnThingApplicationLogs {
  * @stability external
  */
 export class CfnThingAccessLogs {
+  /**
+   * Send logs to a destination with a specified arn
+   */
+  public toDestination(destinationArn: string): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.DestinationLogsDelivery(destinationArn));
+    }
+  }
+
   /**
    * Send logs to an S3 Bucket
    */
