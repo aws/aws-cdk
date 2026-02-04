@@ -330,13 +330,19 @@ export class PartitionProjectionConfiguration {
       );
     }
 
-    // Validate no empty strings
     for (let i = 0; i < props.values.length; i++) {
       const value = props.values[i];
-      if (!Token.isUnresolved(value) && value.trim() === '') {
-        throw new UnscopedValidationError(
-          'ENUM partition projection values must not contain empty strings',
-        );
+      if (!Token.isUnresolved(value)) {
+        if (value.trim() === '') {
+          throw new UnscopedValidationError(
+            'ENUM partition projection values must not contain empty strings',
+          );
+        }
+        if (value.includes(',')) {
+          throw new UnscopedValidationError(
+            `ENUM partition projection values must not contain commas because the values are serialized as a comma-separated list, got: '${value}'`,
+          );
+        }
       }
     }
 

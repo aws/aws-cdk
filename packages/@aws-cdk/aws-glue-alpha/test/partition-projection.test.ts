@@ -91,5 +91,14 @@ describe('PartitionProjectionConfiguration Validation', () => {
         glue.PartitionProjectionConfiguration.enum({ values });
       }).toThrow('ENUM partition projection values must not contain empty strings');
     });
+
+    test.each([
+      [['value,with,commas', 'normal'], 0],
+      [['normal', 'also,bad'], 1],
+    ])('throws when values=%p contains comma at index %p', (values, index) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.enum({ values });
+      }).toThrow(`ENUM partition projection values must not contain commas because the values are serialized as a comma-separated list, got: '${values[index]}'`);
+    });
   });
 });
