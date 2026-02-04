@@ -107,8 +107,8 @@ export interface ParameterGroupProps {
 
 /**
  * A parameter group.
- * Represents both a cluster parameter group,
- * and an instance parameter group.
+ * Represents both a cluster parameter group (AWS::RDS::DBClusterParameterGroup),
+ * and an instance parameter group (AWS::RDS::DBParameterGroup).
  *
  * @resource AWS::RDS::DBParameterGroup
  */
