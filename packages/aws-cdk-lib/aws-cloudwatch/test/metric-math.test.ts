@@ -110,6 +110,42 @@ describe('Metric Math', () => {
     });
   });
 
+  test('math expression with CDK token does not produce warning', () => {
+    const m = new MathExpression({
+      expression: 'TIME_SERIES(${Token[TOKEN.81]})',
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('math expression with multiple CDK tokens does not produce warning', () => {
+    const m = new MathExpression({
+      expression: '${Token[TOKEN.1]} + ${Token[TOKEN.2]}',
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('math expression with CDK token and real identifier warns only about real identifier', () => {
+    const m = new MathExpression({
+      expression: 'm1 + ${Token[TOKEN.81]}',
+    });
+
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:UnknownIdentifier': expect.stringContaining('references unknown identifiers: m1'),
+    });
+    // Should NOT mention "oken" as an unknown identifier (only "m1" should be listed)
+    expect(m.warningsV2?.['CloudWatch:Math:UnknownIdentifier']).not.toMatch(/identifiers:.*oken/);
+  });
+
+  test('math expression with complex token pattern does not produce warning', () => {
+    const m = new MathExpression({
+      expression: 'SUM([${Token[TOKEN.123]}, ${Token[TOKEN.456]}])',
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
   test('metrics METRICS expression does not produce warning for unknown identifier', () => {
     const m = new MathExpression({
       expression: 'SUM(METRICS())',
