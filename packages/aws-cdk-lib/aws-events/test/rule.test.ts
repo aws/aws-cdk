@@ -1369,6 +1369,39 @@ describe('rule tagging', () => {
       ]),
     });
   });
+
+  test('disabled rule with targets can be tagged (issue #4907 comment scenario)', () => {
+    // GIVEN - exact scenario from user comment on issue #4907
+    const stack = new cdk.Stack();
+    const resource = new Construct(stack, 'Resource');
+
+    // WHEN - matches the Python code from the comment:
+    // self.poller_rule = aws_events.Rule(
+    //     self, "PollerRule",
+    //     schedule=aws_events.Schedule.rate(duration=Duration.minutes(1)),
+    //     targets=[aws_events_targets.LambdaFunction(self.poller)],
+    //     enabled=False,
+    // )
+    // Tags.of(self.poller_rule).add('purpose', 'poller-rule')
+    const rule = new Rule(stack, 'PollerRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      targets: [new SomeTarget('T1', resource)],
+      enabled: false,
+    });
+    cdk.Tags.of(rule).add('purpose', 'poller-rule');
+
+    // THEN - tags should appear in the synthesized template
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      ScheduleExpression: 'rate(1 minute)',
+      State: 'DISABLED',
+      Targets: Match.arrayWith([
+        Match.objectLike({ Id: 'T1' }),
+      ]),
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'purpose', Value: 'poller-rule' }),
+      ]),
+    });
+  });
 });
 
 class SomeTarget implements IRuleTarget {
