@@ -5124,7 +5124,7 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
   }).toThrow(/Invalid Capacity Provider Name: EcsCp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 
   expect(() => {
-    // WHEN Capacity Provider define capacityProviderName start with Ecs.
+    // WHEN Capacity Provider define capacityProviderName start with Fargate.
     const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-6', {
       autoScalingGroup: autoScalingGroupAl2,
       enableManagedTerminationProtection: false,
