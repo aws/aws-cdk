@@ -198,7 +198,13 @@ export class AssetStaging extends Construct {
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
       skip = !Stack.of(this).bundlingRequired;
-      const bundling = props.bundling;
+      let bundling = props.bundling;
+
+      const fixOwnership = this.node.tryGetContext(cxapi.BUNDLING_FIX_DOCKER_OWNERSHIP);
+      if (fixOwnership && bundling.fixOwnership === undefined) {
+        bundling = { ...bundling, fixOwnership: true };
+      }
+
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {
       stageThisAsset = () => this.stageByCopying();
@@ -662,7 +668,7 @@ function determineBundledAsset(scope: Construct, bundleDir: string, outputType: 
  * Loop through ARCHIVE_EXTENSIONS for valid archive extensions.
  */
 function getExtension(source: string): string {
-  for ( const ext of ARCHIVE_EXTENSIONS ) {
+  for (const ext of ARCHIVE_EXTENSIONS) {
     if (source.toLowerCase().endsWith(ext)) {
       return ext;
     }
