@@ -1764,6 +1764,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [BUNDLING_FIX_DOCKER_OWNERSHIP]: {
+    type: FlagType.BugFix,
+    summary: 'Fix file ownership issues when bundling assets on Linux',
+    detailsMd: `
+      When enabled, bundled asset files will have their ownership changed to the host user's
+      UID/GID after Docker bundling completes. This fixes the issue where files created inside
+      Docker containers are owned by root on the host system, which can cause permission issues.
+
+      This only affects Linux hosts; other platforms handle file ownership differently.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
 };
 
 export const CURRENT_MV = 'v2';
