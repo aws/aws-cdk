@@ -60,7 +60,7 @@ import {
   type VpcSubnet,
   type VpcSubnetGroup,
 } from '@aws-cdk/cloud-assembly-api';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import type * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
 export {
   ASSET_PREFIX_SEPARATOR,
@@ -163,6 +163,9 @@ export interface MissingContext {
   readonly props: Record<string, any>;
 }
 
+/**
+ * Represents a deployable cloud application.
+ */
 export declare class CloudAssembly implements cxschema.ICloudAssembly {
   /**
    * Return whether the given object is a CloudAssembly.
@@ -495,6 +498,9 @@ export declare class CloudFormationStackArtifact extends CloudArtifact {
 }
 exports.CloudFormationStackArtifact = CloudFormationStackArtifact_;
 
+/**
+ * Asset manifest is a description of a set of assets which need to be built and published
+ */
 export declare class AssetManifestArtifact extends CloudArtifact {
   /**
    * Checks if `art` is an instance of this class.
@@ -606,6 +612,9 @@ export interface MetadataEntryResult extends cxschema.MetadataEntry {
   readonly path: string;
 }
 
+/**
+ * Models an AWS execution environment, for use within the CDK toolkit.
+ */
 export interface Environment {
   /** The arbitrary name of this environment (user-set, or at least user-meaningful) */
   readonly name: string;

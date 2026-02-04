@@ -1,5 +1,5 @@
 import type { CloudAssemblyBuilder } from '@aws-cdk/cloud-assembly-api';
-import type { ArtifactType, FeatureFlag } from '@aws-cdk/cloud-assembly-schema';
+import { ArtifactType, type FeatureFlag } from '@aws-cdk/cloud-assembly-schema';
 import type { IConstruct } from 'constructs';
 import * as feats from '../../../cx-api/lib/features';
 import type { FlagInfo } from '../../../cx-api/lib/private/flag-modeling';

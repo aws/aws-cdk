@@ -1,11 +1,11 @@
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
-import type { IConstruct, Construct, Node } from 'constructs';
+import { type IConstruct, Construct, Node } from 'constructs';
 import type { Environment } from './environment';
 import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
-import type { IPropertyInjector, PropertyInjectors } from './prop-injectors';
+import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import type { IPolicyValidationPluginBeta1 } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
