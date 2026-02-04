@@ -738,13 +738,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Grant a predefined set of permissions on this Table.
    */
   public get grants(): TableGrants {
-    return new TableGrants({
-      table: this,
-      encryptedResource: this,
-      policyResource: this,
-      regions: this.regions,
-      hasIndex: this.hasIndex,
-    });
+    return TableGrants.fromTable(this, this.regions, this.hasIndex);
   }
 
   /**

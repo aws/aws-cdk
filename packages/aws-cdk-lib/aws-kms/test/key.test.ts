@@ -446,10 +446,40 @@ describe('key policies', () => {
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
             Resource: '*',
           },
+          // Add this statement even if there is no policy decorator explicitly registered,
+          {
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+            Resource: '*',
+          },
         ],
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('grant encrypt permission to service principal (L1) without policy decorator throws when feature flag disabled', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { [cxapi.AUTOMATIC_L1_TRAITS]: false } });
+    const stack = new cdk.Stack(app, 'Stack');
+    const key = new kms.CfnKey(stack, 'Key', {
+      keyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    const principal = new ServicePrincipal('ec2.amazonaws.com');
+
+    // WHEN / THEN
+    expect(() => KeyGrants.fromKey(key).encrypt(principal)).toThrow();
   });
 
   test('grant multiple permissions to an L1', () => {

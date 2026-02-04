@@ -1,7 +1,12 @@
+import type { IConstruct } from 'constructs';
 import type { ITableRef } from './dynamodb.generated';
+import { CfnTable } from './dynamodb.generated';
 import * as perms from './perms';
+import type { IResourceWithPolicyV2, ResourcePolicyDecorator } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { Stack } from '../../core';
+import { DefaultPolicyDecorators } from '../../aws-iam';
+import type { ResourceEnvironment } from '../../core';
+import { Stack, Token, ValidationError } from '../../core';
 
 /**
  * Construction properties for TableGrants
@@ -47,6 +52,16 @@ export interface TableGrantsProps {
  * A set of permissions to grant on a Table
  */
 export class TableGrants {
+  public static fromTable(table: ITableRef, regions?: string[], hasIndex?: boolean): TableGrants {
+    return new TableGrants({
+      table,
+      encryptedResource: (iam.GrantableResources.isEncryptedResource(table) ? table : undefined),
+      policyResource: iam.ResourceWithPolicies.of(table),
+      regions,
+      hasIndex,
+    });
+  }
+
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
   private readonly encryptedResource?: iam.IEncryptedResource;
@@ -175,3 +190,40 @@ export class TableGrants {
     return result;
   }
 }
+
+export class TablePolicyDecorator implements ResourcePolicyDecorator {
+  static {
+    DefaultPolicyDecorators.INSTANCE.set('AWS::DynamoDB::Table', new TablePolicyDecorator());
+  }
+
+  public decorate(resource: IConstruct): IResourceWithPolicyV2 {
+    if (!CfnTable.isCfnTable(resource)) {
+      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
+    }
+
+    return new CfnTableWithPolicy(resource);
+  }
+}
+
+class CfnTableWithPolicy implements iam.IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+
+  constructor(private readonly table: CfnTable) {
+    this.env = table.env;
+  }
+
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (Token.isResolved(this.table.resourcePolicy)) {
+      const current = this.table.resourcePolicy?.policyDocument ?? { Statement: [] };
+      const policyDocument = iam.PolicyDocument.fromJson(current);
+      policyDocument.addStatements(statement);
+      this.table.resourcePolicy = {
+        policyDocument: policyDocument.toJSON(),
+      };
+
+      return { statementAdded: true, policyDependable: this.table };
+    }
+    return { statementAdded: false };
+  }
+}
+

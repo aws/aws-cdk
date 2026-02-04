@@ -9,8 +9,9 @@ import type {
   ResourcePolicyDecorator,
 } from '../../aws-iam';
 import * as iam from '../../aws-iam';
+import { DefaultPolicyDecorators } from '../../aws-iam';
 import type { ResourceEnvironment } from '../../core';
-import { FeatureFlags, Stack, ValidationError } from '../../core';
+import { Token, FeatureFlags, Stack, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
 
@@ -185,27 +186,38 @@ export class KeyGrants {
 }
 
 export class KeyPolicyDecorator implements ResourcePolicyDecorator {
+  static {
+    DefaultPolicyDecorators.INSTANCE.set('AWS::KMS::Key', new KeyPolicyDecorator());
+  }
+
   public decorate(resource: IConstruct): IResourceWithPolicyV2 {
     if (!CfnKey.isCfnKey(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnKey`, resource);
     }
+
     return new CfnKeyWithPolicy(resource);
   }
 }
 
 class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
+  private policyDocument?: iam.PolicyDocument;
 
   constructor(private readonly key: CfnKey) {
     this.env = key.env;
   }
 
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-    const currentPolicy = this.key.keyPolicy ?? { Statement: [] };
-    const policyDocument = iam.PolicyDocument.fromJson(currentPolicy);
-    policyDocument.addStatements(statement);
-    this.key.keyPolicy = policyDocument.toJSON();
+    if (Token.isResolved(this.key.keyPolicy)) {
+      if (this.policyDocument == null) {
+        this.policyDocument = iam.PolicyDocument.fromJson(this.key.keyPolicy ?? { Statement: [] });
+      }
 
-    return { statementAdded: true, policyDependable: policyDocument };
+      this.policyDocument.addStatements(statement);
+      this.key.keyPolicy = this.policyDocument.toJSON();
+
+      return { statementAdded: true, policyDependable: this.policyDocument };
+    }
+    return { statementAdded: false };
   }
 }

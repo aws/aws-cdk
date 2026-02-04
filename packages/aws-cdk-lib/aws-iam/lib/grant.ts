@@ -2,10 +2,10 @@ import type { IConstruct, IDependable } from 'constructs';
 import { Dependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import type { IGrantable, IPrincipal } from './principals';
-import type { IEnvironmentAware } from '../../core';
 import * as cdk from '../../core';
-import { CfnResource } from '../../core';
+import { CfnResource, FeatureFlags, IEnvironmentAware, UnscopedValidationError, ValidationError } from '../../core';
 import type * as iam from '../index';
+import * as cxapi from "../../cx-api/index";
 
 const POLICY_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-resource-policy-decorator');
 
@@ -436,6 +436,18 @@ export interface GrantOnKeyResult {
   readonly grant?: Grant;
 }
 
+// FIXME: look for the decorator itself, not the map
+// TODO use prop test (see aspect tests)
+function lookupDecoratorMap(scope: IConstruct): Map<string, ResourcePolicyDecorator> | undefined {
+  let decoratorMap = (scope as any)[POLICY_DECORATOR_MAP_SYMBOL];
+  let current: any = scope;
+  while (!decoratorMap && current) {
+    decoratorMap = current[POLICY_DECORATOR_MAP_SYMBOL];
+    current = (current && current.node && current.node.scope) ? current.node.scope : undefined;
+  }
+  return decoratorMap;
+}
+
 export class ResourceWithPolicies {
   /**
    * Retrieve an `IResourceWithPolicyV2` adapter for a resource if one is available.
@@ -457,25 +469,31 @@ export class ResourceWithPolicies {
       return resource;
     }
 
+    const cached = ResourceWithPolicies.instances.get(resource);
+    if (cached != null) {
+      return cached;
+    }
+
     if (!(resource instanceof CfnResource)) {
       return undefined;
     }
 
-    let decoratorMap = (resource as any)[POLICY_DECORATOR_MAP_SYMBOL];
-    // Walk up the construct scope chain until we find a decorator map or run out of scopes.
-    let current: any = resource;
-    while (!decoratorMap && current) {
-      decoratorMap = current[POLICY_DECORATOR_MAP_SYMBOL];
-      current = (current && current.node && current.node.scope) ? current.node.scope : undefined;
+    let decoratorMap = lookupDecoratorMap(resource);
+    if (decoratorMap == null) {
+      if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
+        const msg = `Couldn't find ResourceWithPolicies trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
+        throw new ValidationError(msg, resource);
+      }
+      decoratorMap = DefaultPolicyDecorators.INSTANCE;
     }
-    if (!decoratorMap) {
-      return undefined;
-    }
+
     const decorator = decoratorMap.get((resource as CfnResource).cfnResourceType);
-    if (!decorator) {
-      return undefined;
+    if (decorator != null) {
+      const resourceWithPolicy = (decorator as ResourcePolicyDecorator).decorate(resource);
+      ResourceWithPolicies.instances.set(resource, resourceWithPolicy);
+      return resourceWithPolicy;
     }
-    return (decorator as ResourcePolicyDecorator).decorate(resource);
+    return undefined;
   }
 
   /**
@@ -504,6 +522,8 @@ export class ResourceWithPolicies {
 
     decoratorMap.set(cfnType, decorator);
   }
+
+  private static instances = new WeakMap<IEnvironmentAware, IResourceWithPolicyV2>();
 }
 
 export interface ResourcePolicyDecorator {
@@ -592,5 +612,20 @@ export class CompositeDependable implements IDependable {
         return Array.prototype.concat.apply([], dependables.map(d => Dependable.of(d).dependencyRoots));
       },
     });
+  }
+}
+
+export class DefaultPolicyDecorators extends Map<string, ResourcePolicyDecorator> {
+  static INSTANCE = new DefaultPolicyDecorators();
+
+  private constructor() {
+    super();
+  }
+
+  public set(key: string, value: ResourcePolicyDecorator): this {
+    if (this.has(key)) {
+      throw new UnscopedValidationError(`A resource policy decorator for resource type '${key}' is already registered.`);
+    }
+    return super.set(key, value);
   }
 }

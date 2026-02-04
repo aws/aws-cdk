@@ -16,6 +16,8 @@ import type {
   LocalSecondaryIndexProps,
 } from '../lib';
 import {
+  TableGrants, TablePolicyDecorator,
+
   AttributeType,
   BillingMode,
   ProjectionType,
@@ -5031,4 +5033,55 @@ test('Throws when more than four multi-attribute sort keys are specified', () =>
         { name: 'gsiSortKeyFive', type: AttributeType.BINARY }],
     });
   }).toThrow('Maximum of 4 sort keys allowed');
+});
+
+describe('L1 table grants', () => {
+  test('grant read permission to service principal (L1) with policy decorator', () => {
+    const stack = new Stack();
+    iam.ResourceWithPolicies.register(stack, 'AWS::DynamoDB::Table', new TablePolicyDecorator());
+    const table = new CfnTable(stack, 'Table', {
+      keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+      attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    });
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    TableGrants.fromTable(table).readData(principal);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: Match.arrayWith([{
+            Action: ['dynamodb:BatchGetItem', 'dynamodb:Query', 'dynamodb:GetItem', 'dynamodb:Scan', 'dynamodb:ConditionCheckItem', 'dynamodb:DescribeTable'],
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: '*',
+          }]),
+        },
+      },
+    });
+  });
+
+  test('grant read permission to service principal (L1) without policy decorator', () => {
+    const stack = new Stack();
+    const table = new CfnTable(stack, 'Table', {
+      keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+      attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    });
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    TableGrants.fromTable(table).readData(principal);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: Match.arrayWith([{
+            Action: ['dynamodb:BatchGetItem', 'dynamodb:Query', 'dynamodb:GetItem', 'dynamodb:Scan', 'dynamodb:ConditionCheckItem', 'dynamodb:DescribeTable'],
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: '*',
+          }]),
+        },
+      },
+    });
+  });
 });
