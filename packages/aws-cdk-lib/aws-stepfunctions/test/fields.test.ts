@@ -1,4 +1,5 @@
-import { FieldUtils, JsonPath, TaskInput } from '../lib';
+import { Stack, Token, Tokenization } from '../../core';
+import { FieldUtils, JsonPath, Jsonata, TaskInput } from '../lib';
 
 describe('Fields', () => {
   const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Array, States.ArrayPartition, States.ArrayContains, States.ArrayRange, States.ArrayGetItem, States.ArrayLength, States.ArrayUnique, States.Base64Encode, States.Base64Decode, States.Hash, States.JsonMerge, States.StringToJson, States.JsonToString, States.MathRandom, States.MathAdd, States.StringSplit, States.UUID, or States.Format./;
@@ -31,150 +32,150 @@ describe('Fields', () => {
       ],
     });
   }),
-  test('exercise contextpaths', () => {
-    expect(
-      FieldUtils.renderObject({
-        str: JsonPath.stringAt('$$.Execution.StartTime'),
-        count: JsonPath.numberAt('$$.State.RetryCount'),
-        token: JsonPath.taskToken,
-        entire: JsonPath.entireContext,
-        execId: JsonPath.executionId,
-        input: JsonPath.executionInput,
-        execName: JsonPath.executionName,
-        roleArn: JsonPath.executionRoleArn,
-        startTime: JsonPath.executionStartTime,
-        enteredTime: JsonPath.stateEnteredTime,
-        stateName: JsonPath.stateName,
-        retryCount: JsonPath.stateRetryCount,
-        stateMachineId: JsonPath.stateMachineId,
-        stateMachineName: JsonPath.stateMachineName,
-      }),
-    ).toStrictEqual({
-      'str.$': '$$.Execution.StartTime',
-      'count.$': '$$.State.RetryCount',
-      'token.$': '$$.Task.Token',
-      'entire.$': '$$',
-      'execId.$': '$$.Execution.Id',
-      'input.$': '$$.Execution.Input',
-      'execName.$': '$$.Execution.Name',
-      'roleArn.$': '$$.Execution.RoleArn',
-      'startTime.$': '$$.Execution.StartTime',
-      'enteredTime.$': '$$.State.EnteredTime',
-      'stateName.$': '$$.State.Name',
-      'retryCount.$': '$$.State.RetryCount',
-      'stateMachineId.$': '$$.StateMachine.Id',
-      'stateMachineName.$': '$$.StateMachine.Name',
+    test('exercise contextpaths', () => {
+      expect(
+        FieldUtils.renderObject({
+          str: JsonPath.stringAt('$$.Execution.StartTime'),
+          count: JsonPath.numberAt('$$.State.RetryCount'),
+          token: JsonPath.taskToken,
+          entire: JsonPath.entireContext,
+          execId: JsonPath.executionId,
+          input: JsonPath.executionInput,
+          execName: JsonPath.executionName,
+          roleArn: JsonPath.executionRoleArn,
+          startTime: JsonPath.executionStartTime,
+          enteredTime: JsonPath.stateEnteredTime,
+          stateName: JsonPath.stateName,
+          retryCount: JsonPath.stateRetryCount,
+          stateMachineId: JsonPath.stateMachineId,
+          stateMachineName: JsonPath.stateMachineName,
+        }),
+      ).toStrictEqual({
+        'str.$': '$$.Execution.StartTime',
+        'count.$': '$$.State.RetryCount',
+        'token.$': '$$.Task.Token',
+        'entire.$': '$$',
+        'execId.$': '$$.Execution.Id',
+        'input.$': '$$.Execution.Input',
+        'execName.$': '$$.Execution.Name',
+        'roleArn.$': '$$.Execution.RoleArn',
+        'startTime.$': '$$.Execution.StartTime',
+        'enteredTime.$': '$$.State.EnteredTime',
+        'stateName.$': '$$.State.Name',
+        'retryCount.$': '$$.State.RetryCount',
+        'stateMachineId.$': '$$.StateMachine.Id',
+        'stateMachineName.$': '$$.StateMachine.Name',
+      });
+    }),
+    test('find all referenced paths', () => {
+      expect(
+        FieldUtils.findReferencedPaths({
+          bool: false,
+          literal: 'literal',
+          field: JsonPath.stringAt('$.stringField'),
+          listField: JsonPath.listAt('$.listField'),
+          deep: [
+            'literal',
+            {
+              field: JsonPath.stringAt('$.stringField'),
+              deepField: JsonPath.numberAt('$.numField'),
+            },
+          ],
+        }),
+      ).toStrictEqual(['$.listField', '$.numField', '$.stringField']);
+    }),
+    test('JsonPath.listAt before Parallel', () => {
+      expect(
+        FieldUtils.findReferencedPaths({
+          listAt: JsonPath.listAt('$[0].stringList'),
+        }),
+      ).toStrictEqual(['$[0].stringList']);
     });
-  }),
-  test('find all referenced paths', () => {
-    expect(
-      FieldUtils.findReferencedPaths({
-        bool: false,
-        literal: 'literal',
-        field: JsonPath.stringAt('$.stringField'),
-        listField: JsonPath.listAt('$.listField'),
-        deep: [
-          'literal',
-          {
-            field: JsonPath.stringAt('$.stringField'),
-            deepField: JsonPath.numberAt('$.numField'),
-          },
-        ],
-      }),
-    ).toStrictEqual(['$.listField', '$.numField', '$.stringField']);
-  }),
-  test('JsonPath.listAt before Parallel', () => {
-    expect(
-      FieldUtils.findReferencedPaths({
-        listAt: JsonPath.listAt('$[0].stringList'),
-      }),
-    ).toStrictEqual(['$[0].stringList']);
-  });
   test('cannot have JsonPath fields in arrays', () => {
     expect(() => FieldUtils.renderObject({
       deep: [JsonPath.stringAt('$.hello')],
     })).toThrow(/Cannot use JsonPath fields in an array/);
   }),
-  test('datafield path must be correct', () => {
-    expect(JsonPath.stringAt('$')).toBeDefined();
-    expect(JsonPath.stringAt('States.Format')).toBeDefined();
-    expect(JsonPath.stringAt('States.StringToJson')).toBeDefined();
-    expect(JsonPath.stringAt('States.JsonToString')).toBeDefined();
-    expect(JsonPath.stringAt('States.Array')).toBeDefined();
-    expect(JsonPath.stringAt('States.ArrayPartition')).toBeDefined();
-    expect(JsonPath.stringAt('States.ArrayContains')).toBeDefined();
-    expect(JsonPath.stringAt('States.ArrayRange')).toBeDefined();
-    expect(JsonPath.stringAt('States.ArrayGetItem')).toBeDefined();
-    expect(JsonPath.stringAt('States.ArrayLength')).toBeDefined();
-    expect(JsonPath.stringAt('States.ArrayUnique')).toBeDefined();
-    expect(JsonPath.stringAt('States.Base64Encode')).toBeDefined();
-    expect(JsonPath.stringAt('States.Base64Decode')).toBeDefined();
-    expect(JsonPath.stringAt('States.Hash')).toBeDefined();
-    expect(JsonPath.stringAt('States.JsonMerge')).toBeDefined();
-    expect(JsonPath.stringAt('States.MathRandom')).toBeDefined();
-    expect(JsonPath.stringAt('States.MathAdd')).toBeDefined();
-    expect(JsonPath.stringAt('States.StringSplit')).toBeDefined();
-    expect(JsonPath.stringAt('States.UUID')).toBeDefined();
+    test('datafield path must be correct', () => {
+      expect(JsonPath.stringAt('$')).toBeDefined();
+      expect(JsonPath.stringAt('States.Format')).toBeDefined();
+      expect(JsonPath.stringAt('States.StringToJson')).toBeDefined();
+      expect(JsonPath.stringAt('States.JsonToString')).toBeDefined();
+      expect(JsonPath.stringAt('States.Array')).toBeDefined();
+      expect(JsonPath.stringAt('States.ArrayPartition')).toBeDefined();
+      expect(JsonPath.stringAt('States.ArrayContains')).toBeDefined();
+      expect(JsonPath.stringAt('States.ArrayRange')).toBeDefined();
+      expect(JsonPath.stringAt('States.ArrayGetItem')).toBeDefined();
+      expect(JsonPath.stringAt('States.ArrayLength')).toBeDefined();
+      expect(JsonPath.stringAt('States.ArrayUnique')).toBeDefined();
+      expect(JsonPath.stringAt('States.Base64Encode')).toBeDefined();
+      expect(JsonPath.stringAt('States.Base64Decode')).toBeDefined();
+      expect(JsonPath.stringAt('States.Hash')).toBeDefined();
+      expect(JsonPath.stringAt('States.JsonMerge')).toBeDefined();
+      expect(JsonPath.stringAt('States.MathRandom')).toBeDefined();
+      expect(JsonPath.stringAt('States.MathAdd')).toBeDefined();
+      expect(JsonPath.stringAt('States.StringSplit')).toBeDefined();
+      expect(JsonPath.stringAt('States.UUID')).toBeDefined();
 
-    expect(() => JsonPath.stringAt('$hello')).not.toThrow(jsonPathValidationErrorMsg);
-    expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
-    expect(() => JsonPath.stringAt('States.FooBar')).toThrow(jsonPathValidationErrorMsg);
-  }),
-  test('context path must be correct', () => {
-    expect(JsonPath.stringAt('$$')).toBeDefined();
+      expect(() => JsonPath.stringAt('$hello')).not.toThrow(jsonPathValidationErrorMsg);
+      expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
+      expect(() => JsonPath.stringAt('States.FooBar')).toThrow(jsonPathValidationErrorMsg);
+    }),
+    test('context path must be correct', () => {
+      expect(JsonPath.stringAt('$$')).toBeDefined();
 
-    expect(() => JsonPath.stringAt('$$hello')).not.toThrow(jsonPathValidationErrorMsg);
-    expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
-  }),
-  test('datafield path with array must be correct', () => {
-    expect(JsonPath.stringAt('$[0]')).toBeDefined();
-    expect(JsonPath.stringAt("$['abc']")).toBeDefined();
-  }),
-  test('test contains task token', () => {
-    expect(true).toEqual(
-      FieldUtils.containsTaskToken({
-        field: JsonPath.taskToken,
-      }),
-    );
+      expect(() => JsonPath.stringAt('$$hello')).not.toThrow(jsonPathValidationErrorMsg);
+      expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
+    }),
+    test('datafield path with array must be correct', () => {
+      expect(JsonPath.stringAt('$[0]')).toBeDefined();
+      expect(JsonPath.stringAt("$['abc']")).toBeDefined();
+    }),
+    test('test contains task token', () => {
+      expect(true).toEqual(
+        FieldUtils.containsTaskToken({
+          field: JsonPath.taskToken,
+        }),
+      );
 
-    expect(true).toEqual(
-      FieldUtils.containsTaskToken({
-        field: JsonPath.stringAt('$$.Task'),
-      }),
-    );
+      expect(true).toEqual(
+        FieldUtils.containsTaskToken({
+          field: JsonPath.stringAt('$$.Task'),
+        }),
+      );
 
-    expect(true).toEqual(
-      FieldUtils.containsTaskToken({
-        field: JsonPath.entireContext,
-      }),
-    );
+      expect(true).toEqual(
+        FieldUtils.containsTaskToken({
+          field: JsonPath.entireContext,
+        }),
+      );
 
-    expect(false).toEqual(
-      FieldUtils.containsTaskToken({
-        oops: 'not here',
-      }),
-    );
+      expect(false).toEqual(
+        FieldUtils.containsTaskToken({
+          oops: 'not here',
+        }),
+      );
 
-    expect(false).toEqual(
-      FieldUtils.containsTaskToken({
-        oops: JsonPath.stringAt('$$.Execution.StartTime'),
-      }),
-    );
-  }),
-  test('arbitrary JSONPath fields are not replaced', () => {
-    expect(
-      FieldUtils.renderObject({
+      expect(false).toEqual(
+        FieldUtils.containsTaskToken({
+          oops: JsonPath.stringAt('$$.Execution.StartTime'),
+        }),
+      );
+    }),
+    test('arbitrary JSONPath fields are not replaced', () => {
+      expect(
+        FieldUtils.renderObject({
+          field: '$.content',
+        }),
+      ).toStrictEqual({
         field: '$.content',
-      }),
-    ).toStrictEqual({
-      field: '$.content',
+      });
+    }),
+    test('fields cannot be used somewhere in a string interpolation', () => {
+      expect(() => FieldUtils.renderObject({
+        field: `contains ${JsonPath.stringAt('$.hello')}`,
+      })).toThrow(/Field references must be the entire string/);
     });
-  }),
-  test('fields cannot be used somewhere in a string interpolation', () => {
-    expect(() => FieldUtils.renderObject({
-      field: `contains ${JsonPath.stringAt('$.hello')}`,
-    })).toThrow(/Field references must be the entire string/);
-  });
   test('infinitely recursive object graphs do not break referenced path finding', () => {
     const deepObject = {
       field: JsonPath.stringAt('$.stringField'),
@@ -525,4 +526,117 @@ test('find task token even if nested in intrinsic functions', () => {
 
 test('find task token should handle null values', () => {
   expect(FieldUtils.containsTaskToken({ x: JsonPath.array(JsonPath.taskToken), y: null })).toEqual(true);
+});
+
+describe('Jsonata', () => {
+  describe('numberAt', () => {
+    test('returns a number token that resolves to JSONata expression', () => {
+      const result = Jsonata.numberAt('$states.input.count');
+      expect(Token.isUnresolved(result)).toBe(true);
+
+      const stack = new Stack();
+      const resolved = stack.resolve(result);
+      expect(resolved).toBe('{% $states.input.count %}');
+    });
+
+    test('throws on empty expression', () => {
+      expect(() => Jsonata.numberAt('')).toThrow(/cannot be empty/);
+    });
+
+    test('throws on whitespace-only expression', () => {
+      expect(() => Jsonata.numberAt('   ')).toThrow(/cannot be empty/);
+    });
+
+    test('throws if expression includes opening delimiter', () => {
+      expect(() => Jsonata.numberAt('{% $states.input.count')).toThrow(/should not include/);
+    });
+
+    test('throws if expression includes closing delimiter', () => {
+      expect(() => Jsonata.numberAt('$states.input.count %}')).toThrow(/should not include/);
+    });
+
+    test('throws if expression includes both delimiters', () => {
+      expect(() => Jsonata.numberAt('{% $states.input.count %}')).toThrow(/should not include/);
+    });
+  });
+
+  describe('stringAt', () => {
+    test('returns a string token that resolves to JSONata expression', () => {
+      const result = Jsonata.stringAt('$states.input.name');
+      expect(Token.isUnresolved(result)).toBe(true);
+
+      const stack = new Stack();
+      const resolved = stack.resolve(result);
+      expect(resolved).toBe('{% $states.input.name %}');
+    });
+
+    test('throws on empty expression', () => {
+      expect(() => Jsonata.stringAt('')).toThrow(/cannot be empty/);
+    });
+
+    test('throws if expression includes delimiters', () => {
+      expect(() => Jsonata.stringAt('{% $states.input.name %}')).toThrow(/should not include/);
+    });
+  });
+
+  describe('listAt', () => {
+    test('returns a list token that resolves to JSONata expression', () => {
+      const result = Jsonata.listAt('$states.input.items');
+      expect(Token.isUnresolved(result)).toBe(true);
+
+      const stack = new Stack();
+      const resolved = stack.resolve(result);
+      expect(resolved).toBe('{% $states.input.items %}');
+    });
+
+    test('throws on empty expression', () => {
+      expect(() => Jsonata.listAt('')).toThrow(/cannot be empty/);
+    });
+
+    test('throws if expression includes delimiters', () => {
+      expect(() => Jsonata.listAt('{% $states.input.items %}')).toThrow(/should not include/);
+    });
+  });
+
+  describe('objectAt', () => {
+    test('returns an IResolvable that resolves to JSONata expression', () => {
+      const result = Jsonata.objectAt('$states.input.data');
+      expect(Tokenization.isResolvable(result)).toBe(true);
+
+      const stack = new Stack();
+      const resolved = stack.resolve(result);
+      expect(resolved).toBe('{% $states.input.data %}');
+    });
+
+    test('throws on empty expression', () => {
+      expect(() => Jsonata.objectAt('')).toThrow(/cannot be empty/);
+    });
+
+    test('throws if expression includes delimiters', () => {
+      expect(() => Jsonata.objectAt('{% $states.input.data %}')).toThrow(/should not include/);
+    });
+  });
+
+  describe('complex expressions', () => {
+    test('supports JSONata function calls', () => {
+      const result = Jsonata.numberAt('$count($states.input.items)');
+      const stack = new Stack();
+      const resolved = stack.resolve(result);
+      expect(resolved).toBe('{% $count($states.input.items) %}');
+    });
+
+    test('supports JSONata arithmetic expressions', () => {
+      const result = Jsonata.numberAt('$states.input.price * $states.input.quantity');
+      const stack = new Stack();
+      const resolved = stack.resolve(result);
+      expect(resolved).toBe('{% $states.input.price * $states.input.quantity %}');
+    });
+
+    test('supports JSONata string concatenation', () => {
+      const result = Jsonata.stringAt('$states.input.firstName & " " & $states.input.lastName');
+      const stack = new Stack();
+      const resolved = stack.resolve(result);
+      expect(resolved).toBe('{% $states.input.firstName & " " & $states.input.lastName %}');
+    });
+  });
 });
