@@ -62,6 +62,44 @@ describe('PartitionProjectionConfiguration Validation', () => {
       }).toThrow('DATE partition projection format must be a non-empty string');
     });
 
+    test.each([
+      'yyyy-MM-dd',
+      'yyyy/MM/dd/HH',
+      "yyyyMMdd'T'HHmmss",
+      "yyyy-MM-dd''HH",
+    ])('accepts valid format=%p', (format) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({
+          min: '2020-01-01',
+          max: '2023-12-31',
+          format,
+        });
+      }).not.toThrow();
+    });
+
+    test.each([
+      ['yyyy-bb-dd', ['b']],
+      ['yyyy-MM-ddJ', ['J']],
+    ])('throws when format=%p contains invalid characters %p', (format, invalidChars) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({
+          min: '2020-01-01',
+          max: '2023-12-31',
+          format,
+        });
+      }).toThrow(`DATE partition projection format contains invalid pattern characters: ${invalidChars.join(', ')}. Must use Java DateTimeFormatter valid pattern letters.`);
+    });
+
+    test("throws when format has unclosed single quote", () => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({
+          min: '2020-01-01',
+          max: '2023-12-31',
+          format: "yyyy-MM-dd'T",
+        });
+      }).toThrow("DATE partition projection format has an unclosed single quote: 'yyyy-MM-dd'T'");
+    });
+
     test.each([0, -1, 1.5])('throws when interval=%p is invalid', (interval) => {
       expect(() => {
         glue.PartitionProjectionConfiguration.date({

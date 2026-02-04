@@ -292,11 +292,49 @@ export class PartitionProjectionConfiguration {
       );
     }
 
-    // Validate format is not empty
-    if (!Token.isUnresolved(props.format) && props.format.trim() === '') {
-      throw new UnscopedValidationError(
-        'DATE partition projection format must be a non-empty string',
-      );
+    // Validate format
+    if (!Token.isUnresolved(props.format)) {
+      // Validate format is not empty
+      if (props.format.trim() === '') {
+        throw new UnscopedValidationError(
+          'DATE partition projection format must be a non-empty string',
+        );
+      }
+
+      // Validate format pattern characters (Java 8 DateTimeFormatter)
+      const validPatternLetters = 'GyuYDMLdQqwWEecFahKkHmsSAnNVzOXxZp';
+      const format = props.format;
+      let inQuote = false;
+      const invalidChars: string[] = [];
+
+      for (let i = 0; i < format.length; i++) {
+        const ch = format[i];
+        if (ch === "'") {
+          if (i + 1 < format.length && format[i + 1] === "'") {
+            // '' is an escaped single quote literal, skip both
+            i++;
+          } else {
+            inQuote = !inQuote;
+          }
+        } else if (!inQuote && /[a-zA-Z]/.test(ch)) {
+          if (!validPatternLetters.includes(ch)) {
+            invalidChars.push(ch);
+          }
+        }
+      }
+
+      if (inQuote) {
+        throw new UnscopedValidationError(
+          `DATE partition projection format has an unclosed single quote: '${format}'`,
+        );
+      }
+
+      if (invalidChars.length > 0) {
+        const unique = [...new Set(invalidChars)];
+        throw new UnscopedValidationError(
+          `DATE partition projection format contains invalid pattern characters: ${unique.join(', ')}. Must use Java DateTimeFormatter valid pattern letters.`,
+        );
+      }
     }
 
     // Validate interval
