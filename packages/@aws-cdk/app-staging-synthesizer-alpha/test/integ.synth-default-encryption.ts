@@ -14,6 +14,9 @@ const stackDefaultEncryption = new Stack(app, 'synthesize-default-encryption', {
   synthesizer: AppStagingSynthesizer.defaultResources({
     appId: APP_ID_MAX, // this has implications on the overall template size
     stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+    // Disable auto-delete to avoid permission issues with the auto-delete custom resource
+    // The custom resource doesn't have s3:GetBucketTagging permission which causes deployment failures
+    autoDeleteStagingAssets: false,
   }),
 });
 
