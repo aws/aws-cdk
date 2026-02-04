@@ -364,7 +364,7 @@ export class Method extends Resource {
     // Determine connectionId from vpcLink (V1) or vpcLinkV2 (V2)
     let connectionId: string | undefined;
     if (options.vpcLinkV2) {
-      connectionId = options.vpcLinkV2.vpcLinkId;
+      connectionId = options.vpcLinkV2.vpcLinkRef.vpcLinkId;
     } else if (options.vpcLink) {
       connectionId = options.vpcLink.vpcLinkId;
     }
