@@ -105,6 +105,26 @@ describe('new style synthesis', () => {
     expect(template?.Rules?.CheckBootstrapVersion).toEqual(undefined);
   });
 
+  test('version check is not added to manifest if disabled', () => {
+    // GIVEN
+    stack = new Stack(app, 'Stack3', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+    });
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    const asm = app.synth();
+    const stackArtifact = asm.getStackArtifact('Stack3');
+    expect(stackArtifact.requiresBootstrapStackVersion).toEqual(undefined);
+
+    const manifestArtifact = getAssetManifest(asm);
+    expect(manifestArtifact.requiresBootstrapStackVersion).toEqual(undefined);
+  });
+
   test('can set role additional options tags on default stack synthesizer', () => {
     // GIVEN
     stack = new Stack(app, 'SessionTagsStack', {
