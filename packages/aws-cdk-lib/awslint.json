@@ -1893,6 +1893,8 @@
     "interface-extends-ref:aws-cdk-lib.aws_iam.IEncryptedResource",
     "interface-extends-ref:aws-cdk-lib.aws_iam.IIdentity",
     "interface-extends-ref:aws-cdk-lib.aws_iam.IResourceWithPolicy",
-    "interface-extends-ref:aws-cdk-lib.aws_servicediscovery.INamespace"
+    "interface-extends-ref:aws-cdk-lib.aws_servicediscovery.INamespace",
+    "props-physical-name:aws-cdk-lib.aws_dynamodb.TableV2CrossAccountReplicaProps",
+    "prefer-ref-interface:aws-cdk-lib.aws_dynamodb.TableV2CrossAccountReplicaProps.kinesisStream"
   ]
 }
