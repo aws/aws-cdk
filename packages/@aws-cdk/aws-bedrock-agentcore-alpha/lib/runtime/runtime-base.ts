@@ -13,6 +13,7 @@
 
 import type { IResource, ResourceProps } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
+import type { IRuntimeRef, RuntimeReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type {
   DimensionsMap,
   MetricOptions,
@@ -27,7 +28,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
 import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
 import { ValidationError } from './validation-helpers';
-import type { IRuntimeRef, RuntimeReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /******************************************************************************
  *                                Interface

@@ -1,4 +1,6 @@
-import { IResource, Resource, ResourceProps } from 'aws-cdk-lib';
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { GatewayReference, IGatewayRef } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type { DimensionsMap, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -8,7 +10,6 @@ import type { Construct } from 'constructs';
 import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
 import { GATEWAY_GET_PERMS, GATEWAY_LIST_PERMS, GATEWAY_MANAGE_PERMS, GATEWAY_INVOKE_PERMS } from './perms';
 import type { IGatewayProtocolConfig } from './protocol';
-import type { GatewayReference, IGatewayRef } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /******************************************************************************
  *                                 Enums

@@ -1,9 +1,9 @@
 import type { IResource } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
+import type { GatewayTargetReference, IGatewayTargetRef } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IGateway } from '../gateway-base';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
-import type { GatewayTargetReference, IGatewayTargetRef } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /******************************************************************************
  *                                 ENUM
