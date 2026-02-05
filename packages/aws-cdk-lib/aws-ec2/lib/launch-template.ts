@@ -1,21 +1,25 @@
-import { Construct } from 'constructs';
-import { Connections, IConnectable } from './connections';
-import { CfnLaunchTemplate, ILaunchTemplateRef, IPlacementGroupRef, LaunchTemplateReference } from './ec2.generated';
-import { InstanceType } from './instance-types';
-import { IKeyPair } from './key-pair';
-import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
+import type { Construct } from 'constructs';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
+import type { ILaunchTemplateRef, IPlacementGroupRef, LaunchTemplateReference } from './ec2.generated';
+import { CfnLaunchTemplate } from './ec2.generated';
+import type { InstanceType } from './instance-types';
+import type { IKeyPair } from './key-pair';
+import type { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
-import { ISecurityGroup } from './security-group';
-import { UserData } from './user-data';
-import { BlockDevice } from './volume';
+import type { ISecurityGroup } from './security-group';
+import type { UserData } from './user-data';
+import type { BlockDevice } from './volume';
 import * as iam from '../../aws-iam';
-import {
-  Annotations,
+import type {
   Duration,
   Expiration,
+  IResource,
+} from '../../core';
+import {
+  Annotations,
   FeatureFlags,
   Fn,
-  IResource,
   Lazy,
   Resource,
   TagManager,

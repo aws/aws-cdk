@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnHook } from './cfn-hook';
-import { CfnResource } from './cfn-resource';
+import type { CfnResource } from './cfn-resource';
 import { UnscopedValidationError } from './errors';
-import { FromCloudFormationOptions } from './helpers-internal';
+import type { FromCloudFormationOptions } from './helpers-internal';
 import { undefinedIfAllValuesAreEmpty } from './util';
 
 /**

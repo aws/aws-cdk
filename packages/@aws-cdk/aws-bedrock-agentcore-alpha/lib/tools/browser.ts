@@ -1,31 +1,35 @@
+import type {
+  IResource,
+  ResourceProps,
+} from 'aws-cdk-lib';
 import {
   Arn,
   ArnFormat,
-  IResource,
   Lazy,
   Resource,
-  ResourceProps,
   Token,
   Stack,
   ValidationError,
   Names,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
-import { IBrowserCustomRef, BrowserCustomReference } from 'aws-cdk-lib/aws-bedrockagentcore';
-import {
+import type { BrowserCustomReference, IBrowserCustomRef } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Location } from 'aws-cdk-lib/aws-s3';
+import type { Location } from 'aws-cdk-lib/aws-s3';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';

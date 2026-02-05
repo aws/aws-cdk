@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { IBucket, Location } from '../../aws-s3';
-import { Asset, AssetOptions } from '../../aws-s3-assets';
+import type { Construct } from 'constructs';
+import type { IBucket, Location } from '../../aws-s3';
+import type { AssetOptions } from '../../aws-s3-assets';
+import { Asset } from '../../aws-s3-assets';
 import { ValidationError } from '../../core';
 
 /**

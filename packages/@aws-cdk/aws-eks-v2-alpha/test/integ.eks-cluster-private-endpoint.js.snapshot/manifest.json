@@ -45,12 +45,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/AdminRole/ImportAdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-private-endpoint-test/AdminRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -395,12 +389,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -439,12 +427,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/ClusternodePoolRole/Resource": [
@@ -584,12 +566,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -752,12 +728,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [

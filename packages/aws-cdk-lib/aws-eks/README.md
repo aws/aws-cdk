@@ -731,6 +731,21 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+To overwrite an existing ALB controller service account, use the `overwriteServiceAccount` property:
+
+```ts
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_34,
+  albController: {
+    version: eks.AlbControllerVersion.V2_8_2,
+    overwriteServiceAccount: true
+  },
+  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+});
+```
+
 The `albController` requires `defaultCapacity` or at least one nodegroup. If there's no `defaultCapacity` or available
 nodegroup for the cluster, the `albController` deployment would fail.
 
@@ -1338,6 +1353,20 @@ cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
 ]);
 ```
 
+You can optionally specify an access entry type when granting access:
+
+```ts
+declare const cluster: eks.Cluster;
+declare const nodeRole: iam.Role;
+
+// For EKS Auto Mode node roles
+cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], { accessEntryType: eks.AccessEntryType.EC2 });
+```
+
+Supported types: `STANDARD` (default), `FARGATE_LINUX`, `EC2_LINUX`, `EC2_WINDOWS`, `EC2`, `HYBRID_LINUX`, `HYPERPOD_LINUX`.
+
+**Note**: `EC2`, `HYBRID_LINUX`, and `HYPERPOD_LINUX` types cannot have access policies attached.
+
 ### Migrating from ConfigMap to Access Entry
 
 If the cluster is created with the `authenticationMode` property left undefined,
@@ -1427,6 +1456,16 @@ const serviceAccount = cluster.addServiceAccount('MyServiceAccount', {
   labels: {
     'some-label': 'with-some-value',
   },
+});
+```
+
+To overwrite an existing service account, use the `overwriteServiceAccount` property:
+
+```ts
+declare const cluster: eks.Cluster;
+// overwrite existing service account
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount', {
+  overwriteServiceAccount: true,
 });
 ```
 

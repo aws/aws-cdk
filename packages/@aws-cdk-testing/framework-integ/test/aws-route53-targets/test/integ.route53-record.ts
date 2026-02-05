@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import { App, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 
 class TestStack extends Stack {

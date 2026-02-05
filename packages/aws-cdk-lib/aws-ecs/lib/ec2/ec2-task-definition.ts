@@ -1,21 +1,23 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Stack, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
-import {
+import type {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
-  Compatibility,
   InferenceAccelerator,
   IpcMode,
   ITaskDefinition,
-  NetworkMode,
   PidMode,
+} from '../base/task-definition';
+import {
+  Compatibility,
+  NetworkMode,
   TaskDefinition,
 } from '../base/task-definition';
-import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
-import { PlacementConstraint } from '../placement';
+import type { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
+import type { PlacementConstraint } from '../placement';
 
 /**
  * The properties for a task definition run on an EC2 cluster.
