@@ -3,7 +3,8 @@
   "testCases": {
     "AppRunnerVpcConnector/DefaultTest": {
       "stacks": [
-        "integ-apprunner"
+        "integ-apprunner-vpc-connector-new",
+        "integ-apprunner-vpc-connector-imported"
       ],
       "regions": [
         "ap-northeast-1",

@@ -1,28 +1,28 @@
 {
   "version": "50.0.0",
   "artifacts": {
-    "integ-apprunner.assets": {
+    "integ-apprunner-vpc-connector-new.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-apprunner.assets.json",
+        "file": "integ-apprunner-vpc-connector-new.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-apprunner": {
+    "integ-apprunner-vpc-connector-new": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-apprunner.template.json",
+        "templateFile": "integ-apprunner-vpc-connector-new.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b40de519c3506556790457780431c3030e65b67026fd793640e3c0ce53f1877.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29cc7a3720663c304d75b7deea8af91a7c66cf4997851ef510016f72b6ef0779.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-apprunner.assets"
+          "integ-apprunner-vpc-connector-new.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "integ-apprunner.assets"
+        "integ-apprunner-vpc-connector-new.assets"
       ],
       "metadata": {
-        "/integ-apprunner/Vpc": [
+        "/integ-apprunner-vpc-connector-new/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -43,13 +43,13 @@
             }
           }
         ],
-        "/integ-apprunner/Vpc/Resource": [
+        "/integ-apprunner-vpc-connector-new/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet1": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -85,43 +85,43 @@
             }
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet1/Subnet": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet1/RouteTable": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet1/DefaultRoute": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet1/EIP": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet1/NATGateway": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet2": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -157,43 +157,43 @@
             }
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet2/Subnet": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet2/RouteTable": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet2/DefaultRoute": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet2/EIP": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/integ-apprunner/Vpc/PublicSubnet2/NATGateway": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet1": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -221,31 +221,31 @@
             "data": {}
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet1/Subnet": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet1/RouteTable": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet2": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -273,43 +273,43 @@
             "data": {}
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet2/Subnet": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet2/RouteTable": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/integ-apprunner/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/integ-apprunner/Vpc/IGW": [
+        "/integ-apprunner-vpc-connector-new/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/integ-apprunner/Vpc/VPCGW": [
+        "/integ-apprunner-vpc-connector-new/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/integ-apprunner/SecurityGroup": [
+        "/integ-apprunner-vpc-connector-new/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -317,31 +317,31 @@
             }
           }
         ],
-        "/integ-apprunner/SecurityGroup/Resource": [
+        "/integ-apprunner-vpc-connector-new/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecurityGroupDD263621"
           }
         ],
-        "/integ-apprunner/VpcConnector": [
+        "/integ-apprunner-vpc-connector-new/VpcConnector": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-apprunner/VpcConnector/Resource": [
+        "/integ-apprunner-vpc-connector-new/VpcConnector/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcConnectorE3A78531"
           }
         ],
-        "/integ-apprunner/Service6": [
+        "/integ-apprunner-vpc-connector-new/Service": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-apprunner/Service6/InstanceRole": [
+        "/integ-apprunner-vpc-connector-new/Service/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -353,74 +353,423 @@
             }
           }
         ],
-        "/integ-apprunner/Service6/InstanceRole/Resource": [
+        "/integ-apprunner-vpc-connector-new/Service/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Service6InstanceRole7220D460"
+            "data": "ServiceInstanceRoleDFA90CEC"
           }
         ],
-        "/integ-apprunner/Service6/Resource": [
+        "/integ-apprunner-vpc-connector-new/Service/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Service6DF16DDFB"
+            "data": "ServiceDBC79909"
           }
         ],
-        "/integ-apprunner/URL6": [
+        "/integ-apprunner-vpc-connector-new/ServiceURL": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "URL6"
+            "data": "ServiceURL"
           }
         ],
-        "/integ-apprunner/Service7": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-apprunner/Service7/InstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "roleName": "*"
-            }
-          }
-        ],
-        "/integ-apprunner/Service7/InstanceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Service7InstanceRoleFD40F312"
-          }
-        ],
-        "/integ-apprunner/Service7/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Service7E1F980B2"
-          }
-        ],
-        "/integ-apprunner/URL7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "URL7"
-          }
-        ],
-        "/integ-apprunner/BootstrapVersion": [
+        "/integ-apprunner-vpc-connector-new/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-apprunner/CheckBootstrapVersion": [
+        "/integ-apprunner-vpc-connector-new/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-apprunner"
+      "displayName": "integ-apprunner-vpc-connector-new"
+    },
+    "integ-apprunner-vpc-connector-imported.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-apprunner-vpc-connector-imported.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-apprunner-vpc-connector-imported": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner-vpc-connector-imported.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/503086d154788cb8c87561e0ba8f2d47f7ce1b4273f6991c380f7559f45461d7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-apprunner-vpc-connector-imported.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-apprunner-vpc-connector-imported.assets"
+      ],
+      "metadata": {
+        "/integ-apprunner-vpc-connector-imported/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": false,
+              "ipAddresses": "*"
+            }
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/VpcConnector": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/VpcConnector/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcConnectorE3A78531"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Service": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Service/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Service/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceInstanceRoleDFA90CEC"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/Service/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceDBC79909"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceURL"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-apprunner-vpc-connector-imported/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-apprunner-vpc-connector-imported"
     },
     "AppRunnerVpcConnectorDefaultTestDeployAssert569EDBD6.assets": {
       "type": "cdk:asset-manifest",

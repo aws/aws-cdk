@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PrivateSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PrivateSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PrivateSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PrivateSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc"
      }
     ]
    }
@@ -394,7 +394,7 @@
   "SecurityGroupDD263621": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-apprunner/SecurityGroup",
+    "GroupDescription": "integ-apprunner-vpc-connector-new/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -429,7 +429,7 @@
     "VpcConnectorName": "MyVpcConnector"
    }
   },
-  "Service6InstanceRole7220D460": {
+  "ServiceInstanceRoleDFA90CEC": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -446,64 +446,13 @@
     }
    }
   },
-  "Service6DF16DDFB": {
+  "ServiceDBC79909": {
    "Type": "AWS::AppRunner::Service",
    "Properties": {
     "InstanceConfiguration": {
      "InstanceRoleArn": {
       "Fn::GetAtt": [
-       "Service6InstanceRole7220D460",
-       "Arn"
-      ]
-     }
-    },
-    "NetworkConfiguration": {
-     "EgressConfiguration": {
-      "EgressType": "VPC",
-      "VpcConnectorArn": {
-       "Fn::GetAtt": [
-        "VpcConnectorE3A78531",
-        "VpcConnectorArn"
-       ]
-      }
-     }
-    },
-    "SourceConfiguration": {
-     "AuthenticationConfiguration": {},
-     "ImageRepository": {
-      "ImageConfiguration": {
-       "Port": "8000"
-      },
-      "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
-      "ImageRepositoryType": "ECR_PUBLIC"
-     }
-    }
-   }
-  },
-  "Service7InstanceRoleFD40F312": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "tasks.apprunner.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "Service7E1F980B2": {
-   "Type": "AWS::AppRunner::Service",
-   "Properties": {
-    "InstanceConfiguration": {
-     "InstanceRoleArn": {
-      "Fn::GetAtt": [
-       "Service7InstanceRoleFD40F312",
+       "ServiceInstanceRoleDFA90CEC",
        "Arn"
       ]
      }
@@ -533,7 +482,7 @@
   }
  },
  "Outputs": {
-  "URL6": {
+  "ServiceURL": {
    "Value": {
     "Fn::Join": [
      "",
@@ -541,23 +490,7 @@
       "https://",
       {
        "Fn::GetAtt": [
-        "Service6DF16DDFB",
-        "ServiceUrl"
-       ]
-      }
-     ]
-    ]
-   }
-  },
-  "URL7": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "https://",
-      {
-       "Fn::GetAtt": [
-        "Service7E1F980B2",
+        "ServiceDBC79909",
         "ServiceUrl"
        ]
       }

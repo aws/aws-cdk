@@ -5,55 +5,73 @@ import { Service, Source, VpcConnector } from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'integ-apprunner');
+// Stack 1: Service with newly created VPC Connector
+const stack1 = new cdk.Stack(app, 'integ-apprunner-vpc-connector-new');
 
-// Scenario 6: Create the service from ECR public with a VPC Connector
-const vpc = new ec2.Vpc(stack, 'Vpc', {
+const vpc1 = new ec2.Vpc(stack1, 'Vpc', {
   restrictDefaultSecurityGroup: false,
   ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
 });
 
-const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+const securityGroup1 = new ec2.SecurityGroup(stack1, 'SecurityGroup', { vpc: vpc1 });
 
-const vpcConnector = new VpcConnector(stack, 'VpcConnector', {
-  vpc,
-  vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
-  securityGroups: [securityGroup],
+const vpcConnector1 = new VpcConnector(stack1, 'VpcConnector', {
+  vpc: vpc1,
+  vpcSubnets: vpc1.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
+  securityGroups: [securityGroup1],
   vpcConnectorName: 'MyVpcConnector',
 });
 
-const service6 = new Service(stack, 'Service6', {
+const service1 = new Service(stack1, 'Service', {
   source: Source.fromEcrPublic({
     imageConfiguration: {
       port: 8000,
     },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
-  vpcConnector,
+  vpcConnector: vpcConnector1,
 });
-new cdk.CfnOutput(stack, 'URL6', { value: `https://${service6.serviceUrl}` });
+new cdk.CfnOutput(stack1, 'ServiceURL', { value: `https://${service1.serviceUrl}` });
 
-// Scenario 7: Create the service from ECR public and associate it with an existing VPC Connector
+// Stack 2: Service with imported VPC Connector
+const stack2 = new cdk.Stack(app, 'integ-apprunner-vpc-connector-imported');
 
-const service7 = new Service(stack, 'Service7', {
+const vpc2 = new ec2.Vpc(stack2, 'Vpc', {
+  restrictDefaultSecurityGroup: false,
+  ipAddresses: ec2.IpAddresses.cidr('10.1.0.0/16'),
+});
+
+const securityGroup2 = new ec2.SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2 });
+
+const vpcConnector2 = new VpcConnector(stack2, 'VpcConnector', {
+  vpc: vpc2,
+  vpcSubnets: vpc2.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
+  securityGroups: [securityGroup2],
+  vpcConnectorName: 'MyImportedVpcConnector',
+});
+
+// Test importing an existing VPC Connector
+const importedConnector = VpcConnector.fromVpcConnectorAttributes(stack2, 'ImportedVpcConnector', {
+  vpcConnectorArn: vpcConnector2.vpcConnectorArn,
+  vpcConnectorName: vpcConnector2.vpcConnectorName,
+  vpcConnectorRevision: vpcConnector2.vpcConnectorRevision,
+  securityGroups: [securityGroup2],
+});
+
+const service2 = new Service(stack2, 'Service', {
   source: Source.fromEcrPublic({
     imageConfiguration: {
       port: 8000,
     },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
-  vpcConnector: VpcConnector.fromVpcConnectorAttributes(stack, 'ImportedVpcConnector', {
-    vpcConnectorArn: vpcConnector.vpcConnectorArn,
-    vpcConnectorName: vpcConnector.vpcConnectorName,
-    vpcConnectorRevision: vpcConnector.vpcConnectorRevision,
-    securityGroups: [securityGroup],
-  }),
+  vpcConnector: importedConnector,
 });
-new cdk.CfnOutput(stack, 'URL7', { value: `https://${service7.serviceUrl}` });
+new cdk.CfnOutput(stack2, 'ServiceURL', { value: `https://${service2.serviceUrl}` });
 
 // AppRunner is only available in specific regions
 new integ.IntegTest(app, 'AppRunnerVpcConnector', {
-  testCases: [stack],
+  testCases: [stack1, stack2],
   regions: ['ap-northeast-1', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2', 'eu-central-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'us-east-1', 'us-east-2', 'us-west-2'],
 });
 
