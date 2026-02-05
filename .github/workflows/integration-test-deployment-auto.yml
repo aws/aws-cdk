@@ -15,9 +15,56 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  integration_test_deployment:
-    # Only run when a review is approved
+  # Early validation: Check if approver is a CDK team member and PR has snapshot changes
+  validate_approver:
     if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check_team.outputs.is_member == 'true' && steps.check_snapshots.outputs.has_snapshots == 'true' }}
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Check for snapshot changes
+        id: check_snapshots
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Get list of changed files in the PR
+          CHANGED_FILES=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/files" --paginate --jq '.[].filename')
+          
+          # Check if any files contain .js.snapshot in the path (matches integration test snapshots)
+          if echo "$CHANGED_FILES" | grep -q '\.js\.snapshot'; then
+            echo "PR contains snapshot changes"
+            echo "has_snapshots=true" >> $GITHUB_OUTPUT
+          else
+            echo "No snapshot changes detected in this PR"
+            echo "has_snapshots=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check if approver is CDK team member
+        id: check_team
+        if: steps.check_snapshots.outputs.has_snapshots == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPROVER: ${{ github.event.review.user.login }}
+        run: |
+          # Use gh CLI to check team membership (pre-installed in GitHub Actions runners)
+          # https://docs.github.com/en/rest/teams/members#get-team-membership-for-a-user
+          if gh api "orgs/aws/teams/aws-cdk-team/memberships/${APPROVER}" --jq '.state' 2>/dev/null | grep -q "active"; then
+            echo "${APPROVER} is an active CDK team member"
+            echo "is_member=true" >> $GITHUB_OUTPUT
+          else
+            echo "${APPROVER} is not a CDK team member or membership is not active"
+            echo "is_member=false" >> $GITHUB_OUTPUT
+          fi
+
+  integration_test_deployment_auto:
+    needs: validate_approver
+    # Only run if approver is a CDK team member AND PR has snapshot changes
+    if: needs.validate_approver.outputs.should_run == 'true'
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
     # No environment - runs automatically without manual approval
     # Shadow mode: workflow reports success even if tests fail
