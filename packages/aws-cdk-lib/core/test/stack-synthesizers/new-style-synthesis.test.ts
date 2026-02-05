@@ -284,6 +284,24 @@ describe('new style synthesis', () => {
     expect(nestedStack.synthesizer.lookupRole).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
   });
 
+  test('metadata from nested stack is not collected in parent stack', () => {
+    // GIVEN
+    const nested = new NestedStack(stack, 'Nested');
+    const resource = new CfnResource(nested, 'Resource', { type: 'Some::Resource' });
+    resource.node.addMetadata('test:metadata', 'value');
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    const manifest = asm.getStackArtifact(stack.artifactId).manifest;
+    const metadata = manifest.metadata || {};
+
+    // Metadata should not contain entries from the nested stack
+    const allMetadataData = Object.values(metadata).flat().map(m => m.data);
+    expect(allMetadataData).not.toContain('value');
+  });
+
   test('add file asset', () => {
     // WHEN
     const ext = __filename.match(/\.([tj]s)$/)?.[1];
