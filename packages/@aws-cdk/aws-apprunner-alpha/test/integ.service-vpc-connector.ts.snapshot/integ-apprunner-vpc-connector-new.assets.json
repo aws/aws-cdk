@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "503086d154788cb8c87561e0ba8f2d47f7ce1b4273f6991c380f7559f45461d7": {
-      "displayName": "integ-apprunner-vpc-connector-imported Template",
+    "29cc7a3720663c304d75b7deea8af91a7c66cf4997851ef510016f72b6ef0779": {
+      "displayName": "integ-apprunner-vpc-connector-new Template",
       "source": {
-        "path": "integ-apprunner-vpc-connector-imported.template.json",
+        "path": "integ-apprunner-vpc-connector-new.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-5e8a6063": {
+        "current_account-current_region-c2a5c2ee": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "503086d154788cb8c87561e0ba8f2d47f7ce1b4273f6991c380f7559f45461d7.json",
+          "objectKey": "29cc7a3720663c304d75b7deea8af91a7c66cf4997851ef510016f72b6ef0779.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

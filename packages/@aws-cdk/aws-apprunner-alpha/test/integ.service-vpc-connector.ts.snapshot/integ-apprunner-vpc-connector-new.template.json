@@ -3,14 +3,14 @@
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
-    "CidrBlock": "10.1.0.0/16",
+    "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
     "InstanceTenancy": "default",
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc"
      }
     ]
    }
@@ -26,7 +26,7 @@
       }
      ]
     },
-    "CidrBlock": "10.1.0.0/18",
+    "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -134,7 +134,7 @@
       }
      ]
     },
-    "CidrBlock": "10.1.64.0/18",
+    "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -242,7 +242,7 @@
       }
      ]
     },
-    "CidrBlock": "10.1.128.0/18",
+    "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -311,7 +311,7 @@
       }
      ]
     },
-    "CidrBlock": "10.1.192.0/18",
+    "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc/PrivateSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner-vpc-connector-imported/Vpc"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc"
      }
     ]
    }
@@ -394,7 +394,7 @@
   "SecurityGroupDD263621": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-apprunner-vpc-connector-imported/SecurityGroup",
+    "GroupDescription": "integ-apprunner-vpc-connector-new/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -426,7 +426,7 @@
       "Ref": "VpcPublicSubnet2Subnet691E08A3"
      }
     ],
-    "VpcConnectorName": "MyImportedVpcConnector"
+    "VpcConnectorName": "MyVpcConnector"
    }
   },
   "ServiceInstanceRoleDFA90CEC": {
