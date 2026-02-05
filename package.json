@@ -156,6 +156,8 @@
       "@aws-cdk/yaml-cfn/yaml/**",
       "aws-cdk-lib/@balena/dockerignore",
       "aws-cdk-lib/@balena/dockerignore/**",
+      "aws-cdk-lib/@aws-cdk/cloud-assembly-api",
+      "aws-cdk-lib/@aws-cdk/cloud-assembly-api/**",
       "aws-cdk-lib/case",
       "aws-cdk-lib/case/**",
       "aws-cdk-lib/chalk",
