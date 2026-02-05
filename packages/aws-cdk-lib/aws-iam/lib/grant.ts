@@ -457,19 +457,43 @@ function lookupDecorator(scope: IConstruct, cfnResourceType: string): ResourcePo
 
 export class ResourceWithPolicies {
   /**
-   * Retrieve an `IResourceWithPolicyV2` adapter for a resource if one is available.
+   * Attempts to convert a resource into an IResourceWithPolicyV2 interface.
    *
-   * - If the resource already implements `IResourceWithPolicyV2`, it is returned.
-   * - If the resource is a CloudFormation `CfnResource`, walk up the construct
-   *   scope chain to find a registered resource policy decorator (via
-   *   `ResourceWithPolicies.register`) for the resource's `cfnResourceType` and
-   *   use it to produce an `IResourceWithPolicyV2` adapter.
+   * This method provides a unified way to obtain a resource policy interface for AWS resources,
+   * handling multiple scenarios:
    *
-   * Returns `undefined` when no resource policy support (neither direct nor via
-   * decorator) can be found.
+   * 1. If the resource already implements IResourceWithPolicyV2, returns it directly
+   * 2. If the resource was previously converted, returns the cached result
+   * 3. For CloudFormation L1 resources, attempts to find and apply a decorator to add policy capabilities
+   * 4. Returns undefined if the resource cannot be converted to IResourceWithPolicyV2
    *
-   * @param resource the environment-aware construct to inspect
-   * @returns an `IResourceWithPolicyV2` adapter for the resource, or `undefined`
+   * The method uses a decorator pattern to dynamically add resource policy capabilities to
+   * CloudFormation resources. Decorators can be registered using ResourceWithPolicies.register()
+   * or automatically discovered if the AUTOMATIC_L1_TRAITS feature flag is enabled.
+   *
+   * @param resource - The resource to convert. Must be environment-aware (have account/region info).
+   * @returns An IResourceWithPolicyV2 interface for the resource, or undefined if conversion is not possible.
+   *
+   * @throws ValidationError if the resource is a CfnResource without a registered decorator and
+   *         the AUTOMATIC_L1_TRAITS feature flag is disabled.
+   *
+   * @example
+   * // Using with an S3 bucket
+   * declare const bucket: s3.Bucket;
+   * const resourceWithPolicy = ResourceWithPolicies.of(bucket);
+   * if (resourceWithPolicy) {
+   *   resourceWithPolicy.addToResourcePolicy(new iam.PolicyStatement({
+   *     actions: ['s3:GetObject'],
+   *     principals: [new iam.AccountPrincipal('123456789012')],
+   *     resources: [bucket.arnForObjects('*')],
+   *   }));
+   * }
+   *
+   * @example
+   * // Using with a CloudFormation L1 resource
+   * declare const cfnBucket: s3.CfnBucket;
+   * const resourceWithPolicy = ResourceWithPolicies.of(cfnBucket);
+   * // Returns undefined or decorated resource depending on decorator availability
    */
   public static of(resource: IEnvironmentAware): IResourceWithPolicyV2 | undefined {
     if (GrantableResources.isResourceWithPolicy(resource)) {
