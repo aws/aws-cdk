@@ -835,7 +835,7 @@ export interface SecurityGroupContextResponse {
  *
  * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
  */
-export declare enum VpcSubnetGroupType {
+export enum VpcSubnetGroupType {
   /** Public subnet group type. */
   PUBLIC = 'Public',
   /** Private subnet group type. */
@@ -994,7 +994,7 @@ export interface VpcContextResponse {
  *
  * @deprecated The definition of this type has moved to `@aws-cdk/cloud-assembly-api`.
  */
-export declare enum LoadBalancerIpAddressType {
+export enum LoadBalancerIpAddressType {
   /**
    * IPV4 ip address
    */
