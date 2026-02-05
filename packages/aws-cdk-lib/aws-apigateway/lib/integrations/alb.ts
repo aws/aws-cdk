@@ -1,10 +1,11 @@
-import * as apigwv2 from '../../../aws-apigatewayv2';
-import * as ec2 from '../../../aws-ec2';
-import * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import type * as apigwv2 from '../../../aws-apigatewayv2';
+import type * as ec2 from '../../../aws-ec2';
+import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { ConnectionType, Integration, IntegrationConfig, IntegrationOptions, IntegrationType } from '../integration';
-import { Method } from '../method';
+import type { IntegrationConfig, IntegrationOptions } from '../integration';
+import { ConnectionType, Integration, IntegrationType } from '../integration';
+import type { Method } from '../method';
 
 /**
  * Properties for `AlbIntegration`.
