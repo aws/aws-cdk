@@ -12,12 +12,13 @@
  */
 
 import * as cdk from 'aws-cdk-lib';
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import type * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Location } from 'aws-cdk-lib/aws-s3';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import { IConstruct } from 'constructs';
-import { IMemoryStrategy, MemoryStrategyCommonProps, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
+import type { Location } from 'aws-cdk-lib/aws-s3';
+import type * as sns from 'aws-cdk-lib/aws-sns';
+import type { IConstruct } from 'constructs';
+import type { IMemoryStrategy, MemoryStrategyCommonProps, MemoryStrategyType } from '../memory-strategy';
+import { MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************

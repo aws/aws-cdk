@@ -46,10 +46,10 @@ describe('S3 Mixins', () => {
     });
   });
 
-  describe('EnableVersioning', () => {
+  describe('BucketVersioning', () => {
     test('applies to S3 bucket', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const mixin = new s3Mixins.EnableVersioning();
+      const mixin = new s3Mixins.BucketVersioning();
 
       expect(mixin.supports(bucket)).toBe(true);
       mixin.applyTo(bucket);
@@ -58,9 +58,19 @@ describe('S3 Mixins', () => {
       expect(versionConfig?.status).toBe('Enabled');
     });
 
+    test('suspends versioning when disabled', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketVersioning(false);
+
+      mixin.applyTo(bucket);
+
+      const versionConfig = bucket.versioningConfiguration as any;
+      expect(versionConfig?.status).toBe('Suspended');
+    });
+
     test('does not support non-S3 constructs', () => {
       const construct = new TestConstruct(stack, 'test');
-      const mixin = new s3Mixins.EnableVersioning();
+      const mixin = new s3Mixins.BucketVersioning();
 
       expect(mixin.supports(construct)).toBe(false);
     });
