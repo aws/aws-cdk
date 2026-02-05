@@ -1,0 +1,2582 @@
+{
+  "AWS::AIOps::InvestigationGroup": {
+    "properties": [
+      {
+        "name": "EncryptionConfig",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "EncryptionConfigurationType",
+        "path": "EncryptionConfig.EncryptionConfigurationType",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "EncryptionConfig.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::APS::Workspace": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for APS by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::AmazonMQ::Broker": {
+    "properties": [
+      {
+        "name": "EncryptionOptions",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "UseAwsOwnedKey",
+        "path": "EncryptionOptions.UseAwsOwnedKey",
+        "type": "boolean",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": false,
+          "awsManaged": true
+        }
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "EncryptionOptions.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS owned key by default when EncryptionOptions not specified.",
+    "notes": "Set UseAwsOwnedKey to false and provide KmsKeyId for customer managed encryption."
+  },
+  "AWS::AppConfig::ConfigurationProfile": {
+    "properties": [
+      {
+        "name": "KmsKeyIdentifier",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for AppConfig by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::AppConfig::Deployment": {
+    "properties": [
+      {
+        "name": "KmsKeyIdentifier",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for AppConfig by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::AppFlow::ConnectorProfile": {
+    "properties": [
+      {
+        "name": "KMSArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for AppFlow by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::AppFlow::Flow": {
+    "properties": [
+      {
+        "name": "KMSArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for AppFlow by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::AppIntegrations::DataIntegration": {
+    "properties": [
+      {
+        "name": "KmsKey",
+        "type": "string",
+        "required": true,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for AppIntegrations by default. Specify KMS key for customer managed encryption.",
+    "notes": "Some encryption properties are required. Supports customer managed KMS keys."
+  },
+  "AWS::AppRunner::Service": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKey",
+        "path": "EncryptionConfiguration.KmsKey",
+        "type": "string",
+        "required": true,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::AppSync::ApiCache": {
+    "properties": [
+      {
+        "name": "AtRestEncryptionEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Refer to AWS documentation for encryption configuration details."
+  },
+  "AWS::Backup::BackupVault": {
+    "properties": [
+      {
+        "name": "EncryptionKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key if EncryptionKeyArn not specified.",
+    "notes": "All backups in the vault are encrypted. Encryption key cannot be changed after vault creation."
+  },
+  "AWS::BackupGateway::Hypervisor": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for BackupGateway by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Bedrock::Agent": {
+    "properties": [
+      {
+        "name": "CustomerEncryptionKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Bedrock by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Bedrock::AutomatedReasoningPolicy": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Bedrock by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Bedrock::Blueprint": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "KmsEncryptionContext",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Bedrock::DataAutomationProject": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "KmsEncryptionContext",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Bedrock::DataSource": {
+    "properties": [
+      {
+        "name": "ServerSideEncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyArn",
+        "path": "ServerSideEncryptionConfiguration.KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::Bedrock::Flow": {
+    "properties": [
+      {
+        "name": "CustomerEncryptionKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Bedrock by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Bedrock::Guardrail": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Bedrock by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Bedrock::Prompt": {
+    "properties": [
+      {
+        "name": "CustomerEncryptionKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Bedrock by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::BedrockAgentCore::Gateway": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for BedrockAgentCore by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::BedrockAgentCore::Memory": {
+    "properties": [
+      {
+        "name": "EncryptionKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for BedrockAgentCore by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Cassandra::Table": {
+    "properties": [
+      {
+        "name": "EncryptionSpecification",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "EncryptionType",
+        "path": "EncryptionSpecification.EncryptionType",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "CUSTOMER_MANAGED_KMS_KEY",
+          "awsManaged": "AWS_OWNED_KMS_KEY"
+        }
+      },
+      {
+        "name": "KmsKeyIdentifier",
+        "path": "EncryptionSpecification.KmsKeyIdentifier",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::CleanRooms::IdMappingTable": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for CleanRooms by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::CloudTrail::EventDataStore": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for CloudTrail by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::CloudTrail::Trail": {
+    "properties": [
+      {
+        "name": "KMSKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Log files encrypted with S3 server-side encryption by default.",
+    "notes": "Can specify KMS key for additional encryption. CloudTrail must have permissions to use the key."
+  },
+  "AWS::CodeArtifact::Domain": {
+    "properties": [
+      {
+        "name": "EncryptionKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for CodeArtifact by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::CodeBuild::Project": {
+    "properties": [
+      {
+        "name": "EncryptionKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Build artifacts encrypted with AWS managed S3 key by default.",
+    "notes": "EncryptionKey applies to build output artifacts stored in S3."
+  },
+  "AWS::CodeCommit::Repository": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for CodeCommit by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::CodeStarConnections::RepositoryLink": {
+    "properties": [
+      {
+        "name": "EncryptionKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for CodeStarConnections by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Comprehend::DocumentClassifier": {
+    "properties": [
+      {
+        "name": "VolumeKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "ModelKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Config::DeliveryChannel": {
+    "properties": [
+      {
+        "name": "S3KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Config by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::CustomerProfiles::Domain": {
+    "properties": [
+      {
+        "name": "DefaultEncryptionKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for CustomerProfiles by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::CustomerProfiles::ObjectType": {
+    "properties": [
+      {
+        "name": "EncryptionKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for CustomerProfiles by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::DAX::Cluster": {
+    "properties": [
+      {
+        "name": "SSESpecification",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "SSEEnabled",
+        "path": "SSESpecification.SSEEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default.",
+    "notes": "Encryption at rest for DAX clusters. Cannot be modified after cluster creation."
+  },
+  "AWS::DMS::Endpoint": {
+    "properties": [
+      {
+        "name": "RedisSettings",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KinesisSettings",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Supports customer managed KMS keys. Encryption configured through nested properties."
+  },
+  "AWS::DMS::InstanceProfile": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for DMS by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::DMS::ReplicationInstance": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for DMS by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::DSQL::Cluster": {
+    "properties": [
+      {
+        "name": "KmsEncryptionKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for DSQL by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::DataBrew::Job": {
+    "properties": [
+      {
+        "name": "EncryptionKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "EncryptionMode",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys. Supports multiple encryption types or algorithms."
+  },
+  "AWS::DataSync::LocationHDFS": {
+    "properties": [
+      {
+        "name": "KmsKeyProviderUri",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for DataSync by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::DataZone::Domain": {
+    "properties": [
+      {
+        "name": "KmsKeyIdentifier",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for DataZone by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Deadline::Farm": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Deadline by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::DocDB::DBCluster": {
+    "properties": [
+      {
+        "name": "StorageEncrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "MasterUserSecretKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. Uses AWS managed key if StorageEncrypted is true but KmsKeyId not specified.",
+    "notes": "Encryption cannot be changed after cluster creation. Encrypts data at rest including underlying storage, backups, and snapshots."
+  },
+  "AWS::DocDBElastic::Cluster": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for DocDBElastic by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::DynamoDB::GlobalTable": {
+    "properties": [
+      {
+        "name": "SSESpecification",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "SSEEnabled",
+        "path": "SSESpecification.SSEEnabled",
+        "type": "boolean",
+        "required": true,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "SSEType",
+        "path": "SSESpecification.SSEType",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS"
+        }
+      }
+    ],
+    "defaultBehavior": "Uses AWS-owned key if SSEEnabled is false. Uses AWS-managed KMS key if SSEEnabled is true.",
+    "notes": "SSEType only supports 'KMS'. Customer managed keys specified via ReplicaSpecification.SSESpecification."
+  },
+  "AWS::DynamoDB::Table": {
+    "properties": [
+      {
+        "name": "SSESpecification",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "SSEEnabled",
+        "path": "SSESpecification.SSEEnabled",
+        "type": "boolean",
+        "required": true,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "SSEType",
+        "path": "SSESpecification.SSEType",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS"
+        }
+      },
+      {
+        "name": "KMSMasterKeyId",
+        "path": "SSESpecification.KMSMasterKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS-owned key if SSEEnabled is false or not specified. Uses AWS-managed key if SSEEnabled is true but KMSMasterKeyId is not specified.",
+    "notes": "SSEType KMS is required when KMSMasterKeyId is specified."
+  },
+  "AWS::EC2::Instance": {
+    "properties": [
+      {
+        "name": "BlockDeviceMappings",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration",
+        "context": "ebs-volumes"
+      }
+    ],
+    "defaultBehavior": "EBS volumes follow account encryption-by-default setting. Root and data volumes can be encrypted independently.",
+    "notes": "Encryption configured per volume in BlockDeviceMappings. Each volume can have different encryption settings."
+  },
+  "AWS::EC2::VerifiedAccessEndpoint": {
+    "properties": [
+      {
+        "name": "SseSpecification",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "CustomerManagedKeyEnabled",
+        "path": "SseSpecification.CustomerManagedKeyEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": true,
+          "awsManaged": false
+        }
+      },
+      {
+        "name": "KmsKeyArn",
+        "path": "SseSpecification.KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS owned key by default.",
+    "notes": "Set CustomerManagedKeyEnabled to true and provide KmsKeyArn for customer managed encryption."
+  },
+  "AWS::EC2::VerifiedAccessGroup": {
+    "properties": [
+      {
+        "name": "SseSpecification",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "CustomerManagedKeyEnabled",
+        "path": "SseSpecification.CustomerManagedKeyEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": true,
+          "awsManaged": false
+        }
+      },
+      {
+        "name": "KmsKeyArn",
+        "path": "SseSpecification.KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS owned key by default.",
+    "notes": "Set CustomerManagedKeyEnabled to true and provide KmsKeyArn for customer managed encryption."
+  },
+  "AWS::EC2::VerifiedAccessTrustProvider": {
+    "properties": [
+      {
+        "name": "SseSpecification",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "CustomerManagedKeyEnabled",
+        "path": "SseSpecification.CustomerManagedKeyEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": true,
+          "awsManaged": false
+        }
+      },
+      {
+        "name": "KmsKeyArn",
+        "path": "SseSpecification.KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS owned key by default.",
+    "notes": "Set CustomerManagedKeyEnabled to true and provide KmsKeyArn for customer managed encryption."
+  },
+  "AWS::EC2::Volume": {
+    "properties": [
+      {
+        "name": "Encrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Depends on account encryption-by-default setting. If enabled, volumes are encrypted with default KMS key. If KmsKeyId is specified, Encrypted must be true.",
+    "notes": "Encryption cannot be changed after volume creation. Supports key ID, alias, ARN, or alias ARN. Uses AWS managed key (alias/aws/ebs) if no key specified."
+  },
+  "AWS::ECR::Repository": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "EncryptionType",
+        "path": "EncryptionConfiguration.EncryptionType",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS",
+          "awsManaged": "AES256"
+        }
+      },
+      {
+        "name": "KmsKey",
+        "path": "EncryptionConfiguration.KmsKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AES256 encryption with Amazon S3-managed keys by default",
+    "notes": "KmsKey is required if EncryptionType is KMS or KMS_DSSE. KMS_DSSE also available for dual-layer encryption."
+  },
+  "AWS::ECR::RepositoryCreationTemplate": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "EncryptionType",
+        "path": "EncryptionConfiguration.EncryptionType",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS",
+          "awsManaged": "AES256"
+        }
+      },
+      {
+        "name": "KmsKey",
+        "path": "EncryptionConfiguration.KmsKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::EFS::FileSystem": {
+    "properties": [
+      {
+        "name": "Encrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. Uses default EFS KMS key if Encrypted is true but KmsKeyId not specified",
+    "notes": "Encryption cannot be changed after file system creation"
+  },
+  "AWS::EKS::Cluster": {
+    "properties": [
+      {
+        "name": "EncryptionConfig",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KeyArn",
+        "path": "EncryptionConfig[].Provider.KeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Secrets not encrypted with customer managed key by default.",
+    "notes": "Enables envelope encryption of Kubernetes secrets using KMS. Cannot be changed after cluster creation."
+  },
+  "AWS::EMR::Studio": {
+    "properties": [
+      {
+        "name": "EncryptionKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for EMR by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::ElastiCache::ReplicationGroup": {
+    "properties": [
+      {
+        "name": "AtRestEncryptionEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. Uses AWS managed key if AtRestEncryptionEnabled is true but KmsKeyId not specified.",
+    "notes": "Encryption cannot be changed after creation. Only available for Redis replication groups."
+  },
+  "AWS::ElastiCache::ServerlessCache": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for ElastiCache by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys. Encryption settings typically cannot be changed after resource creation."
+  },
+  "AWS::Elasticsearch::Domain": {
+    "properties": [
+      {
+        "name": "EncryptionAtRestOptions",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "Enabled",
+        "path": "EncryptionAtRestOptions.Enabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "EncryptionAtRestOptions.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default",
+    "notes": "AWS::Elasticsearch::Domain is being replaced by AWS::OpenSearchService::Domain"
+  },
+  "AWS::Events::Archive": {
+    "properties": [
+      {
+        "name": "KmsKeyIdentifier",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Events by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Events::Connection": {
+    "properties": [
+      {
+        "name": "KmsKeyIdentifier",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Events by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Events::EventBus": {
+    "properties": [
+      {
+        "name": "KmsKeyIdentifier",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Events by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::FSx::FileSystem": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for FSx by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::FinSpace::Environment": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for FinSpace by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Forecast::Dataset": {
+    "properties": [
+      {
+        "name": "EncryptionConfig",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyArn",
+        "path": "EncryptionConfig.KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "RoleArn",
+        "path": "EncryptionConfig.RoleArn",
+        "type": "string",
+        "required": false,
+        "purpose": "configuration"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::Glue::DataCatalogEncryptionSettings": {
+    "properties": [
+      {
+        "name": "EncryptionAtRest",
+        "path": "DataCatalogEncryptionSettings.EncryptionAtRest",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "CatalogEncryptionMode",
+        "path": "DataCatalogEncryptionSettings.EncryptionAtRest.CatalogEncryptionMode",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "SSE-KMS"
+        }
+      },
+      {
+        "name": "SseAwsKmsKeyId",
+        "path": "DataCatalogEncryptionSettings.EncryptionAtRest.SseAwsKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "CatalogEncryptionServiceRole",
+        "path": "DataCatalogEncryptionSettings.EncryptionAtRest.CatalogEncryptionServiceRole",
+        "type": "string",
+        "required": false,
+        "purpose": "configuration"
+      }
+    ],
+    "defaultBehavior": "Encryption disabled by default",
+    "notes": "SSE-KMS uses default Glue service key if no KmsKeyId specified. SSE-KMS-WITH-SERVICE-ROLE also available."
+  },
+  "AWS::Glue::MLTransform": {
+    "properties": [
+      {
+        "name": "TransformEncryption",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "MLUserDataEncryptionMode",
+        "path": "TransformEncryption.MLUserDataEncryption.MLUserDataEncryptionMode",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "SSE-KMS"
+        }
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "TransformEncryption.MLUserDataEncryption.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption disabled by default.",
+    "notes": "SSE-KMS uses default Glue service key if no KmsKeyId specified."
+  },
+  "AWS::Glue::SecurityConfiguration": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": true,
+        "purpose": "configuration"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Some encryption properties are required. Encryption configured through nested properties."
+  },
+  "AWS::GroundStation::MissionProfile": {
+    "properties": [
+      {
+        "name": "StreamsKmsKey",
+        "type": "object",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "StreamsKmsRole",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "KmsKeyArn",
+        "path": "StreamsKmsKey.KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys. Encryption configured through nested properties."
+  },
+  "AWS::HealthImaging::Datastore": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for HealthImaging by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::HealthLake::FHIRDatastore": {
+    "properties": [
+      {
+        "name": "SseConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "CmkType",
+        "path": "SseConfiguration.KmsEncryptionConfig.CmkType",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "CUSTOMER_MANAGED_KMS_KEY",
+          "awsManaged": "AWS_OWNED_KMS_KEY"
+        }
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "SseConfiguration.KmsEncryptionConfig.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::ImageBuilder::Component": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for ImageBuilder by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::ImageBuilder::ContainerRecipe": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for ImageBuilder by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::ImageBuilder::Workflow": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for ImageBuilder by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::IoT::EncryptionConfiguration": {
+    "properties": [
+      {
+        "name": "EncryptionType",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "CUSTOMER_MANAGED_KMS_KEY",
+          "awsManaged": "AWS_OWNED_KMS_KEY"
+        }
+      },
+      {
+        "name": "KmsAccessRoleArn",
+        "type": "string",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "EncryptionType is required. KmsKeyArn required if using CUSTOMER_MANAGED_KMS_KEY."
+  },
+  "AWS::Kendra::Index": {
+    "properties": [
+      {
+        "name": "ServerSideEncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "ServerSideEncryptionConfiguration.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::Kinesis::Stream": {
+    "properties": [
+      {
+        "name": "StreamEncryption",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "EncryptionType",
+        "path": "StreamEncryption.EncryptionType",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS"
+        }
+      },
+      {
+        "name": "KeyId",
+        "path": "StreamEncryption.KeyId",
+        "type": "string",
+        "required": true,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default.",
+    "notes": "EncryptionType only supports 'KMS'. Both EncryptionType and KeyId are required when StreamEncryption is specified."
+  },
+  "AWS::KinesisFirehose::DeliveryStream": {
+    "properties": [
+      {
+        "name": "DeliveryStreamEncryptionConfigurationInput",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KeyType",
+        "path": "DeliveryStreamEncryptionConfigurationInput.KeyType",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "CUSTOMER_MANAGED_CMK",
+          "awsManaged": "AWS_OWNED_CMK"
+        }
+      },
+      {
+        "name": "KeyARN",
+        "path": "DeliveryStreamEncryptionConfigurationInput.KeyARN",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::KinesisVideo::Stream": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for KinesisVideo by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Lambda::EventSourceMapping": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Lambda by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Lambda::Function": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id",
+        "context": "environment-variables"
+      }
+    ],
+    "defaultBehavior": "Environment variables encrypted with AWS managed key by default.",
+    "notes": "KmsKeyArn only applies to environment variable encryption, not function code or layers."
+  },
+  "AWS::Location::GeofenceCollection": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Location by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Location::Tracker": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "KmsKeyEnableGeospatialQueries",
+        "type": "boolean",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Logs::LogAnomalyDetector": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Logs by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Logs::LogGroup": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encrypted with AWS managed key by default.",
+    "notes": "Can specify customer managed KMS key. Encryption applies to log data at rest."
+  },
+  "AWS::LookoutEquipment::InferenceScheduler": {
+    "properties": [
+      {
+        "name": "ServerSideKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for LookoutEquipment by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::LookoutMetrics::AnomalyDetector": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for LookoutMetrics by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::M2::Application": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for M2 by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::M2::Environment": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for M2 by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::MSK::Cluster": {
+    "properties": [
+      {
+        "name": "EncryptionInfo",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "DataVolumeKMSKeyId",
+        "path": "EncryptionInfo.EncryptionAtRest.DataVolumeKMSKeyId",
+        "type": "string",
+        "required": true,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "MSK creates and uses an AWS managed key if EncryptionInfo not specified.",
+    "notes": "DataVolumeKMSKeyId is required when EncryptionAtRest is specified. Cannot be changed after cluster creation."
+  },
+  "AWS::MWAA::Environment": {
+    "properties": [
+      {
+        "name": "KmsKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for MWAA by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::MediaConnect::FlowEntitlement": {
+    "properties": [
+      {
+        "name": "Encryption",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KeyType",
+        "path": "Encryption.KeyType",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type"
+      },
+      {
+        "name": "RoleArn",
+        "path": "Encryption.RoleArn",
+        "type": "string",
+        "required": false,
+        "purpose": "configuration"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::MediaConnect::FlowOutput": {
+    "properties": [
+      {
+        "name": "Encryption",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KeyType",
+        "path": "Encryption.KeyType",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type"
+      },
+      {
+        "name": "RoleArn",
+        "path": "Encryption.RoleArn",
+        "type": "string",
+        "required": false,
+        "purpose": "configuration"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::MemoryDB::Cluster": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for MemoryDB by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Neptune::DBCluster": {
+    "properties": [
+      {
+        "name": "StorageEncrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. Uses AWS managed key if encryption enabled without specifying KMS key.",
+    "notes": "Supports customer managed KMS keys. Encryption settings typically cannot be changed after resource creation."
+  },
+  "AWS::NimbleStudio::Studio": {
+    "properties": [
+      {
+        "name": "StudioEncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KeyType",
+        "path": "StudioEncryptionConfiguration.KeyType",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "CUSTOMER_MANAGED_KEY",
+          "awsManaged": "AWS_OWNED_KEY"
+        }
+      },
+      {
+        "name": "KeyArn",
+        "path": "StudioEncryptionConfiguration.KeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS owned key by default if StudioEncryptionConfiguration not specified.",
+    "notes": "KeyType is required when StudioEncryptionConfiguration is specified. KeyArn required if KeyType is CUSTOMER_MANAGED_KEY."
+  },
+  "AWS::OSIS::Pipeline": {
+    "properties": [
+      {
+        "name": "EncryptionAtRestOptions",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyArn",
+        "path": "EncryptionAtRestOptions.KmsKeyArn",
+        "type": "string",
+        "required": true,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS owned key by default. Specify EncryptionAtRestOptions with KmsKeyArn for customer managed encryption.",
+    "notes": "KmsKeyArn is required when EncryptionAtRestOptions is specified."
+  },
+  "AWS::Omics::AnnotationStore": {
+    "properties": [
+      {
+        "name": "SseConfig",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "Type",
+        "path": "SseConfig.Type",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS"
+        }
+      },
+      {
+        "name": "KeyArn",
+        "path": "SseConfig.KeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Type only supports 'KMS' and is required when SseConfig is specified."
+  },
+  "AWS::Omics::ReferenceStore": {
+    "properties": [
+      {
+        "name": "SseConfig",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "Type",
+        "path": "SseConfig.Type",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS"
+        }
+      },
+      {
+        "name": "KeyArn",
+        "path": "SseConfig.KeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Type only supports 'KMS' and is required when SseConfig is specified."
+  },
+  "AWS::Omics::SequenceStore": {
+    "properties": [
+      {
+        "name": "SseConfig",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "Type",
+        "path": "SseConfig.Type",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS"
+        }
+      },
+      {
+        "name": "KeyArn",
+        "path": "SseConfig.KeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Type only supports 'KMS' and is required when SseConfig is specified."
+  },
+  "AWS::Omics::VariantStore": {
+    "properties": [
+      {
+        "name": "SseConfig",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "Type",
+        "path": "SseConfig.Type",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "KMS"
+        }
+      },
+      {
+        "name": "KeyArn",
+        "path": "SseConfig.KeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Type only supports 'KMS' and is required when SseConfig is specified."
+  },
+  "AWS::OpenSearchService::Domain": {
+    "properties": [
+      {
+        "name": "EncryptionAtRestOptions",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "Enabled",
+        "path": "EncryptionAtRestOptions.Enabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "EncryptionAtRestOptions.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default",
+    "notes": "Required if fine-grained access control is enabled. Changing after creation causes domain replacement"
+  },
+  "AWS::Personalize::DatasetGroup": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Personalize by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Pipes::Pipe": {
+    "properties": [
+      {
+        "name": "KmsKeyIdentifier",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Pipes by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Proton::EnvironmentTemplate": {
+    "properties": [
+      {
+        "name": "EncryptionKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Proton by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Proton::ServiceTemplate": {
+    "properties": [
+      {
+        "name": "EncryptionKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Proton by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::QBusiness::Application": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "EncryptionConfiguration.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::QLDB::Ledger": {
+    "properties": [
+      {
+        "name": "KmsKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for QLDB by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::RDS::CustomDBEngineVersion": {
+    "properties": [
+      {
+        "name": "KMSKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for RDS by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys. Encryption settings typically cannot be changed after resource creation."
+  },
+  "AWS::RDS::DBCluster": {
+    "properties": [
+      {
+        "name": "StorageEncrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "PerformanceInsightsKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. Uses AWS managed key if encryption enabled without specifying KMS key.",
+    "notes": "Supports customer managed KMS keys. Encryption settings typically cannot be changed after resource creation."
+  },
+  "AWS::RDS::DBInstance": {
+    "properties": [
+      {
+        "name": "StorageEncrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag",
+        "context": "storage"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id",
+        "context": "storage"
+      },
+      {
+        "name": "PerformanceInsightsKMSKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id",
+        "context": "performance-insights"
+      },
+      {
+        "name": "AutomaticBackupReplicationKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id",
+        "context": "backup-replication"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. If KmsKeyId is specified, StorageEncrypted must be true",
+    "notes": "Different encryption contexts for storage, performance insights, and backup replication"
+  },
+  "AWS::RDS::GlobalCluster": {
+    "properties": [
+      {
+        "name": "StorageEncrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Encryption settings typically cannot be changed after resource creation."
+  },
+  "AWS::RDS::Integration": {
+    "properties": [
+      {
+        "name": "KMSKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys. Encryption settings typically cannot be changed after resource creation."
+  },
+  "AWS::Redshift::Cluster": {
+    "properties": [
+      {
+        "name": "Encrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "MasterPasswordSecretKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. Uses AWS managed key if Encrypted is true but KmsKeyId not specified.",
+    "notes": "Encryption can be changed after creation but requires cluster modification. Encrypts data blocks, system metadata, and snapshots."
+  },
+  "AWS::Redshift::Integration": {
+    "properties": [
+      {
+        "name": "KMSKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys. Encryption settings typically cannot be changed after resource creation."
+  },
+  "AWS::RedshiftServerless::Namespace": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "AdminPasswordSecretKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption behavior depends on service configuration. Refer to AWS documentation for details.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Rekognition::StreamProcessor": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Rekognition by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::S3::Bucket": {
+    "properties": [
+      {
+        "name": "BucketEncryption",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "SSEAlgorithm",
+        "path": "BucketEncryption.ServerSideEncryptionConfiguration[].ServerSideEncryptionByDefault.SSEAlgorithm",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "aws:kms",
+          "awsManaged": "AES256"
+        }
+      },
+      {
+        "name": "KMSMasterKeyID",
+        "path": "BucketEncryption.ServerSideEncryptionConfiguration[].ServerSideEncryptionByDefault.KMSMasterKeyID",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "AWS now enables default encryption for new buckets using SSE-S3",
+    "notes": "Supports SSE-S3 (AES256), SSE-KMS (aws:kms), and DSSE-KMS (aws:kms:dsse) encryption types"
+  },
+  "AWS::S3Express::DirectoryBucket": {
+    "properties": [
+      {
+        "name": "BucketEncryption",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "SSEAlgorithm",
+        "path": "BucketEncryption.ServerSideEncryptionConfiguration[].ServerSideEncryptionByDefault.SSEAlgorithm",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "aws:kms",
+          "awsManaged": "AES256"
+        }
+      },
+      {
+        "name": "KMSMasterKeyID",
+        "path": "BucketEncryption.ServerSideEncryptionConfiguration[].ServerSideEncryptionByDefault.KMSMasterKeyID",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::S3Tables::TableBucket": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "SSEAlgorithm",
+        "path": "EncryptionConfiguration.SSEAlgorithm",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "aws:kms",
+          "awsManaged": "AES256"
+        }
+      },
+      {
+        "name": "KMSKeyArn",
+        "path": "EncryptionConfiguration.KMSKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::S3Vectors::VectorBucket": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "SSEAlgorithm",
+        "path": "EncryptionConfiguration.SSEAlgorithm",
+        "type": "string",
+        "required": false,
+        "purpose": "encryption-type"
+      },
+      {
+        "name": "KMSKeyArn",
+        "path": "EncryptionConfiguration.KMSKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::SES::MailManagerArchive": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for SES by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::SNS::Topic": {
+    "properties": [
+      {
+        "name": "KmsMasterKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default.",
+    "notes": "When KmsMasterKeyId is specified, messages are encrypted at rest using the specified KMS key."
+  },
+  "AWS::SQS::Queue": {
+    "properties": [
+      {
+        "name": "KmsMasterKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "SqsManagedSseEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": false,
+          "awsManaged": true
+        }
+      }
+    ],
+    "defaultBehavior": "SQS-managed encryption (SSE-SQS) enabled by default for new queues.",
+    "notes": "KmsMasterKeyId and SqsManagedSseEnabled are mutually exclusive. Use KmsMasterKeyId for customer-managed KMS, or SqsManagedSseEnabled=true for SQS-managed encryption."
+  },
+  "AWS::SSM::ResourceDataSync": {
+    "properties": [
+      {
+        "name": "KMSKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for SSM by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::SageMaker::Domain": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for SageMaker by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::SageMaker::EndpointConfig": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for SageMaker by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::SageMaker::InferenceExperiment": {
+    "properties": [
+      {
+        "name": "KmsKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for SageMaker by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::SageMaker::NotebookInstance": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for SageMaker by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::SageMaker::PartnerApp": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for SageMaker by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Scheduler::Schedule": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Scheduler by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::SecretsManager::Secret": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encrypted with AWS managed key (aws/secretsmanager) by default.",
+    "notes": "Can specify customer managed KMS key. Encryption key can be changed after secret creation."
+  },
+  "AWS::SecurityLake::DataLake": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "EncryptionConfiguration.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::Serverless::Function": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Serverless by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Serverless::SimpleTable": {
+    "properties": [
+      {
+        "name": "SSESpecification",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "SSEEnabled",
+        "path": "SSESpecification.SSEEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::StepFunctions::Activity": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "Type",
+        "path": "EncryptionConfiguration.Type",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "CUSTOMER_MANAGED_KMS_KEY",
+          "awsManaged": "AWS_OWNED_KEY"
+        }
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "EncryptionConfiguration.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::StepFunctions::StateMachine": {
+    "properties": [
+      {
+        "name": "EncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "Type",
+        "path": "EncryptionConfiguration.Type",
+        "type": "string",
+        "required": true,
+        "purpose": "encryption-type",
+        "keyTypeValues": {
+          "customerManaged": "CUSTOMER_MANAGED_KMS_KEY",
+          "awsManaged": "AWS_OWNED_KEY"
+        }
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "EncryptionConfiguration.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::Timestream::Database": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Timestream by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::Timestream::ScheduledQuery": {
+    "properties": [
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      },
+      {
+        "name": "SQKmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for Timestream by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::VoiceID::Domain": {
+    "properties": [
+      {
+        "name": "ServerSideEncryptionConfiguration",
+        "type": "object",
+        "required": true,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "ServerSideEncryptionConfiguration.KmsKeyId",
+        "type": "string",
+        "required": true,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Customer managed KMS key is required. No default encryption available.",
+    "notes": "KmsKeyId is required - Voice ID does not support AWS managed keys."
+  },
+  "AWS::Wisdom::Assistant": {
+    "properties": [
+      {
+        "name": "ServerSideEncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "ServerSideEncryptionConfiguration.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::Wisdom::KnowledgeBase": {
+    "properties": [
+      {
+        "name": "ServerSideEncryptionConfiguration",
+        "type": "object",
+        "required": false,
+        "purpose": "configuration"
+      },
+      {
+        "name": "KmsKeyId",
+        "path": "ServerSideEncryptionConfiguration.KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Encryption configuration optional. Check AWS documentation for service-specific defaults.",
+    "notes": "Encryption configured through nested properties."
+  },
+  "AWS::WorkSpaces::Workspace": {
+    "properties": [
+      {
+        "name": "RootVolumeEncryptionEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "UserVolumeEncryptionEnabled",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "VolumeEncryptionKey",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. Uses AWS managed key if encryption enabled without specifying KMS key.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::WorkSpacesThinClient::Environment": {
+    "properties": [
+      {
+        "name": "KmsKeyArn",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Uses AWS managed key for WorkSpacesThinClient by default. Specify KMS key for customer managed encryption.",
+    "notes": "Supports customer managed KMS keys."
+  },
+  "AWS::WorkspacesInstances::Volume": {
+    "properties": [
+      {
+        "name": "Encrypted",
+        "type": "boolean",
+        "required": false,
+        "purpose": "enable-flag"
+      },
+      {
+        "name": "KmsKeyId",
+        "type": "string",
+        "required": false,
+        "purpose": "kms-key-id"
+      }
+    ],
+    "defaultBehavior": "Not encrypted by default. Uses AWS managed key if encryption enabled without specifying KMS key.",
+    "notes": "Supports customer managed KMS keys."
+  }
+}
