@@ -1394,7 +1394,7 @@ export interface ServiceLoadBalancerAddressOptions {
 /**
  * Options for fetching an IngressLoadBalancerAddress.
  */
-export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
+export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions { }
 
 /**
  * Internal helper interface for adding access entries to a cluster.
@@ -1663,7 +1663,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  private readonly logging?: { [key: string]: [{ [key: string]: any }] };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1725,7 +1725,17 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
+    const defaultVpcSubnets = [];
+    if (this.vpc.publicSubnets.length > 0) {
+      defaultVpcSubnets.push({ subnetType: ec2.SubnetType.PUBLIC });
+    }
+    if (this.vpc.privateSubnets.length > 0) {
+      defaultVpcSubnets.push({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
+    } else if (this.vpc.isolatedSubnets.length > 0) {
+      defaultVpcSubnets.push({ subnetType: ec2.SubnetType.PRIVATE_ISOLATED });
+    }
+
+    this.vpcSubnets = props.vpcSubnets ?? (defaultVpcSubnets.length > 0 ? defaultVpcSubnets : [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]);
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
@@ -1772,7 +1782,7 @@ export class Cluster extends ClusterBase {
       }
 
       if (privateSubnets.length === 0 && publicAccessRestricted) {
-      // no private subnets and public access is restricted, no good.
+        // no private subnets and public access is restricted, no good.
         throw new ValidationError('Vpc must contain private subnets when public endpoint access is restricted', this);
       }
     }
@@ -1816,7 +1826,7 @@ export class Cluster extends ClusterBase {
           remoteNodeNetworks: props.remoteNodeNetworks,
           ...(props.remotePodNetworks ? {
             remotePodNetworks: props.remotePodNetworks,
-          }: {}),
+          } : {}),
         },
       } : {}),
       resourcesVpcConfig: {
@@ -2280,12 +2290,13 @@ export class Cluster extends ClusterBase {
   private selectPrivateSubnets(): ec2.ISubnet[] {
     const privateSubnets: ec2.ISubnet[] = [];
     const vpcPrivateSubnetIds = this.vpc.privateSubnets.map(s => s.subnetId);
+    const vpcIsolatedSubnetIds = this.vpc.isolatedSubnets.map(s => s.subnetId);
     const vpcPublicSubnetIds = this.vpc.publicSubnets.map(s => s.subnetId);
 
     for (const placement of this.vpcSubnets) {
       for (const subnet of this.vpc.selectSubnets(placement).subnets) {
-        if (vpcPrivateSubnetIds.includes(subnet.subnetId)) {
-          // definitely private, take it.
+        if (vpcPrivateSubnetIds.includes(subnet.subnetId) || vpcIsolatedSubnetIds.includes(subnet.subnetId)) {
+          // definitely private or isolated, take it.
           privateSubnets.push(subnet);
           continue;
         }
@@ -2344,6 +2355,7 @@ export class Cluster extends ClusterBase {
 
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
     tagAllSubnets('private', this.vpc.privateSubnets, 'kubernetes.io/role/internal-elb');
+    tagAllSubnets('isolated', this.vpc.isolatedSubnets, 'kubernetes.io/role/internal-elb');
     tagAllSubnets('public', this.vpc.publicSubnets, 'kubernetes.io/role/elb');
   }
 
@@ -2385,7 +2397,7 @@ export class Cluster extends ClusterBase {
   }
 
   private validateRemoteNetworkConfig(props: ClusterProps) {
-    if (!props.remoteNodeNetworks) { return;}
+    if (!props.remoteNodeNetworks) { return; }
     // validate that no two CIDRs overlap within the same remote node network
     props.remoteNodeNetworks.forEach((network, index) => {
       const { cidrs } = network;
