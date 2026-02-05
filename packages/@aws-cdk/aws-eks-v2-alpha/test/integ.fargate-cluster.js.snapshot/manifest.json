@@ -364,12 +364,6 @@
             }
           }
         ],
-        "/eks-fargate-cluster-test-stack/FargateTestCluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -522,12 +516,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -692,12 +680,6 @@
             }
           }
         ],
-        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -822,12 +804,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/PodExecutionRole/ImportPodExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/PodExecutionRole/Resource": [

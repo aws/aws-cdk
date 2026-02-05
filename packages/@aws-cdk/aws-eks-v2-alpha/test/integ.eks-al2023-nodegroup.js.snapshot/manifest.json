@@ -45,12 +45,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-al2023-nodegroup-test/AdminRole/ImportAdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/AdminRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -370,12 +364,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -528,12 +516,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -696,12 +678,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -873,12 +849,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_STANDARD/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_STANDARD/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -936,12 +906,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_ARM_64_STANDARD/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_ARM_64_STANDARD/NodeGroupRole/Resource": [
@@ -1003,12 +967,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NEURON/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NEURON/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1066,12 +1024,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NVIDIA/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NVIDIA/NodeGroupRole/Resource": [
