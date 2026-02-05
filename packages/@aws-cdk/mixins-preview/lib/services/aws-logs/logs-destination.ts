@@ -9,6 +9,7 @@ import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, ServicePrinc
 import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 import type { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as xray from '../aws-xray/policy';
 import { S3LogsDeliveryPermissionsVersion } from './logs-delivery';
 
 /**
@@ -48,7 +49,7 @@ export interface S3DeliveryDestinationProps extends CrossAccountDestinationProps
 /**
  * Properties for Firehose delivery destination
  */
-export interface FirehoseDelvieryDestinationProps extends CrossAccountDestinationProps {
+export interface FirehoseDeliveryDestinationProps extends CrossAccountDestinationProps {
   /**
    * Delivery stream to delivery logs to
    */
@@ -63,6 +64,16 @@ export interface CloudwatchDeliveryDestinationProps {
    * Log group to deliver logs to
    */
   readonly logGroup: logs.ILogGroupRef;
+}
+
+/**
+ * Properties for XRay delivery destination
+ */
+export interface XRayDeliveryDestinationProps {
+  /**
+   * Arn of the source resource
+   */
+  readonly sourceResource: string;
 }
 
 /**
@@ -209,8 +220,8 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
 /**
  * Firehose delivery destination for CloudWatch Logs.
  */
-export class FirehoseDelvieryDestination extends logs.CfnDeliveryDestination {
-  constructor(scope: Construct, id: string, props: FirehoseDelvieryDestinationProps) {
+export class FirehoseDeliveryDestination extends logs.CfnDeliveryDestination {
+  constructor(scope: Construct, id: string, props: FirehoseDeliveryDestinationProps) {
     super(scope, id, {
       destinationResourceArn: props.deliveryStream.deliveryStreamRef.deliveryStreamArn,
       name: deliveryDestName('fh', id, scope),
@@ -278,6 +289,65 @@ export class CloudwatchDeliveryDestination extends logs.CfnDeliveryDestination {
         },
         ArnLike: {
           'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
+        },
+      },
+    }));
+  }
+}
+
+/**
+ * XRay delivery destination for XRay traces.
+ */
+export class XRayDeliveryDestination extends logs.CfnDeliveryDestination {
+  constructor(scope: Construct, id: string, props: XRayDeliveryDestinationProps) {
+    super(scope, id, {
+      name: deliveryDestName('xray', id, scope),
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const xrayResourcePolicy = this.getOrCreateResourcePolicy(scope);
+    this.grantLogsDelivery(xrayResourcePolicy, props.sourceResource);
+    this.node.addDependency(xrayResourcePolicy);
+  }
+
+  /**
+   * Gets or creates a singleton X-Ray resource policy.
+   *
+   * @param scope - The construct scope
+   * @returns The X-Ray resource policy
+   */
+  private getOrCreateResourcePolicy(scope: IConstruct): xray.ResourcePolicy {
+    const stack = Stack.of(scope);
+    const policyId = 'CdkXRayLogsDeliveryPolicy';
+
+    // Singleton policy per stack
+    const existingPolicy = stack.node.tryFindChild(policyId) as xray.ResourcePolicy;
+
+    return existingPolicy ?? new xray.ResourcePolicy(stack, policyId);
+  }
+
+  /**
+   * Grants permissions for log delivery to resource policy.
+   * @param policy - The resource policy
+   */
+  private grantLogsDelivery(policy: xray.ResourcePolicy, sourceResourceArn: string): void {
+    const stack = Stack.of(policy);
+
+    policy.document.addStatements( new PolicyStatement({
+      sid: 'CDKLogsDeliveryWrite',
+      effect: Effect.ALLOW,
+      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+      actions: ['xray:PutTraceSegments'],
+      resources: ['*'],
+      conditions: {
+        'ForAllValues:ArnLike': {
+          'logs:LogGeneratingResourceArns': [sourceResourceArn],
+        },
+        'StringEquals': {
+          'aws:SourceAccount': stack.account,
+        },
+        'ArnLike': {
+          'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
         },
       },
     }));

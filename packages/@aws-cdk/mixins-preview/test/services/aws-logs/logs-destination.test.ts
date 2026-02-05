@@ -4,7 +4,7 @@ import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk
 import { DeliveryStream, CfnDeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { CfnLogGroup, LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { CfnKey, Key } from 'aws-cdk-lib/aws-kms';
-import { CloudwatchDeliveryDestination, FirehoseDelvieryDestination, S3DeliveryDestination, S3LogsDeliveryPermissionsVersion } from '../../../lib/services/aws-logs';
+import { CloudwatchDeliveryDestination, FirehoseDeliveryDestination, S3DeliveryDestination, S3LogsDeliveryPermissionsVersion, XRayDeliveryDestination } from '../../../lib/services/aws-logs';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
@@ -254,7 +254,7 @@ describe('cross acount destination', () => {
       role: firehoseRole,
     });
 
-    new FirehoseDelvieryDestination(stack, 'FirehoseDelivery', {
+    new FirehoseDeliveryDestination(stack, 'FirehoseDelivery', {
       deliveryStream: stream,
       sourceAccountId: sourceAccount,
     });
@@ -373,7 +373,7 @@ describe('Firehose destination', () => {
       role: firehoseRole,
     });
 
-    new FirehoseDelvieryDestination(stream, 'FHDest', {
+    new FirehoseDeliveryDestination(stream, 'FHDest', {
       deliveryStream: stream,
     });
 
@@ -417,7 +417,7 @@ describe('Firehose destination', () => {
       },
     });
 
-    new FirehoseDelvieryDestination(stream, 'FHDest', {
+    new FirehoseDeliveryDestination(stream, 'FHDest', {
       deliveryStream: stream,
     });
 
@@ -818,5 +818,63 @@ describe('S3 Destination', () => {
         ]),
       },
     });
+  });
+});
+
+describe('XRay Destination', () => {
+  let stack: Stack;
+
+  beforeEach(() => {
+    const app = new App();
+    stack = new Stack(app, 'Stack');
+  });
+
+  test('creates an XRay destination', () => {
+    const sourceResourceArn = 'arn:aws:s3:::my-bucket';
+
+    new XRayDeliveryDestination(stack, 'XRayDest', {
+      sourceResource: sourceResourceArn,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'XRAY',
+      Name: Match.stringLikeRegexp('cdk-xray-XRayDest-dest-.*'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            `{"Statement":[{"Action":"xray:PutTraceSegments","Condition":{"ForAllValues:ArnLike":{"logs:LogGeneratingResourceArns":["${sourceResourceArn}"]},"StringEquals":{"aws:SourceAccount":"`,
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '"},"ArnLike":{"aws:SourceArn":"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':logs:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':delivery-source:*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"*","Sid":"CDKLogsDeliveryWrite"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    const deliveryDestinations = template.findResources('AWS::Logs::DeliveryDestination');
+    const resourcePolicies = template.findResources('AWS::XRay::ResourcePolicy');
+
+    const deliveryDestinationLogicalId = Object.keys(deliveryDestinations)[0];
+    const xrayPolicyLogicalId = Object.keys(resourcePolicies)[0];
+
+    expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(xrayPolicyLogicalId);
   });
 });

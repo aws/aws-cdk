@@ -1126,7 +1126,7 @@ describe('XRay Delivery', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'XRAY',
-      Name: Match.stringLikeRegexp('cdk-xray-traces-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-xray-Desttraces-dest-.*'),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
       LogType: logType,

@@ -1,13 +1,11 @@
-import { Names, Stack } from 'aws-cdk-lib/core';
-import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Names } from 'aws-cdk-lib/core';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import type * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { tryFindDeliverySourceForResource } from '../../mixins/private/reflections';
-import * as xray from '../aws-xray/policy';
 import type { IKeyRef } from 'aws-cdk-lib/aws-kms';
-import { S3DeliveryDestination, CloudwatchDeliveryDestination, FirehoseDelvieryDestination } from './logs-destination';
+import { S3DeliveryDestination, CloudwatchDeliveryDestination, FirehoseDeliveryDestination, XRayDeliveryDestination } from './logs-destination';
 
 /**
  * The individual elements of a logs delivery integration.
@@ -113,7 +111,7 @@ export class S3LogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
 
-    const deliveryDestination = new S3DeliveryDestination(container, 'Dest' + logType.split('_').map(word => word.toLowerCase()).join('-'), {
+    const deliveryDestination = new S3DeliveryDestination(container, makeDestId(logType), {
       bucket: this.bucket,
       permissionsVersion: this.permissions,
       encryptionKey: this.kmsKey,
@@ -157,7 +155,7 @@ export class FirehoseLogsDelivery implements ILogsDelivery {
 
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
 
-    const deliveryDestination = new FirehoseDelvieryDestination(container, 'Dest' + logType.split('_').map(word => word.toLowerCase()).join('-'), {
+    const deliveryDestination = new FirehoseDeliveryDestination(container, makeDestId(logType), {
       deliveryStream: this.deliveryStream,
     });
 
@@ -200,7 +198,7 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
 
-    const deliveryDestination= new CloudwatchDeliveryDestination(container, 'Dest' + logType.split('_').map(word => word.toLowerCase()).join('-'), {
+    const deliveryDestination= new CloudwatchDeliveryDestination(container, makeDestId(logType), {
       logGroup: this.logGroup,
     });
 
@@ -236,20 +234,14 @@ export class XRayLogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const container = new Construct(scope, deliveryId('XRay', logType, scope, deliverySource));
 
-    const xrayResourcePolicy = this.getOrCreateResourcePolicy(container);
-    this.grantLogsDelivery(xrayResourcePolicy, sourceResourceArn);
-
-    const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
-      name: deliveryDestName('xray', logType, container),
-      deliveryDestinationType: 'XRAY',
+    const deliveryDestination= new XRayDeliveryDestination(container, makeDestId(logType), {
+      sourceResource: sourceResourceArn,
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.attrArn,
       deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
     });
-
-    deliveryDestination.node.addDependency(xrayResourcePolicy);
 
     delivery.node.addDependency(deliverySource);
     delivery.node.addDependency(deliveryDestination);
@@ -260,58 +252,14 @@ export class XRayLogsDelivery implements ILogsDelivery {
       delivery,
     };
   }
-
-  /**
-   * Gets or creates a singleton X-Ray resource policy.
-   *
-   * @param scope - The construct scope
-   * @returns The X-Ray resource policy
-   */
-  private getOrCreateResourcePolicy(scope: IConstruct): xray.ResourcePolicy {
-    const stack = Stack.of(scope);
-    const policyId = 'CdkXRayLogsDeliveryPolicy';
-
-    // Singleton policy per stack
-    const existingPolicy = stack.node.tryFindChild(policyId) as xray.ResourcePolicy;
-
-    return existingPolicy ?? new xray.ResourcePolicy(stack, policyId);
-  }
-
-  /**
-   * Grants permissions for log delivery to resource policy.
-   * @param policy - The resource policy
-   */
-  private grantLogsDelivery(policy: xray.ResourcePolicy, sourceResourceArn: string): void {
-    const stack = Stack.of(policy);
-
-    policy.document.addStatements( new PolicyStatement({
-      sid: 'CDKLogsDeliveryWrite',
-      effect: Effect.ALLOW,
-      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-      actions: ['xray:PutTraceSegments'],
-      resources: ['*'],
-      conditions: {
-        'ForAllValues:ArnLike': {
-          'logs:LogGeneratingResourceArns': [sourceResourceArn],
-        },
-        'StringEquals': {
-          'aws:SourceAccount': stack.account,
-        },
-        'ArnLike': {
-          'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
-        },
-      },
-    }));
-  }
 }
 
 function deliveryId(destType: string, logType: string, ...scopes: IConstruct[]) {
   return `Cdk${destType}${logType.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join('')}Delivery${scopes.map(s => Names.uniqueId(s)).join('')}`;
 }
 
-function deliveryDestName(destType: string, logType: string, scope: IConstruct) {
-  const prefix = `cdk-${destType}-${logType.split('_').map(word => word.toLowerCase()).join('-')}-dest-`;
-  return `${prefix}${Names.uniqueResourceName(scope, { maxLength: 60 - prefix.length })}`;
+function makeDestId(logType: string) {
+  return 'Dest' + logType.split('_').map(word => word.toLowerCase()).join('-');
 }
 
 function getOrCreateDeliverySource(logType: string, resource: IConstruct, sourceArn: string) {
