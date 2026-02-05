@@ -90,7 +90,7 @@ describe('PartitionProjectionConfiguration Validation', () => {
       }).toThrow(`DATE partition projection format contains invalid pattern characters: ${invalidChars.join(', ')}. Must use Java DateTimeFormatter valid pattern letters.`);
     });
 
-    test("throws when format has unclosed single quote", () => {
+    test('throws when format has unclosed single quote', () => {
       expect(() => {
         glue.PartitionProjectionConfiguration.date({
           min: '2020-01-01',
