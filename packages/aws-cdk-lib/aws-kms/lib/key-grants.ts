@@ -74,7 +74,11 @@ export class KeyGrants {
         resourceSelfArns: crossEnvironment ? undefined : ['*'],
       };
 
-      if (this.trustAccountIdentities && !crossEnvironment) {
+      // For L1s, we always add the statement to the resource policy because we cannot automatically
+      // detect whether the key already has a policy for trusting account identities. And we can't
+      // expect users to pass the correct value for `trustAccountIdentities` prop when creating the
+      // KeyGrants instance for an L1.
+      if (!CfnKey.isCfnKey(this.resource) && this.trustAccountIdentities && !crossEnvironment) {
         return iam.Grant.addToPrincipalOrResource(grantOptions);
       } else {
         return iam.Grant.addToPrincipalAndResource({

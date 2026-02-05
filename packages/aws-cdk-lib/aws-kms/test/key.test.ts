@@ -262,7 +262,6 @@ describe('key policies', () => {
     KeyGrants.fromKey(key).decrypt(user);
 
     // THEN
-    // Key policy should be unmodified by the grant.
     let template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
@@ -271,6 +270,19 @@ describe('key policies', () => {
             Action: 'kms:*',
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::GetAtt': [
+                  'User00B015A1',
+                  'Arn',
+                ],
+              },
+            },
             Resource: '*',
           },
         ],
