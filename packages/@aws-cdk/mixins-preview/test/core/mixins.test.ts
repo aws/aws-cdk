@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, type IConstruct } from 'constructs';
 import { Stack, App } from 'aws-cdk-lib/core';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -7,6 +7,12 @@ import {
   Mixin,
   Mixins,
 } from '../../lib/core';
+
+class Root extends Construct {
+  constructor() {
+    super(undefined as any, '');
+  }
+}
 
 class TestConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -145,6 +151,44 @@ describe('Core Mixins Framework', () => {
       const applicator = Mixins.of(stack).apply(mixin);
 
       expect(applicator.report).toEqual([{ construct: bucket, mixin }]);
+    });
+
+    test('applies mixins in order, completing each mixin before the next', () => {
+      const root = new Root();
+      new Construct(root, 'child');
+
+      const order: string[] = [];
+      const mixin1 = {
+        supports: () => true,
+        applyTo: (c: IConstruct) => order.push(`m1:${c.node.id || 'root'}`),
+      };
+      const mixin2 = {
+        supports: () => true,
+        applyTo: (c: IConstruct) => order.push(`m2:${c.node.id || 'root'}`),
+      };
+
+      Mixins.of(root).apply(mixin1, mixin2);
+
+      expect(order).toEqual(['m1:root', 'm1:child', 'm2:root', 'm2:child']);
+    });
+
+    test('does not apply mixins to constructs added by other mixins', () => {
+      const root = new Root();
+
+      const applied: string[] = [];
+      const addingMixin = {
+        supports: (c: IConstruct) => c.node.id === '',
+        applyTo: (c: IConstruct) => new Construct(c, 'added-by-mixin'),
+      };
+      const trackingMixin = {
+        supports: () => true,
+        applyTo: (c: IConstruct) => applied.push(c.node.id || 'root'),
+      };
+
+      Mixins.of(root).apply(addingMixin, trackingMixin);
+
+      expect(applied).toEqual(['root']);
+      expect(root.node.findChild('added-by-mixin')).toBeDefined();
     });
   });
 
