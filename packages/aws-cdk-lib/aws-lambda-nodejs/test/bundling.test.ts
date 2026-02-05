@@ -635,6 +635,41 @@ test('pnpm with nodeModules writes .npmrc using base64 for private registry auth
   });
 });
 
+test('pnpm with nodeModules writes .npmrc using base64 for private registry authentication on win32', () => {
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  const pnpmLock = 'C:\\project\\pnpm-lock.yaml';
+  const npmrcFixture = path.join(__dirname, '.testnpmrc');
+  const npmrcBase64 = Buffer.from(fs.readFileSync(npmrcFixture, 'utf-8')).toString('base64');
+
+  const originalFindUp = util.findUp;
+  jest.spyOn(util, 'findUp').mockImplementation((name, dir) =>
+    name === '.npmrc' ? npmrcFixture : originalFindUp(name, dir),
+  );
+  jest.spyOn(path, 'basename').mockReturnValueOnce('pnpm-lock.yaml');
+  jest.spyOn(path, 'relative').mockReturnValueOnce('test\\bundling.test.ts').mockReturnValueOnce('pnpm-lock.yaml');
+
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: 'C:\\project',
+    depsLockFilePath: pnpmLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(expect.any(String), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringContaining(`echo '${npmrcBase64}' | base64 -d`),
+      ]),
+    }),
+  });
+
+  osPlatformMock.mockRestore();
+});
+
 test('Detects bun.lockb', () => {
   const bunLock = path.join(__dirname, '..', 'bun.lockb');
   Bundling.bundle(stack, {
