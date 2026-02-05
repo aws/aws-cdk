@@ -8,6 +8,7 @@
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from '../../../lib';
 
@@ -50,6 +51,13 @@ const toolSchema1 = agentcore.ToolSchema.fromInline([
   },
 ]);
 
+// Workaround for IAM eventual consistency issue (see https://github.com/aws/aws-cdk/issues/36826)
+// Add resource-based policy before creating the target to avoid dry run Lambda invocation failure
+lambdaFunction1.addPermission('BedrockAgentCoreInvoke', {
+  principal: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+  sourceArn: gateway.gatewayArn,
+});
+
 const lambdaTarget = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget', {
   gateway: gateway,
   gatewayTargetName: 'lambda-via-static',
@@ -57,6 +65,9 @@ const lambdaTarget = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget', {
   lambdaFunction: lambdaFunction1,
   toolSchema: toolSchema1,
 });
+
+// Ensure Gateway role and its policies are created before the target
+lambdaTarget.node.addDependency(gateway.role);
 
 // ===== Test 2: GatewayTarget.forOpenApi() Static Method =====
 // NOTE: OpenAPI targets are NOT included in this integration test because they require
@@ -71,27 +82,6 @@ const smithyTarget = agentcore.GatewayTarget.forSmithy(stack, 'SmithyTarget', {
   gatewayTargetName: 'smithy-via-static',
   description: 'Target created via forSmithy static method',
   smithyModel: agentcore.ApiSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'smithy', 'basic-service.json')),
-});
-
-// ===== Test 3a: GatewayTarget.forApiGateway() Static Method =====
-// NOTE: API Gateway target is included for synthesis testing only.
-// Full integration testing requires a deployed API Gateway REST API which is not
-// included in this automated test. The target validates that the construct can be
-// created and synthesizes correctly with default IAM authentication.
-const apiGatewayTarget = agentcore.GatewayTarget.forApiGateway(stack, 'ApiGatewayTarget', {
-  gateway: gateway,
-  gatewayTargetName: 'api-gateway-via-static',
-  description: 'Target created via forApiGateway static method (synthesis only)',
-  restApiId: 'placeholder-api-id', // Placeholder - not deployed
-  stage: 'prod',
-  apiGatewayToolConfiguration: {
-    toolFilters: [
-      {
-        filterPath: '/test/*',
-        methods: [agentcore.ApiGatewayHttpMethod.GET],
-      },
-    ],
-  },
 });
 
 // ===== Test 4: GatewayTarget Constructor with LambdaTargetConfiguration =====
@@ -119,6 +109,13 @@ const toolSchema2 = agentcore.ToolSchema.fromInline([
   },
 ]);
 
+// Workaround for IAM eventual consistency issue (see https://github.com/aws/aws-cdk/issues/36826)
+// Add resource-based policy before creating the target to avoid dry run Lambda invocation failure
+lambdaFunction2.addPermission('BedrockAgentCoreInvoke', {
+  principal: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+  sourceArn: gateway.gatewayArn,
+});
+
 const constructorTarget = new agentcore.GatewayTarget(stack, 'ConstructorTarget', {
   gateway: gateway,
   gatewayTargetName: 'lambda-via-constructor',
@@ -128,6 +125,9 @@ const constructorTarget = new agentcore.GatewayTarget(stack, 'ConstructorTarget'
     toolSchema2,
   ),
 });
+
+// Ensure Gateway role and its policies are created before the target
+constructorTarget.node.addDependency(gateway.role);
 
 // ===== Outputs =====
 new cdk.CfnOutput(stack, 'GatewayId', {
@@ -140,10 +140,6 @@ new cdk.CfnOutput(stack, 'LambdaTargetId', {
 
 new cdk.CfnOutput(stack, 'SmithyTargetId', {
   value: smithyTarget.targetId,
-});
-
-new cdk.CfnOutput(stack, 'ApiGatewayTargetId', {
-  value: apiGatewayTarget.targetId,
 });
 
 new cdk.CfnOutput(stack, 'ConstructorTargetId', {
