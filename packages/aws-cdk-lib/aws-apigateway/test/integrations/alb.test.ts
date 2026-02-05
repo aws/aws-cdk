@@ -2,7 +2,6 @@ import { Template } from '../../../assertions';
 import * as apigwv2 from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { HttpMethod } from '../../../aws-events';
 import * as cdk from '../../../core';
 import * as apigateway from '../../lib';
 
@@ -21,7 +20,7 @@ describe('AlbIntegration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
-      HttpMethod: HttpMethod.GET,
+      HttpMethod: 'GET',
       Integration: {
         Type: 'HTTP_PROXY',
         IntegrationHttpMethod: 'GET',
@@ -68,7 +67,7 @@ describe('AlbIntegration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
-      HttpMethod: HttpMethod.GET,
+      HttpMethod: 'GET',
       Integration: {
         Type: 'HTTP_PROXY',
         IntegrationHttpMethod: 'GET',
