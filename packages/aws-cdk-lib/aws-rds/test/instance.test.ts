@@ -2287,6 +2287,17 @@ describe('instance', () => {
     })).toThrow(/maximum ratio of storage throughput to IOPS is 0.25/);
   });
 
+  test('throws if IOPS is less than 1000', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      allocatedStorage: 200,
+      storageType: rds.StorageType.IO1,
+      iops: 999,
+    })).toThrow('The IOPS value must be at least 1000, got: 999');
+  });
+
   test.each([
     rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
     rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
@@ -2476,6 +2487,296 @@ describe('instance', () => {
         ]],
       },
       EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
+
+  describe('additionalStorageVolumes', () => {
+    test('can specify additional storage volumes with all properties', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+        vpc,
+        additionalStorageVolumes: [
+          {
+            allocatedStorage: cdk.Size.gibibytes(200),
+            storageType: rds.StorageType.GP3,
+            iops: 12000,
+            storageThroughput: cdk.Size.mebibytes(500),
+            maxAllocatedStorage: cdk.Size.gibibytes(1000),
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AdditionalStorageVolumes: [
+          {
+            VolumeName: 'rdsdbdata2',
+            AllocatedStorage: '200',
+            StorageType: 'gp3',
+            Iops: 12000,
+            StorageThroughput: 500,
+            MaxAllocatedStorage: 1000,
+          },
+        ],
+      });
+    });
+
+    test.each([
+      rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+      rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
+    ])('auto-generates volumeNames for multiple volumes', (engine) => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine,
+        vpc,
+        additionalStorageVolumes: [
+          { allocatedStorage: cdk.Size.gibibytes(200) },
+          { allocatedStorage: cdk.Size.gibibytes(300) },
+          { allocatedStorage: cdk.Size.gibibytes(400) },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AdditionalStorageVolumes: [
+          Match.objectLike({ VolumeName: 'rdsdbdata2', AllocatedStorage: '200' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata3', AllocatedStorage: '300' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata4', AllocatedStorage: '400' }),
+        ],
+      });
+    });
+
+    test.each([
+      rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0 }),
+      rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16 }),
+      rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    ])('throws if additional storage volumes specified for unsupported engine', (engine) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine,
+          vpc,
+          additionalStorageVolumes: [
+            { allocatedStorage: cdk.Size.gibibytes(200) },
+          ],
+        });
+      }).toThrow(`Additional storage volumes are only supported for Oracle and SQL Server engines, got: '${engine.engineType}'`);
+    });
+
+    test('accepts up to 3 additional volumes', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+        vpc,
+        additionalStorageVolumes: [
+          { allocatedStorage: cdk.Size.gibibytes(200) },
+          { allocatedStorage: cdk.Size.gibibytes(300) },
+          { allocatedStorage: cdk.Size.gibibytes(400) },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AdditionalStorageVolumes: [
+          Match.objectLike({ VolumeName: 'rdsdbdata2', AllocatedStorage: '200' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata3', AllocatedStorage: '300' }),
+          Match.objectLike({ VolumeName: 'rdsdbdata4', AllocatedStorage: '400' }),
+        ],
+      });
+    });
+
+    test('throws if more than 3 additional volumes specified', () => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            { allocatedStorage: cdk.Size.gibibytes(200) },
+            { allocatedStorage: cdk.Size.gibibytes(200) },
+            { allocatedStorage: cdk.Size.gibibytes(200) },
+            { allocatedStorage: cdk.Size.gibibytes(200) },
+          ],
+        });
+      }).toThrow('A maximum of 3 additional storage volumes can be specified, got: 4');
+    });
+
+    test('throws if storageThroughput specified for IO2', () => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            {
+              allocatedStorage: cdk.Size.gibibytes(200),
+              storageType: rds.StorageType.IO2,
+              storageThroughput: cdk.Size.mebibytes(125),
+            },
+          ],
+        });
+      }).toThrow("The storage throughput can only be specified with GP3 storage type for additionalStorageVolumes[0], got: 'io2'");
+    });
+
+    // Oracle allocatedStorage valid boundary values (min 200 GiB)
+    test.each([200, 65536])('accepts Oracle allocatedStorage %d GiB', (sizeGiB) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    // Oracle allocatedStorage invalid boundary values
+    test.each([199, 65537])('throws if Oracle allocatedStorage is %d GiB', (sizeGiB) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
+          ],
+        });
+      }).toThrow(`Allocated storage for additionalStorageVolumes[0] must be between 200 and 65,536 GiB, got: ${sizeGiB} GiB`);
+    });
+
+    // SQL Server allocatedStorage valid boundary values (min 20 GiB)
+    test.each([20, 65536])('accepts SQL Server allocatedStorage %d GiB', (sizeGiB) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
+          vpc,
+          additionalStorageVolumes: [
+            { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    // SQL Server allocatedStorage invalid boundary values
+    test.each([19, 65537])('throws if SQL Server allocatedStorage is %d GiB', (sizeGiB) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
+          vpc,
+          additionalStorageVolumes: [
+            { allocatedStorage: cdk.Size.gibibytes(sizeGiB) },
+          ],
+        });
+      }).toThrow(`Allocated storage for additionalStorageVolumes[0] must be between 20 and 65,536 GiB, got: ${sizeGiB} GiB`);
+    });
+
+    test('throws if GP3 throughput/IOPS ratio exceeds 0.25', () => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            {
+              allocatedStorage: cdk.Size.gibibytes(200),
+              storageType: rds.StorageType.GP3,
+              iops: 3000,
+              storageThroughput: cdk.Size.mebibytes(1000),
+            },
+          ],
+        });
+      }).toThrow(`The maximum ratio of storage throughput to IOPS is 0.25 for additionalStorageVolumes[0], got: ${1000 / 3000}`);
+    });
+
+    test('throws if IOPS is less than 1000 for additional volume', () => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            {
+              allocatedStorage: cdk.Size.gibibytes(200),
+              storageType: rds.StorageType.IO2,
+              iops: 999,
+            },
+          ],
+        });
+      }).toThrow('The IOPS value must be at least 1000 for additionalStorageVolumes[0], got: 999');
+    });
+
+    test('accepts GP3 throughput/IOPS ratio at exactly 0.25', () => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            {
+              allocatedStorage: cdk.Size.gibibytes(200),
+              storageType: rds.StorageType.GP3,
+              iops: 4000,
+              storageThroughput: cdk.Size.mebibytes(1000),
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test.each([
+      rds.StorageType.GP2,
+      rds.StorageType.IO1,
+      rds.StorageType.STANDARD,
+    ])('throws if unsupported storage type %s is specified', (storageType) => {
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Instance', {
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+          vpc,
+          additionalStorageVolumes: [
+            {
+              allocatedStorage: cdk.Size.gibibytes(200),
+              storageType,
+            },
+          ],
+        });
+      }).toThrow(`Only GP3 and IO2 storage types are supported for additional storage volumes, got '${storageType}' for additionalStorageVolumes[0]`);
+    });
+
+    test('IO2 storage type uses default IOPS of 1000', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+        vpc,
+        additionalStorageVolumes: [
+          {
+            allocatedStorage: cdk.Size.gibibytes(200),
+            storageType: rds.StorageType.IO2,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AdditionalStorageVolumes: [
+          {
+            VolumeName: 'rdsdbdata2',
+            AllocatedStorage: '200',
+            StorageType: 'io2',
+            Iops: 1000,
+          },
+        ],
+      });
+    });
+
+    test('GP3 storage type does not set default IOPS', () => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+        vpc,
+        additionalStorageVolumes: [
+          {
+            allocatedStorage: cdk.Size.gibibytes(200),
+            storageType: rds.StorageType.GP3,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        AdditionalStorageVolumes: [
+          {
+            VolumeName: 'rdsdbdata2',
+            AllocatedStorage: '200',
+            StorageType: 'gp3',
+            Iops: Match.absent(),
+          },
+        ],
+      });
     });
   });
 });
