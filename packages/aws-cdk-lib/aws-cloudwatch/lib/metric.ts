@@ -1139,7 +1139,10 @@ function validVariableName(x: string) {
  * Return all variable names used in an expression
  */
 function allIdentifiersInExpression(x: string) {
-  return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
+  // Remove CDK token patterns before extracting identifiers
+  // Token format: ${Token[TOKEN.123]} or ${Token[TOKEN.456]}
+  const withoutTokens = x.replace(/\$\{Token\[[^\]]+\]\}/g, '');
+  return Array.from(matchAll(withoutTokens, FIND_VARIABLE)).map(m => m[0]);
 }
 
 /**
