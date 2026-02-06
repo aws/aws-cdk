@@ -480,31 +480,6 @@ export interface TableV2MultiAccountReplicaProps extends TableOptionsV2 {
   readonly tableName?: string;
 
   /**
-   * Global secondary index options for the replica.
-   *
-   * @default - inherited from source table
-   */
-  readonly globalSecondaryIndexOptions?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions };
-
-  /**
-   * The read capacity for the replica table.
-   *
-   * Note: This can only be configured if primary table billing is provisioned.
-   *
-   * @default - inherited from the primary table
-   */
-  readonly readCapacity?: Capacity;
-
-  /**
-   * The maximum read request units for the replica table.
-   *
-   * Note: This can only be configured if primary table billing is PAY_PER_REQUEST.
-   *
-   * @default - inherited from the primary table
-   */
-  readonly maxReadRequestUnits?: number;
-
-  /**
    * The server-side encryption configuration for the replica table.
    *
    * Note: Each replica manages its own encryption independently. This is not synchronized
@@ -534,6 +509,8 @@ export interface TableV2MultiAccountReplicaProps extends TableOptionsV2 {
    * @default GlobalTableSettingsReplicationMode.ALL
    */
   readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
+
+  readonly grantIndexPermissions?: boolean;
 }
 
 /**
@@ -1424,8 +1401,8 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   public readonly grants: TableGrants;
 
   protected readonly region: string;
-  private readonly hasGsiOptions: boolean;
   private readonly resource: CfnGlobalTable;
+  private readonly _hasIndex: boolean;
 
   @memoizedGetter
   public get tableArn(): string {
@@ -1451,33 +1428,22 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this.validateMultiAccountReplica(props);
 
     this.region = this.stack.region;
-    this.hasGsiOptions = !!props.globalSecondaryIndexOptions && Object.keys(props.globalSecondaryIndexOptions).length > 0;
+    this._hasIndex = props.grantIndexPermissions ?? true;
 
     this.resourcePolicy = props.resourcePolicy;
 
     this.encryptionKey = props.encryption?.tableKey;
 
     const resource = new CfnGlobalTable(this, 'Resource', {
-      tableName: this.physicalName,
+      tableName: props.replicaSourceTable.tableName,
       replicas: [{
         region: this.stack.region,
-        globalSecondaryIndexes: props.globalSecondaryIndexOptions ?
-          Object.entries(props.globalSecondaryIndexOptions).map(([indexName, options]) => ({
-            indexName,
-            readProvisionedThroughputSettings: options.readCapacity?._renderReadCapacity(),
-            readOnDemandThroughputSettings: options.maxReadRequestUnits ?
-              { maxReadRequestUnits: options.maxReadRequestUnits } : undefined,
-            contributorInsightsSpecification: options.contributorInsightsSpecification,
-          })) : undefined,
         deletionProtectionEnabled: props.deletionProtection,
         tableClass: props.tableClass,
         kinesisStreamSpecification: props.kinesisStream ?
           { streamArn: props.kinesisStream.streamArn } : undefined,
         contributorInsightsSpecification: props.contributorInsightsSpecification,
         pointInTimeRecoverySpecification: props.pointInTimeRecoverySpecification,
-        readProvisionedThroughputSettings: props.readCapacity?._renderReadCapacity(),
-        readOnDemandThroughputSettings: props.maxReadRequestUnits ?
-          { maxReadRequestUnits: props.maxReadRequestUnits } : undefined,
         resourcePolicy: Lazy.any({ produce: () => this.resourcePolicy ? { policyDocument: this.resourcePolicy } : undefined }),
         sseSpecification: props.encryption?._renderReplicaSseSpecification(this, this.stack.region),
         tags: props.tags,
@@ -1495,7 +1461,6 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this.grants = new TableGrants({
       table: this,
       regions: [],
-      hasIndex: this.hasIndex,
       encryptedResource: this.encryptionKey ? this : undefined,
       policyResource: this,
     });
@@ -1541,7 +1506,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   }
 
   protected get hasIndex() {
-    return this.hasGsiOptions;
+    return this._hasIndex;
   }
 
   private validateMultiAccountReplica(props: TableV2MultiAccountReplicaProps) {

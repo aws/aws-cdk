@@ -4066,7 +4066,6 @@ test('TableV2MultiAccountReplica with all optional parameters', () => {
 
   new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
     replicaSourceTable: sourceTable,
-    tableName: 'MyReplicaTable',
     globalTableSettingsReplicationMode: GlobalTableSettingsReplicationMode.ALL,
     deletionProtection: true,
     tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
@@ -4080,7 +4079,6 @@ test('TableV2MultiAccountReplica with all optional parameters', () => {
   // Grants are automatically set up - no manual call needed
 
   Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-    TableName: 'MyReplicaTable',
     Replicas: [
       Match.objectLike({
         Region: 'us-east-1',
