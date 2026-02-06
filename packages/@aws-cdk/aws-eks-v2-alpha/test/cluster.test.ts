@@ -2524,6 +2524,68 @@ describe('cluster', () => {
     });
   });
 
+  test('bootstrapSelfManagedAddons can be set to false', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      bootstrapSelfManagedAddons: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      BootstrapSelfManagedAddons: false,
+    });
+  });
+
+  test('bootstrapSelfManagedAddons can be set to true', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+      bootstrapSelfManagedAddons: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      BootstrapSelfManagedAddons: true,
+    });
+  });
+
+  test('bootstrapSelfManagedAddons is not set when not provided', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      BootstrapSelfManagedAddons: Match.absent(),
+    });
+  });
+
+  test('throws when bootstrapSelfManagedAddons is true and using Auto Mode', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN & THEN
+    expect(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+        bootstrapSelfManagedAddons: true,
+      });
+    }).toThrow(/bootstrapSelfManagedAddons cannot be true when using EKS Auto Mode/);
+  });
+
   describe('AccessConfig', () => {
     // bootstrapClusterCreatorAdminPermissions can be explicitly enabled or disabled
     test.each([
