@@ -176,12 +176,14 @@ class EksClusterStack extends Stack {
     this.cluster.addCdk8sChart('cdk8s-chart', chart);
   }
   private assertSimpleHelmChart() {
-    // deploy the Kubernetes dashboard through a helm chart
+    // deploy a dashboard through a helm chart
+    // As Kubernetes dashboard is retired, we will use headlamp instead.
+    // See https://github.com/kubernetes-retired/dashboard?tab=readme-ov-file#important
     this.cluster.addHelmChart('dashboard', {
-      chart: 'kubernetes-dashboard',
-      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
-      version: '6.0.8',
-      repository: 'https://kubernetes.github.io/dashboard/',
+      chart: 'headlamp',
+      // https://kubernetes-sigs.github.io/headlamp/
+      version: '0.39.0',
+      repository: 'https://kubernetes-sigs.github.io/headlamp/',
     });
   }
 
