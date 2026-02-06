@@ -21,6 +21,7 @@ import { McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } fr
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
+import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
 import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
 
 /******************************************************************************
@@ -161,6 +162,53 @@ export interface AddMcpServerTargetOptions {
    * OAuth2 is strongly recommended over NoAuth.
    */
   readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+}
+
+/**
+ * Options for adding an API Gateway target to a gateway
+ */
+export interface AddApiGatewayTargetOptions {
+  /**
+   * The name of the gateway target
+   * @default - auto generate
+   */
+  readonly gatewayTargetName?: string;
+
+  /**
+   * Optional description for the gateway target
+   * @default - No description
+   */
+  readonly description?: string;
+
+  /**
+   * The ID of the REST API
+   */
+  readonly restApiId: string;
+
+  /**
+   * The stage name of the REST API
+   * The stage must be deployed
+   */
+  readonly stage: string;
+
+  /**
+   * Tool configuration defining which operations to expose
+   */
+  readonly apiGatewayToolConfiguration: ApiGatewayToolConfiguration;
+
+  /**
+   * Credential providers for authentication
+   * API Gateway targets support IAM and API key authentication
+   * @default - Empty array (service handles IAM automatically)
+   */
+  readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
+
+  /**
+   * Metadata configuration for passing headers and query parameters
+   * Allows you to pass additional context through headers and query parameters
+   * @default - No metadata configuration
+   */
+  readonly metadataConfiguration?: MetadataConfiguration;
 }
 
 /**
@@ -636,6 +684,36 @@ export class Gateway extends GatewayBase {
     };
 
     const target = GatewayTarget.forMcpServer(this, id, targetProps);
+
+    return target;
+  }
+
+  /**
+   * Add an API Gateway target to this gateway
+   * This is a convenience method that creates a GatewayTarget associated with this gateway
+   *
+   * @param id The construct id for the target
+   * @param props Properties for the API Gateway target
+   * @returns The created GatewayTarget
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html
+   */
+  @MethodMetadata()
+  public addApiGatewayTarget(
+    id: string,
+    props: AddApiGatewayTargetOptions,
+  ): GatewayTarget {
+    // API Gateway targets require explicit credential configuration or defaults to IAM
+    // GetExport and execute-api:Invoke permissions are automatically granted in ApiGatewayTargetConfiguration.bind()
+    const target = GatewayTarget.forApiGateway(this, id, {
+      gatewayTargetName: props.gatewayTargetName,
+      description: props.description,
+      gateway: this,
+      restApiId: props.restApiId,
+      stage: props.stage,
+      apiGatewayToolConfiguration: props.apiGatewayToolConfiguration,
+      credentialProviderConfigurations: props.credentialProviderConfigurations,
+      metadataConfiguration: props.metadataConfiguration,
+    });
 
     return target;
   }
