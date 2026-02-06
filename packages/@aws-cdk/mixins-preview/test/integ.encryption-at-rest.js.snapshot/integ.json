@@ -1,0 +1,18 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EncryptionAtRestTest/DefaultTest": {
+      "stacks": [
+        "S3EncryptionIntegTest",
+        "DynamoDBEncryptionIntegTest",
+        "SQSEncryptionIntegTest",
+        "SNSEncryptionIntegTest",
+        "LambdaEncryptionIntegTest",
+        "CrossServiceEncryptionIntegTest"
+      ],
+      "assertionStack": "EncryptionAtRestTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EncryptionAtRestTestDefaultTestDeployAssert398F6519"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

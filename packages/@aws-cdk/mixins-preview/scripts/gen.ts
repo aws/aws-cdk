@@ -2,6 +2,7 @@
 import { generateAll as generateCfnPropsMixins } from './spec2mixins';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
 import { generateAll as generateEvents } from './spec2eventbridge';
+import { generateAll as generateEncryptionAtRestMixins } from './spec2ear';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -22,6 +23,7 @@ async function main() {
     await generateCfnPropsMixins({ outputPath }),
     await generateLogsDeliveryMixins({ outputPath }),
     await generateEvents({ outputPath }),
+    await generateEncryptionAtRestMixins({ outputPath }),
   ];
 
   const moduleMap = mergeModuleMaps(...moduleMaps);
@@ -144,6 +146,10 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
 
   if (existsSync(path.join(modulePath, 'logs-delivery-mixins.generated.ts'))) {
     mixinsIndexLines.push('export * from \'./logs-delivery-mixins.generated\';');
+  }
+
+  if (existsSync(path.join(modulePath, 'encryption-at-rest-mixins.generated.ts'))) {
+    mixinsIndexLines.push('export * from \'./encryption-at-rest-mixins.generated\';');
   }
 
   await ensureFileContains(mixinsModuleFile, mixinsIndexLines);

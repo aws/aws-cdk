@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "07c56069505bb3bc35200e69a9e7ed120bb0913094690249a95f24158f467a06": {
+      "displayName": "SNSEncryptionIntegTest Template",
+      "source": {
+        "path": "SNSEncryptionIntegTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-95d49540": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "07c56069505bb3bc35200e69a9e7ed120bb0913094690249a95f24158f467a06.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

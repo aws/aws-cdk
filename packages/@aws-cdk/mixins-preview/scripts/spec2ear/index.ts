@@ -1,0 +1,1 @@
+export { generateAll } from './generate';

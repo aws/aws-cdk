@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "ee3451d53ebfecd0bae073908d09ee115f433793e7c5f666c5489843c8fd2e5d": {
+      "displayName": "LambdaEncryptionIntegTest Template",
+      "source": {
+        "path": "LambdaEncryptionIntegTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-452857dc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ee3451d53ebfecd0bae073908d09ee115f433793e7c5f666c5489843c8fd2e5d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
