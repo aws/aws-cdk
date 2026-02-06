@@ -5,10 +5,9 @@
       "stacks": [
         "FlowLogsTestStack"
       ],
-      "diffAssets": true,
       "assertionStack": "FlowLogs/DefaultTest/DeployAssert",
       "assertionStackName": "FlowLogsDefaultTestDeployAssert6AFD1854"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1027.0"
 }
