@@ -47,6 +47,15 @@ export interface CodePipelineProps {
   readonly pipelineType?: cp.PipelineType;
 
   /**
+   * The method that the pipeline will use to handle multiple executions.
+   *
+   * @default - ExecutionMode.SUPERSEDED
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/concepts-how-it-works.html
+   */
+  readonly executionMode?: cp.ExecutionMode;
+
+  /**
    * The build step that produces the CDK Cloud Assembly
    *
    * The primary output of this step needs to be the `cdk.out` directory
@@ -514,6 +523,7 @@ export class CodePipeline extends PipelineBase {
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
         pipelineType: this.props.pipelineType ?? (isDefaultV2 ? cp.PipelineType.V2 : cp.PipelineType.V1),
+        executionMode: this.props.executionMode,
         crossAccountKeys: this.props.crossAccountKeys ?? false,
         crossRegionReplicationBuckets: this.props.crossRegionReplicationBuckets,
         reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,
