@@ -21,7 +21,7 @@ export interface ILogsDeliveryConfig {
   /**
    *  The logs delivery destination.
    */
-  readonly deliveryDestination: logs.IDeliveryDestinationRef;
+  readonly deliveryDestination?: logs.IDeliveryDestinationRef;
   /**
    *  The logs delivery
    */
@@ -471,6 +471,40 @@ export class XRayLogsDelivery implements ILogsDelivery {
         },
       },
     }));
+  }
+}
+
+/**
+ * Delivers vended logs to a CfnDeliveryDestination specified by an arn.
+ */
+export class DestinationLogsDelivery implements ILogsDelivery {
+  /**
+   * Creates a new Destination delivery.
+   */
+  private readonly destination: logs.IDeliveryDestinationRef;
+  constructor(destination: logs.IDeliveryDestinationRef) {
+    this.destination = destination;
+  }
+
+  /**
+   * Binds Delivery Destination to a source resource for the purposes of log delivery and creates a delivery source and a connection between the source and the destination.
+   */
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const uniqueName = `Dest${Names.nodeUniqueId(this.destination.node)}`;
+    const container = new Construct(scope, deliveryId(uniqueName, logType, scope, deliverySource));
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: this.destination.deliveryDestinationRef.deliveryDestinationArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(deliverySource);
+
+    return {
+      deliverySource,
+      delivery,
+    };
   }
 }
 
