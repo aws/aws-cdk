@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c3b0d609bec0c1ea62d04bb9dd9e8fc08b155dbdf96b6e20c470146bc77e1d3b": {
+      "displayName": "aws-cdk-kms-bypass-policy-lockout Template",
+      "source": {
+        "path": "aws-cdk-kms-bypass-policy-lockout.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-2cef647c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c3b0d609bec0c1ea62d04bb9dd9e8fc08b155dbdf96b6e20c470146bc77e1d3b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
