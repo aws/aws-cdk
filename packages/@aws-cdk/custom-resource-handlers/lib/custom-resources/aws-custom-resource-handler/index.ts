@@ -9,7 +9,7 @@ import { ApiCall } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 import type * as AWSLambda from 'aws-lambda';
 import type { AwsSdkCall } from './construct-types';
 import { loadAwsSdk } from './load-sdk';
-import { decodeCall, decodeSpecialValues, respond, getCredentials, formatData } from './utils';
+import { decodeCall, decodeSpecialValues, respond, getCredentials, formatData, makeWithRetry } from './utils';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context): Promise<void> {
   try {
@@ -46,14 +46,20 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       const credentials = await getCredentials(call, physicalResourceId);
 
       const flatData: { [key: string]: string } = {};
+
+      // Create retry wrapper for Lambda initialization errors
+      const withRetry = makeWithRetry();
+
       try {
-        const response = await apiCall.invoke({
-          sdkPackage: awsSdk,
-          apiVersion: call.apiVersion,
-          credentials,
-          region: call.region,
-          parameters: decodeSpecialValues(call.parameters, physicalResourceId),
-          flattenResponse: true,
+        const response = await withRetry(async () => {
+          return apiCall.invoke({
+            sdkPackage: awsSdk,
+            apiVersion: call.apiVersion,
+            credentials,
+            region: call.region,
+            parameters: decodeSpecialValues(call.parameters, physicalResourceId),
+            flattenResponse: true,
+          });
         });
 
         if (logApiResponseData) {
