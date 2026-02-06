@@ -8,9 +8,12 @@ class MyStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const queue = new sqs.Queue(this, 'MyQueue');
+    const queue = new sqs.Queue(this, 'MyQueue', {
+      encryption: sqs.QueueEncryption.KMS_MANAGED,
+    });
     const bucket = new s3.Bucket(this, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      encryption: s3.BucketEncryption.S3_MANAGED,
     });
 
     bucket.addEventNotification(
