@@ -464,7 +464,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
     // Bind the target configuration
     // This sets up permissions and dependencies
-    this.targetConfiguration.bind(this, this.gateway);
+    const config = this.targetConfiguration.bind(this, this.gateway);
 
     // Create the L1 construct
     const cfnProps: bedrockagentcore.CfnGatewayTargetProps = {
@@ -485,6 +485,13 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       'Resource',
       cfnProps,
     );
+
+    // Ensure Lambda permission is created before the target
+    // This prevents IAM eventual consistency issues during CreateGatewayTarget
+    // @see https://github.com/aws/aws-cdk/issues/36826
+    if (config.permission) {
+      this.targetResource.node.addDependency(config.permission);
+    }
 
     if (this.credentialProviderConfigurations) {
       for (const provider of this.credentialProviderConfigurations) {

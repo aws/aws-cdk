@@ -2865,3 +2865,260 @@ describe('Multiple Schema Binding Tests', () => {
     }).not.toThrow();
   });
 });
+
+describe('Lambda Target Permission Tests (Issue #36826)', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+        allowedAudience: ['my-app'],
+      }),
+    });
+  });
+
+  test('Should create Lambda::Permission resource for Lambda targets', () => {
+    // GIVEN
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    // WHEN
+    GatewayTarget.forLambda(stack, 'TestTarget', {
+      gatewayTargetName: 'test-lambda-target',
+      gateway: gateway,
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+
+    // Verify Lambda::Permission is created with correct properties
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      Principal: 'bedrock-agentcore.amazonaws.com',
+      FunctionName: Match.anyValue(),
+      SourceArn: Match.anyValue(),
+    });
+  });
+
+  test('Should create GatewayTarget with DependsOn Lambda::Permission', () => {
+    // GIVEN
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    // WHEN
+    GatewayTarget.forLambda(stack, 'TestTarget', {
+      gatewayTargetName: 'test-lambda-target',
+      gateway: gateway,
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+
+    // Verify GatewayTarget has DependsOn the Lambda permission
+    template.hasResource('AWS::BedrockAgentCore::GatewayTarget', {
+      DependsOn: Match.arrayWith([
+        Match.stringLikeRegexp('.*BedrockAgentCoreInvoke.*'),
+      ]),
+    });
+  });
+
+  test('Should NOT create Lambda::Permission for OpenAPI targets', () => {
+    // GIVEN
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
+
+    // WHEN
+    GatewayTarget.forOpenApi(stack, 'TestTarget', {
+      gatewayTargetName: 'test-openapi-target',
+      gateway: gateway,
+      apiSchema: apiSchema,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
+          providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          credentialLocation: ApiKeyCredentialLocation.header(),
+        }),
+      ],
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+
+    // Verify no Lambda::Permission with bedrock-agentcore principal is created
+    const permissions = template.findResources('AWS::Lambda::Permission', {
+      Properties: {
+        Principal: 'bedrock-agentcore.amazonaws.com',
+      },
+    });
+    expect(Object.keys(permissions).length).toBe(0);
+  });
+
+  test('Should NOT create Lambda::Permission for Smithy targets', () => {
+    // GIVEN
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+
+    // WHEN
+    GatewayTarget.forSmithy(stack, 'TestTarget', {
+      gatewayTargetName: 'test-smithy-target',
+      gateway: gateway,
+      smithyModel: smithyModel,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+
+    // Verify no Lambda::Permission with bedrock-agentcore principal is created
+    const permissions = template.findResources('AWS::Lambda::Permission', {
+      Properties: {
+        Principal: 'bedrock-agentcore.amazonaws.com',
+      },
+    });
+    expect(Object.keys(permissions).length).toBe(0);
+  });
+
+  test('Should NOT create Lambda::Permission for MCP Server targets', () => {
+    // GIVEN/WHEN
+    GatewayTarget.forMcpServer(stack, 'TestTarget', {
+      gatewayTargetName: 'test-mcp-server-target',
+      gateway: gateway,
+      endpoint: 'https://mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
+          providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          credentialLocation: ApiKeyCredentialLocation.header(),
+        }),
+      ],
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+
+    // Verify no Lambda::Permission with bedrock-agentcore principal is created
+    const permissions = template.findResources('AWS::Lambda::Permission', {
+      Properties: {
+        Principal: 'bedrock-agentcore.amazonaws.com',
+      },
+    });
+    expect(Object.keys(permissions).length).toBe(0);
+  });
+
+  test('Should create separate Lambda::Permission for each Lambda target', () => {
+    // GIVEN
+    const fn1 = new lambda.Function(stack, 'TestFunction1', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const fn2 = new lambda.Function(stack, 'TestFunction2', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    // WHEN
+    GatewayTarget.forLambda(stack, 'TestTarget1', {
+      gatewayTargetName: 'test-lambda-target-1',
+      gateway: gateway,
+      lambdaFunction: fn1,
+      toolSchema: toolSchema,
+    });
+
+    GatewayTarget.forLambda(stack, 'TestTarget2', {
+      gatewayTargetName: 'test-lambda-target-2',
+      gateway: gateway,
+      lambdaFunction: fn2,
+      toolSchema: toolSchema,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+
+    // Verify two Lambda::Permission resources are created
+    const permissions = template.findResources('AWS::Lambda::Permission', {
+      Properties: {
+        Principal: 'bedrock-agentcore.amazonaws.com',
+      },
+    });
+    expect(Object.keys(permissions).length).toBe(2);
+  });
+
+  test('Should create Lambda::Permission using addLambdaTarget method', () => {
+    // GIVEN
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    // WHEN
+    gateway.addLambdaTarget('TestTarget', {
+      gatewayTargetName: 'added-lambda-target',
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+
+    // Verify Lambda::Permission is created
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      Principal: 'bedrock-agentcore.amazonaws.com',
+    });
+  });
+});
