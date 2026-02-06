@@ -1,7 +1,15 @@
-import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
-import type { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
-import type { CfnBucket, IBucketRef, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+/**
+ * ATTENTION: this file was copied from the mixins-preview package, because we cannot
+ * depend on that package from core. When mixins goes GA, this file should be removed
+ * and all references to the functions in it should be updated to import from the new
+ * location in core.
+ */
+
 import type { IConstruct } from 'constructs';
+import type { CfnTable, ITableRef } from '../../../aws-dynamodb';
+import type { CfnKey, IKeyRef } from '../../../aws-kms';
+import type { CfnDeliverySource } from '../../../aws-logs';
+import type { CfnBucket, IBucketRef, CfnBucketPolicy } from '../../../aws-s3';
 import { CfnResource } from '../../../core';
 
 /**
@@ -168,5 +176,27 @@ export function tryFindBucketConstruct(bucket: IBucketRef): CfnBucket | undefine
     bucket,
     'AWS::S3::Bucket',
     (cfn, ref) => ref.bucketRef == cfn.bucketRef,
+  );
+}
+
+export function tryFindTableConstruct(table: ITableRef): CfnTable | undefined {
+  return findL1FromRef<ITableRef, CfnTable>(
+    table,
+    'AWS::DynamoDB::Table',
+    (cfn, ref) => ref.tableRef == cfn.tableRef,
+  );
+}
+
+export function tryFindKmsKeyForTable(table: ITableRef): CfnKey | undefined {
+  const cfnTable = tryFindTableConstruct(table);
+  const kmsMasterKeyId = cfnTable?.sseSpecification &&
+    (cfnTable.sseSpecification as CfnTable.SSESpecificationProperty).kmsMasterKeyId;
+  if (!kmsMasterKeyId) {
+    return undefined;
+  }
+  return findClosestRelatedResource<IConstruct, CfnKey>(
+    table,
+    'AWS::KMS::Key',
+    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
   );
 }

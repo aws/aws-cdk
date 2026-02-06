@@ -4,6 +4,7 @@ import type { CfnBucket } from 'aws-cdk-lib/aws-s3';
 import { type IBucketRef, type CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import type { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
 import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { CfnTable, ITableRef } from 'aws-cdk-lib/aws-dynamodb';
 
 /**
  * Finds the closest related resource in the construct tree.
@@ -169,5 +170,27 @@ export function tryFindBucketConstruct(bucket: IBucketRef): CfnBucket | undefine
     bucket,
     'AWS::S3::Bucket',
     (cfn, ref) => ref.bucketRef == cfn.bucketRef,
+  );
+}
+
+export function tryFindTableConstruct(table: ITableRef): CfnTable | undefined {
+  return findL1FromRef<ITableRef, CfnTable>(
+    table,
+    'AWS::DynamoDB::Table',
+    (cfn, ref) => ref.tableRef == cfn.tableRef,
+  );
+}
+
+export function tryFindKmsKeyForTable(table: ITableRef): CfnKey | undefined {
+  const cfnTable = tryFindTableConstruct(table);
+  const kmsMasterKeyId = cfnTable?.sseSpecification &&
+    (cfnTable.sseSpecification as CfnTable.SSESpecificationProperty).kmsMasterKeyId;
+  if (!kmsMasterKeyId) {
+    return undefined;
+  }
+  return findClosestRelatedResource<IConstruct, CfnKey>(
+    table,
+    'AWS::KMS::Key',
+    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
   );
 }

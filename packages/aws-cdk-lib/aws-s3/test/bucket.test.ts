@@ -3,10 +3,11 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { CfnKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
-import { BucketGrants } from '../lib';
+import { BucketGrants, CfnBucket } from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable @stylistic/quote-props */
@@ -1729,8 +1730,20 @@ describe('bucket', () => {
 
   test('can grant read permissions to a CfnBucket', () => {
     const stack = new cdk.Stack();
-    const cfnBucket = new s3.CfnBucket(stack, 'CfnBucket');
     const principal = new iam.ServicePrincipal('s3.amazonaws.com');
+
+    const key = new CfnKey(stack, 'EncryptionKey');
+    const cfnBucket = new CfnBucket(stack, 'CfnBucket', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          bucketKeyEnabled: true,
+          serverSideEncryptionByDefault: {
+            kmsMasterKeyId: key.attrKeyId,
+            sseAlgorithm: 'aws:kms',
+          },
+        }],
+      },
+    });
 
     BucketGrants.fromBucket(cfnBucket).read(principal);
 
@@ -1748,6 +1761,25 @@ describe('bucket', () => {
             'Fn::Join': ['', [{ 'Fn::GetAtt': ['CfnBucket', 'Arn'] }, '/*']],
           }],
         }],
+      },
+    });
+
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+            ],
+            Effect: 'Allow',
+            Principal: {
+              Service: 's3.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });

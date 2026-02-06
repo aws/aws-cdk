@@ -21,7 +21,7 @@ import type * as iam from '../../aws-iam/lib/grant';
 import { KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
 import { FeatureFlags, Lazy, Token, ValidationError } from '../../core';
-import { tryFindKmsKeyforBucket } from './private/reflections';
+import { tryFindKmsKeyforBucket } from '../../core/lib/helpers-internal/reflections';
 import * as cxapi from '../../cx-api/index';
 
 /**

@@ -734,7 +734,7 @@ export class DefaultEncryptedResourceDecorators {
 
   public static set(key: string, value: IEncryptedResourceDecorator) {
     if (DefaultEncryptedResourceDecorators.map.has(key)) {
-      throw new UnscopedValidationError(`A resource policy decorator for resource type '${key}' is already registered.`);
+      throw new UnscopedValidationError(`An encrypted resource decorator for resource type '${key}' is already registered.`);
     }
     DefaultEncryptedResourceDecorators.map.set(key, value);
   }

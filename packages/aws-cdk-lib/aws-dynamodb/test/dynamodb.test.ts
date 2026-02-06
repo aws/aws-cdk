@@ -5085,3 +5085,84 @@ describe('L1 table grants', () => {
     });
   });
 });
+
+test('grant read permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).readData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
+});
+
+test('grant write permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).writeData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
+});
+
+test('grant readWrite permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).readWriteData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
+});

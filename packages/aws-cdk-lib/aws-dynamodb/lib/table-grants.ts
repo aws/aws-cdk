@@ -5,8 +5,10 @@ import * as perms from './perms';
 import type { IResourceWithPolicyV2, IResourcePolicyDecorator } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { DefaultPolicyDecorators } from '../../aws-iam';
+import { KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
 import { Stack, Token, ValidationError } from '../../core';
+import { tryFindKmsKeyForTable } from '../../core/lib/helpers-internal/reflections';
 
 /**
  * Construction properties for TableGrants
@@ -55,7 +57,7 @@ export class TableGrants {
   public static fromTable(table: ITableRef, regions?: string[], hasIndex?: boolean): TableGrants {
     return new TableGrants({
       table,
-      encryptedResource: (iam.GrantableResources.isEncryptedResource(table) ? table : undefined),
+      encryptedResource: iam.EncryptedResources.of(table),
       policyResource: iam.ResourceWithPolicies.of(table),
       regions,
       hasIndex,
@@ -224,6 +226,34 @@ class CfnTableWithPolicy implements iam.IResourceWithPolicyV2 {
       return { statementAdded: true, policyDependable: this.table };
     }
     return { statementAdded: false };
+  }
+}
+
+export class EncryptedTableDecorator implements iam.IEncryptedResourceDecorator {
+  static {
+    iam.DefaultEncryptedResourceDecorators.set('AWS::DynamoDB::Table', new EncryptedTableDecorator());
+  }
+
+  public decorate(resource: IConstruct): iam.IEncryptedResource {
+    if (!CfnTable.isCfnTable(resource)) {
+      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
+    }
+    return new EncryptedCfnTable(resource);
+  }
+}
+
+class EncryptedCfnTable implements iam.IEncryptedResource {
+  public readonly env: ResourceEnvironment;
+
+  constructor(private readonly table: CfnTable) {
+    this.env = table.env;
+  }
+
+  public grantOnKey(grantee: iam.IGrantable, ...actions: string[]): iam.GrantOnKeyResult {
+    const key = tryFindKmsKeyForTable(this.table);
+    return {
+      grant: key ? KeyGrants.fromKey(key).actions(grantee, ...actions) : undefined,
+    };
   }
 }
 
