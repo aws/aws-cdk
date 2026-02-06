@@ -5,7 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import type { Construct } from 'constructs';
 import type { IGateway } from '../gateway-base';
-import { validateOpenApiSchema, validateFieldPattern, validateStringField, ValidationError } from '../validation-helpers';
+import { validateOpenApiSchema, validateFieldPattern, ValidationError } from '../validation-helpers';
 import type { ApiSchema } from './schema/api-schema';
 import { AssetApiSchema } from './schema/api-schema';
 import type { ToolSchema } from './schema/tool-schema';
@@ -575,12 +575,6 @@ export interface ApiGatewayTargetConfigurationProps {
  * The gateway translates incoming MCP requests into HTTP requests to your REST API
  * and handles response formatting.
  *
- * Key considerations:
- * - API must be in the same account and region as the gateway
- * - Only REST APIs are supported (no HTTP or WebSocket APIs)
- * - API must use a public endpoint type
- * - Methods with both AWS_IAM authorization and API key requirements are not supported
- * - Proxy resources (e.g., `/pets/{proxy+}`) are not supported
  */
 export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -647,8 +641,6 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     );
 
     // Grant permission to invoke the API Gateway REST API
-    // This is required for IAM-based outbound authorization
-    // The gateway role needs this permission to make API calls to the REST API endpoints
     gateway.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
@@ -693,38 +685,6 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
    * @internal
    */
   private validateConfiguration(): void {
-    // Validate REST API ID
-    if (Token.isUnresolved(this.restApiId)) {
-      return;
-    }
-
-    const restApiIdErrors = validateStringField({
-      value: this.restApiId,
-      fieldName: 'REST API ID',
-      minLength: 1,
-      maxLength: 256,
-    });
-
-    if (restApiIdErrors.length > 0) {
-      throw new ValidationError(restApiIdErrors.join('\n'));
-    }
-
-    // Validate stage name
-    if (Token.isUnresolved(this.stage)) {
-      return;
-    }
-
-    const stageErrors = validateStringField({
-      value: this.stage,
-      fieldName: 'Stage name',
-      minLength: 1,
-      maxLength: 128,
-    });
-
-    if (stageErrors.length > 0) {
-      throw new ValidationError(stageErrors.join('\n'));
-    }
-
     // Validate tool filters
     if (!this.apiGatewayToolConfiguration.toolFilters || this.apiGatewayToolConfiguration.toolFilters.length === 0) {
       throw new ValidationError('At least one tool filter is required for API Gateway target configuration');
@@ -741,27 +701,6 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
         this.validateToolOverride(override);
       }
     }
-
-    // Validate metadata configuration if provided
-    if (this.metadataConfiguration) {
-      this.validateMetadataConfiguration(this.metadataConfiguration);
-    }
-  }
-
-  /**
-   * Validates metadata configuration
-   * @internal
-   */
-  private validateMetadataConfiguration(config: MetadataConfiguration): void {
-    if (config.allowedQueryParameters && config.allowedQueryParameters.length > 20) {
-      throw new ValidationError('allowedQueryParameters cannot exceed 20 items');
-    }
-    if (config.allowedRequestHeaders && config.allowedRequestHeaders.length > 20) {
-      throw new ValidationError('allowedRequestHeaders cannot exceed 20 items');
-    }
-    if (config.allowedResponseHeaders && config.allowedResponseHeaders.length > 20) {
-      throw new ValidationError('allowedResponseHeaders cannot exceed 20 items');
-    }
   }
 
   /**
@@ -769,22 +708,6 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
    * @internal
    */
   private validateToolFilter(filter: ApiGatewayToolFilter): void {
-    if (Token.isUnresolved(filter.filterPath)) {
-      return;
-    }
-
-    // Validate filter path
-    const pathErrors = validateFieldPattern(
-      filter.filterPath,
-      'Filter path',
-      /^\/[\w\-{}/*]*$/,
-      'Filter path must start with a forward slash and contain only alphanumeric characters, hyphens, underscores, curly braces, forward slashes, and asterisks',
-    );
-
-    if (pathErrors.length > 0) {
-      throw new ValidationError(pathErrors.join('\n'));
-    }
-
     // Validate methods
     if (!filter.methods || filter.methods.length === 0) {
       throw new ValidationError(`At least one HTTP method is required for filter path: ${filter.filterPath}`);
@@ -806,48 +729,6 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
         `Tool override path cannot contain wildcards. Path: ${override.path}. ` +
         'Tool overrides must specify an explicit path that matches an existing operation in your API.',
       );
-    }
-
-    // Validate override path format
-    const pathErrors = validateFieldPattern(
-      override.path,
-      'Override path',
-      /^\/[\w\-{}/]*$/,
-      'Override path must start with a forward slash and contain only alphanumeric characters, hyphens, underscores, curly braces, and forward slashes',
-    );
-
-    if (pathErrors.length > 0) {
-      throw new ValidationError(pathErrors.join('\n'));
-    }
-
-    // Validate override name
-    if (Token.isUnresolved(override.name)) {
-      return;
-    }
-
-    const nameErrors = validateStringField({
-      value: override.name,
-      fieldName: 'Override tool name',
-      minLength: 1,
-      maxLength: 64,
-    });
-
-    if (nameErrors.length > 0) {
-      throw new ValidationError(nameErrors.join('\n'));
-    }
-
-    // Validate override description if provided
-    if (override.description && !Token.isUnresolved(override.description)) {
-      const descErrors = validateStringField({
-        value: override.description,
-        fieldName: 'Override description',
-        minLength: 1,
-        maxLength: 200,
-      });
-
-      if (descErrors.length > 0) {
-        throw new ValidationError(descErrors.join('\n'));
-      }
     }
   }
 }

@@ -170,7 +170,6 @@ export interface AddMcpServerTargetOptions {
 export interface AddApiGatewayTargetOptions {
   /**
    * The name of the gateway target
-   * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
    * @default - auto generate
    */
   readonly gatewayTargetName?: string;
@@ -183,7 +182,6 @@ export interface AddApiGatewayTargetOptions {
 
   /**
    * The ID of the REST API
-   * Must be in the same account and region as the gateway
    */
   readonly restApiId: string;
 

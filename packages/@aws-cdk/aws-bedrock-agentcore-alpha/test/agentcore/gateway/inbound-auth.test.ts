@@ -431,6 +431,67 @@ describe('Inbound Auth Tests', () => {
         expect(rendered.customJwtAuthorizer.allowedScopes).toEqual(['read']);
         expect(rendered.customJwtAuthorizer.customClaims).toHaveLength(1);
       });
+
+      test('Should not render allowedAudience when not provided', () => {
+        const userPool = new cognito.UserPool(stack, 'UserPool', {
+          userPoolName: 'test-pool',
+        });
+
+        const client = new cognito.UserPoolClient(stack, 'Client', {
+          userPool: userPool,
+        });
+
+        const authorizer = GatewayAuthorizer.usingCognito({
+          userPool: userPool,
+          allowedClients: [client],
+        });
+
+        const rendered = authorizer._render();
+        expect(rendered.customJwtAuthorizer.allowedAudience).toBeUndefined();
+      });
+
+      test('Should not render allowedScopes when not provided', () => {
+        const userPool = new cognito.UserPool(stack, 'UserPool', {
+          userPoolName: 'test-pool',
+        });
+
+        const authorizer = GatewayAuthorizer.usingCognito({
+          userPool: userPool,
+          allowedAudiences: ['app1'],
+        });
+
+        const rendered = authorizer._render();
+        expect(rendered.customJwtAuthorizer.allowedScopes).toBeUndefined();
+      });
+
+      test('Should not render customClaims when not provided', () => {
+        const userPool = new cognito.UserPool(stack, 'UserPool', {
+          userPoolName: 'test-pool',
+        });
+
+        const authorizer = GatewayAuthorizer.usingCognito({
+          userPool: userPool,
+          allowedAudiences: ['app1'],
+        });
+
+        const rendered = authorizer._render();
+        expect(rendered.customJwtAuthorizer.customClaims).toBeUndefined();
+      });
+
+      test('Should not render customClaims when empty array provided', () => {
+        const userPool = new cognito.UserPool(stack, 'UserPool', {
+          userPoolName: 'test-pool',
+        });
+
+        const authorizer = GatewayAuthorizer.usingCognito({
+          userPool: userPool,
+          allowedAudiences: ['app1'],
+          customClaims: [],
+        });
+
+        const rendered = authorizer._render();
+        expect(rendered.customJwtAuthorizer.customClaims).toBeUndefined();
+      });
     });
   });
 });
