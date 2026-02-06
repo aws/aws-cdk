@@ -1,7 +1,17 @@
+import type { IConstruct } from 'constructs';
+import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
+import type {
+  AddToResourcePolicyResult,
+  IGrantable,
+  IResourceWithPolicyV2,
+  PolicyStatement,
+  IResourcePolicyFactory,
+} from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import type { IGrantable } from '../../aws-iam';
-import { FeatureFlags, Stack } from '../../core';
+import { DefaultPolicyFactories } from '../../aws-iam';
+import type { ResourceEnvironment } from '../../core';
+import { Token, FeatureFlags, Stack, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
 
@@ -28,7 +38,7 @@ export class KeyGrants {
   private constructor(props: KeyGrantsProps) {
     this.resource = props.resource;
     this.trustAccountIdentities = props.trustAccountIdentities ?? FeatureFlags.of(this.resource).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
-    this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
+    this.policyResource = iam.ResourceWithPolicies.of(this.resource);
   }
 
   /**
@@ -64,7 +74,11 @@ export class KeyGrants {
         resourceSelfArns: crossEnvironment ? undefined : ['*'],
       };
 
-      if (this.trustAccountIdentities && !crossEnvironment) {
+      // For L1s, we always add the statement to the resource policy because we cannot automatically
+      // detect whether the key already has a policy for trusting account identities. And we can't
+      // expect users to pass the correct value for `trustAccountIdentities` prop when creating the
+      // KeyGrants instance for an L1.
+      if (!CfnKey.isCfnKey(this.resource) && this.trustAccountIdentities && !crossEnvironment) {
         return iam.Grant.addToPrincipalOrResource(grantOptions);
       } else {
         return iam.Grant.addToPrincipalAndResource({
@@ -172,5 +186,42 @@ export class KeyGrants {
       return keyStack.account !== identityStack.account && this.resource.env.account !== identityStack.account;
     }
     return keyStack.account !== identityStack.account;
+  }
+}
+
+export class KeyWithPolicyFactory implements IResourcePolicyFactory {
+  static {
+    DefaultPolicyFactories.set('AWS::KMS::Key', new KeyWithPolicyFactory());
+  }
+
+  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+    if (!CfnKey.isCfnKey(resource)) {
+      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnKey`, resource);
+    }
+
+    return new CfnKeyWithPolicy(resource);
+  }
+}
+
+class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  private policyDocument?: iam.PolicyDocument;
+
+  constructor(private readonly key: CfnKey) {
+    this.env = key.env;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (Token.isResolved(this.key.keyPolicy)) {
+      if (this.policyDocument == null) {
+        this.policyDocument = iam.PolicyDocument.fromJson(this.key.keyPolicy ?? { Statement: [] });
+      }
+
+      this.policyDocument.addStatements(statement);
+      this.key.keyPolicy = this.policyDocument.toJSON();
+
+      return { statementAdded: true, policyDependable: this.policyDocument };
+    }
+    return { statementAdded: false };
   }
 }

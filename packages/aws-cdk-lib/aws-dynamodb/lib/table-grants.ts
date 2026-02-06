@@ -1,7 +1,14 @@
+import type { IConstruct } from 'constructs';
 import type { ITableRef } from './dynamodb.generated';
+import { CfnTable } from './dynamodb.generated';
 import * as perms from './perms';
+import type { IResourceWithPolicyV2, IResourcePolicyFactory } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { Stack } from '../../core';
+import { DefaultPolicyFactories } from '../../aws-iam';
+import { KeyGrants } from '../../aws-kms';
+import type { ResourceEnvironment } from '../../core';
+import { Stack, Token, ValidationError } from '../../core';
+import { tryFindKmsKeyForTable } from '../../core/lib/helpers-internal/reflections';
 
 /**
  * Construction properties for TableGrants
@@ -47,6 +54,16 @@ export interface TableGrantsProps {
  * A set of permissions to grant on a Table
  */
 export class TableGrants {
+  public static fromTable(table: ITableRef, regions?: string[], hasIndex?: boolean): TableGrants {
+    return new TableGrants({
+      table,
+      encryptedResource: iam.EncryptedResources.of(table),
+      policyResource: iam.ResourceWithPolicies.of(table),
+      regions,
+      hasIndex,
+    });
+  }
+
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
   private readonly encryptedResource?: iam.IEncryptedResource;
@@ -175,3 +192,68 @@ export class TableGrants {
     return result;
   }
 }
+
+export class TablePolicyFactory implements IResourcePolicyFactory {
+  static {
+    DefaultPolicyFactories.set('AWS::DynamoDB::Table', new TablePolicyFactory());
+  }
+
+  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+    if (!CfnTable.isCfnTable(resource)) {
+      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
+    }
+
+    return new CfnTableWithPolicy(resource);
+  }
+}
+
+class CfnTableWithPolicy implements iam.IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+
+  constructor(private readonly table: CfnTable) {
+    this.env = table.env;
+  }
+
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (Token.isResolved(this.table.resourcePolicy)) {
+      const current = this.table.resourcePolicy?.policyDocument ?? { Statement: [] };
+      const policyDocument = iam.PolicyDocument.fromJson(current);
+      policyDocument.addStatements(statement);
+      this.table.resourcePolicy = {
+        policyDocument: policyDocument.toJSON(),
+      };
+
+      return { statementAdded: true, policyDependable: this.table };
+    }
+    return { statementAdded: false };
+  }
+}
+
+export class EncryptedTableFactory implements iam.IEncryptedResourceFactory {
+  static {
+    iam.DefaultEncryptedResourceFactories.set('AWS::DynamoDB::Table', new EncryptedTableFactory());
+  }
+
+  public fromConstruct(resource: IConstruct): iam.IEncryptedResource {
+    if (!CfnTable.isCfnTable(resource)) {
+      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
+    }
+    return new EncryptedCfnTable(resource);
+  }
+}
+
+class EncryptedCfnTable implements iam.IEncryptedResource {
+  public readonly env: ResourceEnvironment;
+
+  constructor(private readonly table: CfnTable) {
+    this.env = table.env;
+  }
+
+  public grantOnKey(grantee: iam.IGrantable, ...actions: string[]): iam.GrantOnKeyResult {
+    const key = tryFindKmsKeyForTable(this.table);
+    return {
+      grant: key ? KeyGrants.fromKey(key).actions(grantee, ...actions) : undefined,
+    };
+  }
+}
+

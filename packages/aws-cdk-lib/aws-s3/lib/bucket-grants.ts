@@ -1,10 +1,27 @@
+import type { IConstruct } from 'constructs';
 import type { GrantReplicationPermissionProps } from './bucket';
 import * as perms from './perms';
 import type { IBucketRef } from './s3.generated';
-import type { IEncryptedResource, IGrantable, IResourceWithPolicyV2 } from '../../aws-iam';
-import { AnyPrincipal, Grant } from '../../aws-iam';
-import * as iam from '../../aws-iam/lib/grant';
-import { FeatureFlags, Lazy, ValidationError } from '../../core';
+import { CfnBucket, CfnBucketPolicy } from './s3.generated';
+import type {
+  AddToResourcePolicyResult,
+  IEncryptedResource,
+  IGrantable,
+  IResourceWithPolicyV2,
+  PolicyStatement,
+  IResourcePolicyFactory, IEncryptedResourceFactory, GrantOnKeyResult,
+} from '../../aws-iam';
+import {
+  EncryptedResources,
+
+  DefaultEncryptedResourceFactories,
+  AnyPrincipal, DefaultPolicyFactories, Grant, PolicyDocument, ResourceWithPolicies,
+} from '../../aws-iam';
+import type * as iam from '../../aws-iam/lib/grant';
+import { KeyGrants } from '../../aws-kms';
+import type { ResourceEnvironment } from '../../core';
+import { FeatureFlags, Lazy, Token, ValidationError } from '../../core';
+import { tryFindKmsKeyforBucket } from '../../core/lib/helpers-internal/reflections';
 import * as cxapi from '../../cx-api/index';
 
 /**
@@ -27,8 +44,8 @@ export class BucketGrants {
   public static fromBucket(bucket: IBucketRef): BucketGrants {
     return new BucketGrants(
       bucket,
-      iam.GrantableResources.isEncryptedResource(bucket) ? bucket : undefined,
-      iam.GrantableResources.isResourceWithPolicy(bucket) ? bucket : undefined,
+      EncryptedResources.of(bucket),
+      ResourceWithPolicies.of(bucket),
     );
   }
 
@@ -264,4 +281,74 @@ export class BucketGrants {
   private arnForObjects(keyPattern: string): string {
     return `${this.bucket.bucketRef.bucketArn}/${keyPattern}`;
   }
+}
+
+export class EncryptedBucketFactory implements IEncryptedResourceFactory {
+  static {
+    DefaultEncryptedResourceFactories.set('AWS::S3::Bucket', new EncryptedBucketFactory());
+  }
+
+  public fromConstruct(resource: IConstruct): IEncryptedResource {
+    return ifCfnBucket(resource, (r) => new EncryptedCfnBucket(r));
+  }
+}
+
+export class EncryptedCfnBucket implements IEncryptedResource {
+  public readonly env: ResourceEnvironment;
+
+  constructor(private readonly bucket: CfnBucket) {
+    this.env = bucket.env;
+  }
+
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    const key = tryFindKmsKeyforBucket(this.bucket);
+    return {
+      grant: key ? KeyGrants.fromKey(key).actions(grantee, ...actions) : undefined,
+    };
+  }
+}
+
+export class BucketWithPolicyFactory implements IResourcePolicyFactory {
+  static {
+    DefaultPolicyFactories.set('AWS::S3::Bucket', new BucketWithPolicyFactory());
+  }
+
+  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+    return ifCfnBucket(resource, (r) => new CfnBucketWithPolicy(r));
+  }
+}
+
+class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  private policy?: CfnBucketPolicy;
+
+  constructor(private readonly bucket: CfnBucket) {
+    this.env = bucket.env;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.policy) {
+      this.policy = new CfnBucketPolicy(this.bucket, 'S3BucketPolicy', {
+        bucket: this.bucket.ref,
+        policyDocument: { Statement: [] },
+      });
+    }
+
+    if (Token.isResolved(this.policy.policyDocument)) {
+      const policyDocument = PolicyDocument.fromJson(this.policy.policyDocument ?? { Statement: [] });
+      policyDocument.addStatements(statement);
+      this.policy.policyDocument = policyDocument.toJSON();
+
+      return { statementAdded: true, policyDependable: this.policy };
+    }
+    return { statementAdded: false };
+  }
+}
+
+function ifCfnBucket<A>(resource: IConstruct, factory: (r: CfnBucket) => A): A {
+  if (!CfnBucket.isCfnBucket(resource)) {
+    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnBucket`, resource);
+  }
+
+  return factory(resource);
 }

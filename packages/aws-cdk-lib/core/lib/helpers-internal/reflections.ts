@@ -1,10 +1,16 @@
+/**
+ * ATTENTION: this file was copied from the mixins-preview package, because we cannot
+ * depend on that package from core. When mixins goes GA, this file should be removed
+ * and all references to the functions in it should be updated to import from the new
+ * location in core.
+ */
+
 import type { IConstruct } from 'constructs';
-import { CfnResource } from 'aws-cdk-lib/core';
-import type { CfnBucket } from 'aws-cdk-lib/aws-s3';
-import { type IBucketRef, type CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
-import type { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
-import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
-import type { CfnTable, ITableRef } from 'aws-cdk-lib/aws-dynamodb';
+import type { CfnTable, ITableRef } from '../../../aws-dynamodb';
+import type { CfnKey, IKeyRef } from '../../../aws-kms';
+import type { CfnDeliverySource } from '../../../aws-logs';
+import type { CfnBucket, IBucketRef, CfnBucketPolicy } from '../../../aws-s3';
+import { CfnResource } from '../../../core';
 
 /**
  * Finds the closest related resource in the construct tree.

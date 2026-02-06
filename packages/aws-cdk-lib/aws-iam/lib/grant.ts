@@ -2,9 +2,14 @@ import type { IConstruct, IDependable } from 'constructs';
 import { Dependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import type { IGrantable, IPrincipal } from './principals';
-import * as cdk from '../../core';
 import type { IEnvironmentAware } from '../../core';
+import * as cdk from '../../core';
+import { CfnResource, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
+import * as cxapi from '../../cx-api/index';
 import type * as iam from '../index';
+
+const POLICY_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-resource-policy-decorator');
+const ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-encrypted-resource-decorator');
 
 /**
  * Basic options for a grant operation
@@ -433,6 +438,137 @@ export interface GrantOnKeyResult {
   readonly grant?: Grant;
 }
 
+function lookupFactory(scope: IConstruct, cfnResourceType: string, sym: symbol): IEnvironmentAware | undefined {
+  for (
+    let current: any = scope;
+    current != null;
+    current = (current.node && current.node.scope) ? current.node.scope : undefined
+  ) {
+    const decoratorMap = current[sym];
+    if (decoratorMap) {
+      const decorator = decoratorMap.get(cfnResourceType);
+      if (decorator) {
+        return decorator;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+class Traits<
+  Trait extends IEncryptedResource | IResourceWithPolicyV2,
+  Factory extends ITraitFactory<Trait>,
+> {
+  private instances = new WeakMap<IEnvironmentAware, Trait>();
+
+  public of(
+    resource: IEnvironmentAware,
+    factoryLookup: (resource: CfnResource, type: string) => Factory | undefined,
+    defaultFactoryFor: (type: string) => Factory | undefined,
+  ): Trait | undefined {
+    const cached = this.instances.get(resource);
+    if (cached != null) {
+      return cached;
+    }
+
+    if (!(resource instanceof CfnResource)) {
+      return undefined;
+    }
+
+    const cfnResourceType = (resource as CfnResource).cfnResourceType;
+    let decorator = factoryLookup(resource, cfnResourceType);
+    if (decorator == null) {
+      if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
+        const msg = `Couldn't find trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
+        throw new ValidationError(msg, resource);
+      }
+      decorator = defaultFactoryFor(cfnResourceType);
+    }
+    if (decorator != null) {
+      const trait = decorator.fromConstruct(resource);
+      this.instances.set(resource, trait);
+      return trait;
+    }
+    return undefined;
+  }
+
+  public register(scope: IConstruct, cfnType: string, decorator: Factory, sym: symbol) {
+    let decoratorMap = (scope as any)[sym] as Map<string, Factory>;
+    if (!decoratorMap) {
+      decoratorMap = new Map<string, Factory>();
+
+      Object.defineProperty(scope, sym, {
+        value: decoratorMap,
+        configurable: false,
+        enumerable: false,
+      });
+    }
+
+    decoratorMap.set(cfnType, decorator);
+  }
+}
+
+export class ResourceWithPolicies {
+  public static of(resource: IEnvironmentAware): IResourceWithPolicyV2 | undefined {
+    if (GrantableResources.isResourceWithPolicy(resource)) {
+      return resource;
+    }
+
+    function lookupResourcePolicyFactory(scope: IConstruct, cfnResourceType: string): IResourcePolicyFactory | undefined {
+      return lookupFactory(scope, cfnResourceType, POLICY_DECORATOR_MAP_SYMBOL) as IResourcePolicyFactory | undefined;
+    }
+
+    return ResourceWithPolicies.traits.of(
+      resource,
+      (cfnResource, type) => lookupResourcePolicyFactory(cfnResource, type),
+      type => DefaultPolicyFactories.get(type),
+    );
+  }
+
+  public static register(scope: IConstruct, cfnType: string, decorator: IResourcePolicyFactory) {
+    this.traits.register(scope, cfnType, decorator, POLICY_DECORATOR_MAP_SYMBOL);
+  }
+
+  private static traits = new Traits<IResourceWithPolicyV2, IResourcePolicyFactory>();
+}
+
+export class EncryptedResources {
+  public static of(resource: IEnvironmentAware): IEncryptedResource | undefined {
+    if (GrantableResources.isEncryptedResource(resource)) {
+      return resource;
+    }
+
+    function lookupEncryptedResourceFactory(scope: IConstruct, cfnResourceType: string): IEncryptedResourceFactory | undefined {
+      return lookupFactory(scope, cfnResourceType, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL) as IEncryptedResourceFactory | undefined;
+    }
+
+    return EncryptedResources.traits.of(
+      resource,
+      (cfnResource, type) => lookupEncryptedResourceFactory(cfnResource, type),
+      type => DefaultEncryptedResourceFactories.get(type),
+    );
+  }
+
+  public static register(scope: IConstruct, cfnType: string, decorator: IEncryptedResourceFactory) {
+    this.traits.register(scope, cfnType, decorator, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL);
+  }
+
+  private static traits = new Traits<IEncryptedResource, IEncryptedResourceFactory>();
+}
+
+interface ITraitFactory<T> {
+  fromConstruct(resource: IConstruct): T;
+}
+
+export interface IResourcePolicyFactory {
+  fromConstruct(resource: IConstruct): IResourceWithPolicyV2;
+}
+
+export interface IEncryptedResourceFactory {
+  fromConstruct(resource: IConstruct): IEncryptedResource;
+}
+
 /**
  * A resource that contains data that can be encrypted, using a KMS key.s
  */
@@ -516,4 +652,42 @@ export class CompositeDependable implements IDependable {
       },
     });
   }
+}
+
+export class DefaultPolicyFactories {
+  public static get(key: string): IResourcePolicyFactory | undefined {
+    return DefaultPolicyFactories.map.get(key);
+  }
+
+  public static set(key: string, value: IResourcePolicyFactory) {
+    if (DefaultPolicyFactories.map.has(key)) {
+      throw new UnscopedValidationError(`A resource policy decorator for resource type '${key}' is already registered.`);
+    }
+    DefaultPolicyFactories.map.set(key, value);
+  }
+
+  public static has(key: string): boolean {
+    return DefaultPolicyFactories.map.has(key);
+  }
+
+  private static readonly map = new Map<string, IResourcePolicyFactory>();
+}
+
+export class DefaultEncryptedResourceFactories {
+  public static get(key: string): IEncryptedResourceFactory | undefined {
+    return DefaultEncryptedResourceFactories.map.get(key);
+  }
+
+  public static set(key: string, value: IEncryptedResourceFactory) {
+    if (DefaultEncryptedResourceFactories.map.has(key)) {
+      throw new UnscopedValidationError(`An encrypted resource decorator for resource type '${key}' is already registered.`);
+    }
+    DefaultEncryptedResourceFactories.map.set(key, value);
+  }
+
+  public static has(key: string): boolean {
+    return DefaultEncryptedResourceFactories.map.has(key);
+  }
+
+  private static readonly map = new Map<string, IEncryptedResourceFactory>();
 }
