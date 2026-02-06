@@ -471,6 +471,22 @@
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
    ]
   },
+  "NLBSG78A4E61C": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "TestProducerVpcEndpointService/NLB-SG",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
   "NLB55158F82": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -481,6 +497,14 @@
      }
     ],
     "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "NLBSG78A4E61C",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VpcPrivateSubnet1Subnet536B997A"

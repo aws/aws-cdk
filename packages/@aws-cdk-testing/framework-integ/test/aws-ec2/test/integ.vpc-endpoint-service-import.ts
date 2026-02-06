@@ -11,7 +11,11 @@ class ProducerStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
-    const loadBalancer = new elbv2.NetworkLoadBalancer(this, 'NLB', { vpc });
+    const nlbSg = new ec2.SecurityGroup(this, 'NLB-SG', { vpc });
+    const loadBalancer = new elbv2.NetworkLoadBalancer(this, 'NLB', {
+      vpc,
+      securityGroups: [nlbSg],
+    });
 
     const endpointService = new ec2.VpcEndpointService(this, 'vpcEndpointService', {
       vpcEndpointServiceLoadBalancers: [loadBalancer],
