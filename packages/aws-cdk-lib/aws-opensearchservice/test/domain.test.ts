@@ -2304,6 +2304,96 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
   });
 });
 
+describe('S3 Vectors Engine', () => {
+  test.each([true, false])('configure to %s', (enabled) => {
+    new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: enabled,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      AIMLOptions: {
+        S3VectorsEngine: {
+          Enabled: enabled,
+        },
+      },
+    });
+  });
+
+  test('default is undefined', () => {
+    new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      AIMLOptions: Match.absent(),
+    });
+  });
+
+  test('throws error for Elasticsearch versions', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.ELASTICSEARCH_7_10,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch version 2.19 or later. Elasticsearch versions are not supported.');
+  });
+
+  test('throws error for OpenSearch versions below 2.19', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_17,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch version 2.19 or later. Got version 2.17.');
+  });
+
+  test('throws error for non-OpenSearch Optimized instance types', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 't3.small.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*). Got t3.small.search.');
+  });
+
+  test('throws error when encryption at rest is disabled', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: false,
+      },
+    })).toThrow('S3 Vectors Engine requires encryption at rest to be enabled.');
+  });
+});
+
 test('can specify future version', () => {
   new Domain(stack, 'Domain', { version: EngineVersion.elasticsearch('8.2') });
 

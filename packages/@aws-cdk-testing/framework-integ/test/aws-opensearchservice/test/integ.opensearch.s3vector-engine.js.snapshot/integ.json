@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "OpenSearchS3VectorEngineInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-s3vector-engine"
+      ],
+      "assertionStack": "OpenSearchS3VectorEngineInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchS3VectorEngineIntegDefaultTestDeployAssertE844BBEE"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

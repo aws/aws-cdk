@@ -356,7 +356,6 @@ domain.addAccessPolicies(
 );
 ```
 
-
 ## Audit logs
 
 Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
@@ -442,6 +441,30 @@ const domain = new Domain(this, 'Domain', {
     warmInstanceType: 'ultrawarm1.medium.search',
   },
   coldStorageEnabled: true,
+});
+```
+
+## S3 Vectors Engine
+
+Amazon OpenSearch Service offers [the ability to use Amazon S3 as a vector engine for vector indexes](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html).
+This feature allows you to offload vector data to Amazon S3 while maintaining sub-second vector search capabilities at low cost.
+
+Requirements:
+
+- OpenSearch version 2.19 or later
+- OpenSearch Optimized instance types (OR1, OR2, OM2) for data nodes
+- Encryption at rest must be enabled
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_2_19,
+  s3VectorsEngineEnabled: true,
+  capacity: {
+    dataNodeInstanceType: 'or1.medium.search',
+  },
+  encryptionAtRest: {
+    enabled: true,
+  },
 });
 ```
 
