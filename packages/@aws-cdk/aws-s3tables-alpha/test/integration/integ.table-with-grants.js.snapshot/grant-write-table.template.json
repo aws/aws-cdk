@@ -24,7 +24,19 @@
   "Table4C2D914F": {
    "Type": "AWS::S3Tables::Table",
    "Properties": {
-    "Namespace": "test_namespace",
+    "Namespace": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Split": [
+        "|",
+        {
+         "Ref": "NamespaceADFEA57E"
+        }
+       ]
+      }
+     ]
+    },
     "OpenTableFormat": "ICEBERG",
     "TableBucketARN": {
      "Fn::GetAtt": [
@@ -35,9 +47,6 @@
     "TableName": "grant_write_table",
     "WithoutMetadata": "Yes"
    },
-   "DependsOn": [
-    "NamespaceADFEA57E"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -72,10 +81,7 @@
       "TableARN"
      ]
     }
-   },
-   "DependsOn": [
-    "NamespaceADFEA57E"
-   ]
+   }
   }
  },
  "Outputs": {
@@ -99,6 +105,14 @@
    },
    "Export": {
     "Name": "grant-write-table:ExportsOutputFnGetAttTableBucket0BF18B0DTableBucketARN92D70B40"
+   }
+  },
+  "ExportsOutputRefNamespaceADFEA57E9D22F106": {
+   "Value": {
+    "Ref": "NamespaceADFEA57E"
+   },
+   "Export": {
+    "Name": "grant-write-table:ExportsOutputRefNamespaceADFEA57E9D22F106"
    }
   }
  },
