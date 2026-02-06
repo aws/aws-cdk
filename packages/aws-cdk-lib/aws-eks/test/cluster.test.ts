@@ -1084,6 +1084,110 @@ describe('cluster', () => {
     expect(cluster.kubectlProvider).toEqual(kubectlProvider);
   });
 
+  test('addAutoScalingGroupCapacity with mixedInstancesPolicy and instanceType throws error', () => {
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    expect(() => cluster.addAutoScalingGroupCapacity('add', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      mixedInstancesPolicy: {
+        launchTemplate: new ec2.LaunchTemplate(stack, 'template', {}),
+        launchTemplateOverrides: [],
+      },
+    })).toThrow('Setting \'mixedInstancesPolicy\' must not bet set when \'instanceType\' is set');
+  });
+
+  test('addAutoScalingGroupCapacity with mixedInstancesPolicy and bootstrapEnabled throws error', () => {
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    expect(() => cluster.addAutoScalingGroupCapacity('add', {
+      bootstrapEnabled: true,
+      mixedInstancesPolicy: {
+        launchTemplate: new ec2.LaunchTemplate(stack, 'template', {}),
+        launchTemplateOverrides: [],
+      },
+    })).toThrow('Setting \'mixedInstancesPolicy\' must not bet set when \'bootstrapEnabled\' is set');
+  });
+
+  test('addAutoScalingGroupCapacity with mixedInstancesPolicy and machineImageType throws error', () => {
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    expect(() => cluster.addAutoScalingGroupCapacity('add', {
+      machineImageType: eks.MachineImageType.BOTTLEROCKET,
+      mixedInstancesPolicy: {
+        launchTemplate: new ec2.LaunchTemplate(stack, 'template', {}),
+        launchTemplateOverrides: [],
+      },
+    })).toThrow('Setting \'mixedInstancesPolicy\' must not bet set when \'machineImageType\' is set');
+  });
+
+  test('addAutoScalingGroupCapacity without mixedInstancesPolicy or instanceType throws error', () => {
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    expect(() => cluster.addAutoScalingGroupCapacity('add', {})).toThrow('One of \'mixedInstancesPolicy\' or \'instanceType\' must be set');
+  });
+
+  test('addAutoScalingGroupCapacity with mixedInstancesPolicy applies launch template', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    const launchTemplateName = 'launchTemplateName';
+
+    // WHEN
+    cluster.addAutoScalingGroupCapacity('add', {
+      mixedInstancesPolicy: {
+        launchTemplate: new ec2.LaunchTemplate(stack, 'template', {
+          launchTemplateName: launchTemplateName,
+          instanceType: new ec2.InstanceType('t2.medium'),
+          machineImage: new eks.EksOptimizedImage({
+            nodeType: eks.NodeType.STANDARD,
+            cpuArch: eks.CpuArch.X86_64,
+            kubernetesVersion: CLUSTER_VERSION.version,
+          }),
+          securityGroup: cluster.clusterSecurityGroup,
+          role: new iam.Role(stack, 'role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') }),
+        }),
+        launchTemplateOverrides: [],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateName: launchTemplateName,
+      LaunchTemplateData: {
+        InstanceType: 't2.medium',
+      },
+    });
+  });
+
   describe('import cluster with existing kubectl provider function should work as expected with resources relying on kubectl getOrCreate', () => {
     test('creates helm chart', () => {
       const { stack } = testFixture();
