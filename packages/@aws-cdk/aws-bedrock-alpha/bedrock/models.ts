@@ -378,6 +378,40 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   );
 
   /**
+   * Anthropic's Claude Opus 4.6 model, the most intelligent model and the world's best model
+   * for coding, enterprise agents, and professional work.
+   * Supports both 200K and 1M context tokens (with the latter in preview).
+   * Excels in agentic workflows, complex coding projects, and enterprise applications
+   * requiring sophisticated reasoning.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Financial analysis, cybersecurity, computer use workflows, long-horizon development, multi-tool orchestration
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_6_V1 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-6-v1',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Opus 4.5 model, the flagship model released November 2025.
+   * Excels at real-world programming tasks, scoring highest on SWE-bench Verified benchmarks.
+   * Demonstrates superior performance in long-horizon, goal-directed agentic work with fewer dead-ends.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Software engineering, code migration, agentic workflows, financial modeling, deep research
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_5_V1_0 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-5-20251101-v1:0',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
    * Anthropic's Claude Opus 4.1 model, most advanced for coding and agentic applications.
    * Excels at independently planning and executing complex development tasks end-to-end.
    * Drop-in replacement for Opus 4 with superior performance and precision.
