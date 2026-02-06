@@ -1,5 +1,8 @@
 {
  "Resources": {
+  "CdkIntegTestEksAdminUserF8D417B9": {
+   "Type": "AWS::IAM::User"
+  },
   "AdminRole38563C57": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -10,15 +13,26 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "CdkIntegTestEksAdminUserF8D417B9",
+          "Arn"
+         ]
+        }
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestedRegion": "us-east-1"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CdkIntegTestEksAdminUserF8D417B9",
+          "Arn"
          ]
         }
        }
@@ -30,34 +44,15 @@
   },
   "SecretsKey317DCF94": {
    "Type": "AWS::KMS::Key",
-   "Properties": {
-    "KeyPolicy": {
-     "Statement": [
-      {
-       "Action": "kms:*",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS"
+     ]
+    }
+   }
   },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
@@ -1009,7 +1004,10 @@
        }
       ]
      },
-     "accessConfig": {}
+     "accessConfig": {},
+     "controlPlaneScalingConfig": {
+      "tier": "standard"
+     }
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -1322,6 +1320,43 @@
       "GroupId"
      ]
     }
+   }
+  },
+  "ClusterClusterSecurityGroupfromIndirectPeer443F03F2A0D": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIp": {
+     "Fn::GetAtt": [
+      "Vpc8378EB38",
+      "CidrBlock"
+     ]
+    },
+    "Description": "Allow HTTPS from VPC IPv4",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "Cluster9EE0221C",
+      "ClusterSecurityGroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 443
+   }
+  },
+  "ClusterClusterSecurityGroupfrom0443F8B899B8": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIpv6": "::/0",
+    "Description": "Allow HTTPS from IPv6",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "Cluster9EE0221C",
+      "ClusterSecurityGroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 443
    }
   },
   "ClusterAwsAuthmanifestFE51F8AE": {
@@ -4145,7 +4180,7 @@
      ]
     },
     "RejectUnauthorized": false,
-    "CodeHash": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a"
+    "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -4400,7 +4435,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/74f0c23bdc75a98d28fe19433302a52c4bea843e3db955cba46671106f67d08f.json"
+       "/862cca191baa23c5dfd7de479f9b47ef0f9fbbaaeee27158402eccf2b437f651.json"
       ]
      ]
     }
@@ -4446,7 +4481,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/841e346827b3ba40d7f399611acabdb98a1b960a0112ea2dc4e010e172d29700.json"
+       "/7283a0885dbc163925aace6a82c153f9c77fffa1a0762dc78994458748a48ae2.json"
       ]
      ]
     }
@@ -4564,7 +4599,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a.zip"
+     "S3Key": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -4678,6 +4713,10 @@
      ]
     ]
    }
+  },
+  "ControlPlaneScalingTier": {
+   "Description": "Control plane scaling tier configured",
+   "Value": "standard"
   },
   "ClusterEndpoint": {
    "Value": {
