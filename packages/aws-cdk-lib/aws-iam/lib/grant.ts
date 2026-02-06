@@ -9,6 +9,7 @@ import * as cxapi from '../../cx-api/index';
 import type * as iam from '../index';
 
 const POLICY_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-resource-policy-decorator');
+const ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-encrypted-resource-decorator');
 
 /**
  * Basic options for a grant operation
@@ -437,13 +438,13 @@ export interface GrantOnKeyResult {
   readonly grant?: Grant;
 }
 
-function lookupDecorator(scope: IConstruct, cfnResourceType: string): IResourcePolicyDecorator | undefined {
+function lookupDecorator(scope: IConstruct, cfnResourceType: string, sym: symbol): IEnvironmentAware | undefined {
   for (
     let current: any = scope;
     current != null;
     current = (current.node && current.node.scope) ? current.node.scope : undefined
   ) {
-    const decoratorMap = current[POLICY_DECORATOR_MAP_SYMBOL];
+    const decoratorMap = current[sym];
     if (decoratorMap) {
       const decorator = decoratorMap.get(cfnResourceType);
       if (decorator) {
@@ -453,6 +454,59 @@ function lookupDecorator(scope: IConstruct, cfnResourceType: string): IResourceP
   }
 
   return undefined;
+}
+
+class Traits<
+  A extends IEncryptedResource | IResourceWithPolicyV2,
+  D extends IDecorator<A>,
+> {
+  private instances = new WeakMap<IEnvironmentAware, A>();
+
+  public of(
+    resource: IEnvironmentAware,
+    decLookup: (r: CfnResource, t: string) => D | undefined,
+    defo: (t: string) => D | undefined,
+  ): A | undefined {
+    const cached = this.instances.get(resource);
+    if (cached != null) {
+      return cached;
+    }
+
+    if (!(resource instanceof CfnResource)) {
+      return undefined;
+    }
+
+    const cfnResourceType = (resource as CfnResource).cfnResourceType;
+    let decorator = decLookup(resource, cfnResourceType);
+    if (decorator == null) {
+      if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
+        const msg = `Couldn't find ResourceWithPolicies trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
+        throw new ValidationError(msg, resource);
+      }
+      decorator = defo(cfnResourceType);
+    }
+    if (decorator != null) {
+      const resourceWithPolicy = decorator.decorate(resource);
+      this.instances.set(resource, resourceWithPolicy);
+      return resourceWithPolicy;
+    }
+    return undefined;
+  }
+
+  public register(scope: IConstruct, cfnType: string, decorator: D, sym: symbol) {
+    let decoratorMap = (scope as any)[sym] as Map<string, D>;
+    if (!decoratorMap) {
+      decoratorMap = new Map<string, D>();
+
+      Object.defineProperty(scope, sym, {
+        value: decoratorMap,
+        configurable: false,
+        enumerable: false,
+      });
+    }
+
+    decoratorMap.set(cfnType, decorator);
+  }
 }
 
 export class ResourceWithPolicies {
@@ -500,30 +554,15 @@ export class ResourceWithPolicies {
       return resource;
     }
 
-    const cached = ResourceWithPolicies.instances.get(resource);
-    if (cached != null) {
-      return cached;
+    function lookupResourcePolicyDecorator(scope: IConstruct, cfnResourceType: string): IResourcePolicyDecorator | undefined {
+      return lookupDecorator(scope, cfnResourceType, POLICY_DECORATOR_MAP_SYMBOL) as IResourcePolicyDecorator | undefined;
     }
 
-    if (!(resource instanceof CfnResource)) {
-      return undefined;
-    }
-
-    const cfnResourceType = (resource as CfnResource).cfnResourceType;
-    let decorator = lookupDecorator(resource, cfnResourceType);
-    if (decorator == null) {
-      if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
-        const msg = `Couldn't find ResourceWithPolicies trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
-        throw new ValidationError(msg, resource);
-      }
-      decorator = DefaultPolicyDecorators.get(cfnResourceType);
-    }
-    if (decorator != null) {
-      const resourceWithPolicy = (decorator as IResourcePolicyDecorator).decorate(resource);
-      ResourceWithPolicies.instances.set(resource, resourceWithPolicy);
-      return resourceWithPolicy;
-    }
-    return undefined;
+    return ResourceWithPolicies.traits.of(
+      resource,
+      (cfnResource, type) => lookupResourcePolicyDecorator(cfnResource, type),
+      type => DefaultPolicyDecorators.get(type),
+    );
   }
 
   /**
@@ -539,25 +578,46 @@ export class ResourceWithPolicies {
    *                    decorate the resource.
    */
   public static register(scope: IConstruct, cfnType: string, decorator: IResourcePolicyDecorator) {
-    let decoratorMap = (scope as any)[POLICY_DECORATOR_MAP_SYMBOL];
-    if (!decoratorMap) {
-      decoratorMap = new Map<string, IResourcePolicyDecorator>();
-
-      Object.defineProperty(scope, POLICY_DECORATOR_MAP_SYMBOL, {
-        value: decoratorMap,
-        configurable: false,
-        enumerable: false,
-      });
-    }
-
-    decoratorMap.set(cfnType, decorator);
+    this.traits.register(scope, cfnType, decorator, POLICY_DECORATOR_MAP_SYMBOL);
   }
 
-  private static instances = new WeakMap<IEnvironmentAware, IResourceWithPolicyV2>();
+  private static traits = new Traits<IResourceWithPolicyV2, IResourcePolicyDecorator>();
+}
+
+export class EncryptedResources {
+  public static of(resource: IEnvironmentAware): IEncryptedResource | undefined {
+    if (GrantableResources.isEncryptedResource(resource)) {
+      return resource;
+    }
+
+    function lookupEncryptedResourceDecorator(scope: IConstruct, cfnResourceType: string): IEncryptedResourceDecorator | undefined {
+      return lookupDecorator(scope, cfnResourceType, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL) as IEncryptedResourceDecorator | undefined;
+    }
+
+    return EncryptedResources.traits.of(
+      resource,
+      (cfnResource, type) => lookupEncryptedResourceDecorator(cfnResource, type),
+      type => DefaultEncryptedResourceDecorators.get(type),
+    );
+  }
+
+  public static register(scope: IConstruct, cfnType: string, decorator: IEncryptedResourceDecorator) {
+    this.traits.register(scope, cfnType, decorator, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL);
+  }
+
+  private static traits = new Traits<IEncryptedResource, IEncryptedResourceDecorator>();
+}
+
+interface IDecorator<T> {
+  decorate(resource: IConstruct): T;
 }
 
 export interface IResourcePolicyDecorator {
   decorate(resource: IConstruct): IResourceWithPolicyV2;
+}
+
+export interface IEncryptedResourceDecorator {
+  decorate(resource: IConstruct): IEncryptedResource;
 }
 
 /**
@@ -645,6 +705,9 @@ export class CompositeDependable implements IDependable {
   }
 }
 
+// TODO Can we deduplicate DefaultPolicyDecorators and DefaultEncryptedResourceDecorators into a single class
+//  without using a generic type parameter?
+
 export class DefaultPolicyDecorators {
   public static get(key: string): IResourcePolicyDecorator | undefined {
     return DefaultPolicyDecorators.map.get(key);
@@ -662,4 +725,23 @@ export class DefaultPolicyDecorators {
   }
 
   private static readonly map = new Map<string, IResourcePolicyDecorator>();
+}
+
+export class DefaultEncryptedResourceDecorators {
+  public static get(key: string): IEncryptedResourceDecorator | undefined {
+    return DefaultEncryptedResourceDecorators.map.get(key);
+  }
+
+  public static set(key: string, value: IEncryptedResourceDecorator) {
+    if (DefaultEncryptedResourceDecorators.map.has(key)) {
+      throw new UnscopedValidationError(`A resource policy decorator for resource type '${key}' is already registered.`);
+    }
+    DefaultEncryptedResourceDecorators.map.set(key, value);
+  }
+
+  public static has(key: string): boolean {
+    return DefaultEncryptedResourceDecorators.map.has(key);
+  }
+
+  private static readonly map = new Map<string, IEncryptedResourceDecorator>();
 }

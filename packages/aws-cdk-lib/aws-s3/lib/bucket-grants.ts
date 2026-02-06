@@ -9,12 +9,19 @@ import type {
   IGrantable,
   IResourceWithPolicyV2,
   PolicyStatement,
-  IResourcePolicyDecorator,
+  IResourcePolicyDecorator, IEncryptedResourceDecorator, GrantOnKeyResult,
 } from '../../aws-iam';
-import { AnyPrincipal, DefaultPolicyDecorators, Grant, PolicyDocument, ResourceWithPolicies } from '../../aws-iam';
-import * as iam from '../../aws-iam/lib/grant';
+import {
+  EncryptedResources,
+
+  DefaultEncryptedResourceDecorators,
+  AnyPrincipal, DefaultPolicyDecorators, Grant, PolicyDocument, ResourceWithPolicies,
+} from '../../aws-iam';
+import type * as iam from '../../aws-iam/lib/grant';
+import { KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
 import { FeatureFlags, Lazy, Token, ValidationError } from '../../core';
+import { tryFindKmsKeyforBucket } from './private/reflections';
 import * as cxapi from '../../cx-api/index';
 
 /**
@@ -37,7 +44,7 @@ export class BucketGrants {
   public static fromBucket(bucket: IBucketRef): BucketGrants {
     return new BucketGrants(
       bucket,
-      iam.GrantableResources.isEncryptedResource(bucket) ? bucket : undefined,
+      EncryptedResources.of(bucket),
       ResourceWithPolicies.of(bucket),
     );
   }
@@ -276,17 +283,38 @@ export class BucketGrants {
   }
 }
 
+export class EncryptedBucketDecorator implements IEncryptedResourceDecorator {
+  static {
+    DefaultEncryptedResourceDecorators.set('AWS::S3::Bucket', new EncryptedBucketDecorator());
+  }
+
+  public decorate(resource: IConstruct): IEncryptedResource {
+    return ifCfnBucket(resource, (r) => new EncryptedCfnBucket(r));
+  }
+}
+
+export class EncryptedCfnBucket implements IEncryptedResource {
+  public readonly env: ResourceEnvironment;
+
+  constructor(private readonly bucket: CfnBucket) {
+    this.env = bucket.env;
+  }
+
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    const key = tryFindKmsKeyforBucket(this.bucket);
+    return {
+      grant: key ? KeyGrants.fromKey(key).actions(grantee, ...actions) : undefined,
+    };
+  }
+}
+
 export class BucketPolicyDecorator implements IResourcePolicyDecorator {
   static {
     DefaultPolicyDecorators.set('AWS::S3::Bucket', new BucketPolicyDecorator());
   }
 
   public decorate(resource: IConstruct): IResourceWithPolicyV2 {
-    if (!CfnBucket.isCfnBucket(resource)) {
-      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnBucket`, resource);
-    }
-
-    return new CfnBucketWithPolicy(resource);
+    return ifCfnBucket(resource, (r) => new CfnBucketWithPolicy(r));
   }
 }
 
@@ -315,4 +343,12 @@ class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
     }
     return { statementAdded: false };
   }
+}
+
+function ifCfnBucket<A>(resource: IConstruct, factory: (r: CfnBucket) => A): A {
+  if (!CfnBucket.isCfnBucket(resource)) {
+    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnBucket`, resource);
+  }
+
+  return factory(resource);
 }
