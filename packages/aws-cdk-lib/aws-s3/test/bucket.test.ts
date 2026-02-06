@@ -6,6 +6,7 @@ import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
+import { BucketGrants } from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable @stylistic/quote-props */
@@ -1723,6 +1724,31 @@ describe('bucket', () => {
       }));
 
       Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 2);
+    });
+  });
+
+  test('can grant read permissions to a CfnBucket', () => {
+    const stack = new cdk.Stack();
+    const cfnBucket = new s3.CfnBucket(stack, 'CfnBucket');
+    const principal = new iam.ServicePrincipal('s3.amazonaws.com');
+
+    BucketGrants.fromBucket(cfnBucket).read(principal);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'CfnBucket' },
+      PolicyDocument: {
+        Statement: [{
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          Effect: 'Allow',
+          Principal: { 'Service': 's3.amazonaws.com' },
+          Resource: [{
+            'Fn::GetAtt': ['CfnBucket', 'Arn'],
+          }, {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['CfnBucket', 'Arn'] }, '/*']],
+          }],
+        }],
+      },
     });
   });
 

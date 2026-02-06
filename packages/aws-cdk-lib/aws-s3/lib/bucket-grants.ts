@@ -1,10 +1,20 @@
+import type { IConstruct } from 'constructs';
 import type { GrantReplicationPermissionProps } from './bucket';
 import * as perms from './perms';
 import type { IBucketRef } from './s3.generated';
-import type { IEncryptedResource, IGrantable, IResourceWithPolicyV2 } from '../../aws-iam';
-import { AnyPrincipal, Grant } from '../../aws-iam';
+import { CfnBucket, CfnBucketPolicy } from './s3.generated';
+import type {
+  AddToResourcePolicyResult,
+  IEncryptedResource,
+  IGrantable,
+  IResourceWithPolicyV2,
+  PolicyStatement,
+  IResourcePolicyDecorator,
+} from '../../aws-iam';
+import { AnyPrincipal, DefaultPolicyDecorators, Grant, PolicyDocument, ResourceWithPolicies } from '../../aws-iam';
 import * as iam from '../../aws-iam/lib/grant';
-import { FeatureFlags, Lazy, ValidationError } from '../../core';
+import type { ResourceEnvironment } from '../../core';
+import { FeatureFlags, Lazy, Token, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api/index';
 
 /**
@@ -28,7 +38,7 @@ export class BucketGrants {
     return new BucketGrants(
       bucket,
       iam.GrantableResources.isEncryptedResource(bucket) ? bucket : undefined,
-      iam.GrantableResources.isResourceWithPolicy(bucket) ? bucket : undefined,
+      ResourceWithPolicies.of(bucket),
     );
   }
 
@@ -263,5 +273,46 @@ export class BucketGrants {
 
   private arnForObjects(keyPattern: string): string {
     return `${this.bucket.bucketRef.bucketArn}/${keyPattern}`;
+  }
+}
+
+export class BucketPolicyDecorator implements IResourcePolicyDecorator {
+  static {
+    DefaultPolicyDecorators.set('AWS::S3::Bucket', new BucketPolicyDecorator());
+  }
+
+  public decorate(resource: IConstruct): IResourceWithPolicyV2 {
+    if (!CfnBucket.isCfnBucket(resource)) {
+      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnBucket`, resource);
+    }
+
+    return new CfnBucketWithPolicy(resource);
+  }
+}
+
+class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  private policy?: CfnBucketPolicy;
+
+  constructor(private readonly bucket: CfnBucket) {
+    this.env = bucket.env;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.policy) {
+      this.policy = new CfnBucketPolicy(this.bucket, 'S3BucketPolicy', {
+        bucket: this.bucket.ref,
+        policyDocument: { Statement: [] },
+      });
+    }
+
+    if (Token.isResolved(this.policy.policyDocument)) {
+      const policyDocument = PolicyDocument.fromJson(this.policy.policyDocument ?? { Statement: [] });
+      policyDocument.addStatements(statement);
+      this.policy.policyDocument = policyDocument.toJSON();
+
+      return { statementAdded: true, policyDependable: this.policy };
+    }
+    return { statementAdded: false };
   }
 }

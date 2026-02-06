@@ -437,7 +437,7 @@ export interface GrantOnKeyResult {
   readonly grant?: Grant;
 }
 
-function lookupDecorator(scope: IConstruct, cfnResourceType: string): ResourcePolicyDecorator | undefined {
+function lookupDecorator(scope: IConstruct, cfnResourceType: string): IResourcePolicyDecorator | undefined {
   for (
     let current: any = scope;
     current != null;
@@ -516,10 +516,10 @@ export class ResourceWithPolicies {
         const msg = `Couldn't find ResourceWithPolicies trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
         throw new ValidationError(msg, resource);
       }
-      decorator = DefaultPolicyDecorators.INSTANCE.get(cfnResourceType);
+      decorator = DefaultPolicyDecorators.get(cfnResourceType);
     }
     if (decorator != null) {
-      const resourceWithPolicy = (decorator as ResourcePolicyDecorator).decorate(resource);
+      const resourceWithPolicy = (decorator as IResourcePolicyDecorator).decorate(resource);
       ResourceWithPolicies.instances.set(resource, resourceWithPolicy);
       return resourceWithPolicy;
     }
@@ -538,10 +538,10 @@ export class ResourceWithPolicies {
    * @param decorator - The `ResourcePolicyDecorator` instance that will be used to
    *                    decorate the resource.
    */
-  public static register(scope: IConstruct, cfnType: string, decorator: ResourcePolicyDecorator) {
+  public static register(scope: IConstruct, cfnType: string, decorator: IResourcePolicyDecorator) {
     let decoratorMap = (scope as any)[POLICY_DECORATOR_MAP_SYMBOL];
     if (!decoratorMap) {
-      decoratorMap = new Map<string, ResourcePolicyDecorator>();
+      decoratorMap = new Map<string, IResourcePolicyDecorator>();
 
       Object.defineProperty(scope, POLICY_DECORATOR_MAP_SYMBOL, {
         value: decoratorMap,
@@ -556,7 +556,7 @@ export class ResourceWithPolicies {
   private static instances = new WeakMap<IEnvironmentAware, IResourceWithPolicyV2>();
 }
 
-export interface ResourcePolicyDecorator {
+export interface IResourcePolicyDecorator {
   decorate(resource: IConstruct): IResourceWithPolicyV2;
 }
 
@@ -645,17 +645,21 @@ export class CompositeDependable implements IDependable {
   }
 }
 
-export class DefaultPolicyDecorators extends Map<string, ResourcePolicyDecorator> {
-  static INSTANCE = new DefaultPolicyDecorators();
-
-  private constructor() {
-    super();
+export class DefaultPolicyDecorators {
+  public static get(key: string): IResourcePolicyDecorator | undefined {
+    return DefaultPolicyDecorators.map.get(key);
   }
 
-  public set(key: string, value: ResourcePolicyDecorator): this {
-    if (this.has(key)) {
+  public static set(key: string, value: IResourcePolicyDecorator) {
+    if (DefaultPolicyDecorators.map.has(key)) {
       throw new UnscopedValidationError(`A resource policy decorator for resource type '${key}' is already registered.`);
     }
-    return super.set(key, value);
+    DefaultPolicyDecorators.map.set(key, value);
   }
+
+  public static has(key: string): boolean {
+    return DefaultPolicyDecorators.map.has(key);
+  }
+
+  private static readonly map = new Map<string, IResourcePolicyDecorator>();
 }

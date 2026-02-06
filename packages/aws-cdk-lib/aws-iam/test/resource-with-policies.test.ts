@@ -232,7 +232,7 @@ class TestConstruct extends Construct {
   }
 }
 
-class MockDecorator implements iam.ResourcePolicyDecorator {
+class MockDecorator implements iam.IResourcePolicyDecorator {
   constructor(private readonly id: string) {}
 
   decorate(_resource: Construct): iam.IResourceWithPolicyV2 {

@@ -2,7 +2,7 @@ import type { IConstruct } from 'constructs';
 import type { ITableRef } from './dynamodb.generated';
 import { CfnTable } from './dynamodb.generated';
 import * as perms from './perms';
-import type { IResourceWithPolicyV2, ResourcePolicyDecorator } from '../../aws-iam';
+import type { IResourceWithPolicyV2, IResourcePolicyDecorator } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { DefaultPolicyDecorators } from '../../aws-iam';
 import type { ResourceEnvironment } from '../../core';
@@ -191,9 +191,9 @@ export class TableGrants {
   }
 }
 
-export class TablePolicyDecorator implements ResourcePolicyDecorator {
+export class TablePolicyDecorator implements IResourcePolicyDecorator {
   static {
-    DefaultPolicyDecorators.INSTANCE.set('AWS::DynamoDB::Table', new TablePolicyDecorator());
+    DefaultPolicyDecorators.set('AWS::DynamoDB::Table', new TablePolicyDecorator());
   }
 
   public decorate(resource: IConstruct): IResourceWithPolicyV2 {

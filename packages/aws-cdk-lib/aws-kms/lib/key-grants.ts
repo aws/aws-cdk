@@ -6,7 +6,7 @@ import type {
   IGrantable,
   IResourceWithPolicyV2,
   PolicyStatement,
-  ResourcePolicyDecorator,
+  IResourcePolicyDecorator,
 } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { DefaultPolicyDecorators } from '../../aws-iam';
@@ -189,9 +189,9 @@ export class KeyGrants {
   }
 }
 
-export class KeyPolicyDecorator implements ResourcePolicyDecorator {
+export class KeyPolicyDecorator implements IResourcePolicyDecorator {
   static {
-    DefaultPolicyDecorators.INSTANCE.set('AWS::KMS::Key', new KeyPolicyDecorator());
+    DefaultPolicyDecorators.set('AWS::KMS::Key', new KeyPolicyDecorator());
   }
 
   public decorate(resource: IConstruct): IResourceWithPolicyV2 {
