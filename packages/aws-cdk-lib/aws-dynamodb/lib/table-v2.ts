@@ -510,6 +510,13 @@ export interface TableV2MultiAccountReplicaProps extends TableOptionsV2 {
    */
   readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
 
+  /**
+   * Whether or not to grant permissions for all indexes of the table.
+   *
+   * Note: If false, permissions will only be granted to indexes when `globalIndexes` is specified.
+   *
+   * @default false
+   */
   readonly grantIndexPermissions?: boolean;
 }
 
