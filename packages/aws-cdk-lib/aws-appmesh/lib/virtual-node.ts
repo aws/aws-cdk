@@ -132,6 +132,9 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.streamAggregatedResources()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
