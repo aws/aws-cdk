@@ -18,17 +18,9 @@ const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
 });
 
-const stack = new cdk.Stack(app, 'MultiAzRedshift', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  },
-});
+const stack = new cdk.Stack(app, 'MultiAzRedshift');
 
 interface RedshiftRebootStackProps extends cdk.StackProps {
   parameterGroupParams: { [name: string]: string };
@@ -63,6 +55,7 @@ class RedshiftRebootStack extends cdk.Stack {
       masterUser: {
         masterUsername: 'admin',
       },
+      nodeType: redshift.NodeType.RA3_XLPLUS,
       parameterGroup: this.parameterGroup,
       rebootForParameterChanges: true,
     });
@@ -131,6 +124,6 @@ describeEngineDefaultParams.expect(integ.ExpectedResult.objectLike({
     Match.objectLike({ ParameterName: 'require_ssl', ParameterValue: 'false' }),
     Match.objectLike({ ParameterName: 'search_path', ParameterValue: '$user, public' }),
     Match.objectLike({ ParameterName: 'statement_timeout', ParameterValue: '0' }),
-    Match.objectLike({ ParameterName: 'wlm_json_configuration', ParameterValue: '[{"auto_wlm":true}]' }),
+    Match.objectLike({ ParameterName: 'wlm_json_configuration', ParameterValue: '[{\"auto_wlm\":true}]' }),
   ]),
 }));

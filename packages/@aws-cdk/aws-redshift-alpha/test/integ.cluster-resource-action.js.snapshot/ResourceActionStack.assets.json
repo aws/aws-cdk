@@ -1,18 +1,17 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "b4212c44bcc362b6e1c11171647d5f1d651ab96b87a285dacd47eb7ed0f99305": {
+    "c901bcda1be09c70616d0821a1ca78189c99325027bd3e846e83af4d2f3f15cd": {
       "displayName": "ResourceActionStack Template",
       "source": {
         "path": "ResourceActionStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456789012-us-east-1": {
-          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "objectKey": "b4212c44bcc362b6e1c11171647d5f1d651ab96b87a285dacd47eb7ed0f99305.json",
-          "region": "us-east-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
+        "current_account-current_region-296851af": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c901bcda1be09c70616d0821a1ca78189c99325027bd3e846e83af4d2f3f15cd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }

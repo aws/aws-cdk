@@ -13,7 +13,11 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:iam::",
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
            {
             "Ref": "AWS::AccountId"
            },
@@ -613,9 +617,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/Table/Resource/Provider)",
     "Environment": {
@@ -787,9 +791,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "60d6644ca7559903aa3a4516f84720a5f2cc1310aa4f456b1aad45a0c1e28046.zip"
+     "S3Key": "9498e6702ce6c03da3fdca3a790be8758bfbbf930b64bdbc9eb49af74dcf49c5.zip"
     },
     "Handler": "index.handler",
     "Role": {

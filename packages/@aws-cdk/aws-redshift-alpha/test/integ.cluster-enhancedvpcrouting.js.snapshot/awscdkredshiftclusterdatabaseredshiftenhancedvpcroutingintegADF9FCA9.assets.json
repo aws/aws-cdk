@@ -1,16 +1,16 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "efb029297de21fcaef50ff77a64525c7b10345c38e6f26482cdc476b58259a97": {
+    "76fce6c3489f384afabcc253170ff03dea6d99598c2addb56fbf1b5ead1a0b3d": {
       "displayName": "awscdkredshiftclusterdatabaseredshiftenhancedvpcroutingintegADF9FCA9 Template",
       "source": {
         "path": "awscdkredshiftclusterdatabaseredshiftenhancedvpcroutingintegADF9FCA9.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-afcb1738": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "efb029297de21fcaef50ff77a64525c7b10345c38e6f26482cdc476b58259a97.json",
+          "objectKey": "76fce6c3489f384afabcc253170ff03dea6d99598c2addb56fbf1b5ead1a0b3d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

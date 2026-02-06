@@ -18,8 +18,15 @@
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.0.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -119,8 +126,15 @@
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.32.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -217,112 +231,18 @@
     "VPCPublicSubnet2RouteTableAssociation5A808732"
    ]
   },
-  "VPCPublicSubnet3Subnet631C5E25": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.64.0/19",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCPublicSubnet3RouteTable98AE0E14": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCPublicSubnet3RouteTableAssociation427FE0C6": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
-    },
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet3Subnet631C5E25"
-    }
-   }
-  },
-  "VPCPublicSubnet3DefaultRouteA0D29D46": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
-    },
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
-    }
-   },
-   "DependsOn": [
-    "VPCVPCGW99B986DC"
-   ]
-  },
-  "VPCPublicSubnet3EIPAD4BC883": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3"
-     }
-    ]
-   }
-  },
-  "VPCPublicSubnet3NATGatewayD3048F5C": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "VPCPublicSubnet3EIPAD4BC883",
-      "AllocationId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet3Subnet631C5E25"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3"
-     }
-    ]
-   },
-   "DependsOn": [
-    "VPCPublicSubnet3DefaultRouteA0D29D46",
-    "VPCPublicSubnet3RouteTableAssociation427FE0C6"
-   ]
-  },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.96.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -383,8 +303,15 @@
   "VPCPrivateSubnet2SubnetCFCDAA7A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.128.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -439,68 +366,6 @@
     },
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-    }
-   }
-  },
-  "VPCPrivateSubnet3Subnet3EDCD457": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.160.0/19",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCPrivateSubnet3RouteTable192186F8": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCPrivateSubnet3RouteTableAssociationC28D144E": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet3RouteTable192186F8"
-    },
-    "SubnetId": {
-     "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
-    }
-   }
-  },
-  "VPCPrivateSubnet3DefaultRoute27F311AE": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "VPCPublicSubnet3NATGatewayD3048F5C"
-    },
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet3RouteTable192186F8"
     }
    }
   },
@@ -586,9 +451,6 @@
      },
      {
       "Ref": "VPCPublicSubnet2Subnet74179F39"
-     },
-     {
-      "Ref": "VPCPublicSubnet3Subnet631C5E25"
      }
     ]
    },

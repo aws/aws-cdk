@@ -1,16 +1,16 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "61ca0b6c07fe1c93c815f8adacb6d33d05cc776eb9cda47c27ec032686c4db46": {
+    "d779015aded9cbd0438e73ac7798969b8e318045a689b3f569e4ada78e3f0234": {
       "displayName": "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7 Template",
       "source": {
         "path": "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-f11ed3fc": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "61ca0b6c07fe1c93c815f8adacb6d33d05cc776eb9cda47c27ec032686c4db46.json",
+          "objectKey": "d779015aded9cbd0438e73ac7798969b8e318045a689b3f569e4ada78e3f0234.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
