@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "50.0.0",
   "testCases": {
     "integ.service-ecr-public": {
       "stacks": [
@@ -10,5 +10,6 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1101.0"
 }

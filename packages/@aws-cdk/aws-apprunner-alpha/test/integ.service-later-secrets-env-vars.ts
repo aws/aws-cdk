@@ -31,6 +31,7 @@ new cdk.CfnOutput(stack, 'URL9', { value: `https://${service9.serviceUrl}` });
 
 new integ.IntegTest(app, 'AppRunnerLaterSecretsEnvVars', {
   testCases: [stack],
+  regions: ['ap-northeast-1', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2', 'eu-central-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'us-east-1', 'us-east-2', 'us-west-2'],
 });
 
 app.synth();
