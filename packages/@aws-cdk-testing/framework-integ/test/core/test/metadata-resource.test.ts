@@ -1,6 +1,7 @@
 import { constructAnalyticsFromScope } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { localCdkVersion } from './util';
-import { App, NestedStack, Stack, Stage, IPolicyValidationPluginBeta1, PolicyViolationBeta1, PolicyValidationPluginReportBeta1, IPolicyValidationContextBeta1 } from 'aws-cdk-lib/core';
+import type { IPolicyValidationPluginBeta1, PolicyViolationBeta1, PolicyValidationPluginReportBeta1, IPolicyValidationContextBeta1 } from 'aws-cdk-lib/core';
+import { App, NestedStack, Stack, Stage } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');

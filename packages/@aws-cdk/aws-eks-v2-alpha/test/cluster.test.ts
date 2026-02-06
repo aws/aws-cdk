@@ -1907,7 +1907,7 @@ describe('cluster', () => {
 
       // we don't attach vpc config in case endpoint is public only, regardless of whether
       // the vpc has private subnets or not.
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).allResourcesProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
@@ -1925,7 +1925,7 @@ describe('cluster', () => {
 
       // we don't attach vpc config in case endpoint is public only, regardless of whether
       // the vpc has private subnets or not.
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).allResourcesProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
@@ -1975,7 +1975,7 @@ describe('cluster', () => {
 
       // we don't have private subnets, but we don't need them since public access
       // is not restricted.
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).allResourcesProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
@@ -2580,6 +2580,26 @@ describe('cluster', () => {
             },
           },
         ],
+      });
+    });
+
+    test('cluster can grantAccess with accessEntryType', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+      });
+      const nodeRole = new iam.Role(stack, 'NodeRole', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
+
+      // WHEN
+      cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], { accessEntryType: eks.AccessEntryType.EC2 });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        PrincipalArn: { 'Fn::GetAtt': ['NodeRoleB5643E21', 'Arn'] },
+        Type: 'EC2',
+        AccessPolicies: [],
       });
     });
   });

@@ -4,29 +4,40 @@ import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack, UnscopedValidationError, FeatureFlags } from 'aws-cdk-lib/core';
+import type { IResource, Duration, ArnComponents } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
-import { Construct, Node } from 'constructs';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import * as YAML from 'yaml';
-import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
-import { IAddon, Addon } from './addon';
-import { AlbController, AlbControllerOptions } from './alb-controller';
-import { FargateProfile, FargateProfileOptions } from './fargate-profile';
-import { HelmChart, HelmChartOptions } from './helm-chart';
+import type { IAccessPolicy, IAccessEntry, AccessEntryType } from './access-entry';
+import { AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
+import type { IAddon } from './addon';
+import { Addon } from './addon';
+import type { AlbControllerOptions } from './alb-controller';
+import { AlbController } from './alb-controller';
+import type { FargateProfileOptions } from './fargate-profile';
+import { FargateProfile } from './fargate-profile';
+import type { HelmChartOptions } from './helm-chart';
+import { HelmChart } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
-import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
+import type { KubernetesManifestOptions } from './k8s-manifest';
+import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import type { IKubectlProvider, KubectlProviderOptions } from './kubectl-provider';
+import { KubectlProvider } from './kubectl-provider';
+import type { NodegroupOptions } from './managed-nodegroup';
+import { Nodegroup } from './managed-nodegroup';
 import { OpenIdConnectProvider, OidcProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
-import { ServiceAccount, ServiceAccountOptions } from './service-account';
+import type { ServiceAccountOptions } from './service-account';
+import { ServiceAccount } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -917,6 +928,35 @@ export interface ServiceLoadBalancerAddressOptions {
 export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
+ * Internal helper interface for adding access entries to a cluster.
+ */
+interface AddAccessEntryOptions {
+  readonly id: string;
+  readonly principal: string;
+  readonly policies: IAccessPolicy[];
+  readonly accessEntryType?: AccessEntryType;
+}
+
+/**
+ * Options for granting access to a cluster.
+ */
+export interface GrantAccessOptions {
+  /**
+   * The type of the access entry.
+   *
+   * Specify `AccessEntryType.EC2` for EKS Auto Mode node roles,
+   * `AccessEntryType.HYBRID_LINUX` for EKS Hybrid Nodes, or
+   * `AccessEntryType.HYPERPOD_LINUX` for SageMaker HyperPod.
+   *
+   * Note that EC2, HYBRID_LINUX, and HYPERPOD_LINUX types cannot
+   * have access policies attached per AWS EKS API constraints.
+   *
+   * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
+   */
+  readonly accessEntryType?: AccessEntryType;
+}
+
+/**
  * A Cluster represents a managed Kubernetes Service (EKS)
  *
  * This is a fully managed cluster of API Servers (control-plane)
@@ -1366,10 +1406,16 @@ export class Cluster extends ClusterBase {
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
    * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM principal.
+   * @param options - Additional options for granting access.
    */
   @MethodMetadata()
-  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[]) {
-    this.addToAccessEntry(id, principal, accessPolicies);
+  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[], options?: GrantAccessOptions) {
+    this.addToAccessEntry({
+      id,
+      principal,
+      policies: accessPolicies,
+      accessEntryType: options?.accessEntryType,
+    });
   }
 
   /**
@@ -1653,24 +1699,24 @@ export class Cluster extends ClusterBase {
    * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
    * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
    *
-   * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
-   * @param policies - An array of access policies to be associated with the principal.
+   * @param props - Options for adding the access entry.
    *
    * @throws {Error} If the uniqueName generated for the new access entry is not unique.
    *
    * @returns {void}
    */
-  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
-    const entry = this.accessEntries.get(principal);
+  private addToAccessEntry(props: AddAccessEntryOptions) {
+    const entry = this.accessEntries.get(props.principal);
     if (entry) {
-      (entry as AccessEntry).addAccessPolicies(policies);
+      (entry as AccessEntry).addAccessPolicies(props.policies);
     } else {
-      const newEntry = new AccessEntry(this, id, {
-        principal,
+      const newEntry = new AccessEntry(this, props.id, {
+        principal: props.principal,
         cluster: this,
-        accessPolicies: policies,
+        accessPolicies: props.policies,
+        accessEntryType: props.accessEntryType,
       });
-      this.accessEntries.set(principal, newEntry);
+      this.accessEntries.set(props.principal, newEntry);
     }
   }
 

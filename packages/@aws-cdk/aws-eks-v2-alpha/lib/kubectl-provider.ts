@@ -1,12 +1,15 @@
 import * as path from 'path';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Duration, CfnCondition, Fn, Aws, Size } from 'aws-cdk-lib/core';
+import type { Size } from 'aws-cdk-lib/core';
+import { Duration, CfnCondition, Fn, Aws } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCliLayer } from 'aws-cdk-lib/lambda-layer-awscli';
-import { Construct, IConstruct } from 'constructs';
-import { Cluster, ICluster } from './cluster';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster } from './cluster';
 
 export interface KubectlProviderOptions {
   /**
@@ -216,7 +219,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
-      vpc: props.cluster.vpc,
+      vpc: vpc,
       vpcSubnets: privateSubnets,
       securityGroups,
     });
