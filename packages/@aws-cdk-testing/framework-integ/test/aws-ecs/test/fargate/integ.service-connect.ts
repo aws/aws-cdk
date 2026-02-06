@@ -6,6 +6,9 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 class ServiceConnect extends cdk.Stack {
+  public readonly clusterName: string;
+  public readonly serviceNameWithAccessLog: string;
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
@@ -16,12 +19,14 @@ class ServiceConnect extends cdk.Stack {
       },
     });
 
+    this.clusterName = cluster.clusterName;
+
     const td = new ecs.FargateTaskDefinition(this, 'TaskDef', {
       cpu: 1024,
       memoryLimitMiB: 2048,
     });
 
-    td.addContainer('container', {
+    td.addContainer('Container', {
       containerName: 'web',
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       portMappings: [
@@ -36,7 +41,7 @@ class ServiceConnect extends cdk.Stack {
       }),
     });
 
-    new ecs.FargateService(this, 'svc', {
+    new ecs.FargateService(this, 'Svc', {
       taskDefinition: td,
       cluster,
       serviceConnectConfiguration: {
@@ -53,11 +58,11 @@ class ServiceConnect extends cdk.Stack {
       },
     });
 
-    const ns = new cloudmap.HttpNamespace(this, 'ns', {
+    const ns = new cloudmap.HttpNamespace(this, 'Ns', {
       name: 'whistler.com',
     });
 
-    const svc2 = new ecs.FargateService(this, 'svc-two', {
+    const svc2 = new ecs.FargateService(this, 'SvcTwo', {
       taskDefinition: td,
       cluster,
     });
@@ -75,7 +80,16 @@ class ServiceConnect extends cdk.Stack {
         },
       ],
       namespace: ns.namespaceArn,
+      logDriver: ecs.LogDrivers.awsLogs({
+        streamPrefix: 'sc-svc2',
+      }),
+      accessLogConfiguration: {
+        format: ecs.ServiceConnectAccessLogFormat.JSON,
+        includeQueryParameters: true,
+      },
     });
+
+    this.serviceNameWithAccessLog = svc2.serviceName;
   }
 }
 
@@ -85,6 +99,8 @@ const app = new cdk.App({
   },
 });
 const stack = new ServiceConnect(app, 'aws-ecs-service-connect');
+
+cdk.RemovalPolicies.of(stack).apply(cdk.RemovalPolicy.DESTROY);
 
 const test = new integ.IntegTest(app, 'ServiceConnect', {
   testCases: [stack],
@@ -111,5 +127,3 @@ listNamespaceCall.expect(integ.ExpectedResult.objectLike({
     }),
   ]),
 }));
-
-app.synth();
