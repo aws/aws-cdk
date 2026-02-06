@@ -234,3 +234,32 @@ new QueueProcessingFargateService(stack, 'QueueProcessingFargateService', {
   queue
 });
 ```
+
+### Part 4: Create `QueueProcessingManagedInstancesServiceProps` interface and `QueueProcessingManagedInstancesService` construct
+
+An example use case:
+```ts
+// Create the vpc and cluster used by the queue processing service
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const cluster = new ecs.Cluster(stack, 'ManagedInstancesCluster', { vpc });
+const instanceSecurityGroup = new ec2.SecurityGroup(stack, 'ManagedInstancesSecurityGroup', { vpc });
+const queue = new sqs.Queue(stack, 'ProcessingQueue', {
+  QueueName: 'ManagedInstancesEventQueue'
+});
+
+const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'ManagedInstancesCapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [instanceSecurityGroup],
+});
+cluster.addManagedInstancesCapacityProvider(capacityProvider);
+
+// Create the queue processing service
+new ecsPatterns.QueueProcessingManagedInstancesService(stack, 'QueueProcessingManagedInstancesService', {
+  cluster,
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  desiredTaskCount: 2,
+  maxScalingCapacity: 5,
+  queue,
+  managedInstancesCapacityProvider: capacityProvider,
+});
+```
