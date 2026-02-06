@@ -1380,6 +1380,17 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - This DB Cluster is not a read replica
    */
   readonly replicationSourceIdentifier?: string;
+
+  /**
+   * Whether to use RDS native integration with AWS Secrets Manager for master user password management.
+   *
+   * When enabled, RDS generates and manages the master user password in Secrets Manager.
+   * Cannot be used together with credentials containing a password.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html
+   */
+  readonly manageMasterUserPassword?: boolean;
 }
 
 /**
@@ -1482,23 +1493,73 @@ export class DatabaseCluster extends DatabaseClusterNew {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    // Validate manageMasterUserPassword conflicts with unsupported credential properties
+    if (props.manageMasterUserPassword) {
+      const unsupportedProps = [
+        props.credentials?.excludeCharacters && 'excludeCharacters',
+        props.credentials?.password && 'password',
+        props.credentials?.replicaRegions && 'replicaRegions',
+        props.credentials?.secret && 'secret',
+        props.credentials?.secretName && 'secretName',
+        props.credentials?.usernameAsString && 'usernameAsString',
+      ].filter(Boolean);
 
-    const canHaveCredentials = props.replicationSourceIdentifier == undefined;
+      if (unsupportedProps.length > 0) {
+        throw new ValidationError(
+          'When manageMasterUserPassword is enabled, only \'username\' and \'encryptionKey\' are allowed in credentials. ' +
+          `Found unsupported properties: ${unsupportedProps.join(', ')}.`,
+          this,
+        );
+      }
+    }
 
+    const canHaveCredentials = props.replicationSourceIdentifier === undefined;
+
+    // Prepare credential-specific configuration
+    let secret: secretsmanager.ISecret | undefined;
+    let masterUsername: string | undefined;
+    let masterUserPassword: string | undefined;
+    let manageMasterUserPassword: boolean | undefined;
+    let masterUserSecret: { kmsKeyId: string } | undefined;
+
+    if (props.manageMasterUserPassword) {
+      // RDS-managed approach: RDS creates and manages the Secret automatically
+      masterUsername = canHaveCredentials
+        ? (props.credentials?.username ?? props.engine.defaultUsername ?? 'admin')
+        : undefined;
+      manageMasterUserPassword = canHaveCredentials ? props.manageMasterUserPassword : undefined;
+      masterUserSecret = props.credentials?.encryptionKey && canHaveCredentials
+        ? { kmsKeyId: props.credentials.encryptionKey.keyId }
+        : undefined;
+    } else {
+      // Standard approach: CDK creates and manages the Secret via DatabaseSecret
+      const credentials = renderCredentials(this, props.engine, props.credentials);
+      secret = credentials.secret;
+      masterUsername = canHaveCredentials ? credentials.username : undefined;
+      masterUserPassword = canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined;
+    }
+
+    // Create the cluster with the prepared configuration
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
-      // Admin
-      masterUsername: canHaveCredentials ? credentials.username : undefined,
-      masterUserPassword: canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined,
+      masterUsername,
+      masterUserPassword,
+      manageMasterUserPassword,
+      masterUserSecret,
       replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
-    if (secret) {
+    // Set up the secret reference
+    if (props.manageMasterUserPassword) {
+      this.secret = secretsmanager.Secret.fromSecretCompleteArn(
+        this,
+        'ManagedSecret',
+        cluster.attrMasterUserSecretSecretArn,
+      );
+    } else if (secret) {
       this.secret = secret.attach(this);
     }
 
