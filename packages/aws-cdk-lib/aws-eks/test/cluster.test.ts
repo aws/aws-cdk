@@ -3867,7 +3867,7 @@ describe('cluster', () => {
             cidrs: remoteNodeNetworkCidrs,
           },
         ],
-        kubectlLayer: undefined as any,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       // THEN
@@ -3903,7 +3903,7 @@ describe('cluster', () => {
             cidrs: remotePodNetworkCidrs,
           },
         ],
-        kubectlLayer: undefined as any,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       // THEN
@@ -3946,7 +3946,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`Remote node network CIDR block ${overlappingCidr} should not overlap with remote pod network CIDR block ${overlappingCidr}`);
     });
@@ -3970,7 +3970,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs2,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote node network #1 should not overlap with CIDR block ${overlappingCidr} in remote node network #2`);
     });
@@ -4000,7 +4000,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs2,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote pod network #1 should not overlap with CIDR block ${overlappingCidr} in remote pod network #2`);
     });
@@ -4020,7 +4020,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
     });
@@ -4046,9 +4046,137 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote pod network #1`);
+    });
+
+    test('skips validation for unresolved tokens in remote node networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedCidr = cdk.Fn.importValue('NodeCidr');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedCidr, '10.0.0.0/16'],
+          },
+        ],
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr' }), '10.0.0.0/16'],
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test('skips validation for unresolved tokens in remote pod networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedNodeCidr = cdk.Fn.importValue('NodeCidr');
+      const unresolvedPodCidr = cdk.Fn.importValue('PodCidr');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedNodeCidr],
+          },
+        ],
+        remotePodNetworks: [
+          {
+            cidrs: [unresolvedPodCidr, '192.168.0.0/16'],
+          },
+        ],
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr' })],
+              },
+            ],
+            remotePodNetworks: [
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'PodCidr' }), '192.168.0.0/16'],
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test('validates resolved CIDRs even when tokens are present', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedCidr = cdk.Fn.importValue('NodeCidr');
+      const overlappingCidr = '172.16.0.0/12';
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: [unresolvedCidr, overlappingCidr, overlappingCidr],
+            },
+          ],
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        });
+      }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
+    });
+
+    test('skips cross-network validation when all CIDRs are tokens', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedNodeCidr1 = cdk.Fn.importValue('NodeCidr1');
+      const unresolvedNodeCidr2 = cdk.Fn.importValue('NodeCidr2');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedNodeCidr1],
+          },
+          {
+            cidrs: [unresolvedNodeCidr2],
+          },
+        ],
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr1' })],
+              },
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr2' })],
+              },
+            ],
+          },
+        },
+      });
     });
   });
 });

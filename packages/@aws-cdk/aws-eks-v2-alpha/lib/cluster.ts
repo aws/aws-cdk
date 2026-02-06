@@ -8,6 +8,7 @@ import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import type { IResource, Duration, ArnComponents } from 'aws-cdk-lib/core';
 import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags } from 'aws-cdk-lib/core';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -433,6 +434,19 @@ export interface ClusterCommonOptions {
    * If not defined, kubectl provider will not be created by default.
    */
   readonly kubectlProviderOptions?: KubectlProviderOptions;
+
+  /**
+   * IPv4 CIDR blocks defining the expected address range of hybrid nodes
+   * that will join the cluster.
+   * @default - none
+   */
+  readonly remoteNodeNetworks?: RemoteNodeNetwork[];
+
+  /**
+   * IPv4 CIDR blocks for Pods running Kubernetes webhooks on hybrid nodes.
+   * @default - none
+   */
+  readonly remotePodNetworks?: RemotePodNetwork[];
 }
 
 /**
@@ -525,6 +539,26 @@ export class EndpointAccess {
       publicCidrs: cidr,
     });
   }
+}
+
+/**
+ * Remote network configuration for hybrid nodes
+ */
+export interface RemoteNodeNetwork {
+  /**
+   * IPv4 CIDR blocks for the remote node network
+   */
+  readonly cidrs: string[];
+}
+
+/**
+ * Remote network configuration for pods on hybrid nodes
+ */
+export interface RemotePodNetwork {
+  /**
+   * IPv4 CIDR blocks for the remote pod network
+   */
+  readonly cidrs: string[];
 }
 
 /**
@@ -1150,6 +1184,8 @@ export class Cluster extends ClusterBase {
 
     this.tagSubnets();
 
+    this.validateRemoteNetworkConfig(props);
+
     // this is the role used by EKS when interacting with AWS resources
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
@@ -1261,6 +1297,14 @@ export class Cluster extends ClusterBase {
           enabled: autoModeEnabled,
         },
       },
+      ...(props.remoteNodeNetworks ? {
+        remoteNetworkConfig: {
+          remoteNodeNetworks: props.remoteNodeNetworks,
+          ...(props.remotePodNetworks ? {
+            remotePodNetworks: props.remotePodNetworks,
+          }: {}),
+        },
+      } : {}),
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
@@ -1677,6 +1721,81 @@ export class Cluster extends ClusterBase {
     }
 
     return autoModeEnabled;
+  }
+
+  private validateRemoteNetworkConfig(props: ClusterProps) {
+    if (!props.remoteNodeNetworks) {
+      if (props.remotePodNetworks) {
+        throw new ValidationError('remotePodNetworks cannot be specified without remoteNodeNetworks also being specified', this);
+      }
+      return;
+    }
+
+    this.validateNetworkCidrs(props.remoteNodeNetworks, 'node');
+
+    if (!props.remotePodNetworks) return;
+
+    this.validateNetworkCidrs(props.remotePodNetworks, 'pod');
+    this.validateCrossNetworkOverlap(props.remoteNodeNetworks, props.remotePodNetworks);
+  }
+
+  /**
+   * Validates all CIDR rules for a single network type (within same network + across networks).
+   */
+  private validateNetworkCidrs(networks: RemoteNodeNetwork[] | RemotePodNetwork[], networkType: 'node' | 'pod') {
+    const resolvedCidrs = networks.map(n => n.cidrs.filter(c => !Token.isUnresolved(c)));
+
+    // Within same network
+    resolvedCidrs.forEach((cidrs, index) => {
+      for (let i = 0; i < cidrs.length; i++) {
+        for (let j = i + 1; j < cidrs.length; j++) {
+          if (ec2.NetworkUtils.validateCidrPairOverlap(cidrs[i], cidrs[j])) {
+            throw new ValidationError(
+              `CIDR ${cidrs[i]} should not overlap with another CIDR in remote ${networkType} network #${index + 1}`,
+              this,
+            );
+          }
+        }
+      }
+    });
+
+    // Across different networks
+    for (let i = 0; i < resolvedCidrs.length; i++) {
+      if (resolvedCidrs[i].length === 0) continue;
+      for (let j = i + 1; j < resolvedCidrs.length; j++) {
+        if (resolvedCidrs[j].length === 0) continue;
+        const [overlap, cidr1, cidr2] = ec2.NetworkUtils.validateCidrBlocksOverlap(resolvedCidrs[i], resolvedCidrs[j]);
+        if (overlap) {
+          throw new ValidationError(
+            `CIDR block ${cidr1} in remote ${networkType} network #${i + 1} should not overlap with CIDR block ${cidr2} in remote ${networkType} network #${j + 1}`,
+            this,
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Validates that node network CIDRs do not overlap with pod network CIDRs.
+   */
+  private validateCrossNetworkOverlap(nodeNetworks: RemoteNodeNetwork[], podNetworks: RemotePodNetwork[]) {
+    for (const nodeNetwork of nodeNetworks) {
+      const nodeCidrs = nodeNetwork.cidrs.filter(c => !Token.isUnresolved(c));
+      if (nodeCidrs.length === 0) continue;
+
+      for (const podNetwork of podNetworks) {
+        const podCidrs = podNetwork.cidrs.filter(c => !Token.isUnresolved(c));
+        if (podCidrs.length === 0) continue;
+
+        const [overlap, nodeCidr, podCidr] = ec2.NetworkUtils.validateCidrBlocksOverlap(nodeCidrs, podCidrs);
+        if (overlap) {
+          throw new ValidationError(
+            `Remote node network CIDR block ${nodeCidr} should not overlap with remote pod network CIDR block ${podCidr}`,
+            this,
+          );
+        }
+      }
+    }
   }
 
   private addNodePoolRole(id: string): iam.Role {
