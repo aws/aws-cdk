@@ -42,6 +42,19 @@ export abstract class ListenerCondition {
   }
 
   /**
+   * Create a regex path-pattern listener rule condition
+   *
+   * Path patterns support regular expressions that allow for more flexible matching.
+   * For example, `^/api/?.*$` matches both `/api` and `/api/*`.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-condition-types.html#path-conditions
+   * @param values Regex path patterns
+   */
+  public static regexPathPatterns(values: string[]): ListenerCondition {
+    return new RegexPathPatternListenerCondition(values);
+  }
+
+  /**
    * Create a query-string listener rule condition
    *
    * @param values Query string key/value pairs
@@ -153,6 +166,27 @@ class PathPatternListenerCondition extends ListenerCondition {
       field: 'path-pattern',
       pathPatternConfig: {
         values: this.values,
+      },
+    };
+  }
+}
+
+/**
+ * Regex path pattern config of the listener rule condition
+ */
+class RegexPathPatternListenerCondition extends ListenerCondition {
+  constructor(public readonly values: string[]) {
+    super();
+    if (values && values.length > 5) {
+      throw new UnscopedValidationError("A rule can only have '5' condition values");
+    }
+  }
+
+  public renderRawCondition(): any {
+    return {
+      field: 'path-pattern',
+      pathPatternConfig: {
+        regexValues: this.values,
       },
     };
   }
