@@ -20,9 +20,9 @@ export class CfnThingApplicationLogs {
   /**
    * Send logs to a destination with a specified arn
    */
-  public toDestination(destinationArn: string): CfnThingLogsMixin {
+  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.DestinationLogsDelivery(destinationArn));
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.DestinationLogsDelivery(destination));
     }
   }
 
@@ -68,9 +68,9 @@ export class CfnThingAccessLogs {
   /**
    * Send logs to a destination with a specified arn
    */
-  public toDestination(destinationArn: string): CfnThingLogsMixin {
+  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.DestinationLogsDelivery(destinationArn));
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.DestinationLogsDelivery(destination));
     }
   }
 

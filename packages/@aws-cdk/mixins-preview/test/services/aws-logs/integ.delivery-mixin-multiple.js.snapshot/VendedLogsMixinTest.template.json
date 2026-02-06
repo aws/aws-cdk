@@ -70,7 +70,7 @@
     }
    }
   },
-  "EventBusCdkDest094bf5afe7c2f993f7c3b692fa98e7b3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestEventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CAEA2661EFDeliveryD0E9AD9A": {
+  "EventBusCdkDestVendedLogsMixinTestDeliveryDestination409399E9InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestEventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CAEA2661EFDeliveryA29B2652": {
    "Type": "AWS::Logs::Delivery",
    "Properties": {
     "DeliveryDestinationArn": {

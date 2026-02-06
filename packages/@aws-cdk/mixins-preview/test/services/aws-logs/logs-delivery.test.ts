@@ -1240,29 +1240,13 @@ describe('Destination Delivery', () => {
     source = new Bucket(stack, 'SourceBucket');
   });
 
-  test('creates a delivery connection to an existing delivery destination', () => {
-    const destinationArn = 'arn:aws:logs:us-east-1:123456789012:delivery-destination:my-destination';
-
-    const destLogs = new DestinationLogsDelivery(destinationArn);
-    destLogs.bind(source, logType, source.bucketArn);
-
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
-      DeliveryDestinationArn: destinationArn,
-      DeliverySourceName: {
-        Ref: 'SourceBucketCDKSourceACCESSLOGSSourceBucket3DC18173',
-      },
-    });
-  });
-
   test('creates delivery connection with existing delivery destination resource', () => {
     const destination = new CfnDeliveryDestination(stack, 'Dest', {
       name: 'my-cool-xray-dest',
       deliveryDestinationType: 'XRAY',
     });
 
-    const destLogs = new DestinationLogsDelivery(destination.attrArn);
+    const destLogs = new DestinationLogsDelivery(destination);
     destLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
@@ -1277,20 +1261,6 @@ describe('Destination Delivery', () => {
     });
   });
 
-  test('reuses delivery source when binding same source multiple times', () => {
-    const destinationArn1 = 'arn:aws:logs:us-east-1:123456789012:delivery-destination:destination-1';
-    const destinationArn2 = 'arn:aws:logs:us-east-1:123456789012:delivery-destination:destination-2';
-
-    const destLogs1 = new DestinationLogsDelivery(destinationArn1);
-    destLogs1.bind(source, logType, source.bucketArn);
-
-    const destLogs2 = new DestinationLogsDelivery(destinationArn2);
-    destLogs2.bind(source, logType, source.bucketArn);
-
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
-  });
-
   test('reuses delivery source when binding same source multiple times and destination arn is unresolved', () => {
     const destination1 = new CfnDeliveryDestination(stack, 'Dest1', {
       name: 'my-cool-xray-dest-1',
@@ -1302,10 +1272,10 @@ describe('Destination Delivery', () => {
       deliveryDestinationType: 'XRAY',
     });
 
-    const destLogs1 = new DestinationLogsDelivery(destination1.attrArn);
+    const destLogs1 = new DestinationLogsDelivery(destination1);
     destLogs1.bind(source, logType, source.bucketArn);
 
-    const destLogs2 = new DestinationLogsDelivery(destination2.attrArn);
+    const destLogs2 = new DestinationLogsDelivery(destination2);
     destLogs2.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
@@ -1313,15 +1283,22 @@ describe('Destination Delivery', () => {
   });
 
   test('able to make multiple deliveries to different destinations', () => {
-    const destinationArn1 = 'arn:aws:logs:us-east-1:123456789012:delivery-destination:destination-1';
-    const destinationArn2 = 'arn:aws:logs:us-east-1:123456789012:delivery-destination:destination-2';
+    const destination1 = new CfnDeliveryDestination(stack, 'Dest1', {
+      name: 'my-cool-xray-dest-1',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destination2 = new CfnDeliveryDestination(stack, 'Dest2', {
+      name: 'my-cool-xray-dest-2',
+      deliveryDestinationType: 'XRAY',
+    });
 
     const source2 = new Bucket(stack, 'SourceBucket2');
 
-    const destLogs1 = new DestinationLogsDelivery(destinationArn1);
+    const destLogs1 = new DestinationLogsDelivery(destination1);
     destLogs1.bind(source, logType, source.bucketArn);
 
-    const destLogs2 = new DestinationLogsDelivery(destinationArn2);
+    const destLogs2 = new DestinationLogsDelivery(destination2);
     destLogs2.bind(source2, logType, source2.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 2);

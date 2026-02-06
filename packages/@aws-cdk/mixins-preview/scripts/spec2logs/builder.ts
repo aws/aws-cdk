@@ -146,8 +146,8 @@ class LogsHelper extends ClassType {
     });
 
     const paramDest = toDest.addParameter({
-      name: 'destinationArn',
-      type: Type.STRING,
+      name: 'destination',
+      type: CDK_INTERFACES.IDeliveryDestinationRef,
     });
 
     toDest.addBody(stmt.block(

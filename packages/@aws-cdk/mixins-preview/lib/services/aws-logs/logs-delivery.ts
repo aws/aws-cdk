@@ -1,4 +1,4 @@
-import { Arn, ArnFormat, Aws, Names, Stack, Tags, Token } from 'aws-cdk-lib/core';
+import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
 import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -9,7 +9,6 @@ import { ConstructSelector, Mixins } from '../../core';
 import * as xray from '../aws-xray/policy';
 import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
 import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The individual elements of a logs delivery integration.
@@ -482,9 +481,9 @@ export class DestinationLogsDelivery implements ILogsDelivery {
   /**
    * Creates a new Destination delivery.
    */
-  private readonly destinationArn: string;
-  constructor(destinationArn: string) {
-    this.destinationArn = destinationArn;
+  private readonly destination: logs.IDeliveryDestinationRef;
+  constructor(destination: logs.IDeliveryDestinationRef) {
+    this.destination = destination;
   }
 
   /**
@@ -492,12 +491,11 @@ export class DestinationLogsDelivery implements ILogsDelivery {
    */
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
-    const destName = Arn.split(this.destinationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
-    const uniqueName = destName && !Token.isUnresolved(destName) ? destName : `Dest${md5hash(this.destinationArn)}`;
+    const uniqueName = `Dest${Names.nodeUniqueId(this.destination.node)}`;
     const container = new Construct(scope, deliveryId(uniqueName, logType, scope, deliverySource));
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
-      deliveryDestinationArn: this.destinationArn,
+      deliveryDestinationArn: this.destination.deliveryDestinationRef.deliveryDestinationArn,
       deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
     });
 
