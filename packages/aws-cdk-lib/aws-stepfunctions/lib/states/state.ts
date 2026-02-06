@@ -552,12 +552,13 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render ItemProcessor in ASL JSON format
    */
-  protected renderItemProcessor(): any {
+  protected renderItemProcessor(topLevelQueryLanguage?: QueryLanguage): any {
     if (!this.processor) return undefined;
+    const queryLanguage = _getActualQueryLanguage(topLevelQueryLanguage, this.queryLanguage);
     return {
       ItemProcessor: {
         ...this.renderProcessorConfig(),
-        ...this.processor.toGraphJson(),
+        ...this.processor.toGraphJson(queryLanguage),
       },
     };
   }
