@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-bedrock-agentcore-runtime.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/138be1da40402620a60edd51f91247edd9eccf3130fc4733ffde8f9e61f8ecf9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6169289f1085523aa2429927421fe0d32a9ef620e6bb033422d8f21a617c8d9a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -135,12 +135,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime/TestRuntime/ExecutionRole/ImportExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime/TestRuntime/ExecutionRole/Resource": [
@@ -271,16 +265,16 @@
             "data": "TaggedEndpointB1B1CDE4"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime/V2Endpoint": [
+        "/aws-cdk-bedrock-agentcore-runtime/V1Endpoint2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime/V2Endpoint/Resource": [
+        "/aws-cdk-bedrock-agentcore-runtime/V1Endpoint2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "V2EndpointFFAF1748"
+            "data": "V1Endpoint2B3D8B4DA"
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction": [
@@ -296,8 +290,18 @@
         ],
         "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -322,12 +326,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/ServiceRole/Resource": [
@@ -416,10 +414,10 @@
             "data": "TaggedEndpointId"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime/V2EndpointId": [
+        "/aws-cdk-bedrock-agentcore-runtime/V1Endpoint2Id": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "V2EndpointId"
+            "data": "V1Endpoint2Id"
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime/BootstrapVersion": [
@@ -782,6 +780,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -813,16 +815,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -969,6 +961,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -980,12 +973,17 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

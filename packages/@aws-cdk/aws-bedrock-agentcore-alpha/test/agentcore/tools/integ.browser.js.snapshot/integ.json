@@ -5,9 +5,18 @@
       "stacks": [
         "aws-cdk-bedrock-agentcore-browser-1"
       ],
+      "regions": [
+        "us-west-2",
+        "eu-central-1",
+        "eu-west-1",
+        "eu-west-2",
+        "ap-northeast-1",
+        "ap-southeast-1",
+        "ap-southeast-2"
+      ],
       "assertionStack": "BedrockAgentCoreBrowser/DefaultTest/DeployAssert",
       "assertionStackName": "BedrockAgentCoreBrowserDefaultTestDeployAssertB840FB3F"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

@@ -25,7 +25,15 @@
           "Fn::Join": [
            "",
            [
-            "arn:aws:bedrock-agentcore:us-east-1:",
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
             {
              "Ref": "AWS::AccountId"
             },
@@ -109,9 +117,13 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:s3:::",
+           "arn:",
            {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            },
            "/*"
           ]
@@ -121,9 +133,13 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:s3:::",
+           "arn:",
            {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            }
           ]
          ]
@@ -258,7 +274,11 @@
        "Fn::Join": [
         "",
         [
-         "https://cognito-idp.us-east-1.amazonaws.com/",
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
          {
           "Ref": "TestGatewayUserPool545AA49A"
          },
@@ -403,7 +423,11 @@
       }
      }
     }
-   }
+   },
+   "DependsOn": [
+    "TestGatewayServiceRoleDefaultPolicyCFEDA895",
+    "TestGatewayServiceRole426CDA0F"
+   ]
   },
   "SmithyTargetF5FB3E32": {
    "Type": "AWS::BedrockAgentCore::GatewayTarget",
@@ -431,7 +455,7 @@
           [
            "s3://",
            {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            },
            "/986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c.json"
           ]
@@ -557,7 +581,11 @@
       }
      }
     }
-   }
+   },
+   "DependsOn": [
+    "TestGatewayServiceRoleDefaultPolicyCFEDA895",
+    "TestGatewayServiceRole426CDA0F"
+   ]
   }
  },
  "Outputs": {
