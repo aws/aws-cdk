@@ -21,6 +21,33 @@ import { AwsCliLayer } from '../../lambda-layer-awscli';
 const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
 
 /**
+ * Mapping of file patterns to content-encoding values.
+ *
+ * This allows specifying different Content-Encoding headers for different file types
+ * in a single bucket deployment.
+ */
+export interface ContentEncodingMapping {
+  /**
+   * File pattern to match (glob pattern).
+   *
+   * Examples:
+   * - `'*.br'` - matches all files ending with .br
+   * - `'*.gz'` - matches all files ending with .gz
+   * - `'assets/*.br'` - matches .br files in assets directory
+   */
+  readonly include: string;
+
+  /**
+   * Content-Encoding value to apply to matched files.
+   *
+   * Common values: 'br' (Brotli), 'gzip', 'compress', 'deflate', 'identity'
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
+   */
+  readonly encoding: string;
+}
+
+/**
  * Properties for `BucketDeployment`.
  */
 export interface BucketDeploymentProps {
@@ -207,6 +234,25 @@ export interface BucketDeploymentProps {
    */
   readonly contentEncoding?: string;
   /**
+   * Content-encoding metadata to apply based on file patterns.
+   *
+   * Each mapping specifies a file pattern and the Content-Encoding value to apply.
+   * Files matching multiple patterns will use the first matching pattern.
+   * Files not matching any pattern will use the `contentEncoding` property if specified.
+   *
+   * This is useful for serving pre-compressed static websites where different files
+   * have different compression formats (e.g., Brotli for `.br` files, Gzip for `.gz` files).
+   *
+   * @example
+   * contentEncodingByExtension: [
+   *   { include: '*.br', encoding: 'br' },
+   *   { include: '*.gz', encoding: 'gzip' },
+   * ]
+   *
+   * @default - No per-extension content encoding
+   */
+  readonly contentEncodingByExtension?: ContentEncodingMapping[];
+  /**
    * System-defined content-language metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
@@ -347,6 +393,9 @@ export class BucketDeployment extends Construct {
       throw new ValidationError('Vpc must be specified if useEfs is set', this);
     }
 
+    // Validate contentEncodingByExtension inputs
+    this.validateContentEncodingByExtension(props.contentEncodingByExtension, props.contentEncoding);
+
     this.destinationBucket = props.destinationBucket;
 
     const accessPointPath = '/lambda';
@@ -479,6 +528,7 @@ export class BucketDeployment extends Construct {
         Include: props.include,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
+        ContentEncodingByExtension: props.contentEncodingByExtension,
         DistributionId: props.distribution?.distributionRef.distributionId,
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
@@ -667,6 +717,87 @@ export class BucketDeployment extends Construct {
     const stack = cdk.Stack.of(scope);
     const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
     return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
+  }
+
+  /**
+   * Validates contentEncodingByExtension inputs for security and correctness.
+   *
+   * - Validates encoding values against standard HTTP Content-Encoding values (plus vendor extensions)
+   * - Validates include patterns don't contain dangerous shell characters
+   * - Rejects path traversal sequences with comprehensive detection
+   * - Warns when catch-all patterns are used with contentEncoding
+   */
+  private validateContentEncodingByExtension(mappings?: ContentEncodingMapping[], contentEncoding?: string): void {
+    if (!mappings || mappings.length === 0) {
+      return;
+    }
+
+    // Skip validation if the entire array is a token
+    if (cdk.Token.isUnresolved(mappings)) {
+      return;
+    }
+
+    const STANDARD_ENCODINGS = ['br', 'gzip', 'compress', 'deflate', 'identity', 'zstd', 'x-gzip', 'x-compress'];
+    // Block dangerous shell characters instead of allowlisting safe ones
+    const DANGEROUS_CHARS = /[;|&$`"'<>()!#\n\r\t\0]/;
+
+    for (const [index, mapping] of mappings.entries()) {
+      // Skip validation if the entire mapping object is a token
+      if (cdk.Token.isUnresolved(mapping)) {
+        continue;
+      }
+
+      // Validate include pattern
+      if (!cdk.Token.isUnresolved(mapping.include)) {
+        // Check for dangerous shell characters
+        if (DANGEROUS_CHARS.test(mapping.include)) {
+          throw new ValidationError(
+            `contentEncodingByExtension[${index}].include contains potentially dangerous characters. Got: '${mapping.include}'`,
+            this,
+          );
+        }
+
+        // Comprehensive path traversal detection: normalize and check segments
+        const normalizedPath = mapping.include.replace(/\\/g, '/').replace(/\/+/g, '/');
+        const pathSegments = normalizedPath.split('/').filter(s => s.length > 0);
+        if (pathSegments.includes('..')) {
+          throw new ValidationError(
+            `contentEncodingByExtension[${index}].include contains path traversal sequences. Got: '${mapping.include}'`,
+            this,
+          );
+        }
+      }
+
+      // Validate encoding value
+      if (!cdk.Token.isUnresolved(mapping.encoding)) {
+        const isStandard = STANDARD_ENCODINGS.includes(mapping.encoding.toLowerCase());
+        const isVendorExtension = /^x-[\w-]+$/i.test(mapping.encoding);
+
+        if (!isStandard && !isVendorExtension) {
+          cdk.Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-s3-deployment:nonStandardEncoding',
+            `contentEncodingByExtension[${index}].encoding uses non-standard value '${mapping.encoding}'. ` +
+            `Standard values are: ${STANDARD_ENCODINGS.join(', ')}`,
+          );
+        }
+      }
+    }
+
+    // Warn when catch-all patterns are used alongside contentEncoding
+    if (contentEncoding) {
+      const hasCatchAll = mappings.some(m =>
+        !cdk.Token.isUnresolved(m) &&
+        !cdk.Token.isUnresolved(m.include) &&
+        ['*', '**', '*.*'].includes(m.include.trim()),
+      );
+      if (hasCatchAll) {
+        cdk.Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-s3-deployment:catchAllWithContentEncoding',
+          'Both contentEncoding and a catch-all pattern in contentEncodingByExtension are specified. ' +
+          'The catch-all pattern will match all files, making the contentEncoding property ineffective.',
+        );
+      }
+    }
   }
 }
 

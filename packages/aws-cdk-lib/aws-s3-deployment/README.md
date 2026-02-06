@@ -301,6 +301,47 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
 });
 ```
 
+### Content-Encoding by File Extension
+
+When serving pre-compressed static websites, you often need different `Content-Encoding` headers
+for different file types. For example, `.br` files should have `Content-Encoding: br` (Brotli),
+while `.gz` files should have `Content-Encoding: gzip`.
+
+The `contentEncodingByExtension` property allows you to specify different Content-Encoding values
+based on file patterns:
+
+```ts
+declare const websiteBucket: s3.Bucket;
+
+new s3deploy.BucketDeployment(this, 'DeployCompressedWebsite', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: websiteBucket,
+  contentEncodingByExtension: [
+    { include: '*.br', encoding: 'br' },
+    { include: '*.gz', encoding: 'gzip' },
+  ],
+});
+```
+
+This is particularly useful when you have pre-compressed files with multiple compression formats
+and want browsers to correctly decompress them. Files not matching any pattern will not have
+a Content-Encoding header set (unless you also specify the `contentEncoding` property for a default).
+
+You can also use directory patterns:
+
+```ts
+declare const websiteBucket: s3.Bucket;
+
+new s3deploy.BucketDeployment(this, 'DeployCompressedAssets', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: websiteBucket,
+  contentEncodingByExtension: [
+    { include: 'assets/*.br', encoding: 'br' },
+    { include: 'scripts/*.gz', encoding: 'gzip' },
+  ],
+});
+```
+
 ## CloudFront Invalidation
 
 You can provide a CloudFront distribution and optional paths to invalidate after the bucket deployment finishes.
