@@ -2,8 +2,8 @@ import * as path from 'path';
 import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import type { Size } from 'aws-cdk-lib/core';
-import { Duration, CfnCondition, Fn, Aws } from 'aws-cdk-lib/core';
+import type { RemovalPolicy, Size } from 'aws-cdk-lib/core';
+import { Duration, CfnCondition, Fn, Aws, RemovalPolicies } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCliLayer } from 'aws-cdk-lib/lambda-layer-awscli';
 import type { IConstruct } from 'constructs';
@@ -59,6 +59,20 @@ export interface KubectlProviderOptions {
    * endpoint is expected to be accessible publicly.
    */
   readonly privateSubnets?: ec2.ISubnet[];
+
+  /**
+   * The removal policy applied to the custom resource that provides kubectl.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -226,5 +240,9 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
 
     this.serviceToken = provider.serviceToken;
     this.role = handlerRole;
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 }

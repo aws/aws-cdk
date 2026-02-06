@@ -2989,4 +2989,72 @@ describe('cluster', () => {
       });
     });
   });
+
+  describe('removal policy', () => {
+    test('applies removal policy to cluster and all child resources', () => {
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResource('AWS::EKS::Cluster', {
+        DeletionPolicy: 'Retain',
+      });
+      template.hasResource('AWS::IAM::Role', {
+        DeletionPolicy: 'Retain',
+      });
+      template.hasResource('AWS::EC2::SecurityGroup', {
+        DeletionPolicy: 'Retain',
+      });
+    });
+
+    test('applies removal policy to kubectl provider and its resources', () => {
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResource('AWS::Lambda::Function', {
+        DeletionPolicy: 'Retain',
+      });
+      template.hasResource('AWS::IAM::Role', {
+        DeletionPolicy: 'Retain',
+      });
+    });
+
+    test('applies removal policy to OIDC provider', () => {
+      const { stack } = testFixture();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+
+      cluster.openIdConnectProvider;
+
+      Template.fromStack(stack).hasResource('Custom::AWSCDKOpenIdConnectProvider', {
+        DeletionPolicy: 'Delete',
+      });
+    });
+
+    test('applies removal policy to EKS Pod Identity Agent', () => {
+      const { stack } = testFixture();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      });
+
+      cluster.eksPodIdentityAgent;
+
+      Template.fromStack(stack).hasResource('AWS::EKS::Addon', {
+        DeletionPolicy: 'Retain',
+      });
+    });
+  });
 });
