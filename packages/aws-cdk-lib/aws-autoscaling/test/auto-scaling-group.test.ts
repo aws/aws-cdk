@@ -3135,3 +3135,31 @@ function mockSecurityGroup(stack: cdk.Stack) {
 function getTestStack(): cdk.Stack {
   return new cdk.Stack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }
+
+test.each([
+  [autoscaling.TerminateHookAbandonAction.RETAIN, 'retain'],
+  [autoscaling.TerminateHookAbandonAction.TERMINATE, 'terminate'],
+  [undefined, Match.absent()],
+])('can configure instanceLifecyclePolicy with %s', (terminateHookAbandon, expectedValue) => {
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  new autoscaling.AutoScalingGroup(stack, `MyASG-${expectedValue}`, {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    instanceLifecyclePolicy: {
+      retentionTriggers: {
+        terminateHookAbandon,
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    InstanceLifecyclePolicy: {
+      RetentionTriggers: {
+        TerminateHookAbandon: expectedValue,
+      },
+    },
+  });
+});

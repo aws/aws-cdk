@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "58bb232970865fbefd2fbd5cb20ad6f319544bc646d88ad30be9ea80a91811c7": {
+      "displayName": "aws-cdk-autoscaling-instance-lifecycle-policy Template",
+      "source": {
+        "path": "aws-cdk-autoscaling-instance-lifecycle-policy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4b28ebbf": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "58bb232970865fbefd2fbd5cb20ad6f319544bc646d88ad30be9ea80a91811c7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
