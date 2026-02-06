@@ -320,6 +320,19 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
   readonly caaAmazon?: boolean;
 
   /**
+   * Whether to enable accelerated recovery for this hosted zone.
+   *
+   * Accelerated recovery reduces the time to recovery when a hosted zone
+   * becomes unavailable due to DNS resolution issues.
+   *
+   * This feature is only available for public hosted zones.
+   *
+   * @default - no accelerated recovery
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-accelerated-recovery.html
+   */
+  readonly acceleratedRecoveryEnabled?: boolean;
+
+  /**
    * A principal which is trusted to assume a role for zone delegation
    *
    * If supplied, this will create a Role in the same account as the Hosted
@@ -433,6 +446,13 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.acceleratedRecoveryEnabled !== undefined) {
+      const cfnHostedZone = this.node.defaultChild as CfnHostedZone;
+      cfnHostedZone.hostedZoneFeatures = {
+        enableAcceleratedRecovery: props.acceleratedRecoveryEnabled,
+      };
+    }
 
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
