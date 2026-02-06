@@ -1,6 +1,7 @@
 import type { IConstruct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { CfnResource, CustomResource, Tags } from 'aws-cdk-lib/core';
+import { CfnResource, CustomResource, Tags, FeatureFlags } from 'aws-cdk-lib/core';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/aws-s3/auto-delete-objects-provider';
 import type { IMixin } from '../../core';
 import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
@@ -92,5 +93,37 @@ export class BucketVersioning implements IMixin {
         status: this.enabled ? 'Enabled' : 'Suspended',
       };
     }
+  }
+}
+
+export class BucketPublicAccessBlock implements IMixin {
+  private readonly configOptions: s3.BlockPublicAccessOptions;
+
+  constructor(publicAccessConfig: s3.BlockPublicAccess) {
+    this.configOptions = {
+      blockPublicAcls: publicAccessConfig.blockPublicAcls,
+      blockPublicPolicy: publicAccessConfig.blockPublicPolicy,
+      ignorePublicAcls: publicAccessConfig.ignorePublicAcls,
+      restrictPublicBuckets: publicAccessConfig.restrictPublicBuckets,
+    };
+  }
+
+  supports(construct: IConstruct): construct is s3.CfnBucket {
+    return CfnResource.isCfnResource(construct) &&
+           construct.cfnResourceType === s3.CfnBucket.CFN_RESOURCE_TYPE_NAME;
+  }
+
+  applyTo(construct: IConstruct): void {
+    if (!this.supports(construct)) return;
+
+    const applyDefaults = FeatureFlags.of(construct).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT);
+
+    construct.publicAccessBlockConfiguration = applyDefaults ? {
+      blockPublicAcls: this.configOptions.blockPublicAcls ?? true,
+      blockPublicPolicy: this.configOptions.blockPublicPolicy ?? true,
+      ignorePublicAcls: this.configOptions.ignorePublicAcls ?? true,
+      restrictPublicBuckets: this.configOptions.restrictPublicBuckets ?? true,
+    }
+      : this.configOptions;
   }
 }
