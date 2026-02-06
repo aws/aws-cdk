@@ -177,6 +177,7 @@ const sourceStack = new cdk.Stack(app, 'SourceStack', {
 const sourceTable = new dynamodb.TableV2(sourceStack, 'SourceTable', {
   tableName: 'MyMultiAccountTable',
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
 });
 
 // Replica stack in Account B
@@ -188,6 +189,7 @@ const replicaStack = new cdk.Stack(app, 'ReplicaStack', {
 const replica = new dynamodb.TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
   tableName: 'MyMultiAccountTable',
   replicaSourceTable: sourceTable,
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
 });
 ```
 
@@ -228,6 +230,7 @@ const importedSource = dynamodb.TableV2.fromTableArn(
 const replica = new dynamodb.TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
   TableName: 'MyMultiAccountTable',
   replicaSourceTable: importedSource,
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
 });
 ```
 
@@ -237,7 +240,7 @@ Then configure permissions on the actual source table using the replica ARN as s
 
 #### Key Considerations
 
-* Multi-account replicas can only be created using the `TableV2` construct
+* Multi-account replicas can only be created using the `TableV2MultiAccountReplica` construct
 * Each replica must be in a separate AWS account and region
 * Only Multi-Region Eventual Consistency (MREC) is supported
 * Resource-based policies must be configured on both source and replica tables before replication begins

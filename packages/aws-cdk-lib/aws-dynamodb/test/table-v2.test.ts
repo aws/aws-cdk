@@ -4,9 +4,11 @@ import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
-import {
+import type {
   GlobalSecondaryIndexPropsV2,
   LocalSecondaryIndexProps,
+} from '../lib';
+import {
   AttributeType,
   Billing,
   Capacity,
@@ -17,7 +19,7 @@ import {
   TableEncryptionV2,
   MultiRegionConsistency,
   ContributorInsightsMode,
-  SettingsReplicationMode,
+  GlobalTableSettingsReplicationMode,
   TableV2MultiAccountReplica,
 } from '../lib';
 
@@ -3890,7 +3892,7 @@ test('TableV2MultiAccountReplica creates replica with permissions', () => {
 
   new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
     replicaSourceTable: sourceTable,
-    settingsReplicationMode: SettingsReplicationMode.ALL,
+    globalTableSettingsReplicationMode: GlobalTableSettingsReplicationMode.ALL,
   });
 
   // Grants are automatically set up - no manual call needed
@@ -4065,7 +4067,7 @@ test('TableV2MultiAccountReplica with all optional parameters', () => {
   new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
     replicaSourceTable: sourceTable,
     tableName: 'MyReplicaTable',
-    settingsReplicationMode: SettingsReplicationMode.ALL,
+    globalTableSettingsReplicationMode: GlobalTableSettingsReplicationMode.ALL,
     deletionProtection: true,
     tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
     kinesisStream,

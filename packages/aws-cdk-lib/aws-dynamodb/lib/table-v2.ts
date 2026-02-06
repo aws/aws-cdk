@@ -1,16 +1,19 @@
-import { Construct } from 'constructs';
-import { Billing } from './billing';
-import { Capacity } from './capacity';
+import type { Construct } from 'constructs';
+
+import type { Billing } from './billing';
+import type { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
-import { TableEncryptionV2 } from './encryption';
-import {
+import type { TableEncryptionV2 } from './encryption';
+import type {
   Attribute,
   LocalSecondaryIndexProps,
   SecondaryIndexProps,
   PointInTimeRecoverySpecification,
+  TableClass,
   WarmThroughput,
   ContributorInsightsSpecification,
   KeySchema,
+  GlobalTableSettingsReplicationMode,
 } from './shared';
 import {
   BillingMode,
@@ -19,14 +22,19 @@ import {
   MultiRegionConsistency,
   validateContributorInsights,
   parseKeySchema,
-  SettingsReplicationMode,
-  TableClass,
 } from './shared';
 import { TableGrants } from './table-grants';
-import { ITableV2, TableBaseV2 } from './table-v2-base';
-import { AddToResourcePolicyResult, PolicyDocument, PolicyStatement } from '../../aws-iam';
-import { IStream } from '../../aws-kinesis';
-import { IKey, Key } from '../../aws-kms';
+import type { ITableV2 } from './table-v2-base';
+import { TableBaseV2 } from './table-v2-base';
+import type { AddToResourcePolicyResult, PolicyStatement } from '../../aws-iam';
+import { PolicyDocument } from '../../aws-iam';
+import type { IStream } from '../../aws-kinesis';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
+import type {
+  CfnTag,
+  RemovalPolicy,
+} from '../../core';
 import {
   ArnFormat,
   FeatureFlags,
@@ -384,20 +392,6 @@ export interface TablePropsV2 extends TableOptionsV2 {
   readonly replicas?: ReplicaTableProps[];
 
   /**
-   * The source table for multi-account replication.
-   *
-   * When creating a replica table in a different account, specify the source table
-   * to replicate from. Use TableV2.fromTableArn() to reference tables by ARN.
-   *
-   * Note: This property is only supported for multi-account global tables.
-   *
-   * [disable-awslint:prefer-ref-interface]
-   *
-   * @default - no replica source table
-   */
-  readonly replicaSourceTable?: ITableV2;
-
-  /**
    * Controls whether table settings are synchronized across replicas.
    *
    * When set to ALL, synchronizable settings (billing mode, throughput, TTL, streams view type, GSIs)
@@ -407,9 +401,9 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * Note: Some settings are always synchronized (key schema, LSIs) regardless of this setting,
    * and some are never synchronized (table class, SSE, deletion protection, PITR, tags, resource policy).
    *
-   * @default SettingsReplicationMode.NONE
+   * @default GlobalTableSettingsReplicationMode.NONE
    */
-  readonly settingsReplicationMode?: SettingsReplicationMode;
+  readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
 
   /**
    * The witness Region for the MRSC global table.
@@ -537,9 +531,9 @@ export interface TableV2MultiAccountReplicaProps extends TableOptionsV2 {
    * Note: Some settings are always synchronized (key schema, LSIs) regardless of this setting,
    * and some are never synchronized (table class, SSE, deletion protection, PITR, tags, resource policy).
    *
-   * @default SettingsReplicationMode.ALL
+   * @default GlobalTableSettingsReplicationMode.ALL
    */
-  readonly settingsReplicationMode?: SettingsReplicationMode;
+  readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
 }
 
 /**
@@ -783,7 +777,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
-  private readonly settingsReplicationMode?: SettingsReplicationMode;
+  private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
 
   @memoizedGetter
   public get tableArn(): string {
@@ -819,7 +813,7 @@ export class TableV2 extends TableBaseV2 {
     this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
     this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME);
-    this.settingsReplicationMode = props.settingsReplicationMode;
+    this.globalTableSettingsReplicationMode = props.globalTableSettingsReplicationMode;
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
@@ -855,18 +849,6 @@ export class TableV2 extends TableBaseV2 {
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
     this.resourcePolicy = props.resourcePolicy;
 
-    // Validate replicaSourceTable if provided
-    if (props.replicaSourceTable) {
-      const sourceStack = Stack.of(props.replicaSourceTable);
-      const sourceRegion = sourceStack.splitArn(props.replicaSourceTable.tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
-      if (sourceRegion === this.region) {
-        throw new ValidationError(
-          `The region in \`replicaSourceArn\` (${sourceRegion}) cannot be the same as the stack region (${this.region}).`,
-          this,
-        );
-      }
-    }
-
     this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
@@ -875,7 +857,6 @@ export class TableV2 extends TableBaseV2 {
       globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
-      globalTableSourceArn: props.replicaSourceTable?.tableArn,
       localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
@@ -1080,7 +1061,7 @@ export class TableV2 extends TableBaseV2 {
       resourcePolicy: resourcePolicy
         ? { policyDocument: resourcePolicy }
         : undefined,
-      globalTableSettingsReplicationMode: this.settingsReplicationMode,
+      globalTableSettingsReplicationMode: this.globalTableSettingsReplicationMode,
     };
   }
 
@@ -1423,16 +1404,6 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   /**
    * @attribute
    */
-  public readonly tableArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableName: string;
-
-  /**
-   * @attribute
-   */
   public readonly tableStreamArn?: string;
 
   /**
@@ -1454,6 +1425,21 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
 
   protected readonly region: string;
   private readonly hasGsiOptions: boolean;
+  private readonly resource: CfnGlobalTable;
+
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   public constructor(scope: Construct, id: string, props: TableV2MultiAccountReplicaProps = {}) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
@@ -1495,18 +1481,13 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
         resourcePolicy: Lazy.any({ produce: () => this.resourcePolicy ? { policyDocument: this.resourcePolicy } : undefined }),
         sseSpecification: props.encryption?._renderReplicaSseSpecification(this, this.stack.region),
         tags: props.tags,
-        globalTableSettingsReplicationMode: props.settingsReplicationMode,
+        globalTableSettingsReplicationMode: props.globalTableSettingsReplicationMode,
       }],
       globalTableSourceArn: props.replicaSourceTable.tableArn,
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
-    });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
+    this.resource = resource;
     this.tableId = resource.attrTableId;
     this.tableStreamArn = resource.attrStreamArn;
 

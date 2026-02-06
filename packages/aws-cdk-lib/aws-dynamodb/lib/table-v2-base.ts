@@ -1,13 +1,13 @@
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import * as perms from './perms';
-import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
-import { TableGrants } from './table-grants';
-import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
-import { AddToResourcePolicyResult, Grant, GrantOnKeyResult, IEncryptedResource, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
+import { Operation } from './shared';
+import type { TableGrants } from './table-grants';
+import type { IMetric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
+import { MathExpression, Metric } from '../../aws-cloudwatch';
+import type { AddToResourcePolicyResult, GrantOnKeyResult, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Grant } from '../../aws-iam';
 import type { IKey } from '../../aws-kms';
->>>>>>> internal/main
 import { Resource, ValidationError } from '../../core';
 import type { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
@@ -31,7 +31,7 @@ export interface ITableV2 extends ITable {
 /**
  * Base class for a DynamoDB table.
  */
-export abstract class TableBaseV2 extends Resource implements ITableV2, IResourceWithPolicy, IEncryptedResource {
+export abstract class TableBaseV2 extends Resource implements ITableV2, IResourceWithPolicy {
   /**
    * The ARN of the table.
    *

@@ -177,13 +177,12 @@ export enum ContributorInsightsMode {
 }
 
 /**
- * Replication mode for settings of multi-account global tables
+ * The replication mode for global table settings across multiple accounts.
  *
- * Note: The replication mode for global table settings across multiple accounts.
- * In a multi-account global table, you cannot make changes to a synchronized setting using CDK.
+ * Note: In a multi-account global table, you cannot make changes to a synchronized setting using CDK.
  * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_MA_HowItWorks.html
  */
-export enum SettingsReplicationMode {
+export enum GlobalTableSettingsReplicationMode {
   /**
    * All synchronizable settings are replicated across all replicas.
    *

@@ -47,7 +47,7 @@ const importedSource = dynamodb.TableV2.fromTableArn(
 new dynamodb.TableV2MultiAccountReplica(replicaStack, 'Replica', {
   tableName: 'MultiAccountGlobalTable',
   replicaSourceTable: importedSource,
-  settingsReplicationMode: dynamodb.SettingsReplicationMode.ALL,
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 

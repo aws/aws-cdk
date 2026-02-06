@@ -50,7 +50,7 @@ const sourceTable = new dynamodb.TableV2(sourceStack, 'SourceTableV2', {
     type: dynamodb.AttributeType.STRING,
   },
   removalPolicy: RemovalPolicy.DESTROY,
-  settingsReplicationMode: dynamodb.SettingsReplicationMode.ALL,
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
 });
 
 // Replica table in Account B
@@ -62,7 +62,7 @@ const replicaStack = new Stack(app, 'MultiAccountReplicaStackV2', {
 new dynamodb.TableV2MultiAccountReplica(replicaStack, 'ReplicaTableV2', {
   tableName: 'MultiAccountGlobalTable',
   replicaSourceTable: sourceTable,
-  settingsReplicationMode: dynamodb.SettingsReplicationMode.ALL,
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
