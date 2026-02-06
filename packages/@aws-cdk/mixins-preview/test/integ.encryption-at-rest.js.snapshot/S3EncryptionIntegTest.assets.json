@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "a28e96517b34f67d4870524554568555c08059aa9bfcb6b969eda076bfce785c": {
+      "displayName": "S3EncryptionIntegTest Template",
+      "source": {
+        "path": "S3EncryptionIntegTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-0a91432e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a28e96517b34f67d4870524554568555c08059aa9bfcb6b969eda076bfce785c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

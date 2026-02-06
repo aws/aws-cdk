@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "0707466b41035524221e9d7d68bc48f42b4ac0e74a03180344657f82377e1147": {
+      "displayName": "SQSEncryptionIntegTest Template",
+      "source": {
+        "path": "SQSEncryptionIntegTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-640f5330": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0707466b41035524221e9d7d68bc48f42b4ac0e74a03180344657f82377e1147.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

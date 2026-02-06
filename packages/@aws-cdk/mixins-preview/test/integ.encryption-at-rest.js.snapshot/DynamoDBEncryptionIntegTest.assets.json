@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "1ebc9e62aff79db2566b0ad1e05ac31ad2a5e14d89976b13ac5509ceb710e64f": {
+      "displayName": "DynamoDBEncryptionIntegTest Template",
+      "source": {
+        "path": "DynamoDBEncryptionIntegTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e9a5c132": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1ebc9e62aff79db2566b0ad1e05ac31ad2a5e14d89976b13ac5509ceb710e64f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
