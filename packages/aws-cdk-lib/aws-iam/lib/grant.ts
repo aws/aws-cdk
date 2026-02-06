@@ -438,7 +438,7 @@ export interface GrantOnKeyResult {
   readonly grant?: Grant;
 }
 
-function lookupDecorator(scope: IConstruct, cfnResourceType: string, sym: symbol): IEnvironmentAware | undefined {
+function lookupFactory(scope: IConstruct, cfnResourceType: string, sym: symbol): IEnvironmentAware | undefined {
   for (
     let current: any = scope;
     current != null;
@@ -457,16 +457,16 @@ function lookupDecorator(scope: IConstruct, cfnResourceType: string, sym: symbol
 }
 
 class Traits<
-  A extends IEncryptedResource | IResourceWithPolicyV2,
-  D extends IDecorator<A>,
+  Trait extends IEncryptedResource | IResourceWithPolicyV2,
+  Factory extends ITraitFactory<Trait>,
 > {
-  private instances = new WeakMap<IEnvironmentAware, A>();
+  private instances = new WeakMap<IEnvironmentAware, Trait>();
 
   public of(
     resource: IEnvironmentAware,
-    decLookup: (r: CfnResource, t: string) => D | undefined,
-    defo: (t: string) => D | undefined,
-  ): A | undefined {
+    factoryLookup: (resource: CfnResource, type: string) => Factory | undefined,
+    defaultFactoryFor: (type: string) => Factory | undefined,
+  ): Trait | undefined {
     const cached = this.instances.get(resource);
     if (cached != null) {
       return cached;
@@ -477,26 +477,26 @@ class Traits<
     }
 
     const cfnResourceType = (resource as CfnResource).cfnResourceType;
-    let decorator = decLookup(resource, cfnResourceType);
+    let decorator = factoryLookup(resource, cfnResourceType);
     if (decorator == null) {
       if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
-        const msg = `Couldn't find ResourceWithPolicies trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
+        const msg = `Couldn't find trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
         throw new ValidationError(msg, resource);
       }
-      decorator = defo(cfnResourceType);
+      decorator = defaultFactoryFor(cfnResourceType);
     }
     if (decorator != null) {
-      const resourceWithPolicy = decorator.decorate(resource);
-      this.instances.set(resource, resourceWithPolicy);
-      return resourceWithPolicy;
+      const trait = decorator.fromConstruct(resource);
+      this.instances.set(resource, trait);
+      return trait;
     }
     return undefined;
   }
 
-  public register(scope: IConstruct, cfnType: string, decorator: D, sym: symbol) {
-    let decoratorMap = (scope as any)[sym] as Map<string, D>;
+  public register(scope: IConstruct, cfnType: string, decorator: Factory, sym: symbol) {
+    let decoratorMap = (scope as any)[sym] as Map<string, Factory>;
     if (!decoratorMap) {
-      decoratorMap = new Map<string, D>();
+      decoratorMap = new Map<string, Factory>();
 
       Object.defineProperty(scope, sym, {
         value: decoratorMap,
@@ -510,78 +510,27 @@ class Traits<
 }
 
 export class ResourceWithPolicies {
-  /**
-   * Attempts to convert a resource into an IResourceWithPolicyV2 interface.
-   *
-   * This method provides a unified way to obtain a resource policy interface for AWS resources,
-   * handling multiple scenarios:
-   *
-   * 1. If the resource already implements IResourceWithPolicyV2, returns it directly
-   * 2. If the resource was previously converted, returns the cached result
-   * 3. For CloudFormation L1 resources, attempts to find and apply a decorator to add policy capabilities
-   * 4. Returns undefined if the resource cannot be converted to IResourceWithPolicyV2
-   *
-   * The method uses a decorator pattern to dynamically add resource policy capabilities to
-   * CloudFormation resources. Decorators can be registered using ResourceWithPolicies.register()
-   * or automatically discovered if the AUTOMATIC_L1_TRAITS feature flag is enabled.
-   *
-   * @param resource - The resource to convert. Must be environment-aware (have account/region info).
-   * @returns An IResourceWithPolicyV2 interface for the resource, or undefined if conversion is not possible.
-   *
-   * @throws ValidationError if the resource is a CfnResource without a registered decorator and
-   *         the AUTOMATIC_L1_TRAITS feature flag is disabled.
-   *
-   * @example
-   * // Using with an S3 bucket
-   * declare const bucket: s3.Bucket;
-   * const resourceWithPolicy = ResourceWithPolicies.of(bucket);
-   * if (resourceWithPolicy) {
-   *   resourceWithPolicy.addToResourcePolicy(new iam.PolicyStatement({
-   *     actions: ['s3:GetObject'],
-   *     principals: [new iam.AccountPrincipal('123456789012')],
-   *     resources: [bucket.arnForObjects('*')],
-   *   }));
-   * }
-   *
-   * @example
-   * // Using with a CloudFormation L1 resource
-   * declare const cfnBucket: s3.CfnBucket;
-   * const resourceWithPolicy = ResourceWithPolicies.of(cfnBucket);
-   * // Returns undefined or decorated resource depending on decorator availability
-   */
   public static of(resource: IEnvironmentAware): IResourceWithPolicyV2 | undefined {
     if (GrantableResources.isResourceWithPolicy(resource)) {
       return resource;
     }
 
-    function lookupResourcePolicyDecorator(scope: IConstruct, cfnResourceType: string): IResourcePolicyDecorator | undefined {
-      return lookupDecorator(scope, cfnResourceType, POLICY_DECORATOR_MAP_SYMBOL) as IResourcePolicyDecorator | undefined;
+    function lookupResourcePolicyFactory(scope: IConstruct, cfnResourceType: string): IResourcePolicyFactory | undefined {
+      return lookupFactory(scope, cfnResourceType, POLICY_DECORATOR_MAP_SYMBOL) as IResourcePolicyFactory | undefined;
     }
 
     return ResourceWithPolicies.traits.of(
       resource,
-      (cfnResource, type) => lookupResourcePolicyDecorator(cfnResource, type),
-      type => DefaultPolicyDecorators.get(type),
+      (cfnResource, type) => lookupResourcePolicyFactory(cfnResource, type),
+      type => DefaultPolicyFactories.get(type),
     );
   }
 
-  /**
-   * Registers a resource policy decorator for a specific CloudFormation resource type.
-   *
-   * This method associates a decorator with a CloudFormation resource type (`cfnType`)
-   * within the given construct scope. The decorator can later be used to adapt the
-   * resource into an `IResourceWithPolicyV2` interface.
-   *
-   * @param scope - The construct scope in which to register the decorator.
-   * @param cfnType - The CloudFormation resource type to associate with the decorator.
-   * @param decorator - The `ResourcePolicyDecorator` instance that will be used to
-   *                    decorate the resource.
-   */
-  public static register(scope: IConstruct, cfnType: string, decorator: IResourcePolicyDecorator) {
+  public static register(scope: IConstruct, cfnType: string, decorator: IResourcePolicyFactory) {
     this.traits.register(scope, cfnType, decorator, POLICY_DECORATOR_MAP_SYMBOL);
   }
 
-  private static traits = new Traits<IResourceWithPolicyV2, IResourcePolicyDecorator>();
+  private static traits = new Traits<IResourceWithPolicyV2, IResourcePolicyFactory>();
 }
 
 export class EncryptedResources {
@@ -590,34 +539,34 @@ export class EncryptedResources {
       return resource;
     }
 
-    function lookupEncryptedResourceDecorator(scope: IConstruct, cfnResourceType: string): IEncryptedResourceDecorator | undefined {
-      return lookupDecorator(scope, cfnResourceType, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL) as IEncryptedResourceDecorator | undefined;
+    function lookupEncryptedResourceFactory(scope: IConstruct, cfnResourceType: string): IEncryptedResourceFactory | undefined {
+      return lookupFactory(scope, cfnResourceType, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL) as IEncryptedResourceFactory | undefined;
     }
 
     return EncryptedResources.traits.of(
       resource,
-      (cfnResource, type) => lookupEncryptedResourceDecorator(cfnResource, type),
-      type => DefaultEncryptedResourceDecorators.get(type),
+      (cfnResource, type) => lookupEncryptedResourceFactory(cfnResource, type),
+      type => DefaultEncryptedResourceFactories.get(type),
     );
   }
 
-  public static register(scope: IConstruct, cfnType: string, decorator: IEncryptedResourceDecorator) {
+  public static register(scope: IConstruct, cfnType: string, decorator: IEncryptedResourceFactory) {
     this.traits.register(scope, cfnType, decorator, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL);
   }
 
-  private static traits = new Traits<IEncryptedResource, IEncryptedResourceDecorator>();
+  private static traits = new Traits<IEncryptedResource, IEncryptedResourceFactory>();
 }
 
-interface IDecorator<T> {
-  decorate(resource: IConstruct): T;
+interface ITraitFactory<T> {
+  fromConstruct(resource: IConstruct): T;
 }
 
-export interface IResourcePolicyDecorator {
-  decorate(resource: IConstruct): IResourceWithPolicyV2;
+export interface IResourcePolicyFactory {
+  fromConstruct(resource: IConstruct): IResourceWithPolicyV2;
 }
 
-export interface IEncryptedResourceDecorator {
-  decorate(resource: IConstruct): IEncryptedResource;
+export interface IEncryptedResourceFactory {
+  fromConstruct(resource: IConstruct): IEncryptedResource;
 }
 
 /**
@@ -705,43 +654,40 @@ export class CompositeDependable implements IDependable {
   }
 }
 
-// TODO Can we deduplicate DefaultPolicyDecorators and DefaultEncryptedResourceDecorators into a single class
-//  without using a generic type parameter?
-
-export class DefaultPolicyDecorators {
-  public static get(key: string): IResourcePolicyDecorator | undefined {
-    return DefaultPolicyDecorators.map.get(key);
+export class DefaultPolicyFactories {
+  public static get(key: string): IResourcePolicyFactory | undefined {
+    return DefaultPolicyFactories.map.get(key);
   }
 
-  public static set(key: string, value: IResourcePolicyDecorator) {
-    if (DefaultPolicyDecorators.map.has(key)) {
+  public static set(key: string, value: IResourcePolicyFactory) {
+    if (DefaultPolicyFactories.map.has(key)) {
       throw new UnscopedValidationError(`A resource policy decorator for resource type '${key}' is already registered.`);
     }
-    DefaultPolicyDecorators.map.set(key, value);
+    DefaultPolicyFactories.map.set(key, value);
   }
 
   public static has(key: string): boolean {
-    return DefaultPolicyDecorators.map.has(key);
+    return DefaultPolicyFactories.map.has(key);
   }
 
-  private static readonly map = new Map<string, IResourcePolicyDecorator>();
+  private static readonly map = new Map<string, IResourcePolicyFactory>();
 }
 
-export class DefaultEncryptedResourceDecorators {
-  public static get(key: string): IEncryptedResourceDecorator | undefined {
-    return DefaultEncryptedResourceDecorators.map.get(key);
+export class DefaultEncryptedResourceFactories {
+  public static get(key: string): IEncryptedResourceFactory | undefined {
+    return DefaultEncryptedResourceFactories.map.get(key);
   }
 
-  public static set(key: string, value: IEncryptedResourceDecorator) {
-    if (DefaultEncryptedResourceDecorators.map.has(key)) {
+  public static set(key: string, value: IEncryptedResourceFactory) {
+    if (DefaultEncryptedResourceFactories.map.has(key)) {
       throw new UnscopedValidationError(`An encrypted resource decorator for resource type '${key}' is already registered.`);
     }
-    DefaultEncryptedResourceDecorators.map.set(key, value);
+    DefaultEncryptedResourceFactories.map.set(key, value);
   }
 
   public static has(key: string): boolean {
-    return DefaultEncryptedResourceDecorators.map.has(key);
+    return DefaultEncryptedResourceFactories.map.has(key);
   }
 
-  private static readonly map = new Map<string, IEncryptedResourceDecorator>();
+  private static readonly map = new Map<string, IEncryptedResourceFactory>();
 }

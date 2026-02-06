@@ -6,10 +6,10 @@ import type {
   IGrantable,
   IResourceWithPolicyV2,
   PolicyStatement,
-  IResourcePolicyDecorator,
+  IResourcePolicyFactory,
 } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { DefaultPolicyDecorators } from '../../aws-iam';
+import { DefaultPolicyFactories } from '../../aws-iam';
 import type { ResourceEnvironment } from '../../core';
 import { Token, FeatureFlags, Stack, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -189,12 +189,12 @@ export class KeyGrants {
   }
 }
 
-export class KeyPolicyDecorator implements IResourcePolicyDecorator {
+export class KeyWithPolicyFactory implements IResourcePolicyFactory {
   static {
-    DefaultPolicyDecorators.set('AWS::KMS::Key', new KeyPolicyDecorator());
+    DefaultPolicyFactories.set('AWS::KMS::Key', new KeyWithPolicyFactory());
   }
 
-  public decorate(resource: IConstruct): IResourceWithPolicyV2 {
+  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     if (!CfnKey.isCfnKey(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnKey`, resource);
     }

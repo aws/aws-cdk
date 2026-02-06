@@ -9,13 +9,13 @@ import type {
   IGrantable,
   IResourceWithPolicyV2,
   PolicyStatement,
-  IResourcePolicyDecorator, IEncryptedResourceDecorator, GrantOnKeyResult,
+  IResourcePolicyFactory, IEncryptedResourceFactory, GrantOnKeyResult,
 } from '../../aws-iam';
 import {
   EncryptedResources,
 
-  DefaultEncryptedResourceDecorators,
-  AnyPrincipal, DefaultPolicyDecorators, Grant, PolicyDocument, ResourceWithPolicies,
+  DefaultEncryptedResourceFactories,
+  AnyPrincipal, DefaultPolicyFactories, Grant, PolicyDocument, ResourceWithPolicies,
 } from '../../aws-iam';
 import type * as iam from '../../aws-iam/lib/grant';
 import { KeyGrants } from '../../aws-kms';
@@ -283,12 +283,12 @@ export class BucketGrants {
   }
 }
 
-export class EncryptedBucketDecorator implements IEncryptedResourceDecorator {
+export class EncryptedBucketFactory implements IEncryptedResourceFactory {
   static {
-    DefaultEncryptedResourceDecorators.set('AWS::S3::Bucket', new EncryptedBucketDecorator());
+    DefaultEncryptedResourceFactories.set('AWS::S3::Bucket', new EncryptedBucketFactory());
   }
 
-  public decorate(resource: IConstruct): IEncryptedResource {
+  public fromConstruct(resource: IConstruct): IEncryptedResource {
     return ifCfnBucket(resource, (r) => new EncryptedCfnBucket(r));
   }
 }
@@ -308,12 +308,12 @@ export class EncryptedCfnBucket implements IEncryptedResource {
   }
 }
 
-export class BucketPolicyDecorator implements IResourcePolicyDecorator {
+export class BucketWithPolicyFactory implements IResourcePolicyFactory {
   static {
-    DefaultPolicyDecorators.set('AWS::S3::Bucket', new BucketPolicyDecorator());
+    DefaultPolicyFactories.set('AWS::S3::Bucket', new BucketWithPolicyFactory());
   }
 
-  public decorate(resource: IConstruct): IResourceWithPolicyV2 {
+  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     return ifCfnBucket(resource, (r) => new CfnBucketWithPolicy(r));
   }
 }

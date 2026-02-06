@@ -16,7 +16,7 @@ import type {
   LocalSecondaryIndexProps,
 } from '../lib';
 import {
-  TableGrants, TablePolicyDecorator,
+  TableGrants, TablePolicyFactory,
 
   AttributeType,
   BillingMode,
@@ -5038,7 +5038,7 @@ test('Throws when more than four multi-attribute sort keys are specified', () =>
 describe('L1 table grants', () => {
   test('grant read permission to service principal (L1) with policy decorator', () => {
     const stack = new Stack();
-    iam.ResourceWithPolicies.register(stack, 'AWS::DynamoDB::Table', new TablePolicyDecorator());
+    iam.ResourceWithPolicies.register(stack, 'AWS::DynamoDB::Table', new TablePolicyFactory());
     const table = new CfnTable(stack, 'Table', {
       keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
       attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],

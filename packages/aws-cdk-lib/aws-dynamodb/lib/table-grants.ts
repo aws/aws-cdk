@@ -2,9 +2,9 @@ import type { IConstruct } from 'constructs';
 import type { ITableRef } from './dynamodb.generated';
 import { CfnTable } from './dynamodb.generated';
 import * as perms from './perms';
-import type { IResourceWithPolicyV2, IResourcePolicyDecorator } from '../../aws-iam';
+import type { IResourceWithPolicyV2, IResourcePolicyFactory } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { DefaultPolicyDecorators } from '../../aws-iam';
+import { DefaultPolicyFactories } from '../../aws-iam';
 import { KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
 import { Stack, Token, ValidationError } from '../../core';
@@ -193,12 +193,12 @@ export class TableGrants {
   }
 }
 
-export class TablePolicyDecorator implements IResourcePolicyDecorator {
+export class TablePolicyFactory implements IResourcePolicyFactory {
   static {
-    DefaultPolicyDecorators.set('AWS::DynamoDB::Table', new TablePolicyDecorator());
+    DefaultPolicyFactories.set('AWS::DynamoDB::Table', new TablePolicyFactory());
   }
 
-  public decorate(resource: IConstruct): IResourceWithPolicyV2 {
+  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     if (!CfnTable.isCfnTable(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
     }
@@ -229,12 +229,12 @@ class CfnTableWithPolicy implements iam.IResourceWithPolicyV2 {
   }
 }
 
-export class EncryptedTableDecorator implements iam.IEncryptedResourceDecorator {
+export class EncryptedTableFactory implements iam.IEncryptedResourceFactory {
   static {
-    iam.DefaultEncryptedResourceDecorators.set('AWS::DynamoDB::Table', new EncryptedTableDecorator());
+    iam.DefaultEncryptedResourceFactories.set('AWS::DynamoDB::Table', new EncryptedTableFactory());
   }
 
-  public decorate(resource: IConstruct): iam.IEncryptedResource {
+  public fromConstruct(resource: IConstruct): iam.IEncryptedResource {
     if (!CfnTable.isCfnTable(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
     }
