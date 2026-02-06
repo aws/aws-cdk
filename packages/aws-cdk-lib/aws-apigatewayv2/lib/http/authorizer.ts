@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import type { IHttpApiRef } from './api';
 import type { IHttpRoute } from './route';
+import type { IRoleRef } from '../../../aws-iam';
 import type { Duration } from '../../../core';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -106,6 +107,15 @@ export interface HttpAuthorizerProps {
    * @default - API Gateway will not cache authorizer responses
    */
   readonly resultsCacheTtl?: Duration;
+
+  /**
+   * The IAM role that the API Gateway service assumes while invoking the authorizer.
+   *
+   * Supported only for REQUEST authorizers.
+   *
+   * @default - No role
+   */
+  readonly role?: IRoleRef;
 }
 
 /**
@@ -181,6 +191,10 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
       throw new ValidationError('authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
+    if (props.type !== HttpAuthorizerType.LAMBDA && props.role) {
+      throw new ValidationError('role is supported only for Lambda authorizers', scope);
+    }
+
     /**
      * This check is required because Cloudformation will fail stack creation if this property
      * is set for the JWT authorizer. AuthorizerPayloadFormatVersion can only be set for REQUEST authorizer
@@ -203,6 +217,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
       authorizerPayloadFormatVersion,
       authorizerUri: props.authorizerUri,
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
+      authorizerCredentialsArn: props.role?.roleRef.roleArn,
     });
 
     this.authorizerId = resource.ref;
