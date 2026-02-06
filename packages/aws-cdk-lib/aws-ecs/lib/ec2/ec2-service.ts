@@ -222,7 +222,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
       placementConstraints: Lazy.any({ produce: () => this.constraints }),
       placementStrategies: Lazy.any({ produce: () => this.strategies }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED
+        ? props.availabilityZoneRebalancing
+        : undefined,
     }, props.taskDefinition);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
