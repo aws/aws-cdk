@@ -206,6 +206,108 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
 fileSystem.grantRead(role);
 ```
 
+#### Granting mount permissions
+
+**Important:** When anonymous access is denied (the default when using grant methods or the
+`@aws-cdk/aws-efs:denyAnonymousAccess` feature flag), IAM principals **must** be explicitly
+granted mount permissions using `grantRead()`, `grantReadWrite()`, or `grantRootAccess()` to
+mount the file system. Without these grants, mount operations will fail with access denied errors.
+
+The default file system policy restricts access to same-account IAM principals only and does not
+include `ClientMount` permission. This means:
+
+- **EC2 instances**: The instance role must be granted access via the grant methods
+- **Lambda functions**: The execution role must be granted access via the grant methods
+- **EKS/Kubernetes**: The IAM role used by pods (via IRSA or EKS Pod Identity) must be granted access
+- **Other AWS services**: Any IAM role used to mount the file system must be granted access
+
+Example for an EC2 instance:
+
+```ts fixture=with-filesystem-instance
+// Grant read/write access to the EC2 instance role
+fileSystem.grantReadWrite(instance.role);
+
+// Also allow network access
+fileSystem.connections.allowDefaultPortFrom(instance);
+```
+
+Example for a Lambda function:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const fileSystem: efs.FileSystem;
+declare const fn: lambda.Function;
+
+// Grant read access to the Lambda execution role
+fileSystem.grantRead(fn);
+```
+
+Example for EKS pods using IRSA:
+
+```ts fixture=with-filesystem-instance
+declare const serviceAccountRole: iam.Role;
+
+// Grant read/write access to the service account role used by pods
+fileSystem.grantReadWrite(serviceAccountRole);
+```
+
+If you prefer the legacy behavior where any client can mount the file system without explicit
+IAM grants, set `allowAnonymousAccess: true`:
+
+```ts
+const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
+  vpc: new ec2.Vpc(this, 'VPC'),
+  allowAnonymousAccess: true, // Allows mounting without explicit grants (less secure)
+});
+```
+
+#### Cross-account access
+
+When `allowAnonymousAccess` is `false` (the default), the file system policy restricts access to
+IAM principals within the same AWS account. If you need to grant access to principals in another
+AWS account, explicitly add them to the resource policy using `addToResourcePolicy()`:
+
+```ts fixture=with-filesystem-instance
+// Grant cross-account access to a specific role
+fileSystem.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [
+    new iam.ArnPrincipal('arn:aws:iam::123456789012:role/CrossAccountRole'),
+  ],
+  actions: [
+    'elasticfilesystem:ClientMount',
+    'elasticfilesystem:ClientWrite',
+  ],
+  conditions: {
+    Bool: {
+      'elasticfilesystem:AccessedViaMountTarget': 'true',
+    },
+  },
+}));
+
+// Or grant access to all principals in another account (less restrictive)
+fileSystem.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [
+    new iam.AccountPrincipal('123456789012'),
+  ],
+  actions: [
+    'elasticfilesystem:ClientMount',
+    'elasticfilesystem:ClientWrite',
+    'elasticfilesystem:ClientRootAccess',
+  ],
+  conditions: {
+    Bool: {
+      'elasticfilesystem:AccessedViaMountTarget': 'true',
+    },
+  },
+}));
+```
+
+**Note**: Cross-account EFS access also requires network connectivity between VPCs (via VPC peering,
+Transit Gateway, AWS PrivateLink, etc.) and mount targets must be created in the file system owner's
+account. The cross-account principal must mount the file system using the mount target in the owner's
+VPC.
+
 ### Access Point
 
 An access point is an application-specific view into an EFS file system that applies an operating

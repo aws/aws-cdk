@@ -373,7 +373,22 @@
        },
        "Effect": "Allow",
        "Principal": {
-        "AWS": "*"
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
        }
       }
      ],
