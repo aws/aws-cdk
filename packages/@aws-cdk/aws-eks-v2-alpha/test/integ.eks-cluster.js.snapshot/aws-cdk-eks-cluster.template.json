@@ -4469,6 +4469,246 @@
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
    ]
+  },
+  "ClusterWithoutAddonsRole72619EF6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sts:AssumeRole",
+        "sts:TagSession"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "eks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSClusterPolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSComputePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSBlockStoragePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSLoadBalancingPolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSNetworkingPolicy"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ClusterWithoutAddonsControlPlaneSecurityGroup097EB91D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "EKS Control Plane Security Group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterWithoutAddonsClusterWithoutAddonsnodePoolRoleB82EE683": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ClusterWithoutAddonsBA3E8C11": {
+   "Type": "AWS::EKS::Cluster",
+   "Properties": {
+    "AccessConfig": {
+     "AuthenticationMode": "API"
+    },
+    "BootstrapSelfManagedAddons": false,
+    "ComputeConfig": {
+     "Enabled": true,
+     "NodePools": [
+      "system",
+      "general-purpose"
+     ],
+     "NodeRoleArn": {
+      "Fn::GetAtt": [
+       "ClusterWithoutAddonsClusterWithoutAddonsnodePoolRoleB82EE683",
+       "Arn"
+      ]
+     }
+    },
+    "KubernetesNetworkConfig": {
+     "ElasticLoadBalancing": {
+      "Enabled": true
+     },
+     "IpFamily": "ipv4"
+    },
+    "ResourcesVpcConfig": {
+     "EndpointPrivateAccess": true,
+     "EndpointPublicAccess": true,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "ClusterWithoutAddonsControlPlaneSecurityGroup097EB91D",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+      },
+      {
+       "Ref": "VpcPublicSubnet2Subnet691E08A3"
+      },
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterWithoutAddonsRole72619EF6",
+      "Arn"
+     ]
+    },
+    "StorageConfig": {
+     "BlockStorage": {
+      "Enabled": true
+     }
+    },
+    "Version": "1.32"
+   },
+   "DependsOn": [
+    "VpcIGWD7BA715C",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableB2C5B500",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet1Subnet536B997A",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableA678073B",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+    "VpcPrivateSubnet2Subnet3788AAA1",
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1EIPD7E02669",
+    "VpcPublicSubnet1NATGateway4D7517AA",
+    "VpcPublicSubnet1RouteTable6C95E38E",
+    "VpcPublicSubnet1RouteTableAssociation97140677",
+    "VpcPublicSubnet1Subnet5C2D37C4",
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTable94F7E489",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+    "VpcPublicSubnet2Subnet691E08A3",
+    "Vpc8378EB38",
+    "VpcVPCGWBF912B6E"
+   ]
+  },
+  "ClusterWithoutAddonsKubectlReadyBarrierB9E42AD5": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "aws:cdk:eks:kubectl-ready"
+   },
+   "DependsOn": [
+    "ClusterWithoutAddonsBA3E8C11"
+   ]
   }
  },
  "Conditions": {

@@ -637,6 +637,17 @@ export interface ClusterProps extends ClusterCommonOptions {
   readonly bootstrapClusterCreatorAdminPermissions?: boolean;
 
   /**
+   * If you set this value to False when creating a cluster, the default networking add-ons will not be installed.
+   * The default networking addons include vpc-cni, coredns, and kube-proxy.
+   * Use this option when you plan to install third-party alternative add-ons or self-manage the default networking add-ons.
+   *
+   * Changing this value after the cluster has been created will result in the cluster being replaced.
+   *
+   * @default true if the mode is not EKS Auto Mode
+   */
+  readonly bootstrapSelfManagedAddons?: boolean;
+
+  /**
    * Determines whether a CloudFormation output with the `aws eks
    * update-kubeconfig` command will be synthesized. This command will include
    * the cluster name and, if applicable, the ARN of the masters IAM role.
@@ -1198,6 +1209,10 @@ export class Cluster extends ClusterBase {
     const autoModeEnabled = this.isValidAutoModeConfig(props);
 
     if (autoModeEnabled) {
+      if (props.bootstrapSelfManagedAddons === true) {
+        throw new ValidationError('bootstrapSelfManagedAddons cannot be true when using EKS Auto Mode', this);
+      }
+
       // attach required managed policy for the cluster role in EKS Auto Mode
       // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
       ['AmazonEKSComputePolicy',
@@ -1322,6 +1337,7 @@ export class Cluster extends ClusterBase {
       } : {}),
       tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
+      bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
