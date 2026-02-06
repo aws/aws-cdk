@@ -13,6 +13,7 @@
 
 import type { IResource, ResourceProps } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
+import type { IRuntimeRef, RuntimeReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type {
   DimensionsMap,
   MetricOptions,
@@ -35,7 +36,7 @@ import { ValidationError } from './validation-helpers';
 /**
  * Interface for Agent Runtime resources
  */
-export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable, IRuntimeRef {
   /**
    * The ARN of the agent runtime resource
    * - Format `arn:${Partition}:bedrock-agentcore:${Region}:${Account}:runtime/${RuntimeId}`
@@ -205,6 +206,16 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * A reference to a Runtime resource.
+   */
+  public get runtimeRef(): RuntimeReference {
+    return {
+      agentRuntimeId: this.agentRuntimeId,
+      agentRuntimeArn: this.agentRuntimeArn,
+    };
+  }
+
+  /**
    * An accessor for the Connections object that will fail if this Runtime does not have a VPC
    * configured.
    */
@@ -266,7 +277,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     return iam.Grant.addToPrincipal({
       grantee,
       actions: RUNTIME_INVOKE_PERMS,
-      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`], // * is needed because it invoke the endpoint as subresource
+      resourceArns: [this.runtimeRef.agentRuntimeArn, `${this.runtimeRef.agentRuntimeArn}/*`], // * is needed because it invoke the endpoint as subresource
     });
   }
 
@@ -283,7 +294,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     return iam.Grant.addToPrincipal({
       grantee,
       actions: RUNTIME_INVOKE_USER_PERMS,
-      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`],
+      resourceArns: [this.runtimeRef.agentRuntimeArn, `${this.runtimeRef.agentRuntimeArn}/*`],
     });
   }
 
@@ -299,7 +310,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     return iam.Grant.addToPrincipal({
       grantee,
       actions: [...RUNTIME_INVOKE_PERMS, ...RUNTIME_INVOKE_USER_PERMS],
-      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`],
+      resourceArns: [this.runtimeRef.agentRuntimeArn, `${this.runtimeRef.agentRuntimeArn}/*`],
     });
   }
 
@@ -316,7 +327,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.agentRuntimeArn },
+      dimensionsMap: { ...dimensions, Resource: this.runtimeRef.agentRuntimeArn },
       ...props,
     };
     return this.configureMetric(metricProps);
