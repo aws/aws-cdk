@@ -99,7 +99,7 @@ export class BucketVersioning implements IMixin {
 export class BucketPublicAccessBlock implements IMixin {
   private readonly configOptions: s3.BlockPublicAccessOptions;
 
-  constructor(publicAccessConfig: s3.BlockPublicAccess) {
+  constructor(publicAccessConfig: s3.BlockPublicAccess = s3.BlockPublicAccess.BLOCK_ALL) {
     this.configOptions = {
       blockPublicAcls: publicAccessConfig.blockPublicAcls,
       blockPublicPolicy: publicAccessConfig.blockPublicPolicy,
@@ -109,21 +109,17 @@ export class BucketPublicAccessBlock implements IMixin {
   }
 
   supports(construct: IConstruct): construct is s3.CfnBucket {
-    return CfnResource.isCfnResource(construct) &&
-           construct.cfnResourceType === s3.CfnBucket.CFN_RESOURCE_TYPE_NAME;
+    return s3.CfnBucket.isCfnBucket(construct);
   }
 
   applyTo(construct: IConstruct): void {
     if (!this.supports(construct)) return;
 
-    const applyDefaults = FeatureFlags.of(construct).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT);
-
-    construct.publicAccessBlockConfiguration = applyDefaults ? {
+    construct.publicAccessBlockConfiguration = {
       blockPublicAcls: this.configOptions.blockPublicAcls ?? true,
       blockPublicPolicy: this.configOptions.blockPublicPolicy ?? true,
       ignorePublicAcls: this.configOptions.ignorePublicAcls ?? true,
       restrictPublicBuckets: this.configOptions.restrictPublicBuckets ?? true,
-    }
-      : this.configOptions;
+    };
   }
 }
