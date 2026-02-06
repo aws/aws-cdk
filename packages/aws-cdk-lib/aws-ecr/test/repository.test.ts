@@ -416,6 +416,81 @@ describe('repository', () => {
     });
   });
 
+  test('lifecycle rule with maxDaysSinceLastPull', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addLifecycleRule({
+      maxDaysSinceLastPull: cdk.Duration.days(30),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePulled","countNumber":30,"countUnit":"days"},"action":{"type":"expire"}}]}',
+      },
+    });
+  });
+
+  test('lifecycle rule with maxDaysSinceArchived', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addLifecycleRule({
+      maxDaysSinceArchived: cdk.Duration.days(90),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","storageClass":"archive","countType":"sinceImageTransitioned","countNumber":90,"countUnit":"days"},"action":{"type":"expire"}}]}',
+      },
+    });
+  });
+
+  test('lifecycle rule with action TRANSITION', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addLifecycleRule({
+      maxImageAge: cdk.Duration.days(30),
+      action: ecr.LifecycleAction.TRANSITION,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":30,"countUnit":"days"},"action":{"type":"transition","targetStorageClass":"archive"}}]}',
+      },
+    });
+  });
+
+  test('lifecycle rule must specify exactly one count type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // THEN
+    expect(() => {
+      repo.addLifecycleRule({
+        maxImageCount: 5,
+        maxImageAge: cdk.Duration.days(30),
+      });
+    }).toThrow(/Life cycle rule must contain exactly one of 'maxImageCount', 'maxImageAge', 'maxDaysSinceLastPull', and 'maxDaysSinceArchived'/);
+
+    expect(() => {
+      repo.addLifecycleRule({
+        maxDaysSinceLastPull: cdk.Duration.days(14),
+      });
+    }).not.toThrow();
+  });
+
   test('calculate repository URI', () => {
     // GIVEN
     const stack = new cdk.Stack();

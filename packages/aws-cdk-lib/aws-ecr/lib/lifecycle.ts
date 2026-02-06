@@ -65,16 +65,53 @@ export interface LifecycleRule {
   /**
    * The maximum number of images to retain
    *
-   * Specify exactly one of maxImageCount and maxImageAge.
+   * Specify exactly one of maxImageCount, maxImageAge, maxDaysSinceLastPull, and maxDaysSinceArchived.
    */
   readonly maxImageCount?: number;
 
   /**
-   * The maximum age of images to retain. The value must represent a number of days.
+   * The maximum age of images to retain (days since pushed).
    *
-   * Specify exactly one of maxImageCount and maxImageAge.
+   * Specify exactly one of maxImageCount, maxImageAge, maxDaysSinceLastPull, and maxDaysSinceArchived.
    */
   readonly maxImageAge?: Duration;
+
+  /**
+   * The maximum number of days since an image was last pulled before it can be expired or transitioned.
+   *
+   * Specify exactly one of maxImageCount, maxImageAge, maxDaysSinceLastPull, and maxDaysSinceArchived.
+   */
+  readonly maxDaysSinceLastPull?: Duration;
+
+  /**
+   * The maximum number of days since an image was archived before it can be expired.
+   * Only applies to images already in the archive storage class.
+   *
+   * Specify exactly one of maxImageCount, maxImageAge, maxDaysSinceLastPull, and maxDaysSinceArchived.
+   */
+  readonly maxDaysSinceArchived?: Duration;
+
+  /**
+   * The action to perform on matching images: expire (delete) or transition (move to archive storage).
+   *
+   * @default LifecycleAction.EXPIRE
+   */
+  readonly action?: LifecycleAction;
+}
+
+/**
+ * Action to perform on images that match a lifecycle rule
+ */
+export enum LifecycleAction {
+  /**
+   * Delete matching images
+   */
+  EXPIRE = 'expire',
+
+  /**
+   * Move matching images to archive storage class
+   */
+  TRANSITION = 'transition',
 }
 
 /**

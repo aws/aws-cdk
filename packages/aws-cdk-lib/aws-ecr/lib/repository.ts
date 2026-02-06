@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import type { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import type { LifecycleRule } from './lifecycle';
-import { TagStatus } from './lifecycle';
+import { LifecycleAction, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
@@ -927,8 +927,14 @@ export class Repository extends RepositoryBase {
         }
       });
     }
-    if ((rule.maxImageAge !== undefined) === (rule.maxImageCount !== undefined)) {
-      throw new ValidationError(`Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`, this);
+    const countTypeSpecified = [
+      rule.maxImageCount !== undefined,
+      rule.maxImageAge !== undefined,
+      rule.maxDaysSinceLastPull !== undefined,
+      rule.maxDaysSinceArchived !== undefined,
+    ].filter(Boolean).length;
+    if (countTypeSpecified !== 1) {
+      throw new ValidationError(`Life cycle rule must contain exactly one of 'maxImageCount', 'maxImageAge', 'maxDaysSinceLastPull', and 'maxDaysSinceArchived', got: ${JSON.stringify(rule)}`, this);
     }
 
     if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
@@ -1107,21 +1113,60 @@ function validateAnyRuleLast(rules: LifecycleRule[]) {
  * Render the lifecycle rule to JSON
  */
 function renderLifecycleRule(rule: LifecycleRule) {
+  const selection = renderSelection(rule);
+  const actionType = rule.action ?? LifecycleAction.EXPIRE;
+  const action: { type: string; targetStorageClass?: string } = {
+    type: actionType,
+  };
+  if (actionType === LifecycleAction.TRANSITION) {
+    action.targetStorageClass = 'archive';
+  }
   return {
     rulePriority: rule.rulePriority,
     description: rule.description,
-    selection: {
+    selection,
+    action,
+  };
+}
 
-      tagStatus: rule.tagStatus || TagStatus.ANY,
-      tagPrefixList: rule.tagPrefixList,
-      tagPatternList: rule.tagPatternList,
-      countType: rule.maxImageAge !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
-      countNumber: rule.maxImageAge?.toDays() ?? rule.maxImageCount,
-      countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
-    },
-    action: {
-      type: 'expire',
-    },
+/**
+ * Render the selection block for a lifecycle rule
+ */
+function renderSelection(rule: LifecycleRule) {
+  let countType: CountType;
+  let countNumber: number;
+  let countUnit: 'days' | undefined;
+  let storageClass: string | undefined;
+
+  if (rule.maxImageCount !== undefined) {
+    countType = CountType.IMAGE_COUNT_MORE_THAN;
+    countNumber = rule.maxImageCount;
+    countUnit = undefined;
+  } else if (rule.maxImageAge !== undefined) {
+    countType = CountType.SINCE_IMAGE_PUSHED;
+    countNumber = rule.maxImageAge.toDays();
+    countUnit = 'days';
+  } else if (rule.maxDaysSinceLastPull !== undefined) {
+    countType = CountType.SINCE_IMAGE_PULLED;
+    countNumber = rule.maxDaysSinceLastPull.toDays();
+    countUnit = 'days';
+  } else if (rule.maxDaysSinceArchived !== undefined) {
+    countType = CountType.SINCE_IMAGE_TRANSITIONED;
+    countNumber = rule.maxDaysSinceArchived.toDays();
+    countUnit = 'days';
+    storageClass = 'archive';
+  } else {
+    throw new UnscopedValidationError('Lifecycle rule must specify exactly one count type');
+  }
+
+  return {
+    tagStatus: rule.tagStatus || TagStatus.ANY,
+    tagPrefixList: rule.tagPrefixList,
+    tagPatternList: rule.tagPatternList,
+    ...(storageClass !== undefined && { storageClass }),
+    countType,
+    countNumber,
+    ...(countUnit !== undefined && { countUnit }),
   };
 }
 
@@ -1135,9 +1180,19 @@ enum CountType {
   IMAGE_COUNT_MORE_THAN = 'imageCountMoreThan',
 
   /**
-   * Set an age limit on the images in your repository
+   * Set an age limit on the images in your repository (since pushed)
    */
   SINCE_IMAGE_PUSHED = 'sinceImagePushed',
+
+  /**
+   * Set an age limit based on days since the image was last pulled
+   */
+  SINCE_IMAGE_PULLED = 'sinceImagePulled',
+
+  /**
+   * Set an age limit on images in archive storage (days since archived)
+   */
+  SINCE_IMAGE_TRANSITIONED = 'sinceImageTransitioned',
 }
 
 /**
