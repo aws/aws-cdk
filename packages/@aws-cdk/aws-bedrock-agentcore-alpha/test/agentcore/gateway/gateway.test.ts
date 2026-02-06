@@ -1099,6 +1099,19 @@ describe('Authorizer Configuration Tests', () => {
     expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
   });
 
+  test('Should create Gateway with No Auth authorizer', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.withNoAuth(),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      AuthorizerType: 'NONE',
+      AuthorizerConfiguration: Match.absent(),
+    });
+  });
+
   test('Should create custom JWT authorizer with only allowedScopes', () => {
     const authorizer = GatewayAuthorizer.usingCustomJwt({
       discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
