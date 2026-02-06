@@ -1,6 +1,6 @@
 import { Template, Match } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, HttpsPolicy, SuppressionReasons } from '../lib';
+import { ConfidenceVerdictThreshold, ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, HttpsPolicy, SuppressionReasons } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -214,5 +214,54 @@ describe('maxDeliveryDuration', () => {
         maxDeliveryDuration: Duration.hours(14).plus(Duration.seconds(1)),
       });
     }).toThrow('The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: 50401 seconds.');
+  });
+});
+
+describe('confidenceVerdictThreshold', () => {
+  test('configuration set without confidenceVerdictThreshold', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: Match.absent(),
+    });
+  });
+
+  test('configuration set with confidenceVerdictThreshold DISABLED', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      confidenceVerdictThreshold: ConfidenceVerdictThreshold.DISABLED,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        ValidationOptions: {
+          ConditionThreshold: {
+            ConditionThresholdEnabled: 'DISABLED',
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    ConfidenceVerdictThreshold.MEDIUM,
+    ConfidenceVerdictThreshold.HIGH,
+    ConfidenceVerdictThreshold.MANAGED,
+  ])('configuration set with confidenceVerdictThreshold %s', (threshold) => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      confidenceVerdictThreshold: threshold,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        ValidationOptions: {
+          ConditionThreshold: {
+            ConditionThresholdEnabled: 'ENABLED',
+            OverallConfidenceThreshold: {
+              ConfidenceVerdictThreshold: threshold,
+            },
+          },
+        },
+      },
+    });
   });
 });
