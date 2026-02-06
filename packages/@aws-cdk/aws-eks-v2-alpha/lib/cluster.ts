@@ -1412,6 +1412,7 @@ export class Cluster extends ClusterBase {
         kubectlLayer: this._kubectlProviderOptions!.kubectlLayer,
         environment: this._kubectlProviderOptions?.environment,
         memory: this._kubectlProviderOptions?.memory,
+        securityGroup: this._kubectlProviderOptions?.securityGroup,
         privateSubnets: kubectlSubnets,
       });
 
