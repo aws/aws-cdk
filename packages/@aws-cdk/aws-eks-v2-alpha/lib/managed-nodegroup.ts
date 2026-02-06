@@ -1,12 +1,18 @@
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
+import type { ISecurityGroup, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { InstanceType, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
-import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
+import { Resource, Annotations, withResolved, FeatureFlags, ValidationError, RemovalPolicies, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cxapi from 'aws-cdk-lib/cx-api';
-import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster, IpFamily } from './cluster';
 import { isGpuInstanceType } from './private/nodegroup';
 
 /**
@@ -371,6 +377,20 @@ export interface NodegroupOptions {
    * @default false
    */
   readonly enableNodeAutoRepair?: boolean;
+
+  /**
+   * The removal policy applied to the managed node group resources.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -402,18 +422,6 @@ export class Nodegroup extends Resource implements INodegroup {
     return new Import(scope, id);
   }
   /**
-   * ARN of the nodegroup
-   *
-   * @attribute
-   */
-  public readonly nodegroupArn: string;
-  /**
-   * Nodegroup name
-   *
-   * @attribute
-   */
-  public readonly nodegroupName: string;
-  /**
    * the Amazon EKS cluster resource
    *
    * @attribute ClusterName
@@ -423,6 +431,8 @@ export class Nodegroup extends Resource implements INodegroup {
    * IAM role of the instance profile for the nodegroup
    */
   public readonly role: IRole;
+
+  private readonly resource: CfnNodegroup;
 
   private readonly desiredSize: number;
   private readonly maxSize: number;
@@ -444,25 +454,25 @@ export class Nodegroup extends Resource implements INodegroup {
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
       if (desired === undefined) {return ;}
       if (desired > max) {
-        throw new Error(`Desired capacity ${desired} can't be greater than max size ${max}`);
+        throw new ValidationError(`Desired capacity ${desired} can't be greater than max size ${max}`, this);
       }
     });
 
     withResolved(this.desiredSize, this.minSize, (desired, min) => {
       if (desired === undefined) {return ;}
       if (desired < min) {
-        throw new Error(`Minimum capacity ${min} can't be greater than desired size ${desired}`);
+        throw new ValidationError(`Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
       }
     });
 
     if (props.launchTemplateSpec && props.diskSize) {
       // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
       // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
-      throw new Error('diskSize must be specified within the launch template');
+      throw new ValidationError('diskSize must be specified within the launch template', this);
     }
 
     if (props.instanceType && props.instanceTypes) {
-      throw new Error('"instanceType is deprecated, please use "instanceTypes" only.');
+      throw new ValidationError('"instanceType is deprecated, please use "instanceTypes" only.', this);
     }
 
     if (props.instanceType) {
@@ -483,15 +493,15 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
+        throw new ValidationError(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`, this);
       }
 
       // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
       instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
-        throw new Error('The specified instanceType does not support Windows workloads. '
+        throw new ValidationError('The specified instanceType does not support Windows workloads. '
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
-        + 'R3 instances aren\'t supported for Windows workloads.');
+        + 'R3 instances aren\'t supported for Windows workloads.', this);
       }
     }
 
@@ -523,7 +533,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
     this.validateUpdateConfig(props.maxUnavailable, props.maxUnavailablePercentage);
 
-    const resource = new CfnNodegroup(this, 'Resource', {
+    this.resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
@@ -578,33 +588,53 @@ export class Nodegroup extends Resource implements INodegroup {
       }
     }
 
-    this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
+  }
+
+  /**
+   * ARN of the nodegroup
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get nodegroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'eks',
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
+  }
 
+  /**
+   * Nodegroup name
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get nodegroupName(): string {
     if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
-      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
+      return this.getResourceNameAttribute(this.resource.attrNodegroupName);
     } else {
-      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+      return this.getResourceNameAttribute(this.resource.ref);
     }
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
     if (!maxUnavailable && !maxUnavailablePercentage) return;
     if (maxUnavailable && maxUnavailablePercentage) {
-      throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
+      throw new ValidationError('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together', this);
     }
     if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
-      throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
+      throw new ValidationError(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`, this);
     }
     if (maxUnavailable) {
       if (maxUnavailable > this.maxSize) {
-        throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
+        throw new ValidationError(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`, this);
       }
       if (maxUnavailable < 1 || maxUnavailable > 100) {
-        throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
+        throw new ValidationError(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
       }
     }
   }
@@ -677,11 +707,11 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`);
+    throw new UnscopedValidationError(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`);
   }
 
   if (architectures.size > 1) {
-    throw new Error('instanceTypes of different architectures is not allowed');
+    throw new UnscopedValidationError('instanceTypes of different architectures is not allowed');
   }
 
   return archAmiMap.get(Array.from(architectures)[0])!;

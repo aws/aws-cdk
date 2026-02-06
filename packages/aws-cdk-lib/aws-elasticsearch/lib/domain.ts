@@ -1,25 +1,28 @@
 import { URL } from 'url';
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ElasticsearchAccessPolicy } from './elasticsearch-access-policy';
 import { DomainGrants } from './elasticsearch-grants.generated';
-import { CfnDomain, DomainReference, IDomainRef } from './elasticsearch.generated';
+import type { DomainReference, IDomainRef } from './elasticsearch.generated';
+import { CfnDomain } from './elasticsearch.generated';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import * as perms from './perms';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, MetricOptions, Statistic } from '../../aws-cloudwatch';
+import type { MetricOptions } from '../../aws-cloudwatch';
+import { Metric, Statistic } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Elasticsearch version
@@ -972,6 +975,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @deprecated use opensearchservice module instead
    */
@@ -982,6 +987,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    * @deprecated use opensearchservice module instead
@@ -994,6 +1001,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read/write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @deprecated use opensearchservice module instead
    */
@@ -1004,6 +1013,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1022,6 +1033,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param index The index to grant permissions for
    * @param identity The principal
    * @deprecated use opensearchservice module instead
@@ -1038,6 +1051,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1056,6 +1071,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    * @deprecated use opensearchservice module instead
@@ -1072,6 +1089,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    * @deprecated use opensearchservice module instead
@@ -1087,6 +1106,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param path The path to grant permissions for
    * @param identity The principal
@@ -1409,17 +1430,23 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * @deprecated use opensearchservice module instead
    */
-  public readonly domainArn: string;
-
-  /**
-   * @deprecated use opensearchservice module instead
-   */
-  public readonly domainName: string;
-
-  /**
-   * @deprecated use opensearchservice module instead
-   */
   public readonly domainEndpoint: string;
+
+  private readonly domain: CfnDomain;
+
+  @memoizedGetter
+  public get domainArn(): string {
+    return this.getResourceArnAttribute(this.domain.attrArn, {
+      service: 'es',
+      resource: 'domain',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get domainName(): string {
+    return this.getResourceNameAttribute(this.domain.ref);
+  }
 
   /**
    * Log group that slow searches are logged to.
@@ -1467,8 +1494,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @deprecated use opensearchservice module instead
    */
   public readonly masterUserPassword?: cdk.SecretValue;
-
-  private readonly domain: CfnDomain;
 
   private readonly _slowSearchLogGroup?: logs.ILogGroupRef;
   private readonly _slowIndexLogGroup?: logs.ILogGroupRef;
@@ -1917,15 +1942,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
     }
 
-    this.domainName = this.getResourceNameAttribute(this.domain.ref);
-
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
-
-    this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
-      service: 'es',
-      resource: 'domain',
-      resourceName: this.physicalName,
-    });
 
     if (props.customEndpoint?.hostedZone) {
       new route53.CnameRecord(this, 'CnameRecord', {

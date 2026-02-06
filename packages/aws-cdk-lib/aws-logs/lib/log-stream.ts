@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnLogStream } from './logs.generated';
-import { IResource, RemovalPolicy, Resource, UnscopedValidationError } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Resource, UnscopedValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ILogGroupRef, ILogStreamRef, LogStreamReference } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroupRef, ILogStreamRef, LogStreamReference } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 export interface ILogStream extends IResource, ILogStreamRef {
   /**
@@ -108,12 +110,17 @@ export class LogStream extends Resource implements ILogStream {
     return new Import(scope, id);
   }
 
+  private readonly resource: CfnLogStream;
+
+  private readonly logGroupName: string;
+
   /**
    * The name of this log stream
    */
-  public readonly logStreamName: string;
-
-  private readonly logGroupName: string;
+  @memoizedGetter
+  public get logStreamName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   constructor(scope: Construct, id: string, props: LogStreamProps) {
     super(scope, id, {
@@ -124,13 +131,12 @@ export class LogStream extends Resource implements ILogStream {
 
     this.logGroupName = props.logGroup.logGroupRef.logGroupName;
 
-    const resource = new CfnLogStream(this, 'Resource', {
+    this.resource = new CfnLogStream(this, 'Resource', {
       logGroupName: this.logGroupName,
       logStreamName: this.physicalName,
     });
 
-    resource.applyRemovalPolicy(props.removalPolicy);
-    this.logStreamName = this.getResourceNameAttribute(resource.ref);
+    this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   public get logStreamRef(): LogStreamReference {

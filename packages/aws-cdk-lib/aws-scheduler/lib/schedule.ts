@@ -1,18 +1,21 @@
-import { Construct } from 'constructs';
-import { ScheduleExpression } from './schedule-expression';
-import { IScheduleGroup } from './schedule-group';
+import type { Construct } from 'constructs';
+import type { ScheduleExpression } from './schedule-expression';
+import type { IScheduleGroup } from './schedule-group';
+import type { IScheduleRef, ScheduleReference } from './scheduler.generated';
 import { CfnSchedule } from './scheduler.generated';
-import { IScheduleTarget } from './target';
+import type { IScheduleTarget } from './target';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, Duration, IResource, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { Duration, IResource } from '../../core';
+import { Arn, ArnFormat, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface representing a created or an imported `Schedule`.
  */
-export interface ISchedule extends IResource {
+export interface ISchedule extends IResource, IScheduleRef {
   /**
    * The arn of the schedule.
    * @attribute
@@ -255,9 +258,24 @@ export class Schedule extends Resource implements ISchedule {
    * Import an existing schedule using the ARN.
    */
   public static fromScheduleArn(scope: Construct, id: string, scheduleArn: string): ISchedule {
+    // Format: arn:aws:scheduler:region:account:schedule/SCHEDULE-GROUP/SCHEDULE-NAME
+    const parsedName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName?.split('/')[1];
+
+    if (!parsedName) {
+      throw new UnscopedValidationError(`Invalid schedule ARN format. Expected: arn:<partition>:scheduler:<region>:<account>:schedule/<group-name>/<schedule-name>, got: ${scheduleArn}`);
+    }
+
+    const scheduleName = parsedName;
+
     class Import extends Resource implements ISchedule {
       public readonly scheduleArn = scheduleArn;
-      public readonly scheduleName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split('/')[1];
+      public readonly scheduleName = scheduleName;
+      public get scheduleRef(): ScheduleReference {
+        return {
+          scheduleArn: this.scheduleArn,
+          scheduleName: this.scheduleName,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -270,17 +288,29 @@ export class Schedule extends Resource implements ISchedule {
   /**
    * The arn of the schedule.
    */
-  public readonly scheduleArn: string;
+  @memoizedGetter
+  public get scheduleArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'scheduler',
+      resource: 'schedule',
+      resourceName: `${this.scheduleGroup?.scheduleGroupName ?? 'default'}/${this.physicalName}`,
+    });
+  }
 
   /**
    * The name of the schedule.
    */
-  public readonly scheduleName: string;
+  @memoizedGetter
+  public get scheduleName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
    */
   readonly key?: kms.IKey;
+
+  private readonly _resource: CfnSchedule;
 
   /**
    * A `RetryPolicy` object that includes information about the retry policy settings.
@@ -340,12 +370,7 @@ export class Schedule extends Resource implements ISchedule {
       description: props.description,
     });
 
-    this.scheduleName = this.getResourceNameAttribute(resource.ref);
-    this.scheduleArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'scheduler',
-      resource: 'schedule',
-      resourceName: `${this.scheduleGroup?.scheduleGroupName ?? 'default'}/${this.physicalName}`,
-    });
+    this._resource = resource;
   }
 
   private renderRetryPolicy(): CfnSchedule.RetryPolicyProperty | undefined {
@@ -368,5 +393,12 @@ export class Schedule extends Resource implements ISchedule {
     if (start && end && start >= end) {
       throw new ValidationError(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`, this);
     }
+  }
+
+  public get scheduleRef(): ScheduleReference {
+    return {
+      scheduleArn: this.scheduleArn,
+      scheduleName: this.scheduleName,
+    };
   }
 }

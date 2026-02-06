@@ -1,27 +1,30 @@
 import { URL } from 'url';
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { OpenSearchAccessPolicy } from './opensearch-access-policy';
 import { DomainGrants } from './opensearchservice-grants.generated';
-import { CfnDomain, DomainReference, IDomainRef } from './opensearchservice.generated';
+import type { DomainReference, IDomainRef } from './opensearchservice.generated';
+import { CfnDomain } from './opensearchservice.generated';
 import * as perms from './perms';
-import { EngineVersion } from './version';
+import type { EngineVersion } from './version';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, MetricOptions, Statistic } from '../../aws-cloudwatch';
+import type { MetricOptions } from '../../aws-cloudwatch';
+import { Metric, Statistic } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Configures the capacity of the cluster such as the instance type and the
@@ -1005,6 +1008,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
@@ -1014,6 +1019,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
@@ -1025,6 +1032,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read/write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
@@ -1034,6 +1043,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1051,6 +1062,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param index The index to grant permissions for
    * @param identity The principal
    */
@@ -1066,6 +1079,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1083,6 +1098,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -1098,6 +1115,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    */
@@ -1112,6 +1131,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param path The path to grant permissions for
    * @param identity The principal
@@ -1406,8 +1427,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
   }
 
-  public readonly domainArn: string;
-  public readonly domainName: string;
+  @memoizedGetter
+  public get domainArn(): string {
+    return this.getResourceArnAttribute(this.domain.attrArn, {
+      service: 'es',
+      resource: 'domain',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get domainName(): string {
+    return this.getResourceNameAttribute(this.domain.ref);
+  }
+
   public readonly domainId: string;
   public readonly domainEndpoint: string;
 
@@ -1664,6 +1697,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ec2.InstanceClass.IM4GN,
       ec2.InstanceClass.R7GD,
       ec2.InstanceClass.R8GD,
+      'oi2', // OpenSearch-specific instance type with local NVMe storage
     ];
 
     const supportInstanceStorageInstanceType = [
@@ -1700,8 +1734,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new ValidationError(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`, this);
     }
 
-    // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
+    // Only R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD and OI2 support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
+    // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
       throw new ValidationError(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`, this);
     }
@@ -2000,8 +2035,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
-        kmsKeyId: encryptionAtRestEnabled
-          ? props.encryptionAtRest?.kmsKey?.keyRef.keyId
+        kmsKeyId: encryptionAtRestEnabled && props.encryptionAtRest?.kmsKey
+          ? this.selectKmsKeyIdentifier(props.encryptionAtRest.kmsKey)
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
@@ -2090,17 +2125,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
     }
 
-    this.domainName = this.getResourceNameAttribute(this.domain.ref);
-
     this.domainId = this.domain.getAtt('Id').toString();
 
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
-
-    this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
-      service: 'es',
-      resource: 'domain',
-      resourceName: this.physicalName,
-    });
 
     if (props.customEndpoint?.hostedZone) {
       new route53.CnameRecord(this, 'CnameRecord', {
@@ -2209,6 +2236,38 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
       }
     }
+  }
+
+  /**
+   * Selects the appropriate KMS key identifier (keyId or keyArn) based on whether
+   * the key is from the same account and region as the domain.
+   *
+   * For cross-account or cross-region KMS keys, OpenSearch requires the full ARN.
+   * For same-account, same-region keys, keyId is sufficient.
+   */
+  private selectKmsKeyIdentifier(key: kms.IKeyRef): string {
+    const stack = cdk.Stack.of(this);
+
+    const keyAccount = key.env.account;
+    const keyRegion = key.env.region;
+    const stackAccount = stack.account;
+    const stackRegion = stack.region;
+
+    // If either account or region is different (and not a token), use ARN
+    // Tokens are unresolved values that will be determined at deploy time
+    const isCrossAccount = !cdk.Token.isUnresolved(keyAccount) &&
+                          !cdk.Token.isUnresolved(stackAccount) &&
+                          keyAccount !== stackAccount;
+    const isCrossRegion = !cdk.Token.isUnresolved(keyRegion) &&
+                         !cdk.Token.isUnresolved(stackRegion) &&
+                         keyRegion !== stackRegion;
+
+    if (isCrossAccount || isCrossRegion) {
+      return key.keyRef.keyArn;
+    }
+
+    // For same-account, same-region keys, use keyId (maintains backward compatibility)
+    return key.keyRef.keyId;
   }
 }
 

@@ -1,12 +1,14 @@
 import { Construct } from 'constructs';
-import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
-import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
+import type { BaseStreamEventSourceProps } from './stream';
+import { StreamEventSource } from './stream';
+import type { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Stack, Names, Annotations, UnscopedValidationError, ValidationError, Duration } from '../../core';
+import type { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration } from '../../core';
+import { Stack, Names, Annotations, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
@@ -77,6 +79,19 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly schemaRegistryConfig?: ISchemaRegistry;
 
+  /**
+   * Configuration for logging verbosity from the event source mapping poller
+   *
+   * @default - No logging
+   */
+  readonly logLevel?: lambda.EventSourceMappingLogLevel;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: lambda.MetricsConfig;
   /***
    * If the function returns an error, split the batch in two and retry.
    *
@@ -221,6 +236,12 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
     this.innerProps = props;
+
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError('MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -247,6 +268,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        logLevel: this.innerProps.logLevel,
+        metricsConfig: this.innerProps.metricsConfig,
         bisectBatchOnError: this.innerProps.bisectBatchOnError,
         retryAttempts: this.innerProps.retryAttempts,
         reportBatchItemFailures: this.innerProps.reportBatchItemFailures,
@@ -356,6 +379,12 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new UnscopedValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
 
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError('MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
+    }
+
     this.innerProps = props;
   }
 
@@ -376,6 +405,8 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        logLevel: this.innerProps.logLevel,
+        metricsConfig: this.innerProps.metricsConfig,
         bisectBatchOnError: this.innerProps.bisectBatchOnError,
         retryAttempts: this.innerProps.retryAttempts,
         reportBatchItemFailures: this.innerProps.reportBatchItemFailures,

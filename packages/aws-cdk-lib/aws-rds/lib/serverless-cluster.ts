@@ -1,23 +1,26 @@
-import { Construct } from 'constructs';
-import { IClusterEngine } from './cluster-engine';
+import type { Construct } from 'constructs';
+import type { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IParameterGroup } from './parameter-group';
+import type { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
-import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
-import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
-import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import type { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
+import type { CfnDBClusterProps } from './rds.generated';
+import { CfnDBCluster } from './rds.generated';
+import type { ISubnetGroup } from './subnet-group';
+import { SubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { Resource, Token, Annotations, RemovalPolicy, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { aws_rds } from '../../interfaces';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * Interface representing a serverless database cluster.
@@ -48,6 +51,8 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
 
   /**
    * Grant the given identity to access to the Data API.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -370,6 +375,8 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
 
   /**
    * Grant the given identity to access to the Data API, including read access to the secret attached to the cluster if present
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */

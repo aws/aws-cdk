@@ -1250,6 +1250,13 @@
       }
     ]
   },
+  "aws-mwaaserverless": {
+    "scopes": [
+      {
+        "namespace": "AWS::MWAAServerless"
+      }
+    ]
+  },
   "aws-neptune": {
     "scopes": [
       {
@@ -1946,13 +1953,6 @@
     "scopes": [
       {
         "namespace": "AWS::CloudFormation"
-      }
-    ]
-  },
-  "dev-servicecatalog": {
-    "scopes": [
-      {
-        "namespace": "Dev::ServiceCatalog"
       }
     ]
   },

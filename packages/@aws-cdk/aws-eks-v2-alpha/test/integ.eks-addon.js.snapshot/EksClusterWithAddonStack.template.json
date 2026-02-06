@@ -493,7 +493,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -761,6 +761,7 @@
     "Value": "aws:cdk:eks:kubectl-ready"
    },
    "DependsOn": [
+    "ClusterClusterAdminRoleAccessF2BFF759",
     "ClusterEB0386A7"
    ]
   },
@@ -945,7 +946,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1054,7 +1055,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (EksClusterWithAddonStack/Cluster/KubectlProvider/Provider)",
     "Environment": {

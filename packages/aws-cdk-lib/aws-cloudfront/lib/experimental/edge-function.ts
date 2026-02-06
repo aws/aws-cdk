@@ -1,11 +1,11 @@
-import { Construct, Node } from 'constructs';
-import * as cloudwatch from '../../../aws-cloudwatch';
-import * as ec2 from '../../../aws-ec2';
+import type { Construct, Node } from 'constructs';
+import type * as cloudwatch from '../../../aws-cloudwatch';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as ssm from '../../../aws-ssm';
+import type { CfnResource } from '../../../core';
 import {
-  CfnResource,
   CustomResource,
   Lazy,
   Resource,
@@ -143,22 +143,42 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public addToRolePolicy(statement: iam.PolicyStatement): void {
     return this.lambda.addToRolePolicy(statement);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvoke(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvoke(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeLatestVersion(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeLatestVersion(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeVersion(identity: iam.IGrantable, version: lambda.IVersion): iam.Grant {
     return this.lambda.grantInvokeVersion(identity, version);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeUrl(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
     return this.lambda.grantInvokeCompositePrincipal(compositePrincipal);

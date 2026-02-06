@@ -2,7 +2,7 @@ import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { App, Stack, Resource } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IPipeline, PipelineReference } from 'aws-cdk-lib/aws-sagemaker';
+import type { IPipeline, PipelineReference } from 'aws-cdk-lib/aws-sagemaker';
 import { TestSource } from './test-classes';
 import { SageMakerTarget } from '../lib';
 

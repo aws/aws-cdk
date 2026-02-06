@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnDistribution, IOrigin, OriginBase, OriginBindConfig, OriginBindOptions, OriginProps, OriginProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import type { Construct } from 'constructs';
+import type { CfnDistribution, IOrigin, OriginBindConfig, OriginBindOptions, OriginProps } from 'aws-cdk-lib/aws-cloudfront';
+import { OriginBase, OriginProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 
 /** Used for testing common Origin functionality */
 export class TestOrigin extends OriginBase {
