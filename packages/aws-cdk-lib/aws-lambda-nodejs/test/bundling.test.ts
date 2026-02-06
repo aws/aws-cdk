@@ -605,6 +605,113 @@ test('Detects pnpm-lock.yaml', () => {
   });
 });
 
+test('pnpm with nodeModules writes .npmrc using base64 for private registry authentication', () => {
+  const pnpmLock = '/project/pnpm-lock.yaml';
+  const npmrcFixture = path.join(__dirname, '.testnpmrc');
+  const npmrcBase64 = Buffer.from(fs.readFileSync(npmrcFixture, 'utf-8')).toString('base64');
+
+  const originalFindUp = util.findUp;
+  jest.spyOn(util, 'findUp').mockImplementation((name, dir) =>
+    name === '.npmrc' ? npmrcFixture : originalFindUp(name, dir),
+  );
+
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot,
+    depsLockFilePath: pnpmLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(pnpmLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringContaining(`echo '${npmrcBase64}' | base64 -d`),
+      ]),
+    }),
+  });
+});
+
+test('Local bundling pnpm with .npmrc uses PowerShell base64 on win32', () => {
+  // Simulate Windows environment
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+
+  // Mock spawnSync to capture the command that tryBundle() executes
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  const pnpmLock = path.join(__dirname, '..', 'pnpm-lock.yaml');
+  const npmrcFixture = path.join(__dirname, '.testnpmrc');
+  const npmrcBase64 = Buffer.from(fs.readFileSync(npmrcFixture, 'utf-8')).toString('base64');
+
+  const originalFindUp = util.findUp;
+  jest.spyOn(util, 'findUp').mockImplementation((name, dir) =>
+    name === '.npmrc' ? npmrcFixture : originalFindUp(name, dir),
+  );
+
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(pnpmLock),
+    depsLockFilePath: pnpmLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+  });
+
+  // Call tryBundle() directly to test local bundling.
+  // Local bundling uses os.platform() to determine the shell (cmd on win32, bash on Linux).
+  // This is different from Docker bundling (forceDockerBundling: true) which always uses bash.
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingImage });
+
+  // Verify the command uses PowerShell to decode base64 on Windows
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'cmd',
+    ['/c', expect.stringContaining(`[System.Convert]::FromBase64String('${npmrcBase64}')`)],
+    expect.anything(),
+  );
+
+  osPlatformMock.mockRestore();
+  spawnSyncMock.mockRestore();
+});
+
+test('pnpm with nodeModules does not write .npmrc when none exists', () => {
+  const pnpmLock = '/project/pnpm-lock.yaml';
+
+  // Mock findUp to return undefined for .npmrc (simulating no .npmrc file found)
+  const originalFindUp = util.findUp;
+  jest.spyOn(util, 'findUp').mockImplementation((name, dir) =>
+    name === '.npmrc' ? undefined : originalFindUp(name, dir),
+  );
+
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot,
+    depsLockFilePath: pnpmLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  // Verify the bundling command was generated
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(pnpmLock), expect.anything());
+
+  // Extract the command and verify it does NOT contain base64 decoding for .npmrc
+  const call = (Code.fromAsset as jest.Mock).mock.calls[0];
+  const bundlingCommand = call[1].bundling.command[2]; // The shell command string
+  expect(bundlingCommand).not.toContain('base64 -d');
+  expect(bundlingCommand).not.toContain('.npmrc');
+});
+
 test('Detects bun.lockb', () => {
   const bunLock = path.join(__dirname, '..', 'bun.lockb');
   Bundling.bundle(stack, {
