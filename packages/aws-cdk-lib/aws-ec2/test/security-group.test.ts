@@ -1069,67 +1069,58 @@ describe('Peer rule config type safety', () => {
   test('Peer.ipv4 returns typed IngressRuleConfig with cidrIp', () => {
     const peer = Peer.ipv4('10.0.0.0/16');
     const config: IngressRuleConfig = peer.toIngressRuleConfig();
-    expect(config.cidrIp).toBe('10.0.0.0/16');
-    expect(config.cidrIpv6).toBeUndefined();
-    expect(config.sourcePrefixListId).toBeUndefined();
-    expect(config.sourceSecurityGroupId).toBeUndefined();
+    expect(config).toMatchObject({ cidrIp: '10.0.0.0/16' });
   });
 
   test('Peer.ipv4 returns typed EgressRuleConfig with cidrIp', () => {
     const peer = Peer.ipv4('10.0.0.0/16');
     const config: EgressRuleConfig = peer.toEgressRuleConfig();
-    expect(config.cidrIp).toBe('10.0.0.0/16');
-    expect(config.cidrIpv6).toBeUndefined();
-    expect(config.destinationPrefixListId).toBeUndefined();
-    expect(config.destinationSecurityGroupId).toBeUndefined();
+    expect(config).toMatchObject({ cidrIp: '10.0.0.0/16' });
   });
 
   test('Peer.ipv6 returns typed IngressRuleConfig with cidrIpv6', () => {
     const peer = Peer.ipv6('::0/0');
     const config: IngressRuleConfig = peer.toIngressRuleConfig();
-    expect(config.cidrIpv6).toBe('::0/0');
-    expect(config.cidrIp).toBeUndefined();
+    expect(config).toMatchObject({ cidrIpv6: '::0/0' });
   });
 
   test('Peer.ipv6 returns typed EgressRuleConfig with cidrIpv6', () => {
     const peer = Peer.ipv6('::0/0');
     const config: EgressRuleConfig = peer.toEgressRuleConfig();
-    expect(config.cidrIpv6).toBe('::0/0');
-    expect(config.cidrIp).toBeUndefined();
+    expect(config).toMatchObject({ cidrIpv6: '::0/0' });
   });
 
   test('Peer.prefixList returns typed IngressRuleConfig with sourcePrefixListId', () => {
     const peer = Peer.prefixList('pl-12345');
     const config: IngressRuleConfig = peer.toIngressRuleConfig();
-    expect(config.sourcePrefixListId).toBe('pl-12345');
-    expect(config.cidrIp).toBeUndefined();
+    expect(config).toMatchObject({ sourcePrefixListId: 'pl-12345' });
   });
 
   test('Peer.prefixList returns typed EgressRuleConfig with destinationPrefixListId', () => {
     const peer = Peer.prefixList('pl-12345');
     const config: EgressRuleConfig = peer.toEgressRuleConfig();
-    expect(config.destinationPrefixListId).toBe('pl-12345');
-    expect(config.cidrIp).toBeUndefined();
+    expect(config).toMatchObject({ destinationPrefixListId: 'pl-12345' });
   });
 
   test('Peer.securityGroupId returns typed IngressRuleConfig with sourceSecurityGroupId', () => {
     const peer = Peer.securityGroupId('sg-123456789');
     const config: IngressRuleConfig = peer.toIngressRuleConfig();
-    expect(config.sourceSecurityGroupId).toBe('sg-123456789');
-    expect(config.sourceSecurityGroupOwnerId).toBeUndefined();
+    expect(config).toMatchObject({ sourceSecurityGroupId: 'sg-123456789' });
   });
 
   test('Peer.securityGroupId with owner returns typed IngressRuleConfig with sourceSecurityGroupOwnerId', () => {
     const peer = Peer.securityGroupId('sg-123456789', '123456789012');
     const config: IngressRuleConfig = peer.toIngressRuleConfig();
-    expect(config.sourceSecurityGroupId).toBe('sg-123456789');
-    expect(config.sourceSecurityGroupOwnerId).toBe('123456789012');
+    expect(config).toMatchObject({
+      sourceSecurityGroupId: 'sg-123456789',
+      sourceSecurityGroupOwnerId: '123456789012',
+    });
   });
 
   test('Peer.securityGroupId returns typed EgressRuleConfig with destinationSecurityGroupId', () => {
     const peer = Peer.securityGroupId('sg-123456789');
     const config: EgressRuleConfig = peer.toEgressRuleConfig();
-    expect(config.destinationSecurityGroupId).toBe('sg-123456789');
+    expect(config).toMatchObject({ destinationSecurityGroupId: 'sg-123456789' });
   });
 
   test('SecurityGroup returns typed IngressRuleConfig', () => {

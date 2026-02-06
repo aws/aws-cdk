@@ -4,6 +4,8 @@ import { Token, UnscopedValidationError } from '../../core';
 
 /**
  * Configuration for an ingress security group rule
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ec2-securitygroup-ingress.html
  */
 export interface IngressRuleConfig {
   /**
@@ -44,6 +46,8 @@ export interface IngressRuleConfig {
 
 /**
  * Configuration for an egress security group rule
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ec2-securitygroup-egress.html
  */
 export interface EgressRuleConfig {
   /**
