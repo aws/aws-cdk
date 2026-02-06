@@ -112,6 +112,29 @@ test('deploy with log group', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 7 });
 });
 
+test('deploy with log group creates dependency to prevent log group deletion before lambda', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    logGroup: new logs.LogGroup(stack, 'LogGroup', {
+      retention: logs.RetentionDays.ONE_WEEK,
+    }),
+  });
+
+  // THEN
+  // The Lambda function should depend on the log group to ensure proper deletion order.
+  // Without this dependency, CloudFormation may delete the log group while the Lambda is
+  // still executing during stack deletion, causing Lambda to auto-recreate the log group.
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    DependsOn: Match.arrayWith(['LogGroupF5B46931']),
+  });
+});
+
 test('deploy from local directory assets', () => {
   // GIVEN
   const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
