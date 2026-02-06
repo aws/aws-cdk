@@ -113,6 +113,40 @@ describe(Match, () => {
     expect(() => stack.resolve(Match.anyOf())).toThrow(/A list of matchers must contain at least one element/);
   });
 
+  test('anyOf with raw strings', () => {
+    // Test raw strings only (regression test for issue #36902)
+    expect(stack.resolve(Match.anyOf('string1', 'string2'))).toEqual([
+      'string1',
+      'string2',
+    ]);
+
+    // Test single raw string
+    expect(stack.resolve(Match.anyOf('single-string'))).toEqual([
+      'single-string',
+    ]);
+  });
+
+  test('anyOf with mixed inputs', () => {
+    // Test mixed raw strings and Match method results (regression test for issue #36902)
+    expect(stack.resolve(Match.anyOf('raw-string', Match.prefix('pre')))).toEqual([
+      'raw-string',
+      { prefix: 'pre' },
+    ]);
+
+    // Test mixed with multiple Match methods
+    expect(stack.resolve(Match.anyOf('string1', Match.prefix('pre'), Match.suffix('suf')))).toEqual([
+      'string1',
+      { prefix: 'pre' },
+      { suffix: 'suf' },
+    ]);
+
+    // Test mixed with raw string at the end
+    expect(stack.resolve(Match.anyOf(Match.prefix('pre'), 'raw-string'))).toEqual([
+      { prefix: 'pre' },
+      'raw-string',
+    ]);
+  });
+
   test('prefix', () => {
     expect(stack.resolve(Match.prefix('foo'))).toEqual([
       { prefix: 'foo' },
