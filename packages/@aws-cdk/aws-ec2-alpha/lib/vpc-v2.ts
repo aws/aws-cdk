@@ -2,7 +2,7 @@ import { cx_api, region_info } from 'aws-cdk-lib';
 import type { DefaultInstanceTenancy, ISubnet } from 'aws-cdk-lib/aws-ec2';
 import { CfnVPC, CfnVPCCidrBlock, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import type { CfnResource } from 'aws-cdk-lib/core';
-import { Arn, FeatureFlags, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
+import { Arn, FeatureFlags, Lazy, Names, Resource, Tags, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct, IDependable } from 'constructs';
@@ -529,6 +529,9 @@ export class VpcV2 extends VpcV2Base {
     this.vpcCidrBlock = this.resource.attrCidrBlock;
     if (vpcOptions.ipv4CidrBlock) {
       this.ipv4CidrBlock = vpcOptions.ipv4CidrBlock;
+    } else if (vpcOptions.ipv4IpamPool) {
+      // For IPAM pools, use the VPC's CIDR block attribute
+      this.ipv4CidrBlock = this.resource.attrCidrBlock;
     }
     this.ipv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
     this.vpcId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
@@ -554,8 +557,8 @@ export class VpcV2 extends VpcV2Base {
         if (secondaryVpcOptions.amazonProvided || secondaryVpcOptions.ipv6IpamPool || secondaryVpcOptions.ipv6PoolId) {
           this.useIpv6 = true;
         }
-        // validate CIDR ranges per RFC 1918
-        if (secondaryVpcOptions.ipv4CidrBlock!) {
+        // validate CIDR ranges per RFC 1918 - skip validation for Token-based CIDRs
+        if (secondaryVpcOptions.ipv4CidrBlock && !Token.isUnresolved(secondaryVpcOptions.ipv4CidrBlock)) {
           const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
           if (ret === false) {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');

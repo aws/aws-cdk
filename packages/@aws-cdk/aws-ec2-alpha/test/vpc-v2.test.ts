@@ -364,4 +364,89 @@ describe('Vpc V2 with full control', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16')],
     })).toThrow('Cidr Block Name is required to create secondary IP address');
   });
+
+  test('VPC accepts CloudFormation Parameter for CIDR', () => {
+    const vpcCidr = new cdk.CfnParameter(stack, 'VpcCidr', {
+      type: 'String',
+      default: '10.5.0.0/16',
+      description: 'VPC CIDR block',
+    });
+
+    const testVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4(vpcCidr.valueAsString),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasParameter('VpcCidr', {
+      Type: 'String',
+      Default: '10.5.0.0/16',
+      Description: 'VPC CIDR block',
+    });
+    template.hasResourceProperties('AWS::EC2::VPC', {
+      CidrBlock: { Ref: 'VpcCidr' },
+    });
+    expect(testVpc.ipv4CidrBlock).toBe(vpcCidr.valueAsString);
+  });
+
+  test('VPC accepts Fn::Ref for CIDR', () => {
+    new cdk.CfnParameter(stack, 'VpcCidr', {
+      type: 'String',
+      default: '10.0.0.0/16',
+    });
+
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4(cdk.Fn.ref('VpcCidr')),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::EC2::VPC', {
+      CidrBlock: { Ref: 'VpcCidr' },
+    });
+  });
+
+  test('VPC with concrete CIDR still works (backward compatibility)', () => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
+      CidrBlock: '10.1.0.0/16',
+      EnableDnsHostnames: true,
+      EnableDnsSupport: true,
+    });
+  });
+
+  test('VPC with Token-based secondary CIDR skips RFC 1918 validation', () => {
+    const secondaryCidr = new cdk.CfnParameter(stack, 'SecondaryCidr', {
+      type: 'String',
+      default: '192.168.0.0/16',
+    });
+
+    // This should NOT throw an error even though primary is 10.x and secondary is 192.168.x
+    // because Token-based CIDRs skip validation
+    expect(() => {
+      new vpc.VpcV2(stack, 'TestVpc', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4(secondaryCidr.valueAsString, {
+          cidrBlockName: 'SecondaryAddress',
+        })],
+      });
+    }).not.toThrow();
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      VpcId: { 'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'] },
+      CidrBlock: { Ref: 'SecondaryCidr' },
+    });
+  });
+
+  test('VPC with default CIDR when no primaryAddressBlock provided', () => {
+    new vpc.VpcV2(stack, 'TestVpc');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
+      CidrBlock: '10.0.0.0/16',
+    });
+  });
 });

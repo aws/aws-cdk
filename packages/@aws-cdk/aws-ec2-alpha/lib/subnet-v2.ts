@@ -298,7 +298,8 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     const ipv4CidrBlock = props.ipv4CidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
-    if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
+    // Skip CIDR range validation for Token-based CIDRs (will be validated at deployment time)
+    if (!Token.isUnresolved(ipv4CidrBlock) && !checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
       throw new ValidationError('CIDR block should be within the range of VPC', this);
     }
 
@@ -525,6 +526,11 @@ function validateSupportIpv6(vpc: IVpcV2) {
  * @internal
  */
 function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
+  // Skip validation for Token-based CIDRs (will be validated at deployment time)
+  if (Token.isUnresolved(cidrRange)) {
+    return true; // Assume valid, CloudFormation will validate at deployment
+  }
+
   const vpcCidrBlock = [vpc.ipv4CidrBlock];
   const subnetCidrBlock = new CidrBlock(cidrRange);
   const allCidrs: CidrBlock[] = [];
@@ -532,17 +538,21 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
   // Secondary IP addresses assoicated using user defined IPv4 range
   if (vpc.secondaryCidrBlock) {
     for (const ipAddress of vpc.secondaryCidrBlock) {
-      if (ipAddress.cidrBlock) {
+      if (ipAddress.cidrBlock && !Token.isUnresolved(ipAddress.cidrBlock)) {
         vpcCidrBlock.push(ipAddress.cidrBlock);
       }
     }
-    const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
+    const cidrs = vpcCidrBlock
+      .filter(cidr => !Token.isUnresolved(cidr))
+      .map(cidr => new CidrBlock(cidr));
     allCidrs.push(...cidrs);
   }
 
   // Secondary IP addresses assoicated using IPAM IPv4 range
   if (vpc.ipv4IpamProvisionedCidrs) {
-    const cidrs = vpc.ipv4IpamProvisionedCidrs.map(cidr => new CidrBlock(cidr));
+    const cidrs = vpc.ipv4IpamProvisionedCidrs
+      .filter(cidr => !Token.isUnresolved(cidr))
+      .map(cidr => new CidrBlock(cidr));
     allCidrs.push(...cidrs);
   }
 
