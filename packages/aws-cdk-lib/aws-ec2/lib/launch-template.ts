@@ -151,6 +151,77 @@ export enum SpotRequestType {
 }
 
 /**
+ * Capacity Reservation preferences for instances launched from a LaunchTemplate
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-using.html
+ */
+export enum CapacityReservationPreference {
+  /**
+   * Launch instances into any available Capacity Reservation that matches the instance attributes.
+   * If no matching Capacity Reservation is available, the instance uses On-Demand capacity.
+   */
+  OPEN = 'open',
+
+  /**
+   * Do not launch instances into Capacity Reservations.
+   * The instance will use On-Demand capacity.
+   */
+  NONE = 'none',
+
+  /**
+   * Only launch instances into Capacity Reservations.
+   * If no matching Capacity Reservation is available, the instance launch fails.
+   */
+  CAPACITY_RESERVATIONS_ONLY = 'capacity-reservations-only',
+}
+
+/**
+ * Represents a Capacity Reservation for EC2 instances
+ */
+export interface ICapacityReservation {
+  /**
+   * The ID of the Capacity Reservation
+   */
+  readonly capacityReservationId?: string;
+
+  /**
+   * The ARN of the Capacity Reservation resource group
+   */
+  readonly capacityReservationResourceGroupArn?: string;
+}
+
+/**
+ * A Capacity Reservation for EC2 instances
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html
+ */
+export class CapacityReservation {
+  /**
+   * Reference an existing Capacity Reservation by ID
+   *
+   * @param capacityReservationId The ID of the Capacity Reservation (e.g., 'cr-1234567890abcdef0')
+   */
+  public static fromId(capacityReservationId: string): ICapacityReservation {
+    return {
+      capacityReservationId,
+    };
+  }
+
+  /**
+   * Reference an existing Capacity Reservation resource group by ARN
+   *
+   * @param resourceGroupArn The ARN of the Capacity Reservation resource group
+   */
+  public static fromResourceGroupArn(resourceGroupArn: string): ICapacityReservation {
+    return {
+      capacityReservationResourceGroupArn: resourceGroupArn,
+    };
+  }
+
+  private constructor() {}
+}
+
+/**
  * Interface for the Spot market instance options provided in a LaunchTemplate.
  */
 export interface LaunchTemplateSpotOptions {
@@ -455,6 +526,34 @@ export interface LaunchTemplateProps {
    * @default - no placement group will be used for this launch template.
    */
   readonly placementGroup?: IPlacementGroupRef;
+
+  /**
+   * The Capacity Reservation to associate with the instance
+   *
+   * Use `CapacityReservation.fromId()` to reference an existing Capacity Reservation by ID,
+   * or `CapacityReservation.fromResourceGroupArn()` to reference a Capacity Reservation resource group.
+   *
+   * @default - No Capacity Reservation is associated
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html
+   */
+  readonly capacityReservation?: ICapacityReservation;
+
+  /**
+   * The Capacity Reservation preference for the instance
+   *
+   * Determines how the instance uses Capacity Reservations:
+   * - OPEN: Use any available matching Capacity Reservation, or On-Demand if none available
+   * - NONE: Do not use Capacity Reservations (use On-Demand capacity)
+   * - CAPACITY_RESERVATIONS_ONLY: Only launch if matching Capacity Reservation is available
+   *
+   * @default - When not specified and no capacityReservation is set, instances use On-Demand capacity.
+   * When capacityReservation is specified without a preference, the behavior depends on the
+   * Capacity Reservation's instance matching criteria (open or targeted).
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-using.html
+   */
+  readonly capacityReservationPreference?: CapacityReservationPreference;
 }
 
 /**
@@ -818,11 +917,16 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
           groupName: props.placementGroup.placementGroupRef.groupName,
         } : undefined,
 
+        capacityReservationSpecification: (props.capacityReservation || props.capacityReservationPreference) ? {
+          capacityReservationPreference: props.capacityReservationPreference,
+          capacityReservationTarget: props.capacityReservation ? {
+            capacityReservationId: props.capacityReservation.capacityReservationId,
+            capacityReservationResourceGroupArn: props.capacityReservation.capacityReservationResourceGroupArn,
+          } : undefined,
+        } : undefined,
+
         // Fields not yet implemented:
         // ==========================
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification.html
-        // Will require creating an L2 for AWS::EC2::CapacityReservation
-        // capacityReservationSpecification: undefined,
 
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html
         // cpuOptions: undefined,
