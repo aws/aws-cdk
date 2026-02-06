@@ -1025,6 +1025,44 @@ This issue only applies if the metrics to alarm on are emitted by the service
 itself. If the metrics are emitted by a different resource, that does not depend
 on the service, there will be no restrictions on the alarm name.
 
+### Force new deployment
+
+Use `forceNewDeployment` to start a new deployment with no service definition changes.
+This is useful when you want to update a service's tasks to use a newer Docker image
+with the same image/tag combination (e.g., `my_image:latest`) or to roll Fargate tasks
+onto a newer platform version.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  forceNewDeployment: {
+    enabled: true,
+  },
+});
+```
+
+You can also specify a `nonce` value that signals Amazon ECS to start a new deployment
+when the value changes, even though no other service parameters have changed.
+Use a time-varying value like a timestamp, random string, or sequence number:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  forceNewDeployment: {
+    enabled: true,
+    nonce: Date.now().toString(), // Forces a new deployment on each synth
+  },
+});
+```
+
+See [ForceNewDeployment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-forcenewdeployment.html) for more details.
+
 ### Include an application/network load balancer
 
 `Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:

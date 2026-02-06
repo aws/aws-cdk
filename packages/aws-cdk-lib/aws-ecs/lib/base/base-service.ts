@@ -96,6 +96,35 @@ export interface DeploymentCircuitBreaker {
 }
 
 /**
+ * Configuration for forcing a new deployment of the service.
+ */
+export interface ForceNewDeployment {
+  /**
+   * Whether to force a new deployment of the service.
+   *
+   * By default, deployments aren't forced. You can use this option to start
+   * a new deployment with no service definition changes. For example, you can
+   * update a service's tasks to use a newer Docker image with the same
+   * image/tag combination (`my_image:latest`) or to roll Fargate tasks onto
+   * a newer platform version.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * A unique nonce value that signals Amazon ECS to start a new deployment.
+   *
+   * When you change this value, it signals Amazon ECS to start a new deployment
+   * even though no other service parameters have changed. Use a time-varying value
+   * like a timestamp, random string, or sequence number.
+   *
+   * @default - no nonce
+   */
+  readonly nonce?: string;
+}
+
+/**
  * Configuration for traffic shift during progressive deployments
  */
 export interface TrafficShiftConfig {
@@ -501,6 +530,20 @@ export interface BaseServiceOptions {
    */
   readonly canaryConfiguration?: TrafficShiftConfig;
 
+  /**
+   * Whether to force a new deployment of the service.
+   *
+   * By default, deployments aren't forced. You can use this option to start
+   * a new deployment with no service definition changes. For example, you can
+   * update a service's tasks to use a newer Docker image with the same
+   * image/tag combination (`my_image:latest`) or to roll Fargate tasks onto
+   * a newer platform version.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-forcenewdeployment.html
+   * @default - no forced deployment
+   */
+  readonly forceNewDeployment?: ForceNewDeployment;
+
 }
 
 /**
@@ -837,6 +880,10 @@ export abstract class BaseService extends Resource
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
       volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
+      forceNewDeployment: props.forceNewDeployment ? {
+        enableForceNewDeployment: props.forceNewDeployment.enabled ?? true,
+        forceNewDeploymentNonce: props.forceNewDeployment.nonce,
+      } : undefined,
       ...additionalProps,
     });
 
@@ -852,6 +899,13 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {
       throw new ValidationError('Deployment alarms requires the ECS deployment controller.', this);
+    }
+
+    if (props.forceNewDeployment?.nonce !== undefined) {
+      const nonceLength = props.forceNewDeployment.nonce.length;
+      if (nonceLength < 1 || nonceLength > 255) {
+        throw new ValidationError(`forceNewDeployment.nonce must be between 1 and 255 characters, got ${nonceLength}`, this);
+      }
     }
 
     if (
