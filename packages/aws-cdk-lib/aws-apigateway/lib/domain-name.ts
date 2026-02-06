@@ -4,7 +4,7 @@ import { CfnDomainName } from './apigateway.generated';
 import type { BasePathMappingOptions } from './base-path-mapping';
 import { BasePathMapping } from './base-path-mapping';
 import type { IRestApi } from './restapi';
-import { EndpointType } from './restapi';
+import { EndpointType, EndpointAccessMode } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import type { IBucket } from '../../aws-s3';
 import type { IResource } from '../../core';
@@ -34,6 +34,7 @@ export interface ApiMappingOptions {
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies-list.html
  */
 export enum SecurityPolicy {
   /** Cipher suite TLS 1.0 */
@@ -41,6 +42,22 @@ export enum SecurityPolicy {
 
   /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'TLS_1_2',
+
+  /** Cipher suite SecurityPolicy_TLS13_2025_EDGE for EDGE endpoint */
+  TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+  /** Cipher suite SecurityPolicy_TLS12_PFS_2025_EDGE for EDGE endpoint */
+  TLS12_PFS_2025_EDGE = 'SecurityPolicy_TLS12_PFS_2025_EDGE',
+  /** Cipher suite SecurityPolicy_TLS12_2018_EDGE for EDGE endpoint */
+  TLS12_2018_EDGE = 'SecurityPolicy_TLS12_2018_EDGE',
+
+  /** Cipher suite SecurityPolicy_TLS13_1_3_2025_09 for REGIONAL endpoint */
+  TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
+  /** Cipher suite SecurityPolicy_TLS13_1_3_FIPS_2025_09 for REGIONAL endpoint */
+  TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
+  /** Cipher suite SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09 for REGIONAL endpoint */
+  TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+  /** Cipher suite SecurityPolicy_TLS13_1_2_PQ_2025_09 for REGIONAL endpoint */
+  TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
 }
 
 export interface DomainNameOptions {
@@ -55,6 +72,12 @@ export interface DomainNameOptions {
    * needs to be in the US East (N. Virginia) region.
    */
   readonly certificate: ICertificateRef;
+
+  /**
+   * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
+   * @default - will be set to undefined
+   */
+  readonly endpointAccessMode?: EndpointAccessMode;
 
   /**
    * The type of endpoint for this DomainName.
@@ -164,6 +187,10 @@ export class DomainName extends Resource implements IDomainName {
 
     this.endpointType = props.endpointType || EndpointType.REGIONAL;
     const edge = this.endpointType === EndpointType.EDGE;
+
+    if (props.securityPolicy?.startsWith('SecurityPolicy_') && !props.endpointAccessMode ) {
+      throw new ValidationError('When using a SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified.', this);
+    }
     this.securityPolicy = props.securityPolicy;
 
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
@@ -178,6 +205,7 @@ export class DomainName extends Resource implements IDomainName {
       endpointConfiguration: { types: [this.endpointType] },
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
+      endpointAccessMode: props.endpointAccessMode? props.endpointAccessMode : undefined,
     });
 
     this.domainName = resource.ref;
