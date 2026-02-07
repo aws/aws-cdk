@@ -1260,6 +1260,34 @@ describe('vpc', () => {
       });
     });
 
+    test('NAT gateway provider with maxDrainDuration', () => {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway({
+        maxDrainDuration: Duration.minutes(10),
+      });
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        MaxDrainDurationSeconds: 600,
+      });
+    });
+
+    test('NAT gateway provider throws when maxDrainDuration is less than 1 second', () => {
+      expect(() => {
+        NatProvider.gateway({
+          maxDrainDuration: Duration.millis(500),
+        });
+      }).toThrow('`maxDrainDuration` must be between 1 and 4000 seconds, got 0.5 seconds.');
+    });
+
+    test('NAT gateway provider throws when maxDrainDuration is greater than 4000 seconds', () => {
+      expect(() => {
+        NatProvider.gateway({
+          maxDrainDuration: Duration.seconds(4001),
+        });
+      }).toThrow('`maxDrainDuration` must be between 1 and 4000 seconds, got 4001 seconds.');
+    });
+
     describe('Regional NAT Gateway', () => {
       test('creates a single regional NAT gateway', () => {
         const stack = new Stack();
@@ -1311,6 +1339,22 @@ describe('vpc', () => {
           AvailabilityMode: 'regional',
           MaxDrainDurationSeconds: 600,
         });
+      });
+
+      test('throws when maxDrainDuration is less than 1 second', () => {
+        expect(() => {
+          NatProvider.regionalGateway({
+            maxDrainDuration: Duration.millis(500),
+          });
+        }).toThrow('`maxDrainDuration` must be between 1 and 4000 seconds, got 0.5 seconds.');
+      });
+
+      test('throws when maxDrainDuration is greater than 4000 seconds', () => {
+        expect(() => {
+          NatProvider.regionalGateway({
+            maxDrainDuration: Duration.seconds(4001),
+          });
+        }).toThrow('`maxDrainDuration` must be between 1 and 4000 seconds, got 4001 seconds.');
       });
 
       test('with allocationId', () => {

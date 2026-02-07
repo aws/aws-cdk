@@ -2518,13 +2518,14 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
    * @returns A ref to the the NAT Gateway ID
    */
   @MethodMetadata()
-  public addNatGateway(eipAllocationId?: string) {
+  public addNatGateway(eipAllocationId?: string, maxDrainDurationSeconds?: number) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
       allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
+      maxDrainDurationSeconds,
     });
     ngw.node.addDependency(this.internetConnectivityEstablished);
     return ngw;

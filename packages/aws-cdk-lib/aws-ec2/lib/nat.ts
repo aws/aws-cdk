@@ -177,6 +177,14 @@ export interface NatGatewayProps {
    * @default - No fixed EIPs allocated for the NAT gateways
    */
   readonly eipAllocationIds?: string[];
+
+  /**
+   * Maximum amount of time to wait before forcibly releasing IP addresses
+   * if connections are still in progress.
+   *
+   * @default Duration.seconds(350)
+   */
+  readonly maxDrainDuration?: Duration;
 }
 
 /**
@@ -390,6 +398,15 @@ export class NatGatewayProvider extends NatProvider {
 
   constructor(private readonly props: NatGatewayProps = {}) {
     super();
+
+    if (this.props.maxDrainDuration !== undefined) {
+      const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
+      if (seconds < 1 || seconds > 4000) {
+        throw new UnscopedValidationError(
+          `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+        );
+      }
+    }
   }
 
   public configureNat(options: ConfigureNatOptions) {
@@ -405,7 +422,7 @@ export class NatGatewayProvider extends NatProvider {
     let i = 0;
     for (const sub of options.natSubnets) {
       const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
-      const gateway = sub.addNatGateway(eipAllocationId);
+      const gateway = sub.addNatGateway(eipAllocationId, this.props.maxDrainDuration?.toSeconds());
       this.gateways.add(sub.availabilityZone, gateway.ref);
       i++;
     }
@@ -468,6 +485,15 @@ export class RegionalNatGatewayProvider extends NatProvider {
       if (this.props.availabilityZoneAddresses.some(az => az.allocationIds.length === 0)) {
         throw new UnscopedValidationError(
           '`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.',
+        );
+      }
+    }
+
+    if (this.props.maxDrainDuration !== undefined) {
+      const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
+      if (seconds < 1 || seconds > 4000) {
+        throw new UnscopedValidationError(
+          `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
         );
       }
     }
