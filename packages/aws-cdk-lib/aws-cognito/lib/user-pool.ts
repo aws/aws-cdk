@@ -1594,7 +1594,19 @@ export class UserPool extends UserPoolBase {
     }
 
     if (props.customAttributes) {
+      const standardAttrValues = Object.values(StandardAttributeNames);
+
       const customAttrs = Object.keys(props.customAttributes).map((attrName) => {
+        // Validate custom attribute name doesn't conflict with standard attributes
+        if (!Token.isUnresolved(attrName) && standardAttrValues.includes(attrName)) {
+          throw new ValidationError(
+            `Custom attribute '${attrName}' conflicts with a standard attribute name. ` +
+            'Custom attributes cannot use the same name as standard attributes. ' +
+            `Standard attribute names: ${standardAttrValues.join(', ')}`,
+            this,
+          );
+        }
+
         const attrConfig = props.customAttributes![attrName].bind();
         const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
           minValue: attrConfig.numberConstraints?.min?.toString(),
