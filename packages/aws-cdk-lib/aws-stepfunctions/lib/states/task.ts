@@ -6,9 +6,15 @@ import * as cdk from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { noEmptyObject } from '../private/util';
+<<<<<<< HEAD
+import { StateGraph } from '../state-graph';
+import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
+import { CatchProps, ICatchable, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
+=======
 import type { StateGraph } from '../state-graph';
 import type { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
 import type { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
+>>>>>>> main
 
 /**
  * Props that are common to all tasks
@@ -111,7 +117,7 @@ export interface TaskProps {
  *
  * @deprecated - replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish)
  */
-export class Task extends State implements INextable {
+export class Task extends State implements INextable, ICatchable {
   public readonly endStates: INextable[];
   private readonly timeout?: cdk.Duration;
   private readonly taskProps: StepFunctionsTaskConfig;
@@ -146,7 +152,7 @@ export class Task extends State implements INextable {
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): Task {
+  public addCatch(handler: IChainable, props: CatchProps = {}): ICatchable {
     super._addCatch(handler.startState, props);
     return this;
   }
