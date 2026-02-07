@@ -421,7 +421,7 @@ describe('repository', () => {
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
 
-    // WHEN
+    // WHEN (action defaults to TRANSITION for sinceImagePulled per AWS console)
     repo.addLifecycleRule({
       maxDaysSinceLastPull: cdk.Duration.days(30),
     });
@@ -429,7 +429,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePulled","countNumber":30,"countUnit":"days"},"action":{"type":"expire"}}]}',
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePulled","countNumber":30,"countUnit":"days"},"action":{"type":"transition","targetStorageClass":"archive"}}]}',
       },
     });
   });
@@ -489,6 +489,46 @@ describe('repository', () => {
         maxDaysSinceLastPull: cdk.Duration.days(14),
       });
     }).not.toThrow();
+  });
+
+  test('maxDaysSinceLastPull only allows TRANSITION action', () => {
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    expect(() => {
+      repo.addLifecycleRule({
+        maxDaysSinceLastPull: cdk.Duration.days(30),
+        action: ecr.LifecycleAction.EXPIRE,
+      });
+    }).toThrow(/maxDaysSinceLastPull.*only supports action TRANSITION/);
+
+    repo.addLifecycleRule({
+      maxDaysSinceLastPull: cdk.Duration.days(30),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePulled","countNumber":30,"countUnit":"days"},"action":{"type":"transition","targetStorageClass":"archive"}}]}',
+      },
+    });
+  });
+
+  test('maxDaysSinceArchived only allows EXPIRE action', () => {
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    expect(() => {
+      repo.addLifecycleRule({
+        maxDaysSinceArchived: cdk.Duration.days(90),
+        action: ecr.LifecycleAction.TRANSITION,
+      });
+    }).toThrow(/maxDaysSinceArchived.*only supports action EXPIRE/);
+
+    repo.addLifecycleRule({ maxDaysSinceArchived: cdk.Duration.days(90) });
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","storageClass":"archive","countType":"sinceImageTransitioned","countNumber":90,"countUnit":"days"},"action":{"type":"expire"}}]}',
+      },
+    });
   });
 
   test('calculate repository URI', () => {

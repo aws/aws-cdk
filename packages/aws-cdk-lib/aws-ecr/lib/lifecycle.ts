@@ -77,7 +77,8 @@ export interface LifecycleRule {
   readonly maxImageAge?: Duration;
 
   /**
-   * The maximum number of days since an image was last pulled before it can be expired or transitioned.
+   * The maximum number of days since an image was last pulled before it can be transitioned.
+   * Only the TRANSITION (archive) action is allowed with this count type.
    *
    * Specify exactly one of maxImageCount, maxImageAge, maxDaysSinceLastPull, and maxDaysSinceArchived.
    */
@@ -86,6 +87,7 @@ export interface LifecycleRule {
   /**
    * The maximum number of days since an image was archived before it can be expired.
    * Only applies to images already in the archive storage class.
+   * Only the EXPIRE action is allowed with this count type.
    *
    * Specify exactly one of maxImageCount, maxImageAge, maxDaysSinceLastPull, and maxDaysSinceArchived.
    */
@@ -93,8 +95,11 @@ export interface LifecycleRule {
 
   /**
    * The action to perform on matching images: expire (delete) or transition (move to archive storage).
+   * When using maxDaysSinceLastPull, only TRANSITION is allowed.
+   * When using maxDaysSinceArchived, only EXPIRE is allowed.
+   * Both actions are allowed for maxImageCount and maxImageAge.
    *
-   * @default LifecycleAction.EXPIRE
+   * @default LifecycleAction.EXPIRE (or TRANSITION when maxDaysSinceLastPull is used)
    */
   readonly action?: LifecycleAction;
 }

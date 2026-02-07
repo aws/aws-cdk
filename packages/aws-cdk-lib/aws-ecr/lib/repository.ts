@@ -937,6 +937,14 @@ export class Repository extends RepositoryBase {
       throw new ValidationError(`Life cycle rule must contain exactly one of 'maxImageCount', 'maxImageAge', 'maxDaysSinceLastPull', and 'maxDaysSinceArchived', got: ${JSON.stringify(rule)}`, this);
     }
 
+    // AWS allows only TRANSITION (archive) for sinceImagePulled, and only EXPIRE for sinceImageTransitioned
+    if (rule.maxDaysSinceLastPull !== undefined && rule.action === LifecycleAction.EXPIRE) {
+      throw new ValidationError("Life cycle rule with 'maxDaysSinceLastPull' only supports action TRANSITION (archive), not EXPIRE", this);
+    }
+    if (rule.maxDaysSinceArchived !== undefined && rule.action === LifecycleAction.TRANSITION) {
+      throw new ValidationError("Life cycle rule with 'maxDaysSinceArchived' only supports action EXPIRE, not TRANSITION", this);
+    }
+
     if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
       throw new ValidationError('Life cycle can only have one TagStatus.Any rule', this);
     }
@@ -1114,7 +1122,11 @@ function validateAnyRuleLast(rules: LifecycleRule[]) {
  */
 function renderLifecycleRule(rule: LifecycleRule) {
   const selection = renderSelection(rule);
-  const actionType = rule.action ?? LifecycleAction.EXPIRE;
+  // sinceImagePulled only allows TRANSITION; sinceImageTransitioned only allows EXPIRE
+  const defaultAction = rule.maxDaysSinceLastPull !== undefined ? LifecycleAction.TRANSITION
+    : rule.maxDaysSinceArchived !== undefined ? LifecycleAction.EXPIRE
+      : LifecycleAction.EXPIRE;
+  const actionType = rule.action ?? defaultAction;
   const action: { type: string; targetStorageClass?: string } = {
     type: actionType,
   };
