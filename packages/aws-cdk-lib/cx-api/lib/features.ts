@@ -150,6 +150,7 @@ export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccess
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const BUNDLING_FIX_DOCKER_OWNERSHIP = '@aws-cdk/core:bundlingFixDockerOwnership';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1762,6 +1763,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.233.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BUNDLING_FIX_DOCKER_OWNERSHIP]: {
+    type: FlagType.BugFix,
+    summary: 'Fix file ownership issues when bundling assets on Linux',
+    detailsMd: `
+      When enabled, bundled asset files will have their ownership changed to the host user's
+      UID/GID after Docker bundling completes. This fixes the issue where files created inside
+      Docker containers are owned by root on the host system, which can cause permission issues.
+
+      This only affects Linux hosts; other platforms handle file ownership differently.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
