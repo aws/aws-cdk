@@ -906,7 +906,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    *
    * @default false
    */
-    readonly liveData?: boolean;
+  readonly liveData?: boolean;
 }
 
 /**
