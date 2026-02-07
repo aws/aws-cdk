@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
-import * as ddb from '../../../aws-dynamodb';
+import type { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
+import type * as ddb from '../../../aws-dynamodb';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
@@ -10,7 +10,7 @@ interface DynamoDeleteItemOptions {
   /**
    * The name of the table containing the requested item.
    */
-  readonly table: ddb.ITable;
+  readonly table: ddb.ITableRef;
 
   /**
    * Primary key of the item to retrieve.
@@ -124,7 +124,7 @@ export class DynamoDeleteItem extends sfn.TaskStateBase {
           Stack.of(this).formatArn({
             service: 'dynamodb',
             resource: 'table',
-            resourceName: props.table.tableName,
+            resourceName: props.table.tableRef.tableName,
           }),
         ],
         actions: [`dynamodb:${DynamoMethod.DELETE}Item`],
@@ -141,7 +141,7 @@ export class DynamoDeleteItem extends sfn.TaskStateBase {
       Resource: getDynamoResourceArn(DynamoMethod.DELETE),
       ...this._renderParametersOrArguments({
         Key: transformAttributeValueMap(this.props.key),
-        TableName: this.props.table.tableName,
+        TableName: this.props.table.tableRef.tableName,
         ConditionExpression: this.props.conditionExpression,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
         ExpressionAttributeValues: transformAttributeValueMap(this.props.expressionAttributeValues),

@@ -1,4 +1,4 @@
-import { Graph } from '../../lib/helpers-internal';
+import type { Graph } from '../../lib/helpers-internal';
 import { actionName } from '../../lib/private/identifiers';
 import { mkGraph } from '../blueprint/helpers-internal/util';
 

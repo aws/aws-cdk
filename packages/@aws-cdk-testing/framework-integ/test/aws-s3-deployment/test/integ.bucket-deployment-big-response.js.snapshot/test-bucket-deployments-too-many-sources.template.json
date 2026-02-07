@@ -9,7 +9,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:83368455",
+      "Key": "aws-cdk:cr-owned:8f59c665",
       "Value": "true"
      }
     ]
@@ -146,19 +146,19 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "DeployMeAwsCliLayer5F9219E9": {
+  "DeployWithManySourcesAwsCliLayer2A86408C": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }
   },
-  "DeployMeCustomResource2048MiBEF8BA27E": {
+  "DeployWithManySourcesCustomResource2048MiB35AAAB3B": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -744,7 +744,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeployMeAwsCliLayer5F9219E9"
+      "Ref": "DeployWithManySourcesAwsCliLayer2A86408C"
      }
     ],
     "MemorySize": 2048,
@@ -776,7 +776,7 @@
         ",",
         {
          "Fn::GetAtt": [
-          "DeployMeCustomResource2048MiBEF8BA27E",
+          "DeployWithManySourcesCustomResource2048MiB35AAAB3B",
           "SourceObjectKeys"
          ]
         }

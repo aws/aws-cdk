@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { CodeInterpreterCustom } from '../../../agentcore/tools/code-interpreter';
-import { CodeInterpreterNetworkConfiguration } from '../../../agentcore/network/network-configuration';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CodeInterpreterNetworkConfiguration } from '../../../lib/network/network-configuration';
+import { CodeInterpreterCustom } from '../../../lib/tools/code-interpreter';
 
 describe('CodeInterpreterCustom default tests', () => {
   let template: Template;
@@ -982,5 +982,24 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
     expect(invocationsMetric).toBeDefined();
     expect(errorsMetric).toBeDefined();
     expect(sessionDurationMetric).toBeDefined();
+  });
+});
+
+describe('CodeInterpreter Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create CodeInterpreterCustom without codeInterpreterCustomName (auto-generated)', () => {
+    const codeInterpreter = new CodeInterpreterCustom(stack, 'TestCodeInterpreter', {
+    });
+
+    expect(codeInterpreter.name).toBeDefined();
+    expect(codeInterpreter.name).not.toBe('');
   });
 });

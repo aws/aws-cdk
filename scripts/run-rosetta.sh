@@ -21,7 +21,7 @@
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
 
-ROSETTA=${ROSETTA:-npx jsii-rosetta}
+ROSETTA=${ROSETTA:-yarn run rosetta}
 
 infuse=false
 jsii_pkgs_file=""
@@ -54,11 +54,18 @@ if [[ "${jsii_pkgs_file}" = "" ]]; then
     jsii_pkgs_file=$TMPDIR/jsii.txt
 fi
 
+mkdir -p $HOME/.s3buildcache
 rosetta_cache_file=$HOME/.s3buildcache/rosetta-cache.tabl.json
 extract_opts=""
 if $infuse; then
     extract_opts="--infuse"
 fi
+
+#----------------------------------------------------------------------
+# Rosetta Debug settings
+
+export TIMING="1"
+export DEBUG_TYPE_FINGERPRINTS=$HOME/.s3buildcache/type-fingerprints.txt
 
 #----------------------------------------------------------------------
 
@@ -73,7 +80,7 @@ time $ROSETTA extract \
 
 if $infuse; then
     echo "💎 Generating synthetic examples for the remainder" >&2
-    time npx cdk-generate-synthetic-examples \
+    time yarn run synthetic-examples \
         $(cat $jsii_pkgs_file)
 
     time $ROSETTA extract \
@@ -85,5 +92,6 @@ if $infuse; then
 fi
 
 time $ROSETTA trim-cache \
+    --verbose \
     ${rosetta_cache_file} \
     $(cat $jsii_pkgs_file)

@@ -1,13 +1,14 @@
-import { Construct, IDependable, Node } from 'constructs';
-import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type { Construct, IDependable } from 'constructs';
+import { Node } from 'constructs';
+import type * as iam from '../../../aws-iam';
+import type * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
-import { DestinationS3BackupProps } from '../common';
-import { CfnDeliveryStream } from '../kinesisfirehose.generated';
-import { ILoggingConfig } from '../logging-config';
-import { IDataProcessor } from '../processor';
+import type { DestinationS3BackupProps } from '../common';
+import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
+import type { ILoggingConfig } from '../logging-config';
+import type { IDataProcessor } from '../processor';
 
 export interface DestinationLoggingProps {
   /**
@@ -107,14 +108,21 @@ export function createEncryptionConfig(
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessor?: IDataProcessor,
+  dataProcessors?: IDataProcessor[],
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-  return dataProcessor
-    ? {
-      enabled: true,
-      processors: [renderDataProcessor(dataProcessor, scope, role)],
-    }
-    : undefined;
+  if (!dataProcessors?.length) return undefined;
+
+  const processors = dataProcessors.map((dp) => renderDataProcessor(dp, scope, role));
+  const processorTypes = new Set(processors.map((p) => p.type));
+
+  if (processorTypes.has('CloudWatchLogProcessing') && !processorTypes.has('Decompression')) {
+    throw new cdk.ValidationError('CloudWatchLogProcessor can only be enabled with DecompressionProcessor', scope);
+  }
+
+  return {
+    enabled: true,
+    processors,
+  };
 }
 
 function renderDataProcessor(
@@ -123,6 +131,14 @@ function renderDataProcessor(
   role: iam.IRole,
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
+
+  if (processorConfig.parameters) {
+    return {
+      type: processorConfig.processorType,
+      parameters: processorConfig.parameters,
+    };
+  }
+
   const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
   parameters.push(processorConfig.processorIdentifier);
   if (processor.props.bufferInterval) {

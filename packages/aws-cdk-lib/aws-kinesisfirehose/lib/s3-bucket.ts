@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
-import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
-import { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
+import type { Construct } from 'constructs';
+import type { CommonDestinationProps, CommonDestinationS3Props } from './common';
+import { BackupMode } from './common';
+import type { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import type { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 import * as cdk from '../../core';
 
@@ -96,6 +97,11 @@ export class S3Bucket implements IDestination {
       streamId: 'S3Destination',
     }) ?? {};
 
+    if (this.props.processor && this.props.processors) {
+      throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+    }
+    const dataProcessors = this.props.processor ? [this.props.processor] : this.props.processors;
+
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
 
     const fileExtension = this.props.fileExtension;
@@ -120,7 +126,7 @@ export class S3Bucket implements IDestination {
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
+        processingConfiguration: createProcessingConfig(scope, role, dataProcessors),
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),

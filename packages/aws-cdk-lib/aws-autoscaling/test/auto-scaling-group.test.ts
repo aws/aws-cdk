@@ -3,7 +3,8 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceType, LaunchTemplate } from '../../aws-ec2';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
+import type { ApplicationListener } from '../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
@@ -12,7 +13,7 @@ import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('auto scaling group', () => {
   test('default fleet', () => {
@@ -1170,7 +1171,7 @@ describe('auto scaling group', () => {
     }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
   });
 
-  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
@@ -1188,7 +1189,7 @@ describe('auto scaling group', () => {
           }),
         }],
       });
-    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 2000/);
   });
 
   test.each([

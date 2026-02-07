@@ -45,10 +45,108 @@
       "DUAL_STACK"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/types.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/common/types.ts": {
+    "CustomClaimValueType": [
+      "STRING",
+      "STRING_ARRAY"
+    ],
+    "CustomClaimOperator": [
+      "EQUALS",
+      "CONTAINS",
+      "CONTAINS_ANY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway-base.ts": {
+    "GatewayExceptionLevel": [
+      "DEBUG"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/inbound-auth/authorizer.ts": {
+    "GatewayAuthorizerType": [
+      "CUSTOM_JWT",
+      "AWS_IAM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/interceptor.ts": {
+    "InterceptionPoint": [
+      "REQUEST",
+      "RESPONSE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.ts": {
+    "ApiKeyCredentialLocationType": [
+      "HEADER",
+      "QUERY_PARAMETER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/credential-provider.ts": {
+    "CredentialProviderType": [
+      "API_KEY",
+      "OAUTH",
+      "GATEWAY_IAM_ROLE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/protocol.ts": {
+    "GatewayProtocolType": [
+      "MCP"
+    ],
+    "MCPProtocolVersion": [
+      "2025-06-18",
+      "2025-03-26"
+    ],
+    "McpGatewaySearchType": [
+      "SEMANTIC"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/schema/tool-schema.ts": {
+    "SchemaDefinitionType": [
+      "string",
+      "number",
+      "object",
+      "array",
+      "boolean",
+      "integer"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-base.ts": {
+    "GatewayTargetProtocolType": [
+      "MCP"
+    ],
+    "McpTargetType": [
+      "OPENAPI_SCHEMA",
+      "SMITHY_MODEL",
+      "LAMBDA",
+      "MCP_SERVER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
+    "MemoryStrategyType": [
+      "SUMMARIZATION",
+      "SEMANTIC",
+      "USER_PREFERENCE",
+      "EPISODIC",
+      "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime-artifact.ts": {
+    "AgentCoreRuntime": [
+      "PYTHON_3_10",
+      "PYTHON_3_11",
+      "PYTHON_3_12",
+      "PYTHON_3_13"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/types.ts": {
     "ProtocolType": [
       "MCP",
-      "HTTP"
+      "HTTP",
+      "A2A"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/tools/browser.ts": {
+    "BrowserSigning": [
+      "ENABLED",
+      "DISABLED"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
@@ -140,9 +238,13 @@
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts": {
     "CrossRegionInferenceProfileRegion": [
+      "global",
       "eu",
       "us",
-      "apac"
+      "us-gov",
+      "apac",
+      "jp",
+      "au"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts": {
@@ -334,7 +436,8 @@
       "valkey_8",
       "redis",
       "redis_7",
-      "memcached"
+      "memcached",
+      "memcached_1.6"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
@@ -416,7 +519,8 @@
       "2.0",
       "3.0",
       "4.0",
-      "5.0"
+      "5.0",
+      "5.1"
     ],
     "JobLanguage": [
       "scala",
@@ -540,6 +644,159 @@
       "write.parallel",
       "write.maxfilesize.mb",
       "write.kms.key.id"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/component.ts": {
+    "ComponentAction": [
+      "AppendFile",
+      "Assert",
+      "CopyFile",
+      "CopyFolder",
+      "CreateFile",
+      "CreateFolder",
+      "CreateSymlink",
+      "DeleteFile",
+      "DeleteFolder",
+      "ExecuteBash",
+      "ExecuteBinary",
+      "ExecuteDocument",
+      "ExecutePowerShell",
+      "InstallMSI",
+      "ListFiles",
+      "MoveFile",
+      "MoveFolder",
+      "ReadFile",
+      "Reboot",
+      "SetFileEncoding",
+      "SetFileOwner",
+      "SetFolderOwner",
+      "SetFilePermissions",
+      "SetFolderPermissions",
+      "SetRegistry",
+      "S3Download",
+      "S3Upload",
+      "UninstallMSI",
+      "UpdateOS",
+      "WebDownload"
+    ],
+    "ComponentOnFailure": [
+      "Abort",
+      "Continue",
+      "Ignore"
+    ],
+    "ComponentParameterType": [
+      "string"
+    ],
+    "ComponentPhaseName": [
+      "build",
+      "container-host-test",
+      "test",
+      "validate"
+    ],
+    "ComponentSchemaVersion": [
+      "1.0"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/container-recipe.ts": {
+    "ContainerType": [
+      "DOCKER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/distribution-configuration.ts": {
+    "RepositoryService": [
+      "ECR"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image-pipeline.ts": {
+    "ScheduleStartCondition": [
+      "EXPRESSION_MATCH_ONLY",
+      "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE"
+    ],
+    "ImagePipelineStatus": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image.ts": {
+    "ImageArchitecture": [
+      "arm64",
+      "x86_64"
+    ],
+    "ImageType": [
+      "AMI",
+      "DOCKER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
+    ],
+    "Tenancy": [
+      "default",
+      "dedicated",
+      "host"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/lifecycle-policy.ts": {
+    "LifecyclePolicyActionType": [
+      "DELETE",
+      "DEPRECATE",
+      "DISABLE"
+    ],
+    "LifecyclePolicyStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "LifecyclePolicyResourceType": [
+      "AMI_IMAGE",
+      "CONTAINER_IMAGE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts": {
+    "Platform": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/workflow.ts": {
+    "WorkflowAction": [
+      "ApplyImageConfigurations",
+      "BootstrapInstanceForContainer",
+      "CollectImageMetadata",
+      "CollectImageScanFindings",
+      "CreateImage",
+      "DistributeImage",
+      "ExecuteComponents",
+      "ExecuteStateMachine",
+      "LaunchInstance",
+      "ModifyImageAttributes",
+      "RunCommand",
+      "RegisterImage",
+      "RunSysPrep",
+      "SanitizeInstance",
+      "TerminateInstance",
+      "WaitForAction",
+      "WaitForSSMAgent"
+    ],
+    "WorkflowOnFailure": [
+      "Abort",
+      "Continue"
+    ],
+    "WorkflowParameterType": [
+      "boolean",
+      "integer",
+      "string",
+      "stringList"
+    ],
+    "WorkflowSchemaVersion": [
+      "1.0"
+    ],
+    "WorkflowType": [
+      "BUILD",
+      "TEST",
+      "DISTRIBUTION"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts": {
@@ -764,6 +1021,10 @@
     "StorageMode": [
       "LOCAL",
       "TIERED"
+    ],
+    "BrokerType": [
+      "STANDARD",
+      "EXPRESS"
     ],
     "ClusterMonitoringLevel": [
       "DEFAULT",
@@ -997,6 +1258,18 @@
       "DryRun"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/mixins/property-mixins.ts": {
+    "PropertyMergeStrategy": [
+      "override",
+      "merge"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.ts": {
+    "S3LogsDeliveryPermissionsVersion": [
+      "V1",
+      "V2"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/assets/lib/fs/follow-mode.ts": {
     "FollowMode": [
       "never",
@@ -1012,6 +1285,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts": {
+    "ResponseTransferMode": [
+      "BUFFERED",
+      "STREAM"
+    ],
     "ContentHandling": [
       "CONVERT_TO_BINARY",
       "CONVERT_TO_TEXT"
@@ -2107,7 +2384,14 @@
       "BUILD_GENERAL1_MEDIUM",
       "BUILD_GENERAL1_LARGE",
       "BUILD_GENERAL1_XLARGE",
-      "BUILD_GENERAL1_2XLARGE"
+      "BUILD_GENERAL1_2XLARGE",
+      "ATTRIBUTE_BASED_COMPUTE",
+      "BUILD_LAMBDA_10GB",
+      "BUILD_LAMBDA_1GB",
+      "BUILD_LAMBDA_2GB",
+      "BUILD_LAMBDA_4GB",
+      "BUILD_LAMBDA_8GB",
+      "CUSTOM_INSTANCE_TYPE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
@@ -2592,13 +2876,15 @@
     "AcceleratorType": [
       "gpu",
       "fpga",
-      "inference"
+      "inference",
+      "media"
     ],
     "AcceleratorManufacturer": [
       "amazon-web-services",
       "amd",
       "nvidia",
-      "xilinx"
+      "xilinx",
+      "habana"
     ],
     "AcceleratorName": [
       "a100",
@@ -2607,7 +2893,19 @@
       "radeon-pro-v520",
       "t4",
       "v100",
-      "vu9p"
+      "vu9p",
+      "a10g",
+      "h100",
+      "inferentia",
+      "k520",
+      "t4g",
+      "l40s",
+      "l4",
+      "gaudi-hl-205",
+      "inferentia2",
+      "trainium",
+      "trainium2",
+      "u30"
     ],
     "BareMetal": [
       "included",
@@ -2731,6 +3029,8 @@
       "r8i-flex",
       "memory7-amd",
       "r7a",
+      "memory8-amd",
+      "r8a",
       "memory8-graviton",
       "r8g",
       "memory8-graviton4-nvme-drive",
@@ -2923,6 +3223,8 @@
       "m7a",
       "standard8-amd",
       "m8a",
+      "standard9-graviton",
+      "m9g",
       "high-compute-memory1",
       "z1d",
       "inference1",
@@ -2988,6 +3290,12 @@
       "metal-24xl",
       "metal-32xl",
       "metal-48xl"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/key-pair.ts": {
@@ -3355,7 +3663,8 @@
       "NetworkInterface",
       "TransitGateway",
       "VpcPeeringConnection",
-      "VpcEndpoint"
+      "VpcEndpoint",
+      "CoreNetwork"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpn.ts": {
@@ -3833,7 +4142,9 @@
     ],
     "DeploymentStrategy": [
       "ROLLING",
-      "BLUE_GREEN"
+      "BLUE_GREEN",
+      "LINEAR",
+      "CANARY"
     ],
     "PropagatedTagSource": [
       "SERVICE",
@@ -3907,6 +4218,10 @@
     "PropagateManagedInstancesTags": [
       "CAPACITY_PROVIDER",
       "NONE"
+    ],
+    "CapacityOptionType": [
+      "ON_DEMAND",
+      "SPOT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
@@ -4563,7 +4878,8 @@
       "SM2",
       "ML_DSA_44",
       "ML_DSA_65",
-      "ML_DSA_87"
+      "ML_DSA_87",
+      "ECC_NIST_EDWARDS25519"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
@@ -4642,8 +4958,15 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts": {
+    "EventSourceMappingLogLevel": [
+      "INFO",
+      "DEBUG",
+      "WARN"
+    ],
     "MetricType": [
-      "EventCount"
+      "EventCount",
+      "ErrorCount",
+      "KafkaMetrics"
     ],
     "StartingPosition": [
       "TRIM_HORIZON",
@@ -4897,7 +5220,8 @@
     ],
     "NetworkType": [
       "IPV4",
-      "DUAL"
+      "DUAL",
+      "IPV6"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts": {
@@ -4946,6 +5270,10 @@
       "POSTGRES_MD5",
       "SQL_SERVER_AUTHENTICATION",
       "MYSQL_CACHING_SHA2_PASSWORD"
+    ],
+    "DefaultAuthScheme": [
+      "IAM_AUTH",
+      "NONE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts": {
@@ -5020,6 +5348,10 @@
       "SVCB",
       "TLSA",
       "TXT"
+    ],
+    "Failover": [
+      "PRIMARY",
+      "SECONDARY"
     ],
     "CaaTag": [
       "issue",
@@ -5800,11 +6132,12 @@
       1
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-type.ts": {
     "MetadataType": [
       "aws:cdk:analytics:construct",
       "aws:cdk:analytics:method",
-      "aws:cdk:analytics:featureflag"
+      "aws:cdk:analytics:featureflag",
+      "aws:cdk:analytics:mixin"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-reference.ts": {

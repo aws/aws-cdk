@@ -1,11 +1,14 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
-import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
+import type { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
+import { ComputeEnvironmentBase } from './compute-environment-base';
 import * as ec2 from '../../aws-ec2';
-import * as eks from '../../aws-eks';
+import type * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
-import { IRole } from '../../aws-iam';
-import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
+import type { IRole } from '../../aws-iam';
+import type { Duration, ITaggable } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -260,7 +263,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -463,8 +466,8 @@ export enum AllocationStrategy {
 
   /**
    * If your workflow tolerates interruptions, you should enable `spot` on your `ComputeEnvironment`
-   * and use `SPOT_CAPACITY_OPTIMIZED` (this is the default if `spot` is enabled).
-   * This will tell Batch to choose the instance types from the ones you’ve specified that have
+   * and use `SPOT_CAPACITY_OPTIMIZED`.
+   * This will tell Batch to choose the instance types from the ones you've specified that have
    * the most spot capacity available to minimize the chance of interruption.
    * To get the most benefit from your spot instances,
    * you should allow Batch to choose from as many different instance types as possible.
@@ -540,7 +543,6 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedEc2ComputeE
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
-   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -562,7 +564,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedEc2ComputeE
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -716,6 +718,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
+      public get computeEnvironmentRef() {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
+
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new ValidationError(`cannot add instance class to imported ComputeEnvironment '${id}'`, this);
       }
@@ -726,8 +734,22 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
 
     return new Import(scope, id);
   }
-  public readonly computeEnvironmentArn: string;
-  public readonly computeEnvironmentName: string;
+
+  private readonly resource: CfnComputeEnvironment;
+
+  @memoizedGetter
+  public get computeEnvironmentArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrComputeEnvironmentArn, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get computeEnvironmentName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   public readonly images?: EcsMachineImage[];
   public readonly allocationStrategy?: AllocationStrategy;
@@ -778,7 +800,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
     validateSpotConfig(this, this.spot, this.spotBidPercentage, this.spotFleetRole);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
-    const resource = new CfnComputeEnvironment(this, 'Resource', {
+    this.resource = new CfnComputeEnvironment(this, 'Resource', {
       ...baseManagedResourceProperties(this, subnetIds),
       computeEnvironmentName: props.computeEnvironmentName,
       computeResources: {
@@ -804,13 +826,6 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
         placementGroup: props.placementGroup?.placementGroupRef.groupName,
         tags: this.tags.renderedTags as any,
       },
-    });
-
-    this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
-    this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
-      service: 'batch',
-      resource: 'compute-environment',
-      resourceName: this.physicalName,
     });
 
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
@@ -861,7 +876,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedEc2ComputeEnvironment
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -960,7 +975,6 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedEc2ComputeE
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
-   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -981,7 +995,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedEc2ComputeE
    * the best fitting instance type can be allocated.
    *
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
   readonly allocationStrategy?: AllocationStrategy;
 
@@ -1053,8 +1067,21 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
   public readonly kubernetesNamespace?: string;
   public readonly eksCluster: eks.ICluster;
 
-  public readonly computeEnvironmentName: string;
-  public readonly computeEnvironmentArn: string;
+  private readonly resource: CfnComputeEnvironment;
+
+  @memoizedGetter
+  public get computeEnvironmentName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get computeEnvironmentArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrComputeEnvironmentArn, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
+  }
 
   public readonly images?: EksMachineImage[];
   public readonly allocationStrategy?: AllocationStrategy;
@@ -1072,7 +1099,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
     addConstructMetadata(this, props);
 
     if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
-      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`.', this);
     }
 
     this.kubernetesNamespace = props.kubernetesNamespace;
@@ -1097,7 +1124,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
     validateSpotConfig(this, this.spot, this.spotBidPercentage);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
-    const resource = new CfnComputeEnvironment(this, 'Resource', {
+    this.resource = new CfnComputeEnvironment(this, 'Resource', {
       ...baseManagedResourceProperties(this, subnetIds),
       computeEnvironmentName: props.computeEnvironmentName,
       eksConfiguration: {
@@ -1126,13 +1153,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
         placementGroup: props.placementGroup?.placementGroupRef.groupName,
         tags: this.tags.renderedTags as any,
       },
-    });
-
-    this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
-    this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
-      service: 'batch',
-      resource: 'compute-environment',
-      resourceName: this.physicalName,
     });
 
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
@@ -1178,13 +1198,32 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
       public readonly connections = { } as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
+
+      public get computeEnvironmentRef() {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
     }
 
     return new Import(scope, id);
   }
 
-  public readonly computeEnvironmentName: string;
-  public readonly computeEnvironmentArn: string;
+  private readonly resource: CfnComputeEnvironment;
+
+  @memoizedGetter
+  public get computeEnvironmentName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get computeEnvironmentArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrComputeEnvironmentArn, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: FargateComputeEnvironmentProps) {
     super(scope, id, props);
@@ -1192,19 +1231,13 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     addConstructMetadata(this, props);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
-    const resource = new CfnComputeEnvironment(this, 'Resource', {
+    this.resource = new CfnComputeEnvironment(this, 'Resource', {
       ...baseManagedResourceProperties(this, subnetIds),
       computeEnvironmentName: props.computeEnvironmentName,
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         type: this.spot ? 'FARGATE_SPOT' : 'FARGATE',
       },
-    });
-    this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
-    this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
-      service: 'batch',
-      resource: 'compute-environment',
-      resourceName: this.physicalName,
     });
   }
 }

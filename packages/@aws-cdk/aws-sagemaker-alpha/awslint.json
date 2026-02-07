@@ -1,4 +1,20 @@
 {
-    "exclude": [
-    ]
+  "exclude": [
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.EndpointProps.endpointConfig",
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.InstanceProductionVariantProps.model",
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.ServerlessProductionVariantProps.model",
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.ModelAttributes.role",
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.ModelAttributes.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.ModelProps.role",
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.ModelProps.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.ModelProps.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.ScalableInstanceCountProps.role",
+    "interface-extends-ref:@aws-cdk/aws-sagemaker-alpha.IEndpointConfig",
+    "interface-extends-ref:@aws-cdk/aws-sagemaker-alpha.IModel",
+    "no-grants:@aws-cdk/aws-sagemaker-alpha.Pipeline.grantStartPipelineExecution"
+  ]
 }

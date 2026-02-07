@@ -2,10 +2,11 @@
 // python bundling changes the asset hash pretty frequently
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
 import * as lambda from '../lib';
 
 /*

@@ -16,12 +16,12 @@
  *   This follows a direct implementation pattern where concrete classes implement the interface directly without a shared base class.
  */
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnTransformer } from '.';
-import { ILogGroup } from './log-group';
 import { Resource, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Valid data types for type conversion in the TypeConverter processor.
@@ -806,7 +806,7 @@ export interface TransformerProps {
    */
   readonly transformerName: string;
   /** Existing log group that you want to associate with this transformer. */
-  readonly logGroup: ILogGroup;
+  readonly logGroup: ILogGroupRef;
   /** List of processors in a transformer */
   readonly transformerConfig: Array<IProcessor>;
 }
@@ -1209,7 +1209,7 @@ export class Transformer extends Resource {
 
     // Map the transformer configuration to the L1 CloudFormation resource
     new CfnTransformer(scope, 'ResourceTransformer', {
-      logGroupIdentifier: props.logGroup.logGroupName,
+      logGroupIdentifier: props.logGroup.logGroupRef.logGroupName,
       transformerConfig: props.transformerConfig.map(processor => processor._render()),
     });
   }
@@ -1326,7 +1326,7 @@ export class Transformer extends Resource {
    * @internal Validates that the log group is in the Standard log class, as transformers can only be used with Standard log
    * groups.
    */
-  private validateLogGroupClass(logGroup: ILogGroup): void {
+  private validateLogGroupClass(logGroup: ILogGroupRef): void {
     // Since logGroupClass might not be directly accessible or might be a CDK token,
     // we'll use a warning instead of validation error
     // In an ideal implementation, we would check that: logGroup.logGroupClass === 'Standard'

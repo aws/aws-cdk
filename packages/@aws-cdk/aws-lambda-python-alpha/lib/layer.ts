@@ -1,11 +1,11 @@
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Stack } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { Bundling } from './bundling';
-import { BundlingOptions } from './types';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import { Bundling } from './bundling';
+import type { BundlingOptions } from './types';
 
 /**
  * Properties for PythonLayerVersion

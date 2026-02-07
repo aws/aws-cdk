@@ -1072,7 +1072,7 @@ describe('artifact encryption test', () => {
     const stack = new Stack();
 
     // WHEN
-    const canary = new synthetics.Canary(stack, 'Canary', {
+    new synthetics.Canary(stack, 'Canary', {
       test: synthetics.Test.custom({
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`

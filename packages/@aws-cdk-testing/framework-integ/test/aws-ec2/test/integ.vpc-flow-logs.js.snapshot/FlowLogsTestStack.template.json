@@ -507,6 +507,99 @@
     "VPCFlowLogsS3BucketPolicyB2C2A045"
    ]
   },
+  "VPCFlowLogsCloudwatchIAMRoleCC43FEF5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "vpc-flow-logs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "FlowLogsTestStack/VPC/FlowLogsCloudwatch"
+     }
+    ]
+   }
+  },
+  "VPCFlowLogsCloudwatchIAMRoleDefaultPolicyA420C416": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "VPCFlowLogsCloudwatchLogGroupACA08DD5",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "VPCFlowLogsCloudwatchIAMRoleDefaultPolicyA420C416",
+    "Roles": [
+     {
+      "Ref": "VPCFlowLogsCloudwatchIAMRoleCC43FEF5"
+     }
+    ]
+   }
+  },
+  "VPCFlowLogsCloudwatchLogGroupACA08DD5": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "FlowLogsTestStack/VPC/FlowLogsCloudwatch"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "VPCFlowLogsCloudwatchFlowLog3A58840F": {
+   "Type": "AWS::EC2::FlowLog",
+   "Properties": {
+    "DeliverLogsPermissionArn": {
+     "Fn::GetAtt": [
+      "VPCFlowLogsCloudwatchIAMRoleCC43FEF5",
+      "Arn"
+     ]
+    },
+    "LogDestinationType": "cloud-watch-logs",
+    "LogGroupName": {
+     "Ref": "VPCFlowLogsCloudwatchLogGroupACA08DD5"
+    },
+    "ResourceId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "ResourceType": "VPC",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "FlowLogsTestStack/VPC/FlowLogsCloudwatch"
+     }
+    ],
+    "TrafficType": "ALL"
+   }
+  },
   "VPCFlowLogsS3KeyPrefixFlowLogB57F1746": {
    "Type": "AWS::EC2::FlowLog",
    "Properties": {
@@ -580,16 +673,6 @@
        "Resource": {
         "Fn::GetAtt": [
          "FlowLogsCWLogGroup0398E8F8",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FlowLogsCWIAMRole017AD736",
          "Arn"
         ]
        }

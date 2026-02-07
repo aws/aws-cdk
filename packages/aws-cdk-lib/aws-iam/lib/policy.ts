@@ -1,13 +1,16 @@
-import { Construct } from 'constructs';
-import { IGroup } from './group';
-import { CfnPolicy, IPolicyRef, PolicyReference } from './iam.generated';
+import type { Construct } from 'constructs';
+import type { IGroup } from './group';
+import type { IPolicyRef, PolicyReference } from './iam.generated';
+import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
-import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import type { PolicyStatement } from './policy-statement';
+import type { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ArnPrincipal } from './principals';
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
-import { IRole } from './role';
-import { IUser } from './user';
-import { IResource, Lazy, Resource, UnscopedValidationError, ValidationError } from '../../core';
+import type { IRole } from './role';
+import type { IUser } from './user';
+import type { IResource } from '../../core';
+import { Lazy, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -290,20 +293,29 @@ export class Policy extends Resource implements IPolicy, IGrantable {
 }
 
 class PolicyGrantPrincipal implements IPrincipal {
-  public readonly assumeRoleAction = 'sts:AssumeRole';
-  public readonly grantPrincipal: IPrincipal;
+  public readonly policyFragment: PrincipalPolicyFragment;
   public readonly principalAccount?: string;
+  public readonly grantPrincipal: IPrincipal = this;
 
   constructor(private _policy: Policy) {
-    this.grantPrincipal = this;
+    // lambda.Function.grantInvoke() wants policyFragment to be readable to use as a dedupe hash.
+    // The ARN is referenced to add policy statements as a resource-based policy.
+    // We should fail to synth because a managed policy cannot be used as a principal of a policy document.
+    // cf. https://github.com/aws/aws-cdk/issues/32980
+    const arn = Lazy.string({
+      produce: () => {
+        throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy.', _policy);
+      },
+    });
+    this.policyFragment = new ArnPrincipal(arn).policyFragment;
     this.principalAccount = _policy.env.account;
   }
 
-  public get policyFragment(): PrincipalPolicyFragment {
-    // This property is referenced to add policy statements as a resource-based policy.
+  public get assumeRoleAction(): string {
+    // This property is referenced to add policy statements as a trust policy.
     // We should fail because a policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new UnscopedValidationError(`Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy.', this._policy);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -313,5 +325,9 @@ class PolicyGrantPrincipal implements IPrincipal {
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     this._policy.addStatements(statement);
     return { statementAdded: true, policyDependable: this._policy };
+  }
+
+  public toString(): string {
+    return `Policy(${this._policy.node.path})`;
   }
 }

@@ -1,18 +1,20 @@
 import { Construct } from 'constructs';
-import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
-import { CidrRoutingConfig } from './cidr-routing-config';
-import { GeoLocation } from './geo-location';
-import { IHealthCheck } from './health-check';
-import { IHostedZone } from './hosted-zone-ref';
+import type { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
+import type { CidrRoutingConfig } from './cidr-routing-config';
+import type { GeoLocation } from './geo-location';
+import type { IHealthCheck } from './health-check';
+import type { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { Annotations, CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Annotations, CustomResource, Duration, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
+import type { IRecordSetRef, RecordSetReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
@@ -20,7 +22,7 @@ const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSe
 /**
  * A record set
  */
-export interface IRecordSet extends IResource {
+export interface IRecordSet extends IResource, IRecordSetRef {
   /**
    * The domain name of the record
    */
@@ -167,6 +169,24 @@ export enum RecordType {
 }
 
 /**
+ * The failover policy.
+ * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html
+ */
+export enum Failover {
+  /**
+   * The primary resource record set determines how Route 53 responds to DNS queries when
+   * the primary resource is healthy.
+   */
+  PRIMARY = 'PRIMARY',
+
+  /**
+   * The secondary resource record set determines how Route 53 responds to DNS queries when
+   * the primary resource is unhealthy.
+   */
+  SECONDARY = 'SECONDARY',
+}
+
+/**
  * Options for a RecordSet.
  */
 export interface RecordSetOptions {
@@ -289,6 +309,20 @@ export interface RecordSetOptions {
    * @default - No CIDR routing configured
    */
   readonly cidrRoutingConfig?: CidrRoutingConfig;
+
+  /**
+   * Failover configuration for the record set.
+   *
+   * To configure failover, you add the Failover element to two resource record sets.
+   * For one resource record set, you specify PRIMARY as the value for Failover;
+   * for the other resource record set, you specify SECONDARY.
+   *
+   * You must also include the HealthCheckId element for PRIMARY configurations.
+   *
+   * @default - No failover configuration
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html
+   */
+  readonly failover?: Failover;
 }
 
 /**
@@ -353,6 +387,13 @@ export class RecordSet extends Resource implements IRecordSet {
   private readonly weight?: number;
   private readonly region?: string;
   private readonly multiValueAnswer?: boolean;
+  private readonly failover?: Failover;
+
+  public get recordSetRef(): RecordSetReference {
+    return {
+      recordSetName: this.domainName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -366,11 +407,14 @@ export class RecordSet extends Resource implements IRecordSet {
       throw new ValidationError(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
     }
     if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer
-      && !props.cidrRoutingConfig) {
+      && !props.cidrRoutingConfig && !props.failover) {
       throw new ValidationError('setIdentifier can only be specified for non-simple routing policies', this);
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
       throw new ValidationError('multiValueAnswer cannot be specified for alias record', this);
+    }
+    if (props.failover && props.multiValueAnswer) {
+      throw new ValidationError('Cannot use both failover and multiValueAnswer routing policies', this);
     }
 
     const nonSimpleRoutingPolicies = [
@@ -379,15 +423,27 @@ export class RecordSet extends Resource implements IRecordSet {
       props.weight,
       props.multiValueAnswer,
       props.cidrRoutingConfig,
+      props.failover,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new ValidationError('Only one of region, weight, multiValueAnswer, geoLocation or cidrRoutingConfig can be defined', this);
+      throw new ValidationError('Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined', this);
+    }
+
+    if (props.failover === Failover.PRIMARY && !props.healthCheck && !props.target.aliasTarget) {
+      throw new ValidationError('PRIMARY failover record sets must include a health check', this);
+    }
+    if (props.failover && props.target.aliasTarget) {
+      const aliasTargetConfig = props.target.aliasTarget.bind(this, props.zone);
+      if (aliasTargetConfig && !Token.isUnresolved(aliasTargetConfig.evaluateTargetHealth) && aliasTargetConfig.evaluateTargetHealth !== true) {
+        throw new ValidationError('Failover alias record sets must set EvaluateTargetHealth to true', this);
+      }
     }
 
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;
     this.region = props.region;
     this.multiValueAnswer = props.multiValueAnswer;
+    this.failover = props.failover;
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
     if (props.target.aliasTarget && props.ttl != undefined) {
@@ -415,6 +471,7 @@ export class RecordSet extends Resource implements IRecordSet {
       region: props.region,
       healthCheckId: props.healthCheck?.healthCheckId,
       cidrRoutingConfig: props.cidrRoutingConfig,
+      failover: props.failover,
     });
 
     this.domainName = recordSet.ref;
@@ -462,6 +519,11 @@ export class RecordSet extends Resource implements IRecordSet {
   }
 
   private configureSetIdentifier(): string | undefined {
+    if (this.failover) {
+      const idPrefix = `FAILOVER_${this.failover}_ID_`;
+      return this.createIdentifier(idPrefix);
+    }
+
     if (this.geoLocation) {
       let identifier = 'GEO';
       if (this.geoLocation.continentCode) {
@@ -1377,3 +1439,4 @@ export class CrossAccountZoneDelegationRecord extends Construct {
     }
   }
 }
+

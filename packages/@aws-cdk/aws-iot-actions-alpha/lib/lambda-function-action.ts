@@ -1,6 +1,6 @@
+import type * as iot from '@aws-cdk/aws-iot-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import type * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Names } from 'aws-cdk-lib/core';
 
 /**

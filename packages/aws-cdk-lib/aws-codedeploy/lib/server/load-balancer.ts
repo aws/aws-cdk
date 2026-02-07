@@ -1,5 +1,5 @@
-import * as elb from '../../../aws-elasticloadbalancing';
-import * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import type * as elb from '../../../aws-elasticloadbalancing';
+import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
 
 /**
  * The generations of AWS load balancing solutions.
