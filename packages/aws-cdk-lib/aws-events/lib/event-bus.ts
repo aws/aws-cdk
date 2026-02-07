@@ -548,7 +548,8 @@ export class EventBus extends EventBusBase {
     }
 
     // In order to generate new statementIDs for the change in https://github.com/aws/aws-cdk/pull/27340
-    const statementId = `cdk-${statement.sid}`.slice(0, 64);
+    // Name adjusted to follow alphanumeric Statement Id requirements in https://github.com/aws/aws-cdk/pull/34828
+    const statementId = `cdk${statement.sid}`.slice(0, 64);
     statement.sid = statementId;
     const policy = new EventBusPolicy(this, statementId, {
       eventBus: this,
