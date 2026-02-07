@@ -1,6 +1,8 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib/core';
 import { App, Stack } from 'aws-cdk-lib/core';
+import * as eks from '../lib';
 import { Addon, Cluster, KubernetesVersion, ResolveConflictsType } from '../lib';
 
 describe('Addon', () => {
@@ -235,5 +237,17 @@ describe('Addon', () => {
     // THEN
     expect(addon.addonName).toEqual('my-addon');
     expect(addon.addonArn).toEqual(addonArn);
+  });
+
+  test('applies removal policy', () => {
+    new eks.Addon(stack, 'Addon', {
+      cluster,
+      addonName: 'vpc-cni',
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::EKS::Addon', {
+      DeletionPolicy: 'Retain',
+    });
   });
 });

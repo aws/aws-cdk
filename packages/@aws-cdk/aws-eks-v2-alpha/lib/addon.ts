@@ -1,6 +1,6 @@
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
 import type * as iam from 'aws-cdk-lib/aws-iam';
-import type { IResource } from 'aws-cdk-lib/core';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
 import { ArnFormat, Resource, Stack, Fn } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -84,6 +84,20 @@ export interface AddonProps {
    * @default - No role is bound to the add-on's service account.
    */
   readonly serviceAccountRole?: iam.IRole;
+
+  /**
+   * The removal policy applied to the EKS add-on.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -224,6 +238,10 @@ export class Addon extends Resource implements IAddon {
       resolveConflicts: props.resolveConflicts,
       serviceAccountRoleArn: props.serviceAccountRole?.roleArn,
     });
+
+    if (props.removalPolicy) {
+      this.resource.applyRemovalPolicy(props.removalPolicy);
+    }
   }
 
   /**
