@@ -497,8 +497,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       this.props.lookupRoleExternalId, this.props.lookupRoleAdditionalOptions);
     const templateAsset = this.addFileAsset(templateAssetSource);
 
+    const generateBootstrapVersionRule = this.props.generateBootstrapVersionRule ?? true;
+
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
-      requiresBootstrapStackVersion: this._requiredBoostrapVersionForAssets,
+      requiresBootstrapStackVersion: generateBootstrapVersionRule ? this._requiredBoostrapVersionForAssets : undefined,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
     });
 
@@ -508,14 +510,14 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       assumeRoleAdditionalOptions: this.props.deployRoleAdditionalOptions,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-      requiresBootstrapStackVersion: this._requiredBootstrapVersionForDeployment,
+      requiresBootstrapStackVersion: generateBootstrapVersionRule ? this._requiredBootstrapVersionForDeployment : undefined,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [assetManifestId],
       lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
         arn: this.lookupRoleArn,
         assumeRoleExternalId: this.props.lookupRoleExternalId,
         assumeRoleAdditionalOptions: this.props.lookupRoleAdditionalOptions,
-        requiresBootstrapStackVersion: this._requiredBootstrapVersionForLookup,
+        requiresBootstrapStackVersion: generateBootstrapVersionRule ? this._requiredBootstrapVersionForLookup : undefined,
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       } : undefined,
     });
