@@ -817,6 +817,21 @@ new cloudfront.Distribution(this, 'Distribution', {
 });
 ```
 
+You can specify the IP address type for connecting to the origin:
+
+```ts
+declare const api: apigateway.RestApi;
+const origin = new origins.RestApiOrigin(api, {
+  ipAddressType: cloudfront.OriginIpAddressType.IPV6, // IPv4, IPv6, or DUALSTACK
+});
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin },
+});
+```
+
+The `ipAddressType` property allows you to specify whether CloudFront should use IPv4, IPv6, or both (dual-stack) when connecting to your origin.
+
 ## From a Lambda Function URL
 
 Lambda Function URLs enable direct invocation of Lambda functions via HTTP(S), without intermediaries. They can be set as CloudFront origins for streamlined function execution behind a CDN, leveraging caching and custom domains.
