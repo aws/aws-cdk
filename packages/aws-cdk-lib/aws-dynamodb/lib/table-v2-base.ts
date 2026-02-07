@@ -1,11 +1,14 @@
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import * as perms from './perms';
-import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
-import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
-import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
+import { Operation } from './shared';
+import type { IMetric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
+import { MathExpression, Metric } from '../../aws-cloudwatch';
+import type { AddToResourcePolicyResult, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
 import { Resource, ValidationError } from '../../core';
-import { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
+import type { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
  * Represents an instance of a DynamoDB table.

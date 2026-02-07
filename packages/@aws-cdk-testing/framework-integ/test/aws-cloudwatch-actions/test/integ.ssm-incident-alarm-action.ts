@@ -1,7 +1,8 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssmIncidents from 'aws-cdk-lib/aws-ssmincidents';
-import { App, Stack, StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy, Duration } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';

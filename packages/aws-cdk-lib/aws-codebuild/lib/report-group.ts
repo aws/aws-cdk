@@ -1,12 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnReportGroup } from './codebuild.generated';
 import { renderReportGroupArn, reportGroupArnComponents } from './report-group-utils';
 import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IReportGroupRef, ReportGroupReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
+import type { IReportGroupRef, ReportGroupReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 /**
  * The interface representing the ReportGroup resource -
@@ -164,10 +165,15 @@ export class ReportGroup extends ReportGroupBase {
     return new Import(scope, id);
   }
 
-  public readonly reportGroupArn: string;
-  public readonly reportGroupName: string;
+  @memoizedGetter
+  get reportGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn,
+      reportGroupArnComponents(this.physicalName));
+  }
+
   protected readonly exportBucket?: s3.IBucket;
   protected readonly type?: ReportGroupType;
+  private readonly resource: CfnReportGroup;
 
   constructor(scope: Construct, id: string, props: ReportGroupProps = {}) {
     super(scope, id, {
@@ -195,17 +201,20 @@ export class ReportGroup extends ReportGroupBase {
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: cdk.RemovalPolicy.RETAIN,
     });
-    this.reportGroupArn = this.getResourceArnAttribute(resource.attrArn,
-      reportGroupArnComponents(this.physicalName));
-    this.reportGroupName = this.getResourceNameAttribute(
-      // there is no separate name attribute,
-      // so use Fn::Select + Fn::Split to make one
-      cdk.Fn.select(1, cdk.Fn.split('/', resource.ref)),
-    );
+    this.resource = resource;
     this.exportBucket = props.exportBucket;
 
     if (props.deleteReports && props.removalPolicy !== cdk.RemovalPolicy.DESTROY) {
       throw new cdk.ValidationError('Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.', this);
     }
+  }
+
+  @memoizedGetter
+  public get reportGroupName(): string {
+    return this.getResourceNameAttribute(
+      // there is no separate name attribute,
+      // so use Fn::Select + Fn::Split to make one
+      cdk.Fn.select(1, cdk.Fn.split('/', this.resource.ref)),
+    );
   }
 }

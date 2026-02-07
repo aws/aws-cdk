@@ -1,14 +1,15 @@
-import { Construct } from 'constructs';
-import { ItemBatcher } from './distributed-map/item-batcher';
-import { IItemReader } from './distributed-map/item-reader';
-import { ResultWriter, ResultWriterV2 } from './distributed-map/result-writer';
-import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
+import type { Construct } from 'constructs';
+import type { ItemBatcher } from './distributed-map/item-batcher';
+import type { IItemReader } from './distributed-map/item-reader';
+import type { ResultWriter, ResultWriterV2 } from './distributed-map/result-writer';
+import type { MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
+import { MapBase } from './map-base';
 import { Annotations, FeatureFlags } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
 import { CatchProps, ICatchable, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
-import { StateBaseProps } from './state';
+import type { StateBaseProps } from './state';
 import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from '../../../cx-api';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');

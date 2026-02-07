@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token, ValidationError } from '../../core';
+import type { Duration, IResolvable, IResource, RemovalPolicy, ResourceProps } from '../../core';
+import { ArnFormat, Aws, CfnCondition, Fn, Resource, Stack, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IStreamRef, StreamReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
+import type { IStreamRef, StreamReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -901,13 +903,25 @@ export class Stream extends StreamBase {
     });
   }
 
-  public readonly streamArn: string;
-  public readonly streamName: string;
-  public readonly encryptionKey?: kms.IKey;
-
   private readonly stream: CfnStream;
 
+  public readonly encryptionKey?: kms.IKey;
+
   protected readonly autoCreatePolicy = true;
+
+  @memoizedGetter
+  public get streamArn(): string {
+    return this.getResourceArnAttribute(this.stream.attrArn, {
+      service: 'kinesis',
+      resource: 'stream',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get streamName(): string {
+    return this.getResourceNameAttribute(this.stream.ref);
+  }
 
   constructor(scope: Construct, id: string, props: StreamProps = {}) {
     super(scope, id, {
@@ -959,13 +973,6 @@ export class Stream extends StreamBase {
         : undefined),
     });
     this.stream.applyRemovalPolicy(props.removalPolicy);
-
-    this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
-      service: 'kinesis',
-      resource: 'stream',
-      resourceName: this.physicalName,
-    });
-    this.streamName = this.getResourceNameAttribute(this.stream.ref);
 
     this.encryptionKey = encryptionKey;
   }

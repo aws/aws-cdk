@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Chain } from '..';
 import { State } from './state';
 import { Annotations } from '../../../core/';
