@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-iops-metric');
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_6 }),
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_18_1 }),
   vpc,
   multiAz: false,
   removalPolicy: cdk.RemovalPolicy.DESTROY,

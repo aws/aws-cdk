@@ -15,7 +15,7 @@ const stack = new Stack(app, 'cdk-instance-engine-lifecycle-support');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
-const engine = rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 });
+const engine = rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_7 });
 const instanceType = ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL);
 
 const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {

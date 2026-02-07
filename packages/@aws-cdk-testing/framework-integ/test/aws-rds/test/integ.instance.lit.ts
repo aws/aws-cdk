@@ -8,16 +8,6 @@ import { RemovalPolicy } from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-/**********************************************************************************************************************
- *
- *    Warning! This test case can not be deployed!
- *
- *    Save yourself some time and move on.
- *    The latest given reason is:
- *    - 2023-08-30: `rds.LicenseModel.BRING_YOUR_OWN_LICENSE` is not allowed on our dev accounts, @mrgrain
- *
- *********************************************************************************************************************/
-
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,

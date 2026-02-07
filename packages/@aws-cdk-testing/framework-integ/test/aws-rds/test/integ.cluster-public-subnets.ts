@@ -31,7 +31,7 @@ export class TestStack extends Stack {
 
     testCases.forEach((p: TestCaseProps, i) =>
       new rds.DatabaseCluster(this, `Integ-Cluster-${i}`, {
-        engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_1 }),
+        engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_11_1 }),
         writer: p.writer,
         removalPolicy: RemovalPolicy.DESTROY,
         vpc,

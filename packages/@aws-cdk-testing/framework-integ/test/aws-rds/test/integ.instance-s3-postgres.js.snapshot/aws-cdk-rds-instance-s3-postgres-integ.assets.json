@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "82e181f549885f3c863c49caa8c9315bd05e36603f142953ad9808a2694fb281": {
+    "85e50d0b1f2d62ace4e9881fd919a006173eb58a64f943e90b458fd3b476213d": {
+      "displayName": "aws-cdk-rds-instance-s3-postgres-integ Template",
       "source": {
         "path": "aws-cdk-rds-instance-s3-postgres-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-4858862c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "82e181f549885f3c863c49caa8c9315bd05e36603f142953ad9808a2694fb281.json",
+          "objectKey": "85e50d0b1f2d62ace4e9881fd919a006173eb58a64f943e90b458fd3b476213d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

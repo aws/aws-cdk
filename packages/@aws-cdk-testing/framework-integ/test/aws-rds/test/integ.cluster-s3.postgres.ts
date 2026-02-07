@@ -23,7 +23,7 @@ class PostgresS3TestStack extends cdk.Stack {
 
     new rds.DatabaseCluster(this, 'PostgresDatabase', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
-        version: rds.AuroraPostgresEngineVersion.VER_15_3,
+        version: rds.AuroraPostgresEngineVersion.VER_17_6,
       }),
       readers: [rds.ClusterInstance.provisioned('ReaderInstance', instanceProps)],
       writer: rds.ClusterInstance.provisioned('WriterInstance', instanceProps),

@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "integ.serverless-cluster": {
+    "integ.serverless-cluster/DefaultTest": {
       "stacks": [
         "aws-cdk-rds-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ.serverless-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "integserverlessclusterDefaultTestDeployAssert042DC44F"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1033.0"
 }

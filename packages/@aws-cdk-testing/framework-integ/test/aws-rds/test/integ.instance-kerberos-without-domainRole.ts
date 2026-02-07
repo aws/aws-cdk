@@ -20,7 +20,7 @@ const activeDirectory = new ds.CfnMicrosoftAD(stack, 'AD', {
 
 new rds.DatabaseInstance(stack, 'Database', {
   engine: rds.DatabaseInstanceEngine.mysql({
-    version: rds.MysqlEngineVersion.VER_8_0_35,
+    version: rds.MysqlEngineVersion.VER_8_0_41,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   vpc,

@@ -4,7 +4,6 @@ import { AuroraPostgresEngineVersion, ClusterScalabilityType, DatabaseCluster, D
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const versions = [
-  AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
   AuroraPostgresEngineVersion.VER_16_8_LIMITLESS,
 ];
 

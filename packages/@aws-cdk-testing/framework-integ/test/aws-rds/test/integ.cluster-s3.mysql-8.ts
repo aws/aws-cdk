@@ -14,7 +14,7 @@ const importExportBucket = new s3.Bucket(stack, 'ImportExportBucket', {
 
 new rds.DatabaseCluster(stack, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_07_1,
+    version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
   }),
   credentials: rds.Credentials.fromUsername('admin', {
     password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),

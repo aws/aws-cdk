@@ -11,7 +11,7 @@ export class TestStack extends Stack {
     super(scope, id, props);
     const vpc = new Vpc(this, 'Integ-VPC');
     new rds.DatabaseCluster(this, 'Integ-Cluster', {
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_1 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_11_1 }),
       serverlessV2MaxCapacity: 256,
       serverlessV2MinCapacity: 256,
       writer: ClusterInstance.serverlessV2('writer'),

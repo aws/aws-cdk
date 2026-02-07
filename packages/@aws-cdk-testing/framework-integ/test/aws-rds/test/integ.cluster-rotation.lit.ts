@@ -20,7 +20,7 @@ const instanceProps = {
 };
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_07_1,
+    version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
   }),
   vpc,
   writer: rds.ClusterInstance.provisioned('Instance1', {
@@ -37,7 +37,7 @@ cluster.addRotationSingleUser();
 
 const clusterWithCustomRotationOptions = new rds.DatabaseCluster(stack, 'CustomRotationOptions', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_07_1,
+    version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
   }),
   vpc,
   writer: rds.ClusterInstance.provisioned('Instance1', {

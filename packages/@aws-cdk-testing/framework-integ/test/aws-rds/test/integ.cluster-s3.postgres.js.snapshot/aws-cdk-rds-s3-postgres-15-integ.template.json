@@ -619,12 +619,12 @@
      }
     ],
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-postgresql15",
+    "DBClusterParameterGroupName": "default.aurora-postgresql17",
     "DBSubnetGroupName": {
      "Ref": "PostgresDatabaseSubnets7DD9954C"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "15.3",
+    "EngineVersion": "17.6",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

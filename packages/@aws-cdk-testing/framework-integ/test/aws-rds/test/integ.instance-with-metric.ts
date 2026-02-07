@@ -12,7 +12,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-with-metric', {
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_18_1 }),
   vpc,
   multiAz: false,
   publiclyAccessible: true,

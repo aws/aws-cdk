@@ -18,7 +18,7 @@ class RollingInstanceUpdateTestStack extends cdk.Stack {
 
     new rds.DatabaseCluster(this, 'DatabaseCluster', {
       engine: rds.DatabaseClusterEngine.auroraMysql({
-        version: rds.AuroraMysqlEngineVersion.VER_3_07_1,
+        version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
       }),
       instances: 3,
       instanceProps: {

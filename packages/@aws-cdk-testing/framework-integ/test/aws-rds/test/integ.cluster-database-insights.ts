@@ -1,32 +1,33 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
-import { AuroraMysqlEngineVersion, ClusterInstance, DatabaseCluster, DatabaseClusterEngine, DatabaseInsightsMode, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import {
+  AuroraMysqlEngineVersion,
+  ClusterInstance,
+  DatabaseCluster,
+  DatabaseClusterEngine,
+  DatabaseInsightsMode,
+  PerformanceInsightRetention,
+} from 'aws-cdk-lib/aws-rds';
 
-class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+const app = new App();
+const stack = new Stack(app, 'aws-cdk-rds-cluster-database-insights');
+const vpc = new Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
-    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+new DatabaseCluster(stack, 'Cluster', {
+  engine: DatabaseClusterEngine.auroraMysql({
+    version: AuroraMysqlEngineVersion.VER_3_11_1,
+  }),
+  writer: ClusterInstance.provisioned('writer', {
+    instanceType: InstanceType.of(InstanceClass.R7G, InstanceSize.LARGE),
+  }),
+  vpc,
+  databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
+  performanceInsightRetention: PerformanceInsightRetention.MONTHS_15,
+  removalPolicy: RemovalPolicy.DESTROY,
+});
 
-    new DatabaseCluster(this, 'Database', {
-      engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_08_0,
-      }),
-      vpc,
-      writer: ClusterInstance.provisioned('writer', {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
-      }),
-      databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
-      performanceInsightRetention: PerformanceInsightRetention.MONTHS_15,
-    });
-  }
-}
-
-const app = new cdk.App();
-const stack = new TestStack(app, 'aws-cdk-rds-integ-cluster-database-insights');
-
-new IntegTest(app, 'integ-cluster-database-insights', {
+new IntegTest(app, 'cluster-database-insights-integ-test', {
   testCases: [stack],
 });
 

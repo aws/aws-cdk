@@ -22,7 +22,7 @@ const instanceProps = {
 const cluster = new DatabaseCluster(stack, 'Database', {
   credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_3_07_1,
+    version: AuroraMysqlEngineVersion.VER_3_11_1,
   }),
   vpc,
   writer: ClusterInstance.provisioned('Instance1', {

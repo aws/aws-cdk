@@ -334,7 +334,7 @@
      "Ref": "DatabaseClusterSubnets7FAE1846"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.07.1",
+    "EngineVersion": "8.0.mysql_aurora.3.11.1",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MasterUsername": "admin",
     "ServerlessV2ScalingConfiguration": {

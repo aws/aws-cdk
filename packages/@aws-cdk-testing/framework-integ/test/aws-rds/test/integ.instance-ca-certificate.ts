@@ -1,24 +1,23 @@
-import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { App, Stack } from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 import { CaCertificate, DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion } from 'aws-cdk-lib/aws-rds';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-ca-certificate');
 
-const stack = new Stack(app, 'cdk-integ-rds-instance-ca-certificate');
-
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 new DatabaseInstance(stack, 'Instance', {
   engine: DatabaseInstanceEngine.postgres({
-    version: PostgresEngineVersion.VER_14,
+    version: PostgresEngineVersion.VER_17_7,
   }),
-  instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
   vpc,
   caCertificate: CaCertificate.RDS_CA_RSA2048_G1,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-new integ.IntegTest(app, 'InstanceCACertificateTest', {
+new IntegTest(app, 'instance-ca-certificate-integ-test', {
   testCases: [stack],
 });
 

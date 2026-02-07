@@ -11,7 +11,7 @@ class TestStack extends cdk.Stack {
 
     new DatabaseCluster(this, 'Database', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_07_1,
+        version: AuroraMysqlEngineVersion.VER_3_11_1,
       }),
       vpc,
       engineLifecycleSupport: EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,

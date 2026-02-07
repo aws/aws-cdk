@@ -11,7 +11,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
 
     new rds.DatabaseInstance(this, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_21 }),
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_7 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
       credentials: rds.Credentials.fromGeneratedSecret('admin', { excludeCharacters: '!&*^#@()' }),
       vpc,

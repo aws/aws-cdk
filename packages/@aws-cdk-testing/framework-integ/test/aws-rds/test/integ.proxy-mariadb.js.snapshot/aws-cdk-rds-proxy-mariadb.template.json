@@ -614,7 +614,7 @@
      "Ref": "mariaDBInstanceSubnetGroupA17E5651"
     },
     "Engine": "mariadb",
-    "EngineVersion": "10.6.16",
+    "EngineVersion": "11.8.5",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -727,6 +727,7 @@
     "Auth": [
      {
       "AuthScheme": "SECRETS",
+      "ClientPasswordAuthType": "MYSQL_NATIVE_PASSWORD",
       "IAMAuth": "DISABLED",
       "SecretArn": {
        "Ref": "mariaDBInstanceSecretAttachment900E3C52"

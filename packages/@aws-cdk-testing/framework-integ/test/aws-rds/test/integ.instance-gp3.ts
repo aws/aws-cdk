@@ -11,7 +11,7 @@ class TestStack extends Stack {
     const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     new DatabaseInstance(this, 'Instance', {
-      engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
+      engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_4_7 }),
       instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.SMALL),
       vpc,
       allocatedStorage: 1000,

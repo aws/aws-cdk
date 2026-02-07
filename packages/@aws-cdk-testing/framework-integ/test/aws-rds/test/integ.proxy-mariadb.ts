@@ -13,7 +13,7 @@ const kmsKey = new kms.Key(stack, 'SecretEncryptionKey');
 
 const mariaDBInstance = new rds.DatabaseInstance(stack, 'mariaDBInstance', {
   engine: rds.DatabaseInstanceEngine.mariaDb({
-    version: rds.MariaDbEngineVersion.VER_10_6_16,
+    version: rds.MariaDbEngineVersion.VER_11_8_5,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   credentials: rds.Credentials.fromUsername('master', {
@@ -30,6 +30,7 @@ new rds.DatabaseProxy(stack, 'mariaDBProxy', {
   secrets: [mariaDBInstance.secret!],
   proxyTarget: rds.ProxyTarget.fromInstance(mariaDBInstance),
   vpc,
+  clientPasswordAuthType: rds.ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD,
 });
 
 new integ.IntegTest(app, 'database-proxy-mariadb-integ-test', {

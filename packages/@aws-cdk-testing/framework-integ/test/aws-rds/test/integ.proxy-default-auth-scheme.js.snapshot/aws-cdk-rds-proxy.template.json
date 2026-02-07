@@ -499,7 +499,7 @@
     },
     "EnableIAMDatabaseAuthentication": true,
     "Engine": "postgres",
-    "EngineVersion": "17.7",
+    "EngineVersion": "18.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

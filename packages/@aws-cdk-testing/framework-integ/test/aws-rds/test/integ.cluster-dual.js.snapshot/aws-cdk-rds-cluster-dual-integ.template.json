@@ -393,7 +393,7 @@
      "Ref": "DualstackClusterSubnets00EA466E"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.07.1",
+    "EngineVersion": "8.0.mysql_aurora.3.11.1",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MasterUsername": "admin",
     "NetworkType": "DUAL",
@@ -488,7 +488,7 @@
      "Ref": "Ipv4ClusterSubnets5BD573AA"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.07.1",
+    "EngineVersion": "8.0.mysql_aurora.3.11.1",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MasterUsername": "admin",
     "NetworkType": "IPV4",

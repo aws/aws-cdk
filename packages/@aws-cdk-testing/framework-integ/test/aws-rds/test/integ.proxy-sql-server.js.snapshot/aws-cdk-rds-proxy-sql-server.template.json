@@ -18,9 +18,6 @@
   "vpcPublicSubnet1Subnet2E65531E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet1RouteTable48A2DF9B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
@@ -75,12 +75,12 @@
   "vpcPublicSubnet1DefaultRoute10708846": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "vpcPublicSubnet1NATGateway9C16659E": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "vpcPublicSubnet1Subnet2E65531E"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "vpcPublicSubnet1EIPDA49DCBE",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet2RouteTableEB40D4CB": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet2RouteTableAssociation21F81B59": {
@@ -183,12 +183,12 @@
   "vpcPublicSubnet2DefaultRouteA1EC0F60": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "vpcPublicSubnet2NATGateway9B8AE11A": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "vpcPublicSubnet2Subnet009B674F"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "vpcPublicSubnet2EIP9B3743B1",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "vpcPrivateSubnet1Subnet934893E8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet1RouteTableB41A48CC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet1RouteTableAssociation67945127": {
@@ -291,21 +291,18 @@
   "vpcPrivateSubnet1DefaultRoute1AA8E2E5": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
     }
    }
   },
   "vpcPrivateSubnet2Subnet7031C2BA": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet2RouteTable7280F23E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
@@ -360,12 +360,12 @@
   "vpcPrivateSubnet2DefaultRouteB0E07F99": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "vpcPublicSubnet2NATGateway9B8AE11A"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
     }
    }
   },
@@ -383,11 +383,11 @@
   "vpcVPCGW7984C166": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "InternetGatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "VpcId": {
+     "Ref": "vpcA2121C38"
     }
    }
   },
@@ -424,7 +424,6 @@
   "SqlServerDbInstanceSecurityGroupfromawscdkrdsproxysqlserverDbProxyProxySecurityGroupEA4A8A53IndirectPortB7F9EE50": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "IpProtocol": "tcp",
     "Description": "Allow connections to the database Instance from the Proxy",
     "FromPort": {
      "Fn::GetAtt": [
@@ -438,6 +437,7 @@
       "GroupId"
      ]
     },
+    "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
       "DbProxyProxySecurityGroupCFB8B534",
@@ -500,18 +500,6 @@
     "Engine": "sqlserver-ex",
     "EngineVersion": "15.00",
     "LicenseModel": "license-included",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "SqlServerDbInstanceSecretAC239A57"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -521,6 +509,18 @@
         "Ref": "SqlServerDbInstanceSecretAC239A57"
        },
        ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "SqlServerDbInstanceSecretAC239A57"
+       },
+       ":SecretString:username::}}"
       ]
      ]
     },
@@ -610,21 +610,13 @@
     ],
     "DBProxyName": "awscdkrdsproxysqlserverDbProxy3F5C6270",
     "EngineFamily": "SQLSERVER",
+    "RequireTLS": true,
     "RoleArn": {
      "Fn::GetAtt": [
       "DbProxyIAMRoleDB6E75F4",
       "Arn"
      ]
     },
-    "VpcSubnetIds": [
-     {
-      "Ref": "vpcPrivateSubnet1Subnet934893E8"
-     },
-     {
-      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
-     }
-    ],
-    "RequireTLS": true,
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -632,16 +624,20 @@
        "GroupId"
       ]
      }
+    ],
+    "VpcSubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
     ]
    }
   },
   "DbProxyProxyTargetGroupE3127B9C": {
    "Type": "AWS::RDS::DBProxyTargetGroup",
    "Properties": {
-    "DBProxyName": {
-     "Ref": "DbProxy471ABCB4"
-    },
-    "TargetGroupName": "default",
     "ConnectionPoolConfigurationInfo": {
      "ConnectionBorrowTimeout": 30,
      "MaxConnectionsPercent": 50
@@ -650,7 +646,11 @@
      {
       "Ref": "SqlServerDbInstance8422C0F9"
      }
-    ]
+    ],
+    "DBProxyName": {
+     "Ref": "DbProxy471ABCB4"
+    },
+    "TargetGroupName": "default"
    }
   },
   "SqlProxyRole0DC4DDBC": {

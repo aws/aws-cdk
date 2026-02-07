@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "b9b87a8e009fe998a9e0893a91eb53f39fd4f7c67536acaecf79ef23d3d1ae80": {
+      "displayName": "aws-cdk-rds-cluster-database-insights Template",
+      "source": {
+        "path": "aws-cdk-rds-cluster-database-insights.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-cc9b642a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b9b87a8e009fe998a9e0893a91eb53f39fd4f7c67536acaecf79ef23d3d1ae80.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

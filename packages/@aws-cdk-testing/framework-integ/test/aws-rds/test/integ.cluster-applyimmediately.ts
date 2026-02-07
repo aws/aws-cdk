@@ -14,7 +14,7 @@ const instanceProps = {
 };
 
 new rds.DatabaseCluster(stack, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_11_1 }),
   credentials: rds.Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   vpc,

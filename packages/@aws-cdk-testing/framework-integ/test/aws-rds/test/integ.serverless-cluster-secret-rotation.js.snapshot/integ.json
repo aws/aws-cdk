@@ -1,12 +1,13 @@
 {
-  "version": "30.1.0",
+  "version": "48.0.0",
   "testCases": {
-    "cdk-rds-integ-secret-rotation/DefaultTest": {
+    "integ-test/DefaultTest": {
       "stacks": [
         "aws-cdk-rds-integ-secret-rotation"
       ],
-      "assertionStack": "cdk-rds-integ-secret-rotation/DefaultTest/DeployAssert",
-      "assertionStackName": "cdkrdsintegsecretrotationDefaultTestDeployAssert9780868B"
+      "assertionStack": "integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

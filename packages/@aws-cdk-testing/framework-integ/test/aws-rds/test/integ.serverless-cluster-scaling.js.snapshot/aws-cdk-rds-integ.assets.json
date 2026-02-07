@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "39bf1ae788d29e6def2af02690b18b4dd491662b26b445a93f9b8994e6f18990": {
+    "303a255268583f608040b1c4b8bbfd76e3d6ebf63b5291b0de3dcc7784d8f00b": {
+      "displayName": "aws-cdk-rds-integ Template",
       "source": {
         "path": "aws-cdk-rds-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-f814486b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "39bf1ae788d29e6def2af02690b18b4dd491662b26b445a93f9b8994e6f18990.json",
+          "objectKey": "303a255268583f608040b1c4b8bbfd76e3d6ebf63b5291b0de3dcc7784d8f00b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -505,7 +505,7 @@
     },
     "DeleteAutomatedBackups": false,
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.07.1",
+    "EngineVersion": "8.0.mysql_aurora.3.11.1",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "DbSecurity381C2C15",

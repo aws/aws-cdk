@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'EnableLocalWriteForwardingClusterStack');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 new rds.DatabaseCluster(stack, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_11_1 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   readers: [
     rds.ClusterInstance.serverlessV2('readerInstance1'),
@@ -19,7 +19,7 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
 });
 
 new rds.DatabaseCluster(stack, 'DatabaseClusterPostgresql', {
-  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_4 }),
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_17_6 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   readers: [
     rds.ClusterInstance.serverlessV2('readerInstance1'),

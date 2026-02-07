@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "542fdbc4ae79ba961c6e1fc4708d19b915f161415cf74f8fbf15cdbf6e0661a7": {
       "displayName": "aws-cdk-rds-instance-lookup Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region": {
+        "12345678-test-region-95af9287": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
           "objectKey": "542fdbc4ae79ba961c6e1fc4708d19b915f161415cf74f8fbf15cdbf6e0661a7.json",
           "region": "test-region",

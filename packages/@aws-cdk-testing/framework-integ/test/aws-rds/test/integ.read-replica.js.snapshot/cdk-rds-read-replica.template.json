@@ -206,7 +206,7 @@
      "Ref": "PostgresSourceSubnetGroupBEEB1740"
     },
     "Engine": "postgres",
-    "EngineVersion": "16.3",
+    "EngineVersion": "18.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

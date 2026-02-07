@@ -471,7 +471,7 @@
     ],
     "EnableIAMDatabaseAuthentication": true,
     "Engine": "postgres",
-    "EngineVersion": "16.3",
+    "EngineVersion": "18.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

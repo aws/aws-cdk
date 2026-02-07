@@ -1,46 +1,36 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
+
 const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', {
-  restrictDefaultSecurityGroup: false,
-  maxAzs: 2,
-});
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false, natGateways: 1 });
+
 const subnetGroup = new rds.SubnetGroup(stack, 'SubnetGroup', {
   vpc,
+  description: 'Subnet group for serverless cluster',
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-  description: 'My Subnet Group',
-  subnetGroupName: 'MyNotLowerCaseSubnetGroupName',
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const cluster = new rds.ServerlessCluster(stack, 'Serverless Database', {
-  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
-  credentials: {
-    username: 'admin',
-    password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
-  },
+// Migrate from ServerlessCluster to DatabaseCluster with serverlessV2
+new rds.DatabaseCluster(stack, 'Serverless Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
+  }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  serverlessV2MinCapacity: 0.5,
+  serverlessV2MaxCapacity: 1,
   vpc,
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
   subnetGroup,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  copyTagsToSnapshot: true,
 });
-cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
-const noCopyTagsCluster = new rds.ServerlessCluster(stack, 'Serverless Database Without Copy Tags', {
-  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
-  credentials: {
-    username: 'admin',
-    password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
-  },
-  vpc,
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-  subnetGroup,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-  copyTagsToSnapshot: false,
+new IntegTest(app, 'integ.serverless-cluster', {
+  testCases: [stack],
 });
-noCopyTagsCluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
-
-app.synth();

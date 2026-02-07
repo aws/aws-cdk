@@ -391,122 +391,6 @@
     }
    }
   },
-  "VPCRestrictDefaultSecurityGroupCustomResource59474679": {
-   "Type": "Custom::VpcRestrictDefaultSG",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
-      "Arn"
-     ]
-    },
-    "DefaultSecurityGroupId": {
-     "Fn::GetAtt": [
-      "VPCB9E5F0B4",
-      "DefaultSecurityGroup"
-     ]
-    },
-    "Account": {
-     "Ref": "AWS::AccountId"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyName": "Inline",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Effect": "Allow",
-         "Action": [
-          "ec2:AuthorizeSecurityGroupIngress",
-          "ec2:AuthorizeSecurityGroupEgress",
-          "ec2:RevokeSecurityGroupIngress",
-          "ec2:RevokeSecurityGroupEgress"
-         ],
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":ec2:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":security-group/",
-             {
-              "Fn::GetAtt": [
-               "VPCB9E5F0B4",
-               "DefaultSecurityGroup"
-              ]
-             }
-            ]
-           ]
-          }
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs22.x",
-    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
-   },
-   "DependsOn": [
-    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-   ]
-  },
   "DatabaseSubnets56F17B9A": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
@@ -582,7 +466,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.06.0",
+    "EngineVersion": "8.0.mysql_aurora.3.11.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -619,15 +503,18 @@
    "UpdateReplacePolicy": "Snapshot",
    "DeletionPolicy": "Snapshot"
   },
-  "DatabaseInstanceAA8A5FDE": {
+  "DatabaseInstance1844F58FD": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
     "DBInstanceClass": "db.t3.medium",
-    "Engine": "aurora-mysql",
-    "PromotionTier": 0
+    "DBInstanceIdentifier": "instanceidentifierbase1",
+    "DBSubnetGroupName": {
+     "Ref": "DatabaseSubnets56F17B9A"
+    },
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
@@ -638,18 +525,20 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "Databasereader13B43287": {
+  "DatabaseInstance2AA380DEE": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
     "DBInstanceClass": "db.t3.medium",
-    "Engine": "aurora-mysql",
-    "PromotionTier": 2
+    "DBInstanceIdentifier": "instanceidentifierbase2",
+    "DBSubnetGroupName": {
+     "Ref": "DatabaseSubnets56F17B9A"
+    },
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
-    "DatabaseInstanceAA8A5FDE",
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
     "VPCPrivateSubnet1RouteTableAssociation347902D1",
     "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
