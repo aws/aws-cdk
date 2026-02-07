@@ -24,7 +24,7 @@ import {
   Ipv6Addresses,
   RequestedSubnet,
 } from './ip-addresses';
-import { NatProvider, RegionalNatGatewayProvider } from './nat';
+import { ConfigureNatOptions, NatProvider, RegionalNatGatewayProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
 import {
@@ -1838,11 +1838,12 @@ export class Vpc extends VpcBase {
       }
     }
 
-    provider.configureNat({
+    const options: ConfigureNatOptions = {
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
       privateSubnets: this.privateSubnets as PrivateSubnet[],
-    });
+    };
+    provider.configureNat(options);
   }
 
   /**

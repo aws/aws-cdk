@@ -123,7 +123,7 @@ export abstract class NatProvider {
    *
    * Don't call this directly, the VPC will call it automatically.
    */
-  public abstract configureNat(options: ConfigureNatOptions): void;
+  public abstract configureNat(options: ConfigureRegionalNatOptions): void;
 
   /**
    * Configures subnet with the gateway
@@ -134,24 +134,16 @@ export abstract class NatProvider {
 }
 
 /**
- * Options passed by the VPC when NAT needs to be configured
+ * Options passed by the VPC when Regional NAT Gateway needs to be configured
  *
- *
+ * This is the base interface for NAT configuration, containing only the
+ * properties needed for Regional NAT Gateways.
  */
-export interface ConfigureNatOptions {
+export interface ConfigureRegionalNatOptions {
   /**
    * The VPC we're configuring NAT for
    */
   readonly vpc: Vpc;
-
-  /**
-   * The public subnets where the NAT providers need to be placed.
-   *
-   * Not used for regional NAT gateways, otherwise required.
-   *
-   * @default - For anything other than regional NAT Gateways, it is treated as an empty array and NATs will not be created
-   */
-  readonly natSubnets?: PublicSubnet[];
 
   /**
    * The private subnets that need to route through the NAT providers.
@@ -159,6 +151,19 @@ export interface ConfigureNatOptions {
    * There may be more private subnets than public subnets with NAT providers.
    */
   readonly privateSubnets: PrivateSubnet[];
+}
+
+/**
+ * Options passed by the VPC when NAT needs to be configured
+ *
+ * Extends ConfigureRegionalNatOptions with natSubnets for zonal NAT Gateways
+ * and NAT instances.
+ */
+export interface ConfigureNatOptions extends ConfigureRegionalNatOptions {
+  /**
+   * The public subnets where the NAT providers need to be placed.
+   */
+  readonly natSubnets: PublicSubnet[];
 }
 
 /**
@@ -388,19 +393,17 @@ export class NatGatewayProvider extends NatProvider {
   }
 
   public configureNat(options: ConfigureNatOptions) {
-    const natSubnets = options.natSubnets ?? [];
-
     if (
       this.props.eipAllocationIds != null
       && !Token.isUnresolved(this.props.eipAllocationIds)
-      && this.props.eipAllocationIds.length < natSubnets.length
+      && this.props.eipAllocationIds.length < options.natSubnets.length
     ) {
-      throw new UnscopedValidationError(`Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${natSubnets.length} needed).`);
+      throw new UnscopedValidationError(`Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
     }
 
     // Create the NAT gateways
     let i = 0;
-    for (const sub of natSubnets) {
+    for (const sub of options.natSubnets) {
       const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
       const gateway = sub.addNatGateway(eipAllocationId);
       this.gateways.add(sub.availabilityZone, gateway.ref);
@@ -470,7 +473,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
     }
   }
 
-  public configureNat(options: ConfigureNatOptions) {
+  public configureNat(options: ConfigureRegionalNatOptions) {
     // Warn if availabilityZoneAddresses is specified with allocationId/eip
     // allocationId/eip will be ignored in that case
     if (this.props.availabilityZoneAddresses && (this.props.allocationId || this.props.eip)) {
@@ -561,7 +564,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
-    for (const sub of options.natSubnets ?? []) {
+    for (const sub of options.natSubnets) {
       const natInstance = new Instance(sub, 'NatInstance', {
         instanceType: this.props.instanceType,
         machineImage,
@@ -721,7 +724,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
       userData.addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);
     }
 
-    for (const sub of options.natSubnets ?? []) {
+    for (const sub of options.natSubnets) {
       const natInstance = new Instance(sub, 'NatInstance', {
         instanceType: this.props.instanceType,
         machineImage,
