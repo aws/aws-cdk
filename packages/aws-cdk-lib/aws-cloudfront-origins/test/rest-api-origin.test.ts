@@ -1,4 +1,5 @@
 import * as apigateway from '../../aws-apigateway';
+import * as cloudfront from '../../aws-cloudfront';
 import { Duration, Stack } from '../../core';
 import { RestApiOrigin } from '../lib';
 
