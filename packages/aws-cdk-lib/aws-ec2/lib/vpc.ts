@@ -1819,9 +1819,7 @@ export class Vpc extends VpcBase {
     if (provider instanceof RegionalNatGatewayProvider) {
       provider.configureNat({
         vpc: this,
-        privateSubnets: this.privateSubnets.filter(
-          (s): s is PrivateSubnet => s instanceof PrivateSubnet,
-        ),
+        privateSubnets: this.privateSubnets as PrivateSubnet[],
       });
 
       // NAT Gateway needs needs to be created after Internet Gateway is ready
@@ -2829,17 +2827,16 @@ function determineNatGatewayCount(
   azCount: number,
   natGatewayProvider?: NatProvider,
 ) {
+  if (natGatewayProvider instanceof RegionalNatGatewayProvider) {
+    // Regional NAT Gateway uses a single gateway regardless of AZ count
+    // default to 1 and keep it [0, 1] otherwise
+    return requestedCount === undefined ? 1 : Math.min(1, Math.max(requestedCount, 0));
+  }
+
   const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_EGRESS
     || c.subnetType === SubnetType.PRIVATE || c.subnetType === SubnetType.PRIVATE_WITH_NAT) && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC && !c.reserved);
   const hasCustomEgress = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE_WITH_EGRESS);
-
-  const isRegionalNatGateway = natGatewayProvider instanceof RegionalNatGatewayProvider;
-
-  // Regional NAT Gateway uses a single gateway regardless of AZ count
-  if (isRegionalNatGateway && (requestedCount !== 0)) {
-    return 1;
-  }
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
