@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import { CustomResourceProviderOptions, INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
+import type { CustomResourceProviderOptions } from './shared';
+import { INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
 import * as cxapi from '../../../cx-api';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
@@ -52,17 +53,17 @@ export abstract class CustomResourceProviderBase extends Construct {
   private _codeHash?: string;
   private policyStatements?: any[];
   private role?: CfnResource;
+  private handler?: CfnResource;
 
   /**
    * The ARN of the provider's AWS Lambda function which should be used as the `serviceToken` when defining a custom
    * resource.
    */
-  public readonly serviceToken: string;
+  public get serviceToken(): string {
+    return Token.asString(this.handler!.getAtt('Arn'));
+  }
 
-  /**
-   * The ARN of the provider's AWS Lambda function role.
-   */
-  public readonly roleArn: string;
+  private _roleArn: string = '';
 
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderBaseProps) {
     super(scope, id);
@@ -86,9 +87,6 @@ export abstract class CustomResourceProviderBase extends Construct {
     const assumeRolePolicyDoc = [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }];
     const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
 
-    // need to initialize this attribute, but there should never be an instance
-    // where config.enabled=true && config.preventSynthesis=true
-    this.roleArn = '';
     if (config.enabled) {
       // gives policyStatements a chance to resolve
       this.node.addValidation({
@@ -103,7 +101,7 @@ export abstract class CustomResourceProviderBase extends Construct {
           return [];
         },
       });
-      this.roleArn = Stack.of(this).formatArn({
+      this._roleArn = Stack.of(this).formatArn({
         region: '',
         service: 'iam',
         resource: 'role',
@@ -124,13 +122,12 @@ export abstract class CustomResourceProviderBase extends Construct {
           Policies: Lazy.any({ produce: () => this.renderPolicies() }),
         },
       });
-      this.roleArn = Token.asString(this.role.getAtt('Arn'));
     }
 
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
 
-    const handler = new CfnResource(this, 'Handler', {
+    this.handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
         Code: code,
@@ -145,14 +142,22 @@ export abstract class CustomResourceProviderBase extends Construct {
     });
 
     if (this.role) {
-      handler.addDependency(this.role);
+      this.handler.addDependency(this.role);
     }
 
     if (metadata) {
-      Object.entries(metadata).forEach(([k, v]) => handler.addMetadata(k, v));
+      Object.entries(metadata).forEach(([k, v]) => this.handler!.addMetadata(k, v));
     }
+  }
 
-    this.serviceToken = Token.asString(handler.getAtt('Arn'));
+  /**
+   * The ARN of the provider's AWS Lambda function role.
+   */
+  public get roleArn(): string {
+    if (this.role) {
+      return Token.asString(this.role.getAtt('Arn'));
+    }
+    return this._roleArn;
   }
 
   /**
