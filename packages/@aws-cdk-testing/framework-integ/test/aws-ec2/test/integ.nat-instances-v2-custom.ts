@@ -1,6 +1,7 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as assert from 'assert';
 import * as cdk from 'aws-cdk-lib';
+import type { CfnResource } from 'aws-cdk-lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -56,6 +57,12 @@ class NatInstanceStack extends cdk.Stack {
     const listener = loadBalancer.addListener('listener', { port: 80 });
     listener.addTargets('target', { port: 80 });
     listener.addAction('response', { action: elbv2.ListenerAction.fixedResponse(200) });
+
+    // Suppress Security Guardian for ALB security group (open on port 80 by design)
+    loadBalancer.connections.securityGroups.forEach(sg => {
+      const cfnSg = sg.node.defaultChild as CfnResource;
+      cfnSg.addMetadata('guard', { SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'] });
+    });
 
     const httpApi = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
       defaultIntegration: new integrations.HttpAlbIntegration('DefaultIntegration', listener),
