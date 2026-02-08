@@ -178,6 +178,35 @@ describe('Graphs', () => {
     }]);
   });
 
+  test('specify liveData property on singlevalue widget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [metric],
+      accountId: '123456789012',
+      liveData: true,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        accountId: '123456789012',
+        liveData: true,
+      },
+    }]);
+  });
+
   test('query result widget', () => {
     // GIVEN
     const stack = new Stack();
