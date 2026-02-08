@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-custom-resource-external-id-test": {
       "type": "aws:cloudformation:stack",
@@ -14,13 +14,13 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.a294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420b",
-              "id": "a294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420b",
+              "path": "asset.92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
+              "id": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
               "packaging": "zip",
-              "sourceHash": "a294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420b",
-              "s3BucketParameter": "AssetParametersa294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420bS3BucketA0A16106",
-              "s3KeyParameter": "AssetParametersa294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420bS3VersionKey25C5BB93",
-              "artifactHashParameter": "AssetParametersa294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420bArtifactHashEDBEE04E"
+              "sourceHash": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
+              "s3BucketParameter": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268S3Bucket7B30F1E5",
+              "s3KeyParameter": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268S3VersionKeyD9D1CE3A",
+              "artifactHashParameter": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268ArtifactHash5E4FB476"
             }
           }
         ],
@@ -66,12 +66,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-custom-resource-external-id-test/RoleWithExternalId/ImportRoleWithExternalId": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-custom-resource-external-id-test/RoleWithExternalId/Resource": [
@@ -252,12 +246,6 @@
             }
           }
         ],
-        "/aws-custom-resource-external-id-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-custom-resource-external-id-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -270,22 +258,22 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/aws-custom-resource-external-id-test/AssetParameters/a294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420b/S3Bucket": [
+        "/aws-custom-resource-external-id-test/AssetParameters/92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersa294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420bS3BucketA0A16106"
+            "data": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268S3Bucket7B30F1E5"
           }
         ],
-        "/aws-custom-resource-external-id-test/AssetParameters/a294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420b/S3VersionKey": [
+        "/aws-custom-resource-external-id-test/AssetParameters/92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersa294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420bS3VersionKey25C5BB93"
+            "data": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268S3VersionKeyD9D1CE3A"
           }
         ],
-        "/aws-custom-resource-external-id-test/AssetParameters/a294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420b/ArtifactHash": [
+        "/aws-custom-resource-external-id-test/AssetParameters/92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersa294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420bArtifactHashEDBEE04E"
+            "data": "AssetParameters92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268ArtifactHash5E4FB476"
           }
         ]
       },
@@ -600,6 +588,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -801,5 +793,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

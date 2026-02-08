@@ -14,6 +14,7 @@
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
     "prefer-ref-interface:@aws-cdk/aws-sagemaker-alpha.ScalableInstanceCountProps.role",
     "interface-extends-ref:@aws-cdk/aws-sagemaker-alpha.IEndpointConfig",
-    "interface-extends-ref:@aws-cdk/aws-sagemaker-alpha.IModel"
+    "interface-extends-ref:@aws-cdk/aws-sagemaker-alpha.IModel",
+    "no-grants:@aws-cdk/aws-sagemaker-alpha.Pipeline.grantStartPipelineExecution"
   ]
 }

@@ -1,5 +1,6 @@
 import { Match, Template } from '../../../assertions';
-import { App, Stack } from '../../../core';
+import type { App } from '../../../core';
+import { Stack } from '../../../core';
 import { ModernTestGitHubNpmPipeline, PIPELINE_ENV, sortByRunOrder, TestApp, ThreeStackApp, TwoStackApp } from '../testhelpers';
 
 let app: App;

@@ -1,7 +1,7 @@
 
-import * as constructs from 'constructs';
-import { LifecycleHook } from './lifecycle-hook';
-import * as iam from '../../aws-iam';
+import type * as constructs from 'constructs';
+import type { LifecycleHook } from './lifecycle-hook';
+import type * as iam from '../../aws-iam';
 
 /**
  * Options needed to bind a target to a lifecycle hook.
