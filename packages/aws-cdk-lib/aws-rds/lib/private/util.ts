@@ -1,12 +1,13 @@
-import { Construct } from 'constructs';
-import * as ec2 from '../../../aws-ec2';
+import type { Construct } from 'constructs';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as s3 from '../../../aws-s3';
+import type * as s3 from '../../../aws-s3';
 import { RemovalPolicy } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { DatabaseSecret } from '../database-secret';
-import { IEngine } from '../engine';
-import { CommonRotationUserOptions, Credentials, SnapshotCredentials } from '../props';
+import type { IEngine } from '../engine';
+import type { CommonRotationUserOptions } from '../props';
+import { Credentials, SnapshotCredentials } from '../props';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.

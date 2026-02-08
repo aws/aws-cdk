@@ -1,4 +1,4 @@
-import { Duration } from '../../core';
+import type { Duration } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**

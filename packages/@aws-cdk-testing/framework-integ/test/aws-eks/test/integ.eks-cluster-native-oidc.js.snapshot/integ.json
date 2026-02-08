@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-native-oidc-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-native-oidc"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-cluster-native-oidc-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusternativeoidcintegDefaultTestDeployAssert8D7941F6"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

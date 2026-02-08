@@ -1,8 +1,8 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as _eks from '@aws-sdk/client-eks';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as sts from '@aws-sdk/client-sts';
-import { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
+
+import type * as _eks from '@aws-sdk/client-eks';
+
+import type * as sts from '@aws-sdk/client-sts';
+import type { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 export interface EksUpdateId {
   /**

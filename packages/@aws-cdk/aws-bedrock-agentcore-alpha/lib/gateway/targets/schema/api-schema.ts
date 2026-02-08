@@ -1,8 +1,10 @@
 import { Aws } from 'aws-cdk-lib';
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import { Construct } from 'constructs';
+import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
 
 /**
@@ -118,7 +120,7 @@ export class AssetApiSchema extends ApiSchema {
     if (!this.asset) {
       // Note: Validation is handled at the target configuration level where we know the schema type
       // and whether validation is enabled
-      this.asset = new s3_assets.Asset(scope, 'Schema', {
+      this.asset = new s3_assets.Asset(scope, `Schema${md5hash(this.path)}`, {
         path: this.path,
         ...this.options,
       });

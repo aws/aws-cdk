@@ -1,35 +1,39 @@
 import { EOL } from 'os';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
-import { IBucketNotificationDestination } from './destination';
+import type { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule, StorageClass } from './rule';
-import { BucketReference, CfnBucket, IBucketRef } from './s3.generated';
+import type { LifecycleRule, StorageClass } from './rule';
+import type { BucketReference, IBucketRef } from './s3.generated';
+import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import type {
+  Duration,
+  IResource,
+  ResourceProps,
+} from '../../core';
 import {
   Annotations,
   CustomResource,
-  Duration,
   FeatureFlags,
   Fn,
-  IResource,
   Lazy,
   PhysicalName,
   RemovalPolicy,
   Resource,
-  ResourceProps,
   Stack,
   Tags,
   Token,
   Tokenization,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -2237,8 +2241,20 @@ export class Bucket extends BucketBase {
     }
   }
 
-  public readonly bucketArn: string;
-  public readonly bucketName: string;
+  @memoizedGetter
+  public get bucketArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get bucketName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
   public readonly bucketWebsiteDomainName: string;
@@ -2313,14 +2329,6 @@ export class Bucket extends BucketBase {
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.eventBridgeEnabled = props.eventBridgeEnabled;
-
-    this.bucketName = this.getResourceNameAttribute(resource.ref);
-    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
-      region: '',
-      account: '',
-      service: 's3',
-      resource: this.physicalName,
-    });
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;

@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
-import { CfnElement, Duration, Stack } from '../../../core';
+import type { CfnElement } from '../../../core';
+import { Duration, Stack } from '../../../core';
 import * as targets from '../../lib';
 
 describe('CodePipeline event target', () => {

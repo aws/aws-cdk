@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ISchedulingPolicyRef, SchedulingPolicyReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type { ISchedulingPolicyRef, SchedulingPolicyReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch
@@ -219,8 +221,22 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
   public readonly computeReservation?: number;
   public readonly shareDecay?: Duration;
   public readonly shares: Share[];
-  public readonly schedulingPolicyArn: string;
-  public readonly schedulingPolicyName: string;
+
+  private readonly resource: CfnSchedulingPolicy;
+
+  @memoizedGetter
+  public get schedulingPolicyArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'batch',
+      resource: 'scheduling-policy',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get schedulingPolicyName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   constructor(scope: Construct, id: string, props?: FairshareSchedulingPolicyProps) {
     super(scope, id, props);
@@ -229,7 +245,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
     this.computeReservation = props?.computeReservation;
     this.shareDecay = props?.shareDecay;
     this.shares = props?.shares ?? [];
-    const resource = new CfnSchedulingPolicy(this, 'Resource', {
+    this.resource = new CfnSchedulingPolicy(this, 'Resource', {
       fairsharePolicy: {
         computeReservation: this.computeReservation,
         shareDecaySeconds: this.shareDecay?.toSeconds(),
@@ -242,13 +258,6 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
       },
       name: props?.schedulingPolicyName,
     });
-
-    this.schedulingPolicyArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'batch',
-      resource: 'scheduling-policy',
-      resourceName: this.physicalName,
-    });
-    this.schedulingPolicyName = this.getResourceNameAttribute(resource.ref);
   }
 
   /**
