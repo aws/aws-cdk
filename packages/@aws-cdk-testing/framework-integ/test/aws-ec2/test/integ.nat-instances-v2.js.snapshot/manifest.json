@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-vpc-nat-instances-v2.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/79caf3f06871f4c6d0cba4037d5da02eefbd8fbacef52a0608e0eaa51ef6801e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e9afe04f791595caa57cb78293eeace70de4b122144ab3a4b7fc99264cfb26c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,10 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "natGatewayProvider": "*",
+              "natGateways": "*"
+            }
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/Resource": [
@@ -49,15 +52,29 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/Subnet": [
@@ -87,19 +104,34 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/NatInstance": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "instanceType": "*",
+              "machineImage": "*",
+              "sourceDestCheck": false,
+              "vpc": "*",
+              "vpcSubnets": {
+                "subnets": [
+                  "*"
+                ]
+              },
+              "associatePublicIpAddress": "*",
+              "securityGroup": "*",
+              "keyPair": "*",
+              "keyName": "*",
+              "creditSpecification": "*",
+              "userData": "*"
+            }
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/NatInstance/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/NatInstance/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/NatInstance/InstanceRole/Resource": [
@@ -117,24 +149,35 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7"
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/Subnet": [
@@ -164,19 +207,34 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/NatInstance": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "instanceType": "*",
+              "machineImage": "*",
+              "sourceDestCheck": false,
+              "vpc": "*",
+              "vpcSubnets": {
+                "subnets": [
+                  "*"
+                ]
+              },
+              "associatePublicIpAddress": "*",
+              "securityGroup": "*",
+              "keyPair": "*",
+              "keyName": "*",
+              "creditSpecification": "*",
+              "userData": "*"
+            }
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/NatInstance/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/NatInstance/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/NatInstance/InstanceRole/Resource": [
@@ -194,24 +252,35 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3"
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet1/Subnet": [
@@ -241,15 +310,29 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet2/Subnet": [
@@ -291,11 +374,26 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/NatSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": true
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/NatSecurityGroup/Resource": [
@@ -329,11 +427,26 @@
         "/aws-cdk-vpc-nat-instances-v2/ALB/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/ALB/SecurityGroup/Resource": [
@@ -484,7 +597,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/687e29c83341771260847e925c3a6fe5f3b42c84a19b80f13becc2d963383524.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/31519f38c0fc91e5689b17a745307939f004862b08f0bb88ee0413185b7a8356.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -851,6 +964,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1052,5 +1169,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

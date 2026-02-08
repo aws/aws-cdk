@@ -326,7 +326,7 @@ var ASSERTION_ERROR_SYMBOL, AssertionError;
 var init_error = __esm({
   "../../aws-cdk-lib/assertions/lib/private/error.ts"() {
     "use strict";
-    ASSERTION_ERROR_SYMBOL = /* @__PURE__ */ Symbol.for("@aws-cdk/assertions.AssertionError");
+    ASSERTION_ERROR_SYMBOL = Symbol.for("@aws-cdk/assertions.AssertionError");
     AssertionError = class _AssertionError extends Error {
       #time;
       /**
@@ -819,7 +819,7 @@ var init_match = __esm({
 var require_helpers_internal = __commonJS({
   "../../aws-cdk-lib/assertions/lib/helpers-internal/index.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -829,11 +829,11 @@ var require_helpers_internal = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
+    } : function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       o[k2] = m[k];
-    }));
+    });
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
       for (var p in m)
         if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p))
@@ -12513,7 +12513,7 @@ var init_tslib_es6 = __esm({
       };
       return __assign.apply(this, arguments);
     };
-    __createBinding = Object.create ? (function(o, m, k, k2) {
+    __createBinding = Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -12522,13 +12522,13 @@ var init_tslib_es6 = __esm({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
+    } : function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    __setModuleDefault = Object.create ? (function(o, v) {
+    };
+    __setModuleDefault = Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    }) : function(o, v) {
+    } : function(o, v) {
       o["default"] = v;
     };
     ownKeys = function(o) {
@@ -21069,7 +21069,7 @@ var require_dist_cjs66 = __commonJS({
 var require_fromWebToken = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -21078,13 +21078,13 @@ var require_fromWebToken = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
+    } : function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    }));
-    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+    });
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    }) : function(o, v) {
+    } : function(o, v) {
       o["default"] = v;
     });
     var __importStar2 = exports2 && exports2.__importStar || function(mod) {
@@ -26698,7 +26698,7 @@ var init_api_call = __esm({
 var require_lib = __commonJS({
   "../aws-custom-resource-sdk-adapter/lib/index.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -26707,10 +26707,10 @@ var require_lib = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
+    } : function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    }));
+    });
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
       for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p)) __createBinding2(exports3, m, p);
     };
@@ -26898,8 +26898,8 @@ var require_utils = __commonJS({
         Object.defineProperty(target, keys[i], Object.getOwnPropertyDescriptor(source, keys[i]));
       }
     };
-    module2.exports.wrapperSymbol = /* @__PURE__ */ Symbol("wrapper");
-    module2.exports.implSymbol = /* @__PURE__ */ Symbol("impl");
+    module2.exports.wrapperSymbol = Symbol("wrapper");
+    module2.exports.implSymbol = Symbol("impl");
     module2.exports.wrapperForImpl = function(impl) {
       return impl[module2.exports.wrapperSymbol];
     };
@@ -27092,7 +27092,7 @@ var require_url_state_machine = __commonJS({
       ws: 80,
       wss: 443
     };
-    var failure = /* @__PURE__ */ Symbol("failure");
+    var failure = Symbol("failure");
     function countSymbols(str) {
       return punycode.ucs2.decode(str).length;
     }
@@ -32203,8 +32203,8 @@ var require_lib4 = __commonJS({
     var https2 = _interopDefault(require("https"));
     var zlib2 = _interopDefault(require("zlib"));
     var Readable = Stream.Readable;
-    var BUFFER = /* @__PURE__ */ Symbol("buffer");
-    var TYPE = /* @__PURE__ */ Symbol("type");
+    var BUFFER = Symbol("buffer");
+    var TYPE = Symbol("type");
     var Blob2 = class _Blob {
       constructor() {
         this[TYPE] = "";
@@ -32319,7 +32319,7 @@ var require_lib4 = __commonJS({
       convert = require_encoding().convert;
     } catch (e) {
     }
-    var INTERNALS = /* @__PURE__ */ Symbol("Body internals");
+    var INTERNALS = Symbol("Body internals");
     var PassThrough = Stream.PassThrough;
     function Body(body) {
       var _this = this;
@@ -32659,7 +32659,7 @@ var require_lib4 = __commonJS({
       }
       return void 0;
     }
-    var MAP = /* @__PURE__ */ Symbol("map");
+    var MAP = Symbol("map");
     var Headers2 = class _Headers {
       /**
        * Headers class
@@ -32867,7 +32867,7 @@ var require_lib4 = __commonJS({
         return [k.toLowerCase(), headers[MAP][k].join(", ")];
       });
     }
-    var INTERNAL = /* @__PURE__ */ Symbol("internal");
+    var INTERNAL = Symbol("internal");
     function createHeadersIterator(target, kind) {
       const iterator = Object.create(HeadersIteratorPrototype);
       iterator[INTERNAL] = {
@@ -32936,9 +32936,9 @@ var require_lib4 = __commonJS({
       }
       return headers;
     }
-    var INTERNALS$1 = /* @__PURE__ */ Symbol("Response internals");
+    var INTERNALS$1 = Symbol("Response internals");
     var STATUS_CODES = http.STATUS_CODES;
-    var Response2 = class _Response {
+    var Response = class _Response {
       constructor() {
         let body = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
         let opts = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
@@ -32996,8 +32996,8 @@ var require_lib4 = __commonJS({
         });
       }
     };
-    Body.mixIn(Response2.prototype);
-    Object.defineProperties(Response2.prototype, {
+    Body.mixIn(Response.prototype);
+    Object.defineProperties(Response.prototype, {
       url: { enumerable: true },
       status: { enumerable: true },
       ok: { enumerable: true },
@@ -33006,13 +33006,13 @@ var require_lib4 = __commonJS({
       headers: { enumerable: true },
       clone: { enumerable: true }
     });
-    Object.defineProperty(Response2.prototype, Symbol.toStringTag, {
+    Object.defineProperty(Response.prototype, Symbol.toStringTag, {
       value: "Response",
       writable: false,
       enumerable: false,
       configurable: true
     });
-    var INTERNALS$2 = /* @__PURE__ */ Symbol("Request internals");
+    var INTERNALS$2 = Symbol("Request internals");
     var URL3 = Url.URL || whatwgUrl.URL;
     var parse_url = Url.parse;
     var format_url = Url.format;
@@ -33340,7 +33340,7 @@ var require_lib4 = __commonJS({
           };
           const codings = headers.get("Content-Encoding");
           if (!request2.compress || request2.method === "HEAD" || codings === null || res.statusCode === 204 || res.statusCode === 304) {
-            response = new Response2(body, response_options);
+            response = new Response(body, response_options);
             resolve(response);
             return;
           }
@@ -33350,7 +33350,7 @@ var require_lib4 = __commonJS({
           };
           if (codings == "gzip" || codings == "x-gzip") {
             body = body.pipe(zlib2.createGunzip(zlibOptions));
-            response = new Response2(body, response_options);
+            response = new Response(body, response_options);
             resolve(response);
             return;
           }
@@ -33362,12 +33362,12 @@ var require_lib4 = __commonJS({
               } else {
                 body = body.pipe(zlib2.createInflateRaw());
               }
-              response = new Response2(body, response_options);
+              response = new Response(body, response_options);
               resolve(response);
             });
             raw.on("end", function() {
               if (!response) {
-                response = new Response2(body, response_options);
+                response = new Response(body, response_options);
                 resolve(response);
               }
             });
@@ -33375,11 +33375,11 @@ var require_lib4 = __commonJS({
           }
           if (codings == "br" && typeof zlib2.createBrotliDecompress === "function") {
             body = body.pipe(zlib2.createBrotliDecompress());
-            response = new Response2(body, response_options);
+            response = new Response(body, response_options);
             resolve(response);
             return;
           }
-          response = new Response2(body, response_options);
+          response = new Response(body, response_options);
           resolve(response);
         });
         writeToStream(req, request2);
@@ -33421,7 +33421,7 @@ var require_lib4 = __commonJS({
     exports2.default = exports2;
     exports2.Headers = Headers2;
     exports2.Request = Request2;
-    exports2.Response = Response2;
+    exports2.Response = Response;
     exports2.FetchError = FetchError;
     exports2.AbortError = AbortError;
   }

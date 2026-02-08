@@ -500,6 +500,13 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "ALBAEE750D2": {
@@ -555,6 +562,13 @@
     ],
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
+    }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
     }
    }
   },
