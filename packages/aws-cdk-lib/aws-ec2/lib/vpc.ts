@@ -30,7 +30,7 @@ import {
   IpAddresses,
   Ipv6Addresses,
 } from './ip-addresses';
-import { NatProvider } from './nat';
+import { ConfigureNatOptions, NatProvider, RegionalNatGatewayProvider } from './nat';
 import type { INetworkAcl } from './network-acl';
 import { NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
@@ -1666,7 +1666,9 @@ export class Vpc extends VpcBase {
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
-    const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
+    const natGatewayCount = determineNatGatewayCount(
+      props.natGateways, this.subnetConfiguration, this.availabilityZones.length, props.natGatewayProvider,
+    );
 
     if (this.useIpv6) {
       this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
@@ -1713,6 +1715,23 @@ export class Vpc extends VpcBase {
       // if gateways are needed create them
       if (natGatewayCount > 0) {
         const provider = props.natGatewayProvider || NatProvider.gateway();
+
+        // Add warnings for Regional NAT Gateway if unnecessary options are specified
+        if (provider instanceof RegionalNatGatewayProvider) {
+          if (props.natGateways !== undefined && props.natGateways !== 1) {
+            Annotations.of(this).addWarningV2(
+              '@aws-cdk/aws-ec2:regionalNatGatewayCount',
+              '`natGateways` is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
+            );
+          }
+          if (props.natGatewaySubnets !== undefined) {
+            Annotations.of(this).addWarningV2(
+              '@aws-cdk/aws-ec2:regionalNatGatewaySubnets',
+              '`natGatewaySubnets` is ignored when using Regional NAT Gateway. The gateway is created at VPC level without requiring a public subnet.',
+            );
+          }
+        }
+
         this.createNatGateways(provider, natGatewayCount, natGatewayPlacement);
       }
     }
@@ -1808,6 +1827,19 @@ export class Vpc extends VpcBase {
   }
 
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
+    if (provider instanceof RegionalNatGatewayProvider) {
+      provider.configureNat({
+        vpc: this,
+        privateSubnets: this.privateSubnets as PrivateSubnet[],
+      });
+
+      // NAT Gateway needs needs to be created after Internet Gateway is ready
+      provider.natGateway?.node.addDependency(this.internetConnectivityEstablished);
+
+      return;
+    }
+
+    // Zonal NAT Gateway requires public subnets
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {
       if (this.publicSubnets.indexOf(sub) === -1) {
@@ -1815,11 +1847,12 @@ export class Vpc extends VpcBase {
       }
     }
 
-    provider.configureNat({
+    const options: ConfigureNatOptions = {
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
       privateSubnets: this.privateSubnets as PrivateSubnet[],
-    });
+    };
+    provider.configureNat(options);
   }
 
   /**
@@ -2494,13 +2527,14 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
    * @returns A ref to the the NAT Gateway ID
    */
   @MethodMetadata()
-  public addNatGateway(eipAllocationId?: string) {
+  public addNatGateway(eipAllocationId?: string, maxDrainDurationSeconds?: number) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
       allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
+      maxDrainDurationSeconds,
     });
     ngw.node.addDependency(this.internetConnectivityEstablished);
     return ngw;
@@ -2798,7 +2832,18 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * Do we want to require that there are private subnets if there are NatGateways?
  * They seem pointless but I see no reason to prevent it.
  */
-function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
+function determineNatGatewayCount(
+  requestedCount: number | undefined,
+  subnetConfig: SubnetConfiguration[],
+  azCount: number,
+  natGatewayProvider?: NatProvider,
+) {
+  if (natGatewayProvider instanceof RegionalNatGatewayProvider) {
+    // Regional NAT Gateway uses a single gateway regardless of AZ count
+    // default to 1 and keep it [0, 1] otherwise
+    return requestedCount === undefined ? 1 : Math.min(1, Math.max(requestedCount, 0));
+  }
+
   const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_EGRESS
     || c.subnetType === SubnetType.PRIVATE || c.subnetType === SubnetType.PRIVATE_WITH_NAT) && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC && !c.reserved);

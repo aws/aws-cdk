@@ -1,5 +1,6 @@
 import type { IConnectable } from './connections';
 import { Connections } from './connections';
+import { CfnNatGateway } from './ec2.generated';
 import { Instance } from './instance';
 import type { InstanceType } from './instance-types';
 import { InstanceArchitecture } from './instance-types';
@@ -14,7 +15,8 @@ import { UserData } from './user-data';
 import type { PrivateSubnet, PublicSubnet, Vpc } from './vpc';
 import { RouterType } from './vpc';
 import * as iam from '../../aws-iam';
-import { Fn, Token, UnscopedValidationError } from '../../core';
+import { Annotations, Duration, Fn, Token, UnscopedValidationError } from '../../core';
+import { IEIPRef } from '../../interfaces/generated/aws-ec2-interfaces.generated';
 
 /**
  * Direction of traffic to allow all by default.
@@ -57,8 +59,6 @@ export interface GatewayConfig {
  *
  * Determines what type of NAT provider to create, either NAT gateways or NAT
  * instance.
- *
- *
  */
 export abstract class NatProvider {
   /**
@@ -106,6 +106,19 @@ export abstract class NatProvider {
   }
 
   /**
+   * Use a Regional NAT Gateway to provide NAT services for your VPC
+   *
+   * Regional NAT Gateways provide automatic multi-AZ redundancy with a single
+   * gateway that scales across availability zones. AWS automatically manages
+   * AZ coverage and EIP allocation.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html
+   */
+  public static regionalGateway(props: RegionalNatGatewayProviderProps = {}): NatProvider {
+    return new RegionalNatGatewayProvider(props);
+  }
+
+  /**
    * Return list of gateways spawned by the provider
    */
   public abstract readonly configuredGateways: GatewayConfig[];
@@ -115,7 +128,7 @@ export abstract class NatProvider {
    *
    * Don't call this directly, the VPC will call it automatically.
    */
-  public abstract configureNat(options: ConfigureNatOptions): void;
+  public abstract configureNat(options: ConfigureRegionalNatOptions): void;
 
   /**
    * Configures subnet with the gateway
@@ -126,20 +139,16 @@ export abstract class NatProvider {
 }
 
 /**
- * Options passed by the VPC when NAT needs to be configured
+ * Options passed by the VPC when Regional NAT Gateway needs to be configured
  *
- *
+ * This is the base interface for NAT configuration, containing only the
+ * properties needed for Regional NAT Gateways.
  */
-export interface ConfigureNatOptions {
+export interface ConfigureRegionalNatOptions {
   /**
    * The VPC we're configuring NAT for
    */
   readonly vpc: Vpc;
-
-  /**
-   * The public subnets where the NAT providers need to be placed
-   */
-  readonly natSubnets: PublicSubnet[];
 
   /**
    * The private subnets that need to route through the NAT providers.
@@ -147,6 +156,19 @@ export interface ConfigureNatOptions {
    * There may be more private subnets than public subnets with NAT providers.
    */
   readonly privateSubnets: PrivateSubnet[];
+}
+
+/**
+ * Options passed by the VPC when NAT needs to be configured
+ *
+ * Extends ConfigureRegionalNatOptions with natSubnets for zonal NAT Gateways
+ * and NAT instances.
+ */
+export interface ConfigureNatOptions extends ConfigureRegionalNatOptions {
+  /**
+   * The public subnets where the NAT providers need to be placed.
+   */
+  readonly natSubnets: PublicSubnet[];
 }
 
 /**
@@ -160,12 +182,96 @@ export interface NatGatewayProps {
    * @default - No fixed EIPs allocated for the NAT gateways
    */
   readonly eipAllocationIds?: string[];
+
+  /**
+   * Maximum amount of time to wait before forcibly releasing IP addresses
+   * if connections are still in progress.
+   *
+   * @default Duration.seconds(350)
+   */
+  readonly maxDrainDuration?: Duration;
+}
+
+/**
+ * Configuration for a specific Availability Zone in a Regional NAT Gateway.
+ *
+ * This is used to manually specify which EIPs to use in each AZ.
+ */
+export interface AvailabilityZoneAddress {
+  /**
+   * The allocation IDs of the Elastic IP addresses to be used for handling
+   * outbound NAT traffic in this specific Availability Zone.
+   */
+  readonly allocationIds: string[];
+
+  /**
+   * The Availability Zone where this specific NAT gateway configuration will be active.
+   *
+   * Either `availabilityZone` or `availabilityZoneId` must be specified.
+   *
+   * @default - Use availabilityZoneId instead
+   */
+  readonly availabilityZone?: string;
+
+  /**
+   * The ID of the Availability Zone where this specific NAT gateway configuration will be active.
+   *
+   * Either `availabilityZone` or `availabilityZoneId` must be specified.
+   *
+   * @default - Use availabilityZone instead
+   */
+  readonly availabilityZoneId?: string;
+}
+
+/**
+ * Properties for a Regional NAT Gateway Provider
+ *
+ * Regional NAT Gateways provide automatic multi-AZ redundancy with a single
+ * gateway that scales across availability zones.
+ */
+export interface RegionalNatGatewayProviderProps {
+  /**
+   * Maximum amount of time to wait before forcibly releasing IP addresses
+   * if connections are still in progress.
+   *
+   * @default Duration.seconds(350)
+   */
+  readonly maxDrainDuration?: Duration;
+
+  /**
+   * The allocation ID of the Elastic IP address to use for this NAT gateway.
+   *
+   * Cannot be specified together with `eip`.
+   * Ignored when `availabilityZoneAddresses` is specified.
+   *
+   * @default - A new EIP is automatically allocated
+   */
+  readonly allocationId?: string;
+
+  /**
+   * Reference to an existing EIP to use for this NAT gateway.
+   *
+   * Cannot be specified together with `allocationId`.
+   * Ignored when `availabilityZoneAddresses` is specified.
+   *
+   * @default - A new EIP is automatically allocated
+   */
+  readonly eip?: IEIPRef;
+
+  /**
+   * Specifies which Availability Zones you want the NAT gateway to support
+   * and the Elastic IP addresses to use in each AZ.
+   *
+   * When specified, `allocationId` and `eip` are ignored.
+   * This enables manual mode for Regional NAT Gateway where you control EIP allocation per AZ.
+   *
+   * @default - Automatic mode: AWS manages AZ coverage and EIP allocation
+   */
+  readonly availabilityZoneAddresses?: AvailabilityZoneAddress[];
 }
 
 /**
  * Properties for a NAT instance
- *
- *
  */
 export interface NatInstanceProps {
   /**
@@ -297,6 +403,15 @@ export class NatGatewayProvider extends NatProvider {
 
   constructor(private readonly props: NatGatewayProps = {}) {
     super();
+
+    if (this.props.maxDrainDuration !== undefined) {
+      const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
+      if (seconds < 1 || seconds > 4000) {
+        throw new UnscopedValidationError(
+          `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+        );
+      }
+    }
   }
 
   public configureNat(options: ConfigureNatOptions) {
@@ -312,7 +427,7 @@ export class NatGatewayProvider extends NatProvider {
     let i = 0;
     for (const sub of options.natSubnets) {
       const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
-      const gateway = sub.addNatGateway(eipAllocationId);
+      const gateway = sub.addNatGateway(eipAllocationId, this.props.maxDrainDuration?.toSeconds());
       this.gateways.add(sub.availabilityZone, gateway.ref);
       i++;
     }
@@ -335,6 +450,102 @@ export class NatGatewayProvider extends NatProvider {
 
   public get configuredGateways(): GatewayConfig[] {
     return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1] }));
+  }
+}
+
+/**
+ * Provider for Regional NAT Gateways
+ *
+ * Regional NAT Gateways provide automatic multi-AZ redundancy with a single gateway that scales across availability zones.
+ * Unlike zonal NAT gateways, a regional NAT gateway does not require a public subnet and is created at the VPC level.
+ *
+ * @see https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html
+ */
+export class RegionalNatGatewayProvider extends NatProvider {
+  /**
+   * The Regional NAT Gateway created by this provider
+   */
+  public natGateway?: CfnNatGateway;
+
+  constructor(private readonly props: RegionalNatGatewayProviderProps = {}) {
+    super();
+
+    if (this.props.allocationId && this.props.eip) {
+      throw new UnscopedValidationError(
+        'Cannot specify both `allocationId` and `eip`. Use one or the other.',
+      );
+    }
+
+    if (this.props.availabilityZoneAddresses) {
+      if (this.props.availabilityZoneAddresses.length === 0) {
+        throw new UnscopedValidationError(
+          '`availabilityZoneAddresses` cannot be an empty array.',
+        );
+      }
+      if (this.props.availabilityZoneAddresses.some(az => !az.availabilityZone && !az.availabilityZoneId)) {
+        throw new UnscopedValidationError(
+          'Either `availabilityZone` or `availabilityZoneId` must be specified in `AvailabilityZoneAddress`.',
+        );
+      }
+      if (this.props.availabilityZoneAddresses.some(az => az.allocationIds.length === 0)) {
+        throw new UnscopedValidationError(
+          '`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.',
+        );
+      }
+    }
+
+    if (this.props.maxDrainDuration !== undefined) {
+      const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
+      if (seconds < 1 || seconds > 4000) {
+        throw new UnscopedValidationError(
+          `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+        );
+      }
+    }
+  }
+
+  public configureNat(options: ConfigureRegionalNatOptions) {
+    // Warn if availabilityZoneAddresses is specified with allocationId/eip
+    // allocationId/eip will be ignored in that case
+    if (this.props.availabilityZoneAddresses && (this.props.allocationId || this.props.eip)) {
+      Annotations.of(options.vpc).addWarningV2(
+        '@aws-cdk/aws-ec2:regionalNatGatewayAllocationIdIgnored',
+        '`allocationId` and `eip` are ignored when `availabilityZoneAddresses` is specified.',
+      );
+    }
+
+    this.natGateway = new CfnNatGateway(options.vpc, 'RegionalNatGateway', {
+      vpcId: options.vpc.vpcId,
+      availabilityMode: 'regional',
+      connectivityType: 'public',
+      allocationId: this.props.allocationId ?? this.props.eip,
+      availabilityZoneAddresses: this.props.availabilityZoneAddresses,
+      maxDrainDurationSeconds: this.props.maxDrainDuration?.toSeconds(),
+    });
+
+    // Add routes to the regional NAT gateway in all private subnets
+    for (const sub of options.privateSubnets) {
+      this.configureSubnet(sub);
+    }
+  }
+
+  public configureSubnet(subnet: PrivateSubnet) {
+    if (!this.natGateway) {
+      throw new UnscopedValidationError('Cannot configure subnet before configuring NAT gateway');
+    }
+    // All private subnets use the same regional NAT gateway ID
+    subnet.addRoute('DefaultRoute', {
+      routerType: RouterType.NAT_GATEWAY,
+      routerId: this.natGateway.attrNatGatewayId,
+      enablesInternetConnectivity: true,
+    });
+  }
+
+  public get configuredGateways(): GatewayConfig[] {
+    // Regional NAT gateway is a single gateway covering all AZs
+    return this.natGateway
+      ? [{ az: 'regional', gatewayId: this.natGateway.attrNatGatewayId }]
+      : [];
   }
 }
 
