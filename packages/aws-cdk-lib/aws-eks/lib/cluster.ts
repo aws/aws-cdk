@@ -3,7 +3,7 @@ import * as path from 'path';
 import type { Construct } from 'constructs';
 import { Node } from 'constructs';
 import * as YAML from 'yaml';
-import type { IAccessPolicy, IAccessEntry } from './access-entry';
+import type { IAccessPolicy, IAccessEntry, AccessEntryType } from './access-entry';
 import { AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import type { IAddon } from './addon';
 import { Addon } from './addon';
@@ -32,7 +32,6 @@ import { ServiceAccount } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import { CidrBlock } from '../../aws-ec2/lib/network-util';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type * as lambda from '../../aws-lambda';
@@ -1397,6 +1396,35 @@ export interface ServiceLoadBalancerAddressOptions {
 export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
+ * Internal helper interface for adding access entries to a cluster.
+ */
+interface AddAccessEntryOptions {
+  readonly id: string;
+  readonly principal: string;
+  readonly policies: IAccessPolicy[];
+  readonly accessEntryType?: AccessEntryType;
+}
+
+/**
+ * Options for granting access to a cluster.
+ */
+export interface GrantAccessOptions {
+  /**
+   * The type of the access entry.
+   *
+   * Specify `AccessEntryType.EC2` for EKS Auto Mode node roles,
+   * `AccessEntryType.HYBRID_LINUX` for EKS Hybrid Nodes, or
+   * `AccessEntryType.HYPERPOD_LINUX` for SageMaker HyperPod.
+   *
+   * Note that EC2, HYBRID_LINUX, and HYPERPOD_LINUX types cannot
+   * have access policies attached per AWS EKS API constraints.
+   *
+   * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
+   */
+  readonly accessEntryType?: AccessEntryType;
+}
+
+/**
  * A Cluster represents a managed Kubernetes Service (EKS)
  *
  * This is a fully managed cluster of API Servers (control-plane)
@@ -1652,6 +1680,8 @@ export class Cluster extends ClusterBase {
 
   private readonly _kubectlResourceProvider: KubectlProvider;
 
+  private readonly _removalPolicy?: RemovalPolicy;
+
   /**
    * Initiates an EKS Cluster with the supplied arguments
    *
@@ -1723,6 +1753,7 @@ export class Cluster extends ClusterBase {
     this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
     this.onEventLayer = props.onEventLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
+    this._removalPolicy = props.removalPolicy;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
@@ -1874,7 +1905,7 @@ export class Cluster extends ClusterBase {
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
 
-    this._kubectlResourceProvider = this.defineKubectlProvider();
+    this._kubectlResourceProvider = this.defineKubectlProvider(props.removalPolicy);
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
@@ -1956,10 +1987,16 @@ export class Cluster extends ClusterBase {
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
    * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM principal.
+   * @param options - Additional options for granting access.
    */
   @MethodMetadata()
-  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[]) {
-    this.addToAccessEntry(id, principal, accessPolicies);
+  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[], options?: GrantAccessOptions) {
+    this.addToAccessEntry({
+      id,
+      principal,
+      policies: accessPolicies,
+      accessEntryType: options?.accessEntryType,
+    });
   }
 
   /**
@@ -2123,10 +2160,12 @@ export class Cluster extends ClusterBase {
       if (FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)) {
         this._openIdConnectProvider = new OidcProviderNative(this, 'OidcProviderNative', {
           url: this.clusterOpenIdConnectIssuerUrl,
+          removalPolicy: this._removalPolicy,
         });
       } else {
         this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
           url: this.clusterOpenIdConnectIssuerUrl,
+          removalPolicy: this._removalPolicy,
         });
       }
     }
@@ -2148,6 +2187,7 @@ export class Cluster extends ClusterBase {
       this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
         cluster: this,
         addonName: 'eks-pod-identity-agent',
+        removalPolicy: this._removalPolicy,
       });
     }
 
@@ -2208,28 +2248,28 @@ export class Cluster extends ClusterBase {
    * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
    * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
    *
-   * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
-   * @param policies - An array of access policies to be associated with the principal.
+   * @param props - Options for adding the access entry.
    *
    * @throws {Error} If the uniqueName generated for the new access entry is not unique.
    *
    * @returns {void}
    */
-  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
-    const entry = this.accessEntries.get(principal);
+  private addToAccessEntry(props: AddAccessEntryOptions) {
+    const entry = this.accessEntries.get(props.principal);
     if (entry) {
-      (entry as AccessEntry).addAccessPolicies(policies);
+      (entry as AccessEntry).addAccessPolicies(props.policies);
     } else {
-      const newEntry = new AccessEntry(this, id, {
-        principal,
+      const newEntry = new AccessEntry(this, props.id, {
+        principal: props.principal,
         cluster: this,
-        accessPolicies: policies,
+        accessPolicies: props.policies,
+        accessEntryType: props.accessEntryType,
       });
-      this.accessEntries.set(principal, newEntry);
+      this.accessEntries.set(props.principal, newEntry);
     }
   }
 
-  private defineKubectlProvider() {
+  private defineKubectlProvider(removalPolicy?: RemovalPolicy) {
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
 
     // since we can't have the provider connect to multiple networks, and we
@@ -2239,7 +2279,7 @@ export class Cluster extends ClusterBase {
       throw new ValidationError('Only a single EKS cluster can be defined within a CloudFormation stack', this);
     }
 
-    return new KubectlProvider(this.stack, uid, { cluster: this });
+    return new KubectlProvider(this.stack, uid, { cluster: this, removalPolicy });
   }
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
@@ -2350,59 +2390,78 @@ export class Cluster extends ClusterBase {
   }
 
   private validateRemoteNetworkConfig(props: ClusterProps) {
-    if (!props.remoteNodeNetworks) { return;}
-    // validate that no two CIDRs overlap within the same remote node network
-    props.remoteNodeNetworks.forEach((network, index) => {
-      const { cidrs } = network;
-      if (cidrs.length > 1) {
-        cidrs.forEach((cidr1, j) => {
-          if (cidrs.slice(j + 1).some(cidr2 => validateCidrPairOverlap(cidr1, cidr2))) {
-            throw new ValidationError(`CIDR ${cidr1} should not overlap with another CIDR in remote node network #${index + 1}`, this);
+    if (!props.remoteNodeNetworks) {
+      if (props.remotePodNetworks) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-eks:clusterRemotePodNetworksWithoutNodeNetworks',
+          'remotePodNetworks is specified without remoteNodeNetworks. remotePodNetworks will be ignored.',
+        );
+      }
+      return;
+    }
+
+    this.validateNetworkCidrs(props.remoteNodeNetworks, 'node');
+
+    if (!props.remotePodNetworks) return;
+
+    this.validateNetworkCidrs(props.remotePodNetworks, 'pod');
+    this.validateCrossNetworkOverlap(props.remoteNodeNetworks, props.remotePodNetworks);
+  }
+
+  /**
+   * Validates all CIDR rules for a single network type (within same network + across networks).
+   */
+  private validateNetworkCidrs(networks: RemoteNodeNetwork[] | RemotePodNetwork[], networkType: 'node' | 'pod') {
+    const resolvedCidrs = networks.map(n => n.cidrs.filter(c => !Token.isUnresolved(c)));
+
+    // Within same network
+    resolvedCidrs.forEach((cidrs, index) => {
+      for (let i = 0; i < cidrs.length; i++) {
+        for (let j = i + 1; j < cidrs.length; j++) {
+          if (ec2.NetworkUtils.validateCidrPairOverlap(cidrs[i], cidrs[j])) {
+            throw new ValidationError(
+              `CIDR ${cidrs[i]} should not overlap with another CIDR in remote ${networkType} network #${index + 1}`,
+              this,
+            );
           }
-        });
+        }
       }
     });
 
-    // validate that no two CIDRs overlap across different remote node networks
-    props.remoteNodeNetworks.forEach((network1, i) => {
-      props.remoteNodeNetworks!.slice(i + 1).forEach((network2, j) => {
-        const [overlap, remoteNodeCidr1, remoteNodeCidr2] = validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
+    // Across different networks
+    for (let i = 0; i < resolvedCidrs.length; i++) {
+      if (resolvedCidrs[i].length === 0) continue;
+      for (let j = i + 1; j < resolvedCidrs.length; j++) {
+        if (resolvedCidrs[j].length === 0) continue;
+        const [overlap, cidr1, cidr2] = ec2.NetworkUtils.validateCidrBlocksOverlap(resolvedCidrs[i], resolvedCidrs[j]);
         if (overlap) {
-          throw new ValidationError(`CIDR block ${remoteNodeCidr1} in remote node network #${i + 1} should not overlap with CIDR block ${remoteNodeCidr2} in remote node network #${i + j + 2}`, this);
+          throw new ValidationError(
+            `CIDR block ${cidr1} in remote ${networkType} network #${i + 1} should not overlap with CIDR block ${cidr2} in remote ${networkType} network #${j + 1}`,
+            this,
+          );
         }
-      });
-    });
+      }
+    }
+  }
 
-    if (props.remotePodNetworks) {
-      // validate that no two CIDRs overlap within the same remote pod network
-      props.remotePodNetworks.forEach((network, index) => {
-        const { cidrs } = network;
-        if (cidrs.length > 1) {
-          cidrs.forEach((cidr1, j) => {
-            if (cidrs.slice(j + 1).some(cidr2 => validateCidrPairOverlap(cidr1, cidr2))) {
-              throw new ValidationError(`CIDR ${cidr1} should not overlap with another CIDR in remote pod network #${index + 1}`, this);
-            }
-          });
-        }
-      });
+  /**
+   * Validates that node network CIDRs do not overlap with pod network CIDRs.
+   */
+  private validateCrossNetworkOverlap(nodeNetworks: RemoteNodeNetwork[], podNetworks: RemotePodNetwork[]) {
+    for (const nodeNetwork of nodeNetworks) {
+      const nodeCidrs = nodeNetwork.cidrs.filter(c => !Token.isUnresolved(c));
+      if (nodeCidrs.length === 0) continue;
 
-      // validate that no two CIDRs overlap across different remote pod networks
-      props.remotePodNetworks.forEach((network1, i) => {
-        props.remotePodNetworks!.slice(i + 1).forEach((network2, j) => {
-          const [overlap, remotePodCidr1, remotePodCidr2] = validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
-          if (overlap) {
-            throw new ValidationError(`CIDR block ${remotePodCidr1} in remote pod network #${i + 1} should not overlap with CIDR block ${remotePodCidr2} in remote pod network #${i + j + 2}`, this);
-          }
-        });
-      });
+      for (const podNetwork of podNetworks) {
+        const podCidrs = podNetwork.cidrs.filter(c => !Token.isUnresolved(c));
+        if (podCidrs.length === 0) continue;
 
-      // validate that no two CIDRs overlap between a given remote node network and remote pod network
-      for (const nodeNetwork of props.remoteNodeNetworks!) {
-        for (const podNetwork of props.remotePodNetworks) {
-          const [overlap, remoteNodeCidr, remotePodCidr] = validateCidrBlocksOverlap(nodeNetwork.cidrs, podNetwork.cidrs);
-          if (overlap) {
-            throw new ValidationError(`Remote node network CIDR block ${remoteNodeCidr} should not overlap with remote pod network CIDR block ${remotePodCidr}`, this);
-          }
+        const [overlap, nodeCidr, podCidr] = ec2.NetworkUtils.validateCidrBlocksOverlap(nodeCidrs, podCidrs);
+        if (overlap) {
+          throw new ValidationError(
+            `Remote node network CIDR block ${nodeCidr} should not overlap with remote pod network CIDR block ${podCidr}`,
+            this,
+          );
         }
       }
     }
@@ -2883,35 +2942,4 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
 
 function flatten<A>(xss: A[][]): A[] {
   return Array.prototype.concat.call([], ...xss);
-}
-
-function validateCidrBlocksOverlap(cidrBlocks1: string[], cidrBlocks2: string[]): [boolean, string, string] {
-  for (const cidr1 of cidrBlocks1) {
-    for (const cidr2 of cidrBlocks2) {
-      const overlap = validateCidrPairOverlap(cidr1, cidr2);
-      if (overlap) {
-        return [true, cidr1, cidr2];
-      }
-    }
-  }
-
-  return [false, '', ''];
-}
-
-function validateCidrPairOverlap(cidr1: string, cidr2: string): boolean {
-  const cidr1Range = new CidrBlock(cidr1);
-  const cidr1IpRange: [string, string] = [cidr1Range.minIp(), cidr1Range.maxIp()];
-
-  const cidr2Range = new CidrBlock(cidr2);
-  const cidr2IpRange: [string, string] = [cidr2Range.minIp(), cidr2Range.maxIp()];
-
-  return rangesOverlap(cidr1IpRange, cidr2IpRange);
-}
-
-function rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
-  const [start1, end1] = range1;
-  const [start2, end2] = range2;
-
-  // Check if ranges overlap
-  return start1 <= end2 && start2 <= end1;
 }
