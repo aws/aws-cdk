@@ -1,9 +1,10 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
 import { UnscopedValidationError } from '../errors';
-import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions, StringConcat } from '../resolvable';
-import { TokenizedStringFragments } from '../string-fragments';
+import type { IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions } from '../resolvable';
+import { DefaultTokenResolver, StringConcat } from '../resolvable';
+import type { TokenizedStringFragments } from '../string-fragments';
 import { ResolutionTypeHint } from '../type-hints';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
@@ -246,7 +247,6 @@ export function resolve(obj: any, options: IResolveOptions): any {
       result[resolvedKey] = value;
     } else {
       if (!options.allowIntrinsicKeys) {
-        // eslint-disable-next-line max-len
         throw new UnscopedValidationError(`"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
       }
 

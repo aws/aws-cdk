@@ -1,6 +1,6 @@
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 /*

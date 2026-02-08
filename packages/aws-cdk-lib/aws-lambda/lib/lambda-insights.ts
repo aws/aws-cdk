@@ -1,6 +1,6 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { Architecture } from './architecture';
-import { IFunction } from './function-base';
+import type { IFunction } from './function-base';
 import { Lazy, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { FactName, RegionInfo } from '../../region-info';
@@ -100,6 +100,11 @@ export abstract class LambdaInsightsVersion {
    * Version 1.0.404.0
    */
   public static readonly VERSION_1_0_404_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.404.0');
+
+  /**
+   * Version 1.0.498.0
+   */
+  public static readonly VERSION_1_0_498_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.498.0');
 
   /**
    * Use the insights extension associated with the provided ARN. Make sure the ARN is associated

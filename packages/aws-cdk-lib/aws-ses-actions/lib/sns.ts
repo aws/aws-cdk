@@ -1,5 +1,5 @@
-import * as ses from '../../aws-ses';
-import * as sns from '../../aws-sns';
+import type * as ses from '../../aws-ses';
+import type * as sns from '../../aws-sns';
 
 /**
  * The type of email encoding to use for a SNS action.
@@ -40,7 +40,7 @@ export class Sns implements ses.IReceiptRuleAction {
   constructor(private readonly props: SnsProps) {
   }
 
-  public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(_rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     return {
       snsAction: {
         encoding: this.props.encoding,

@@ -1,0 +1,162 @@
+#
+#####################################
+##           AWS CDK               ##
+#####################################
+# Rule: RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS
+# Coverage: All resource-based policies with :root principals
+#
+# This rule ensures that ANY resource policy using :root principals (account-level delegation)
+# has STRICT conditions to scope down who can actually access the resource.
+#
+# :root principals delegate access to an ENTIRE AWS account, not just the root user.
+# From AWS documentation: "Using the account ARN in the Principal element does not 
+# limit permissions to only the root user of the account."
+#
+# Without conditions, ANY principal in the specified account can access the resource.
+#
+# REQUIRED: ArnEquals or StringEquals conditions (exact match, no wildcards)
+# These operators require exact ARN/string matching and don't support wildcards.
+#
+# NOT ACCEPTED: ArnLike or StringLike conditions
+# These operators support wildcards (* and ?) which can be overly permissive.
+#
+# AWS Documentation References:
+# - https://aws.amazon.com/blogs/security/how-to-restrict-amazon-s3-bucket-access-to-a-specific-iam-role
+# - https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html
+# - https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+#
+# This rule checks PolicyDocument, Policy, and ResourcePolicy properties on ANY resource type.
+#
+# Excluded Resource Types (legitimate use of :root without conditions):
+# - AWS::KMS::Key - Key policies commonly use :root to delegate to IAM
+# - AWS::SecretsManager::Secret - Similar delegation pattern to KMS
+# - AWS::Logs::ResourcePolicy - Policy stored as string, not JSON
+# - AWS::IAM::Role - Covered by IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS rule
+
+let resources_with_policies = Resources.*[
+  Type != 'AWS::KMS::Key'
+  Type != 'AWS::SecretsManager::Secret'
+  Type != 'AWS::Logs::ResourcePolicy'
+  Type != 'AWS::IAM::Role'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS"
+]
+
+rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %resources_with_policies !empty {
+    %resources_with_policies {
+        # =====================================================================
+        # PolicyDocument - Used by S3 Bucket Policies, SQS Queue Policies, 
+        # SNS Topic Policies, IAM Policies/ManagedPolicies, etc.
+        #
+        # Documentation confirming Condition element support:
+        # - S3: https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html
+        # - SQS: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-creating-custom-policies-access-policy-examples.html
+        # - SNS: https://docs.aws.amazon.com/sns/latest/dg/sns-using-identity-based-policies.html
+        # - IAM: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+        # =====================================================================
+        when Properties.PolicyDocument exists {
+            Properties.PolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Principal.AWS exists {
+                        when Principal.AWS is_string {
+                            when Principal.AWS == /(?i):root$/ {
+                                Condition exists
+                                <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                Condition.ArnEquals exists or
+                                Condition.StringEquals exists
+                            }
+                        }
+                        when Principal.AWS is_list {
+                            Principal.AWS[*] {
+                                when this is_string {
+                                    when this == /(?i):root$/ {
+                                        Condition exists
+                                        <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                        Condition.ArnEquals exists or
+                                        Condition.StringEquals exists
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        # =====================================================================
+        # Policy - Used by ECR Repository Policies, Backup Vault Policies,
+        # EventBridge Event Bus Policies, Glacier Vault Policies, etc.
+        #
+        # Documentation confirming Condition element support:
+        # - ECR: https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html
+        # - Backup: https://docs.aws.amazon.com/aws-backup/latest/devguide/access-control.html
+        # - EventBridge: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-use-resource-based.html
+        # =====================================================================
+        when Properties.Policy exists {
+            Properties.Policy.Statement[*] {
+                when Effect == "Allow" {
+                    when Principal.AWS exists {
+                        when Principal.AWS is_string {
+                            when Principal.AWS == /(?i):root$/ {
+                                Condition exists
+                                <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                Condition.ArnEquals exists or
+                                Condition.StringEquals exists
+                            }
+                        }
+                        when Principal.AWS is_list {
+                            Principal.AWS[*] {
+                                when this is_string {
+                                    when this == /(?i):root$/ {
+                                        Condition exists
+                                        <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                        Condition.ArnEquals exists or
+                                        Condition.StringEquals exists
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        # =====================================================================
+        # ResourcePolicy - Used by API Gateway REST APIs, Lambda Layers,
+        # Secrets Manager (ResourcePolicy property), etc.
+        #
+        # Documentation confirming Condition element support:
+        # - API Gateway: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies.html
+        # - Lambda: https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html
+        # - Secrets Manager: https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_resource-based-policies.html
+        # =====================================================================
+        when Properties.ResourcePolicy exists {
+            Properties.ResourcePolicy.Statement[*] {
+                when Effect == "Allow" {
+                    when Principal.AWS exists {
+                        when Principal.AWS is_string {
+                            when Principal.AWS == /(?i):root$/ {
+                                Condition exists
+                                <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                Condition.ArnEquals exists or
+                                Condition.StringEquals exists
+                            }
+                        }
+                        when Principal.AWS is_list {
+                            Principal.AWS[*] {
+                                when this is_string {
+                                    when this == /(?i):root$/ {
+                                        Condition exists
+                                        <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                        Condition.ArnEquals exists or
+                                        Condition.StringEquals exists
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

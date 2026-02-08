@@ -1,5 +1,6 @@
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -12,6 +13,7 @@ class TestStack extends Stack {
       opensearch.EngineVersion.OPENSEARCH_2_15,
       opensearch.EngineVersion.OPENSEARCH_2_17,
       opensearch.EngineVersion.OPENSEARCH_3_1,
+      opensearch.EngineVersion.OPENSEARCH_3_3,
     ];
 
     // deploy opensearch domain with minimal configuration

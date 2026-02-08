@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
-/* eslint-disable no-console */
+
 import type { AwsCredentialIdentityProvider } from '@smithy/types';
-import { AwsSdkCall } from './construct-types';
+import type { AwsSdkCall } from './construct-types';
 
 type Event = AWSLambda.CloudFormationCustomResourceEvent;
 
@@ -65,11 +65,11 @@ export function respond(
   if (logApiResponseData) {
     console.log('Responding', JSON.stringify(responseObject));
   } else {
-    const { Data, ...filteredResponseObject } = responseObject;
+    // Extract Data property to exclude it from logging (security)
+    const { Data: _data, ...filteredResponseObject } = responseObject;
     console.log('Responding', JSON.stringify(filteredResponseObject));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const parsedUrl = require('url').parse(event.ResponseURL);
   const responseBody = JSON.stringify(responseObject);
   const requestOptions = {
@@ -84,7 +84,6 @@ export function respond(
 
   return new Promise((resolve, reject) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const request = require('https').request(requestOptions, resolve);
       request.on('error', reject);
       request.write(responseBody);
@@ -99,6 +98,11 @@ export function respond(
  * Gets credentials used to make an API call.
  */
 export async function getCredentials(call: AwsSdkCall, physicalResourceId: string): Promise<AwsCredentialIdentityProvider | undefined> {
+  // Validate that externalId requires assumedRoleArn
+  if (call.externalId && !call.assumedRoleArn) {
+    throw new Error('ExternalId can only be provided when assumedRoleArn is specified');
+  }
+
   let credentials;
   if (call.assumedRoleArn) {
     const timestamp = (new Date()).getTime();
@@ -106,6 +110,7 @@ export async function getCredentials(call: AwsSdkCall, physicalResourceId: strin
     const params = {
       RoleArn: call.assumedRoleArn,
       RoleSessionName: `${timestamp}-${physicalResourceId}`.replace(/[^\w+=,.@-]/g, '').substring(0, 64),
+      ExternalId: call.externalId,
     };
 
     const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers');

@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import type { IBucketRef, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import { IBucketRef, Location } from 'aws-cdk-lib/aws-s3';
+import type { Construct } from 'constructs';
 import { ActionGroupSchema } from './schema-base';
 
 /**

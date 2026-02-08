@@ -1,10 +1,14 @@
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import * as perms from './perms';
-import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
-import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
-import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
+import { Operation } from './shared';
+import type { IMetric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
+import { MathExpression, Metric } from '../../aws-cloudwatch';
+import type { AddToResourcePolicyResult, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
 import { Resource, ValidationError } from '../../core';
+import type { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
  * Represents an instance of a DynamoDB table.
@@ -65,10 +69,22 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   protected abstract get hasIndex(): boolean;
 
   /**
+   * A reference to this table.
+   */
+  public get tableRef(): TableReference {
+    return {
+      tableName: this.tableName,
+      tableArn: this.tableArn,
+    };
+  }
+
+  /**
    * Adds an IAM policy statement associated with this table to an IAM principal's policy.
    *
    * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow (i.e., 'dynamodb:PutItem', 'dynamodb:GetItem', etc.)
@@ -89,6 +105,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow (i.e., 'dynamodb:DescribeStream', 'dynamodb:GetRecords', etc.)
@@ -113,6 +131,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantStreamRead(grantee: IGrantable): Grant {
@@ -126,6 +146,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
 
   /**
    * Permits an IAM principal to list streams attached to this table.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -149,11 +171,17 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantReadData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions });
+    const tableActions = perms.RESOURCE_READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
+    return this.combinedGrant(grantee, {
+      keyActions: perms.KEY_READ_ACTIONS,
+      tableActions,
+      tablePrinicipalExclusiveActions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+    });
   }
 
   /**
@@ -163,6 +191,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -181,12 +211,18 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantReadWriteData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
+    const tableActions = perms.RESOURCE_READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.combinedGrant(grantee, { keyActions, tableActions });
+    return this.combinedGrant(grantee, {
+      keyActions,
+      tableActions,
+      tablePrinicipalExclusiveActions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+    });
   }
 
   /**
@@ -194,6 +230,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -423,7 +461,12 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal (no-op if undefined)
    * @param options options for keyActions, tableActions, and streamActions
    */
-  private combinedGrant(grantee: IGrantable, options: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] }) {
+  private combinedGrant(grantee: IGrantable, options: {
+    keyActions?: string[];
+    tableActions?: string[];
+    tablePrinicipalExclusiveActions?: string[];
+    streamActions?: string[];
+  }) {
     if (options.keyActions && this.encryptionKey) {
       this.encryptionKey.grant(grantee, ...options.keyActions);
     }
@@ -431,12 +474,25 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     if (options.tableActions) {
       const resourceArns = [this.tableArn];
       this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
-      return Grant.addToPrincipalOrResource({
+      const result = Grant.addToPrincipalOrResource({
         grantee,
         actions: options.tableActions,
         resourceArns,
+        // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+        // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).
+        // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+        resourceSelfArns: ['*'],
         resource: this,
       });
+
+      if (options.tablePrinicipalExclusiveActions) {
+        return result.combine(Grant.addToPrincipal({
+          grantee,
+          actions: options.tablePrinicipalExclusiveActions,
+          resourceArns,
+        }));
+      }
+      return result;
     }
 
     if (options.streamActions) {

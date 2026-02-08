@@ -17,8 +17,9 @@
  * @see https://github.com/aws/aws-cdk/issues/35062
  */
 
-import { App, Fn, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Fn, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -26,6 +27,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 export class TestStack extends Stack {
   public readonly wildcardTable: dynamodb.Table;
   public readonly scopedTable: dynamodb.Table;
+  public readonly grantTable: dynamodb.Table;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -66,6 +68,22 @@ export class TestStack extends Stack {
       // Use CloudFormation intrinsic function to construct table ARN with known table name
       resources: [Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-scoped-table')],
     }));
+
+    // TEST 3: Table using grant methods with AccountRootPrincipal
+    // This validates the fix for issue #35967: circular dependency when using grant methods
+    // Before fix: grant methods with AccountRootPrincipal caused circular dependency
+    // After fix: grant methods use resourceSelfArns: ['*'] to avoid circular dependency
+    this.grantTable = new dynamodb.Table(this, 'GrantTable', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // This should NOT cause circular dependency - validates fix for #35967
+    // Using grantWriteData because it has simpler actions valid for resource policies
+    this.grantTable.grantWriteData(new iam.AccountRootPrincipal());
   }
 }
 

@@ -1,9 +1,10 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Stack, App, StackProps, CfnOutput } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
-import * as cloud9 from '../lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { Stack, App, CfnOutput } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { AnyPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import type { Construct } from 'constructs';
+import * as cloud9 from '../lib';
 
 class Cloud9Env extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

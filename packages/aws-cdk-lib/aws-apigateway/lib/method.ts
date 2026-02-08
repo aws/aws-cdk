@@ -1,14 +1,17 @@
 import { Construct } from 'constructs';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnMethod, CfnMethodProps, IStageRef } from './apigateway.generated';
-import { Authorizer, IAuthorizer } from './authorizer';
-import { Integration, IntegrationConfig } from './integration';
+import type { CfnMethodProps, IStageRef } from './apigateway.generated';
+import { CfnMethod } from './apigateway.generated';
+import type { IAuthorizer } from './authorizer';
+import { Authorizer } from './authorizer';
+import type { Integration, IntegrationConfig } from './integration';
 import { MockIntegration } from './integrations/mock';
-import { MethodResponse } from './methodresponse';
-import { IModel } from './model';
-import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
-import { IResource } from './resource';
-import { IRestApi, RestApi, RestApiBase } from './restapi';
+import type { MethodResponse } from './methodresponse';
+import type { IModel } from './model';
+import type { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
+import type { IResource } from './resource';
+import type { IRestApi, RestApi } from './restapi';
+import { RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -198,7 +201,7 @@ export class Method extends Resource {
 
     // do not use the default authorizer config in case if the provided authorizer type is None
     const authorizer =
-        options.authorizationType === AuthorizationType.NONE
+      options.authorizationType === AuthorizationType.NONE
         && options.authorizer == undefined ? undefined : options.authorizer || defaultMethodOptions.authorizer;
     const authorizerId = authorizer?.authorizerId ? authorizer.authorizerId : undefined;
 
@@ -354,7 +357,7 @@ export class Method extends Resource {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
-      // eslint-disable-next-line max-len
+
       credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
     }
 
@@ -373,6 +376,7 @@ export class Method extends Resource {
       connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
       credentials,
       timeoutInMillis: options.timeout?.toMilliseconds(),
+      responseTransferMode: options.responseTransferMode,
     };
   }
 
@@ -526,6 +530,7 @@ export class Method extends Resource {
 
   /**
    * Grants an IAM principal permission to invoke this method.
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */

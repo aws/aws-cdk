@@ -1,23 +1,28 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import { IResource, Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
+import type { IResource } from '../../../core';
+import { Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IAlternateTarget } from '../alternate-target-configuration';
-import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
-import { CfnTaskDefinition, CfnTaskDefinitionProps } from '../ecs.generated';
-import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
+import type { ITaskDefinitionRef, TaskDefinitionReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
+import type { IAlternateTarget } from '../alternate-target-configuration';
+import type { ContainerDefinitionOptions, PortMapping } from '../container-definition';
+import { ContainerDefinition, Protocol } from '../container-definition';
+import type { CfnTaskDefinitionProps } from '../ecs.generated';
+import { CfnTaskDefinition } from '../ecs.generated';
+import type { FirelensLogRouterDefinitionOptions } from '../firelens-log-router';
+import { FirelensLogRouter, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
-import { PlacementConstraint } from '../placement';
-import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
-import { RuntimePlatform } from '../runtime-platform';
+import type { PlacementConstraint } from '../placement';
+import type { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
+import type { RuntimePlatform } from '../runtime-platform';
 
 /**
  * The interface for all task definitions.
  */
-export interface ITaskDefinition extends IResource {
+export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
   /**
    * ARN of this task definition
    * @attribute
@@ -301,6 +306,15 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public abstract readonly taskDefinitionArn: string;
   public abstract readonly taskRole: iam.IRole;
   public abstract readonly executionRole?: iam.IRole;
+
+  /**
+   * A reference to this task definition.
+   */
+  public get taskDefinitionRef(): TaskDefinitionReference {
+    return {
+      taskDefinitionArn: this.taskDefinitionArn,
+    };
+  }
 
   /**
    * Return true if the task definition can be run on an EC2 cluster
@@ -667,7 +681,6 @@ export class TaskDefinition extends TaskDefinitionBase {
     const targetContainerPort = options.containerPort || targetContainer.containerPort;
     const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
-      // eslint-disable-next-line max-len
       throw new ValidationError(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`, this);
     }
     return {
@@ -816,6 +829,8 @@ export class TaskDefinition extends TaskDefinitionBase {
    *
    *   - ecs:RunTask
    *   - iam:PassRole
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant consume rights to
    */

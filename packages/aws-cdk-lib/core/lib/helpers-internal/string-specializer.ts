@@ -1,7 +1,7 @@
 import * as cxapi from '../../../cx-api';
 import { Aws } from '../cfn-pseudo';
 import { UnscopedValidationError } from '../errors';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
 
 /**

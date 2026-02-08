@@ -1,4 +1,4 @@
-import { CfnPipeline } from './codepipeline.generated';
+import type { CfnPipeline } from './codepipeline.generated';
 import { validatePipelineVariableName } from './private/validation';
 import { Token, UnscopedValidationError } from '../../core';
 
