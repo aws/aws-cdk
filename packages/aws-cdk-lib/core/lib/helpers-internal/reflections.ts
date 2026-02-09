@@ -6,7 +6,7 @@
  */
 
 import type { IConstruct } from 'constructs';
-import { CfnResource } from '../../../core';
+import { CfnResource } from '../cfn-resource';
 
 /**
  * Finds the closest related resource in the construct tree.
