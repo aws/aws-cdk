@@ -1,8 +1,8 @@
-import type { RemovalPolicy } from '../../core';
-import { CustomResource, Stack, ValidationError } from '../../core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import { CustomResource, Stack, ValidationError } from '../../core';
+import type { RemovalPolicy } from '../../core';
 
 /**
  * Properties for KubernetesPatch

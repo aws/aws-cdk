@@ -1,4 +1,8 @@
 import * as path from 'path';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster } from './cluster';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
@@ -6,10 +10,6 @@ import type { RemovalPolicy, Size } from '../../core';
 import { Duration, CfnCondition, Fn, Aws, RemovalPolicies } from '../../core';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
-import type { IConstruct } from 'constructs';
-import { Construct } from 'constructs';
-import type { ICluster } from './cluster';
-import { Cluster } from './cluster';
 
 export interface KubectlProviderOptions {
   /**

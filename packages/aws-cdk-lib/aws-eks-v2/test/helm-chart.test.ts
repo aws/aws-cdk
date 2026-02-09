@@ -1,9 +1,9 @@
 import * as path from 'path';
+import { testFixtureCluster } from './util';
 import { Template } from '../../assertions';
 import { Asset } from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { Duration } from '../../core';
-import { testFixtureCluster } from './util';
 import * as eks from '../lib';
 
 describe('helm chart', () => {

@@ -1,7 +1,7 @@
+import { testFixture, testFixtureCluster } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { testFixture, testFixtureCluster } from './util';
 import * as eks from '../lib';
 
 describe('service account', () => {

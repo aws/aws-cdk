@@ -1,11 +1,11 @@
+import type { Construct } from 'constructs';
+import type { ICluster } from './cluster';
 import { CfnAddon } from '../../aws-eks';
 import type { IResource, RemovalPolicy } from '../../core';
 import { ArnFormat, Resource, Stack, Fn } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type { Construct } from 'constructs';
-import type { ICluster } from './cluster';
 
 /**
  * Represents an Amazon EKS Add-On.

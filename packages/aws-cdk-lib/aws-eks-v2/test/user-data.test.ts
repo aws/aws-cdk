@@ -1,6 +1,6 @@
+import { testFixtureCluster } from './util';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import { testFixtureCluster } from './util';
 import { Cluster } from '../lib/cluster';
 import { renderAmazonLinuxUserData } from '../lib/user-data';
 

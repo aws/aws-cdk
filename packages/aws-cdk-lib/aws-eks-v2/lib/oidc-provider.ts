@@ -1,8 +1,8 @@
+import type { Construct } from 'constructs';
 import type { RemovalPolicy } from '../..';
 import * as iam from '../../aws-iam';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type { Construct } from 'constructs';
 
 /**
  * Initialization properties for `OpenIdConnectProvider`.

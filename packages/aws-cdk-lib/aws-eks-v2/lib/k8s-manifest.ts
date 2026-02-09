@@ -1,9 +1,9 @@
-import type { RemovalPolicy } from '../../core';
-import { CustomResource, Stack, ValidationError } from '../../core';
 import { Construct, Node } from 'constructs';
 import { AlbScheme } from './alb-controller';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import { CustomResource, Stack, ValidationError } from '../../core';
+import type { RemovalPolicy } from '../../core';
 
 const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';
 

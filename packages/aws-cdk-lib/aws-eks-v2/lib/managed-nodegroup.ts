@@ -1,3 +1,7 @@
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster, IpFamily } from './cluster';
 import type { ISecurityGroup, SubnetSelection } from '../../aws-ec2';
 import { InstanceType, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { CfnNodegroup } from '../../aws-eks';
@@ -9,10 +13,6 @@ import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import type { Construct } from 'constructs';
-import { Node } from 'constructs';
-import type { ICluster } from './cluster';
-import { Cluster, IpFamily } from './cluster';
 import { isGpuInstanceType } from './private/nodegroup';
 
 /**

@@ -1,18 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as autoscaling from '../../aws-autoscaling';
-import * as ec2 from '../../aws-ec2';
-import { CfnCluster } from '../../aws-eks';
-import * as iam from '../../aws-iam';
-import type * as kms from '../../aws-kms';
-import * as ssm from '../../aws-ssm';
-import type { IResource, Duration, ArnComponents, RemovalPolicy } from '../../core';
-import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
-import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { EKS_USE_NATIVE_OIDC_PROVIDER } from '../../cx-api';
 import type { Construct } from 'constructs';
 import { Node } from 'constructs';
 import * as YAML from 'yaml';
@@ -40,6 +27,19 @@ import { BottleRocketImage } from './private/bottlerocket';
 import type { ServiceAccountOptions } from './service-account';
 import { ServiceAccount } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+import * as autoscaling from '../../aws-autoscaling';
+import * as ec2 from '../../aws-ec2';
+import { CfnCluster } from '../../aws-eks';
+import * as iam from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import * as ssm from '../../aws-ssm';
+import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies } from '../../core';
+import type { IResource, Duration, ArnComponents, RemovalPolicy } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from '../../cx-api';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;

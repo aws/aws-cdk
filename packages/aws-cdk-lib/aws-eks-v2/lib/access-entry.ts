@@ -1,11 +1,11 @@
+import type { Construct } from 'constructs';
+import type { ICluster } from './cluster';
 import { CfnAccessEntry } from '../../aws-eks';
 import type { IResource, RemovalPolicy } from '../../core';
 import { Resource, Aws, Lazy, ValidationError, Token } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type { Construct } from 'constructs';
-import type { ICluster } from './cluster';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.

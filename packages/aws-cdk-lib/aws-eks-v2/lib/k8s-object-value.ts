@@ -1,8 +1,8 @@
-import type { RemovalPolicy } from '../../core';
-import { CustomResource, Token, Duration, ValidationError } from '../../core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import { CustomResource, Token, Duration, ValidationError } from '../../core';
+import type { RemovalPolicy } from '../../core';
 
 /**
  * Properties for KubernetesObjectValue.

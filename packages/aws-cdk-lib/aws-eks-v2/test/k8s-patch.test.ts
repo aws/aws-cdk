@@ -1,8 +1,8 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { testFixtureCluster } from './util';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import { Names, Stack } from '../../core';
-import { testFixtureCluster } from './util';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
 
