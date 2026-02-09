@@ -6,7 +6,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App();
 
 // Stack 1: Create the capacity provider
-const providerStack = new cdk.Stack(app, 'CapacityProviderStack');
+const providerStack = new cdk.Stack(app, 'ImportedCPStack');
 
 const vpc = new ec2.Vpc(providerStack, 'Vpc');
 const securityGroup = new ec2.SecurityGroup(providerStack, 'SecurityGroup', { vpc });
@@ -17,7 +17,7 @@ const capacityProvider = new lambda.CapacityProvider(providerStack, 'CapacityPro
 });
 
 // Stack 2: Import the capacity provider and add a function to it
-const functionStack = new cdk.Stack(app, 'FunctionStack');
+const functionStack = new cdk.Stack(app, 'ImportedCPFunctionStack');
 
 const importedCapacityProvider = lambda.CapacityProvider.fromCapacityProviderArn(
   functionStack,

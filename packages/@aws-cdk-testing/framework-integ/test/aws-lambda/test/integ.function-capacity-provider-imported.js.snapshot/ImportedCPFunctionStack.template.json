@@ -37,7 +37,7 @@
     "CapacityProviderConfig": {
      "LambdaManagedInstancesCapacityProviderConfig": {
       "CapacityProviderArn": {
-       "Fn::ImportValue": "CapacityProviderStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
+       "Fn::ImportValue": "ImportedCPStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
       }
      }
     },
@@ -83,7 +83,7 @@
     "Ref": "Function76856677"
    },
    "Export": {
-    "Name": "FunctionStack:ExportsOutputRefFunction76856677C48862D5"
+    "Name": "ImportedCPFunctionStack:ExportsOutputRefFunction76856677C48862D5"
    }
   }
  },

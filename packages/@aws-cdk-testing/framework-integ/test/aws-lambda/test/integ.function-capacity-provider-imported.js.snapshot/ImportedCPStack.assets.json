@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
-      "displayName": "CapacityProviderStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "displayName": "ImportedCPStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
         "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
         "packaging": "zip"
@@ -15,16 +15,16 @@
         }
       }
     },
-    "b929655f8bbc812b985b067968ad5ec1d555efaf6d61aca8de4aeddddc932f2b": {
-      "displayName": "CapacityProviderStack Template",
+    "4f3f4c7640686f9ab8ab7774a5a92b74022b9d582132302fa5e95c5b5662bcfb": {
+      "displayName": "ImportedCPStack Template",
       "source": {
-        "path": "CapacityProviderStack.template.json",
+        "path": "ImportedCPStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-07715687": {
+        "current_account-current_region-504a730a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b929655f8bbc812b985b067968ad5ec1d555efaf6d61aca8de4aeddddc932f2b.json",
+          "objectKey": "4f3f4c7640686f9ab8ab7774a5a92b74022b9d582132302fa5e95c5b5662bcfb.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

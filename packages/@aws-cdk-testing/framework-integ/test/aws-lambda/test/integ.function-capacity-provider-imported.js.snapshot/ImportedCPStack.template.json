@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc"
+      "Value": "ImportedCPStack/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PublicSubnet1"
+      "Value": "ImportedCPStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PublicSubnet1"
+      "Value": "ImportedCPStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PublicSubnet1"
+      "Value": "ImportedCPStack/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PublicSubnet1"
+      "Value": "ImportedCPStack/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PublicSubnet2"
+      "Value": "ImportedCPStack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PublicSubnet2"
+      "Value": "ImportedCPStack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PublicSubnet2"
+      "Value": "ImportedCPStack/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PublicSubnet2"
+      "Value": "ImportedCPStack/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PrivateSubnet1"
+      "Value": "ImportedCPStack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PrivateSubnet1"
+      "Value": "ImportedCPStack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PrivateSubnet2"
+      "Value": "ImportedCPStack/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc/PrivateSubnet2"
+      "Value": "ImportedCPStack/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CapacityProviderStack/Vpc"
+      "Value": "ImportedCPStack/Vpc"
      }
     ]
    }
@@ -510,7 +510,7 @@
   "SecurityGroupDD263621": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "CapacityProviderStack/SecurityGroup",
+    "GroupDescription": "ImportedCPStack/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -595,7 +595,7 @@
     ]
    },
    "Export": {
-    "Name": "CapacityProviderStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
+    "Name": "ImportedCPStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
    }
   }
  },

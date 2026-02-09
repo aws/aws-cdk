@@ -3,8 +3,8 @@
   "testCases": {
     "FunctionCapacityProviderImportedTest/DefaultTest": {
       "stacks": [
-        "CapacityProviderStack",
-        "FunctionStack"
+        "ImportedCPStack",
+        "ImportedCPFunctionStack"
       ],
       "assertionStack": "FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert",
       "assertionStackName": "FunctionCapacityProviderImportedTestDefaultTestDeployAssert5E73DE47"

@@ -17,7 +17,7 @@
       [
        "{\"$ObjectLike\":{\"Configuration\":{\"State\":\"Active\",\"CapacityProviderConfig\":{\"LambdaManagedInstancesCapacityProviderConfig\":{\"CapacityProviderArn\":\"",
        {
-        "Fn::ImportValue": "CapacityProviderStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
+        "Fn::ImportValue": "ImportedCPStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
        },
        "\"}}}}}"
       ]
@@ -30,7 +30,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "FunctionStack:ExportsOutputRefFunction76856677C48862D5"
+         "Fn::ImportValue": "ImportedCPFunctionStack:ExportsOutputRefFunction76856677C48862D5"
         },
         "\""
        ]
@@ -38,7 +38,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1770421473570"
+    "salt": "1770671196682"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -1,28 +1,28 @@
 {
   "version": "50.0.0",
   "artifacts": {
-    "CapacityProviderStack.assets": {
+    "ImportedCPStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CapacityProviderStack.assets.json",
+        "file": "ImportedCPStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CapacityProviderStack": {
+    "ImportedCPStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "CapacityProviderStack.template.json",
+        "templateFile": "ImportedCPStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b929655f8bbc812b985b067968ad5ec1d555efaf6d61aca8de4aeddddc932f2b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f3f4c7640686f9ab8ab7774a5a92b74022b9d582132302fa5e95c5b5662bcfb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CapacityProviderStack.assets"
+          "ImportedCPStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,22 +31,22 @@
         }
       },
       "dependencies": [
-        "CapacityProviderStack.assets"
+        "ImportedCPStack.assets"
       ],
       "metadata": {
-        "/CapacityProviderStack/Vpc": [
+        "/ImportedCPStack/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CapacityProviderStack/Vpc/Resource": [
+        "/ImportedCPStack/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet1": [
+        "/ImportedCPStack/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -82,43 +82,43 @@
             }
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet1/Subnet": [
+        "/ImportedCPStack/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet1/RouteTable": [
+        "/ImportedCPStack/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/ImportedCPStack/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet1/DefaultRoute": [
+        "/ImportedCPStack/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet1/EIP": [
+        "/ImportedCPStack/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet1/NATGateway": [
+        "/ImportedCPStack/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet2": [
+        "/ImportedCPStack/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -154,43 +154,43 @@
             }
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet2/Subnet": [
+        "/ImportedCPStack/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet2/RouteTable": [
+        "/ImportedCPStack/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/ImportedCPStack/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet2/DefaultRoute": [
+        "/ImportedCPStack/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet2/EIP": [
+        "/ImportedCPStack/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/CapacityProviderStack/Vpc/PublicSubnet2/NATGateway": [
+        "/ImportedCPStack/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet1": [
+        "/ImportedCPStack/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -218,31 +218,31 @@
             "data": {}
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet1/Subnet": [
+        "/ImportedCPStack/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet1/RouteTable": [
+        "/ImportedCPStack/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/ImportedCPStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/ImportedCPStack/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet2": [
+        "/ImportedCPStack/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -270,73 +270,73 @@
             "data": {}
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet2/Subnet": [
+        "/ImportedCPStack/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet2/RouteTable": [
+        "/ImportedCPStack/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/ImportedCPStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/CapacityProviderStack/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/ImportedCPStack/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/CapacityProviderStack/Vpc/IGW": [
+        "/ImportedCPStack/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/CapacityProviderStack/Vpc/VPCGW": [
+        "/ImportedCPStack/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/CapacityProviderStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+        "/ImportedCPStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CapacityProviderStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/ImportedCPStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
           }
         ],
-        "/CapacityProviderStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+        "/ImportedCPStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/CapacityProviderStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/ImportedCPStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/CapacityProviderStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/ImportedCPStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/CapacityProviderStack/SecurityGroup": [
+        "/ImportedCPStack/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -344,13 +344,13 @@
             }
           }
         ],
-        "/CapacityProviderStack/SecurityGroup/Resource": [
+        "/ImportedCPStack/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecurityGroupDD263621"
           }
         ],
-        "/CapacityProviderStack/CapacityProvider": [
+        "/ImportedCPStack/CapacityProvider": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -364,7 +364,7 @@
             }
           }
         ],
-        "/CapacityProviderStack/CapacityProvider/OperatorRole": [
+        "/ImportedCPStack/CapacityProvider/OperatorRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -380,61 +380,61 @@
             }
           }
         ],
-        "/CapacityProviderStack/CapacityProvider/OperatorRole/Resource": [
+        "/ImportedCPStack/CapacityProvider/OperatorRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CapacityProviderOperatorRole6E18375F"
           }
         ],
-        "/CapacityProviderStack/CapacityProvider/Resource": [
+        "/ImportedCPStack/CapacityProvider/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CapacityProvider7AA4F436"
           }
         ],
-        "/CapacityProviderStack/Exports/Output{\"Fn::GetAtt\":[\"CapacityProvider7AA4F436\",\"Arn\"]}": [
+        "/ImportedCPStack/Exports/Output{\"Fn::GetAtt\":[\"CapacityProvider7AA4F436\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
           }
         ],
-        "/CapacityProviderStack/BootstrapVersion": [
+        "/ImportedCPStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CapacityProviderStack/CheckBootstrapVersion": [
+        "/ImportedCPStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CapacityProviderStack"
+      "displayName": "ImportedCPStack"
     },
-    "FunctionStack.assets": {
+    "ImportedCPFunctionStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "FunctionStack.assets.json",
+        "file": "ImportedCPFunctionStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "FunctionStack": {
+    "ImportedCPFunctionStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "FunctionStack.template.json",
+        "templateFile": "ImportedCPFunctionStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de6af9c88adee8767845aa9455b7c8ecca38244282c6e6d505432f0ce9b6cf2c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b03d5993c028e97ed49a76ea40bf80739e4ba31c930b08f312960761dc2c0b4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "FunctionStack.assets"
+          "ImportedCPFunctionStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -443,17 +443,17 @@
         }
       },
       "dependencies": [
-        "CapacityProviderStack",
-        "FunctionStack.assets"
+        "ImportedCPStack",
+        "ImportedCPFunctionStack.assets"
       ],
       "metadata": {
-        "/FunctionStack/ImportedCapacityProvider": [
+        "/ImportedCPFunctionStack/ImportedCapacityProvider": [
           {
             "type": "aws:cdk:analytics:method",
             "data": "*"
           }
         ],
-        "/FunctionStack/Function": [
+        "/ImportedCPFunctionStack/Function": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -467,7 +467,7 @@
             "data": "Capacity provider configuration cannot be removed from a function, only modified. [ack: aws-lambda:Function.CapacityProviderConfiguration]"
           }
         ],
-        "/FunctionStack/Function/ServiceRole": [
+        "/ImportedCPFunctionStack/Function/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -483,19 +483,19 @@
             }
           }
         ],
-        "/FunctionStack/Function/ServiceRole/Resource": [
+        "/ImportedCPFunctionStack/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionServiceRole675BB04A"
           }
         ],
-        "/FunctionStack/Function/Resource": [
+        "/ImportedCPFunctionStack/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Function76856677"
           }
         ],
-        "/FunctionStack/Function/LogGroup": [
+        "/ImportedCPFunctionStack/Function/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -503,32 +503,32 @@
             }
           }
         ],
-        "/FunctionStack/Function/LogGroup/Resource": [
+        "/ImportedCPFunctionStack/Function/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionLogGroup55B80E27"
           }
         ],
-        "/FunctionStack/Exports/Output{\"Ref\":\"Function76856677\"}": [
+        "/ImportedCPFunctionStack/Exports/Output{\"Ref\":\"Function76856677\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefFunction76856677C48862D5"
           }
         ],
-        "/FunctionStack/BootstrapVersion": [
+        "/ImportedCPFunctionStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/FunctionStack/CheckBootstrapVersion": [
+        "/ImportedCPFunctionStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "FunctionStack"
+      "displayName": "ImportedCPFunctionStack"
     },
     "FunctionCapacityProviderImportedTestDefaultTestDeployAssert5E73DE47.assets": {
       "type": "cdk:asset-manifest",
@@ -547,7 +547,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b5a94fa07d7b6ad67d3a40d1cd062e1e3cf9befdd1f83068f602cd12759fc44d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3cfc8a586ada38f61b1f3d0701397ab0a2b4c6c03368b4e2cd72b74316559328.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -560,8 +560,8 @@
         }
       },
       "dependencies": [
-        "CapacityProviderStack",
-        "FunctionStack",
+        "ImportedCPStack",
+        "ImportedCPFunctionStack",
         "FunctionCapacityProviderImportedTestDefaultTestDeployAssert5E73DE47.assets"
       ],
       "metadata": {
