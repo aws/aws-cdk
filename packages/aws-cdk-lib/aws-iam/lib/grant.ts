@@ -561,17 +561,6 @@ export class ResourceWithPolicies {
  *
  * This class provides methods to retrieve IEncryptedResource instances from constructs,
  * enabling automatic KMS key permission grants during IAM grant operations.
- *
- * @example
- *
- *     // Retrieve encrypted resource trait from a construct
- *     const encryptedResource = EncryptedResources.of(table);
- *     if (encryptedResource) {
- *       encryptedResource.grantOnKey(role, 'kms:Decrypt');
- *     }
- *
- *     // Register a custom factory for a specific scope
- *     EncryptedResources.register(this, 'AWS::MyService::Resource', new MyEncryptedResourceFactory());
  */
 export class EncryptedResources {
   /**
@@ -619,12 +608,6 @@ interface ITraitFactory<T> {
  * specific CloudFormation resource types (e.g., 'AWS::DynamoDB::Table'). The CDK's grant
  * system uses these factories to determine whether a resource supports resource policies
  * and to create the appropriate wrapper when needed.
- *
- * @example
- *
- *    ResourceWithPolicies.register(this, 'AWS::Some::ResourceType', new MyResourcePolicyFactory());
- *
- * where `MyResourcePolicyFactory` implements `IResourcePolicyFactory`
  */
 export interface IResourcePolicyFactory {
   /**
@@ -646,12 +629,6 @@ export interface IResourcePolicyFactory {
  * CloudFormation resource types (e.g., 'AWS::DynamoDB::Table'). The CDK's grant system uses
  * these factories to automatically add necessary KMS key permissions when granting access to
  * encrypted resources.
- *
- * @example
- *
- *    EncryptedResources.register(this, 'AWS::Some::ResourceType', new MyEncryptedResourceFactory());
- *
- * where `MyEncryptedResourceFactory` implements `IEncryptedResourceFactory`
  */
 export interface IEncryptedResourceFactory {
   /**
