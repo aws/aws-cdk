@@ -1,7 +1,6 @@
 import type { IConstruct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { CfnResource, CustomResource, Tags, FeatureFlags } from 'aws-cdk-lib/core';
-import * as cxapi from 'aws-cdk-lib/cx-api';
+import { CfnResource, CustomResource, Tags } from 'aws-cdk-lib/core';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/aws-s3/auto-delete-objects-provider';
 import type { IMixin } from '../../core';
 import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
