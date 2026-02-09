@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
-import { RemovalPolicy } from '../../core';
+import type { RemovalPolicy } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

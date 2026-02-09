@@ -1,6 +1,6 @@
-import { IUserPoolClient, IUserPool } from 'aws-cdk-lib/aws-cognito';
+import type { IUserPoolClient, IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { ValidationError } from '../validation-helpers';
-import { GatewayCustomClaim } from './custom-claim';
+import type { GatewayCustomClaim } from './custom-claim';
 
 /******************************************************************************
  *                                Authorizer Configuration

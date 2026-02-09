@@ -1,5 +1,5 @@
 import { UnscopedValidationError } from '../errors';
-import { IResolvable, IResolveContext } from '../resolvable';
+import type { IResolvable, IResolveContext } from '../resolvable';
 import { captureStackTrace } from '../stack-trace';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';

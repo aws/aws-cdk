@@ -1,5 +1,5 @@
-import { IResource } from '../../../core';
-import { IAuthorizerRef } from '../apigatewayv2.generated';
+import type { IResource } from '../../../core';
+import type { IAuthorizerRef } from '../apigatewayv2.generated';
 
 /**
  * Represents an Authorizer.

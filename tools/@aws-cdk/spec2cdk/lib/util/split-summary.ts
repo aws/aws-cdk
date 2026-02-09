@@ -1,4 +1,4 @@
-import { DocsSpec } from '@cdklabs/typewriter';
+import type { DocsSpec } from '@cdklabs/typewriter';
 
 /**
  * Split the doc comment into summary and remarks

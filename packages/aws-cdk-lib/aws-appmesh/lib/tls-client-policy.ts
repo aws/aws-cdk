@@ -1,5 +1,5 @@
-import { MutualTlsCertificate } from './tls-certificate';
-import { TlsValidation } from './tls-validation';
+import type { MutualTlsCertificate } from './tls-certificate';
+import type { TlsValidation } from './tls-validation';
 
 /**
  * Represents the properties needed to define client policy

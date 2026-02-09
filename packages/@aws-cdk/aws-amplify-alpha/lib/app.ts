@@ -1,13 +1,16 @@
 import { CfnApp } from 'aws-cdk-lib/aws-amplify';
-import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import type * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IResource, Lazy, Resource, SecretValue, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource, SecretValue } from 'aws-cdk-lib/core';
+import { Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct, IConstruct } from 'constructs';
-import { BasicAuth } from './basic-auth';
-import { Branch, BranchOptions } from './branch';
-import { Domain, DomainOptions } from './domain';
+import type { Construct, IConstruct } from 'constructs';
+import type { BasicAuth } from './basic-auth';
+import type { BranchOptions } from './branch';
+import { Branch } from './branch';
+import type { DomainOptions } from './domain';
+import { Domain } from './domain';
 import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 
 /**
