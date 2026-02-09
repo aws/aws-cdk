@@ -41,9 +41,7 @@ Authenticating to assume atmosphere role through OIDC token.
 When GitHub context is provided (`GITHUB_TOKEN`, `GITHUB_REPOSITORY`, `PR_NUMBER`), the tool performs a preflight check before running integration tests:
 
 1. **Snapshot Changes**: Verifies the PR contains `.snapshot` file changes
-2. **Authorization**: Checks if either:
-   - PR has the `pr/needs-integration-tests-deployment` label (manual trigger), OR
-   - PR is approved by a CDK team member (`@aws/aws-cdk-team`)
+2. **Authorization**: Checks if the PR is approved by a CDK team member (`@aws/aws-cdk-team`)
 
 If the preflight check fails, the tool exits gracefully without running tests. This prevents unnecessary test runs on PRs that haven't been reviewed by the CDK team yet.
 

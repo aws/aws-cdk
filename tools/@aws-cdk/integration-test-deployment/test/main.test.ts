@@ -111,7 +111,7 @@ describe('main function', () => {
     it('should proceed with deployment when preflight returns shouldRun=true', async () => {
       (preflight.shouldRunIntegTests as jest.Mock).mockResolvedValue({
         shouldRun: true,
-        reason: 'PR has pr/needs-integration-tests-deployment label',
+        reason: 'PR has snapshot changes and is approved by CDK team member',
       });
 
       await main({

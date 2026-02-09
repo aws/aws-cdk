@@ -42,29 +42,7 @@ describe('shouldRunIntegTests', () => {
       ]);
     });
 
-    it('should run when PR has the integration test label', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          labels: [{ name: 'pr/needs-integration-tests-deployment' }],
-        }),
-      });
-
-      const result = await shouldRunIntegTests(defaultProps);
-
-      expect(result.shouldRun).toBe(true);
-      expect(result.reason).toBe('PR has pr/needs-integration-tests-deployment label');
-    });
-
     it('should run when approved by a CDK team member', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          labels: [],
-        }),
-      });
-
       // Mock reviews
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -86,14 +64,6 @@ describe('shouldRunIntegTests', () => {
     });
 
     it('should not run when approved by non-CDK team member', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          labels: [],
-        }),
-      });
-
       // Mock reviews
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -114,14 +84,6 @@ describe('shouldRunIntegTests', () => {
     });
 
     it('should not run when no approvals exist', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          labels: [],
-        }),
-      });
-
       // Mock reviews - no approvals
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -138,14 +100,6 @@ describe('shouldRunIntegTests', () => {
     });
 
     it('should check multiple approvers until finding a CDK team member', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          labels: [],
-        }),
-      });
-
       // Mock reviews - multiple approvals
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -173,14 +127,6 @@ describe('shouldRunIntegTests', () => {
     });
 
     it('should handle pending team membership state', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          labels: [],
-        }),
-      });
-
       // Mock reviews
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -202,14 +148,6 @@ describe('shouldRunIntegTests', () => {
     });
 
     it('should skip reviews with null user', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          labels: [],
-        }),
-      });
-
       // Mock reviews - approval with null user (e.g., deleted account)
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -222,7 +160,7 @@ describe('shouldRunIntegTests', () => {
 
       expect(result.shouldRun).toBe(false);
       // No team membership check should be made for null user
-      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -231,25 +169,7 @@ describe('shouldRunIntegTests', () => {
       (utils.getChangedSnapshots as jest.Mock).mockResolvedValue(['some-snapshot']);
     });
 
-    it('should throw when PR fetch fails', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-      });
-
-      await expect(shouldRunIntegTests(defaultProps)).rejects.toThrow(
-        'Failed to fetch PR details: 404 Not Found',
-      );
-    });
-
     it('should throw when reviews fetch fails', async () => {
-      // Mock PR details success
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ labels: [] }),
-      });
-
       // Mock reviews failure
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -263,12 +183,6 @@ describe('shouldRunIntegTests', () => {
     });
 
     it('should throw on 401 authentication error during team membership check', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ labels: [] }),
-      });
-
       // Mock reviews
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -288,12 +202,6 @@ describe('shouldRunIntegTests', () => {
     });
 
     it('should throw on 403 forbidden error during team membership check', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ labels: [] }),
-      });
-
       // Mock reviews
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -313,12 +221,6 @@ describe('shouldRunIntegTests', () => {
     });
 
     it('should throw on unexpected status codes during team membership check', async () => {
-      // Mock PR details (no label)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ labels: [] }),
-      });
-
       // Mock reviews
       mockFetch.mockResolvedValueOnce({
         ok: true,

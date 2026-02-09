@@ -56,9 +56,7 @@ async function isCdkTeamMember(githubToken: string, username: string): Promise<b
  *
  * Integration tests should run when:
  * 1. PR has snapshot changes AND
- * 2. Either:
- *    a. PR has the 'pr/needs-integration-tests-deployment' label (manual trigger), OR
- *    b. PR is approved by a CDK team member (@aws/aws-cdk-team)
+ * 2. PR is approved by a CDK team member (@aws/aws-cdk-team)
  */
 export async function shouldRunIntegTests(props: {
   githubToken: string;
@@ -74,29 +72,6 @@ export async function shouldRunIntegTests(props: {
     return {
       shouldRun: false,
       reason: 'No snapshot changes detected in this PR',
-    };
-  }
-
-  // Fetch PR details to check labels
-  const prResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`, {
-    headers: {
-      'Authorization': `token ${githubToken}`,
-      'Accept': 'application/vnd.github.v3+json',
-    },
-  });
-
-  if (!prResponse.ok) {
-    throw new Error(`Failed to fetch PR details: ${prResponse.status} ${prResponse.statusText}`);
-  }
-
-  const pr = await prResponse.json() as { labels: Array<{ name: string }> };
-
-  // Check if PR has the manual trigger label
-  const hasLabel = pr.labels.some((l: { name: string }) => l.name === 'pr/needs-integration-tests-deployment');
-  if (hasLabel) {
-    return {
-      shouldRun: true,
-      reason: 'PR has pr/needs-integration-tests-deployment label',
     };
   }
 
@@ -136,6 +111,6 @@ export async function shouldRunIntegTests(props: {
 
   return {
     shouldRun: false,
-    reason: `PR has snapshot changes but is not yet approved by a CDK team member (@${CDK_ORG}/${CDK_TEAM}). Add the pr/needs-integration-tests-deployment label to run manually.`,
+    reason: `PR has snapshot changes but is not yet approved by a CDK team member (@${CDK_ORG}/${CDK_TEAM}).`,
   };
 }
