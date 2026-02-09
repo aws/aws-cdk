@@ -3,6 +3,8 @@ import { Grant } from 'aws-cdk-lib/aws-iam';
 import type { IGrantable } from 'aws-cdk-lib/aws-iam';
 import type { IPipeline, PipelineReference } from 'aws-cdk-lib/aws-sagemaker';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 
 /**
@@ -76,7 +78,11 @@ export interface PipelineProps {
  *
  * @resource AWS::SageMaker::Pipeline
  */
+@propertyInjectable
 export class Pipeline extends Resource implements IPipeline {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-sagemaker-alpha.Pipeline';
+
   /**
    * Import a pipeline from its ARN
    *
@@ -180,6 +186,8 @@ export class Pipeline extends Resource implements IPipeline {
    */
   constructor(scope: Construct, id: string, props?: PipelineProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     // Suppress unused parameter warning
     void props;
     throw new ValidationError('Pipeline construct cannot be instantiated directly. Use Pipeline.fromPipelineArn() or Pipeline.fromPipelineName() to import existing pipelines.', scope);
@@ -189,6 +197,7 @@ export class Pipeline extends Resource implements IPipeline {
    * Permits an IAM principal to start this pipeline execution
    * @param grantee The principal to grant access to
    */
+  @MethodMetadata()
   public grantStartPipelineExecution(grantee: IGrantable): Grant {
     return Grant.addToPrincipal({
       grantee,
