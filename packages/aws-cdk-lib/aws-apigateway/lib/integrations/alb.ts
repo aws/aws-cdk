@@ -1,4 +1,4 @@
-import type * as apigwv2 from '../../../aws-apigatewayv2';
+import * as apigwv2 from '../../../aws-apigatewayv2';
 import type * as ec2 from '../../../aws-ec2';
 import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { Token } from '../../../core';
