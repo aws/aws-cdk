@@ -49,5 +49,5 @@ const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
 new RedshiftStack(stack, 'RedshiftMaintenanceTrackNameIntegStack');
 
 new integ.IntegTest(stack, 'RedshiftMaintenanceTrackNameInteg', {
-  testCases: [],
+  testCases: [stack],
 });

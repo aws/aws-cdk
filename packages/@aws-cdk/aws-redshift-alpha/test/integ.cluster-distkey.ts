@@ -99,5 +99,3 @@ stacks.forEach(s => {
 new integ.IntegTest(app, 'aws-cdk-redshift-distkey-test', {
   testCases: [stack],
 });
-
-app.synth();

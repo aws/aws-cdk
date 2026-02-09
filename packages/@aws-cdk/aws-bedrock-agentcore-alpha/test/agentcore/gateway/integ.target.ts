@@ -12,12 +12,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'BedrockAgentCoreTargetIntegTest', {
-  env: {
-    region: process.env.CDK_DEFAULT_REGION || 'us-east-1',
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-  },
-});
+const stack = new cdk.Stack(app, 'BedrockAgentCoreTargetIntegTest');
 
 // Create Gateway
 const gateway = new agentcore.Gateway(stack, 'TestGateway', {
@@ -131,5 +126,6 @@ new cdk.CfnOutput(stack, 'ConstructorTargetId', {
 // The test validates that all target creation methods work correctly and can be deployed.
 new integ.IntegTest(app, 'TargetIntegTest', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
 });
 
