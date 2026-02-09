@@ -1,16 +1,16 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "0a890208d11fc406a542f0583b735a068bd922ec01b135d01cb07ee099d7a77c": {
+    "fc7d9cc8619c9e0537f74d3299964912c88f1709096f9ef328654de42cbdc2c6": {
       "displayName": "aws-cdk-redshift-cluster-database Template",
       "source": {
         "path": "aws-cdk-redshift-cluster-database.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456789012-us-east-1": {
+        "123456789012-us-east-1-aeb9ab4e": {
           "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "objectKey": "0a890208d11fc406a542f0583b735a068bd922ec01b135d01cb07ee099d7a77c.json",
+          "objectKey": "fc7d9cc8619c9e0537f74d3299964912c88f1709096f9ef328654de42cbdc2c6.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
         }
