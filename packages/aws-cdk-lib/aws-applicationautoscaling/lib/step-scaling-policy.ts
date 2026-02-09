@@ -4,7 +4,7 @@ import { findAlarmThresholds, normalizeIntervals } from '../../aws-autoscaling-c
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
+import type { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 export interface BasicStepScalingPolicyProps {
   /**
@@ -272,7 +272,7 @@ class StepScalingAlarmAction implements cloudwatch.IAlarmAction {
   constructor(private readonly stepScalingAction: StepScalingAction) {
   }
 
-  public bind(_scope: Construct, _alarm: cloudwatch.IAlarmRef): cloudwatch.AlarmActionConfig {
+  public bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     return { alarmActionArn: this.stepScalingAction.scalingPolicyArn };
   }
 }

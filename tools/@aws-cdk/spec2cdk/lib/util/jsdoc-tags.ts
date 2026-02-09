@@ -1,4 +1,5 @@
-import { DocsSpec, Stability } from '@cdklabs/typewriter';
+import type { DocsSpec } from '@cdklabs/typewriter';
+import { Stability } from '@cdklabs/typewriter';
 
 /**
  * Compute stability taking into account deprecation status.

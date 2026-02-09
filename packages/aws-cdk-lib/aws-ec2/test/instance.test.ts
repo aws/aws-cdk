@@ -6,6 +6,7 @@ import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
 import { App, Stack, Duration } from '../../core';
 import * as cxapi from '../../cx-api';
+import type { LaunchTemplate } from '../lib';
 import {
   AmazonLinuxImage,
   BlockDeviceVolume,
@@ -17,7 +18,6 @@ import {
   InstanceClass,
   InstanceSize,
   InstanceType,
-  LaunchTemplate,
   HttpTokens,
   UserData,
   Vpc,

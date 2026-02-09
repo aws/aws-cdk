@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import * as cdk from 'aws-cdk-lib/core';
 import { Duration } from 'aws-cdk-lib/core';
 import { testFixtureCluster } from './util';
 import * as eks from '../lib';
@@ -278,6 +279,21 @@ describe('helm chart', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
+    });
+  });
+
+  test('applies removal policy to helm chart and kubectl provider', () => {
+    const { stack, cluster } = testFixtureCluster();
+
+    new eks.HelmChart(stack, 'Chart', {
+      cluster,
+      chart: 'test-chart',
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResource('Custom::AWSCDK-EKS-HelmChart', {
+      DeletionPolicy: 'Retain',
     });
   });
 });

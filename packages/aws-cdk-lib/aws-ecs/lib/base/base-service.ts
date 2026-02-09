@@ -1,19 +1,21 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { ScalableTaskCount } from './scalable-task-count';
-import { ServiceManagedVolume } from './service-managed-volume';
+import type { ServiceManagedVolume } from './service-managed-volume';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
-import * as elb from '../../../aws-elasticloadbalancing';
+import type * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
+import type {
+  IResolvable,
+  IResource,
+} from '../../../core';
 import {
   Annotations,
   Duration,
-  IResolvable,
-  IResource,
   Lazy,
   Resource,
   Stack,
@@ -24,21 +26,25 @@ import {
   Fn,
   ValidationError,
 } from '../../../core';
+import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import * as cxapi from '../../../cx-api';
-import { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
+import type { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
-import { IAlternateTarget } from '../alternate-target-configuration';
-import {
+import type { IAlternateTarget } from '../alternate-target-configuration';
+import type {
   LoadBalancerTargetOptions,
-  NetworkMode,
   TaskDefinition,
+} from '../base/task-definition';
+import {
+  NetworkMode,
   TaskDefinitionRevision,
 } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
-import { ContainerDefinition, Protocol } from '../container-definition';
-import { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
+import type { ICluster, CapacityProviderStrategy } from '../cluster';
+import { ExecuteCommandLogging, Cluster } from '../cluster';
+import type { ContainerDefinition, Protocol } from '../container-definition';
+import type { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
-import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
+import type { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 
 /**
  * The interface for a service.
@@ -87,6 +93,28 @@ export interface DeploymentCircuitBreaker {
    * @default false
    */
   readonly rollback?: boolean;
+}
+
+/**
+ * Configuration for traffic shift during progressive deployments
+ */
+export interface TrafficShiftConfig {
+  /**
+   * The percentage of production traffic to shift in each step.
+   * - For linear deployment: multiples of 0.1 from 3.0 to 100.0
+   * - For canary deployment: multiples of 0.1 from 0.1 to 100.0
+   *
+   * @default - 10.0 for linear, 5.0 for canary
+   */
+  readonly stepPercent?: number;
+
+  /**
+   * The duration to wait between traffic shifting steps.
+   * Valid values are 0 to 1440 minutes (24 hours).
+   *
+   * @default - Duration.minutes(6) for linear, Duration.minutes(10) for canary
+   */
+  readonly stepBakeTime?: Duration;
 }
 
 /**
@@ -456,6 +484,23 @@ export interface BaseServiceOptions {
    * @default - none;
    */
   readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[];
+
+  /**
+   * Configuration for linear deployment strategy.
+   * Only valid when deploymentStrategy is set to LINEAR.
+   *
+   * @default - no linear configuration
+   */
+  readonly linearConfiguration?: TrafficShiftConfig;
+
+  /**
+   * Configuration for canary deployment strategy.
+   * Only valid when deploymentStrategy is set to CANARY.
+   *
+   * @default - no canary configuration
+   */
+  readonly canaryConfiguration?: TrafficShiftConfig;
+
 }
 
 /**
@@ -626,18 +671,6 @@ export abstract class BaseService extends Resource
   public readonly connections: ec2.Connections = new ec2.Connections();
 
   /**
-   * The Amazon Resource Name (ARN) of the service.
-   */
-  public readonly serviceArn: string;
-
-  /**
-   * The name of the service.
-   *
-   * @attribute
-   */
-  public readonly serviceName: string;
-
-  /**
    * A reference to this service.
    */
   public get serviceRef(): ServiceReference {
@@ -711,6 +744,25 @@ export abstract class BaseService extends Resource
    */
   private readonly lifecycleHooks: IDeploymentLifecycleHookTarget[] = [];
 
+  @memoizedGetter
+  public get serviceArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'ecs',
+      resource: 'service',
+      resourceName: `${this.cluster.clusterName}/${this.physicalName}`,
+    });
+  }
+
+  @memoizedGetter
+  public get serviceName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  /**
+   * The deployment strategy for the service
+   */
+  private readonly deploymentStrategy?: DeploymentStrategy;
+
   /**
    * Constructs a new instance of the BaseService class.
    */
@@ -740,6 +792,15 @@ export abstract class BaseService extends Resource
 
     // Determine if this service is using the ECS deployment controller
     this.isEcsDeploymentController = !deploymentController || deploymentController.type === DeploymentControllerType.ECS;
+    this.deploymentStrategy = props.deploymentStrategy;
+
+    if (props.linearConfiguration) {
+      this.validateLinearConfiguration(props.linearConfiguration);
+    }
+    if (props.canaryConfiguration) {
+      this.validateCanaryConfiguration(props.canaryConfiguration);
+    }
+
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -754,6 +815,14 @@ export abstract class BaseService extends Resource
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
+        linearConfiguration: props.linearConfiguration ? {
+          stepPercent: props.linearConfiguration.stepPercent,
+          stepBakeTimeInMinutes: props.linearConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
+        canaryConfiguration: props.canaryConfiguration ? {
+          canaryPercent: props.canaryConfiguration.stepPercent,
+          canaryBakeTimeInMinutes: props.canaryConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
         lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
@@ -810,13 +879,6 @@ export abstract class BaseService extends Resource
       }
       this.node.addDependency(taskDefinition);
     }
-
-    this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
-      service: 'ecs',
-      resource: 'service',
-      resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
-    });
-    this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;
 
@@ -1127,6 +1189,62 @@ export abstract class BaseService extends Resource
         throw new ValidationError(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`, this);
       }
     });
+  }
+
+  /**
+   * Validate Canary Configuration
+   */
+  private validateCanaryConfiguration(config: TrafficShiftConfig) {
+    if (this.deploymentStrategy !== DeploymentStrategy.CANARY) {
+      throw new ValidationError('Canary configuration requires deploymentStrategy to be set to CANARY', this);
+    }
+
+    if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
+      if (!Number.isFinite(config.stepPercent) || config.stepPercent < 0.1 || config.stepPercent > 100.0) {
+        throw new ValidationError(`Canary deployment stepPercent must be between 0.1 and 100.0, received ${config.stepPercent}`, this);
+      }
+      if (!Number.isInteger(config.stepPercent * 10)) {
+        throw new ValidationError(`Canary deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+      }
+    }
+
+    if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
+      const minutes = config.stepBakeTime.toMinutes({ integral: false });
+      if (!Number.isInteger(minutes)) {
+        throw new ValidationError(`Canary deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+      }
+      if (minutes < 0 || minutes > 1440) {
+        throw new ValidationError(`Canary deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+      }
+    }
+  }
+
+  /**
+   * Validate Linear Configuration
+   */
+  private validateLinearConfiguration(config: TrafficShiftConfig) {
+    if (this.deploymentStrategy !== DeploymentStrategy.LINEAR) {
+      throw new ValidationError('Linear configuration requires deploymentStrategy to be set to LINEAR', this);
+    }
+
+    if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
+      if (!Number.isFinite(config.stepPercent) || config.stepPercent < 3.0 || config.stepPercent > 100.0) {
+        throw new ValidationError(`Linear deployment stepPercent must be between 3.0 and 100.0, received ${config.stepPercent}`, this);
+      }
+      if (!Number.isInteger(config.stepPercent * 10)) {
+        throw new ValidationError(`Linear deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+      }
+    }
+
+    if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
+      const minutes = config.stepBakeTime.toMinutes({ integral: false });
+      if (!Number.isInteger(minutes)) {
+        throw new ValidationError(`Linear deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+      }
+      if (minutes < 0 || minutes > 1440) {
+        throw new ValidationError(`Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+      }
+    }
   }
 
   /**
@@ -1836,6 +1954,14 @@ export enum DeploymentStrategy {
    * Blue/green deployment
    */
   BLUE_GREEN = 'BLUE_GREEN',
+  /**
+   * Linear deployment with progressive traffic shifting
+   */
+  LINEAR = 'LINEAR',
+  /**
+   * Canary deployment with fixed traffic percentage testing
+   */
+  CANARY = 'CANARY',
 }
 
 /**

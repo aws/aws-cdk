@@ -1,12 +1,14 @@
 import { ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IConnection } from './connection';
-import { Column } from './schema';
-import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
+import type { Construct } from 'constructs';
+import type { IConnection } from './connection';
+import type { Column } from './schema';
+import type { PartitionIndex, TableBaseProps } from './table-base';
+import { TableBase } from './table-base';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**
@@ -34,15 +36,6 @@ export interface ExternalTableProps extends TableBaseProps {
 export class ExternalTable extends TableBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ExternalTable';
-  /**
-   * Name of this table.
-   */
-  public readonly tableName: string;
-
-  /**
-   * ARN of this table.
-   */
-  public readonly tableArn: string;
 
   /**
    * The connection associated to this table
@@ -56,12 +49,14 @@ export class ExternalTable extends TableBase {
 
   protected readonly tableResource: CfnTable;
 
+  private resource: CfnTable;
+
   constructor(scope: Construct, id: string, props: ExternalTableProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     this.connection = props.connection;
-    this.tableResource = new CfnTable(this, 'Table', {
+    this.resource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
 
       databaseName: props.database.databaseName,
@@ -103,19 +98,34 @@ export class ExternalTable extends TableBase {
       },
     });
 
-    this.tableName = this.getResourceNameAttribute(this.tableResource.ref);
-    this.tableArn = this.stack.formatArn({
-      service: 'glue',
-      resource: 'table',
-      resourceName: `${this.database.databaseName}/${this.tableName}`,
-    });
-    this.node.defaultChild = this.tableResource;
+    this.tableResource = this.resource;
+    this.node.defaultChild = this.resource;
 
     // Partition index creation relies on created table.
     if (props.partitionIndexes) {
       this.partitionIndexes = props.partitionIndexes;
       this.partitionIndexes.forEach((index) => this.addPartitionIndex(index));
     }
+  }
+
+  /**
+   * Name of this table.
+   */
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  /**
+   * ARN of this table.
+   */
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.stack.formatArn({
+      service: 'glue',
+      resource: 'table',
+      resourceName: `${this.database.databaseName}/${this.tableName}`,
+    });
   }
 
   /**

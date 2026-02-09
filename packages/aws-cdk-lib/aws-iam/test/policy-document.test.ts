@@ -1,8 +1,9 @@
 import { Template } from '../../assertions';
 import { Lazy, Stack, Token } from '../../core';
+import type { IPrincipal } from '../lib';
 import {
   AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
-  Effect, FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal, Role,
+  Effect, FederatedPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal, Role,
 } from '../lib';
 
 describe('IAM policy document', () => {
