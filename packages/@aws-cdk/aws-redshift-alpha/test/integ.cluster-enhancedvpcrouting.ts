@@ -42,5 +42,3 @@ new RedshiftEnv(stack, 'redshift-enhancedvpcrouting-integ');
 new integ.IntegTest(app, 'EnhancedVpcRouting', {
   testCases: [stack],
 });
-
-app.synth();
