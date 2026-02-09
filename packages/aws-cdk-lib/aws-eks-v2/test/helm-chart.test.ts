@@ -1,8 +1,8 @@
 import * as path from 'path';
-import { Template } from 'aws-cdk-lib/assertions';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import * as cdk from 'aws-cdk-lib/core';
-import { Duration } from 'aws-cdk-lib/core';
+import { Template } from '../../assertions';
+import { Asset } from '../../aws-s3-assets';
+import * as cdk from '../../core';
+import { Duration } from '../../core';
 import { testFixtureCluster } from './util';
 import * as eks from '../lib';
 

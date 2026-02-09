@@ -1,9 +1,9 @@
-import { CfnAddon } from 'aws-cdk-lib/aws-eks';
-import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
-import { ArnFormat, Resource, Stack, Fn } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { CfnAddon } from '../../aws-eks';
+import type { IResource, RemovalPolicy } from '../../core';
+import { ArnFormat, Resource, Stack, Fn } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 

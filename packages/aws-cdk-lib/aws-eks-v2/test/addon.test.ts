@@ -1,6 +1,6 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import * as cdk from 'aws-cdk-lib/core';
-import { App, Stack } from 'aws-cdk-lib/core';
+import { Template } from '../../assertions';
+import * as cdk from '../../core';
+import { App, Stack } from '../../core';
 import * as eks from '../lib';
 import { Addon, KubernetesVersion, Cluster } from '../lib';
 

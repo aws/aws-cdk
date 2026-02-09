@@ -1,5 +1,5 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib/core';
+import * as ec2 from '../../aws-ec2';
+import * as cdk from '../../core';
 import * as eks from '../lib';
 
 class EksClusterStack extends cdk.Stack {

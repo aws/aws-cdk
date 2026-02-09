@@ -1,5 +1,5 @@
-import type { RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, Stack, ValidationError } from 'aws-cdk-lib/core';
+import type { RemovalPolicy } from '../../core';
+import { CustomResource, Stack, ValidationError } from '../../core';
 import { Construct, Node } from 'constructs';
 import { AlbScheme } from './alb-controller';
 import type { ICluster } from './cluster';

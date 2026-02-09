@@ -1,6 +1,6 @@
-import type { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import type { Duration, RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, Names, Stack, ValidationError } from 'aws-cdk-lib/core';
+import type { Asset } from '../../aws-s3-assets';
+import type { Duration, RemovalPolicy } from '../../core';
+import { CustomResource, Names, Stack, ValidationError } from '../../core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';

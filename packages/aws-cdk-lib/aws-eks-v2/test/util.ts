@@ -1,6 +1,6 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { App, Stack } from 'aws-cdk-lib/core';
+import * as ec2 from '../../aws-ec2';
+import { App, Stack } from '../../core';
 import type { ClusterProps } from '../lib';
 import { Cluster, FargateCluster, KubernetesVersion } from '../lib';
 

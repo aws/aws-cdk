@@ -1,5 +1,5 @@
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { ClusterCommonOptions } from './cluster';
 import { Cluster, CoreDnsComputeType, DefaultCapacityType } from './cluster';

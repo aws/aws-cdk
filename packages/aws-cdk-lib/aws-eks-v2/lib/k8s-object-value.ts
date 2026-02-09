@@ -1,5 +1,5 @@
-import type { RemovalPolicy } from 'aws-cdk-lib/core';
-import { CustomResource, Token, Duration, ValidationError } from 'aws-cdk-lib/core';
+import type { RemovalPolicy } from '../../core';
+import { CustomResource, Token, Duration, ValidationError } from '../../core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';

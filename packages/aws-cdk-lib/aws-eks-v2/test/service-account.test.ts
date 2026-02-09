@@ -1,6 +1,6 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib/core';
+import { Template } from '../../assertions';
+import * as iam from '../../aws-iam';
+import * as cdk from '../../core';
 import { testFixture, testFixtureCluster } from './util';
 import * as eks from '../lib';
 

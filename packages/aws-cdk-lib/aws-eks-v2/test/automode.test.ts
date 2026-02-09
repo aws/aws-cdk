@@ -1,6 +1,6 @@
-import { Template, Match } from 'aws-cdk-lib/assertions';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import { Template, Match } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import * as eks from '../lib';
 import { testFixtureNoVpc } from './util';
 

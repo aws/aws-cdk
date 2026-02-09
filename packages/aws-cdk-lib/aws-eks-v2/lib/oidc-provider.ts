@@ -1,7 +1,7 @@
-import type { RemovalPolicy } from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { RemovalPolicy } from '../..';
+import * as iam from '../../aws-iam';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 
 /**

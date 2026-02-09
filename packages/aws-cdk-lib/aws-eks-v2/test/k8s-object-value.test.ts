@@ -1,7 +1,7 @@
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
-import { Template } from 'aws-cdk-lib/assertions';
-import type { App } from 'aws-cdk-lib/core';
-import { Stack, Duration, RemovalPolicy } from 'aws-cdk-lib/core';
+import { Template } from '../../assertions';
+import type { App } from '../../core';
+import { Stack, Duration, RemovalPolicy } from '../../core';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';

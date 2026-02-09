@@ -1,4 +1,4 @@
-import { Aws } from 'aws-cdk-lib/core';
+import { Aws } from '../../core';
 import type { AccessPolicyNameOptions } from '../lib';
 import { AccessPolicy, AccessPolicyArn, AccessScopeType } from '../lib';
 

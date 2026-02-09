@@ -1,5 +1,5 @@
-import type * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
-import { Stack } from 'aws-cdk-lib/core';
+import type * as autoscaling from '../../aws-autoscaling';
+import { Stack } from '../../core';
 import type { BootstrapOptions, ICluster } from './cluster';
 
 // eslint-disable-next-line max-len

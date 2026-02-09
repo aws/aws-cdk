@@ -1,11 +1,11 @@
-import { CfnPodIdentityAssociation } from 'aws-cdk-lib/aws-eks';
-import type { AddToPrincipalPolicyResult, IPrincipal, IRole, PrincipalPolicyFragment } from 'aws-cdk-lib/aws-iam';
+import { CfnPodIdentityAssociation } from '../../aws-eks';
+import type { AddToPrincipalPolicyResult, IPrincipal, IRole, PrincipalPolicyFragment } from '../../aws-iam';
 import {
   OpenIdConnectPrincipal, PolicyStatement, Role,
   ServicePrincipal,
-} from 'aws-cdk-lib/aws-iam';
-import type { RemovalPolicy } from 'aws-cdk-lib/core';
-import { CfnJson, Names, RemovalPolicies } from 'aws-cdk-lib/core';
+} from '../../aws-iam';
+import type { RemovalPolicy } from '../../core';
+import { CfnJson, Names, RemovalPolicies } from '../../core';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 // import { FargateCluster } from './index';

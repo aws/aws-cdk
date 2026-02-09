@@ -1,9 +1,9 @@
-import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
-import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
-import { Resource, Aws, Lazy, ValidationError, Token } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { CfnAccessEntry } from '../../aws-eks';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Resource, Aws, Lazy, ValidationError, Token } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 

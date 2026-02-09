@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import * as iam from '../../aws-iam';
 import { Construct } from 'constructs';
 import type { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
@@ -8,7 +8,7 @@ import { ServiceAccount } from './service-account';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Aws, Duration, Names, RemovalPolicy, Stack, ValidationError } from 'aws-cdk-lib/core';
+import { Aws, Duration, Names, RemovalPolicy, Stack, ValidationError } from '../../core';
 
 /**
  * Controller version.

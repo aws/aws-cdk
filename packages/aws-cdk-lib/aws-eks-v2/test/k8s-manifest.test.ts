@@ -1,8 +1,8 @@
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
-import { Template } from 'aws-cdk-lib/assertions';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib/core';
-import { CfnResource, Stack } from 'aws-cdk-lib/core';
+import { Template } from '../../assertions';
+import * as iam from '../../aws-iam';
+import * as cdk from '../../core';
+import { CfnResource, Stack } from '../../core';
 import { testFixtureNoVpc, testFixtureCluster } from './util';
 import * as eks from '../lib';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart, KubectlProvider } from '../lib';

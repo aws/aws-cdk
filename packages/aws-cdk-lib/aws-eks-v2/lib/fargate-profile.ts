@@ -1,8 +1,8 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { CfnFargateProfile } from 'aws-cdk-lib/aws-eks';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import type { ITaggable, RemovalPolicy } from 'aws-cdk-lib/core';
-import { Annotations, RemovalPolicies, TagManager, TagType, ValidationError } from 'aws-cdk-lib/core';
+import * as ec2 from '../../aws-ec2';
+import { CfnFargateProfile } from '../../aws-eks';
+import * as iam from '../../aws-iam';
+import type { ITaggable, RemovalPolicy } from '../../core';
+import { Annotations, RemovalPolicies, TagManager, TagType, ValidationError } from '../../core';
 import { Construct } from 'constructs';
 import type { Cluster } from './cluster';
 
