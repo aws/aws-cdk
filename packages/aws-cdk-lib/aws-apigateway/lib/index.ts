@@ -16,6 +16,7 @@ export * from './authorizer';
 export * from './json-schema';
 export * from './domain-name';
 export * from './base-path-mapping';
+export * from './routing-rule';
 export * from './cors';
 export * from './authorizers';
 export * from './access-log';
