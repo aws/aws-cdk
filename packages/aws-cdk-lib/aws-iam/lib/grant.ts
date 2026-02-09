@@ -513,18 +513,6 @@ class Traits<
  *
  * This class provides methods to retrieve IResourceWithPolicyV2 instances from constructs,
  * enabling resource-based policy management during IAM grant operations.
- *
- * @example
- *
- *     // Retrieve resource policy trait from a construct
- *     const resourceWithPolicy = ResourceWithPolicies.of(table);
- *     if (resourceWithPolicy) {
- *       resourceWithPolicy.addToResourcePolicy(new PolicyStatement({...}));
- *     }
- *
- *     // Register a custom factory for a specific scope
- *     ResourceWithPolicies.register(this, 'AWS::MyService::Resource', new MyResourcePolicyFactory());
- *
  */
 export class ResourceWithPolicies {
   /**
