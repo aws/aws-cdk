@@ -1,0 +1,53 @@
+#
+#####################################
+##           AWS CDK               ##
+#####################################
+# Rule: IAM_ROLE_NO_BROAD_PRINCIPALS
+# Service: AWS Identity and Access Management (IAM)
+# Coverage: IAM Role Trust Policies
+#
+# This rule checks for overly broad principals in IAM role trust policies:
+# - Wildcard principal: "*"
+# - Wildcard account principal: "arn:aws:iam::*:root" or "arn:aws:iam::*:role/*"
+#
+# NOTE: :root principals (e.g., "arn:aws:iam::123456789012:root") are checked
+# by the separate IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS rule, which allows
+# them if they have restrictive conditions (legitimate cross-account pattern).
+
+let iam_roles_no_broad_principals = Resources.*[ Type == 'AWS::IAM::Role'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_ROLE_NO_BROAD_PRINCIPALS"
+]
+
+rule IAM_ROLE_NO_BROAD_PRINCIPALS when %iam_roles_no_broad_principals !empty {
+    %iam_roles_no_broad_principals.Properties.AssumeRolePolicyDocument.Statement[*] {
+        # Only check Allow statements - Deny statements with broad principals are actually secure
+        when Effect == "Allow" {
+            when Principal exists {
+                # Check for wildcard as entire principal
+                when Principal is_string {
+                  Principal != "*"
+                }
+                # Check if AWS principal exists
+                when Principal.AWS exists {
+                    # Check if AWS is a string
+                    when Principal.AWS is_string {
+                      Principal.AWS != "*"
+                      # Wildcard account - matches any AWS account
+                      Principal.AWS != /arn:aws:iam::\*:/
+                    }
+                    # Check if AWS is an array - iterate each item and check only string items
+                    # This handles mixed arrays with strings and intrinsic functions (objects)
+                    when Principal.AWS is_list {
+                      Principal.AWS[*] {
+                          when this is_string {
+                              this != "*"
+                              this != /arn:aws:iam::\*:/
+                          }
+                      }
+                    }
+                }
+            }
+        }
+    }
+}

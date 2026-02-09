@@ -1,6 +1,7 @@
-import { StreamEventSource, StreamEventSourceProps } from './stream';
-import * as dynamodb from '../../aws-dynamodb';
-import * as lambda from '../../aws-lambda';
+import type { StreamEventSourceProps } from './stream';
+import { StreamEventSource } from './stream';
+import type * as dynamodb from '../../aws-dynamodb';
+import type * as lambda from '../../aws-lambda';
 import { Names, Token, ValidationError } from '../../core';
 
 export interface DynamoEventSourceProps extends StreamEventSourceProps {

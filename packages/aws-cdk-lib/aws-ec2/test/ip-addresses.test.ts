@@ -2,7 +2,7 @@
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
 import { IpAddresses, SubnetType, Vpc, cidrSplitToCfnExpression } from '../lib';
-import { CidrSplit } from '../lib/cidr-splits';
+import type { CidrSplit } from '../lib/cidr-splits';
 
 describe('Cidr vpc allocation', () => {
   test('Default Cidr returns the correct vpc cidr', () => {
@@ -394,7 +394,7 @@ type CfnSplit = {
   count: number;
   hostbits: number;
   select: number;
-}
+};
 
 test.each([
   // Index into first block

@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs';
-import type { ConstructSelector } from './selectors';
+import type { IConstructSelector } from './selectors';
 import { MixinApplicator } from './applicator';
 
 // this will change when we update the interface to deliberately break compatibility checks
@@ -12,7 +12,7 @@ export class Mixins {
   /**
    * Creates a MixinApplicator for the given scope.
    */
-  static of(scope: IConstruct, selector?: ConstructSelector): MixinApplicator {
+  static of(scope: IConstruct, selector?: IConstructSelector): MixinApplicator {
     return new MixinApplicator(scope, selector);
   }
 }
@@ -28,14 +28,9 @@ export interface IMixin {
   supports(construct: IConstruct): boolean;
 
   /**
-   * Validates the construct before applying the mixin.
-   */
-  validate?(construct: IConstruct): string[];
-
-  /**
    * Applies the mixin functionality to the target construct.
    */
-  applyTo(construct: IConstruct): IConstruct;
+  applyTo(construct: IConstruct): void;
 }
 
 /**
@@ -60,9 +55,5 @@ export abstract class Mixin implements IMixin {
     return true;
   }
 
-  public validate(_construct: IConstruct): string[] {
-    return [];
-  }
-
-  abstract applyTo(construct: IConstruct): IConstruct;
+  abstract applyTo(construct: IConstruct): void;
 }

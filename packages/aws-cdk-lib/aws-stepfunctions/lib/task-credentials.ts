@@ -1,6 +1,6 @@
 import { JsonPath } from './fields';
 import { isValidJsonataExpression } from './private/jsonata';
-import * as iam from '../../aws-iam';
+import type * as iam from '../../aws-iam';
 import { UnscopedValidationError } from '../../core';
 
 /**

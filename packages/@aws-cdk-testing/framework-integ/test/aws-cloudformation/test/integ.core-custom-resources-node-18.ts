@@ -7,10 +7,8 @@
  *   - GetAtt.Attribute2: 1234
  */
 import { App, CfnOutput, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-
-/* eslint-disable @cdklabs/no-core-construct */
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {

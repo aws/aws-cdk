@@ -6,8 +6,11 @@
  */
 import * as path from 'node:path';
 import { parseArgs } from 'node:util';
-import { PositionalArg, showHelp } from './help';
-import { GenerateModuleMap, GenerateOptions, generate, generateAll } from '../generate';
+import type { PositionalArg } from './help';
+import { showHelp } from './help';
+import type { AwsCdkLibBuilder } from '../cdk/aws-cdk-lib';
+import type { GenerateModuleMap, GenerateOptions } from '../generate';
+import { generate, generateAll } from '../generate';
 import { log } from '../util';
 
 const command = 'spec2cdk';
@@ -93,16 +96,18 @@ export async function main(argv: string[]) {
   }
 
   const outputPath = outputDir ?? path.join(__dirname, '..', 'services');
-  const generatorOptions: GenerateOptions = {
+
+  const generatorOptions: GenerateOptions<typeof AwsCdkLibBuilder> = {
     outputPath,
-    filePatterns: {
-      resources: options.pattern,
-      augmentations: options.augmentations,
-      cannedMetrics: options.metrics,
-    },
     clearOutput: options['clear-output'],
-    augmentationsSupport: options['augmentations-support'],
     debug: options.debug as boolean,
+    builderProps: {
+      filePatterns: {
+        resources: options.pattern,
+        augmentations: options.augmentations,
+        cannedMetrics: options.metrics,
+      },
+    },
   };
 
   if (options.service?.length) {

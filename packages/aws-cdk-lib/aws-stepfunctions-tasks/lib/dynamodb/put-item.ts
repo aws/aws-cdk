@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
-import * as ddb from '../../../aws-dynamodb';
+import type { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
+import type * as ddb from '../../../aws-dynamodb';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
@@ -19,7 +19,7 @@ interface DynamoPutItemOptions {
   /**
    * The name of the table where the item should be written .
    */
-  readonly table: ddb.ITable;
+  readonly table: ddb.ITableRef;
 
   /**
    * A condition that must be satisfied in order for a conditional PutItem operation to succeed.
@@ -122,7 +122,7 @@ export class DynamoPutItem extends sfn.TaskStateBase {
           Stack.of(this).formatArn({
             service: 'dynamodb',
             resource: 'table',
-            resourceName: props.table.tableName,
+            resourceName: props.table.tableRef.tableName,
           }),
         ],
         actions: [`dynamodb:${DynamoMethod.PUT}Item`],
@@ -139,7 +139,7 @@ export class DynamoPutItem extends sfn.TaskStateBase {
       Resource: getDynamoResourceArn(DynamoMethod.PUT),
       ...this._renderParametersOrArguments({
         Item: transformAttributeValueMap(this.props.item),
-        TableName: this.props.table.tableName,
+        TableName: this.props.table.tableRef.tableName,
         ConditionExpression: this.props.conditionExpression,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
         ExpressionAttributeValues: transformAttributeValueMap(this.props.expressionAttributeValues),

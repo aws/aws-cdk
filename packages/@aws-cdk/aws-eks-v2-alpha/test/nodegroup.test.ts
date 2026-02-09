@@ -1,15 +1,13 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { testFixture } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import * as cdk from 'aws-cdk-lib/core';
 import * as cxapi from 'aws-cdk-lib/cx-api';
+import { testFixture } from './util';
 import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
-import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import { isGpuInstanceType } from '../lib/private/nodegroup';
-
-/* eslint-disable max-len */
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_31;
 
@@ -1693,6 +1691,20 @@ describe('isGpuInstanceType', () => {
     ];
     gpuInstanceTypes.forEach(instanceType => {
       expect(isGpuInstanceType(instanceType)).toBe(true);
+    });
+  });
+
+  test('applies removal policy', () => {
+    const { stack } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::EKS::Nodegroup', {
+      DeletionPolicy: 'Retain',
     });
   });
 });

@@ -1,6 +1,7 @@
-import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
-import { PromptInferenceConfiguration } from './prompt-inference-configuration';
+import type { PromptInferenceConfiguration } from './prompt-inference-configuration';
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
+import type { CommonPromptVariantProps, IPromptVariant } from './prompt-variant';
+import { PromptTemplateType } from './prompt-variant';
 import { ValidationError } from '../agents/validation-helpers';
 
 /**

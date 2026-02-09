@@ -1,7 +1,7 @@
-import * as core from 'aws-cdk-lib/core';
-import * as s3tables from '../../lib';
-import { Construct } from 'constructs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as core from 'aws-cdk-lib/core';
+import type { Construct } from 'constructs';
+import * as s3tables from '../../lib';
 
 /**
  * Snapshot test for namespace with default parameters

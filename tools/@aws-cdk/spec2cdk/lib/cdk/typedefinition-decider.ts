@@ -1,10 +1,10 @@
-import { Property, Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { Expression, PropertySpec, Type } from '@cdklabs/typewriter';
-import { PropertyMapping } from './cloudformation-mapping';
-import { RelationshipDecider } from './relationship-decider';
+import type { Property, Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
+import type { Expression, PropertySpec, Type } from '@cdklabs/typewriter';
+import type { PropertyMapping } from './cloudformation-mapping';
+import type { RelationshipDecider } from './relationship-decider';
 import { ResolverBuilder } from './resolver-builder';
 import { deprecationMessage } from './resource-decider';
-import { TypeConverter } from './type-converter';
+import type { TypeConverter } from './type-converter';
 import { cloudFormationDocLink } from '../naming';
 import { splitDocumentation } from '../util';
 
@@ -38,7 +38,7 @@ export class TypeDefinitionDecider {
   private handlePropertyDefault(cfnName: string, prop: Property) {
     const optional = !prop.required;
 
-    const resolverResult = this.resolverBuilder.buildResolver(prop, cfnName);
+    const resolverResult = this.resolverBuilder.buildResolver(prop, cfnName, true);
 
     this.properties.push({
       propertySpec: {

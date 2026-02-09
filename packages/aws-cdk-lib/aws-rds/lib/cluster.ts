@@ -1,32 +1,42 @@
-import { Construct } from 'constructs';
-import { IAuroraClusterInstance, IClusterInstance, InstanceType } from './aurora-cluster-instance';
-import { ClusterEngineConfig, IClusterEngine } from './cluster-engine';
-import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
+import type { Construct } from 'constructs';
+import type { IAuroraClusterInstance, IClusterInstance } from './aurora-cluster-instance';
+import { InstanceType } from './aurora-cluster-instance';
+import type { ClusterEngineConfig, IClusterEngine } from './cluster-engine';
+import type { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseInsightsMode } from './database-insights-mode';
 import { Endpoint } from './endpoint';
-import { NetworkType } from './instance';
-import { IParameterGroup, ParameterGroup } from './parameter-group';
+import type { NetworkType } from './instance';
+import type { IParameterGroup } from './parameter-group';
+import { ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
-import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
-import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
-import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
-import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import type { BackupProps, Credentials, InstanceProps, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
+import { PerformanceInsightRetention } from './props';
+import type { DatabaseProxyOptions } from './proxy';
+import { DatabaseProxy, ProxyTarget } from './proxy';
+import type { CfnDBClusterProps } from './rds.generated';
+import { CfnDBCluster, CfnDBInstance } from './rds.generated';
+import type { ISubnetGroup } from './subnet-group';
+import { SubnetGroup } from './subnet-group';
 import { validateDatabaseClusterProps } from './validate-database-insights';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
+import type { IRole } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Annotations, ArnFormat, ContextProvider, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
+import type { Duration } from '../../core';
+import { Annotations, ArnFormat, ContextProvider, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import type { aws_rds } from '../../interfaces';
+import { toISubnetGroup } from './private/ref-utils';
 
 /**
  * Common properties for a new database cluster or cluster from snapshot.
@@ -350,7 +360,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - a new subnet group will be created.
    */
-  readonly subnetGroup?: ISubnetGroup;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
 
   /**
    * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
@@ -637,7 +647,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   /**
    * The secret attached to this cluster
    */
-  public abstract readonly secret?: secretsmanager.ISecret
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   protected abstract enableDataApi?: boolean;
 
@@ -651,6 +661,16 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.clusterIdentifier,
     });
+  }
+
+  /**
+   * A reference to this database cluster
+   */
+  public get dbClusterRef(): aws_rds.DBClusterReference {
+    return {
+      dbClusterIdentifier: this.clusterIdentifier,
+      dbClusterArn: this.clusterArn,
+    };
   }
 
   /**
@@ -673,6 +693,9 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantConnect(grantee: iam.IGrantable, dbUser: string): iam.Grant {
     return iam.Grant.addToPrincipal({
       actions: ['rds-db:connect'],
@@ -688,6 +711,8 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   /**
    * Grant the given identity to access the Data API.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
     if (this.enableDataApi === false) {
@@ -717,7 +742,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
-  protected readonly subnetGroup: ISubnetGroup;
+  protected readonly subnetGroupRef: aws_rds.IDBSubnetGroupRef;
 
   private readonly domainId?: string;
   private readonly domainRole?: iam.IRole;
@@ -820,7 +845,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
-    this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
+    this.subnetGroupRef = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
       description: `Subnets for ${id} database`,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
@@ -928,7 +953,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: clusterIdentifier,
-      dbSubnetGroupName: this.subnetGroup.subnetGroupName,
+      dbSubnetGroupName: this.subnetGroupRef.dbSubnetGroupRef.dbSubnetGroupName,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
@@ -978,6 +1003,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     };
   }
 
+  protected get subnetGroup(): ISubnetGroup {
+    return toISubnetGroup(this.subnetGroupRef);
+  }
+
   /**
    * Create cluster instances
    *
@@ -995,7 +1024,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval,
       monitoringRole: props.enableClusterLevelEnhancedMonitoring ? undefined : this.monitoringRole,
       removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
-      subnetGroup: this.subnetGroup,
+      subnetGroup: this.subnetGroupRef,
       promotionTier: 0, // override the promotion tier so that writers are always 0
     });
     instanceIdentifiers.push(writer.instanceIdentifier);
@@ -1008,7 +1037,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval,
         monitoringRole: props.enableClusterLevelEnhancedMonitoring ? undefined : this.monitoringRole,
         removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
-        subnetGroup: this.subnetGroup,
+        subnetGroup: this.subnetGroupRef,
       });
       readers.push(clusterInstance);
       // this makes sure the readers would always be created after the writer
@@ -1147,6 +1176,32 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public metricACUUtilization(props?: cloudwatch.MetricOptions) {
     return this.metric('ACUUtilization', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk read I/O operations per second.
+   *
+   * This metric is only available for Aurora database clusters.
+   * For non-Aurora RDS clusters, this metric will not return any data
+   * in CloudWatch.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricVolumeReadIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeReadIOPs', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk write I/O operations per second.
+   *
+   * This metric is only available for Aurora database clusters.
+   * For non-Aurora RDS clusters, this metric will not return any data
+   * in CloudWatch.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricVolumeWriteIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeWriteIOPs', { statistic: 'Average', ...props });
   }
 
   private validateServerlessScalingConfig(config: ClusterEngineConfig): void {
@@ -1470,7 +1525,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
         throw new ValidationError('writer must be provided', this);
       }
 
-      const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+      const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroupRef);
       this.instanceIdentifiers = createdInstances.instanceIdentifiers;
       this.instanceEndpoints = createdInstances.instanceEndpoints;
     } else {
@@ -1668,7 +1723,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
       throw new ValidationError('Cannot provide clusterInstances if instances or instanceProps are provided', this);
     }
-    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroupRef);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
@@ -1710,7 +1765,7 @@ interface InstanceConfig {
  * A function rather than a protected method on ``DatabaseClusterNew`` to avoid exposing
  * ``DatabaseClusterNew`` and ``DatabaseClusterBaseProps`` in the API.
  */
-function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: ISubnetGroup): InstanceConfig {
+function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: aws_rds.IDBSubnetGroupRef): InstanceConfig {
   const instanceCount = props.instances != null ? props.instances : 2;
   const instanceUpdateBehaviour = props.instanceUpdateBehaviour ?? InstanceUpdateBehaviour.BULK;
   if (Token.isUnresolved(instanceCount)) {
@@ -1782,7 +1837,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
       performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: performanceInsightRetention,
       // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
-      dbSubnetGroupName: subnetGroup.subnetGroupName,
+      dbSubnetGroupName: subnetGroup.dbSubnetGroupRef.dbSubnetGroupName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       // When `enableClusterLevelEnhancedMonitoring` is enabled,
       // both `monitoringInterval` and `monitoringRole` are set at cluster level so no need to re-set it in instance level.

@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IModel } from './model-base';
+import type { Construct } from 'constructs';
+import type { IModel } from './model-base';
 import { ArnFormat, Stack } from '../../core';
 
 /**
@@ -265,6 +265,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "anthropic.claude-opus-4-1-20250805-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-1-20250805-v1:0');
+
+  /** Base model "anthropic.claude-opus-4-5-20251101-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-5-20251101-v1:0');
+
+  /** Base model "anthropic.claude-opus-4-6-v1". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_6_V1 = new FoundationModelIdentifier('anthropic.claude-opus-4-6-v1');
 
   /**
    * Base model "anthropic.claude-instant-v1".

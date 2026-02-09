@@ -1,7 +1,7 @@
 import * as util from 'util';
-import { PrimitiveType } from '@jsii/spec';
+import type { PrimitiveType } from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
-import { RuleFilterSet } from './rule-specs';
+import type { RuleFilterSet } from './rule-specs';
 
 export interface LinterOptions {
   /**
@@ -238,7 +238,7 @@ export class Evaluation<T> {
   }
 }
 export interface Rule {
-  code: string,
+  code: string;
   message: string;
   warning?: boolean;
 }

@@ -1,9 +1,9 @@
 import * as path from 'path';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { CfnOutput } from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type { Construct } from 'constructs';
 import * as gamelift from '../lib';
 
 class TestStack extends cdk.Stack {

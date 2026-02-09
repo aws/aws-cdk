@@ -1,14 +1,16 @@
-import { Construct, IConstruct, IDependable, Node, MetadataOptions } from 'constructs';
-import { Architecture } from './architecture';
-import { Function as LambdaFunction, FunctionProps, EnvironmentOptions } from './function';
+import type { Construct, IConstruct, IDependable, Node, MetadataOptions } from 'constructs';
+import type { Architecture } from './architecture';
+import type { FunctionProps, EnvironmentOptions } from './function';
+import { Function as LambdaFunction } from './function';
 import { FunctionBase } from './function-base';
-import { Version } from './lambda-version';
-import { ILayerVersion } from './layers';
-import { Permission } from './permission';
-import { Runtime } from './runtime';
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as logs from '../../aws-logs';
+import type { Version } from './lambda-version';
+import type { ILayerVersion } from './layers';
+import type { Permission } from './permission';
+import type { Runtime } from './runtime';
+import type { TenancyConfig } from './tenancy-config';
+import type * as ec2 from '../../aws-ec2';
+import type * as iam from '../../aws-iam';
+import type * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -51,6 +53,7 @@ export interface SingletonFunctionProps extends FunctionProps {
 export class SingletonFunction extends FunctionBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.SingletonFunction';
+  public readonly tenancyConfig?: TenancyConfig;
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
