@@ -1826,6 +1826,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enablePartitionFiltering': 'boolean',
       'storageParameters': '*',
       'parameters': '*',
+      'partitionProjection': '*',
       'grantRead': [
         {
           'grantPrincipal': {
@@ -1929,6 +1930,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enablePartitionFiltering': 'boolean',
       'storageParameters': '*',
       'parameters': '*',
+      'partitionProjection': '*',
       'grantRead': [
         {
           'grantPrincipal': {
@@ -4894,6 +4896,17 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'modelData': '*'
         }
       ]
+    },
+    'Pipeline': {
+      'grantStartPipelineExecution': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ]
     }
   },
   '@aws-cdk.aws-servicecatalogappregistry-alpha': {
@@ -5076,7 +5089,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'compatibleRuntimes': '*'
           },
           'environment': '*',
-          'memory': '*'
+          'memory': '*',
+          'removalPolicy': 'RemovalPolicy'
         },
         'kubectlProvider': {
           'serviceToken': '*'
@@ -5091,6 +5105,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'policy': '*'
       },
       'principal': '*',
+      'removalPolicy': 'RemovalPolicy',
       'addAccessPolicies': [
         {
           'accessScope': {
@@ -5166,7 +5181,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'compatibleRuntimes': '*'
           },
           'environment': '*',
-          'memory': '*'
+          'memory': '*',
+          'removalPolicy': 'RemovalPolicy'
         },
         'kubectlProvider': {
           'serviceToken': '*'
@@ -5174,7 +5190,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'prune': 'boolean'
       },
       'preserveOnDelete': 'boolean',
-      'configurationValues': '*'
+      'configurationValues': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Cluster': {
       'compute': {
@@ -5201,6 +5218,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'defaultCapacityInstance': '*',
       'defaultCapacityType': 'DefaultCapacityType',
       'bootstrapClusterCreatorAdminPermissions': 'boolean',
+      'bootstrapSelfManagedAddons': 'boolean',
       'outputConfigCommand': 'boolean',
       'vpc': {
         'vpcId': '*',
@@ -5307,7 +5325,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'repository': '*',
         'policy': '*',
         'additionalHelmChartValues': '*',
-        'overwriteServiceAccount': 'boolean'
+        'overwriteServiceAccount': 'boolean',
+        'removalPolicy': 'RemovalPolicy'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'tags': '*',
@@ -5350,8 +5369,16 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'routeTable': {
             'routeTableId': '*'
           }
-        }
+        },
+        'removalPolicy': 'RemovalPolicy'
       },
+      'remoteNodeNetworks': {
+        'cidrs': '*'
+      },
+      'remotePodNetworks': {
+        'cidrs': '*'
+      },
+      'removalPolicy': 'RemovalPolicy',
       'grantAccess': [
         '*',
         '*',
@@ -5361,6 +5388,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'type': 'AccessScopeType'
           },
           'policy': '*'
+        },
+        {
+          'accessEntryType': 'AccessEntryType'
         }
       ],
       'grantClusterAdmin': [
@@ -5545,7 +5575,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityType': 'CapacityType',
           'maxUnavailable': '*',
           'maxUnavailablePercentage': '*',
-          'enableNodeAutoRepair': 'boolean'
+          'enableNodeAutoRepair': 'boolean',
+          'removalPolicy': 'RemovalPolicy'
         }
       ],
       'addFargateProfile': [
@@ -5596,7 +5627,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'subnetName': '*',
             'onePerAz': 'boolean',
             'subnetFilters': '*'
-          }
+          },
+          'removalPolicy': 'RemovalPolicy'
         }
       ],
       '_attachFargateProfile': [
@@ -5705,7 +5737,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'routeTable': {
             'routeTableId': '*'
           }
-        }
+        },
+        'removalPolicy': 'RemovalPolicy'
       },
       'prune': 'boolean'
     },
@@ -5756,7 +5789,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'subnetName': '*',
           'onePerAz': 'boolean',
           'subnetFilters': '*'
-        }
+        },
+        'removalPolicy': 'RemovalPolicy'
       },
       'vpc': {
         'vpcId': '*',
@@ -5863,7 +5897,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'repository': '*',
         'policy': '*',
         'additionalHelmChartValues': '*',
-        'overwriteServiceAccount': 'boolean'
+        'overwriteServiceAccount': 'boolean',
+        'removalPolicy': 'RemovalPolicy'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'tags': '*',
@@ -5906,8 +5941,16 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'routeTable': {
             'routeTableId': '*'
           }
-        }
-      }
+        },
+        'removalPolicy': 'RemovalPolicy'
+      },
+      'remoteNodeNetworks': {
+        'cidrs': '*'
+      },
+      'remotePodNetworks': {
+        'cidrs': '*'
+      },
+      'removalPolicy': 'RemovalPolicy'
     },
     'Nodegroup': {
       'cluster': {
@@ -5972,7 +6015,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'compatibleRuntimes': '*'
           },
           'environment': '*',
-          'memory': '*'
+          'memory': '*',
+          'removalPolicy': 'RemovalPolicy'
         },
         'kubectlProvider': {
           'serviceToken': '*'
@@ -6059,7 +6103,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'capacityType': 'CapacityType',
       'maxUnavailable': '*',
       'maxUnavailablePercentage': '*',
-      'enableNodeAutoRepair': 'boolean'
+      'enableNodeAutoRepair': 'boolean',
+      'removalPolicy': 'RemovalPolicy'
     },
     'OpenIdConnectProvider': {
       'url': '*',
@@ -14935,6 +14980,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'policy': '*'
       },
       'principal': '*',
+      'removalPolicy': 'RemovalPolicy',
       'addAccessPolicies': [
         {
           'accessScope': {
@@ -15018,7 +15064,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'authenticationMode': 'AuthenticationMode'
       },
       'preserveOnDelete': 'boolean',
-      'configurationValues': '*'
+      'configurationValues': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Cluster': {
       'defaultCapacity': '*',
@@ -15123,7 +15170,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
         },
-        'overwriteServiceAccount': 'boolean'
+        'overwriteServiceAccount': 'boolean',
+        'removalPolicy': 'RemovalPolicy'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15222,6 +15270,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'type': 'AccessScopeType'
           },
           'policy': '*'
+        },
+        {
+          'accessEntryType': 'AccessEntryType'
         }
       ],
       'getServiceLoadBalancerAddress': [
@@ -15404,7 +15455,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityType': 'CapacityType',
           'maxUnavailable': '*',
           'maxUnavailablePercentage': '*',
-          'enableNodeAutoRepair': 'boolean'
+          'enableNodeAutoRepair': 'boolean',
+          'removalPolicy': 'RemovalPolicy'
         }
       ],
       'addFargateProfile': [
@@ -15455,7 +15507,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'subnetName': '*',
             'onePerAz': 'boolean',
             'subnetFilters': '*'
-          }
+          },
+          'removalPolicy': 'RemovalPolicy'
         }
       ],
       '_attachFargateProfile': [
@@ -15628,7 +15681,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'subnetName': '*',
           'onePerAz': 'boolean',
           'subnetFilters': '*'
-        }
+        },
+        'removalPolicy': 'RemovalPolicy'
       },
       'mastersRole': {
         'roleArn': '*',
@@ -15709,7 +15763,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
         },
-        'overwriteServiceAccount': 'boolean'
+        'overwriteServiceAccount': 'boolean',
+        'removalPolicy': 'RemovalPolicy'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15950,7 +16005,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'capacityType': 'CapacityType',
       'maxUnavailable': '*',
       'maxUnavailablePercentage': '*',
-      'enableNodeAutoRepair': 'boolean'
+      'enableNodeAutoRepair': 'boolean',
+      'removalPolicy': 'RemovalPolicy'
     },
     'OpenIdConnectProvider': {
       'url': '*',
