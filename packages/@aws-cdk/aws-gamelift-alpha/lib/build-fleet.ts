@@ -1,12 +1,14 @@
 import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IBuild } from './build';
-import { FleetBase, FleetProps, IFleet } from './fleet-base';
-import { Port, IPeer, IngressRule } from './ingress-rule';
+import type { Construct } from 'constructs';
+import type { IBuild } from './build';
+import type { FleetProps, IFleet } from './fleet-base';
+import { FleetBase } from './fleet-base';
+import type { Port, IPeer, IngressRule } from './ingress-rule';
 
 /**
  * Represents a GameLift Fleet used to run a custom game build.
@@ -65,16 +67,6 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
   }
 
   /**
-   * The Identifier of the fleet.
-   */
-  public readonly fleetId: string;
-
-  /**
-   * The ARN of the fleet.
-   */
-  public readonly fleetArn: string;
-
-  /**
    * The build content of the fleet
    */
   public readonly content: IBuild;
@@ -90,6 +82,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
   public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly ingressRules: IngressRule[] = [];
+  private resource: CfnFleet;
 
   constructor(scope: Construct, id: string, props: BuildFleetProps) {
     super(scope, id, {
@@ -142,7 +135,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
     });
     this.grantPrincipal = this.role;
 
-    const resource = new CfnFleet(this, 'Resource', {
+    this.resource = new CfnFleet(this, 'Resource', {
       buildId: this.content.buildId,
       certificateConfiguration: {
         certificateType: props.useCertificate ? 'GENERATED': 'DISABLED',
@@ -163,9 +156,16 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       resourceCreationLimitPolicy: this.parseResourceCreationLimitPolicy(props),
       runtimeConfiguration: this.parseRuntimeConfiguration(props),
     });
+  }
 
-    this.fleetId = this.getResourceNameAttribute(resource.ref);
-    this.fleetArn = cdk.Stack.of(scope).formatArn({
+  @memoizedGetter
+  public get fleetId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get fleetArn(): string {
+    return cdk.Stack.of(this).formatArn({
       service: 'gamelift',
       resource: 'fleet',
       resourceName: this.fleetId,

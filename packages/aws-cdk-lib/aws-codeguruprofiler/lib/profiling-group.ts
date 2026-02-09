@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ProfilingGroupGrants } from './codeguruprofiler-grants.generated';
-import { CfnProfilingGroup, IProfilingGroupRef, ProfilingGroupReference } from './codeguruprofiler.generated';
-import { Grant, IGrantable } from '../../aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import type { IProfilingGroupRef, ProfilingGroupReference } from './codeguruprofiler.generated';
+import { CfnProfilingGroup } from './codeguruprofiler.generated';
+import type { Grant, IGrantable } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { ArnFormat, Lazy, Names, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -92,6 +95,8 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
    *  - codeguru-profiler:ConfigureAgent
    *  - codeguru-profiler:PostAgentProfile
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant publish rights to
    */
   public grantPublish(grantee: IGrantable) {
@@ -105,6 +110,8 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
    *
    *  - codeguru-profiler:GetProfile
    *  - codeguru-profiler:DescribeProfilingGroup
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant read rights to
    */
@@ -176,19 +183,21 @@ export class ProfilingGroup extends ProfilingGroupBase {
     });
   }
 
-  /**
-   * The name of the Profiling Group.
-   *
-   * @attribute
-   */
-  public readonly profilingGroupName: string;
+  private readonly resource: CfnProfilingGroup;
 
-  /**
-   * The ARN of the Profiling Group.
-   *
-   * @attribute
-   */
-  public readonly profilingGroupArn: string;
+  @memoizedGetter
+  public get profilingGroupName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get profilingGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'codeguru-profiler',
+      resource: 'profilingGroup',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: ProfilingGroupProps = {}) {
     super(scope, id, {
@@ -197,17 +206,9 @@ export class ProfilingGroup extends ProfilingGroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
+    this.resource = new CfnProfilingGroup(this, 'ProfilingGroup', {
       profilingGroupName: this.physicalName,
       computePlatform: props.computePlatform,
-    });
-
-    this.profilingGroupName = this.getResourceNameAttribute(profilingGroup.ref);
-
-    this.profilingGroupArn = this.getResourceArnAttribute(profilingGroup.attrArn, {
-      service: 'codeguru-profiler',
-      resource: 'profilingGroup',
-      resourceName: this.physicalName,
     });
   }
 

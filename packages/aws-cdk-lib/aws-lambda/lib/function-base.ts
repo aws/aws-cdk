@@ -1,20 +1,25 @@
 import { createHash } from 'crypto';
-import { Construct, Node } from 'constructs';
-import { AliasOptions } from './alias';
-import { Architecture } from './architecture';
-import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
-import { IEventSource } from './event-source';
-import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
-import { FunctionUrl, FunctionUrlAuthType, FunctionUrlOptions } from './function-url';
-import { IVersion } from './lambda-version';
-import { CfnPermission, FunctionReference, IFunctionRef, VersionReference } from './lambda.generated';
-import { Permission } from './permission';
-import { TenancyConfig } from './tenancy-config';
+import type { Construct, Node } from 'constructs';
+import type { AliasOptions } from './alias';
+import type { Architecture } from './architecture';
+import type { EventInvokeConfigOptions } from './event-invoke-config';
+import { EventInvokeConfig } from './event-invoke-config';
+import type { IEventSource } from './event-source';
+import type { EventSourceMappingOptions } from './event-source-mapping';
+import { EventSourceMapping } from './event-source-mapping';
+import type { FunctionUrlOptions } from './function-url';
+import { FunctionUrl, FunctionUrlAuthType } from './function-url';
+import type { IVersion } from './lambda-version';
+import type { FunctionReference, IFunctionRef, VersionReference } from './lambda.generated';
+import { CfnPermission } from './lambda.generated';
+import type { Permission } from './permission';
+import type { TenancyConfig } from './tenancy-config';
 import { addAlias, flatMap } from './util';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as ec2 from '../../aws-ec2';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, FeatureFlags, IResource, Resource, Stack, Token } from '../../core';
+import type { IResource } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
@@ -499,6 +504,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     const hash = createHash('sha256')
@@ -521,6 +528,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * Grant the given identity permissions to invoke the $LATEST version or
    * unqualified version of this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeLatestVersion(grantee: iam.IGrantable): iam.Grant {
     return this.grantInvokeVersion(grantee, this.latestVersion);
@@ -528,6 +537,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke the given version of this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeVersion(grantee: iam.IGrantable, version: IVersion): iam.Grant {
     const hash = createHash('sha256')
@@ -554,6 +565,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke this Lambda Function URL
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
@@ -606,6 +619,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
     return compositePrincipal.principals.map((principal) => this.grantInvoke(principal));

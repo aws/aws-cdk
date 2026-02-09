@@ -1,17 +1,19 @@
 import { EOL } from 'os';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnTable, CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
-import {
-  Resource,
+import type {
   IResource,
   RemovalPolicy,
+} from 'aws-cdk-lib/core';
+import {
+  Resource,
   UnscopedValidationError,
   Token,
 } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { INamespace } from './namespace';
+import type { Construct } from 'constructs';
+import type { INamespace } from './namespace';
 import * as perms from './permissions';
 
 /**
@@ -134,6 +136,9 @@ abstract class TableBase extends Resource implements ITable {
     return { statementAdded: false };
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(identity: iam.IGrantable) {
     return this.grant(
       identity,
@@ -142,6 +147,9 @@ abstract class TableBase extends Resource implements ITable {
     );
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(identity: iam.IGrantable) {
     return this.grant(
       identity,
@@ -150,6 +158,9 @@ abstract class TableBase extends Resource implements ITable {
     );
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantReadWrite(identity: iam.IGrantable) {
     return this.grant(
       identity,

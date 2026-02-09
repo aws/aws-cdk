@@ -1,17 +1,22 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AliasTargetInstance } from './alias-target-instance';
-import { CnameInstance, CnameInstanceBaseProps } from './cname-instance';
-import { IInstance } from './instance';
-import { IpInstance, IpInstanceBaseProps } from './ip-instance';
-import { INamespace, NamespaceType } from './namespace';
-import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
+import type { CnameInstanceBaseProps } from './cname-instance';
+import { CnameInstance } from './cname-instance';
+import type { IInstance } from './instance';
+import type { IpInstanceBaseProps } from './ip-instance';
+import { IpInstance } from './ip-instance';
+import type { INamespace } from './namespace';
+import { NamespaceType } from './namespace';
+import type { NonIpInstanceBaseProps } from './non-ip-instance';
+import { NonIpInstance } from './non-ip-instance';
 import { defaultDiscoveryType } from './private/utils';
 import { CfnService } from './servicediscovery.generated';
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
-import { Duration, IResource, Resource, ValidationError } from '../../core';
+import type * as elbv2 from '../../aws-elasticloadbalancingv2';
+import type { IResource } from '../../core';
+import { Duration, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IServiceRef, ServiceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
+import type { IServiceRef, ServiceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface IService extends IResource, IServiceRef {
   /**

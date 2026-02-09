@@ -11,17 +11,21 @@
  *  and limitations under the License.
  */
 
-import { IResource, Resource } from 'aws-cdk-lib';
-import {
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { IRuntimeRef, RuntimeReference } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
 import { ValidationError } from './validation-helpers';
 
@@ -32,7 +36,7 @@ import { ValidationError } from './validation-helpers';
 /**
  * Interface for Agent Runtime resources
  */
-export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable, IRuntimeRef {
   /**
    * The ARN of the agent runtime resource
    * - Format `arn:${Partition}:bedrock-agentcore:${Region}:${Account}:runtime/${RuntimeId}`
@@ -202,6 +206,16 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * A reference to a Runtime resource.
+   */
+  public get runtimeRef(): RuntimeReference {
+    return {
+      agentRuntimeId: this.agentRuntimeId,
+      agentRuntimeArn: this.agentRuntimeArn,
+    };
+  }
+
+  /**
    * An accessor for the Connections object that will fail if this Runtime does not have a VPC
    * configured.
    */
@@ -219,12 +233,14 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    */
   protected _connections: ec2.Connections | undefined;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**
    * Grant the runtime specific actions on AWS resources
+   *
+   * [disable-awslint:no-grants]
    *
    * @param actions The actions to grant
    * @param resources The resource ARNs to grant access to
@@ -252,13 +268,16 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
   /**
    * Permits an IAM principal to invoke this runtime
    * Grants the bedrock-agentcore:InvokeAgentRuntime permission
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantInvokeRuntime(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: RUNTIME_INVOKE_PERMS,
-      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`], // * is needed because it invoke the endpoint as subresource
+      resourceArns: [this.runtimeRef.agentRuntimeArn, `${this.runtimeRef.agentRuntimeArn}/*`], // * is needed because it invoke the endpoint as subresource
     });
   }
 
@@ -266,26 +285,32 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    * Permits an IAM principal to invoke this runtime on behalf of a user
    * Grants the bedrock-agentcore:InvokeAgentRuntimeForUser permission
    * Required when using the X-Amzn-Bedrock-AgentCore-Runtime-User-Id header
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantInvokeRuntimeForUser(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: RUNTIME_INVOKE_USER_PERMS,
-      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`],
+      resourceArns: [this.runtimeRef.agentRuntimeArn, `${this.runtimeRef.agentRuntimeArn}/*`],
     });
   }
 
   /**
    * Permits an IAM principal to invoke this runtime both directly and on behalf of users
    * Grants both bedrock-agentcore:InvokeAgentRuntime and bedrock-agentcore:InvokeAgentRuntimeForUser permissions
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: [...RUNTIME_INVOKE_PERMS, ...RUNTIME_INVOKE_USER_PERMS],
-      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`],
+      resourceArns: [this.runtimeRef.agentRuntimeArn, `${this.runtimeRef.agentRuntimeArn}/*`],
     });
   }
 
@@ -302,7 +327,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.agentRuntimeArn },
+      dimensionsMap: { ...dimensions, Resource: this.runtimeRef.agentRuntimeArn },
       ...props,
     };
     return this.configureMetric(metricProps);

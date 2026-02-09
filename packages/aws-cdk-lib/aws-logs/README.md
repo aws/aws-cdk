@@ -68,14 +68,14 @@ Or more conveniently, write permissions to the log group can be granted as follo
 
 ```ts
 const logGroup = new logs.LogGroup(this, 'LogGroup');
-logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
+logGroup.grants.write(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
 Similarly, read permissions can be granted to the log group as follows.
 
 ```ts
 const logGroup = new logs.LogGroup(this, 'LogGroup');
-logGroup.grantRead(new iam.ServicePrincipal('es.amazonaws.com'));
+logGroup.grants.read(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
 Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.
@@ -461,6 +461,19 @@ new logs.LogGroup(this, 'LogGroupLambda', {
   dataProtectionPolicy: dataProtectionPolicy,
 });
 ```
+
+## Configure Deletion Protection
+
+Indicates whether deletion protection is enabled for this log group. When enabled, deletion protection blocks all deletion operations until it is explicitly disabled.
+
+For more information, see [Protecting log groups from deletion](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protecting-log-groups-from-deletion.html).
+
+```ts
+new logs.LogGroup(this, 'LogGroup', {
+  deletionProtectionEnabled: true,
+});
+```
+
 
 ## Field Index Policies
 

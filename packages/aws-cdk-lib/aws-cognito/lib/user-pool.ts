@@ -1,21 +1,29 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
-import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
-import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
-import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
-import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
-import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
-import { IUserPoolIdentityProvider } from './user-pool-idp';
-import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
-import { Grant, IGrantable, IRoleRef, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IKeyRef } from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { isIUserPoolIdentityProvider } from './private/ref-utils';
+import type { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
+import type { UserPoolClientOptions } from './user-pool-client';
+import { UserPoolClient } from './user-pool-client';
+import type { UserPoolDomainOptions } from './user-pool-domain';
+import { UserPoolDomain } from './user-pool-domain';
+import type { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
+import type { UserPoolGroupOptions } from './user-pool-group';
+import { UserPoolGroup } from './user-pool-group';
+import type { IUserPoolIdentityProvider } from './user-pool-idp';
+import type { UserPoolResourceServerOptions } from './user-pool-resource-server';
+import { UserPoolResourceServer } from './user-pool-resource-server';
+import type { IGrantable, IRoleRef } from '../../aws-iam';
+import { Grant, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import type { IKeyRef } from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type { IResource, RemovalPolicy } from '../../core';
+import { ArnFormat, Duration, Lazy, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IUserPoolIdentityProviderRef, IUserPoolRef, UserPoolReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -945,7 +953,7 @@ export interface UserPoolProps {
 /**
  * Represents a Cognito UserPool
  */
-export interface IUserPool extends IResource {
+export interface IUserPool extends IResource, IUserPoolRef {
   /**
    * The physical ID of this user pool resource
    * @attribute
@@ -997,7 +1005,7 @@ export interface IUserPool extends IResource {
   /**
    * Register an identity provider with this user pool.
    */
-  registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+  registerIdentityProvider(provider: IUserPoolIdentityProviderRef): void;
 
   /**
    * Adds an IAM policy statement associated with this user pool to an
@@ -1011,6 +1019,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolArn: string;
   public abstract readonly userPoolProviderName: string;
   public readonly identityProviders: IUserPoolIdentityProvider[] = [];
+
+  public get userPoolRef(): UserPoolReference {
+    return {
+      userPoolId: this.userPoolId,
+      userPoolArn: this.userPoolArn,
+    };
+  }
 
   public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
     return new UserPoolClient(this, id, {
@@ -1040,10 +1055,15 @@ abstract class UserPoolBase extends Resource implements IUserPool {
     });
   }
 
-  public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
-    this.identityProviders.push(provider);
+  public registerIdentityProvider(provider: IUserPoolIdentityProviderRef) {
+    if (isIUserPoolIdentityProvider(provider)) {
+      this.identityProviders.push(provider as IUserPoolIdentityProvider);
+    }
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,

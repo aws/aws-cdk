@@ -2,13 +2,14 @@
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import { ISource, SourceConfig, Source, MarkersConfig } from './source';
-import * as cloudfront from '../../aws-cloudfront';
-import * as ec2 from '../../aws-ec2';
+import type { ISource, SourceConfig, MarkersConfig } from './source';
+import { Source } from './source';
+import type * as cloudfront from '../../aws-cloudfront';
+import type * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import * as logs from '../../aws-logs';
+import type * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -145,7 +146,7 @@ export interface BucketDeploymentProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which

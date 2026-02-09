@@ -1,11 +1,13 @@
 import { CfnPodIdentityAssociation } from 'aws-cdk-lib/aws-eks';
+import type { AddToPrincipalPolicyResult, IPrincipal, IRole, PrincipalPolicyFragment } from 'aws-cdk-lib/aws-iam';
 import {
-  AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
+  OpenIdConnectPrincipal, PolicyStatement, Role,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import { CfnJson, Names } from 'aws-cdk-lib/core';
+import type { RemovalPolicy } from 'aws-cdk-lib/core';
+import { CfnJson, Names, RemovalPolicies } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 // import { FargateCluster } from './index';
 import { KubernetesManifest } from './k8s-manifest';
 
@@ -79,39 +81,31 @@ export interface ServiceAccountOptions {
    * @default IdentityType.IRSA
    */
   readonly identityType?: IdentityType;
-}
-export interface ServiceAccountOptions {
-  /**
-   * The name of the service account.
-   *
-   * The name of a ServiceAccount object must be a valid DNS subdomain name.
-   * https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-   * @default - If no name is given, it will use the id of the resource.
-   */
-  readonly name?: string;
 
   /**
-   * The namespace of the service account.
+   * Overwrite existing service account.
    *
-   * All namespace names must be valid RFC 1123 DNS labels.
-   * https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#namespaces-and-dns
-   * @default "default"
+   * If this is set, we will use `kubectl apply` instead of `kubectl create`
+   * when the service account is created. Otherwise, if there is already a service account
+   * in the cluster with the same name, the operation will fail.
+   *
+   * @default false
    */
-  readonly namespace?: string;
+  readonly overwriteServiceAccount?: boolean;
 
   /**
-   * Additional annotations of the service account.
+   * The removal policy applied to the service account resources.
    *
-   * @default - no additional annotations
-   */
-  readonly annotations?: {[key:string]: string};
-
-  /**
-   * Additional labels of the service account.
+   * The removal policy controls what happens to the resources if they stop being managed by CloudFormation.
+   * This can happen in one of three situations:
    *
-   * @default - no additional labels
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
    */
-  readonly labels?: {[key:string]: string};
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -226,6 +220,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     // and since this stack inherintely depends on the cluster stack, we will have a circular dependency.
     new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
       cluster,
+      overwrite: props.overwriteServiceAccount,
       manifest: [{
         apiVersion: 'v1',
         kind: 'ServiceAccount',
@@ -243,6 +238,10 @@ export class ServiceAccount extends Construct implements IPrincipal {
         },
       }],
     });
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**

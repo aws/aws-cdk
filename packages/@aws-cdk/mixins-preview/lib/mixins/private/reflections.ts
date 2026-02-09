@@ -1,7 +1,9 @@
 import type { IConstruct } from 'constructs';
 import { CfnResource } from 'aws-cdk-lib/core';
-import type { IBucketRef, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
-import { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
+import type { CfnBucket } from 'aws-cdk-lib/aws-s3';
+import { type IBucketRef, type CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import type { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
+import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
  * Finds the closest related resource in the construct tree.
@@ -95,5 +97,77 @@ export function tryFindDeliverySourceForResource(source: IConstruct, sourceArn: 
     source,
     'AWS::Logs::DeliverySource',
     (_, deliverySource) => deliverySource.resourceArn === sourceArn && deliverySource.logType === logType,
+  );
+}
+
+export function tryFindKmsKeyforBucket(bucket: IBucketRef): CfnKey | undefined {
+  const cfnBucket = tryFindBucketConstruct(bucket);
+  const kmsMasterKeyId = cfnBucket && Array.isArray((cfnBucket.bucketEncryption as
+        CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration) ?
+    (((cfnBucket.bucketEncryption as CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as
+        CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as
+        CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
+    : undefined;
+  if (!kmsMasterKeyId) {
+    return undefined;
+  }
+  return findClosestRelatedResource<IConstruct, CfnKey>(
+    bucket,
+    'AWS::KMS::Key',
+    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
+  );
+}
+
+/**
+ * Attempts to find the L1 CfnResource for a given Ref interface.
+ * Searches children first (for L2 wrappers), then the construct tree.
+ *
+ * @param ref - The Ref interface (e.g., IKeyRef, IBucketRef)
+ * @param cfnResourceType - The CloudFormation resource type (e.g., 'AWS::KMS::Key')
+ * @param extractId - Function to extract the identifying property from the ref
+ * @param extractCfnId - Function to extract the identifying property from the CfnResource
+ * @returns The L1 CfnResource if found, undefined otherwise
+ */
+export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource>(
+  ref: TRef,
+  cfnResourceType: string,
+  compareIdToCfnId: (cfn: TCfn, ref: TRef) => boolean,
+): TCfn | undefined {
+  // Helper to check if a CfnResource matches our criteria
+  const isCfnMatch = (construct: IConstruct): construct is TCfn => {
+    return CfnResource.isCfnResource(construct) && construct.cfnResourceType === cfnResourceType;
+  };
+
+  // First check if ref itself is the L1 construct
+  if (isCfnMatch(ref)) {
+    return ref;
+  }
+
+  // Check if ref is an L2 construct with a defaultChild
+  if (ref.node.defaultChild && isCfnMatch(ref.node.defaultChild)) {
+    return ref.node.defaultChild;
+  }
+
+  // Finally search the broader construct tree
+  return findClosestRelatedResource<TRef, TCfn>(
+    ref,
+    cfnResourceType,
+    (_, candidate) => compareIdToCfnId(candidate, ref),
+  );
+}
+
+export function tryFindKmsKeyConstruct(kmsKey: IKeyRef): CfnKey | undefined {
+  return findL1FromRef<IKeyRef, CfnKey>(
+    kmsKey,
+    'AWS::KMS::Key',
+    (cfn, ref) => ref.keyRef === cfn.keyRef,
+  );
+}
+
+export function tryFindBucketConstruct(bucket: IBucketRef): CfnBucket | undefined {
+  return findL1FromRef<IBucketRef, CfnBucket>(
+    bucket,
+    'AWS::S3::Bucket',
+    (cfn, ref) => ref.bucketRef == cfn.bucketRef,
   );
 }

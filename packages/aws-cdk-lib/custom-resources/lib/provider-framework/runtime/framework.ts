@@ -6,7 +6,7 @@ import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
 import { invokeFunction, startExecution } from './outbound';
 import { getEnv, log, parseJsonPayload } from './util';
-import { IsCompleteResponse, OnEventResponse } from '../types';
+import type { IsCompleteResponse, OnEventResponse } from '../types';
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
 export = {
