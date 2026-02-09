@@ -2,6 +2,7 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, SecretValue, Stack } from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App({
   postCliContext: {
@@ -50,4 +51,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-app.synth();
+new IntegTest(app, 'integ.pipeline-alexa-deploy', {
+  testCases: [stack],
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1'], // AlexaSkillsKit only available in major regions
+});

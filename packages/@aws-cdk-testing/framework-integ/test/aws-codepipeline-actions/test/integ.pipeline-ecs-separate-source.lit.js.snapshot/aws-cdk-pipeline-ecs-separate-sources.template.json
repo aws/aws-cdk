@@ -188,6 +188,10 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
      "EnvironmentVariables": [
@@ -244,7 +248,7 @@
        }
       }
      ],
-     "Image": "aws/codebuild/standard:1.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": true,
      "Type": "LINUX_CONTAINER"
@@ -258,11 +262,7 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"$(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)\",\n        \"docker build -t $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION .\"\n      ]\n    },\n    \"post_build\": {\n      \"commands\": [\n        \"docker push $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION\",\n        \"export imageTag=$CODEBUILD_RESOLVED_SOURCE_VERSION\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"imageTag\"\n    ]\n  }\n}",
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": "alias/aws/s3"
+    }
    }
   },
   "CdkCodeBuildProjectRole6830A58A": {
@@ -432,9 +432,13 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:1.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -448,11 +452,7 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"npx cdk synth --verbose\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": "alias/aws/s3"
+    }
    }
   },
   "ArtifactBucket7410C9EF": {
@@ -490,7 +490,7 @@
        "referenceUpdated"
       ],
       "referenceName": [
-       "master"
+       "main"
       ]
      }
     },
@@ -561,7 +561,7 @@
        "referenceUpdated"
       ],
       "referenceName": [
-       "master"
+       "main"
       ]
      }
     },
@@ -711,6 +711,13 @@
   "CodePipelineDeployingEcsApplication81EB9383": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "ArtifactBucket7410C9EF"
+     },
+     "Type": "S3"
+    },
+    "PipelineType": "V2",
     "RoleArn": {
      "Fn::GetAtt": [
       "CodePipelineDeployingEcsApplicationRole138CDC17",
@@ -734,7 +741,7 @@
            "Name"
           ]
          },
-         "BranchName": "master",
+         "BranchName": "main",
          "PollForSourceChanges": false
         },
         "Name": "AppCodeSource",
@@ -765,7 +772,7 @@
            "Name"
           ]
          },
-         "BranchName": "master",
+         "BranchName": "main",
          "PollForSourceChanges": false
         },
         "Name": "CdkCodeSource",
@@ -887,13 +894,7 @@
       ],
       "Name": "Deploy"
      }
-    ],
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "ArtifactBucket7410C9EF"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "CodePipelineDeployingEcsApplicationRoleDefaultPolicyDBDC1339",
@@ -910,19 +911,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "CodePipelineDeployingEcsApplicationRole138CDC17",
+          "Arn"
          ]
         }
        }
@@ -1011,19 +1002,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "CodePipelineDeployingEcsApplicationRole138CDC17",
+          "Arn"
          ]
         }
        }
@@ -1172,19 +1153,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "CodePipelineDeployingEcsApplicationRole138CDC17",
+          "Arn"
          ]
         }
        }
@@ -1234,19 +1205,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "CodePipelineDeployingEcsApplicationRole138CDC17",
+          "Arn"
          ]
         }
        }
@@ -1296,19 +1257,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "CodePipelineDeployingEcsApplicationRole138CDC17",
+          "Arn"
          ]
         }
        }
@@ -1494,6 +1445,40 @@
    "Export": {
     "Name": "aws-cdk-pipeline-ecs-separate-sources:ExportsOutputRefEcsDeployRepositoryE7A569C04EC3EB5E"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

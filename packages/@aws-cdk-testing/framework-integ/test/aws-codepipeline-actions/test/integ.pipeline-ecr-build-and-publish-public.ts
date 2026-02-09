@@ -20,10 +20,10 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'codepipeline-ecr-build-and-publish-public');
 
 // Make sure you specify your connection ARN, your repository owner and name.
-const connectionArn = process.env.CONNECTION_ARN || 'MOCK';
+const connectionArn = process.env.CONNECTION_ARN || 'arn:aws:codestar-connections:us-east-1:123456789012:connection/mock-connection-id';
 const owner = process.env.REPO_OWNER || 'MOCK';
 const repo = process.env.REPO_NAME || 'MOCK';
-if (connectionArn === 'MOCK') {
+if (connectionArn.includes('mock-connection-id')) {
   cdk.Annotations.of(stack).addWarningV2('integ:connection-arn', 'You must specify your connection ARN in the CONNECTION_ARN environment variable');
 }
 if (owner === 'MOCK') {
@@ -74,6 +74,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
 const integ = new IntegTest(app, 'codepipeline-ecr-build-and-publish-public-test', {
   testCases: [stack],
   diffAssets: true,
+  regions: ['us-east-1'], // ECR public repo must be in us-east-1
   hooks: {
     postDeploy: [
       `aws ecr-public delete-repository --repository-name ${repositoryName} --force`,

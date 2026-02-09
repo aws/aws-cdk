@@ -23,10 +23,10 @@ const app = new cdk.App({
 const stack = new cdk.Stack(app, 'codepipeline-source-code-scan-action');
 
 // Make sure you specify your connection ARN, your repository owner and name.
-const connectionArn = process.env.CONNECTION_ARN || 'MOCK';
+const connectionArn = process.env.CONNECTION_ARN || 'arn:aws:codestar-connections:us-east-1:123456789012:connection/mock-connection-id';
 const owner = process.env.REPO_OWNER || 'MOCK';
 const repo = process.env.REPO_NAME || 'MOCK';
-if (connectionArn === 'MOCK') {
+if (connectionArn.includes('mock-connection-id')) {
   cdk.Annotations.of(stack).addWarningV2('integ:connection-arn', 'You must specify your connection ARN in the CONNECTION_ARN environment variable');
 }
 if (owner === 'MOCK') {

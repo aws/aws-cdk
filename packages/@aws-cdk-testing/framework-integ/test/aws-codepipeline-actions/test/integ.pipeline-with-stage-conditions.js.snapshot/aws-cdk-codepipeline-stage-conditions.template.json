@@ -343,11 +343,9 @@
          "Rules": [
           {
            "Configuration": {
-            "AlarmName": {
-             "Ref": "ErrorAlarmC73DBEA2"
-            },
-            "WaitTime": "300",
-            "FunctionName": "funcName1"
+            "FunctionName": {
+             "Ref": "LambdaFun98622869"
+            }
            },
            "Name": "RollBackOnFailure",
            "RuleTypeId": {
@@ -371,14 +369,13 @@
             "AlarmName": {
              "Ref": "ErrorAlarmC73DBEA2"
             },
-            "WaitTime": "300",
-            "FunctionName": "funcName2"
+            "WaitTime": "300"
            },
            "Name": "CloudWatchCheck",
            "RuleTypeId": {
             "Category": "Rule",
             "Owner": "AWS",
-            "Provider": "LambdaInvoke",
+            "Provider": "CloudWatchAlarm",
             "Version": "1"
            }
           }

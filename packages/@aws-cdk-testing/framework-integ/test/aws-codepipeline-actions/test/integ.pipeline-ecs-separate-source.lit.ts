@@ -10,6 +10,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**
  * This example demonstrates how to create a CodePipeline that deploys an ECS Service
@@ -219,4 +220,6 @@ new EcsAppStack(app, 'EcsStackDeployedInPipeline', {
 });
 /// !hide
 
-app.synth();
+new IntegTest(app, 'integ.pipeline-ecs-separate-source.lit', {
+  testCases: [pipelineStack],
+});
