@@ -1,15 +1,11 @@
 /**
- * ATTENTION: this file was copied from the mixins-preview package, because we cannot
+ * ATTENTION: these functions were copied from the mixins-preview package, because we cannot
  * depend on that package from core. When mixins goes GA, this file should be removed
  * and all references to the functions in it should be updated to import from the new
  * location in core.
  */
 
 import type { IConstruct } from 'constructs';
-import type { CfnTable, ITableRef } from '../../../aws-dynamodb';
-import type { CfnKey, IKeyRef } from '../../../aws-kms';
-import type { CfnDeliverySource } from '../../../aws-logs';
-import type { CfnBucket, IBucketRef, CfnBucketPolicy } from '../../../aws-s3';
 import { CfnResource } from '../../../core';
 
 /**
@@ -21,7 +17,7 @@ import { CfnResource } from '../../../core';
  * @param isConnected - Predicate to determine if a candidate is related to the primary
  * @returns The closest matching resource, or undefined if none found
  */
-function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extends CfnResource>(
+export function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extends CfnResource>(
   primary: TPrimary,
   relatedCfnResourceType: string,
   isConnected: (primary: TPrimary, candidate: TRelated) => boolean,
@@ -82,50 +78,6 @@ function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extend
 }
 
 /**
- * Attempts to find an existing bucket policy for the specified S3 bucket.
- * Finds the closest matching policy to the specified bucket.
- *
- * @param bucket - The S3 bucket reference to search for an associated bucket policy
- * @returns The bucket policy if found, undefined otherwise
- */
-export function tryFindBucketPolicyForBucket(bucket: IBucketRef): CfnBucketPolicy | undefined {
-  return findClosestRelatedResource<IBucketRef, CfnBucketPolicy>(
-    bucket,
-    'AWS::S3::BucketPolicy',
-    (b: any, policy) => {
-      const possibleRefs = new Set([b.ref, b.bucketName, b.bucketArn, b.bucketRef?.bucketName, b.bucketRef?.bucketArn].filter(Boolean));
-      return possibleRefs.has(policy.bucket) || String(policy.bucket).includes(b.node.id);
-    },
-  );
-}
-
-export function tryFindDeliverySourceForResource(source: IConstruct, sourceArn: string, logType: string): CfnDeliverySource | undefined {
-  return findClosestRelatedResource<IConstruct, CfnDeliverySource>(
-    source,
-    'AWS::Logs::DeliverySource',
-    (_, deliverySource) => deliverySource.resourceArn === sourceArn && deliverySource.logType === logType,
-  );
-}
-
-export function tryFindKmsKeyforBucket(bucket: IBucketRef): CfnKey | undefined {
-  const cfnBucket = tryFindBucketConstruct(bucket);
-  const kmsMasterKeyId = cfnBucket && Array.isArray((cfnBucket.bucketEncryption as
-        CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration) ?
-    (((cfnBucket.bucketEncryption as CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as
-        CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as
-        CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
-    : undefined;
-  if (!kmsMasterKeyId) {
-    return undefined;
-  }
-  return findClosestRelatedResource<IConstruct, CfnKey>(
-    bucket,
-    'AWS::KMS::Key',
-    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
-  );
-}
-
-/**
  * Attempts to find the L1 CfnResource for a given Ref interface.
  * Searches children first (for L2 wrappers), then the construct tree.
  *
@@ -163,40 +115,3 @@ export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource>
   );
 }
 
-export function tryFindKmsKeyConstruct(kmsKey: IKeyRef): CfnKey | undefined {
-  return findL1FromRef<IKeyRef, CfnKey>(
-    kmsKey,
-    'AWS::KMS::Key',
-    (cfn, ref) => ref.keyRef === cfn.keyRef,
-  );
-}
-
-export function tryFindBucketConstruct(bucket: IBucketRef): CfnBucket | undefined {
-  return findL1FromRef<IBucketRef, CfnBucket>(
-    bucket,
-    'AWS::S3::Bucket',
-    (cfn, ref) => ref.bucketRef == cfn.bucketRef,
-  );
-}
-
-export function tryFindTableConstruct(table: ITableRef): CfnTable | undefined {
-  return findL1FromRef<ITableRef, CfnTable>(
-    table,
-    'AWS::DynamoDB::Table',
-    (cfn, ref) => ref.tableRef == cfn.tableRef,
-  );
-}
-
-export function tryFindKmsKeyForTable(table: ITableRef): CfnKey | undefined {
-  const cfnTable = tryFindTableConstruct(table);
-  const kmsMasterKeyId = cfnTable?.sseSpecification &&
-    (cfnTable.sseSpecification as CfnTable.SSESpecificationProperty).kmsMasterKeyId;
-  if (!kmsMasterKeyId) {
-    return undefined;
-  }
-  return findClosestRelatedResource<IConstruct, CfnKey>(
-    table,
-    'AWS::KMS::Key',
-    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
-  );
-}

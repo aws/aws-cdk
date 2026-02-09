@@ -18,10 +18,13 @@ import {
   AnyPrincipal, DefaultPolicyFactories, Grant, PolicyDocument, ResourceWithPolicies,
 } from '../../aws-iam';
 import type * as iam from '../../aws-iam/lib/grant';
-import { KeyGrants } from '../../aws-kms';
+import { type CfnKey, KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
 import { FeatureFlags, Lazy, Token, ValidationError } from '../../core';
-import { tryFindKmsKeyforBucket } from '../../core/lib/helpers-internal/reflections';
+import {
+  findClosestRelatedResource,
+  findL1FromRef,
+} from '../../core/lib/helpers-internal';
 import * as cxapi from '../../cx-api/index';
 
 /**
@@ -357,4 +360,30 @@ function ifCfnBucket<A>(resource: IConstruct, factory: (r: CfnBucket) => A): A {
   }
 
   return factory(resource);
+}
+
+function tryFindKmsKeyforBucket(bucket: IBucketRef): CfnKey | undefined {
+  const cfnBucket = tryFindBucketConstruct(bucket);
+  const kmsMasterKeyId = cfnBucket && Array.isArray((cfnBucket.bucketEncryption as
+      CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration) ?
+    (((cfnBucket.bucketEncryption as CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as
+          CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as
+          CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
+    : undefined;
+  if (!kmsMasterKeyId) {
+    return undefined;
+  }
+  return findClosestRelatedResource<IConstruct, CfnKey>(
+    bucket,
+    'AWS::KMS::Key',
+    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
+  );
+}
+
+export function tryFindBucketConstruct(bucket: IBucketRef): CfnBucket | undefined {
+  return findL1FromRef<IBucketRef, CfnBucket>(
+    bucket,
+    'AWS::S3::Bucket',
+    (cfn, ref) => ref.bucketRef == cfn.bucketRef,
+  );
 }

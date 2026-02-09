@@ -6,7 +6,6 @@ import type { IEnvironmentAware } from '../../core';
 import * as cdk from '../../core';
 import { CfnResource, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api/index';
-import type * as iam from '../index';
 
 const POLICY_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-resource-policy-decorator');
 const ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-encrypted-resource-decorator');
@@ -690,15 +689,15 @@ export class GrantableResources {
   /**
    * Whether this resource admits a resource policy.
    */
-  static isResourceWithPolicy(resource: IEnvironmentAware): resource is iam.IResourceWithPolicyV2 {
-    return (resource as unknown as iam.IResourceWithPolicyV2).addToResourcePolicy !== undefined;
+  static isResourceWithPolicy(resource: IEnvironmentAware): resource is IResourceWithPolicyV2 {
+    return (resource as unknown as IResourceWithPolicyV2).addToResourcePolicy !== undefined;
   }
 
   /**
    * Whether this resource holds data that can be encrypted using a KMS key.
    */
-  static isEncryptedResource(resource: IEnvironmentAware): resource is iam.IEncryptedResource {
-    return (resource as unknown as iam.IEncryptedResource).grantOnKey !== undefined;
+  static isEncryptedResource(resource: IEnvironmentAware): resource is IEncryptedResource {
+    return (resource as unknown as IEncryptedResource).grantOnKey !== undefined;
   }
 }
 

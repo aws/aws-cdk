@@ -5,10 +5,13 @@ import * as perms from './perms';
 import type { IResourcePolicyFactory, IResourceWithPolicyV2 } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { DefaultPolicyFactories } from '../../aws-iam';
-import { KeyGrants } from '../../aws-kms';
+import { type CfnKey, KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
 import { Stack, Token, ValidationError } from '../../core';
-import { tryFindKmsKeyForTable } from '../../core/lib/helpers-internal/reflections';
+import {
+  findClosestRelatedResource,
+  findL1FromRef,
+} from '../../core/lib/helpers-internal';
 
 /**
  * Construction properties for TableGrants
@@ -291,3 +294,24 @@ class EncryptedCfnTable implements iam.IEncryptedResource {
   }
 }
 
+function tryFindKmsKeyForTable(table: ITableRef): CfnKey | undefined {
+  const cfnTable = tryFindTableConstruct(table);
+  const kmsMasterKeyId = cfnTable?.sseSpecification &&
+      (cfnTable.sseSpecification as CfnTable.SSESpecificationProperty).kmsMasterKeyId;
+  if (!kmsMasterKeyId) {
+    return undefined;
+  }
+  return findClosestRelatedResource<IConstruct, CfnKey>(
+    table,
+    'AWS::KMS::Key',
+    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
+  );
+}
+
+export function tryFindTableConstruct(table: ITableRef): CfnTable | undefined {
+  return findL1FromRef<ITableRef, CfnTable>(
+    table,
+    'AWS::DynamoDB::Table',
+    (cfn, ref) => ref.tableRef == cfn.tableRef,
+  );
+}
