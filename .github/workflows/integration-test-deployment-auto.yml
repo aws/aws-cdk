@@ -25,18 +25,21 @@ jobs:
       contents: read
       pull-requests: read
     steps:
+      - name: Checkout for path filtering
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
       - name: Check for snapshot changes
         id: check_snapshots
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          # Get list of changed files in the PR
-          CHANGED_FILES=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/files" --paginate --jq '.[].filename')
-          
-          # Check if any files contain .js.snapshot in the path (matches integration test snapshots)
-          if echo "$CHANGED_FILES" | grep -q '\.js\.snapshot'; then
+          # Compare PR head against the merge base to detect snapshot file changes
+          MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
+          if git diff --name-only "$MERGE_BASE" "$HEAD_SHA" | grep -q '\.js\.snapshot'; then
             echo "PR contains snapshot changes"
             echo "has_snapshots=true" >> $GITHUB_OUTPUT
           else
