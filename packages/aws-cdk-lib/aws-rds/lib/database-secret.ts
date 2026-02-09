@@ -2,7 +2,7 @@ import type { Construct } from 'constructs';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
 import type * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Aws, Names } from '../../core';
+import { Aws, Names, SecretValue } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -117,5 +117,25 @@ export class DatabaseSecret extends secretsmanager.Secret {
       const secret = this.node.defaultChild as secretsmanager.CfnSecret;
       secret.overrideLogicalId(logicalId.slice(-255)); // Take last 255 chars
     }
+  }
+
+  /**
+   * Returns a connection string for this database secret using the specified template.
+   *
+   * This method constructs a connection string by interpolating secret fields into a template
+   * using CloudFormation's Fn::Sub intrinsic function. The connection string is resolved at
+   * deployment time using CloudFormation dynamic references to the secret fields.
+   *
+   * The template uses `${fieldName}` syntax for placeholders (e.g., ${username}, ${password}, ${host}, ${port}, ${dbname}).
+   *
+   * **Note**: This method requires that the secret has been attached to a database instance or cluster
+   * to populate the `host` and `port` fields. Use `secret.attach(database)` before calling this method.
+   *
+   * @param template - Connection string template with placeholders. If not provided, you must specify
+   *                   a template (there is no default since the engine type is not known at this level).
+   * @returns SecretValue that resolves to the interpolated connection string
+   */
+  public connectionString(template: string): SecretValue {
+    return this.connectionStringFromJson(template);
   }
 }
