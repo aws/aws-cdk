@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-neptune-instance-public/DefaultTest": {
+      "stacks": [
+        "neptune-instance-public"
+      ],
+      "assertionStack": "integ-neptune-instance-public/DefaultTest/DeployAssert",
+      "assertionStackName": "integneptuneinstancepublicDefaultTestDeployAssert98C9D98C"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
