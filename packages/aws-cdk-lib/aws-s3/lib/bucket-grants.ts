@@ -283,6 +283,9 @@ export class BucketGrants {
   }
 }
 
+/**
+ * Factory to create an encrypted resource for a Bucket.
+ */
 export class EncryptedBucketFactory implements IEncryptedResourceFactory {
   static {
     DefaultEncryptedResourceFactories.set('AWS::S3::Bucket', new EncryptedBucketFactory());
@@ -293,7 +296,7 @@ export class EncryptedBucketFactory implements IEncryptedResourceFactory {
   }
 }
 
-export class EncryptedCfnBucket implements IEncryptedResource {
+class EncryptedCfnBucket implements IEncryptedResource {
   public readonly env: ResourceEnvironment;
 
   constructor(private readonly bucket: CfnBucket) {
@@ -308,6 +311,9 @@ export class EncryptedCfnBucket implements IEncryptedResource {
   }
 }
 
+/**
+ * Factory to create a resource policy for a Bucket.
+ */
 export class BucketWithPolicyFactory implements IResourcePolicyFactory {
   static {
     DefaultPolicyFactories.set('AWS::S3::Bucket', new BucketWithPolicyFactory());

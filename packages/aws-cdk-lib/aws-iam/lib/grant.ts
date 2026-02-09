@@ -509,7 +509,28 @@ class Traits<
   }
 }
 
+/**
+ * Utility class for discovering and managing resource policy traits
+ *
+ * This class provides methods to retrieve IResourceWithPolicyV2 instances from constructs,
+ * enabling resource-based policy management during IAM grant operations.
+ *
+ * @example
+ *
+ *     // Retrieve resource policy trait from a construct
+ *     const resourceWithPolicy = ResourceWithPolicies.of(table);
+ *     if (resourceWithPolicy) {
+ *       resourceWithPolicy.addToResourcePolicy(new PolicyStatement({...}));
+ *     }
+ *
+ *     // Register a custom factory for a specific scope
+ *     ResourceWithPolicies.register(this, 'AWS::MyService::Resource', new MyResourcePolicyFactory());
+ *
+ */
 export class ResourceWithPolicies {
+  /**
+   * Retrieve the IResourceWithPolicyV2 associated with a construct, if available.
+   */
   public static of(resource: IEnvironmentAware): IResourceWithPolicyV2 | undefined {
     if (GrantableResources.isResourceWithPolicy(resource)) {
       return resource;
@@ -526,14 +547,37 @@ export class ResourceWithPolicies {
     );
   }
 
-  public static register(scope: IConstruct, cfnType: string, decorator: IResourcePolicyFactory) {
-    this.traits.register(scope, cfnType, decorator, POLICY_DECORATOR_MAP_SYMBOL);
+  /**
+   * Register a factory for a specific CloudFormation resource type and scope
+   */
+  public static register(scope: IConstruct, cfnType: string, factory: IResourcePolicyFactory) {
+    this.traits.register(scope, cfnType, factory, POLICY_DECORATOR_MAP_SYMBOL);
   }
 
   private static traits = new Traits<IResourceWithPolicyV2, IResourcePolicyFactory>();
 }
 
+/**
+ * Utility class for discovering and registering encrypted resource traits
+ *
+ * This class provides methods to retrieve IEncryptedResource instances from constructs,
+ * enabling automatic KMS key permission grants during IAM grant operations.
+ *
+ * @example
+ *
+ *     // Retrieve encrypted resource trait from a construct
+ *     const encryptedResource = EncryptedResources.of(table);
+ *     if (encryptedResource) {
+ *       encryptedResource.grantOnKey(role, 'kms:Decrypt');
+ *     }
+ *
+ *     // Register a custom factory for a specific scope
+ *     EncryptedResources.register(this, 'AWS::MyService::Resource', new MyEncryptedResourceFactory());
+ */
 export class EncryptedResources {
+  /**
+   * Retrieve the IEncryptedResource associated with a construct, if available.
+   */
   public static of(resource: IEnvironmentAware): IEncryptedResource | undefined {
     if (GrantableResources.isEncryptedResource(resource)) {
       return resource;
@@ -550,6 +594,9 @@ export class EncryptedResources {
     );
   }
 
+  /**
+   * Register a factory for a specific CloudFormation resource type and scope
+   */
   public static register(scope: IConstruct, cfnType: string, decorator: IEncryptedResourceFactory) {
     this.traits.register(scope, cfnType, decorator, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL);
   }
@@ -561,11 +608,58 @@ interface ITraitFactory<T> {
   fromConstruct(resource: IConstruct): T;
 }
 
+/**
+ * Factory interface for creating IResourceWithPolicyV2 instances from constructs
+ *
+ * Implementations of this interface are registered in the DefaultPolicyFactories registry
+ * and enable automatic resource policy support for CloudFormation resources. When a grant
+ * operation is performed, the factory converts L1 constructs into resources that support
+ * resource-based policies.
+ *
+ * Factories are typically registered during static initialization and associated with
+ * specific CloudFormation resource types (e.g., 'AWS::DynamoDB::Table'). The CDK's grant
+ * system uses these factories to determine whether a resource supports resource policies
+ * and to create the appropriate wrapper when needed.
+ *
+ * @example
+ *
+ *    ResourceWithPolicies.register(this, 'AWS::Some::ResourceType', new MyResourcePolicyFactory());
+ *
+ * where `MyResourcePolicyFactory` implements `IResourcePolicyFactory`
+ */
 export interface IResourcePolicyFactory {
+  /**
+   * Create an IResourceWithPolicyV2 from a construct
+   * @param resource the construct to be wrapped as an IResourceWithPolicyV2.
+   */
   fromConstruct(resource: IConstruct): IResourceWithPolicyV2;
 }
 
+/**
+ * Factory interface for creating IEncryptedResource instances from constructs
+ *
+ * Implementations of this interface are registered in the DefaultEncryptedResourceFactories
+ * registry and enable automatic KMS key permission grants for encrypted CloudFormation resources.
+ * When a grant operation is performed on an encrypted resource, the factory converts L1 constructs
+ * into resources that can grant permissions on their associated KMS encryption keys.
+ *
+ * Factories are typically registered during static initialization and associated with specific
+ * CloudFormation resource types (e.g., 'AWS::DynamoDB::Table'). The CDK's grant system uses
+ * these factories to automatically add necessary KMS key permissions when granting access to
+ * encrypted resources.
+ *
+ * @example
+ *
+ *    EncryptedResources.register(this, 'AWS::Some::ResourceType', new MyEncryptedResourceFactory());
+ *
+ * where `MyEncryptedResourceFactory` implements `IEncryptedResourceFactory`
+ */
 export interface IEncryptedResourceFactory {
+  /**
+   * Create an IEncryptedResource from a construct
+   *
+   * @param resource the construct to be wrapped as an IEncryptedResource.
+   */
   fromConstruct(resource: IConstruct): IEncryptedResource;
 }
 
@@ -654,39 +748,72 @@ export class CompositeDependable implements IDependable {
   }
 }
 
+/**
+ * Default factories for resources with policies
+ */
 export class DefaultPolicyFactories {
-  public static get(key: string): IResourcePolicyFactory | undefined {
-    return DefaultPolicyFactories.map.get(key);
+  /**
+   * Get the default factory for a given CloudFormation resource type
+   * @param type the CloudFormation resource type (e.g., 'AWS::DynamoDB::Table')
+   */
+  public static get(type: string): IResourcePolicyFactory | undefined {
+    return DefaultPolicyFactories.map.get(type);
   }
 
-  public static set(key: string, value: IResourcePolicyFactory) {
-    if (DefaultPolicyFactories.map.has(key)) {
-      throw new UnscopedValidationError(`A resource policy decorator for resource type '${key}' is already registered.`);
+  /**
+   * Register a default factory for a given CloudFormation resource type
+   * @param type the CloudFormation resource type (e.g., 'AWS::DynamoDB::Table')
+   * @param factory the factory to register for this resource type
+   * @throws UnscopedValidationError if a factory is already registered for this resource type
+   */
+  public static set(type: string, factory: IResourcePolicyFactory) {
+    if (DefaultPolicyFactories.map.has(type)) {
+      throw new UnscopedValidationError(`A resource policy decorator for resource type '${type}' is already registered.`);
     }
-    DefaultPolicyFactories.map.set(key, value);
+    DefaultPolicyFactories.map.set(type, factory);
   }
 
-  public static has(key: string): boolean {
-    return DefaultPolicyFactories.map.has(key);
+  /**
+   * Check if a default factory is registered for a given CloudFormation resource type
+   * @param type the CloudFormation resource type (e.g., 'AWS::DynamoDB::Table')
+   */
+  public static has(type: string): boolean {
+    return DefaultPolicyFactories.map.has(type);
   }
 
   private static readonly map = new Map<string, IResourcePolicyFactory>();
 }
 
+/**
+ * Default factories for encrypted resources
+ */
 export class DefaultEncryptedResourceFactories {
-  public static get(key: string): IEncryptedResourceFactory | undefined {
-    return DefaultEncryptedResourceFactories.map.get(key);
+  /**
+   * Get the default factory for a given CloudFormation resource type
+   * @param type the CloudFormation resource type (e.g., 'AWS::DynamoDB::Table')
+   */
+  public static get(type: string): IEncryptedResourceFactory | undefined {
+    return DefaultEncryptedResourceFactories.map.get(type);
   }
 
-  public static set(key: string, value: IEncryptedResourceFactory) {
-    if (DefaultEncryptedResourceFactories.map.has(key)) {
-      throw new UnscopedValidationError(`An encrypted resource decorator for resource type '${key}' is already registered.`);
+  /**
+   * Register a default factory for a given CloudFormation resource type
+   * @param type the CloudFormation resource type (e.g., 'AWS::DynamoDB::Table')
+   * @param factory the factory to register for this resource type
+   */
+  public static set(type: string, factory: IEncryptedResourceFactory) {
+    if (DefaultEncryptedResourceFactories.map.has(type)) {
+      throw new UnscopedValidationError(`An encrypted resource decorator for resource type '${type}' is already registered.`);
     }
-    DefaultEncryptedResourceFactories.map.set(key, value);
+    DefaultEncryptedResourceFactories.map.set(type, factory);
   }
 
-  public static has(key: string): boolean {
-    return DefaultEncryptedResourceFactories.map.has(key);
+  /**
+   * Check if a default factory is registered for a given CloudFormation resource type
+   * @param type the CloudFormation resource type (e.g., 'AWS::DynamoDB::Table')
+   */
+  public static has(type: string): boolean {
+    return DefaultEncryptedResourceFactories.map.has(type);
   }
 
   private static readonly map = new Map<string, IEncryptedResourceFactory>();

@@ -189,6 +189,9 @@ export class KeyGrants {
   }
 }
 
+/**
+ * Factory to create a resource policy for a KMS Key.
+ */
 export class KeyWithPolicyFactory implements IResourcePolicyFactory {
   static {
     DefaultPolicyFactories.set('AWS::KMS::Key', new KeyWithPolicyFactory());

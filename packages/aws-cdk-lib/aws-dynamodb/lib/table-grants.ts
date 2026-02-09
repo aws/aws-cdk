@@ -2,7 +2,7 @@ import type { IConstruct } from 'constructs';
 import type { ITableRef } from './dynamodb.generated';
 import { CfnTable } from './dynamodb.generated';
 import * as perms from './perms';
-import type { IResourceWithPolicyV2, IResourcePolicyFactory } from '../../aws-iam';
+import type { IResourcePolicyFactory, IResourceWithPolicyV2 } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { DefaultPolicyFactories } from '../../aws-iam';
 import { KeyGrants } from '../../aws-kms';
@@ -54,6 +54,9 @@ export interface TableGrantsProps {
  * A set of permissions to grant on a Table
  */
 export class TableGrants {
+  /**
+   * Creates a TableGrants object for a given table.
+   */
   public static fromTable(table: ITableRef, regions?: string[], hasIndex?: boolean): TableGrants {
     return new TableGrants({
       table,
@@ -193,11 +196,28 @@ export class TableGrants {
   }
 }
 
+/**
+ * Factory for creating IResourceWithPolicyV2 instances from DynamoDB table constructs
+ *
+ * This factory is automatically registered with the DefaultPolicyFactories registry
+ * for 'AWS::DynamoDB::Table' resources. It enables resource-based policies on DynamoDB
+ * tables, allowing the IAM grant system to add policy statements directly to the table's
+ * resource policy when appropriate.
+ *
+ * The factory converts `CfnTable` constructs into `IResourceWithPolicyV2` instances that
+ * support resource policies. This enables grant methods to use resource-based policies
+ * instead of only identity-based policies, which is useful for cross-account access
+ * and service-to-service permissions.
+ */
 export class TablePolicyFactory implements IResourcePolicyFactory {
   static {
     DefaultPolicyFactories.set('AWS::DynamoDB::Table', new TablePolicyFactory());
   }
 
+  /**
+   * Converts a DynamoDB table construct into an IResourceWithPolicyV2 that can be used
+   * for adding resource-based policy statements.
+   */
   public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     if (!CfnTable.isCfnTable(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
@@ -229,6 +249,20 @@ class CfnTableWithPolicy implements iam.IResourceWithPolicyV2 {
   }
 }
 
+/**
+ * Factory for creating IEncryptedResource instances from DynamoDB table constructs
+ *
+ * This factory is automatically registered with the DefaultEncryptedResourceFactories
+ * registry for 'AWS::DynamoDB::Table' resources. It enables the IAM grant system to
+ * automatically discover and grant permissions on KMS keys associated with encrypted
+ * DynamoDB tables.
+ *
+ * @remarks
+ * The factory converts `CfnTable` constructs into `IEncryptedResource` instances that can
+ * handle KMS key grants for table encryption. This is used internally by the CDK's
+ * grant methods to automatically add necessary KMS permissions when granting DynamoDB
+ * table access.
+ */
 export class EncryptedTableFactory implements iam.IEncryptedResourceFactory {
   static {
     iam.DefaultEncryptedResourceFactories.set('AWS::DynamoDB::Table', new EncryptedTableFactory());
