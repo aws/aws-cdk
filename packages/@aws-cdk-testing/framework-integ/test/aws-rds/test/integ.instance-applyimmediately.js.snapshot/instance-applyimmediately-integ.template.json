@@ -336,7 +336,7 @@
      "Ref": "DatabaseInstanceSubnetGroupA4FFF2A4"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.0.41",
+    "EngineVersion": "8.4.7",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MasterUsername": "admin",
     "PubliclyAccessible": false,

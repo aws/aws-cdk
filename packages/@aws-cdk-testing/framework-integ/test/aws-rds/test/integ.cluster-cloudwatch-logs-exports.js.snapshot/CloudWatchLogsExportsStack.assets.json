@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
-      "displayName": "integRdsInstanceIo2/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "displayName": "CloudWatchLogsExportsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
         "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
         "packaging": "zip"
@@ -15,16 +15,16 @@
         }
       }
     },
-    "6b56ccbce82b36ebd1f8dadf65ed8e05ac5658f8097654cc0a933927e3955e40": {
-      "displayName": "integRdsInstanceIo2 Template",
+    "b2426e4baeb100de6626bc33fac8491e5a7eb420a796871e682708f688cc6fc7": {
+      "displayName": "CloudWatchLogsExportsStack Template",
       "source": {
-        "path": "integRdsInstanceIo2.template.json",
+        "path": "CloudWatchLogsExportsStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-c4f6a5b3": {
+        "current_account-current_region-a3cce895": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6b56ccbce82b36ebd1f8dadf65ed8e05ac5658f8097654cc0a933927e3955e40.json",
+          "objectKey": "b2426e4baeb100de6626bc33fac8491e5a7eb420a796871e682708f688cc6fc7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

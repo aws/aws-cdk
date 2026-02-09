@@ -469,7 +469,7 @@
     "DatabaseInsightsMode": "advanced",
     "EnablePerformanceInsights": true,
     "Engine": "postgres",
-    "EngineVersion": "17.7",
+    "EngineVersion": "18.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -586,7 +586,7 @@
     "DatabaseInsightsMode": "standard",
     "EnablePerformanceInsights": true,
     "Engine": "postgres",
-    "EngineVersion": "17.7",
+    "EngineVersion": "18.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

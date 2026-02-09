@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC"
+      "Value": "CloudWatchLogsExportsStack/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PublicSubnet1"
+      "Value": "CloudWatchLogsExportsStack/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PublicSubnet1"
+      "Value": "CloudWatchLogsExportsStack/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PublicSubnet1"
+      "Value": "CloudWatchLogsExportsStack/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PublicSubnet1"
+      "Value": "CloudWatchLogsExportsStack/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PublicSubnet2"
+      "Value": "CloudWatchLogsExportsStack/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PublicSubnet2"
+      "Value": "CloudWatchLogsExportsStack/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -195,6 +195,42 @@
     "VPCVPCGW99B986DC"
    ]
   },
+  "VPCPublicSubnet2EIP4947BC00": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CloudWatchLogsExportsStack/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2NATGateway3C070193": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet2EIP4947BC00",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CloudWatchLogsExportsStack/VPC/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -219,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PrivateSubnet1"
+      "Value": "CloudWatchLogsExportsStack/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -233,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PrivateSubnet1"
+      "Value": "CloudWatchLogsExportsStack/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -288,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PrivateSubnet2"
+      "Value": "CloudWatchLogsExportsStack/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -302,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC/PrivateSubnet2"
+      "Value": "CloudWatchLogsExportsStack/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -326,7 +362,7 @@
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+     "Ref": "VPCPublicSubnet2NATGateway3C070193"
     },
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
@@ -339,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-cluster-cloudwatch-logs-exports/VPC"
+      "Value": "CloudWatchLogsExportsStack/VPC"
      }
     ]
    }
@@ -355,10 +391,126 @@
     }
    }
   },
-  "MysqlClusterSubnetsACBC1ECF": {
+  "VPCRestrictDefaultSecurityGroupCustomResource59474679": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "VPCB9E5F0B4",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "DatabaseClusterMysqlSubnets10EC6FA4": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for MysqlCluster database",
+    "DBSubnetGroupDescription": "Subnets for DatabaseClusterMysql database",
     "SubnetIds": [
      {
       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
@@ -369,7 +521,7 @@
     ]
    }
   },
-  "MysqlClusterSecurityGroup5F3E6911": {
+  "DatabaseClusterMysqlSecurityGroup107C8D9A": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -385,7 +537,7 @@
     }
    }
   },
-  "MysqlClusterSecret47AAE76E": {
+  "DatabaseClusterMysqlSecretCF6F81B6": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -409,25 +561,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MysqlClusterSecretAttachment960EA808": {
+  "DatabaseClusterMysqlSecretAttachment776D4EC7": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "MysqlClusterSecret47AAE76E"
+     "Ref": "DatabaseClusterMysqlSecretCF6F81B6"
     },
     "TargetId": {
-     "Ref": "MysqlCluster56C02CF8"
+     "Ref": "DatabaseClusterMysqlB6D501E4"
     },
     "TargetType": "AWS::RDS::DBCluster"
    }
   },
-  "MysqlCluster56C02CF8": {
+  "DatabaseClusterMysqlB6D501E4": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
-     "Ref": "MysqlClusterSubnetsACBC1ECF"
+     "Ref": "DatabaseClusterMysqlSubnets10EC6FA4"
     },
     "EnableCloudwatchLogsExports": [
      "error",
@@ -445,7 +597,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "MysqlClusterSecret47AAE76E"
+        "Ref": "DatabaseClusterMysqlSecretCF6F81B6"
        },
        ":SecretString:password::}}"
       ]
@@ -457,16 +609,20 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "MysqlClusterSecret47AAE76E"
+        "Ref": "DatabaseClusterMysqlSecretCF6F81B6"
        },
        ":SecretString:username::}}"
       ]
      ]
     },
+    "ServerlessV2ScalingConfiguration": {
+     "MaxCapacity": 2,
+     "MinCapacity": 0.5
+    },
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "MysqlClusterSecurityGroup5F3E6911",
+       "DatabaseClusterMysqlSecurityGroup107C8D9A",
        "GroupId"
       ]
      }
@@ -475,13 +631,13 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MysqlClusterwriterEAF17DBE": {
+  "DatabaseClusterMysqlwriterInstance4A50FBE6": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
-     "Ref": "MysqlCluster56C02CF8"
+     "Ref": "DatabaseClusterMysqlB6D501E4"
     },
-    "DBInstanceClass": "db.t3.medium",
+    "DBInstanceClass": "db.serverless",
     "Engine": "aurora-mysql",
     "PromotionTier": 0
    },
@@ -494,10 +650,10 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "PostgresClusterSubnets41D66232": {
+  "DatabaseClusterPostgresqlSubnetsE0173DAA": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for PostgresCluster database",
+    "DBSubnetGroupDescription": "Subnets for DatabaseClusterPostgresql database",
     "SubnetIds": [
      {
       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
@@ -508,7 +664,7 @@
     ]
    }
   },
-  "PostgresClusterSecurityGroup76A97CF5": {
+  "DatabaseClusterPostgresqlSecurityGroupEF4103D2": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -524,7 +680,7 @@
     }
    }
   },
-  "PostgresClusterSecret966ABD5A": {
+  "DatabaseClusterPostgresqlSecretD2D9C157": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -548,25 +704,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "PostgresClusterSecretAttachmentC904D90E": {
+  "DatabaseClusterPostgresqlSecretAttachment09D32DC9": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "PostgresClusterSecret966ABD5A"
+     "Ref": "DatabaseClusterPostgresqlSecretD2D9C157"
     },
     "TargetId": {
-     "Ref": "PostgresClusterE64235C6"
+     "Ref": "DatabaseClusterPostgresql0775776E"
     },
     "TargetType": "AWS::RDS::DBCluster"
    }
   },
-  "PostgresClusterE64235C6": {
+  "DatabaseClusterPostgresql0775776E": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-postgresql16",
+    "DBClusterParameterGroupName": "default.aurora-postgresql17",
     "DBSubnetGroupName": {
-     "Ref": "PostgresClusterSubnets41D66232"
+     "Ref": "DatabaseClusterPostgresqlSubnetsE0173DAA"
     },
     "EnableCloudwatchLogsExports": [
      "postgresql",
@@ -574,14 +730,14 @@
      "instance"
     ],
     "Engine": "aurora-postgresql",
-    "EngineVersion": "16.6",
+    "EngineVersion": "17.6",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "PostgresClusterSecret966ABD5A"
+        "Ref": "DatabaseClusterPostgresqlSecretD2D9C157"
        },
        ":SecretString:password::}}"
       ]
@@ -593,17 +749,21 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "PostgresClusterSecret966ABD5A"
+        "Ref": "DatabaseClusterPostgresqlSecretD2D9C157"
        },
        ":SecretString:username::}}"
       ]
      ]
     },
     "Port": 5432,
+    "ServerlessV2ScalingConfiguration": {
+     "MaxCapacity": 2,
+     "MinCapacity": 0.5
+    },
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "PostgresClusterSecurityGroup76A97CF5",
+       "DatabaseClusterPostgresqlSecurityGroupEF4103D2",
        "GroupId"
       ]
      }
@@ -612,13 +772,13 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "PostgresClusterwriter12AA5E4E": {
+  "DatabaseClusterPostgresqlwriterInstanceB16652DD": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
-     "Ref": "PostgresClusterE64235C6"
+     "Ref": "DatabaseClusterPostgresql0775776E"
     },
-    "DBInstanceClass": "db.t3.medium",
+    "DBInstanceClass": "db.serverless",
     "Engine": "aurora-postgresql",
     "PromotionTier": 0
    },
@@ -630,6 +790,24 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDatabaseClusterMysqlB6D501E494AA5328": {
+   "Value": {
+    "Ref": "DatabaseClusterMysqlB6D501E4"
+   },
+   "Export": {
+    "Name": "CloudWatchLogsExportsStack:ExportsOutputRefDatabaseClusterMysqlB6D501E494AA5328"
+   }
+  },
+  "ExportsOutputRefDatabaseClusterPostgresql0775776E85EBE50E": {
+   "Value": {
+    "Ref": "DatabaseClusterPostgresql0775776E"
+   },
+   "Export": {
+    "Name": "CloudWatchLogsExportsStack:ExportsOutputRefDatabaseClusterPostgresql0775776E85EBE50E"
+   }
   }
  },
  "Parameters": {

@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "a21b4305ef19bbc85fbeb8dc87d8caba311ba1776563afa8597a8d6d7de2ef44": {
+    "1a91b434db05d5d6856b23c5ac4a31f547e98bec90934d057d307aaf51d41e00": {
       "displayName": "aws-cdk-rds-integ-instance-database-insights Template",
       "source": {
         "path": "aws-cdk-rds-integ-instance-database-insights.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ad15806d": {
+        "current_account-current_region-462a5784": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a21b4305ef19bbc85fbeb8dc87d8caba311ba1776563afa8597a8d6d7de2ef44.json",
+          "objectKey": "1a91b434db05d5d6856b23c5ac4a31f547e98bec90934d057d307aaf51d41e00.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

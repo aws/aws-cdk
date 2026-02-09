@@ -340,10 +340,7 @@
         "/aws-cdk-rds-instance-with-rds-parameter-group/ParameterGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ParameterGroup5E32DECB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ParameterGroup5E32DECB"
           }
         ],
         "/aws-cdk-rds-instance-with-rds-parameter-group/Instance": [
@@ -448,10 +445,7 @@
         "/aws-cdk-rds-instance-with-rds-parameter-group/Instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "InstanceC1063A87"
           }
         ],
         "/aws-cdk-rds-instance-with-rds-parameter-group/BootstrapVersion": [

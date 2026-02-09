@@ -342,10 +342,7 @@
         "/aws-cdk-rds-integ-secret-rotation/test-secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsecretF8BBC644",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsecretF8BBC644"
           }
         ],
         "/aws-cdk-rds-integ-secret-rotation/test-secret/Attachment": [
@@ -360,10 +357,7 @@
         "/aws-cdk-rds-integ-secret-rotation/test-secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsecretAttachment19AD251F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsecretAttachment19AD251F"
           }
         ],
         "/aws-cdk-rds-integ-secret-rotation/test-secret/test-schedule": [
@@ -378,10 +372,7 @@
         "/aws-cdk-rds-integ-secret-rotation/test-secret/test-schedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsecrettestscheduleEA0B5085",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsecrettestscheduleEA0B5085"
           }
         ],
         "/aws-cdk-rds-integ-secret-rotation/test-secret/Policy": [
@@ -395,10 +386,7 @@
         "/aws-cdk-rds-integ-secret-rotation/test-secret/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsecretPolicyA5D2F46F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsecretPolicyA5D2F46F"
           }
         ],
         "/aws-cdk-rds-integ-secret-rotation/Database": [

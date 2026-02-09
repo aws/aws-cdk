@@ -397,7 +397,7 @@
      "Ref": "MysqlSourceSubnetGroup213E979B"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.0",
+    "EngineVersion": "8.4.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -439,8 +439,8 @@
   "ReplicaParameterGroup4BE5EE70": {
    "Type": "AWS::RDS::DBParameterGroup",
    "Properties": {
-    "Description": "Parameter group for mysql8.0",
-    "Family": "mysql8.0",
+    "Description": "Parameter group for mysql8.4",
+    "Family": "mysql8.4",
     "Parameters": {
      "wait_timeout": "86400"
     }

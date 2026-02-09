@@ -643,7 +643,7 @@
      "Ref": "DatabaseRDSDirectoryServiceRole55FFAFD0"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.0.41",
+    "EngineVersion": "8.4.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

@@ -54,7 +54,7 @@
     "outputPaths": [
      "DBClusters.0.ReplicationSourceIdentifier"
     ],
-    "salt": "1770495712909"
+    "salt": "1770666232474"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -108,7 +108,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
+     "S3Key": "890f31e922c1b984781beab97562539ab9f7bea828c03878498449addebbe285.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

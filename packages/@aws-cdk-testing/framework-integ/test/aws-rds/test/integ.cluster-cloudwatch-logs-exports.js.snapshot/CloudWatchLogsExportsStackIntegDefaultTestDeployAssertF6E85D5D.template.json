@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180": {
-   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBInstances",
+  "AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04": {
+   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBClusters",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -10,32 +10,16 @@
      ]
     },
     "service": "RDS",
-    "api": "describeDBInstances",
-    "expected": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"$ObjectLike\":{\"DBInstances\":[{\"AvailabilityZone\":\"",
-       {
-        "Fn::Select": [
-         0,
-         {
-          "Fn::GetAZs": ""
-         }
-        ]
-       },
-       "\"}]}}"
-      ]
-     ]
-    },
+    "api": "describeDBClusters",
+    "expected": "{\"$ObjectLike\":{\"DBClusters\":[{\"EnabledCloudwatchLogsExports\":[\"audit\",\"error\",\"general\",\"iam-db-auth-error\",\"instance\",\"slowquery\"]}]}}",
     "parameters": {
-     "DBInstanceIdentifier": {
+     "DBClusterIdentifier": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-rds-cluster-availability-zone:ExportsOutputRefClusterwriter2D9E9F4C1B772014"
+         "Fn::ImportValue": "CloudWatchLogsExportsStack:ExportsOutputRefDatabaseClusterMysqlB6D501E494AA5328"
         },
         "\""
        ]
@@ -43,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1770665978066"
+    "salt": "1770666448284"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,7 +60,7 @@
        "Statement": [
         {
          "Action": [
-          "rds:DescribeDBInstances"
+          "rds:DescribeDBClusters"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -85,7 +69,7 @@
         },
         {
          "Action": [
-          "rds:DescribeDBInstances"
+          "rds:DescribeDBClusters"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -118,8 +102,8 @@
     }
    }
   },
-  "AwsApiCallRDSdescribeDBInstancesd3ec9b10e1d9188ee52cbcb9e52d03b2": {
-   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBInstances",
+  "AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392": {
+   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBClusters",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -128,32 +112,16 @@
      ]
     },
     "service": "RDS",
-    "api": "describeDBInstances",
-    "expected": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"$ObjectLike\":{\"DBInstances\":[{\"AvailabilityZone\":\"",
-       {
-        "Fn::Select": [
-         1,
-         {
-          "Fn::GetAZs": ""
-         }
-        ]
-       },
-       "\"}]}}"
-      ]
-     ]
-    },
+    "api": "describeDBClusters",
+    "expected": "{\"$ObjectLike\":{\"DBClusters\":[{\"EnabledCloudwatchLogsExports\":[\"iam-db-auth-error\",\"instance\",\"postgresql\"]}]}}",
     "parameters": {
-     "DBInstanceIdentifier": {
+     "DBClusterIdentifier": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-rds-cluster-availability-zone:ExportsOutputRefClusterreader2204550CF3846A09"
+         "Fn::ImportValue": "CloudWatchLogsExportsStack:ExportsOutputRefDatabaseClusterPostgresql0775776E85EBE50E"
         },
         "\""
        ]
@@ -161,25 +129,25 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1770665978067"
+    "salt": "1770666448285"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180": {
+  "AssertionResultsAwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180",
+     "AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallRDSdescribeDBInstancesd3ec9b10e1d9188ee52cbcb9e52d03b2": {
+  "AssertionResultsAwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallRDSdescribeDBInstancesd3ec9b10e1d9188ee52cbcb9e52d03b2",
+     "AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392",
      "assertion"
     ]
    }

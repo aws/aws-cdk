@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/416838b7473de624724882e22834e4dfe7a5223298a6043a5ed54c7fcf5418a5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d30092c3c01501b8b4c777828535c7a5642bdbe86cf799d5f8b58ea4df17da6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -553,6 +553,717 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "vpcA2121C38": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcA2121C38",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet1Subnet2E65531E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1Subnet2E65531E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet1RouteTable48A2DF9B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1RouteTable48A2DF9B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet1RouteTableAssociation5D3F4579": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet1DefaultRoute10708846": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1DefaultRoute10708846",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet1EIPDA49DCBE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1EIPDA49DCBE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet1NATGateway9C16659E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1NATGateway9C16659E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet2Subnet009B674F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2Subnet009B674F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet2RouteTableEB40D4CB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2RouteTableEB40D4CB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet2RouteTableAssociation21F81B59": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2RouteTableAssociation21F81B59",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet2DefaultRouteA1EC0F60": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2DefaultRouteA1EC0F60",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet2EIP9B3743B1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2EIP9B3743B1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPublicSubnet2NATGateway9B8AE11A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2NATGateway9B8AE11A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPrivateSubnet1Subnet934893E8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1Subnet934893E8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPrivateSubnet1RouteTableB41A48CC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1RouteTableB41A48CC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPrivateSubnet1RouteTableAssociation67945127": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1RouteTableAssociation67945127",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPrivateSubnet1DefaultRoute1AA8E2E5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPrivateSubnet2Subnet7031C2BA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2Subnet7031C2BA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPrivateSubnet2RouteTable7280F23E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2RouteTable7280F23E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPrivateSubnet2RouteTableAssociation007E94D3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcPrivateSubnet2DefaultRouteB0E07F99": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2DefaultRouteB0E07F99",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcIGWE57CBDCA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcIGWE57CBDCA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "vpcVPCGW7984C166": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcVPCGW7984C166",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SecretEncryptionKey40C82244": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretEncryptionKey40C82244",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbInstanceSubnetGroupD062EC9E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbInstanceSubnetGroupD062EC9E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbInstanceSecurityGroupA58A00A3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbInstanceSecurityGroupA58A00A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbInstanceSecurityGroupfromawscdkrdsproxydbProxyProxySecurityGroupA345AFE5IndirectPortE3621D4F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbInstanceSecurityGroupfromawscdkrdsproxydbProxyProxySecurityGroupA345AFE5IndirectPortE3621D4F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbInstanceSecret032D3661": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbInstanceSecret032D3661",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbInstanceSecretAttachment88CFBDAE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbInstanceSecretAttachment88CFBDAE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbInstance4076B1EC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbInstance4076B1EC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbProxyIAMRole662F3AB8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbProxyIAMRole662F3AB8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbProxyIAMRoleDefaultPolicy99AB98F3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbProxyIAMRoleDefaultPolicy99AB98F3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbProxyProxySecurityGroup16E727A7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbProxyProxySecurityGroup16E727A7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbProxy3B89EAF2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbProxy3B89EAF2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbProxyProxyTargetGroup8DA26A77": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbProxyProxyTargetGroup8DA26A77",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterSubnets03B9B0E1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSubnets03B9B0E1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterSecurityGroupCAA1A91F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecurityGroupCAA1A91F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09IndirectPort152B2D99": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09IndirectPort152B2D99",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853FIndirectPort61009070": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853FIndirectPort61009070",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterSecretCEA6D7B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecretCEA6D7B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterSecretAttachmentAB67A752": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecretAttachmentAB67A752",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterE86E47AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterE86E47AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterInstance1BCE092AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterInstance1BCE092AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterInstance20BA1ECD9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterInstance20BA1ECD9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxyIAMRole693E39F5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxyIAMRole693E39F5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxyIAMRoleDefaultPolicyEEE23224": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxyIAMRoleDefaultPolicyEEE23224",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxyProxySecurityGroup170F327D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxyProxySecurityGroup170F327D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxyAB5F8181": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxyAB5F8181",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxyProxyTargetGroupB7010C0D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxyProxyTargetGroupB7010C0D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxy2IAMRole190D217C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy2IAMRole190D217C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxy2IAMRoleDefaultPolicyFD9414D8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy2IAMRoleDefaultPolicyFD9414D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxy2ProxySecurityGroupB44507AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy2ProxySecurityGroupB44507AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxy28BBD43D5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy28BBD43D5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterProxy2ProxyTargetGroup8BD48F57": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy2ProxyTargetGroup8BD48F57",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersSubnetsD9FBAD2A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSubnetsD9FBAD2A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersSecurityGroup1D462CCA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecurityGroup1D462CCA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxyProxy3ProxySecurityGroup211267B8IndirectPort9336325A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxyProxy3ProxySecurityGroup211267B8IndirectPort9336325A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxydbClusterWithWriterAndReadersProxy4ProxySecurityGroup4989CF8FIndirectPort905C5505": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxydbClusterWithWriterAndReadersProxy4ProxySecurityGroup4989CF8FIndirectPort905C5505",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxydbClusterWithWriterAndReadersProxy5ProxySecurityGroupF30773AFIndirectPort5D2FF883": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxydbClusterWithWriterAndReadersProxy5ProxySecurityGroupF30773AFIndirectPort5D2FF883",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersSecret3ED37A64": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecret3ED37A64",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersSecretAttachment9F7B2148": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecretAttachment9F7B2148",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReaders6627D259": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReaders6627D259",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReaderswriter6BAC1240": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReaderswriter6BAC1240",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersreader042B2B99": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersreader042B2B99",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy4IAMRoleA63955A2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4IAMRoleA63955A2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy4IAMRoleDefaultPolicy8019C3D4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4IAMRoleDefaultPolicy8019C3D4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy4ProxySecurityGroupEDC85546": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4ProxySecurityGroupEDC85546",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy4C6584761": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4C6584761",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy4ProxyTargetGroup69B133B1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4ProxyTargetGroup69B133B1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy5IAMRole760AB64E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5IAMRole760AB64E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy5IAMRoleDefaultPolicy0CD3B628": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5IAMRoleDefaultPolicy0CD3B628",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy5ProxySecurityGroupE59314C4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5ProxySecurityGroupE59314C4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy5FA5F5557": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5FA5F5557",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "dbClusterWithWriterAndReadersProxy5ProxyTargetGroupE76C811F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5ProxyTargetGroupE76C811F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Proxy3IAMRole26B82D9F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy3IAMRole26B82D9F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Proxy3IAMRoleDefaultPolicyEBD54677": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy3IAMRoleDefaultPolicyEBD54677",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Proxy3ProxySecurityGroupF29F0434": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy3ProxySecurityGroupF29F0434",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Proxy39463A146": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy39463A146",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Proxy3ProxyTargetGroup5A623A38": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy3ProxyTargetGroup5A623A38",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
