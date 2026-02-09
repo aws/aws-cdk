@@ -22,7 +22,6 @@ const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   { platform: assets.Platform.LINUX_ARM64 },
 );
 
-// Create a single runtime (similar to the working strands example)
 const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
   runtimeName: 'integ_test_runtime',
   description: 'Integration test runtime for BedrockAgentCore',
@@ -62,14 +61,6 @@ const taggedEndpoint = new agentcore.RuntimeEndpoint(stack, 'TaggedEndpoint', {
   },
 });
 
-// Create version 1 endpoint (second endpoint)
-const v1Endpoint2 = new agentcore.RuntimeEndpoint(stack, 'V1Endpoint2', {
-  endpointName: 'v1_endpoint_2',
-  agentRuntimeId: runtime.agentRuntimeId,
-  agentRuntimeVersion: '1',
-  description: 'Second version 1 endpoint',
-});
-
 // Test grant methods to verify sub-resource permissions
 const testFunction = new lambda.Function(stack, 'TestInvokerFunction', {
   runtime: lambda.Runtime.PYTHON_3_12,
@@ -100,11 +91,6 @@ new cdk.CfnOutput(stack, 'BasicEndpointId', {
 new cdk.CfnOutput(stack, 'TaggedEndpointId', {
   value: taggedEndpoint.endpointId,
   description: 'Tagged endpoint ID',
-});
-
-new cdk.CfnOutput(stack, 'V1Endpoint2Id', {
-  value: v1Endpoint2.endpointId,
-  description: 'Second version 1 endpoint ID',
 });
 
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeTest', {

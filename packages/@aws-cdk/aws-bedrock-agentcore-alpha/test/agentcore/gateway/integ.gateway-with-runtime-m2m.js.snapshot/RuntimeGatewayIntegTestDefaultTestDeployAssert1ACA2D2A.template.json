@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallbedrockagentcoreinvokeAgentRuntime5bf2fdd044ab1b27fd12c5de9d53b720": {
+  "AwsApiCallbedrockagentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c": {
    "Type": "Custom::DeployAssert@SdkCallbedrock-agentcoreinvokeAgentRunt",
    "Properties": {
     "ServiceToken": {
@@ -25,11 +25,11 @@
        ]
       ]
      },
-     "runtimeSessionId": "\"63a2929e-c8a1-470a-a51b-6836a33c01c3\"",
+     "runtimeSessionId": "\"2c7050c7-2a25-43b5-8cce-ed2b6d6d965a\"",
      "payload": "\"{\\\"input\\\":{\\\"prompt\\\":\\\"Test Gateway M2M authentication\\\"}}\""
     },
     "flattenResponse": "false",
-    "salt": "1770640167912"
+    "salt": "1770656656442"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -97,10 +97,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime5bf2fdd044ab1b27fd12c5de9d53b720": {
+  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallbedrockagentcoreinvokeAgentRuntime5bf2fdd044ab1b27fd12c5de9d53b720",
+     "AwsApiCallbedrockagentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c",
      "assertion"
     ]
    }

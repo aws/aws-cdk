@@ -40,16 +40,12 @@ const toolSchema = agentcore.ToolSchema.fromInline([
   },
 ]);
 
-const target = gateway.addLambdaTarget('TestTarget', {
+gateway.addLambdaTarget('TestTarget', {
   gatewayTargetName: 'test-tools',
   description: 'Simple test tools for M2M authentication',
   lambdaFunction: calculatorFunction,
   toolSchema: toolSchema,
 });
-
-// Ensure the gateway resource is created before the target
-// This gives time for IAM permissions to propagate
-target.node.addDependency(gateway);
 
 const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, 'gateway-agent'),

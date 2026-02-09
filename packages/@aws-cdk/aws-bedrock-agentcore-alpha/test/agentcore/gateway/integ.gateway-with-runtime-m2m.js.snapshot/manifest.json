@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/444809fb070459cc4d46d5856cffef0f5c77797be1fc00bcf9d25d19e5ea54cd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40b6c0a5f15ea70a9f443fc2da6a5e04b9659c67353dd49db46ff98c731f164f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -675,7 +675,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c5873be7542030065728fcbbb9e06aba351236310929cdc5581112ab4bca108.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e8e1a5d51bd1a820a89b84fd8370c91fa06eb636bcf40846cb51f1ff659bc89d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -692,7 +692,7 @@
         "RuntimeGatewayIntegTestDefaultTestDeployAssert1ACA2D2A.assets"
       ],
       "metadata": {
-        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime5bf2fdd044ab1b27fd12c5de9d53b720/Default": [
+        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -706,16 +706,16 @@
             "data": "*"
           }
         ],
-        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime5bf2fdd044ab1b27fd12c5de9d53b720/Default/Default": [
+        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallbedrockagentcoreinvokeAgentRuntime5bf2fdd044ab1b27fd12c5de9d53b720"
+            "data": "AwsApiCallbedrockagentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c"
           }
         ],
-        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime5bf2fdd044ab1b27fd12c5de9d53b720/AssertionResults": [
+        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime5bf2fdd044ab1b27fd12c5de9d53b720"
+            "data": "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c"
           }
         ],
         "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/53235c8f884bbbc3fb2da237f8ec01d840b06b89ce494cb8a53bc1dd26a5a077.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb5fc1a5332633342c6ca77d8060e7da070bf2994d5eb0b518b14df7b9906574.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -265,18 +265,6 @@
             "data": "TaggedEndpointB1B1CDE4"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime/V1Endpoint2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime/V1Endpoint2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "V1Endpoint2B3D8B4DA"
-          }
-        ],
         "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -414,12 +402,6 @@
             "data": "TaggedEndpointId"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime/V1Endpoint2Id": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "V1Endpoint2Id"
-          }
-        ],
         "/aws-cdk-bedrock-agentcore-runtime/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -430,6 +412,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "V1Endpoint2B3D8B4DA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "V1Endpoint2B3D8B4DA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

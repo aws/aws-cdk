@@ -53,7 +53,7 @@ const lambdaFunction2 = new lambda.Function(stack, 'Lambda2', {
   `),
 });
 
-const lambdaTarget1 = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget1', {
+agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget1', {
   gateway: gateway,
   gatewayTargetName: 'lambda-target-1',
   description: 'First Lambda target with tool schema',
@@ -61,18 +61,13 @@ const lambdaTarget1 = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget1', 
   toolSchema: agentcore.ToolSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'tool', 'schema1.json')),
 });
 
-const lambdaTarget2 = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget2', {
+agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget2', {
   gateway: gateway,
   gatewayTargetName: 'lambda-target-2',
   description: 'Second Lambda target with tool schema',
   lambdaFunction: lambdaFunction2,
   toolSchema: agentcore.ToolSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'tool', 'schema2.json')),
 });
-
-// Ensure the gateway resource is created before the targets
-// This gives time for IAM permissions to propagate
-lambdaTarget1.node.addDependency(gateway);
-lambdaTarget2.node.addDependency(gateway);
 
 new integ.IntegTest(app, 'MultipleSchemasIntegTest', {
   testCases: [stack],

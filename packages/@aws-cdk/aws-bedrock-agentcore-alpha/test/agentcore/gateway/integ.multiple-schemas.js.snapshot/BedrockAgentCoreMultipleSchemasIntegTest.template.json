@@ -569,16 +569,7 @@
       }
      }
     }
-   },
-   "DependsOn": [
-    "TestGateway7394A071",
-    "TestGatewayServiceRoleDefaultPolicyCFEDA895",
-    "TestGatewayServiceRole426CDA0F",
-    "TestGatewayUserPoolDefaultClient3AC9C728",
-    "TestGatewayUserPoolDomainB64B616E",
-    "TestGatewayUserPool545AA49A",
-    "TestGatewayUserPoolResourceServer7A34B6B2"
-   ]
+   }
   },
   "LambdaTarget2437803CD": {
    "Type": "AWS::BedrockAgentCore::GatewayTarget",
@@ -624,16 +615,7 @@
       }
      }
     }
-   },
-   "DependsOn": [
-    "TestGateway7394A071",
-    "TestGatewayServiceRoleDefaultPolicyCFEDA895",
-    "TestGatewayServiceRole426CDA0F",
-    "TestGatewayUserPoolDefaultClient3AC9C728",
-    "TestGatewayUserPoolDomainB64B616E",
-    "TestGatewayUserPool545AA49A",
-    "TestGatewayUserPoolResourceServer7A34B6B2"
-   ]
+   }
   }
  },
  "Parameters": {

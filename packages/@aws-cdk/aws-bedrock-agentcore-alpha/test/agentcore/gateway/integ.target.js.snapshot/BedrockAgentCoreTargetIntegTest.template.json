@@ -423,11 +423,7 @@
       }
      }
     }
-   },
-   "DependsOn": [
-    "TestGatewayServiceRoleDefaultPolicyCFEDA895",
-    "TestGatewayServiceRole426CDA0F"
-   ]
+   }
   },
   "SmithyTargetF5FB3E32": {
    "Type": "AWS::BedrockAgentCore::GatewayTarget",
@@ -581,11 +577,7 @@
       }
      }
     }
-   },
-   "DependsOn": [
-    "TestGatewayServiceRoleDefaultPolicyCFEDA895",
-    "TestGatewayServiceRole426CDA0F"
-   ]
+   }
   }
  },
  "Outputs": {

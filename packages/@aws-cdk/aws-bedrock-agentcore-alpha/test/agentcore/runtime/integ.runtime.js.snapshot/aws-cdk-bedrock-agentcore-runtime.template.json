@@ -294,20 +294,6 @@
     }
    }
   },
-  "V1Endpoint2B3D8B4DA": {
-   "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
-   "Properties": {
-    "AgentRuntimeId": {
-     "Fn::GetAtt": [
-      "TestRuntime65042BB5",
-      "AgentRuntimeId"
-     ]
-    },
-    "AgentRuntimeVersion": "1",
-    "Description": "Second version 1 endpoint",
-    "Name": "v1_endpoint_2"
-   }
-  },
   "TestInvokerFunctionServiceRole08233DAF": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -458,15 +444,6 @@
    "Value": {
     "Fn::GetAtt": [
      "TaggedEndpointB1B1CDE4",
-     "Id"
-    ]
-   }
-  },
-  "V1Endpoint2Id": {
-   "Description": "Second version 1 endpoint ID",
-   "Value": {
-    "Fn::GetAtt": [
-     "V1Endpoint2B3D8B4DA",
      "Id"
     ]
    }

@@ -103,9 +103,6 @@ const constructorTarget = new agentcore.GatewayTarget(stack, 'ConstructorTarget'
   ),
 });
 
-lambdaTarget.node.addDependency(gateway.role);
-constructorTarget.node.addDependency(gateway.role);
-
 // ===== Outputs =====
 new cdk.CfnOutput(stack, 'GatewayId', {
   value: gateway.gatewayId,

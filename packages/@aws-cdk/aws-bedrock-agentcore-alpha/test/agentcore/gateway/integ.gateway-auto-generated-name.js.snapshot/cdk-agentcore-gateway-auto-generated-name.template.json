@@ -286,16 +286,7 @@
       }
      }
     }
-   },
-   "DependsOn": [
-    "Gateway43CB3636",
-    "GatewayServiceRoleDefaultPolicy5A851A93",
-    "GatewayServiceRole162DEA77",
-    "GatewayUserPoolDefaultClient48FC6ADE",
-    "GatewayUserPoolDomainCD8A1197",
-    "GatewayUserPoolAC9C51BE",
-    "GatewayUserPoolResourceServerA9AA7EAD"
-   ]
+   }
   },
   "TestFunctionServiceRole6ABD93C7": {
    "Type": "AWS::IAM::Role",
