@@ -68,7 +68,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
  */
 new SubnetV2(stack, 'testsbubnet', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
   // defined on the basis of allocation done in IPAM console
   // ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
@@ -80,5 +80,6 @@ new SubnetV2(stack, 'testsbubnet', {
  *  due to dependency on de-allocation of provisioned ipv6 CIDR
  */
 new IntegTest(app, 'integtest-model', {
+  regions: ['us-west-2'],
   testCases: [stack],
 });
