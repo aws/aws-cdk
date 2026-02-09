@@ -1,6 +1,7 @@
 import * as fs from 'fs';
+import type { CfnResource } from 'aws-cdk-lib';
 import { Token } from 'aws-cdk-lib';
-import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { CfnPermission, type IFunction } from 'aws-cdk-lib/aws-lambda';
 import type { Construct } from 'constructs';
 import type { IGateway } from '../gateway-base';
 import type { ApiSchema } from './schema/api-schema';
@@ -21,6 +22,14 @@ export interface TargetConfigurationConfig {
    * Indicates that the configuration has been successfully bound
    */
   readonly bound: boolean;
+
+  /**
+   * The Lambda permission resource created for Lambda targets.
+   * Used to establish CloudFormation dependency ordering to avoid
+   * IAM eventual consistency issues during CreateGatewayTarget.
+   * @default - No permission (for non-Lambda targets)
+   */
+  readonly permission?: CfnResource;
 }
 
 /**
@@ -134,11 +143,26 @@ export class LambdaTargetConfiguration extends McpTargetConfiguration {
   public bind(scope: Construct, gateway: IGateway): TargetConfigurationConfig {
     // Bind the tool schema
     this.toolSchema.bind(scope);
-    // Grant permissions to gateway role
+    // Grant permissions to gateway role (identity-based policy)
     this.toolSchema.grantPermissionsToRole(gateway.role);
     this.lambdaFunction.grantInvoke(gateway.role);
 
-    return { bound: true };
+    // Add resource-based policy for synchronous validation
+    // This bypasses IAM eventual consistency issues during CreateGatewayTarget
+    // The BedrockAgentCore service performs a dry run Lambda invocation that
+    // executes before IAM has propagated the identity-based policy
+    // @see https://github.com/aws/aws-cdk/issues/36826
+    const permission = new CfnPermission(scope, 'BedrockAgentCoreInvoke', {
+      action: 'lambda:InvokeFunction',
+      functionName: this.lambdaFunction.functionArn,
+      principal: 'bedrock-agentcore.amazonaws.com',
+      sourceArn: gateway.gatewayArn,
+    });
+
+    return {
+      bound: true,
+      permission, // Return so GatewayTarget can add dependency
+    };
   }
 
   /**

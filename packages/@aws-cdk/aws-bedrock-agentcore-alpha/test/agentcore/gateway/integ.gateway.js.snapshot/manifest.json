@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "BedrockAgentCoreGatewayIntegTest.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/b596a7c2b6abe1b4b0550d41f2904c28fecde5bc1a75a34fbabff9cd595045d4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/349679ab7c96a4a12817e3b66e10f9613fc4f0c9cf4ee526184eea0470c0b95a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -114,12 +114,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole/Resource": [
@@ -268,6 +262,12 @@
             "data": "*"
           }
         ],
+        "/BedrockAgentCoreGatewayIntegTest/TestGateway/LambdaTarget/BedrockAgentCoreInvoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayLambdaTargetBedrockAgentCoreInvokeF366EA95"
+          }
+        ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/LambdaTarget/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -312,12 +312,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/ServiceRole/Resource": [
@@ -374,12 +368,6 @@
             }
           }
         ],
-        "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -432,12 +420,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole/Resource": [
@@ -528,7 +510,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f23d55f813e2935e5e82c753d11f3f2dc9322930a5a33dc3f77b16435dfb825.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44bb2fe2dab9f6bb52757d8ad6744aceccec0dd751546c7ccabcd07cd1f8bf4c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -946,6 +928,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1147,5 +1133,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

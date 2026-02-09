@@ -338,6 +338,25 @@
     }
    }
   },
+  "TestGatewayTestTargetBedrockAgentCoreInvokeD0B637B6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunction22AD90FC",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock-agentcore.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayArn"
+     ]
+    }
+   }
+  },
   "TestGatewayTestTarget12CA1321": {
    "Type": "AWS::BedrockAgentCore::GatewayTarget",
    "Properties": {
@@ -378,7 +397,10 @@
       }
      }
     }
-   }
+   },
+   "DependsOn": [
+    "TestGatewayTestTargetBedrockAgentCoreInvokeD0B637B6"
+   ]
   },
   "TestFunctionServiceRole6ABD93C7": {
    "Type": "AWS::IAM::Role",
@@ -487,7 +509,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip"
+     "S3Key": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip"
     },
     "Handler": "index.handler",
     "Role": {
