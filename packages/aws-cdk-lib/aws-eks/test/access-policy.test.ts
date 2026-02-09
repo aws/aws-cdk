@@ -1,5 +1,6 @@
 import { Aws } from '../../core';
-import { AccessPolicy, AccessPolicyArn, AccessPolicyNameOptions, AccessScopeType } from '../lib';
+import type { AccessPolicyNameOptions } from '../lib';
+import { AccessPolicy, AccessPolicyArn, AccessScopeType } from '../lib';
 
 describe('AccessPolicy', () => {
   describe('fromAccessPolicyName', () => {

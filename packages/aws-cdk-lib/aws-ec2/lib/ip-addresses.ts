@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import { CidrSplit, calculateCidrSplits } from './cidr-splits';
+import type { Construct } from 'constructs';
+import type { CidrSplit } from './cidr-splits';
+import { calculateCidrSplits } from './cidr-splits';
 import { CfnVPCCidrBlock } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { SubnetConfiguration } from './vpc';
+import type { SubnetConfiguration } from './vpc';
 import { Fn, Token, UnscopedValidationError } from '../../core';
 
 /**

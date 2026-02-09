@@ -1,9 +1,12 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
-import { Construct } from 'constructs';
-import { CfnDeployment, IRestApiRef } from './apigateway.generated';
-import { Method } from './method';
-import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
-import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
+import type { Construct } from 'constructs';
+import type { IRestApiRef } from './apigateway.generated';
+import { CfnDeployment } from './apigateway.generated';
+import type { Method } from './method';
+import type { IRestApi } from './restapi';
+import { RestApi, SpecRestApi, RestApiBase } from './restapi';
+import type { CfnResource } from '../../core';
+import { Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';

@@ -1,6 +1,8 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from 'aws-cdk-lib/assertions';
+import * as cdk from 'aws-cdk-lib/core';
 import { Names, Stack } from 'aws-cdk-lib/core';
+import { testFixtureCluster } from './util';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
 
@@ -112,6 +114,23 @@ describe('k8s patch', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'strategicPatchResource',
       PatchType: 'strategic',
+    });
+  });
+
+  test('applies removal policy to kubernetes patch and kubectl provider', () => {
+    const { stack, cluster } = testFixtureCluster();
+
+    new KubernetesPatch(stack, 'Patch', {
+      cluster,
+      resourceName: 'deployment/test',
+      applyPatch: { spec: { replicas: 3 } },
+      restorePatch: { spec: { replicas: 1 } },
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+      DeletionPolicy: 'Retain',
     });
   });
 });

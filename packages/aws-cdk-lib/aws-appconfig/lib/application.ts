@@ -1,15 +1,18 @@
 /* eslint-disable @cdklabs/no-literal-partition */
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnApplication } from './appconfig.generated';
-import { HostedConfiguration, HostedConfigurationOptions, SourcedConfiguration, SourcedConfigurationOptions } from './configuration';
-import { Environment, EnvironmentOptions, IEnvironment } from './environment';
-import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import type { HostedConfigurationOptions, SourcedConfigurationOptions } from './configuration';
+import { HostedConfiguration, SourcedConfiguration } from './configuration';
+import type { EnvironmentOptions, IEnvironment } from './environment';
+import { Environment } from './environment';
+import type { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible } from './extension';
+import { ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
 import { toIEnvironment } from './private/ref-utils';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IApplicationRef, IEnvironmentRef, ApplicationReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
+import type { IApplicationRef, IEnvironmentRef, ApplicationReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
 /**
  * Defines the platform for the AWS AppConfig Lambda extension.

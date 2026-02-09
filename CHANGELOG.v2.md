@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.237.1](https://github.com/aws/aws-cdk/compare/v2.237.0...v2.237.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* **core:** intrinsic cfn function tokens are not detected as such in java ([#36843](https://github.com/aws/aws-cdk/issues/36843)) ([89cd54f](https://github.com/aws/aws-cdk/commit/89cd54f6097025bc3e98f2c4bc3caea7c22a61ab))
+
+## [2.237.0](https://github.com/aws/aws-cdk/compare/v2.236.0...v2.237.0) (2026-02-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **iam:** Receivers of `IEncryptedResource` objects now have fewer guarantees about the shape of the object. If you still require an `IResource`, change the type to `IEncryptedResource & IResource` and/or add a type guard check using `Resource.isResource()`. Implementations of `IEncryptedResource` no longer need to implement `IResource` but must continue to implement `IEnvironmentAware`. Since `IResource` extends `IEnvironmentAware`, there is no change for implementors. Calls to `GrantableResources.isEncryptedResource()` now require an `IEnvironmentAware` argument instead of `IConstruct`.
+
+
+### Features
+
+* **eks:** add OidcProviderNative using L1 and deprecate OpenIdConnectProvider custom resource ([#36589](https://github.com/aws/aws-cdk/issues/36589)) ([09383cb](https://github.com/aws/aws-cdk/commit/09383cbad28336441f0fb405c9d8a190135620dc))
+* **eks:** add support overwriteServiceAccount prop in service account construct ([#36751](https://github.com/aws/aws-cdk/issues/36751)) ([3aa38f6](https://github.com/aws/aws-cdk/commit/3aa38f677d6d1c562c8c2e721b4b4a1f254270db))
+* **kms:** make `trustAccountIdentities` optional in `KeyGrants` ([#36786](https://github.com/aws/aws-cdk/issues/36786)) ([06676ac](https://github.com/aws/aws-cdk/commit/06676acaa1e8f4dc33c4690dd326cb867303ba0b))
+* **lambda:** add observability support for kafka event source mappings ([#36808](https://github.com/aws/aws-cdk/issues/36808)) ([dd8b419](https://github.com/aws/aws-cdk/commit/dd8b419b94e1cca719838ee9f85fe0c1ab40f394))
+* update L1 CloudFormation resource definitions ([#36799](https://github.com/aws/aws-cdk/issues/36799)) ([7ecd0a9](https://github.com/aws/aws-cdk/commit/7ecd0a9f1473809c1e196f4cfe7a23967a42378a))
+* **opensearchservice:** support OI2 instance type with local NVMe storage ([#36700](https://github.com/aws/aws-cdk/issues/36700)) ([034baf3](https://github.com/aws/aws-cdk/commit/034baf37e91fbc67235eaa96e2c5b7a557e37801)), closes [#36698](https://github.com/aws/aws-cdk/issues/36698)
+
+
+### Bug Fixes
+
+* **iam:** `IEncryptedResource` extends `IEnvironmentAware` instead of `IResource` ([#36787](https://github.com/aws/aws-cdk/issues/36787)) ([90ad834](https://github.com/aws/aws-cdk/commit/90ad834e7c65069e5ab8219600a4fdbef401bebb))
+
 ## [2.236.0](https://github.com/aws/aws-cdk/compare/v2.235.1...v2.236.0) (2026-01-23)
 
 

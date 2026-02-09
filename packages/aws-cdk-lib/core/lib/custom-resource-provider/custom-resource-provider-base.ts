@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import { CustomResourceProviderOptions, INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
+import type { CustomResourceProviderOptions } from './shared';
+import { INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
 import * as cxapi from '../../../cx-api';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
