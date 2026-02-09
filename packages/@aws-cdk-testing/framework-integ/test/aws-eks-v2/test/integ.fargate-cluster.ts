@@ -4,7 +4,7 @@ import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import type * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as eks from '../lib';
+import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 interface EksFargateClusterStackProps extends StackProps {
   vpc?: ec2.IVpc;

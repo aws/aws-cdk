@@ -2,7 +2,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as eks from '../lib';
+import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 class EksHybridNodesStack extends Stack {
   constructor(scope: App, id: string) {

@@ -13,7 +13,7 @@ import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import type * as constructs from 'constructs';
 import * as hello from './hello-k8s';
-import * as eks from '../lib';
+import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;

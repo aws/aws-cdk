@@ -4,7 +4,7 @@ import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as eks from '../lib';
+import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 /**
  * This test checks that all EKS resources can be deployed with removal policies.

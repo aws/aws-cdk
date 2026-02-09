@@ -4,7 +4,7 @@ import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
-import * as eks from '../lib';
+import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 class EksClusterNativeOidcStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {

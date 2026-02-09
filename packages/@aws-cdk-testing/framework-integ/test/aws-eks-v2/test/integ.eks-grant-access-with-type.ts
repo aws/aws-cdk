@@ -4,7 +4,7 @@ import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as eks from '../lib';
+import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 /**
  * Integration test for AccessEntry with different access entry types.
