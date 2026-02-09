@@ -64,17 +64,17 @@ export enum DeletionProtection {
   /**
    * No deletion protection
    */
-  NONE = 'None',
+  NONE = 'none',
 
   /**
    * Block force delete operations
    */
-  PREVENT_FORCE_DELETION = 'PreventForceDelete',
+  PREVENT_FORCE_DELETION = 'prevent-force-deletion',
 
   /**
    * Block all delete operations
    */
-  PREVENT_ALL_DELETION = 'PreventDelete',
+  PREVENT_ALL_DELETION = 'prevent-all-deletion',
 }
 
 /**

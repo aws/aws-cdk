@@ -3137,9 +3137,9 @@ function getTestStack(): cdk.Stack {
 }
 
 test.each([
-  [autoscaling.DeletionProtection.NONE, 'None'],
-  [autoscaling.DeletionProtection.PREVENT_FORCE_DELETION, 'PreventForceDelete'],
-  [autoscaling.DeletionProtection.PREVENT_ALL_DELETION, 'PreventDelete'],
+  [autoscaling.DeletionProtection.NONE, 'none'],
+  [autoscaling.DeletionProtection.PREVENT_FORCE_DELETION, 'prevent-force-deletion'],
+  [autoscaling.DeletionProtection.PREVENT_ALL_DELETION, 'prevent-all-deletion'],
 ])('can configure deletion protection with %s', (deletionProtection, expectedValue) => {
   // GIVEN
   const stack = new cdk.Stack();

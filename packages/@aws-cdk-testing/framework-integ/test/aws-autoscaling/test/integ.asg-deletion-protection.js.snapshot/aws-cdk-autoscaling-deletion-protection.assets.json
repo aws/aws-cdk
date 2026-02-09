@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "40e32d838c4a5585fa15a7189623437e02c0d2c23d78528807511d2f1c4834ac": {
+      "displayName": "aws-cdk-autoscaling-deletion-protection Template",
+      "source": {
+        "path": "aws-cdk-autoscaling-deletion-protection.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6d4ce88e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "40e32d838c4a5585fa15a7189623437e02c0d2c23d78528807511d2f1c4834ac.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
