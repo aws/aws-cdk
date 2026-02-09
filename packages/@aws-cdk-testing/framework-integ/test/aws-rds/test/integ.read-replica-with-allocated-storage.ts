@@ -26,7 +26,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 
 const sourceInstance = new rds.DatabaseInstance(stack, 'SourceInstance', {
   engine: rds.DatabaseInstanceEngine.mysql({
-    version: rds.MysqlEngineVersion.VER_8_0_42,
+    version: rds.MysqlEngineVersion.VER_8_4_7,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   vpc,

@@ -9,7 +9,7 @@ const stack = new Stack(app, 'integRdsInstanceIo2');
 const vpc = new Vpc(stack, 'Vpc', { natGateways: 0 });
 
 new DatabaseInstance(stack, 'Instance', {
-  engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_41 }),
+  engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_4_7 }),
   instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.SMALL),
   vpc,
   vpcSubnets: {

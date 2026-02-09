@@ -11,7 +11,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const dbInstance = new rds.DatabaseInstance(stack, 'DBInstance', {
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_16_11,
+    version: rds.PostgresEngineVersion.VER_18_1,
   }),
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,

@@ -10,7 +10,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 new DatabaseInstance(stack, 'Instance', {
   engine: DatabaseInstanceEngine.postgres({
-    version: PostgresEngineVersion.VER_17_7,
+    version: PostgresEngineVersion.VER_18_1,
   }),
   vpc,
   caCertificate: CaCertificate.RDS_CA_RSA2048_G1,

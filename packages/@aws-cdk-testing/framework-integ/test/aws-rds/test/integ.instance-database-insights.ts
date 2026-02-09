@@ -16,7 +16,7 @@ class TestStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
     new DatabaseInstance(this, 'PostgresInstanceAdvanced', {
-      engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_17_7 }),
+      engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_18_1 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       vpc,
       allocatedStorage: 100,
@@ -25,7 +25,7 @@ class TestStack extends cdk.Stack {
     });
 
     new DatabaseInstance(this, 'PostgresInstanceStandard', {
-      engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_17_7 }),
+      engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_18_1 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       vpc,
       allocatedStorage: 100,

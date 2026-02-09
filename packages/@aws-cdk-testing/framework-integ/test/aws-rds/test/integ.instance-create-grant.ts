@@ -12,7 +12,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_16_11,
+    version: rds.PostgresEngineVersion.VER_18_1,
   }),
   vpc,
   credentials: rds.Credentials.fromUsername('postgres'),

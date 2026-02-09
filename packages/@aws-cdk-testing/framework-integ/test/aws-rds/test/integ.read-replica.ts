@@ -43,7 +43,7 @@ class TestStack extends Stack {
     });
 
     const mysqlSource = new rds.DatabaseInstance(this, 'MysqlSource', {
-      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0 }),
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_7 }),
       backupRetention: Duration.days(5),
       instanceType,
       vpc,
@@ -51,7 +51,7 @@ class TestStack extends Stack {
     });
 
     const parameterGroup = new rds.ParameterGroup(this, 'ReplicaParameterGroup', {
-      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0 }),
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_7 }),
       parameters: {
         wait_timeout: '86400',
       },
