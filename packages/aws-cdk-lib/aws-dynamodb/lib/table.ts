@@ -1,16 +1,20 @@
 import { Construct } from 'constructs';
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
-import { CfnTable, CfnTableProps, ITableRef, TableReference } from './dynamodb.generated';
+import type { CfnTableProps, ITableRef, TableReference } from './dynamodb.generated';
+import { CfnTable } from './dynamodb.generated';
 import { ReplicaProvider } from './replica-provider';
-import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
+import type { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
-import {
-  Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
-  Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
-  LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput, PointInTimeRecoverySpecification,
+import type {
+  OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
+  Attribute, ITable, SecondaryIndexProps, TableClass,
+  LocalSecondaryIndexProps, WarmThroughput, PointInTimeRecoverySpecification,
   ContributorInsightsSpecification,
-  validateContributorInsights,
   KeySchema,
+} from './shared';
+import {
+  Operation, BillingMode, ProjectionType, TableEncryption, StreamViewType,
+  validateContributorInsights,
   parseKeySchema,
 } from './shared';
 import { StreamGrants } from './stream-grants';
@@ -18,13 +22,14 @@ import { TableGrants } from './table-grants';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
+import type { CfnCustomResource, CfnResource, Duration } from '../../core';
 import {
   ArnFormat, Resource,
-  Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
+  Aws, CfnCondition,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
   CfnDeletionPolicy,
   FeatureFlags,

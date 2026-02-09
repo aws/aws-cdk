@@ -1,9 +1,10 @@
-import { Dependable, IConstruct, IDependable } from 'constructs';
+import type { IConstruct, IDependable } from 'constructs';
+import { Dependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
-import { IGrantable, IPrincipal } from './principals';
+import type { IGrantable, IPrincipal } from './principals';
 import * as cdk from '../../core';
-import { IEnvironmentAware } from '../../core';
-import * as iam from '../index';
+import type { IEnvironmentAware } from '../../core';
+import type * as iam from '../index';
 
 /**
  * Basic options for a grant operation

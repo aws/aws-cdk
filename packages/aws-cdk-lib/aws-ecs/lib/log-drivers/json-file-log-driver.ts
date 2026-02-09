@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from './log-driver';
+import type { Construct } from 'constructs';
+import type { BaseLogDriverProps } from './base-log-driver';
+import type { LogDriverConfig } from './log-driver';
+import { LogDriver } from './log-driver';
 import { joinWithCommas, stringifyOptions } from './utils';
 import { UnscopedValidationError } from '../../../core';
-import { ContainerDefinition } from '../container-definition';
+import type { ContainerDefinition } from '../container-definition';
 
 /**
  * Specifies the json-file log driver configuration options.

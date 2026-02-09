@@ -1,6 +1,6 @@
 import * as path from 'node:path';
-import { Service } from '@aws-cdk/service-spec-types';
-import { Module, TypeDeclaration } from '@cdklabs/typewriter';
+import type { Service } from '@aws-cdk/service-spec-types';
+import type { Module, TypeDeclaration } from '@cdklabs/typewriter';
 
 /**
  * A Module located in a file

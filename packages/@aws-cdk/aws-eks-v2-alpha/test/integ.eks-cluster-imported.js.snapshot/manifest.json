@@ -302,12 +302,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/EksAdminRole/ImportEksAdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/EksAdminRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -358,12 +352,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-import-cluster-test/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Cluster/Role/Resource": [
@@ -526,12 +514,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-import-cluster-test/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -704,12 +686,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -867,12 +843,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -910,10 +880,6 @@
         "/aws-cdk-eks-import-cluster-test/Cluster/OpenIdConnectProvider/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
             "data": "*"
           }
         ],
@@ -1046,12 +1012,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/ImportedCluster/MyServiceAccount/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/ImportedCluster/MyServiceAccount/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1095,12 +1055,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/aws-cdk-eks-import-cluster-test/ImportedCluster/MyExtendedServiceAccount/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/ImportedCluster/MyExtendedServiceAccount/Role/Resource": [

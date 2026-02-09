@@ -1,10 +1,11 @@
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
-import { ArnFormat, IResource, Resource, Stack, Fn } from 'aws-cdk-lib/core';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
+import { ArnFormat, Resource, Stack, Fn } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { Construct } from 'constructs';
+import type { ICluster } from './cluster';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -57,6 +58,20 @@ export interface AddonProps {
    * @default - Use default configuration.
    */
   readonly configurationValues?: Record<string, any>;
+
+  /**
+   * The removal policy applied to the EKS add-on.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -146,6 +161,10 @@ export class Addon extends Resource implements IAddon {
       preserveOnDelete: props.preserveOnDelete,
       configurationValues: this.stack.toJsonString(props.configurationValues),
     });
+
+    if (props.removalPolicy) {
+      this.resource.applyRemovalPolicy(props.removalPolicy);
+    }
   }
 
   /**

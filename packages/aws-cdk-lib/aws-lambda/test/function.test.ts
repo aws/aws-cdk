@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { testDeprecated, bockfs } from '@aws-cdk/cdk-build-tools';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as _ from 'lodash';
 import { Annotations, Match, Template } from '../../assertions';
 import { ProfilingGroup } from '../../aws-codeguruprofiler';

@@ -2,8 +2,8 @@ import { Construct } from 'constructs';
 import { CustomResource } from './custom-resource';
 import { CfnUtilsProvider } from './private/cfn-utils-provider';
 import { CfnUtilsResourceType } from './private/cfn-utils-provider/consts';
-import { Reference } from './reference';
-import { IResolvable, IResolveContext } from './resolvable';
+import type { Reference } from './reference';
+import type { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
 

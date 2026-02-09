@@ -9,10 +9,11 @@ import { CfnResource } from '../cfn-resource';
 import { AssumptionError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
-import { ConstructInfo } from './runtime-info';
-import { ConstructAnalytics, constructAnalyticsFromScope } from './stack-metadata';
+import type { ConstructInfo } from './runtime-info';
+import type { ConstructAnalytics } from './stack-metadata';
+import { constructAnalyticsFromScope } from './stack-metadata';
 
 /**
  * Construct that will render the metadata resource

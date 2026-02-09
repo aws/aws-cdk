@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cdk from '../../../core';
 import { UnscopedValidationError } from '../../../core';
 import { ActionCategory } from '../action';
-import { Artifact } from '../artifact';
-import { GitConfiguration, GitPullRequestFilter, GitPushFilter } from '../trigger';
+import type { Artifact } from '../artifact';
+import type { GitConfiguration, GitPullRequestFilter, GitPushFilter } from '../trigger';
 
 /**
  * Validation function that checks if the number of artifacts is within the given bounds

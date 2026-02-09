@@ -1,8 +1,9 @@
-import { CustomResource, Reference } from 'aws-cdk-lib/core';
-import { Construct, IConstruct } from 'constructs';
-import { ExpectedResult } from './common';
-import { AssertionsProvider } from './providers';
-import { WaiterStateMachineOptions } from './waiter-state-machine';
+import type { CustomResource, Reference } from 'aws-cdk-lib/core';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { ExpectedResult } from './common';
+import type { AssertionsProvider } from './providers';
+import type { WaiterStateMachineOptions } from './waiter-state-machine';
 
 /**
  * Represents an ApiCall

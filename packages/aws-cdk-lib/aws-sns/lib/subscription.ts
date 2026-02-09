@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { DeliveryPolicy } from './delivery-policy';
+import type { Construct } from 'constructs';
+import type { DeliveryPolicy } from './delivery-policy';
 import { CfnSubscription } from './sns.generated';
-import { SubscriptionFilter } from './subscription-filter';
-import { ITopic } from './topic-base';
+import type { SubscriptionFilter } from './subscription-filter';
+import type { ITopic } from './topic-base';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
-import { IQueue } from '../../aws-sqs';
+import type { IQueue } from '../../aws-sqs';
 import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

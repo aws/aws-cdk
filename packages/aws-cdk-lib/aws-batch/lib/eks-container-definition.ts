@@ -1,7 +1,9 @@
-import { Construct, IConstruct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
-import * as ecs from '../../aws-ecs';
-import { Lazy, Size } from '../../core';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { CfnJobDefinition } from './batch.generated';
+import type * as ecs from '../../aws-ecs';
+import type { Size } from '../../core';
+import { Lazy } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.EmptyDirVolume');

@@ -1,9 +1,11 @@
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
-import { TargetBaseProps, bindBaseTargetConfig } from './util';
+import type { TargetBaseProps } from './util';
+import { bindBaseTargetConfig } from './util';
+import type { RuleTargetInputProperties, IRule } from '../../aws-events';
 import * as events from '../../aws-events';
-import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule, InputType } from '../../aws-events';
+import { RuleTargetInput, EventField, InputType } from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as logs from '../../aws-logs';
+import type * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import { ArnFormat, Stack, ValidationError } from '../../core';
 

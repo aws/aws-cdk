@@ -1,5 +1,6 @@
 import * as events from '../../aws-events';
-import { Duration, TimeZone, UnscopedValidationError } from '../../core';
+import type { Duration } from '../../core';
+import { TimeZone, UnscopedValidationError } from '../../core';
 
 /**
  * ScheduleExpression for EventBridge Schedule

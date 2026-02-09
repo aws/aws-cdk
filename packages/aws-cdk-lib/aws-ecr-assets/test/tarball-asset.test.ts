@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import * as cxschema from '../../cloud-assembly-schema';
+import type * as cxschema from '../../cloud-assembly-schema';
 import { App, Stack, DefaultStackSynthesizer } from '../../core';
 import * as cxapi from '../../cx-api';
 import { TarballImageAsset, DOCKER_LOAD_OUTPUT_REGEX } from '../lib';

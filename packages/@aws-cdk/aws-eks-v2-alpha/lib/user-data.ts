@@ -1,6 +1,6 @@
-import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import type * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Stack } from 'aws-cdk-lib/core';
-import { BootstrapOptions, ICluster } from './cluster';
+import type { BootstrapOptions, ICluster } from './cluster';
 
 // eslint-disable-next-line max-len
 export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {

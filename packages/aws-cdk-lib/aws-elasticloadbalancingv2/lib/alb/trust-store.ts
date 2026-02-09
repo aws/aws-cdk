@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { IBucketRef } from '../../../aws-s3';
-import { Fn, IResource, Lazy, Names, Resource, Token } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IBucketRef } from '../../../aws-s3';
+import type { IResource } from '../../../core';
+import { Fn, Lazy, Names, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTrustStore } from '../elasticloadbalancingv2.generated';
 
 /**

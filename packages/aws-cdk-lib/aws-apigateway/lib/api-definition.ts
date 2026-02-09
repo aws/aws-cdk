@@ -1,6 +1,7 @@
-import { Construct, Node } from 'constructs';
-import { CfnRestApi, IRestApiRef } from './apigateway.generated';
-import * as s3 from '../../aws-s3';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { CfnRestApi, IRestApiRef } from './apigateway.generated';
+import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';

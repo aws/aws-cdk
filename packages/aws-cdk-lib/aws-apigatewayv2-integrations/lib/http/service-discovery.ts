@@ -1,8 +1,8 @@
-import { HttpPrivateIntegrationOptions } from './base-types';
+import type { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
-import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
+import type { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
 import { ValidationError } from '../../../core/lib/errors';
-import { IServiceRef } from '../../../interfaces/generated/aws-servicediscovery-interfaces.generated';
+import type { IServiceRef } from '../../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 /**
  * Properties to initialize `HttpServiceDiscoveryIntegration`.

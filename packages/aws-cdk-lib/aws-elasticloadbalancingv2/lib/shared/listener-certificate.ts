@@ -1,4 +1,4 @@
-import { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * A certificate source for an ELBv2 listener

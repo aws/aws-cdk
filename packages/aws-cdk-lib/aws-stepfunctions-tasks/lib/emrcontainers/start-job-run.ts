@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { TaskInput } from '../../../aws-stepfunctions';
+import type { TaskInput } from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
 import { RolePolicySingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/role-policy-provider.generated';

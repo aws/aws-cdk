@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import { Duration, Lazy, Stack } from '../../core';
-import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
+import type { IWidget } from '../lib';
+import { Alarm, GraphWidget, MathExpression, Metric } from '../lib';
 
 const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
 const b = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'Average' });

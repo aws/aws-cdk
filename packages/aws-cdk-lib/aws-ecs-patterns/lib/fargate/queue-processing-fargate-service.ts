@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
-import * as ec2 from '../../../aws-ec2';
-import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
-import { FeatureFlags, Duration, ValidationError } from '../../../core';
+import type { Construct } from 'constructs';
+import type * as ec2 from '../../../aws-ec2';
+import type { HealthCheck } from '../../../aws-ecs';
+import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
+import type { Duration } from '../../../core';
+import { FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
-import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
+import type { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
+import { QueueProcessingServiceBase } from '../base/queue-processing-service-base';
 
 /**
  * The properties for the QueueProcessingFargateService service.

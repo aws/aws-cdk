@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import * as ec2 from '../../../aws-ec2';
+import type { Construct } from 'constructs';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Size, Stack, ValidationError, withResolved } from '../../../core';
+import type { Size } from '../../../core';
+import { Stack, ValidationError, withResolved } from '../../../core';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 /**

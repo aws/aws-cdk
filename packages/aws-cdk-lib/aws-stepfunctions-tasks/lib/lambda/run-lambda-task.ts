@@ -1,5 +1,5 @@
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
+import type * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import { ValidationError } from '../../../core';
 import { getResourceArn } from '../resource-arn-suffix';

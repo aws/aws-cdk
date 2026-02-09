@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
-import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
+import type { Construct } from 'constructs';
+import type { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
+import type { HealthCheck } from '../../../aws-ecs';
+import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags, Token, ValidationError } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
+import { ApplicationLoadBalancedServiceBase } from '../base/application-load-balanced-service-base';
+import type { FargateServiceBaseProps } from '../base/fargate-service-base';
 /**
  * The properties for the ApplicationLoadBalancedFargateService service.
  */

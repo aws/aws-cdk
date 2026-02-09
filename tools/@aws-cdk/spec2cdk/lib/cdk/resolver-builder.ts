@@ -1,9 +1,10 @@
-import { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
-import { CallableDeclaration, expr, Expression, Lambda, Module, Parameter, Type } from '@cdklabs/typewriter';
+import type { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
+import type { CallableDeclaration, Expression, Module } from '@cdklabs/typewriter';
+import { expr, Lambda, Parameter, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { RelationshipDecider, Relationship } from './relationship-decider';
+import type { RelationshipDecider, Relationship } from './relationship-decider';
 import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
-import { TypeConverter } from './type-converter';
+import type { TypeConverter } from './type-converter';
 import { flattenFunctionNameFromType, propertyNameFromCloudFormation } from '../naming';
 
 export interface ResolverResult {

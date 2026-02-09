@@ -1,10 +1,10 @@
-import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import type { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { CfnFirewallRuleGroupAssociation } from 'aws-cdk-lib/aws-route53resolver';
 import { Resource, Token, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IFirewallRuleGroup } from './firewall-rule-group';
+import type { Construct } from 'constructs';
+import type { IFirewallRuleGroup } from './firewall-rule-group';
 
 /**
  * Options for a Firewall Rule Group Association

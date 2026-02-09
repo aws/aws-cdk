@@ -1,6 +1,6 @@
 import { UnscopedValidationError } from '../../../core';
-import { ISchedulingPolicyRef } from '../../../interfaces/generated/aws-batch-interfaces.generated';
-import { ISchedulingPolicy } from '../scheduling-policy';
+import type { ISchedulingPolicyRef } from '../../../interfaces/generated/aws-batch-interfaces.generated';
+import type { ISchedulingPolicy } from '../scheduling-policy';
 
 /**
  * Converts an ISchedulingPolicyRef to ISchedulingPolicy, validating that it implements the full interface.

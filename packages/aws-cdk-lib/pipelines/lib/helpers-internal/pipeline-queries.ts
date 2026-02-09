@@ -1,6 +1,6 @@
 import { ValidationError } from '../../../core';
-import { Step, StackOutputReference, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
-import { PipelineBase } from '../main/pipeline-base';
+import type { Step, StackOutputReference, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
+import type { PipelineBase } from '../main/pipeline-base';
 
 /**
  * Answer some questions about a pipeline blueprint

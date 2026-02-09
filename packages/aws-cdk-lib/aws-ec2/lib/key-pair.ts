@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { CfnKeyPair, IKeyPairRef, KeyPairReference } from './ec2.generated';
+import type { Construct } from 'constructs';
+import type { IKeyPairRef, KeyPairReference } from './ec2.generated';
+import { CfnKeyPair } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
-import { IStringParameter, StringParameter } from '../../aws-ssm';
-import { IResource, Lazy, Names, Resource, ResourceProps, ValidationError } from '../../core';
+import type { IStringParameter } from '../../aws-ssm';
+import { StringParameter } from '../../aws-ssm';
+import type { IResource, ResourceProps } from '../../core';
+import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

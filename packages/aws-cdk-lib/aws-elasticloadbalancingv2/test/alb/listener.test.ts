@@ -1,8 +1,8 @@
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { Annotations, Match, Template } from '../../../assertions';
 import * as acm from '../../../aws-certificatemanager';
-import { Metric } from '../../../aws-cloudwatch';
+import type { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';

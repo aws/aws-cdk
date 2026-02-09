@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { IFileSystem } from './efs-file-system';
+import type { Construct } from 'constructs';
+import type { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
-import { ArnFormat, IResource, Resource, Stack, Tags, Token, UnscopedValidationError, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack, Tags, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { AccessPointReference, IAccessPointRef, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
+import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * Represents an EFS AccessPoint

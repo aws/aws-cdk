@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { BundlingDockerImage, DockerImage, Stack } from '../../core';
+import type { Construct } from 'constructs';
+import type { BundlingDockerImage } from '../../core';
+import { DockerImage, Stack } from '../../core';
 import { FactName } from '../../region-info';
 
 export interface LambdaRuntimeProps {

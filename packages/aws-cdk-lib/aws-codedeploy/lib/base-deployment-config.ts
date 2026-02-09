@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDeploymentConfig } from './codedeploy.generated';
-import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
+import type { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
 import { arnForDeploymentConfig, validateName } from './private/utils';
-import { TrafficRouting } from './traffic-routing-config';
-import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../core';
+import type { TrafficRouting } from './traffic-routing-config';
+import type { Duration } from '../../core';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
-import { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,

@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import { IListenerAction } from './listener-action';
-import { Attributes, mapTagMapToCxschema, renderAttributes } from './util';
+import type { Construct } from 'constructs';
+import type { IListenerAction } from './listener-action';
+import type { Attributes } from './util';
+import { mapTagMapToCxschema, renderAttributes } from './util';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
+import type { IResource } from '../../../core';
+import { Annotations, ContextProvider, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import * as cxapi from '../../../cx-api';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type * as cxapi from '../../../cx-api';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 
 /**

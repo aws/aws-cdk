@@ -1,4 +1,4 @@
-import { CfnGlobalTable } from './dynamodb.generated';
+import type { CfnGlobalTable } from './dynamodb.generated';
 import { UnscopedValidationError } from '../../core';
 
 /**

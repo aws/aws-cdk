@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Annotations, Capture, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -10,12 +10,14 @@ import * as s3 from '../../aws-s3';
 import { App, ArnFormat, Aws, CfnDeletionPolicy, Duration, Fn, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
-import {
+import type {
   Attribute,
-  AttributeType,
-  BillingMode,
   GlobalSecondaryIndexProps,
   LocalSecondaryIndexProps,
+} from '../lib';
+import {
+  AttributeType,
+  BillingMode,
   ProjectionType,
   StreamViewType,
   Table,

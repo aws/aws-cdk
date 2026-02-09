@@ -1,14 +1,20 @@
 import { Construct } from 'constructs';
-import { IVpc } from '../../../aws-ec2';
-import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver,
-  PropagatedTagSource, Protocol, Secret,
+import type { IVpc } from '../../../aws-ec2';
+import type {
+  BaseService, CloudMapOptions, ContainerDefinition, ContainerImage, ICluster, LogDriver,
+  PropagatedTagSource, Secret,
 } from '../../../aws-ecs';
-import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
-import { IRole } from '../../../aws-iam';
-import { ARecord, IHostedZone, RecordTarget } from '../../../aws-route53';
+import {
+  AwsLogDriver, Cluster, Protocol,
+} from '../../../aws-ecs';
+import type { NetworkListener, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import { NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
+import type { IRole } from '../../../aws-iam';
+import type { IHostedZone } from '../../../aws-route53';
+import { ARecord, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, Stack, ValidationError } from '../../../core';
+import type { Duration } from '../../../core';
+import { CfnOutput, Stack, ValidationError } from '../../../core';
 
 /**
  * The properties for the base NetworkMultipleTargetGroupsEc2Service or NetworkMultipleTargetGroupsFargateService service.

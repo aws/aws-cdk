@@ -1,18 +1,21 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { NetworkListenerAction } from './network-listener-action';
 import { NetworkListenerCertificate } from './network-listener-certificate';
-import { INetworkLoadBalancer } from './network-load-balancer';
-import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
+import type { INetworkLoadBalancer } from './network-load-balancer';
+import type { INetworkLoadBalancerTarget, INetworkTargetGroup } from './network-target-group';
+import { NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
-import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
-import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
-import { IListenerCertificate } from '../shared/listener-certificate';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { BaseListenerLookupOptions, IListener } from '../shared/base-listener';
+import { BaseListener } from '../shared/base-listener';
+import type { HealthCheck } from '../shared/base-target-group';
+import type { AlpnPolicy, SslPolicy } from '../shared/enums';
+import { Protocol } from '../shared/enums';
+import type { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
 /**

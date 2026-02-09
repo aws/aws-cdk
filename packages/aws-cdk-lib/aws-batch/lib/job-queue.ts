@@ -1,12 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { toISchedulingPolicy } from './private/ref-utils';
-import { ISchedulingPolicy } from './scheduling-policy';
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import type { ISchedulingPolicy } from './scheduling-policy';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef, JobQueueReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef, JobQueueReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobQueue

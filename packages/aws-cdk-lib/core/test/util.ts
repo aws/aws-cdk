@@ -1,5 +1,6 @@
-import { CloudArtifact, CloudAssembly, SynthesisMessageLevel } from '../../cx-api';
-import { Stack } from '../lib';
+import type { CloudAssembly } from '../../cx-api';
+import { CloudArtifact, SynthesisMessageLevel } from '../../cx-api';
+import type { Stack } from '../lib';
 import { CDK_DEBUG } from '../lib/debug';
 import { synthesize } from '../lib/private/synthesis';
 

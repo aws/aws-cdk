@@ -1,5 +1,5 @@
 import * as apigw from '../../aws-apigateway';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Names, Stack, UnscopedValidationError } from '../../core';
 
 export class ApiEventSource implements lambda.IEventSource {

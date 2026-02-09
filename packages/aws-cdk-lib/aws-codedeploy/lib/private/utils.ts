@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { Token, Stack, ArnFormat, Arn, Fn, Aws, ValidationError, IEnvironmentAware } from '../../../core';
+import type { Construct } from 'constructs';
+import type { Stack, IEnvironmentAware } from '../../../core';
+import { Token, ArnFormat, Arn, Fn, Aws, ValidationError } from '../../../core';
 import { DetachedConstruct } from '../../../core/lib/private/detached-construct';
-import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
-import { IBaseDeploymentConfig, IBindableDeploymentConfig } from '../base-deployment-config';
-import { CfnDeploymentGroup, IDeploymentConfigRef, IDeploymentGroupRef } from '../codedeploy.generated';
-import { AutoRollbackConfig } from '../rollback-config';
+import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IBaseDeploymentConfig, IBindableDeploymentConfig } from '../base-deployment-config';
+import type { CfnDeploymentGroup, IDeploymentConfigRef, IDeploymentGroupRef } from '../codedeploy.generated';
+import type { AutoRollbackConfig } from '../rollback-config';
 
 export function arnForApplication(stack: Stack, applicationName: string): string {
   return stack.formatArn({

@@ -1486,6 +1486,8 @@ To do this for a specific stack, add a `suppressTemplateIndentation: true` prope
 stack's `StackProps` parameter. You can also set this property to `false` to override
 the context key setting.
 
+Similarly, to do this for a specific nested stack, add a `suppressTemplateIndentation: true` property to its `NestedStackProps` parameter. You can also set this property to `false` to override the context key setting.
+
 ## App Context
 
 [Context values](https://docs.aws.amazon.com/cdk/v2/guide/context.html) are key-value pairs that can be associated with an app, stack, or construct.

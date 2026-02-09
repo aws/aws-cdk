@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import * as appscaling from '../../aws-applicationautoscaling';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type { Construct } from 'constructs';
+import type * as appscaling from '../../aws-applicationautoscaling';
+import type * as cloudwatch from '../../aws-cloudwatch';
 
 /**
  * Use an ApplicationAutoScaling StepScalingAction as an Alarm Action

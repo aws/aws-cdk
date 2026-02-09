@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { TaskDefinition } from './base/task-definition';
-import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
+import type { Construct } from 'constructs';
+import type { TaskDefinition } from './base/task-definition';
+import type { ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
+import { ContainerDefinition } from './container-definition';
 import { ContainerImage } from './container-image';
-import { CfnTaskDefinition } from './ecs.generated';
-import { LogDriverConfig } from './log-drivers/log-driver';
+import type { CfnTaskDefinition } from './ecs.generated';
+import type { LogDriverConfig } from './log-drivers/log-driver';
 import * as iam from '../../aws-iam';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';

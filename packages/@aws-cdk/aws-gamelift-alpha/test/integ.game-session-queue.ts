@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as gamelift from '../lib';
 
 class TestStack extends cdk.Stack {

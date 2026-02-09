@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnOriginRequestPolicy, IOriginRequestPolicyRef, OriginRequestPolicyReference } from './cloudfront.generated';
+import type { Construct } from 'constructs';
+import type { IOriginRequestPolicyRef, OriginRequestPolicyReference } from './cloudfront.generated';
+import { CfnOriginRequestPolicy } from './cloudfront.generated';
 import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { DetachedConstruct } from '../../core/lib/private/detached-construct';

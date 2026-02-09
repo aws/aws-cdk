@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
-import {
-  WebSocketAuthorizer,
-  WebSocketAuthorizerType,
+import type { Construct } from 'constructs';
+import type {
   WebSocketRouteAuthorizerBindOptions,
   WebSocketRouteAuthorizerConfig,
   IWebSocketRouteAuthorizer,
   IWebSocketApi,
 } from '../../../aws-apigatewayv2';
+import {
+  WebSocketAuthorizer,
+  WebSocketAuthorizerType,
+} from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
-import { IFunction } from '../../../aws-lambda';
+import type { IFunction } from '../../../aws-lambda';
 import { Stack, Names } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 

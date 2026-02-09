@@ -1,18 +1,20 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Tokenization, Token, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
-import {
+import type {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
-  Compatibility,
   ITaskDefinition,
+} from '../base/task-definition';
+import {
+  Compatibility,
   NetworkMode,
   PidMode,
   TaskDefinition,
 } from '../base/task-definition';
-import { RuntimePlatform } from '../runtime-platform';
+import type { RuntimePlatform } from '../runtime-platform';
 
 /**
  * The properties for a task definition.

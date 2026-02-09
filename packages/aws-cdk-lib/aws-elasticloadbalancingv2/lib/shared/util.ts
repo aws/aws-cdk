@@ -1,5 +1,5 @@
 import { ApplicationProtocol, Protocol } from './enums';
-import * as cxschema from '../../../cloud-assembly-schema';
+import type * as cxschema from '../../../cloud-assembly-schema';
 import { Arn, ArnFormat, Fn, Token } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 

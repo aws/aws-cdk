@@ -1,5 +1,5 @@
-import { IBucket } from '../../aws-s3';
-import { IParameter } from '../../aws-ssm';
+import type { IBucket } from '../../aws-s3';
+import type { IParameter } from '../../aws-ssm';
 import { ValidationError } from '../../core';
 
 /**

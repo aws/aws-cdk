@@ -1,4 +1,4 @@
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { ValidationError } from '../agents/validation-helpers';
 
 /**

@@ -1,11 +1,15 @@
 import { Construct } from 'constructs';
-import { ScalingInterval } from '../../../aws-applicationautoscaling';
-import { IVpc } from '../../../aws-ec2';
-import {
-  AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+import type { ScalingInterval } from '../../../aws-applicationautoscaling';
+import type { IVpc } from '../../../aws-ec2';
+import type {
+  BaseService, CapacityProviderStrategy, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '../../../aws-ecs';
-import { IQueue, Queue } from '../../../aws-sqs';
+import {
+  AwsLogDriver, Cluster,
+} from '../../../aws-ecs';
+import type { IQueue } from '../../../aws-sqs';
+import { Queue } from '../../../aws-sqs';
 import { CfnOutput, Duration, FeatureFlags, Stack, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 

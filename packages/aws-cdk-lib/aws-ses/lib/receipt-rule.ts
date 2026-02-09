@@ -1,12 +1,13 @@
 import { Construct } from 'constructs';
-import { IReceiptRuleAction } from './receipt-rule-action';
+import type { IReceiptRuleAction } from './receipt-rule-action';
 import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
-import { Aws, IResource, Lazy, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Aws, Lazy, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
-import { IReceiptRuleSetRef, IReceiptRuleRef, ReceiptRuleReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IReceiptRuleSetRef, IReceiptRuleRef, ReceiptRuleReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A receipt rule.

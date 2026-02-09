@@ -1,11 +1,13 @@
 
-import { Construct } from 'constructs';
-import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
+import type { Construct } from 'constructs';
+import type { BatchStrategy, ModelClientOptions, TransformInput, TransformOutput, TransformResources } from './base-types';
+import { S3DataType } from './base-types';
 import { renderEnvironment, renderTags } from './private/utils';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Size, Stack, Token, ValidationError } from '../../../core';
+import type { Size } from '../../../core';
+import { Stack, Token, ValidationError } from '../../../core';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 interface SageMakerCreateTransformJobOptions {

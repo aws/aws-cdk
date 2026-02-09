@@ -1,7 +1,8 @@
 import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, Statistic } from '../../aws-cloudwatch';
+import type { Metric } from '../../aws-cloudwatch';
+import { Statistic } from '../../aws-cloudwatch';
 import { Vpc, EbsDeviceVolumeType, Port, SecurityGroup, SubnetType } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -9,7 +10,8 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, NodeType, TLSSecurityPolicy } from '../lib';
+import type { DomainProps, NodeOptions } from '../lib';
+import { Domain, EngineVersion, IpAddressType, NodeType, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;

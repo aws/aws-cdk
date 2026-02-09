@@ -1,4 +1,4 @@
-import * as sfn from '../../../aws-stepfunctions';
+import type * as sfn from '../../../aws-stepfunctions';
 
 /** Http Methods that API Gateway supports */
 export enum HttpMethod {

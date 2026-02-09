@@ -1,5 +1,7 @@
-import { Grant, IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { CredentialProviderType, ICredentialProviderConfig } from './credential-provider';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { Grant, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import type { ICredentialProviderConfig } from './credential-provider';
+import { CredentialProviderType } from './credential-provider';
 import { GATEWAY_API_KEY_PERMS, GATEWAY_WORKLOAD_IDENTITY_PERMS, GATEWAY_SECRETS_PERMS } from '../perms';
 
 /******************************************************************************

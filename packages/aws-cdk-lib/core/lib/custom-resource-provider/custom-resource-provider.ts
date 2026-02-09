@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CustomResourceProviderBase } from './custom-resource-provider-base';
-import { CustomResourceProviderOptions } from './shared';
+import type { CustomResourceProviderOptions } from './shared';
 import { FactName } from '../../../region-info';
 import { Stack } from '../stack';
 

@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
-import { BaseServiceProps, Service } from './service';
+import type { Construct } from 'constructs';
+import type { BaseNamespaceProps, INamespace } from './namespace';
+import { NamespaceType } from './namespace';
+import type { BaseServiceProps } from './service';
+import { Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { HttpNamespaceReference, IHttpNamespaceRef } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
+import type { HttpNamespaceReference, IHttpNamespaceRef } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
 export interface IHttpNamespace extends INamespace, IHttpNamespaceRef { }

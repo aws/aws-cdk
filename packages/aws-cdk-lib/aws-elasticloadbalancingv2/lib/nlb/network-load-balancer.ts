@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
+import type { Construct } from 'constructs';
+import type { BaseNetworkListenerProps } from './network-listener';
+import { NetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
@@ -8,9 +9,10 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2, SubnetMapping } from '../shared/base-load-balancer';
+import type { BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2, SubnetMapping } from '../shared/base-load-balancer';
+import { BaseLoadBalancer } from '../shared/base-load-balancer';
 import { IpAddressType, Protocol } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 

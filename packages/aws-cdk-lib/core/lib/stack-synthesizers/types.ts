@@ -1,6 +1,6 @@
-import { CloudAssemblyBuilder } from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { Stack } from '../stack';
+import type { CloudAssemblyBuilder } from '../../../cx-api';
+import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import type { Stack } from '../stack';
 
 /**
  * Encodes information how a certain Stack should be deployed

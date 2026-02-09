@@ -2,7 +2,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
 /**

@@ -1,19 +1,127 @@
 /// !cdk-integ pragma:disable-update-workflow
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 /**
- * This test just checks that all resources can be deployed with a removal policy.
+ * This test checks that all EKS resources can be deployed with removal policies.
  * We use the DESTROY policy here to avoid leaving orphaned resources behind, but if it works for DESTROY, it should work for other values as well.
  */
 class EksClusterRemovalPolicyStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new eks.Cluster(this, 'Cluster', {
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
+
+    const cluster = new eks.Cluster(this, 'Cluster', {
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
+      removalPolicy: RemovalPolicy.DESTROY,
+      prune: false,
+      vpc,
+      defaultCapacity: 0,
+      authenticationMode: eks.AuthenticationMode.API,
+    });
+
+    cluster.clusterSecurityGroup.addIngressRule(
+      ec2.Peer.ipv4(vpc.vpcCidrBlock),
+      ec2.Port.tcp(443),
+      'Allow VPC traffic',
+    );
+
+    // Access Entry
+    const accessPolicy = new eks.AccessPolicy({
+      accessScope: { type: eks.AccessScopeType.CLUSTER },
+      policy: eks.AccessPolicyArn.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
+    });
+    new eks.AccessEntry(this, 'AccessEntry', {
+      cluster,
+      principal: 'arn:aws:iam::123456789012:user/test-user',
+      accessPolicies: [accessPolicy],
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Addon
+    new eks.Addon(this, 'Addon', {
+      cluster,
+      addonName: 'kube-proxy',
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // ALB Controller
+    new eks.AlbController(this, 'AlbControllerConstruct', {
+      cluster,
+      version: eks.AlbControllerVersion.V2_8_2,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Nodegroup
+    new eks.Nodegroup(this, 'Nodegroup', {
+      cluster,
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM)],
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    new eks.FargateProfile(this, 'FargateProfileConstruct', {
+      cluster,
+      fargateProfileName: 'fp-construct',
+      selectors: [{ namespace: 'fp-construct-ns' }],
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Service Account
+    new eks.ServiceAccount(this, 'PodIdentityServiceAccount', {
+      cluster,
+      name: 'test-pod-identity',
+      removalPolicy: RemovalPolicy.DESTROY,
+      identityType: eks.IdentityType.POD_IDENTITY,
+    });
+
+    new eks.ServiceAccount(this, 'ServiceAccount', {
+      cluster,
+      name: 'test-irsa',
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Helm Chart
+    new eks.HelmChart(this, 'HelmChart', {
+      cluster,
+      chart: 'redis',
+      repository: 'https://charts.bitnami.com/bitnami',
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Kubernetes Manifest
+    new eks.KubernetesManifest(this, 'K8sManifest', {
+      cluster,
+      manifest: [{
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        metadata: { name: 'test-config' },
+        data: { key: 'value' },
+      }],
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Kubernetes Object Value
+    new eks.KubernetesObjectValue(this, 'K8sObjectValue', {
+      cluster,
+      objectType: 'service',
+      objectName: 'kubernetes',
+      objectNamespace: 'default',
+      jsonPath: '.spec.type',
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Kubernetes Patch
+    new eks.KubernetesPatch(this, 'K8sPatch', {
+      cluster,
+      resourceName: 'deployment/coredns',
+      resourceNamespace: 'kube-system',
+      applyPatch: { spec: { replicas: 3 } },
+      restorePatch: { spec: { replicas: 2 } },
       removalPolicy: RemovalPolicy.DESTROY,
     });
   }

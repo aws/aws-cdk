@@ -1,8 +1,10 @@
 import * as path from 'path';
-import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from 'aws-cdk-lib/core';
+import type { AssetCode, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Code } from 'aws-cdk-lib/aws-lambda';
+import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume } from 'aws-cdk-lib/core';
+import { AssetStaging, DockerImage } from 'aws-cdk-lib/core';
 import { Packaging, DependenciesFile } from './packaging';
-import { BundlingOptions, ICommandHooks } from './types';
+import type { BundlingOptions, ICommandHooks } from './types';
 
 /**
  * Dependency files to exclude from the asset hash.

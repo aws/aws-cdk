@@ -1,14 +1,17 @@
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { AccessPoint, AccessPointOptions } from './access-point';
+import type { Construct, IDependable } from 'constructs';
+import { DependencyGroup } from 'constructs';
+import type { AccessPointOptions } from './access-point';
+import { AccessPoint } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, Names, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { RemovalPolicy, Size } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { FileSystemReference, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
+import type { FileSystemReference, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access

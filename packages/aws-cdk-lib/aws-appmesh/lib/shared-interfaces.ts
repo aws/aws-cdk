@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import type { Construct } from 'constructs';
+import type { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { renderTlsClientPolicy } from './private/utils';
-import { TlsClientPolicy } from './tls-client-policy';
-import { IVirtualService } from './virtual-service';
+import type { TlsClientPolicy } from './tls-client-policy';
+import type { IVirtualService } from './virtual-service';
 import * as cdk from '../../core';
 
 /**

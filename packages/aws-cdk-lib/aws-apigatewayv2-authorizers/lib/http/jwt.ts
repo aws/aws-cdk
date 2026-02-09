@@ -1,9 +1,11 @@
-import {
-  HttpAuthorizer,
-  HttpAuthorizerType,
+import type {
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
+} from '../../../aws-apigatewayv2';
+import {
+  HttpAuthorizer,
+  HttpAuthorizerType,
 } from '../../../aws-apigatewayv2';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 

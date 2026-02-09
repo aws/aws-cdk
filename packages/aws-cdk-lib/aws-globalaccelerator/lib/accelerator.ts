@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
-import { Listener, ListenerOptions } from './listener';
+import type { ListenerOptions } from './listener';
+import { Listener } from './listener';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAcceleratorRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
+import type { IAcceleratorRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
 /**
  * The interface of the Accelerator

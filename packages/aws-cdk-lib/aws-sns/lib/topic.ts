@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
-import { ITopic, TopicBase } from './topic-base';
-import { IRoleRef } from '../../aws-iam';
-import { IKey, Key } from '../../aws-kms';
+import type { ITopic } from './topic-base';
+import { TopicBase } from './topic-base';
+import type { IRoleRef } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';

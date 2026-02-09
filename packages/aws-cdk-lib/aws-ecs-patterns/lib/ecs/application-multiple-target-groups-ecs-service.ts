@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
-import { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import type { Construct } from 'constructs';
+import type { PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition } from '../../../aws-ecs';
+import type { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
+import type { ApplicationMultipleTargetGroupsServiceBaseProps } from '../base/application-multiple-target-groups-service-base';
 import {
   ApplicationMultipleTargetGroupsServiceBase,
-  ApplicationMultipleTargetGroupsServiceBaseProps,
 } from '../base/application-multiple-target-groups-service-base';
 
 /**

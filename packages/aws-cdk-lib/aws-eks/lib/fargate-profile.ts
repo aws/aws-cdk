@@ -1,10 +1,12 @@
 import { Construct } from 'constructs';
-import { Cluster, AuthenticationMode } from './cluster';
+import type { Cluster } from './cluster';
+import { AuthenticationMode } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType, ValidationError } from '../../core';
+import type { ITaggable, RemovalPolicy } from '../../core';
+import { Annotations, CustomResource, Lazy, RemovalPolicies, TagManager, TagType, ValidationError } from '../../core';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -56,6 +58,20 @@ export interface FargateProfileOptions {
    * @default - all private subnets of the VPC are selected.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * The removal policy applied to the custom resource that manages the Fargate profile.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -217,6 +233,10 @@ export class FargateProfile extends Construct implements ITaggable {
           'system:node-proxier',
         ],
       });
+    }
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
     }
   }
 }

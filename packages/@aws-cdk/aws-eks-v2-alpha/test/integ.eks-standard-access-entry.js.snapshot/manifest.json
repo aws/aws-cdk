@@ -328,12 +328,6 @@
             }
           }
         ],
-        "/EKSStandardAccessEntry/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EKSStandardAccessEntry/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -486,12 +480,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/EKSStandardAccessEntry/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EKSStandardAccessEntry/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -656,12 +644,6 @@
             }
           }
         ],
-        "/EKSStandardAccessEntry/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EKSStandardAccessEntry/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -769,12 +751,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/EKSStandardAccessEntry/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EKSStandardAccessEntry/Role/Resource": [

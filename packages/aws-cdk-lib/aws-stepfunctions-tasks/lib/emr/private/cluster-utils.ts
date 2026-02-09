@@ -1,7 +1,7 @@
 import * as cdk from '../../../../core';
 import { UnscopedValidationError } from '../../../../core';
 import { EmrCreateCluster } from '../emr-create-cluster';
-import { EmrModifyInstanceGroupByName } from '../emr-modify-instance-group-by-name';
+import type { EmrModifyInstanceGroupByName } from '../emr-modify-instance-group-by-name';
 
 /**
  * Render the KerberosAttributesProperty as JSON

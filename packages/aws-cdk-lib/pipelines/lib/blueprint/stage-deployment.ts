@@ -1,8 +1,8 @@
 import { StackDeployment } from './stack-deployment';
-import { StackSteps, Step } from './step';
-import * as cdk from '../../../core';
+import type { StackSteps, Step } from './step';
+import type * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
-import { CloudFormationStackArtifact } from '../../../cx-api';
+import type { CloudFormationStackArtifact } from '../../../cx-api';
 import { isStackArtifact } from '../private/cloud-assembly-internals';
 import { pipelineSynth } from '../private/construct-internals';
 

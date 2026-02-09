@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { ProductionVariant } from './base-types';
+import type { Construct } from 'constructs';
+import type { ProductionVariant } from './base-types';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';

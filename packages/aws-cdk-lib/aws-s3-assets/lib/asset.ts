@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
-import { CopyOptions } from '../../assets';
-import * as iam from '../../aws-iam';
+import type { CopyOptions } from '../../assets';
+import type * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';

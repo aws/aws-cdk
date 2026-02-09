@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { ContainerOverride, EphemeralStorageOverride, InferenceAcceleratorOverride } from './ecs-task-properties';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import type { ContainerOverride, EphemeralStorageOverride, InferenceAcceleratorOverride } from './ecs-task-properties';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as ec2 from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import * as events from '../../aws-events';

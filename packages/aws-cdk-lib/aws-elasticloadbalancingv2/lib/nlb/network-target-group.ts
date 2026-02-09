@@ -1,14 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ITargetGroupRef } from '../elasticloadbalancingv2.generated';
-import { INetworkListenerRef } from './network-listener';
-import {
-  BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+import type { ITargetGroupRef } from '../elasticloadbalancingv2.generated';
+import type { INetworkListenerRef } from './network-listener';
+import type {
+  BaseTargetGroupProps, HealthCheck, ITargetGroup, LoadBalancerTargetProps,
+  TargetGroupAttributes, TargetGroupImportProps,
 } from '../shared/base-target-group';
+import { loadBalancerNameFromListenerArn, TargetGroupBase } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { parseLoadBalancerFullName, parseTargetGroupFullName, validateNetworkProtocol } from '../shared/util';

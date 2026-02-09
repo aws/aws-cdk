@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Token, ValidationError } from '../../core';
 
 export function validateWeight(scope: IConstruct, x?: number) {

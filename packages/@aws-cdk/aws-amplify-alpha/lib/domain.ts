@@ -1,12 +1,13 @@
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
-import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Lazy, Resource, IResolvable, Token, ValidationError } from 'aws-cdk-lib/core';
+import type * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type { IResolvable } from 'aws-cdk-lib/core';
+import { Lazy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IApp } from './app';
-import { IBranch } from './branch';
+import type { Construct } from 'constructs';
+import type { IApp } from './app';
+import type { IBranch } from './branch';
 
 /**
  * Options to add a domain to an application

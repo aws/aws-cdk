@@ -1,5 +1,6 @@
-import { DefaultTokenResolver, IResolveContext, Lazy, StringConcat, Token, Tokenization } from 'aws-cdk-lib';
-import { IPipe } from './pipe';
+import type { IResolveContext } from 'aws-cdk-lib';
+import { DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization } from 'aws-cdk-lib';
+import type { IPipe } from './pipe';
 import { unquote } from './unquote';
 
 type InputTransformationValue = string | Record<string, any>;

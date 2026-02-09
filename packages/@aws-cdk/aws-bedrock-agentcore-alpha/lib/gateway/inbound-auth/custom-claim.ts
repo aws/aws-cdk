@@ -12,7 +12,7 @@
  */
 
 import { Token } from 'aws-cdk-lib';
-import { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CustomClaimOperator, CustomClaimValueType } from '../../common/types';
 import { ValidationError } from '../validation-helpers';
 

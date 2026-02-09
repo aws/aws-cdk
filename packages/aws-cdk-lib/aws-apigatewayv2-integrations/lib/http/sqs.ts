@@ -1,7 +1,7 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import * as apigwv2 from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
-import * as sqs from '../../../aws-sqs';
+import type * as sqs from '../../../aws-sqs';
 import { ValidationError } from '../../../core';
 
 /**

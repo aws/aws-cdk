@@ -1,12 +1,14 @@
 import { cx_api } from 'aws-cdk-lib';
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
-import { Annotations, Duration, FeatureFlags, IResource, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
+import type { IRouteTable, IVpcEndpoint } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Annotations, Duration, FeatureFlags, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct, IDependable } from 'constructs';
-import { ISubnetV2 } from './subnet-v2';
+import type { Construct, IDependable } from 'constructs';
+import type { ISubnetV2 } from './subnet-v2';
 import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
-import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
+import type { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.

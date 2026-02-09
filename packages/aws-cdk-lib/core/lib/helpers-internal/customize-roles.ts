@@ -5,8 +5,9 @@ import { Annotations } from '../annotations';
 import { attachCustomSynthesis } from '../app';
 import { ValidationError } from '../errors';
 import { Reference } from '../reference';
-import { IResolvable, StringConcat, DefaultTokenResolver, IFragmentConcatenator } from '../resolvable';
-import { ISynthesisSession } from '../stack-synthesizers';
+import type { IResolvable, IFragmentConcatenator } from '../resolvable';
+import { StringConcat, DefaultTokenResolver } from '../resolvable';
+import type { ISynthesisSession } from '../stack-synthesizers';
 import { Token, Tokenization } from '../token';
 
 export const POLICY_SYNTHESIZER_ID = 'PolicySynthesizer';

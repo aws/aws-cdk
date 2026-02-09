@@ -1,13 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Construct, IConstruct } from 'constructs';
-import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { ConstructInfo } from './runtime-info';
+import { constructInfoFromConstruct } from './runtime-info';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import { Annotations } from '../annotations';
 import { Stack } from '../stack';
-import { ISynthesisSession } from '../stack-synthesizers';
-import { IInspectable, TreeInspector } from '../tree';
+import type { ISynthesisSession } from '../stack-synthesizers';
+import type { IInspectable } from '../tree';
+import { TreeInspector } from '../tree';
 import { iterateBfs } from './construct-iteration';
 import { AssumptionError } from '../errors';
 

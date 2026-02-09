@@ -1,6 +1,6 @@
 import { DefaultStackSynthesizer } from './default-synthesizer';
-import { ISynthesisSession } from './types';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import type { ISynthesisSession } from './types';
+import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { UnscopedValidationError } from '../errors';
 
 /**

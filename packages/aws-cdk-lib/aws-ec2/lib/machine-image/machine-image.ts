@@ -1,13 +1,17 @@
-import { Construct } from 'constructs';
-import { AmazonLinux2022ImageSsmParameter, AmazonLinux2022ImageSsmParameterProps, AmazonLinux2022Kernel } from './amazon-linux-2022';
-import { AmazonLinux2023ImageSsmParameter, AmazonLinux2023ImageSsmParameterProps, AmazonLinux2023Kernel } from './amazon-linux-2023';
-import { AmazonLinux2ImageSsmParameter, AmazonLinux2ImageSsmParameterProps, AmazonLinux2Kernel } from './amazon-linux2';
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, IMachineImage, MachineImageConfig, OperatingSystemType } from './common';
+import type { Construct } from 'constructs';
+import type { AmazonLinux2022ImageSsmParameterProps } from './amazon-linux-2022';
+import { AmazonLinux2022ImageSsmParameter, AmazonLinux2022Kernel } from './amazon-linux-2022';
+import type { AmazonLinux2023ImageSsmParameterProps } from './amazon-linux-2023';
+import { AmazonLinux2023ImageSsmParameter, AmazonLinux2023Kernel } from './amazon-linux-2023';
+import type { AmazonLinux2ImageSsmParameterProps } from './amazon-linux2';
+import { AmazonLinux2ImageSsmParameter, AmazonLinux2Kernel } from './amazon-linux2';
+import type { IMachineImage, MachineImageConfig } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, OperatingSystemType } from './common';
 import { lookupImage } from './utils';
 import * as ssm from '../../../aws-ssm';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ContextProvider, CfnMapping, Aws, Stack, Token, UnscopedValidationError, ValidationError } from '../../../core';
-import * as cxapi from '../../../cx-api';
+import type * as cxapi from '../../../cx-api';
 import { UserData } from '../user-data';
 import { WindowsVersion } from '../windows-versions';
 

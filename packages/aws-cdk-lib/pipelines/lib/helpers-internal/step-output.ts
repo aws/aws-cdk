@@ -1,5 +1,6 @@
-import { IResolvable, IResolveContext, Token, Tokenization, ValidationError } from '../../../core';
-import { Step } from '../blueprint/step';
+import type { IResolvable, IResolveContext } from '../../../core';
+import { Token, Tokenization, ValidationError } from '../../../core';
+import type { Step } from '../blueprint/step';
 
 const STEP_OUTPUT_SYM = Symbol.for('@aws-cdk/pipelines.StepOutput');
 

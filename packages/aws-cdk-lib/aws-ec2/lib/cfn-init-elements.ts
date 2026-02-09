@@ -1,7 +1,8 @@
 import * as fs from 'fs';
-import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
-import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
+import type { InitBindOptions, InitElementConfig } from './private/cfn-init-internal';
+import { InitElementType, InitPlatform } from './private/cfn-init-internal';
+import type * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { Duration, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';

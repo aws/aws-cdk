@@ -1,4 +1,4 @@
-import { IConstruct, MetadataEntry } from 'constructs';
+import type { IConstruct, MetadataEntry } from 'constructs';
 import { App } from './app';
 import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';

@@ -1,25 +1,29 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
-import { CloudFormationInit } from './cfn-init';
-import { Connections, IConnectable } from './connections';
-import { CfnInstance, IInstanceRef, InstanceReference, IPlacementGroupRef } from './ec2.generated';
-import { InstanceType } from './instance-types';
-import { IKeyPair } from './key-pair';
-import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
-import { IMachineImage, OperatingSystemType } from './machine-image';
+import type { CloudFormationInit } from './cfn-init';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
+import type { IInstanceRef, InstanceReference, IPlacementGroupRef } from './ec2.generated';
+import { CfnInstance } from './ec2.generated';
+import type { InstanceType } from './instance-types';
+import type { IKeyPair } from './key-pair';
+import type { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
+import type { IMachineImage, OperatingSystemType } from './machine-image';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
-import { ISecurityGroup, SecurityGroup } from './security-group';
-import { UserData } from './user-data';
-import { BlockDevice } from './volume';
-import { IVpc, Subnet, SubnetSelection } from './vpc';
+import type { ISecurityGroup } from './security-group';
+import { SecurityGroup } from './security-group';
+import type { UserData } from './user-data';
+import type { BlockDevice } from './volume';
+import type { IVpc, SubnetSelection } from './vpc';
+import { Subnet } from './vpc';
 import * as iam from '../../aws-iam';
+import type { IResource } from '../../core';
 import {
   Annotations,
   Aspects,
   Duration,
   FeatureFlags,
   Fn,
-  IResource,
   Lazy,
   Resource,
   Stack,

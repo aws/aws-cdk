@@ -1,14 +1,17 @@
-import { Construct } from 'constructs';
-import { IHttpApi, IHttpApiRef, toIHttpApi } from './api';
-import { HttpMethod, IHttpRoute } from './route';
-import { CfnIntegration, IntegrationReference } from '.././index';
-import { IRoleRef } from '../../../aws-iam';
-import { Aws, Duration, Resource } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IHttpApi, IHttpApiRef } from './api';
+import { toIHttpApi } from './api';
+import type { HttpMethod, IHttpRoute } from './route';
+import type { IntegrationReference } from '.././index';
+import { CfnIntegration } from '.././index';
+import type { IRoleRef } from '../../../aws-iam';
+import type { Duration } from '../../../core';
+import { Aws, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IIntegration } from '../common';
-import { ParameterMapping } from '../parameter-mapping';
+import type { IIntegration } from '../common';
+import type { ParameterMapping } from '../parameter-mapping';
 
 /**
  * Represents an Integration for an HTTP API.

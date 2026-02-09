@@ -1,5 +1,6 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib/core';
 import { testFixture, testFixtureCluster } from './util';
 import * as eks from '../lib';
 
@@ -433,6 +434,46 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         Overwrite: true,
       });
+    });
+  });
+
+  test('supports custom removal policy with IRSA', () => {
+    const { stack, cluster } = testFixtureCluster();
+
+    new eks.ServiceAccount(stack, 'MyServiceAccount', {
+      cluster,
+      identityType: eks.IdentityType.IRSA,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    Template.fromStack(stack).hasResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      DeletionPolicy: 'Retain',
+    });
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', {
+      DeletionPolicy: 'Retain',
+    });
+    Template.fromStack(stack).hasResource('Custom::AWSCDKCfnJson', {
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('supports custom removal policy with POD_IDENTITY', () => {
+    const { stack, cluster } = testFixtureCluster();
+
+    new eks.ServiceAccount(stack, 'MyServiceAccount', {
+      cluster,
+      identityType: eks.IdentityType.POD_IDENTITY,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    Template.fromStack(stack).hasResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      DeletionPolicy: 'Retain',
+    });
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', {
+      DeletionPolicy: 'Retain',
+    });
+    Template.fromStack(stack).hasResource('AWS::EKS::PodIdentityAssociation', {
+      DeletionPolicy: 'Retain',
     });
   });
 });

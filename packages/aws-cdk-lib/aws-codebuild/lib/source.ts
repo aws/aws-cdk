@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnProject } from './codebuild.generated';
-import { IProject } from './project';
+import type { Construct } from 'constructs';
+import type { CfnProject } from './codebuild.generated';
+import type { IProject } from './project';
 import {
   BITBUCKET_SOURCE_TYPE,
   CODECOMMIT_SOURCE_TYPE,
@@ -8,9 +8,9 @@ import {
   GITHUB_SOURCE_TYPE,
   S3_SOURCE_TYPE,
 } from './source-types';
-import * as codecommit from '../../aws-codecommit';
+import type * as codecommit from '../../aws-codecommit';
 import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import { UnscopedValidationError } from '../../core';
 
 /**

@@ -1,16 +1,20 @@
-import { Construct } from 'constructs';
-import { CfnVpcOrigin, IVpcOriginRef, VpcOriginReference } from './cloudfront.generated';
-import { OriginProtocolPolicy, OriginSslPolicy } from '../';
-import { IInstance } from '../../aws-ec2';
-import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
-import {
-  ArnFormat,
+import type { Construct } from 'constructs';
+import type { IVpcOriginRef, VpcOriginReference } from './cloudfront.generated';
+import { CfnVpcOrigin } from './cloudfront.generated';
+import type { OriginProtocolPolicy } from '../';
+import { OriginSslPolicy } from '../';
+import type { IInstance } from '../../aws-ec2';
+import type { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
+import type {
   IResource,
   ITaggableV2,
+  TagManager,
+} from '../../core';
+import {
+  ArnFormat,
   Names,
   Resource,
   Stack,
-  TagManager,
   Token,
   ValidationError,
 } from '../../core';

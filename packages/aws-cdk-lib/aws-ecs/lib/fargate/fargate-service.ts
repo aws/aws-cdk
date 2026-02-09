@@ -1,16 +1,17 @@
-import { Construct } from 'constructs';
-import * as ec2 from '../../../aws-ec2';
-import * as elb from '../../../aws-elasticloadbalancing';
+import type { Construct } from 'constructs';
+import type * as ec2 from '../../../aws-ec2';
+import type * as elb from '../../../aws-elasticloadbalancing';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
-import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
+import type { BaseServiceOptions, IBaseService, IService } from '../base/base-service';
+import { BaseService, DeploymentControllerType, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
-import { TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
-import { ServiceReference } from '../ecs.generated';
+import type { TaskDefinition } from '../base/task-definition';
+import type { ICluster } from '../cluster';
+import type { ServiceReference } from '../ecs.generated';
 
 /**
  * The properties for defining a service using the Fargate launch type.

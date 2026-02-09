@@ -1,9 +1,10 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnClusterSubnetGroup } from 'aws-cdk-lib/aws-redshift';
-import { IResource, RemovalPolicy, Resource } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { RemovalPolicy, Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Interface for a cluster subnet group.

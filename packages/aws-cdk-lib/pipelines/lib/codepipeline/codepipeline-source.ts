@@ -1,15 +1,14 @@
 import { Node } from 'constructs';
-import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import type { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { makeCodePipelineOutput } from './private/outputs';
-import * as codecommit from '../../../aws-codecommit';
-import * as cp from '../../../aws-codepipeline';
-import { Artifact } from '../../../aws-codepipeline';
+import type * as codecommit from '../../../aws-codecommit';
+import type { Artifact, IStage } from '../../../aws-codepipeline';
 import * as cp_actions from '../../../aws-codepipeline-actions';
-import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '../../../aws-codepipeline-actions';
-import * as iam from '../../../aws-iam';
-import { IBucket } from '../../../aws-s3';
+import type { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '../../../aws-codepipeline-actions';
+import type * as iam from '../../../aws-iam';
+import type { IBucket } from '../../../aws-s3';
 import { Fn, SecretValue, Token, UnscopedValidationError } from '../../../core';
-import { IRepositoryRef } from '../../../interfaces/generated/aws-ecr-interfaces.generated';
+import type { IRepositoryRef } from '../../../interfaces/generated/aws-ecr-interfaces.generated';
 import { FileSet, Step } from '../blueprint';
 
 /**
@@ -133,7 +132,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   // tells `PipelineGraph` to hoist a "Source" step
   public readonly isSource = true;
 
-  public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
+  public produceAction(stage: IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const output = options.artifacts.toCodePipeline(this.primaryOutput!);
 
     const action = this.getAction(output, options.actionName, options.runOrder, options.variablesNamespace);

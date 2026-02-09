@@ -1,27 +1,31 @@
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
-import {
+import type { Construct, IDependable } from 'constructs';
+import { DependencyGroup } from 'constructs';
+import type { ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
+import { ClientVpnAuthorizationRule } from './client-vpn-authorization-rule';
+import type {
   IClientVpnConnectionHandler,
   IClientVpnEndpoint,
   TransportProtocol,
   VpnPort,
 } from './client-vpn-endpoint-types';
-import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
+import type { ClientVpnRouteOptions } from './client-vpn-route';
+import { ClientVpnRoute } from './client-vpn-route';
 import { Connections } from './connections';
+import type { ClientVpnEndpointReference } from './ec2.generated';
 import {
   CfnClientVpnEndpoint,
   CfnClientVpnTargetNetworkAssociation,
-  ClientVpnEndpointReference,
 } from './ec2.generated';
 import { CidrBlock } from './network-util';
-import { ISecurityGroup, SecurityGroup } from './security-group';
-import { IVpc, SubnetSelection } from './vpc';
-import { ISAMLProviderRef } from '../../aws-iam';
+import type { ISecurityGroup } from './security-group';
+import { SecurityGroup } from './security-group';
+import type { IVpc, SubnetSelection } from './vpc';
+import type { ISAMLProviderRef } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { CfnOutput, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ILogStreamRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogStreamRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Options for Client Route Enforcement

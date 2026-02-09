@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { DatabaseCluster } from 'aws-cdk-lib/aws-docdb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 

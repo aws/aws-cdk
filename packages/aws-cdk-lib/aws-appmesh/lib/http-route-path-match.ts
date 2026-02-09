@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { CfnGatewayRoute, CfnRoute } from './appmesh.generated';
+import type { Construct } from 'constructs';
+import type { CfnGatewayRoute, CfnRoute } from './appmesh.generated';
 import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**

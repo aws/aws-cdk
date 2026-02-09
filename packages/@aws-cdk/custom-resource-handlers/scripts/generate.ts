@@ -2,7 +2,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
-import { config, ComponentProps } from '../lib/custom-resources-framework/config';
+import type { ComponentProps } from '../lib/custom-resources-framework/config';
+import { config } from '../lib/custom-resources-framework/config';
 import { HandlerFrameworkModule } from '../lib/custom-resources-framework/framework';
 
 const framework: { [fqn: string]: ComponentProps[] } = {};

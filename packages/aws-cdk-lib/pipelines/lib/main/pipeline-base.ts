@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
-import { AspectPriority, Aspects, Stage, ValidationError } from '../../../core';
-import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet } from '../blueprint';
+import type { Stage } from '../../../core';
+import { AspectPriority, Aspects, ValidationError } from '../../../core';
+import type { AddStageOpts as StageOptions, WaveOptions, IFileSetProducer, FileSet } from '../blueprint';
+import { Wave, ShellStep } from '../blueprint';
 
 const PIPELINE_SYMBOL = Symbol.for('@aws-cdk/pipelines.PipelineBase');
 

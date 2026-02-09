@@ -1,9 +1,9 @@
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
-import { IGrantable } from '../../aws-iam';
+import type { IGrantable } from '../../aws-iam';
 import { FeatureFlags, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
-import { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
+import type { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
 
 interface KeyGrantsProps {
   readonly resource: IKeyRef;

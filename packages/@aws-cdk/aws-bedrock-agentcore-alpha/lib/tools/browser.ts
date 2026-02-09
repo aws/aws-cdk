@@ -1,30 +1,35 @@
+import type {
+  IResource,
+  ResourceProps,
+} from 'aws-cdk-lib';
 import {
   Arn,
   ArnFormat,
-  IResource,
   Lazy,
   Resource,
-  ResourceProps,
   Token,
   Stack,
   ValidationError,
   Names,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
-import {
+import type { BrowserCustomReference, IBrowserCustomRef } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Location } from 'aws-cdk-lib/aws-s3';
+import type { Location } from 'aws-cdk-lib/aws-s3';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
@@ -83,7 +88,7 @@ export enum BrowserSigning {
 /**
  * Interface for Browser resources
  */
-export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnectable, IBrowserCustomRef {
   /**
    * The ARN of the browser resource
    * @attribute
@@ -214,6 +219,17 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    * The principal to grant permissions to
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * A reference to a BrowserCustom resource.
+   */
+  public get browserCustomRef(): BrowserCustomReference {
+    return {
+      browserId: this.browserId,
+      browserArn: this.browserArn,
+    };
+  }
+
   /**
    * An accessor for the Connections object that will fail if this Browser does not have a VPC
    * configured.
@@ -247,7 +263,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.browserArn],
+      resourceArns: [this.browserCustomRef.browserArn],
       actions: actions,
     });
   }
@@ -310,7 +326,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.browserArn },
+      dimensionsMap: { ...dimensions, Resource: this.browserCustomRef.browserArn },
       ...props,
     };
     return this.configureMetric(metricProps);

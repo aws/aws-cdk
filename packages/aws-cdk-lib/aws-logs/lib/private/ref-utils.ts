@@ -1,6 +1,6 @@
 import { UnscopedValidationError } from '../../../core';
-import { ILogGroupRef } from '../../../interfaces/generated/aws-logs-interfaces.generated';
-import { ILogGroup } from '../log-group';
+import type { ILogGroupRef } from '../../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroup } from '../log-group';
 
 /**
  * Convert an ILogGroupRef to ILogGroup, validating that it implements the full interface

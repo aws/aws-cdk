@@ -1,4 +1,5 @@
-import { ConstructOrder, Dependable, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { ConstructOrder, Dependable } from 'constructs';
 import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { Stack } from '../stack';

@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import * as glue from '../../../aws-glue';
+import type { Construct } from 'constructs';
+import type * as glue from '../../../aws-glue';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { CfnDeliveryStream } from '../kinesisfirehose.generated';
+import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
  * Options when binding a SchemaConfig to a Destination

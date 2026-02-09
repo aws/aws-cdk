@@ -1,5 +1,6 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
-import { FlagInfo, FlagType } from './private/flag-modeling';
+import type { FlagInfo } from './private/flag-modeling';
+import { FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
 //

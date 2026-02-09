@@ -1,11 +1,13 @@
 import { CfnPodIdentityAssociation } from 'aws-cdk-lib/aws-eks';
+import type { AddToPrincipalPolicyResult, IPrincipal, IRole, PrincipalPolicyFragment } from 'aws-cdk-lib/aws-iam';
 import {
-  AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
+  OpenIdConnectPrincipal, PolicyStatement, Role,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import { CfnJson, Names } from 'aws-cdk-lib/core';
+import type { RemovalPolicy } from 'aws-cdk-lib/core';
+import { CfnJson, Names, RemovalPolicies } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 // import { FargateCluster } from './index';
 import { KubernetesManifest } from './k8s-manifest';
 
@@ -90,6 +92,20 @@ export interface ServiceAccountOptions {
    * @default false
    */
   readonly overwriteServiceAccount?: boolean;
+
+  /**
+   * The removal policy applied to the service account resources.
+   *
+   * The removal policy controls what happens to the resources if they stop being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -222,6 +238,10 @@ export class ServiceAccount extends Construct implements IPrincipal {
         },
       }],
     });
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**

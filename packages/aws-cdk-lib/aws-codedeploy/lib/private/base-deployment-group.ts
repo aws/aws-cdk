@@ -1,11 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { validateName } from './utils';
 import * as iam from '../../../aws-iam';
 import { Resource, ArnFormat, Arn, Aws } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { DeploymentGroupReference, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
-import { CfnDeploymentGroup } from '../codedeploy.generated';
+import type { DeploymentGroupReference, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { CfnDeploymentGroup } from '../codedeploy.generated';
 import { isIBindableDeploymentConfig } from './predefined-deployment-config';
 
 /**

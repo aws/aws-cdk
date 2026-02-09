@@ -8,7 +8,7 @@ import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFind
 import { ConstructSelector, Mixins } from '../../core';
 import * as xray from '../aws-xray/policy';
 import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
-import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
  * The individual elements of a logs delivery integration.

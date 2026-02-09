@@ -20,17 +20,17 @@ declare const scope: Construct;
 
 class MyMixin extends Mixins {
   supports(_construct: any): boolean { return true; }
-  applyTo(construct: any): any { return construct; }
+  applyTo(_construct: any): void { }
 }
 
 class ProductionSecurityMixin extends Mixins {
   supports(_construct: any): boolean { return true; }
-  applyTo(construct: any): any { return construct; }
+  applyTo(_construct: any): void { }
 }
 
 class EncryptionAtRest extends Mixins {
   supports(_construct: any): boolean { return true; }
-  applyTo(construct: any): any { return construct; }
+  applyTo(_construct: any): void { }
 }
 
 /// here

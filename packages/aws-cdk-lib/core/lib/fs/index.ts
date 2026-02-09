@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
-import { CopyOptions, FingerprintOptions } from './options';
+import type { CopyOptions, FingerprintOptions } from './options';
 
 export * from './ignore';
 export * from './options';

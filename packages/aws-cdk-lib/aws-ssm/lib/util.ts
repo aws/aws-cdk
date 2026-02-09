@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { ArnFormat, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 

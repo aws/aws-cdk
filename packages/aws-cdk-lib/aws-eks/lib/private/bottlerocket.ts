@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as ssm from '../../../aws-ssm';
 

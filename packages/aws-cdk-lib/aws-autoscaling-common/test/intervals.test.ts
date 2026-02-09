@@ -1,6 +1,6 @@
 import * as fc from 'fast-check';
 import { arbitrary_complete_intervals } from './util';
-import * as appscaling from '../lib';
+import type * as appscaling from '../lib';
 import { findAlarmThresholds, normalizeIntervals } from '../lib/interval-utils';
 
 describe('intervals', () => {

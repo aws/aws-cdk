@@ -2,13 +2,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { Cluster } from './cluster';
+import type { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Aws, Duration, Names, Stack, ValidationError } from 'aws-cdk-lib/core';
+import { Aws, Duration, Names, RemovalPolicy, Stack, ValidationError } from 'aws-cdk-lib/core';
 
 /**
  * Controller version.
@@ -291,6 +291,20 @@ export interface AlbControllerOptions {
    * @default false
    */
   readonly overwriteServiceAccount?: boolean;
+
+  /**
+   * The removal policy applied to the ALB controller resources.
+   *
+   * The removal policy controls what happens to the resources if they stop being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -338,6 +352,7 @@ export class AlbController extends Construct {
       name: 'aws-load-balancer-controller',
       cluster: props.cluster,
       overwriteServiceAccount: props.overwriteServiceAccount,
+      removalPolicy: props.removalPolicy,
     });
 
     if (props.version.custom && !props.policy) {
@@ -380,6 +395,7 @@ export class AlbController extends Construct {
         },
         ...props.additionalHelmChartValues,
       },
+      removalPolicy: props.removalPolicy,
     });
 
     // the controller relies on permissions deployed using these resources.

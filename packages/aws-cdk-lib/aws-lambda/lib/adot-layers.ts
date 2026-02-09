@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
-import { Architecture } from './architecture';
-import { IFunction } from './function-base';
+import type { IConstruct } from 'constructs';
+import type { Architecture } from './architecture';
+import type { IFunction } from './function-base';
 import { ValidationError } from '../../core/lib/errors';
 import { Stack } from '../../core/lib/stack';
 import { Token } from '../../core/lib/token';

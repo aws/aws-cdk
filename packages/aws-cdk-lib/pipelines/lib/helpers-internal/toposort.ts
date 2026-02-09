@@ -1,4 +1,4 @@
-import { GraphNode } from './graph';
+import type { GraphNode } from './graph';
 import { UnscopedValidationError } from '../../../core';
 
 export function printDependencyMap<A>(dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>) {

@@ -1,4 +1,4 @@
-import { Column, TableDistStyle, TableSortStyle } from '../table';
+import type { Column, TableDistStyle, TableSortStyle } from '../table';
 
 export interface DatabaseQueryHandlerProps {
   readonly handler: string;

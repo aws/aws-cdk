@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "GluePartitionProjectionTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-glue-partition-projection"
+      ],
+      "assertionStack": "GluePartitionProjectionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GluePartitionProjectionTestDefaultTestDeployAssert9180F049"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

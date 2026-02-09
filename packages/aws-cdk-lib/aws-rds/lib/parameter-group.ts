@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { IEngine } from './engine';
+import type { Construct } from 'constructs';
+import type { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
-import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { aws_rds } from '../../interfaces';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.

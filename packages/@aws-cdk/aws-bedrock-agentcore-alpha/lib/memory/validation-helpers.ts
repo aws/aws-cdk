@@ -13,7 +13,7 @@
 
 import { Token } from 'aws-cdk-lib';
 import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 interface IntervalValidation {
   fieldName: string;
   minLength: number;

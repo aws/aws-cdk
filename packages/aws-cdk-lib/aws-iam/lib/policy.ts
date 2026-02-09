@@ -1,13 +1,16 @@
-import { Construct } from 'constructs';
-import { IGroup } from './group';
-import { CfnPolicy, IPolicyRef, PolicyReference } from './iam.generated';
+import type { Construct } from 'constructs';
+import type { IGroup } from './group';
+import type { IPolicyRef, PolicyReference } from './iam.generated';
+import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
-import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import type { PolicyStatement } from './policy-statement';
+import type { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ArnPrincipal } from './principals';
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
-import { IRole } from './role';
-import { IUser } from './user';
-import { IResource, Lazy, Resource, ValidationError } from '../../core';
+import type { IRole } from './role';
+import type { IUser } from './user';
+import type { IResource } from '../../core';
+import { Lazy, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

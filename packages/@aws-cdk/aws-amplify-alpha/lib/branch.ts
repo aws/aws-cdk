@@ -1,10 +1,10 @@
 import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
-import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import type * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import type { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import type { IResource } from 'aws-cdk-lib/core';
 import {
   CustomResource,
-  IResource,
   Lazy,
   Resource,
   Duration,
@@ -15,9 +15,10 @@ import {
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Provider } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
-import { App, IApp } from './app';
-import { BasicAuth } from './basic-auth';
+import type { Construct } from 'constructs';
+import type { IApp } from './app';
+import { App } from './app';
+import type { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
 

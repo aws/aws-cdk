@@ -1,6 +1,7 @@
-import { IConstruct } from 'constructs';
-import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
-import { IPolicy } from '../policy';
+import type { IConstruct } from 'constructs';
+import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
+import { captureStackTrace, DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
+import type { IPolicy } from '../policy';
 
 export const MAX_POLICY_NAME_LEN = 128;
 

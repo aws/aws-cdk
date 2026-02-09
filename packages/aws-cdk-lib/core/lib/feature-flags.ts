@@ -1,4 +1,5 @@
-import { IConstruct, Node } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Node } from 'constructs';
 import { UnscopedValidationError } from './errors';
 import * as cxapi from '../../cx-api';
 

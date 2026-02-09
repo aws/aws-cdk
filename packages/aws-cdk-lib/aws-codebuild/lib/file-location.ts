@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnProject } from './codebuild.generated';
-import { IProject } from './project';
+import type { Construct } from 'constructs';
+import type { CfnProject } from './codebuild.generated';
+import type { IProject } from './project';
 
 /**
  * The type returned from `IFileSystemLocation#bind`.

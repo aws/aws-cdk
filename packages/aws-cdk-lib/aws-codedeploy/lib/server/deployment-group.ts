@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { IServerApplication, ServerApplication } from './application';
-import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
-import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
-import * as autoscaling from '../../../aws-autoscaling';
+import type { Construct } from 'constructs';
+import type { IServerApplication } from './application';
+import { ServerApplication } from './application';
+import type { IServerDeploymentConfig } from './deployment-config';
+import { ServerDeploymentConfig } from './deployment-config';
+import type { LoadBalancer } from './load-balancer';
+import { LoadBalancerGeneration } from './load-balancer';
+import type * as autoscaling from '../../../aws-autoscaling';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
@@ -10,13 +13,13 @@ import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
-import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
-import { IDeploymentGroupRef, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IDeploymentGroupRef, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { toIServerApplication, toIServerDeploymentConfig } from '../private/ref-utils';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
-import { AutoRollbackConfig } from '../rollback-config';
+import type { AutoRollbackConfig } from '../rollback-config';
 
 export interface IServerDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   readonly application: IServerApplication;

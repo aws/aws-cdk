@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import type { Construct } from 'constructs';
+import type { PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
+import type { NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
+import { NetworkLoadBalancedServiceBase } from '../base/network-load-balanced-service-base';
 
 /**
  * The properties for the NetworkLoadBalancedEc2Service service.

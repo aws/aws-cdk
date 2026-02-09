@@ -2,7 +2,8 @@ import { join } from 'path';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { GraphqlApi, LogConfig, SchemaFile } from 'aws-cdk-lib/aws-appsync';
+import type { LogConfig } from 'aws-cdk-lib/aws-appsync';
+import { GraphqlApi, SchemaFile } from 'aws-cdk-lib/aws-appsync';
 
 const app = new App();
 const stack = new Stack(app, 'AppSyncLogMetrics');

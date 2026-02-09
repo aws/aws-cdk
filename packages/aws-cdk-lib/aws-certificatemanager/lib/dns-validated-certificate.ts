@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import { CertificateProps, ICertificate } from './certificate';
+import type { Construct } from 'constructs';
+import type { CertificateProps, ICertificate } from './certificate';
 import { CertificateBase } from './certificate-base';
 import * as iam from '../../aws-iam';
-import * as route53 from '../../aws-route53';
+import type * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';

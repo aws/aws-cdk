@@ -1,5 +1,5 @@
-import { IConstruct } from 'constructs';
-import { BucketAttributes } from './bucket';
+import type { IConstruct } from 'constructs';
+import type { BucketAttributes } from './bucket';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 

@@ -1,4 +1,4 @@
-import * as notifications from '../lib';
+import type * as notifications from '../lib';
 
 export class FakeCodeBuild implements notifications.INotificationRuleSource {
   readonly projectArn = 'arn:aws:codebuild::1234567890:project/MyCodebuildProject';

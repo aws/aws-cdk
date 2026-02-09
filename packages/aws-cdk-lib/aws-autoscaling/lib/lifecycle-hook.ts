@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnLifecycleHook } from './autoscaling.generated';
-import { ILifecycleHookTarget } from './lifecycle-hook-target';
-import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource, ValidationError } from '../../core';
+import type { ILifecycleHookTarget } from './lifecycle-hook-target';
+import type * as iam from '../../aws-iam';
+import type { Duration, IResource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAutoScalingGroupRef, ILifecycleHookRef, LifecycleHookReference } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
+import type { IAutoScalingGroupRef, ILifecycleHookRef, LifecycleHookReference } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Basic properties for a lifecycle hook

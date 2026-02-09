@@ -1,6 +1,7 @@
 import { join } from 'path';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   GraphqlApi,

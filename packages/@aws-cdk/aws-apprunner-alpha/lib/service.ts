@@ -1,18 +1,18 @@
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import type * as ecr from 'aws-cdk-lib/aws-ecr';
+import type * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import type * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cdk from 'aws-cdk-lib/core';
 import { Lazy } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IAutoScalingConfiguration } from './auto-scaling-configuration';
-import { IObservabilityConfiguration } from './observability-configuration';
-import { IVpcConnector } from './vpc-connector';
+import type { Construct } from 'constructs';
+import type { IAutoScalingConfiguration } from './auto-scaling-configuration';
+import type { IObservabilityConfiguration } from './observability-configuration';
+import type { IVpcConnector } from './vpc-connector';
 
 /**
  * The image repository types

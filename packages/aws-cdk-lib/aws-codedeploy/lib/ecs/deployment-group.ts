@@ -1,21 +1,23 @@
 import { Construct } from 'constructs';
-import { IEcsApplication, EcsApplication } from './application';
-import { EcsDeploymentConfig, IEcsDeploymentConfig } from './deployment-config';
+import type { IEcsApplication } from './application';
+import { EcsApplication } from './application';
+import type { IEcsDeploymentConfig } from './deployment-config';
+import { EcsDeploymentConfig } from './deployment-config';
 import * as ecs from '../../../aws-ecs';
-import * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
-import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
-import { IDeploymentGroupRef, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IDeploymentGroupRef, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { toIBaseDeploymentConfig, toIEcsApplication } from '../private/ref-utils';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
-import { AutoRollbackConfig } from '../rollback-config';
+import type { AutoRollbackConfig } from '../rollback-config';
 
 /**
  * Interface for an ECS deployment group.

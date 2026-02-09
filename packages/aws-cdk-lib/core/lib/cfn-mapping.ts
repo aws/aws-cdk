@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Annotations } from './annotations';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { UnscopedValidationError, ValidationError } from './errors';
-import { IResolvable, IResolveContext } from './resolvable';
+import type { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token } from './token';
 
