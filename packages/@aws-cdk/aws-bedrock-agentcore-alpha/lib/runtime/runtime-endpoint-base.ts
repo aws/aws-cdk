@@ -13,6 +13,7 @@
 
 import type { IResource, ResourceProps } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
+import type { IRuntimeEndpointRef, RuntimeEndpointReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type { Construct } from 'constructs';
 
 /******************************************************************************
@@ -22,7 +23,7 @@ import type { Construct } from 'constructs';
 /**
  * Interface for Runtime Endpoint resources
  */
-export interface IRuntimeEndpoint extends IResource {
+export interface IRuntimeEndpoint extends IResource, IRuntimeEndpointRef {
   /**
    * The ARN of the runtime endpoint resource
    * @attribute
@@ -87,6 +88,15 @@ export abstract class RuntimeEndpointBase extends Resource implements IRuntimeEn
   public abstract readonly targetVersion?: string;
   public abstract readonly createdAt?: string;
   public abstract readonly description?: string;
+
+  /**
+   * A reference to a RuntimeEndpoint resource.
+   */
+  public get runtimeEndpointRef(): RuntimeEndpointReference {
+    return {
+      agentRuntimeEndpointArn: this.agentRuntimeEndpointArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
