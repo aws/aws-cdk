@@ -7,8 +7,8 @@ import * as cdk from '../../core';
 import { CfnResource, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api/index';
 
-const POLICY_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-resource-policy-decorator');
-const ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL = Symbol.for('cdk-encrypted-resource-decorator');
+const POLICY_FACTORY_MAP_SYMBOL = Symbol.for('cdk-resource-policy-factory');
+const ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL = Symbol.for('cdk-encrypted-resource-factory');
 
 /**
  * Basic options for a grant operation
@@ -443,11 +443,11 @@ function lookupFactory(scope: IConstruct, cfnResourceType: string, sym: symbol):
     current != null;
     current = (current.node && current.node.scope) ? current.node.scope : undefined
   ) {
-    const decoratorMap = current[sym];
-    if (decoratorMap) {
-      const decorator = decoratorMap.get(cfnResourceType);
-      if (decorator) {
-        return decorator;
+    const factoryMap = current[sym];
+    if (factoryMap) {
+      const factory = factoryMap.get(cfnResourceType);
+      if (factory) {
+        return factory;
       }
     }
   }
@@ -476,35 +476,35 @@ class Traits<
     }
 
     const cfnResourceType = (resource as CfnResource).cfnResourceType;
-    let decorator = factoryLookup(resource, cfnResourceType);
-    if (decorator == null) {
+    let factory = factoryLookup(resource, cfnResourceType);
+    if (factory == null) {
       if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
         const msg = `Couldn't find trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
         throw new ValidationError(msg, resource);
       }
-      decorator = defaultFactoryFor(cfnResourceType);
+      factory = defaultFactoryFor(cfnResourceType);
     }
-    if (decorator != null) {
-      const trait = decorator.fromConstruct(resource);
+    if (factory != null) {
+      const trait = factory.fromConstruct(resource);
       this.instances.set(resource, trait);
       return trait;
     }
     return undefined;
   }
 
-  public register(scope: IConstruct, cfnType: string, decorator: Factory, sym: symbol) {
-    let decoratorMap = (scope as any)[sym] as Map<string, Factory>;
-    if (!decoratorMap) {
-      decoratorMap = new Map<string, Factory>();
+  public register(scope: IConstruct, cfnType: string, factory: Factory, sym: symbol) {
+    let factoryMap = (scope as any)[sym] as Map<string, Factory>;
+    if (!factoryMap) {
+      factoryMap = new Map<string, Factory>();
 
       Object.defineProperty(scope, sym, {
-        value: decoratorMap,
+        value: factoryMap,
         configurable: false,
         enumerable: false,
       });
     }
 
-    decoratorMap.set(cfnType, decorator);
+    factoryMap.set(cfnType, factory);
   }
 }
 
@@ -536,7 +536,7 @@ export class ResourceWithPolicies {
     }
 
     function lookupResourcePolicyFactory(scope: IConstruct, cfnResourceType: string): IResourcePolicyFactory | undefined {
-      return lookupFactory(scope, cfnResourceType, POLICY_DECORATOR_MAP_SYMBOL) as IResourcePolicyFactory | undefined;
+      return lookupFactory(scope, cfnResourceType, POLICY_FACTORY_MAP_SYMBOL) as IResourcePolicyFactory | undefined;
     }
 
     return ResourceWithPolicies.traits.of(
@@ -550,7 +550,7 @@ export class ResourceWithPolicies {
    * Register a factory for a specific CloudFormation resource type and scope
    */
   public static register(scope: IConstruct, cfnType: string, factory: IResourcePolicyFactory) {
-    this.traits.register(scope, cfnType, factory, POLICY_DECORATOR_MAP_SYMBOL);
+    this.traits.register(scope, cfnType, factory, POLICY_FACTORY_MAP_SYMBOL);
   }
 
   private static traits = new Traits<IResourceWithPolicyV2, IResourcePolicyFactory>();
@@ -572,7 +572,7 @@ export class EncryptedResources {
     }
 
     function lookupEncryptedResourceFactory(scope: IConstruct, cfnResourceType: string): IEncryptedResourceFactory | undefined {
-      return lookupFactory(scope, cfnResourceType, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL) as IEncryptedResourceFactory | undefined;
+      return lookupFactory(scope, cfnResourceType, ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL) as IEncryptedResourceFactory | undefined;
     }
 
     return EncryptedResources.traits.of(
@@ -585,8 +585,8 @@ export class EncryptedResources {
   /**
    * Register a factory for a specific CloudFormation resource type and scope
    */
-  public static register(scope: IConstruct, cfnType: string, decorator: IEncryptedResourceFactory) {
-    this.traits.register(scope, cfnType, decorator, ENCRYPTED_RESOURCE_DECORATOR_MAP_SYMBOL);
+  public static register(scope: IConstruct, cfnType: string, factory: IEncryptedResourceFactory) {
+    this.traits.register(scope, cfnType, factory, ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL);
   }
 
   private static traits = new Traits<IEncryptedResource, IEncryptedResourceFactory>();
@@ -744,7 +744,7 @@ export class DefaultPolicyFactories {
    */
   public static set(type: string, factory: IResourcePolicyFactory) {
     if (DefaultPolicyFactories.map.has(type)) {
-      throw new UnscopedValidationError(`A resource policy decorator for resource type '${type}' is already registered.`);
+      throw new UnscopedValidationError(`A resource policy factory for resource type '${type}' is already registered.`);
     }
     DefaultPolicyFactories.map.set(type, factory);
   }
@@ -779,7 +779,7 @@ export class DefaultEncryptedResourceFactories {
    */
   public static set(type: string, factory: IEncryptedResourceFactory) {
     if (DefaultEncryptedResourceFactories.map.has(type)) {
-      throw new UnscopedValidationError(`An encrypted resource decorator for resource type '${type}' is already registered.`);
+      throw new UnscopedValidationError(`An encrypted resource factory for resource type '${type}' is already registered.`);
     }
     DefaultEncryptedResourceFactories.map.set(type, factory);
   }
