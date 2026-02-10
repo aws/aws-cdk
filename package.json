@@ -18,7 +18,7 @@
     "synthetic-examples": "cdk-generate-synthetic-examples"
   },
   "devDependencies": {
-    "@nx/workspace": "^20",
+    "@nx/workspace": "^22",
     "@types/node": "18.19.129",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -32,7 +32,7 @@
     "jsii-pacmak": "1.126.0",
     "jsii-reflect": "1.125.0",
     "lerna": "^8.2.4",
-    "nx": "^20",
+    "nx": "^22",
     "semver": "^7.7.3",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.4.6",

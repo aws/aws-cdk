@@ -22,7 +22,7 @@ jobs:
         run: yarn install
 
       - name: Build Library
-        run: npx lerna run build --scope=aws-cdk-lib
+        run: npx nx run aws-cdk-lib:build
 
       - name: Run Core tests
         run: cd packages/aws-cdk-lib && yarn test core
