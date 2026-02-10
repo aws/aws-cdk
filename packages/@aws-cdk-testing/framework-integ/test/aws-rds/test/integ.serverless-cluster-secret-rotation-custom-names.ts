@@ -24,8 +24,7 @@ const secret = new DatabaseSecret(stack, 'test-secret', {
   secretName: 'admin-secret',
 });
 
-// @ts-ignore - cluster is used implicitly by secret rotation
-const cluster = new DatabaseCluster(stack, 'Database', {
+new DatabaseCluster(stack, 'Database', {
   engine: DatabaseClusterEngine.auroraMysql({
     version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),

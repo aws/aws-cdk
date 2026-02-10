@@ -12,18 +12,6 @@ const stack = new IntegTestBaseStack(app, 'cdk-rds-read-replica-with-allocated-s
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 2,
   restrictDefaultSecurityGroup: false,
-  subnetConfiguration: [
-    {
-      cidrMask: 24,
-      name: 'Public',
-      subnetType: ec2.SubnetType.PUBLIC,
-    },
-    {
-      cidrMask: 24,
-      name: 'Isolated',
-      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-    },
-  ],
 });
 
 const sourceInstance = new rds.DatabaseInstance(stack, 'SourceInstance', {
@@ -32,21 +20,15 @@ const sourceInstance = new rds.DatabaseInstance(stack, 'SourceInstance', {
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   vpc,
-  vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-  },
 });
 
 new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
   sourceDatabaseInstance: sourceInstance,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   vpc,
-  vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-  },
   allocatedStorage: 500,
 });
 
-new integ.IntegTest(app, 'ReadReplicaWithAllocatedStorageTest', {
+new integ.IntegTest(app, 'aws-cdk-rds-read-replica-with-allocated-storage-test', {
   testCases: [stack],
 });
