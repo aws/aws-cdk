@@ -1,5 +1,5 @@
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
-import { aws_elasticloadbalancingv2 } from '../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../interfaces';
 
 /**
  * A single Application Load Balancer as the target for load balancing.

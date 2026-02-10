@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import { ICertificate, KeyAlgorithm } from './certificate';
+import type { Construct } from 'constructs';
+import type { ICertificate, KeyAlgorithm } from './certificate';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
-import * as acmpca from '../../aws-acmpca';
+import type * as acmpca from '../../aws-acmpca';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

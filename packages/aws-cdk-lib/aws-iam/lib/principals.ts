@@ -1,10 +1,11 @@
-import { IDependable } from 'constructs';
-import { IOIDCProviderRef, ISAMLProviderRef } from './iam.generated';
-import { PolicyDocument } from './policy-document';
-import { Condition, Conditions, PolicyStatement } from './policy-statement';
+import type { IDependable } from 'constructs';
+import type { IOIDCProviderRef, ISAMLProviderRef } from './iam.generated';
+import type { PolicyDocument } from './policy-document';
+import type { Condition, Conditions } from './policy-statement';
+import { PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
-import { ISamlProvider } from './saml-provider';
+import type { ISamlProvider } from './saml-provider';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core';
 import { RegionInfo } from '../../region-info';
@@ -270,7 +271,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
   public addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
     defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
@@ -384,7 +385,7 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
   public addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
     defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {

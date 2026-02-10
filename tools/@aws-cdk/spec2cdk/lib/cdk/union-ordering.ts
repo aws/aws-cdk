@@ -1,5 +1,6 @@
-import { PropertyType, RichPropertyType, SpecDatabase, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { Type } from '@cdklabs/typewriter';
+import type { PropertyType, SpecDatabase, TypeDefinition } from '@aws-cdk/service-spec-types';
+import { RichPropertyType } from '@aws-cdk/service-spec-types';
+import type { Type } from '@cdklabs/typewriter';
 import { isSubsetOf } from '../util/sets';
 import { topologicalSort } from '../util/toposort';
 
