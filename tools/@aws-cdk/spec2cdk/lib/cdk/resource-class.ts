@@ -680,7 +680,7 @@ export class ResourceClass extends ClassType implements Referenceable {
       stmt.constVar(propsResult, reverseMapper.call(resourceProperties)),
       stmt
         .if_(CDK_CORE.isResolvableObject(propsResult.value))
-        .then(stmt.block(stmt.throw_(CDK_CORE.errors.ValidationError.newInstance(expr.lit('Unexpected IResolvable'), scope)))),
+        .then(stmt.block(stmt.throw_(CDK_CORE.errors.ValidationError.newInstance(expr.lit('UnexpectedIresolvable'), expr.lit('Unexpected IResolvable'), scope)))),
       stmt.constVar(ret, this.newInstance(scope, id, propsResult.value)),
     );
 
