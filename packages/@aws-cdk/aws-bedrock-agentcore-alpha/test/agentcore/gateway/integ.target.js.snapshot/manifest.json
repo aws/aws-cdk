@@ -1,5 +1,6 @@
 {
   "version": "50.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "BedrockAgentCoreTargetIntegTest.assets": {
       "type": "cdk:asset-manifest",
