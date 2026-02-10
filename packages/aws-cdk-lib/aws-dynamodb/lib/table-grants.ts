@@ -8,10 +8,7 @@ import { DefaultPolicyFactories } from '../../aws-iam';
 import { type CfnKey, KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
 import { Stack, Token, ValidationError } from '../../core';
-import {
-  findClosestRelatedResource,
-  findL1FromRef,
-} from '../../core/lib/helpers-internal';
+import { findClosestRelatedResource, findL1FromRef } from '../../core/lib/helpers-internal';
 
 /**
  * Construction properties for TableGrants
@@ -221,7 +218,7 @@ export class TablePolicyFactory implements IResourcePolicyFactory {
    * Converts a DynamoDB table construct into an IResourceWithPolicyV2 that can be used
    * for adding resource-based policy statements.
    */
-  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     if (!CfnTable.isCfnTable(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
     }
@@ -271,7 +268,7 @@ export class EncryptedTableFactory implements iam.IEncryptedResourceFactory {
     iam.DefaultEncryptedResourceFactories.set('AWS::DynamoDB::Table', new EncryptedTableFactory());
   }
 
-  public fromConstruct(resource: IConstruct): iam.IEncryptedResource {
+  public forConstruct(resource: IConstruct): iam.IEncryptedResource {
     if (!CfnTable.isCfnTable(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
     }

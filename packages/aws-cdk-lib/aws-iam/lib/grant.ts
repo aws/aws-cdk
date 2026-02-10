@@ -3,9 +3,9 @@ import { Dependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import type { IGrantable, IPrincipal } from './principals';
 import type { IEnvironmentAware } from '../../core';
+import { CfnResource, UnscopedValidationError } from '../../core';
 import * as cdk from '../../core';
-import { CfnResource, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
-import * as cxapi from '../../cx-api/index';
+import { Traits } from '../../core/lib/helpers-internal';
 
 const POLICY_FACTORY_MAP_SYMBOL = Symbol.for('cdk-resource-policy-factory');
 const ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL = Symbol.for('cdk-encrypted-resource-factory');
@@ -437,77 +437,6 @@ export interface GrantOnKeyResult {
   readonly grant?: Grant;
 }
 
-function lookupFactory(scope: IConstruct, cfnResourceType: string, sym: symbol): IEnvironmentAware | undefined {
-  for (
-    let current: any = scope;
-    current != null;
-    current = (current.node && current.node.scope) ? current.node.scope : undefined
-  ) {
-    const factoryMap = current[sym];
-    if (factoryMap) {
-      const factory = factoryMap.get(cfnResourceType);
-      if (factory) {
-        return factory;
-      }
-    }
-  }
-
-  return undefined;
-}
-
-class Traits<
-  Trait extends IEncryptedResource | IResourceWithPolicyV2,
-  Factory extends ITraitFactory<Trait>,
-> {
-  private instances = new WeakMap<IEnvironmentAware, Trait>();
-
-  public of(
-    resource: IEnvironmentAware,
-    factoryLookup: (resource: CfnResource, type: string) => Factory | undefined,
-    defaultFactoryFor: (type: string) => Factory | undefined,
-  ): Trait | undefined {
-    const cached = this.instances.get(resource);
-    if (cached != null) {
-      return cached;
-    }
-
-    if (!(resource instanceof CfnResource)) {
-      return undefined;
-    }
-
-    const cfnResourceType = (resource as CfnResource).cfnResourceType;
-    let factory = factoryLookup(resource, cfnResourceType);
-    if (factory == null) {
-      if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
-        const msg = `Couldn't find trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
-        throw new ValidationError(msg, resource);
-      }
-      factory = defaultFactoryFor(cfnResourceType);
-    }
-    if (factory != null) {
-      const trait = factory.fromConstruct(resource);
-      this.instances.set(resource, trait);
-      return trait;
-    }
-    return undefined;
-  }
-
-  public register(scope: IConstruct, cfnType: string, factory: Factory, sym: symbol) {
-    let factoryMap = (scope as any)[sym] as Map<string, Factory>;
-    if (!factoryMap) {
-      factoryMap = new Map<string, Factory>();
-
-      Object.defineProperty(scope, sym, {
-        value: factoryMap,
-        configurable: false,
-        enumerable: false,
-      });
-    }
-
-    factoryMap.set(cfnType, factory);
-  }
-}
-
 /**
  * Utility class for discovering and managing resource policy traits
  *
@@ -523,25 +452,20 @@ export class ResourceWithPolicies {
       return resource;
     }
 
-    function lookupResourcePolicyFactory(scope: IConstruct, cfnResourceType: string): IResourcePolicyFactory | undefined {
-      return lookupFactory(scope, cfnResourceType, POLICY_FACTORY_MAP_SYMBOL) as IResourcePolicyFactory | undefined;
-    }
-
-    return ResourceWithPolicies.traits.of(
-      resource,
-      (cfnResource, type) => lookupResourcePolicyFactory(cfnResource, type),
-      type => DefaultPolicyFactories.get(type),
-    );
+    return resource instanceof CfnResource ? ResourceWithPolicies.traits.of(resource) : undefined;
   }
 
   /**
    * Register a factory for a specific CloudFormation resource type and scope
    */
   public static register(scope: IConstruct, cfnType: string, factory: IResourcePolicyFactory) {
-    this.traits.register(scope, cfnType, factory, POLICY_FACTORY_MAP_SYMBOL);
+    ResourceWithPolicies.traits.register(scope, cfnType, factory, POLICY_FACTORY_MAP_SYMBOL);
   }
 
-  private static traits = new Traits<IResourceWithPolicyV2, IResourcePolicyFactory>();
+  private static traits = new Traits<IResourceWithPolicyV2, IResourcePolicyFactory>(
+    POLICY_FACTORY_MAP_SYMBOL,
+    type => DefaultPolicyFactories.get(type),
+  );
 }
 
 /**
@@ -559,29 +483,20 @@ export class EncryptedResources {
       return resource;
     }
 
-    function lookupEncryptedResourceFactory(scope: IConstruct, cfnResourceType: string): IEncryptedResourceFactory | undefined {
-      return lookupFactory(scope, cfnResourceType, ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL) as IEncryptedResourceFactory | undefined;
-    }
-
-    return EncryptedResources.traits.of(
-      resource,
-      (cfnResource, type) => lookupEncryptedResourceFactory(cfnResource, type),
-      type => DefaultEncryptedResourceFactories.get(type),
-    );
+    return resource instanceof CfnResource ? EncryptedResources.traits.of(resource) : undefined;
   }
 
   /**
    * Register a factory for a specific CloudFormation resource type and scope
    */
   public static register(scope: IConstruct, cfnType: string, factory: IEncryptedResourceFactory) {
-    this.traits.register(scope, cfnType, factory, ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL);
+    EncryptedResources.traits.register(scope, cfnType, factory, ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL);
   }
 
-  private static traits = new Traits<IEncryptedResource, IEncryptedResourceFactory>();
-}
-
-interface ITraitFactory<T> {
-  fromConstruct(resource: IConstruct): T;
+  private static traits = new Traits<IEncryptedResource, IEncryptedResourceFactory>(
+    ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL,
+    type => DefaultEncryptedResourceFactories.get(type),
+  );
 }
 
 /**
@@ -602,7 +517,7 @@ export interface IResourcePolicyFactory {
    * Create an IResourceWithPolicyV2 from a construct
    * @param resource the construct to be wrapped as an IResourceWithPolicyV2.
    */
-  fromConstruct(resource: IConstruct): IResourceWithPolicyV2;
+  forConstruct(resource: IConstruct): IResourceWithPolicyV2;
 }
 
 /**
@@ -624,7 +539,7 @@ export interface IEncryptedResourceFactory {
    *
    * @param resource the construct to be wrapped as an IEncryptedResource.
    */
-  fromConstruct(resource: IConstruct): IEncryptedResource;
+  forConstruct(resource: IConstruct): IEncryptedResource;
 }
 
 /**

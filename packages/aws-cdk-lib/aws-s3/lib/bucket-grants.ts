@@ -294,7 +294,7 @@ export class EncryptedBucketFactory implements IEncryptedResourceFactory {
     DefaultEncryptedResourceFactories.set('AWS::S3::Bucket', new EncryptedBucketFactory());
   }
 
-  public fromConstruct(resource: IConstruct): IEncryptedResource {
+  public forConstruct(resource: IConstruct): IEncryptedResource {
     return ifCfnBucket(resource, (r) => new EncryptedCfnBucket(r));
   }
 }
@@ -322,7 +322,7 @@ export class BucketWithPolicyFactory implements IResourcePolicyFactory {
     DefaultPolicyFactories.set('AWS::S3::Bucket', new BucketWithPolicyFactory());
   }
 
-  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     return ifCfnBucket(resource, (r) => new CfnBucketWithPolicy(r));
   }
 }

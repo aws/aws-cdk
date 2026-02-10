@@ -197,7 +197,7 @@ export class KeyWithPolicyFactory implements IResourcePolicyFactory {
     DefaultPolicyFactories.set('AWS::KMS::Key', new KeyWithPolicyFactory());
   }
 
-  public fromConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     if (!CfnKey.isCfnKey(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnKey`, resource);
     }

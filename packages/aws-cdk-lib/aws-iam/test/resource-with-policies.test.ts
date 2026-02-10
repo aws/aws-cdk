@@ -235,7 +235,7 @@ class TestConstruct extends Construct {
 class MockFactory implements iam.IResourcePolicyFactory {
   constructor(private readonly id: string) {}
 
-  fromConstruct(_resource: Construct): iam.IResourceWithPolicyV2 {
+  forConstruct(_resource: Construct): iam.IResourceWithPolicyV2 {
     return {
       env: { account: '123456789012', region: 'us-east-1' },
       addToResourcePolicy: () => ({ statementAdded: true }),
