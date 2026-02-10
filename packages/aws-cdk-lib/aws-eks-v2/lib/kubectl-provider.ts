@@ -11,6 +11,10 @@ import { Duration, CfnCondition, Fn, Aws, RemovalPolicies } from '../../core';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
+/**
+ * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
+ * against the cluster.
+ */
 export interface KubectlProviderOptions {
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -26,13 +30,15 @@ export interface KubectlProviderOptions {
   /**
    * An AWS Lambda layer that contains the `aws` CLI.
    *
-   * If not defined, a default layer will be used containing the AWS CLI 2.x.
+   * @default - If not defined, a default layer will be used containing the AWS CLI 2.x.
    */
   readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    *
    * Custom environment variables when running `kubectl` against this cluster.
+   *
+   * @default - No custom environment variables
    */
   readonly environment?: { [key: string]: string };
 
@@ -46,6 +52,8 @@ export interface KubectlProviderOptions {
 
   /**
    * The amount of memory allocated to the kubectl provider's lambda function.
+   *
+   * @default - 1024
    */
   readonly memory?: Size;
 
@@ -57,6 +65,8 @@ export interface KubectlProviderOptions {
   /**
    * Subnets to host the `kubectl` compute resources. If not specified, the k8s
    * endpoint is expected to be accessible publicly.
+   *
+   * @default - the k8s is accessible publicly
    */
   readonly privateSubnets?: ec2.ISubnet[];
 

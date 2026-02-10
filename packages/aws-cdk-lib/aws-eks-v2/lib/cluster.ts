@@ -128,7 +128,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
    * against the cluster. If defined, `kubectlLayer` is a required property.
    *
-   * If not defined, kubectl provider will not be created by default.
+   * @default - kubectl provider will not be created
    */
   readonly kubectlProviderOptions?: KubectlProviderOptions;
 
@@ -277,7 +277,7 @@ export interface ClusterAttributes {
    * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
    * against the cluster. If defined, `kubectlLayer` is a required property.
    *
-   * If not defined, kubectl provider will not be created by default.
+   * @default - kubectl provider will not be created by default.
    */
   readonly kubectlProviderOptions?: KubectlProviderOptions;
 
@@ -431,7 +431,7 @@ export interface ClusterCommonOptions {
    * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
    * against the cluster. If defined, `kubectlLayer` is a required property.
    *
-   * If not defined, kubectl provider will not be created by default.
+   * @default - kubectl provider will not be created
    */
   readonly kubectlProviderOptions?: KubectlProviderOptions;
 
@@ -1672,6 +1672,9 @@ export class Cluster extends ClusterBase {
     return this._openIdConnectProvider;
   }
 
+  /**
+   * KubectlProvider for issuing kubectl commands.
+   */
   public get kubectlProvider() {
     return this._kubectlProvider;
   }
