@@ -292,9 +292,18 @@ for the `AWS::KMS::Key` CloudFormation type:
 
 ```ts
 declare const scope: Construct;
-declare const MyFactory: iam.IResourcePolicyFactory;
+class MyFactory implements iam.IResourcePolicyFactory {
+  forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+    return {
+      addToResourcePolicy(statement: PolicyStatement) {
+        // custom implementation to add the statement to the resource policy
+        return { statementAdded: true, policyDependable: resource };
+      }
+    }
+  }
+}
 
-ResourceWithPolicies.register(scope, 'AWS::KMS::Key', new MyFactory());
+iam.ResourceWithPolicies.register(scope, 'AWS::KMS::Key', new MyFactory());
 ```
 
 `IResourcePolicyFactory` is responsible for converting a construct into a `IResourceWithPolicyV2`,

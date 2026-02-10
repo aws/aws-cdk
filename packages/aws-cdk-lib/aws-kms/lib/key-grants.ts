@@ -90,6 +90,10 @@ export class KeyGrants {
     }
   }
 
+  public admin(grantee: IGrantable): iam.Grant {
+    return this.actions(grantee, ...perms.ADMIN_ACTIONS);
+  }
+
   /**
    * Grant decryption permissions using this key to the given principal
    *
