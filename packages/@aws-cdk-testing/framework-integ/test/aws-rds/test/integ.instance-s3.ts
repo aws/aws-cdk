@@ -2,11 +2,12 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_SQLSERVER } from './db-versions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { DatabaseInstance, DatabaseInstanceEngine, LicenseModel } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-s3-integ');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-instance-s3-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
@@ -19,7 +20,6 @@ new DatabaseInstance(stack, 'Database', {
   licenseModel: LicenseModel.LICENSE_INCLUDED,
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
   deletionProtection: false,
 });
 

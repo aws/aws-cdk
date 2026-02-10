@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "VPCB9E5F0B4": {
+  "vpcA2121C38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
@@ -10,12 +10,14 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC"
+      "Value": "aws-cdk-rds-proxy/vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet1SubnetB4246D30": {
+  "vpcPublicSubnet1Subnet2E65531E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -39,91 +41,103 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet1RouteTableFEE4B781": {
+  "vpcPublicSubnet1RouteTable48A2DF9B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+  "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
     },
     "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet1DefaultRoute91CEF279": {
+  "vpcPublicSubnet1DefaultRoute10708846": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
+     "Ref": "vpcIGWE57CBDCA"
     },
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
     }
    },
    "DependsOn": [
-    "VPCVPCGW99B986DC"
-   ]
+    "vpcVPCGW7984C166"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet1EIP6AD938E8": {
+  "vpcPublicSubnet1EIPDA49DCBE": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
     "Domain": "vpc",
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet1NATGatewayE0556630": {
+  "vpcPublicSubnet1NATGateway9C16659E": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
-      "VPCPublicSubnet1EIP6AD938E8",
+      "vpcPublicSubnet1EIPDA49DCBE",
       "AllocationId"
      ]
     },
     "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
     },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
      }
     ]
    },
    "DependsOn": [
-    "VPCPublicSubnet1DefaultRoute91CEF279",
-    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
-   ]
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet2Subnet74179F39": {
+  "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -147,55 +161,103 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PublicSubnet2"
+      "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet2RouteTable6F1A15F1": {
+  "vpcPublicSubnet2RouteTableEB40D4CB": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PublicSubnet2"
+      "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+  "vpcPublicSubnet2RouteTableAssociation21F81B59": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
     },
     "SubnetId": {
-     "Ref": "VPCPublicSubnet2Subnet74179F39"
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+  "vpcPublicSubnet2DefaultRouteA1EC0F60": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
+     "Ref": "vpcIGWE57CBDCA"
     },
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
     }
    },
    "DependsOn": [
-    "VPCVPCGW99B986DC"
-   ]
+    "vpcVPCGW7984C166"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPrivateSubnet1Subnet8BCA10E0": {
+  "vpcPublicSubnet2EIP9B3743B1": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "vpcPublicSubnet2NATGateway9B8AE11A": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "vpcPublicSubnet2EIP9B3743B1",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "vpcPrivateSubnet1Subnet934893E8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -219,52 +281,60 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-rds-proxy/vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPrivateSubnet1RouteTableBE8A6027": {
+  "vpcPrivateSubnet1RouteTableB41A48CC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-rds-proxy/vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+  "vpcPrivateSubnet1RouteTableAssociation67945127": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
     },
     "SubnetId": {
-     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     "Ref": "vpcPrivateSubnet1Subnet934893E8"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+  "vpcPrivateSubnet1DefaultRoute1AA8E2E5": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+     "Ref": "vpcPublicSubnet1NATGateway9C16659E"
     },
     "RouteTableId": {
-     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPrivateSubnet2SubnetCFCDAA7A": {
+  "vpcPrivateSubnet2Subnet7031C2BA": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -288,91 +358,215 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-rds-proxy/vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPrivateSubnet2RouteTable0A19E10E": {
+  "vpcPrivateSubnet2RouteTable7280F23E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-rds-proxy/vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+  "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
     },
     "SubnetId": {
-     "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
+  "vpcPrivateSubnet2DefaultRouteB0E07F99": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+     "Ref": "vpcPublicSubnet2NATGateway9B8AE11A"
     },
     "RouteTableId": {
-     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCIGWB7E252D3": {
+  "vpcIGWE57CBDCA": {
    "Type": "AWS::EC2::InternetGateway",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-proxy/VPC"
+      "Value": "aws-cdk-rds-proxy/vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCVPCGW99B986DC": {
+  "vpcVPCGW7984C166": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
     "InternetGatewayId": {
-     "Ref": "VPCIGWB7E252D3"
+     "Ref": "vpcIGWE57CBDCA"
     },
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstanceSubnetGroupF597B45B": {
+  "SecretEncryptionKey40C82244": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:CreateGrant",
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "kms:ViaService": {
+          "Fn::Join": [
+           "",
+           [
+            "secretsmanager.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".amazonaws.com"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": "kms:Decrypt",
+       "Condition": {
+        "StringEquals": {
+         "kms:ViaService": {
+          "Fn::Join": [
+           "",
+           [
+            "secretsmanager.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".amazonaws.com"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "dbProxyIAMRole662F3AB8",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbInstanceSubnetGroupD062EC9E": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnet group for DBInstance database",
+    "DBSubnetGroupDescription": "Subnet group for dbInstance database",
     "SubnetIds": [
      {
-      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
      },
      {
-      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstanceSecurityGroup8BE42C36": {
+  "dbInstanceSecurityGroupA58A00A3": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Security group for DBInstance database",
+    "GroupDescription": "Security group for dbInstance database",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -381,42 +575,375 @@
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstanceSecurityGroupfromawscdkrdsproxyDBInstanceDBProxyProxySecurityGroup3733D5EAIndirectPortE02C026B": {
+  "dbInstanceSecurityGroupfromawscdkrdsproxydbProxyProxySecurityGroupA345AFE5IndirectPortE3621D4F": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "Description": "Allow connections to the database Instance from the Proxy",
     "FromPort": {
      "Fn::GetAtt": [
-      "DBInstance46641A50",
+      "dbInstance4076B1EC",
       "Endpoint.Port"
      ]
     },
     "GroupId": {
      "Fn::GetAtt": [
-      "DBInstanceSecurityGroup8BE42C36",
+      "dbInstanceSecurityGroupA58A00A3",
       "GroupId"
      ]
     },
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "DBInstanceDBProxyProxySecurityGroup3CF2B2FC",
+      "dbProxyProxySecurityGroup16E727A7",
       "GroupId"
      ]
     },
     "ToPort": {
      "Fn::GetAtt": [
-      "DBInstance46641A50",
+      "dbInstance4076B1EC",
       "Endpoint.Port"
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstanceSecret8881423A": {
+  "dbInstanceSecret032D3661": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": "\"@/\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"master\"}"
+    },
+    "KmsKeyId": {
+     "Fn::GetAtt": [
+      "SecretEncryptionKey40C82244",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbInstanceSecretAttachment88CFBDAE": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "dbInstanceSecret032D3661"
+    },
+    "TargetId": {
+     "Ref": "dbInstance4076B1EC"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbInstance4076B1EC": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "AllocatedStorage": "100",
+    "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t3.medium",
+    "DBSubnetGroupName": {
+     "Ref": "dbInstanceSubnetGroupD062EC9E"
+    },
+    "Engine": "postgres",
+    "EngineVersion": "18.1",
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "dbInstanceSecret032D3661"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "dbInstanceSecret032D3661"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "StorageType": "gp2",
+    "VPCSecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "dbInstanceSecurityGroupA58A00A3",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbProxyIAMRole662F3AB8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "rds.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbProxyIAMRoleDefaultPolicy99AB98F3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "dbInstanceSecretAttachment88CFBDAE"
+       }
+      },
+      {
+       "Action": "kms:Decrypt",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SecretEncryptionKey40C82244",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "dbProxyIAMRoleDefaultPolicy99AB98F3",
+    "Roles": [
+     {
+      "Ref": "dbProxyIAMRole662F3AB8"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbProxyProxySecurityGroup16E727A7": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SecurityGroup for Database Proxy",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbProxy3B89EAF2": {
+   "Type": "AWS::RDS::DBProxy",
+   "Properties": {
+    "Auth": [
+     {
+      "AuthScheme": "SECRETS",
+      "ClientPasswordAuthType": "POSTGRES_SCRAM_SHA_256",
+      "IAMAuth": "DISABLED",
+      "SecretArn": {
+       "Ref": "dbInstanceSecretAttachment88CFBDAE"
+      }
+     }
+    ],
+    "DBProxyName": "awscdkrdsproxydbProxy0E60A1B7",
+    "EngineFamily": "POSTGRESQL",
+    "RequireTLS": true,
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "dbProxyIAMRole662F3AB8",
+      "Arn"
+     ]
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "dbProxyProxySecurityGroup16E727A7",
+       "GroupId"
+      ]
+     }
+    ],
+    "VpcSubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbProxyProxyTargetGroup8DA26A77": {
+   "Type": "AWS::RDS::DBProxyTargetGroup",
+   "Properties": {
+    "ConnectionPoolConfigurationInfo": {
+     "ConnectionBorrowTimeout": 30,
+     "MaxConnectionsPercent": 50
+    },
+    "DBInstanceIdentifiers": [
+     {
+      "Ref": "dbInstance4076B1EC"
+     }
+    ],
+    "DBProxyName": {
+     "Ref": "dbProxy3B89EAF2"
+    },
+    "TargetGroupName": "default"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterSubnets03B9B0E1": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for dbCluster database",
+    "SubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterSecurityGroupCAA1A91F": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09IndirectPort152B2D99": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow connections to the database Cluster from the Proxy",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "dbClusterE86E47AE",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "dbClusterSecurityGroupCAA1A91F",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "dbClusterProxyProxySecurityGroup170F327D",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "dbClusterE86E47AE",
+      "Endpoint.Port"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853FIndirectPort61009070": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow connections to the database Cluster from the Proxy",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "dbClusterE86E47AE",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "dbClusterSecurityGroupCAA1A91F",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "dbClusterProxy2ProxySecurityGroupB44507AE",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "dbClusterE86E47AE",
+      "Endpoint.Port"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterSecretCEA6D7B6": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -440,36 +967,37 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DBInstanceSecretAttachment4CA3F9D8": {
+  "dbClusterSecretAttachmentAB67A752": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "DBInstanceSecret8881423A"
+     "Ref": "dbClusterSecretCEA6D7B6"
     },
     "TargetId": {
-     "Ref": "DBInstance46641A50"
+     "Ref": "dbClusterE86E47AE"
     },
-    "TargetType": "AWS::RDS::DBInstance"
-   }
+    "TargetType": "AWS::RDS::DBCluster"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstance46641A50": {
-   "Type": "AWS::RDS::DBInstance",
+  "dbClusterE86E47AE": {
+   "Type": "AWS::RDS::DBCluster",
    "Properties": {
-    "AllocatedStorage": "100",
     "CopyTagsToSnapshot": true,
-    "DBInstanceClass": "db.m5.large",
+    "DBClusterParameterGroupName": "default.aurora-postgresql17",
     "DBSubnetGroupName": {
-     "Ref": "DBInstanceSubnetGroupF597B45B"
+     "Ref": "dbClusterSubnets03B9B0E1"
     },
-    "Engine": "postgres",
-    "EngineVersion": "18.1",
+    "Engine": "aurora-postgresql",
+    "EngineVersion": "17.6",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "DBInstanceSecret8881423A"
+        "Ref": "dbClusterSecretCEA6D7B6"
        },
        ":SecretString:password::}}"
       ]
@@ -481,17 +1009,17 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "DBInstanceSecret8881423A"
+        "Ref": "dbClusterSecretCEA6D7B6"
        },
        ":SecretString:username::}}"
       ]
      ]
     },
-    "StorageType": "gp2",
-    "VPCSecurityGroups": [
+    "Port": 5432,
+    "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "DBInstanceSecurityGroup8BE42C36",
+       "dbClusterSecurityGroupCAA1A91F",
        "GroupId"
       ]
      }
@@ -500,7 +1028,49 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DBInstanceDBProxyIAMRoleBE460B38": {
+  "dbClusterInstance1BCE092AC": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "dbClusterE86E47AE"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "DBSubnetGroupName": {
+     "Ref": "dbClusterSubnets03B9B0E1"
+    },
+    "Engine": "aurora-postgresql"
+   },
+   "DependsOn": [
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterInstance20BA1ECD9": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "dbClusterE86E47AE"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "DBSubnetGroupName": {
+     "Ref": "dbClusterSubnets03B9B0E1"
+    },
+    "Engine": "aurora-postgresql"
+   },
+   "DependsOn": [
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterProxyIAMRole693E39F5": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -515,9 +1085,11 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstanceDBProxyIAMRoleDefaultPolicy6D7D7D5A": {
+  "dbClusterProxyIAMRoleDefaultPolicyEEE23224": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -529,21 +1101,23 @@
        ],
        "Effect": "Allow",
        "Resource": {
-        "Ref": "DBInstanceSecretAttachment4CA3F9D8"
+        "Ref": "dbClusterSecretAttachmentAB67A752"
        }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DBInstanceDBProxyIAMRoleDefaultPolicy6D7D7D5A",
+    "PolicyName": "dbClusterProxyIAMRoleDefaultPolicyEEE23224",
     "Roles": [
      {
-      "Ref": "DBInstanceDBProxyIAMRoleBE460B38"
+      "Ref": "dbClusterProxyIAMRole693E39F5"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstanceDBProxyProxySecurityGroup3CF2B2FC": {
+  "dbClusterProxyProxySecurityGroup170F327D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "SecurityGroup for Database Proxy",
@@ -555,11 +1129,13 @@
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstanceDBProxy35E5975A": {
+  "dbClusterProxyAB5F8181": {
    "Type": "AWS::RDS::DBProxy",
    "Properties": {
     "Auth": [
@@ -567,62 +1143,829 @@
       "AuthScheme": "SECRETS",
       "IAMAuth": "DISABLED",
       "SecretArn": {
-       "Ref": "DBInstanceSecretAttachment4CA3F9D8"
+       "Ref": "dbClusterSecretAttachmentAB67A752"
       }
      }
     ],
-    "DBProxyName": "awscdkrdsproxyDBInstanceDBProxy86F50011",
-    "DebugLogging": true,
+    "DBProxyName": "awscdkrdsproxydbClusterProxyE88930B6",
     "EngineFamily": "POSTGRESQL",
-    "RequireTLS": false,
+    "RequireTLS": true,
     "RoleArn": {
      "Fn::GetAtt": [
-      "DBInstanceDBProxyIAMRoleBE460B38",
+      "dbClusterProxyIAMRole693E39F5",
       "Arn"
      ]
     },
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "DBInstanceDBProxyProxySecurityGroup3CF2B2FC",
+       "dbClusterProxyProxySecurityGroup170F327D",
        "GroupId"
       ]
      }
     ],
     "VpcSubnetIds": [
      {
-      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
      },
      {
-      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DBInstanceDBProxyProxyTargetGroup5C818D22": {
+  "dbClusterProxyProxyTargetGroupB7010C0D": {
    "Type": "AWS::RDS::DBProxyTargetGroup",
    "Properties": {
     "ConnectionPoolConfigurationInfo": {},
-    "DBInstanceIdentifiers": [
+    "DBClusterIdentifiers": [
      {
-      "Ref": "DBInstance46641A50"
+      "Ref": "dbClusterE86E47AE"
      }
     ],
     "DBProxyName": {
-     "Ref": "DBInstanceDBProxy35E5975A"
+     "Ref": "dbClusterProxyAB5F8181"
     },
     "TargetGroupName": "default"
-   }
-  }
- },
- "Outputs": {
-  "ProxyEndpoint": {
-   "Value": {
-    "Fn::GetAtt": [
-     "DBInstanceDBProxy35E5975A",
-     "Endpoint"
+   },
+   "DependsOn": [
+    "dbClusterInstance1BCE092AC",
+    "dbClusterInstance20BA1ECD9",
+    "dbClusterE86E47AE"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterProxy2IAMRole190D217C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "rds.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterProxy2IAMRoleDefaultPolicyFD9414D8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "dbClusterSecretAttachmentAB67A752"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "dbClusterProxy2IAMRoleDefaultPolicyFD9414D8",
+    "Roles": [
+     {
+      "Ref": "dbClusterProxy2IAMRole190D217C"
+     }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterProxy2ProxySecurityGroupB44507AE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SecurityGroup for Database Proxy",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterProxy28BBD43D5": {
+   "Type": "AWS::RDS::DBProxy",
+   "Properties": {
+    "Auth": [
+     {
+      "AuthScheme": "SECRETS",
+      "IAMAuth": "DISABLED",
+      "SecretArn": {
+       "Ref": "dbClusterSecretAttachmentAB67A752"
+      }
+     }
+    ],
+    "DBProxyName": "awscdkrdsproxydbClusterProxy27493E9A7",
+    "EngineFamily": "POSTGRESQL",
+    "RequireTLS": true,
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "dbClusterProxy2IAMRole190D217C",
+      "Arn"
+     ]
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "dbClusterProxy2ProxySecurityGroupB44507AE",
+       "GroupId"
+      ]
+     }
+    ],
+    "VpcSubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterProxy2ProxyTargetGroup8BD48F57": {
+   "Type": "AWS::RDS::DBProxyTargetGroup",
+   "Properties": {
+    "ConnectionPoolConfigurationInfo": {},
+    "DBClusterIdentifiers": [
+     {
+      "Ref": "dbClusterE86E47AE"
+     }
+    ],
+    "DBProxyName": {
+     "Ref": "dbClusterProxy28BBD43D5"
+    },
+    "TargetGroupName": "default"
+   },
+   "DependsOn": [
+    "dbClusterInstance1BCE092AC",
+    "dbClusterInstance20BA1ECD9",
+    "dbClusterE86E47AE"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersSubnetsD9FBAD2A": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for dbClusterWithWriterAndReaders database",
+    "SubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersSecurityGroup1D462CCA": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxyProxy3ProxySecurityGroup211267B8IndirectPort9336325A": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow connections to the database Cluster from the Proxy",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReaders6627D259",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReadersSecurityGroup1D462CCA",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "Proxy3ProxySecurityGroupF29F0434",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReaders6627D259",
+      "Endpoint.Port"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxydbClusterWithWriterAndReadersProxy4ProxySecurityGroup4989CF8FIndirectPort905C5505": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow connections to the database Cluster from the Proxy",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReaders6627D259",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReadersSecurityGroup1D462CCA",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReadersProxy4ProxySecurityGroupEDC85546",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReaders6627D259",
+      "Endpoint.Port"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxydbClusterWithWriterAndReadersProxy5ProxySecurityGroupF30773AFIndirectPort5D2FF883": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow connections to the database Cluster from the Proxy",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReaders6627D259",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReadersSecurityGroup1D462CCA",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReadersProxy5ProxySecurityGroupE59314C4",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReaders6627D259",
+      "Endpoint.Port"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersSecret3ED37A64": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"postgres\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersSecretAttachment9F7B2148": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "dbClusterWithWriterAndReadersSecret3ED37A64"
+    },
+    "TargetId": {
+     "Ref": "dbClusterWithWriterAndReaders6627D259"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReaders6627D259": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-postgresql17",
+    "DBSubnetGroupName": {
+     "Ref": "dbClusterWithWriterAndReadersSubnetsD9FBAD2A"
+    },
+    "Engine": "aurora-postgresql",
+    "EngineVersion": "17.6",
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "dbClusterWithWriterAndReadersSecret3ED37A64"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "dbClusterWithWriterAndReadersSecret3ED37A64"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "Port": 5432,
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "dbClusterWithWriterAndReadersSecurityGroup1D462CCA",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReaderswriter6BAC1240": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "dbClusterWithWriterAndReaders6627D259"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "Engine": "aurora-postgresql",
+    "PromotionTier": 0
+   },
+   "DependsOn": [
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersreader042B2B99": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "dbClusterWithWriterAndReaders6627D259"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "Engine": "aurora-postgresql",
+    "PromotionTier": 2
+   },
+   "DependsOn": [
+    "dbClusterWithWriterAndReaderswriter6BAC1240",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy4IAMRoleA63955A2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "rds.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy4IAMRoleDefaultPolicy8019C3D4": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "dbClusterWithWriterAndReadersSecretAttachment9F7B2148"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "dbClusterWithWriterAndReadersProxy4IAMRoleDefaultPolicy8019C3D4",
+    "Roles": [
+     {
+      "Ref": "dbClusterWithWriterAndReadersProxy4IAMRoleA63955A2"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy4ProxySecurityGroupEDC85546": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SecurityGroup for Database Proxy",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy4C6584761": {
+   "Type": "AWS::RDS::DBProxy",
+   "Properties": {
+    "Auth": [
+     {
+      "AuthScheme": "SECRETS",
+      "IAMAuth": "DISABLED",
+      "SecretArn": {
+       "Ref": "dbClusterWithWriterAndReadersSecretAttachment9F7B2148"
+      }
+     }
+    ],
+    "DBProxyName": "awscdkrdsproxydbClusterWithWriterAndReadersProxy401E48F9F",
+    "EngineFamily": "POSTGRESQL",
+    "RequireTLS": true,
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReadersProxy4IAMRoleA63955A2",
+      "Arn"
+     ]
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "dbClusterWithWriterAndReadersProxy4ProxySecurityGroupEDC85546",
+       "GroupId"
+      ]
+     }
+    ],
+    "VpcSubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy4ProxyTargetGroup69B133B1": {
+   "Type": "AWS::RDS::DBProxyTargetGroup",
+   "Properties": {
+    "ConnectionPoolConfigurationInfo": {},
+    "DBClusterIdentifiers": [
+     {
+      "Ref": "dbClusterWithWriterAndReaders6627D259"
+     }
+    ],
+    "DBProxyName": {
+     "Ref": "dbClusterWithWriterAndReadersProxy4C6584761"
+    },
+    "TargetGroupName": "default"
+   },
+   "DependsOn": [
+    "dbClusterWithWriterAndReadersreader042B2B99",
+    "dbClusterWithWriterAndReaders6627D259",
+    "dbClusterWithWriterAndReaderswriter6BAC1240"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy5IAMRole760AB64E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "rds.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy5IAMRoleDefaultPolicy0CD3B628": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "dbClusterWithWriterAndReadersSecretAttachment9F7B2148"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "dbClusterWithWriterAndReadersProxy5IAMRoleDefaultPolicy0CD3B628",
+    "Roles": [
+     {
+      "Ref": "dbClusterWithWriterAndReadersProxy5IAMRole760AB64E"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy5ProxySecurityGroupE59314C4": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SecurityGroup for Database Proxy",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy5FA5F5557": {
+   "Type": "AWS::RDS::DBProxy",
+   "Properties": {
+    "Auth": [
+     {
+      "AuthScheme": "SECRETS",
+      "IAMAuth": "DISABLED",
+      "SecretArn": {
+       "Ref": "dbClusterWithWriterAndReadersSecretAttachment9F7B2148"
+      }
+     }
+    ],
+    "DBProxyName": "awscdkrdsproxydbClusterWithWriterAndReadersProxy5EFD158FA",
+    "EngineFamily": "POSTGRESQL",
+    "RequireTLS": true,
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "dbClusterWithWriterAndReadersProxy5IAMRole760AB64E",
+      "Arn"
+     ]
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "dbClusterWithWriterAndReadersProxy5ProxySecurityGroupE59314C4",
+       "GroupId"
+      ]
+     }
+    ],
+    "VpcSubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "dbClusterWithWriterAndReadersProxy5ProxyTargetGroupE76C811F": {
+   "Type": "AWS::RDS::DBProxyTargetGroup",
+   "Properties": {
+    "ConnectionPoolConfigurationInfo": {},
+    "DBClusterIdentifiers": [
+     {
+      "Ref": "dbClusterWithWriterAndReaders6627D259"
+     }
+    ],
+    "DBProxyName": {
+     "Ref": "dbClusterWithWriterAndReadersProxy5FA5F5557"
+    },
+    "TargetGroupName": "default"
+   },
+   "DependsOn": [
+    "dbClusterWithWriterAndReadersreader042B2B99",
+    "dbClusterWithWriterAndReaders6627D259",
+    "dbClusterWithWriterAndReaderswriter6BAC1240"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Proxy3IAMRole26B82D9F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "rds.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Proxy3IAMRoleDefaultPolicyEBD54677": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "dbClusterWithWriterAndReadersSecretAttachment9F7B2148"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Proxy3IAMRoleDefaultPolicyEBD54677",
+    "Roles": [
+     {
+      "Ref": "Proxy3IAMRole26B82D9F"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Proxy3ProxySecurityGroupF29F0434": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SecurityGroup for Database Proxy",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Proxy39463A146": {
+   "Type": "AWS::RDS::DBProxy",
+   "Properties": {
+    "Auth": [
+     {
+      "AuthScheme": "SECRETS",
+      "IAMAuth": "DISABLED",
+      "SecretArn": {
+       "Ref": "dbClusterWithWriterAndReadersSecretAttachment9F7B2148"
+      }
+     }
+    ],
+    "DBProxyName": "awscdkrdsproxyProxy396989E4B",
+    "EngineFamily": "POSTGRESQL",
+    "RequireTLS": true,
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "Proxy3IAMRole26B82D9F",
+      "Arn"
+     ]
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "Proxy3ProxySecurityGroupF29F0434",
+       "GroupId"
+      ]
+     }
+    ],
+    "VpcSubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Proxy3ProxyTargetGroup5A623A38": {
+   "Type": "AWS::RDS::DBProxyTargetGroup",
+   "Properties": {
+    "ConnectionPoolConfigurationInfo": {},
+    "DBClusterIdentifiers": [
+     {
+      "Ref": "dbClusterWithWriterAndReaders6627D259"
+     }
+    ],
+    "DBProxyName": {
+     "Ref": "Proxy39463A146"
+    },
+    "TargetGroupName": "default"
+   },
+   "DependsOn": [
+    "dbClusterWithWriterAndReadersreader042B2B99",
+    "dbClusterWithWriterAndReaders6627D259",
+    "dbClusterWithWriterAndReaderswriter6BAC1240"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

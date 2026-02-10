@@ -1,11 +1,12 @@
 import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 import { DatabaseInstance, DatabaseInstanceEngine, StorageType } from 'aws-cdk-lib/aws-rds';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 
-class TestStack extends Stack {
+class TestStack extends IntegTestBaseStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -17,7 +18,6 @@ class TestStack extends Stack {
       vpc,
       allocatedStorage: 1000,
       storageType: StorageType.GP3,
-      removalPolicy: RemovalPolicy.DESTROY,
     });
   }
 }

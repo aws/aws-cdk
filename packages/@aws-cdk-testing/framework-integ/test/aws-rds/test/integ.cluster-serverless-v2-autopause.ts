@@ -1,13 +1,14 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import type { StackProps } from 'aws-cdk-lib';
-import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
 import type { Construct } from 'constructs';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 
-export class TestStack extends Stack {
+export class TestStack extends IntegTestBaseStack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
     const vpc = new Vpc(this, 'Integ-VPC');
@@ -17,7 +18,6 @@ export class TestStack extends Stack {
       serverlessV2MinCapacity: 0,
       serverlessV2AutoPauseDuration: Duration.hours(1),
       writer: ClusterInstance.serverlessV2('writer'),
-      removalPolicy: RemovalPolicy.DESTROY,
       vpc: vpc,
     });
   }

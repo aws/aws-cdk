@@ -3,11 +3,12 @@ import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-s3-integ');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-s3-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 

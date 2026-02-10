@@ -5,7 +5,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib';
-import { RemovalPolicy } from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
@@ -15,7 +15,7 @@ const app = new cdk.App({
   },
 });
 
-class DatabaseInstanceStack extends cdk.Stack {
+class DatabaseInstanceStack extends IntegTestBaseStack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -72,7 +72,6 @@ class DatabaseInstanceStack extends cdk.Stack {
       autoMinorVersionUpgrade: true, // required to be true if LOCATOR is used in the option group
       optionGroup,
       parameterGroup,
-      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     // Allow connections on default port from any IPV4

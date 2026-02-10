@@ -1,11 +1,12 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-enhanced-monitoring');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-cluster-enhanced-monitoring');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
@@ -17,7 +18,6 @@ new rds.DatabaseCluster(stack, 'Cluster', {
   serverlessV2MaxCapacity: 1,
   monitoringInterval: cdk.Duration.seconds(5),
   enableClusterLevelEnhancedMonitoring: true,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new IntegTest(app, 'cluster-enhanced-monitoring-integ-test', {

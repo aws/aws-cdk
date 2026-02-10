@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib/core';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -7,7 +8,7 @@ import * as ds from 'aws-cdk-lib/aws-directoryservice';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'instance-kerberos-without-domainRole');
+const stack = new IntegTestBaseStack(app, 'instance-kerberos-without-domainRole');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const activeDirectory = new ds.CfnMicrosoftAD(stack, 'AD', {

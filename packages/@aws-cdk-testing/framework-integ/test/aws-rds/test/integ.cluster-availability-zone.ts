@@ -1,11 +1,12 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-availability-zone');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-cluster-availability-zone');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
@@ -22,7 +23,6 @@ const cluster = new rds.DatabaseCluster(stack, 'Cluster', {
       availabilityZone: vpc.availabilityZones[1],
     }),
   ],
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const integ = new IntegTest(app, 'cluster-availability-zone-integ-test', {

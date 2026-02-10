@@ -2,12 +2,13 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
-class PostgresS3TestStack extends cdk.Stack {
+class PostgresS3TestStack extends IntegTestBaseStack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -19,7 +20,6 @@ class PostgresS3TestStack extends cdk.Stack {
     };
 
     const importExportBucket = new s3.Bucket(this, 'ImportExportBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     new rds.DatabaseCluster(this, 'PostgresDatabase', {

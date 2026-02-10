@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib/core';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { INTEG_TEST_LATEST_AURORA_MYSQL, INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -6,7 +7,7 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'EnableLocalWriteForwardingClusterStack');
+const stack = new IntegTestBaseStack(app, 'EnableLocalWriteForwardingClusterStack');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 new rds.DatabaseCluster(stack, 'DatabaseCluster', {

@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { INTEG_TEST_LATEST_POSTGRES } from './db-versions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -7,7 +8,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-create-grant');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-instance-create-grant');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false, natGateways: 1 });
 
@@ -17,7 +18,6 @@ const instance = new rds.DatabaseInstance(stack, 'Instance', {
   }),
   vpc,
   credentials: rds.Credentials.fromUsername('postgres'),
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const role = new iam.Role(stack, 'DBRole', {

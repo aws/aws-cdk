@@ -1,9 +1,10 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { InstanceSnapshoter } from './snapshoter';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 
 const app = new App({
   postCliContext: {
@@ -12,7 +13,7 @@ const app = new App({
   },
 });
 
-const stack = new Stack(app, 'cdk-instance-engine-lifecycle-support');
+const stack = new IntegTestBaseStack(app, 'cdk-instance-engine-lifecycle-support');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
@@ -23,7 +24,6 @@ const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
   engine,
   instanceType,
   vpc,
-  removalPolicy: RemovalPolicy.DESTROY,
   engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
 });
 
@@ -37,7 +37,6 @@ const restoredInstance = new rds.DatabaseInstanceFromSnapshot(stack, 'FromSnapsh
   engine,
   instanceType,
   vpc,
-  removalPolicy: RemovalPolicy.DESTROY,
   engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
 });
 
@@ -45,7 +44,6 @@ new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
   sourceDatabaseInstance: restoredInstance,
   instanceType,
   vpc,
-  removalPolicy: RemovalPolicy.DESTROY,
   engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
 });
 

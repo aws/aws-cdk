@@ -1,10 +1,11 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { ClusterInstance, DatabaseCluster, DatabaseClusterEngine, EngineLifecycleSupport } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-class TestStack extends cdk.Stack {
+class TestStack extends IntegTestBaseStack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 

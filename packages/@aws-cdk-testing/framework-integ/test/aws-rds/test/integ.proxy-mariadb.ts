@@ -1,13 +1,13 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_MARIADB } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
-import { RemovalPolicy } from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as rds from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-proxy-mariadb');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-proxy-mariadb');
 
 const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const kmsKey = new kms.Key(stack, 'SecretEncryptionKey');
@@ -22,7 +22,6 @@ const mariaDBInstance = new rds.DatabaseInstance(stack, 'mariaDBInstance', {
     excludeCharacters: '"@/\\',
   }),
   vpc,
-  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 new rds.DatabaseProxy(stack, 'mariaDBProxy', {

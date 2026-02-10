@@ -3,11 +3,12 @@ import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 
 const app = new App();
 const instanceIdentifier = 'test-instance-lookup';
 
-const stackLookup = new Stack(app, 'aws-cdk-rds-instance-lookup', {
+const stackLookup = new IntegTestBaseStack(app, 'aws-cdk-rds-instance-lookup', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION,

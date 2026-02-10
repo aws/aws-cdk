@@ -1,12 +1,13 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as rds from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'cdk-rds-read-replica-with-allocated-storage');
+const stack = new IntegTestBaseStack(app, 'cdk-rds-read-replica-with-allocated-storage');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 2,
@@ -34,7 +35,6 @@ const sourceInstance = new rds.DatabaseInstance(stack, 'SourceInstance', {
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
   },
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
@@ -45,7 +45,6 @@ new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
   },
   allocatedStorage: 500,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new integ.IntegTest(app, 'ReadReplicaWithAllocatedStorageTest', {

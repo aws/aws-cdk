@@ -2,11 +2,12 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Credentials, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType, ClusterInstance } from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-io-integ');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-io-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
@@ -24,7 +25,6 @@ const cluster = new DatabaseCluster(stack, 'Database', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE),
     }),
   ],
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

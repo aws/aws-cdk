@@ -1,12 +1,13 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ClusterSnapshoter } from './snapshoter';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-snapshot');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-cluster-snapshot');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
@@ -18,7 +19,6 @@ const sourceCluster = new rds.DatabaseCluster(stack, 'SourceCluster', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   }),
   vpc,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const snapshotIdentifier = 'aws-cdk-rds-cluster-snapshot-integ-test';
@@ -37,7 +37,6 @@ const restoredCluster = new rds.DatabaseClusterFromSnapshot(stack, 'RestoredClus
   vpc,
   snapshotIdentifier,
   snapshotCredentials: rds.SnapshotCredentials.fromGeneratedSecret('admin'),
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 restoredCluster.node.addDependency(snapshoter);
 

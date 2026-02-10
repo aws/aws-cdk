@@ -1,13 +1,14 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, Duration } from 'aws-cdk-lib';
+import { App, Stack, Duration } from 'aws-cdk-lib';
 import { ClusterInstance, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 
 const app = new App();
-const stack = new Stack(app, 'cluster-replication');
+const stack = new IntegTestBaseStack(app, 'cluster-replication');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
@@ -22,7 +23,6 @@ const primaryCluster = new DatabaseCluster(stack, 'PrimaryDatabase', {
   parameters: {
     binlog_format: 'ROW',
   },
-  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 const replicaCluster = new DatabaseCluster(stack, 'ReplicaDatabase', {
@@ -34,7 +34,6 @@ const replicaCluster = new DatabaseCluster(stack, 'ReplicaDatabase', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   }),
   replicationSourceIdentifier: primaryCluster.clusterArn,
-  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 replicaCluster.node.addDependency(primaryCluster.node.findChild('WriterInstance'));
