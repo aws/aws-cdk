@@ -13,6 +13,7 @@
 
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Gateway } from '../../../lib';
@@ -29,6 +30,7 @@ import {
 describe('GatewayTarget Tests', () => {
   let stack: cdk.Stack;
   let gateway: Gateway;
+  let restApi: apigateway.RestApi;
 
   beforeEach(() => {
     const app = new cdk.App();
@@ -38,6 +40,11 @@ describe('GatewayTarget Tests', () => {
     gateway = new Gateway(stack, 'TestGateway', {
       gatewayName: 'test-gateway',
     });
+    restApi = new apigateway.RestApi(stack, 'TestRestApi', {
+      restApiName: 'test-api',
+      deployOptions: { stageName: 'prod' },
+    });
+    restApi.root.addResource('test').addMethod('GET');
   });
 
   describe('Credential provider configuration by target type', () => {
@@ -123,7 +130,7 @@ describe('GatewayTarget Tests', () => {
       const target = GatewayTarget.forApiGateway(stack, 'ApiGwTarget', {
         gateway: gateway,
         gatewayTargetName: 'apigw-target',
-        restApiId: 'test-api',
+        restApi: restApi,
         stage: 'prod',
         apiGatewayToolConfiguration: {
           toolFilters: [
@@ -216,7 +223,7 @@ describe('GatewayTarget Tests', () => {
       const target = GatewayTarget.forApiGateway(stack, 'ApiGwTarget', {
         gateway: gateway,
         gatewayTargetName: 'apigw-target',
-        restApiId: 'test-api',
+        restApi: restApi,
         stage: 'prod',
         apiGatewayToolConfiguration: {
           toolFilters: [
@@ -238,7 +245,7 @@ describe('GatewayTarget Tests', () => {
       const target = GatewayTarget.forApiGateway(stack, 'ApiGwTarget', {
         gateway: gateway,
         gatewayTargetName: 'apigw-target-with-metadata',
-        restApiId: 'test-api',
+        restApi: restApi,
         stage: 'prod',
         apiGatewayToolConfiguration: {
           toolFilters: [
@@ -271,7 +278,7 @@ describe('GatewayTarget Tests', () => {
       const target = GatewayTarget.forApiGateway(stack, 'ApiGwTarget', {
         gateway: gateway,
         gatewayTargetName: 'apigw-target-no-metadata',
-        restApiId: 'test-api',
+        restApi: restApi,
         stage: 'prod',
         apiGatewayToolConfiguration: {
           toolFilters: [
@@ -678,7 +685,7 @@ describe('GatewayTarget Tests', () => {
         gateway: gateway,
         gatewayTargetName: 'constructor-apigw-target',
         targetConfiguration: ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [

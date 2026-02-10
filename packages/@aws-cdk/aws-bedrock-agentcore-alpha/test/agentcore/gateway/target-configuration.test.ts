@@ -13,6 +13,7 @@
 
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Gateway } from '../../../lib';
@@ -30,6 +31,7 @@ import {
 describe('Target Configuration Tests', () => {
   let stack: cdk.Stack;
   let gateway: Gateway;
+  let restApi: apigateway.RestApi;
 
   beforeEach(() => {
     const app = new cdk.App();
@@ -39,13 +41,19 @@ describe('Target Configuration Tests', () => {
     gateway = new Gateway(stack, 'TestGateway', {
       gatewayName: 'test-gateway',
     });
+    restApi = new apigateway.RestApi(stack, 'TestRestApi', {
+      restApiName: 'test-api',
+      deployOptions: { stageName: 'prod' },
+    });
+    // Add a method to satisfy RestApi validation
+    restApi.root.addResource('test').addMethod('GET');
   });
 
   describe('ApiGatewayTargetConfiguration', () => {
     describe('Basic creation and validation', () => {
       test('Should create API Gateway target configuration with minimum required props', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -58,14 +66,14 @@ describe('Target Configuration Tests', () => {
         });
 
         expect(config).toBeDefined();
-        expect(config.restApiId).toBe('test-api-id');
+        expect(config.restApiId).toBe(restApi.restApiId); // Should be the token from RestApi
         expect(config.stage).toBe('prod');
         expect(config.apiGatewayToolConfiguration.toolFilters).toHaveLength(1);
       });
 
       test('Should create API Gateway target configuration with metadata configuration', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -90,7 +98,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should create API Gateway target configuration with tool overrides', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -117,7 +125,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should create API Gateway target configuration with multiple tool filters', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -142,7 +150,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should create API Gateway target configuration with all HTTP methods', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -167,29 +175,11 @@ describe('Target Configuration Tests', () => {
     });
 
     describe('Validation error cases', () => {
-      test('Should throw error when REST API ID is too long', () => {
-        const longApiId = 'a'.repeat(257);
-        expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApiId: longApiId,
-            stage: 'prod',
-            apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/pets',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
-            },
-          });
-        }).toThrow(/REST API ID/);
-      });
-
       test('Should throw error when stage name is too long', () => {
         const longStage = 'a'.repeat(129);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: longStage,
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -206,7 +196,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when stage name is empty', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: '',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -223,8 +213,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when no tool filters provided', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
-            stage: 'prod',
+            restApi: restApi,
             apiGatewayToolConfiguration: {
               toolFilters: [],
             },
@@ -235,7 +224,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when tool filter has invalid path format', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -252,7 +241,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when tool filter has no methods', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -269,7 +258,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when tool override path contains wildcard', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -294,7 +283,7 @@ describe('Target Configuration Tests', () => {
         const longName = 'a'.repeat(65);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -318,7 +307,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when tool override name is empty', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -343,7 +332,7 @@ describe('Target Configuration Tests', () => {
         const longDesc = 'a'.repeat(201);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -368,7 +357,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when tool override path format is invalid', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -391,12 +380,11 @@ describe('Target Configuration Tests', () => {
     });
 
     describe('Metadata configuration validation', () => {
-      test('Should throw error when allowedQueryParameters exceeds 20 items', () => {
-        const tooManyParams = Array.from({ length: 21 }, (_, i) => `param${i}`);
+      test('Should throw error when allowedQueryParameters exceeds 10 items', () => {
+        const tooManyParams = Array.from({ length: 11 }, (_, i) => `param${i}`);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
-            stage: 'prod',
+            restApi: restApi,
             apiGatewayToolConfiguration: {
               toolFilters: [
                 {
@@ -409,15 +397,14 @@ describe('Target Configuration Tests', () => {
               allowedQueryParameters: tooManyParams,
             },
           });
-        }).toThrow(/allowedQueryParameters cannot exceed 20 items/);
+        }).toThrow(/allowedQueryParameters cannot exceed 10 items/);
       });
 
-      test('Should throw error when allowedRequestHeaders exceeds 20 items', () => {
-        const tooManyHeaders = Array.from({ length: 21 }, (_, i) => `Header${i}`);
+      test('Should throw error when allowedRequestHeaders exceeds 10 items', () => {
+        const tooManyHeaders = Array.from({ length: 11 }, (_, i) => `Header${i}`);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
-            stage: 'prod',
+            restApi: restApi,
             apiGatewayToolConfiguration: {
               toolFilters: [
                 {
@@ -430,15 +417,14 @@ describe('Target Configuration Tests', () => {
               allowedRequestHeaders: tooManyHeaders,
             },
           });
-        }).toThrow(/allowedRequestHeaders cannot exceed 20 items/);
+        }).toThrow(/allowedRequestHeaders cannot exceed 10 items/);
       });
 
-      test('Should throw error when allowedResponseHeaders exceeds 20 items', () => {
-        const tooManyHeaders = Array.from({ length: 21 }, (_, i) => `ResHeader${i}`);
+      test('Should throw error when allowedResponseHeaders exceeds 10 items', () => {
+        const tooManyHeaders = Array.from({ length: 11 }, (_, i) => `ResHeader${i}`);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
-            stage: 'prod',
+            restApi: restApi,
             apiGatewayToolConfiguration: {
               toolFilters: [
                 {
@@ -451,17 +437,17 @@ describe('Target Configuration Tests', () => {
               allowedResponseHeaders: tooManyHeaders,
             },
           });
-        }).toThrow(/allowedResponseHeaders cannot exceed 20 items/);
+        }).toThrow(/allowedResponseHeaders cannot exceed 10 items/);
       });
 
-      test('Should accept metadata configuration with exactly 20 items in each array', () => {
-        const maxParams = Array.from({ length: 20 }, (_, i) => `param${i}`);
-        const maxReqHeaders = Array.from({ length: 20 }, (_, i) => `ReqHeader${i}`);
-        const maxResHeaders = Array.from({ length: 20 }, (_, i) => `ResHeader${i}`);
+      test('Should accept metadata configuration with exactly 10 items in each array', () => {
+        const maxParams = Array.from({ length: 10 }, (_, i) => `param${i}`);
+        const maxReqHeaders = Array.from({ length: 10 }, (_, i) => `ReqHeader${i}`);
+        const maxResHeaders = Array.from({ length: 10 }, (_, i) => `ResHeader${i}`);
 
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -480,31 +466,9 @@ describe('Target Configuration Tests', () => {
         }).not.toThrow();
       });
 
-      test('Should accept metadata configuration with empty arrays', () => {
-        expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
-            stage: 'prod',
-            apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
-            },
-            metadataConfiguration: {
-              allowedQueryParameters: [],
-              allowedRequestHeaders: [],
-              allowedResponseHeaders: [],
-            },
-          });
-        }).not.toThrow();
-      });
-
       test('Should accept metadata configuration with only query parameters', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -529,7 +493,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept filter path with path parameters', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -546,7 +510,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept filter path with wildcard at end', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -563,7 +527,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept filter path with hyphens and underscores', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -580,7 +544,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept root path', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -597,7 +561,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error for invalid filter path with spaces', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -614,7 +578,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error for invalid filter path with special characters', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -633,7 +597,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept tool override without description', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -657,7 +621,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept tool override with valid description', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -682,7 +646,7 @@ describe('Target Configuration Tests', () => {
       test('Should throw error for override path with special characters', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -706,7 +670,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept tool override with empty description', () => {
         // Empty description is treated as undefined and not included in output
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -732,29 +696,11 @@ describe('Target Configuration Tests', () => {
     });
 
     describe('Token handling', () => {
-      test('Should skip validation for token-based REST API ID', () => {
-        const tokenApiId = cdk.Lazy.string({ produce: () => 'my-api-id' });
-        expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApiId: tokenApiId,
-            stage: 'prod',
-            apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
-            },
-          });
-        }).not.toThrow();
-      });
-
       test('Should skip validation for token-based stage name', () => {
         const tokenStage = cdk.Lazy.string({ produce: () => 'my-stage' });
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: tokenStage,
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -772,7 +718,7 @@ describe('Target Configuration Tests', () => {
         const tokenPath = cdk.Lazy.string({ produce: () => '/test' });
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -790,7 +736,7 @@ describe('Target Configuration Tests', () => {
         const tokenPath = cdk.Lazy.string({ produce: () => '/test' });
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -815,7 +761,7 @@ describe('Target Configuration Tests', () => {
         const tokenName = cdk.Lazy.string({ produce: () => 'my_operation' });
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -840,7 +786,7 @@ describe('Target Configuration Tests', () => {
         const tokenDesc = cdk.Lazy.string({ produce: () => 'Test operation description' });
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -866,7 +812,7 @@ describe('Target Configuration Tests', () => {
     describe('Bind and render', () => {
       test('Should bind successfully and grant API Gateway permissions', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -900,7 +846,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should render configuration correctly without metadata', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -915,14 +861,14 @@ describe('Target Configuration Tests', () => {
         const rendered = config._render();
         expect(rendered).toHaveProperty('mcp');
         expect(rendered.mcp).toHaveProperty('apiGateway');
-        expect(rendered.mcp.apiGateway.restApiId).toBe('test-api-id');
+        expect(rendered.mcp.apiGateway.restApiId).toBe(restApi.restApiId); // Token from RestApi
         expect(rendered.mcp.apiGateway.stage).toBe('prod');
         expect(rendered.mcp.apiGateway.apiGatewayToolConfiguration).toBeDefined();
       });
 
       test('Should render configuration correctly with tool overrides', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -949,7 +895,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should render configuration without tool overrides when not provided', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1247,7 +1193,7 @@ describe('Target Configuration Tests', () => {
     describe('API Gateway - Multiple validations', () => {
       test('Should create config with multiple tool overrides', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1278,7 +1224,7 @@ describe('Target Configuration Tests', () => {
       test('Should validate multiple tool filters correctly', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1299,7 +1245,7 @@ describe('Target Configuration Tests', () => {
       test('Should validate all tool overrides in list', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1327,7 +1273,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should accept metadata configuration with only request headers', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1349,7 +1295,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should accept metadata configuration with only response headers', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1371,7 +1317,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should render tool filters with multiple methods correctly', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1392,7 +1338,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should render tool override with description in configuration', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1419,7 +1365,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should render tool override without description when not provided', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1442,29 +1388,11 @@ describe('Target Configuration Tests', () => {
         expect(rendered.mcp.apiGateway.apiGatewayToolConfiguration.toolOverrides[0]).not.toHaveProperty('description');
       });
 
-      test('Should handle REST API ID at exact max length', () => {
-        const maxLengthApiId = 'a'.repeat(256);
-        expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApiId: maxLengthApiId,
-            stage: 'prod',
-            apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
-            },
-          });
-        }).not.toThrow();
-      });
-
       test('Should handle stage name at exact max length', () => {
         const maxLengthStage = 'a'.repeat(128);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: maxLengthStage,
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1482,7 +1410,7 @@ describe('Target Configuration Tests', () => {
         const maxLengthName = 'a'.repeat(64);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1507,7 +1435,7 @@ describe('Target Configuration Tests', () => {
         const maxLengthDesc = 'a'.repeat(200);
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1531,7 +1459,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should validate when metadata config undefined but metadataConfiguration property exists', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1675,7 +1603,7 @@ describe('Target Configuration Tests', () => {
 
       test('Should have correct target type for API Gateway configuration', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [
@@ -1694,7 +1622,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept single method in filter', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1711,7 +1639,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept HEAD method in filter', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1728,7 +1656,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept OPTIONS method in filter', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1745,7 +1673,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept PATCH method in filter', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1762,7 +1690,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept PUT method in filter', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1781,7 +1709,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept metadata with query params and request headers only', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1802,7 +1730,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept metadata with query params and response headers only', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1823,7 +1751,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept metadata with request and response headers only', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1846,7 +1774,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept REST API ID with single character', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'a',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1865,7 +1793,7 @@ describe('Target Configuration Tests', () => {
       test('Should accept stage name with single character', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'p',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1884,7 +1812,7 @@ describe('Target Configuration Tests', () => {
       test('Should iterate through all filters for validation', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1911,7 +1839,7 @@ describe('Target Configuration Tests', () => {
       test('Should iterate through multiple overrides for validation', () => {
         expect(() => {
           ApiGatewayTargetConfiguration.create({
-            restApiId: 'test-api-id',
+            restApi: restApi,
             stage: 'prod',
             apiGatewayToolConfiguration: {
               toolFilters: [
@@ -1947,7 +1875,7 @@ describe('Target Configuration Tests', () => {
     describe('Render with varying metadata configurations', () => {
       test('Should render with all three metadata arrays present', () => {
         const config = ApiGatewayTargetConfiguration.create({
-          restApiId: 'test-api-id',
+          restApi: restApi,
           stage: 'prod',
           apiGatewayToolConfiguration: {
             toolFilters: [

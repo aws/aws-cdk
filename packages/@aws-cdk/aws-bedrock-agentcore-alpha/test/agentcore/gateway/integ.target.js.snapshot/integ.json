@@ -27,16 +27,3 @@
   },
   "minimumCliVersion": "2.1033.0"
 }
-{
-  "version": "48.0.0",
-  "testCases": {
-    "TargetIntegTest/DefaultTest": {
-      "stacks": [
-        "BedrockAgentCoreTargetIntegTest"
-      ],
-      "assertionStack": "TargetIntegTest/DefaultTest/DeployAssert",
-      "assertionStackName": "TargetIntegTestDefaultTestDeployAssert539C81CD"
-    }
-  },
-  "minimumCliVersion": "2.1033.0"
-}
