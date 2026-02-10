@@ -1,3 +1,4 @@
+export * from './grants';
 export * from './policy';
 export * from './queue';
 export * from './queue-base';
