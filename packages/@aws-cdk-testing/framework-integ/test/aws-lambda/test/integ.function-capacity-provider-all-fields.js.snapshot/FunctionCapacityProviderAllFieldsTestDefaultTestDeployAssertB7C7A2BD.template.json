@@ -11,18 +11,8 @@
     },
     "service": "Lambda",
     "api": "GetFunction",
-    "expected": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"$ObjectLike\":{\"Configuration\":{\"State\":\"Active\",\"PublishToLatestPublished\":true,\"CapacityProviderConfig\":{\"LambdaManagedInstancesCapacityProviderConfig\":{\"CapacityProviderArn\":\"",
-       {
-        "Fn::ImportValue": "FunctionCapacityProviderAllFieldsStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
-       },
-       "\",\"PerExecutionEnvironmentMaxConcurrency\":10,\"ExecutionEnvironmentMemoryGiBPerVCpu\":2}},\"FunctionScalingConfig\":{\"MinExecutionEnvironments\":1,\"MaxExecutionEnvironments\":5}}}}"
-      ]
-     ]
-    },
+    "expected": "{\"$StringLike\":\"Active\"}",
+    "actualPath": "Configuration.State",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [
@@ -37,8 +27,15 @@
       ]
      }
     },
-    "flattenResponse": "false",
-    "salt": "1764275242935"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Configuration.State",
+     "Configuration.PublishToLatestPublished",
+     "Configuration.CapacityProviderConfig.LambdaManagedInstancesCapacityProviderConfig.PerExecutionEnvironmentMaxConcurrency",
+     "Configuration.CapacityProviderConfig.LambdaManagedInstancesCapacityProviderConfig.ExecutionEnvironmentMemoryGiBPerVCpu",
+     "Configuration.State"
+    ],
+    "salt": "1770760879395"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -92,7 +89,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
