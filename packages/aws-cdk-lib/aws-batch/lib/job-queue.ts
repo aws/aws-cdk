@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { toISchedulingPolicy } from './private/ref-utils';
-import { ISchedulingPolicy } from './scheduling-policy';
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import type { ISchedulingPolicy } from './scheduling-policy';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef, JobQueueReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef, JobQueueReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobQueue
@@ -269,8 +271,21 @@ export class JobQueue extends Resource implements IJobQueue {
   public readonly enabled?: boolean;
   private readonly _schedulingPolicy?: ISchedulingPolicyRef;
 
-  public readonly jobQueueArn: string;
-  public readonly jobQueueName: string;
+  private readonly resource: CfnJobQueue;
+
+  @memoizedGetter
+  public get jobQueueArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrJobQueueArn, {
+      service: 'batch',
+      resource: 'job-queue',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get jobQueueName(): string {
+    return Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+  }
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
@@ -297,7 +312,7 @@ export class JobQueue extends Resource implements IJobQueue {
     this.enabled = props?.enabled;
     this._schedulingPolicy = props?.schedulingPolicy;
 
-    const resource = new CfnJobQueue(this, 'Resource', {
+    this.resource = new CfnJobQueue(this, 'Resource', {
       computeEnvironmentOrder: Lazy.any({
         produce: () => this.computeEnvironments.map((ce) => {
           return {
@@ -312,13 +327,6 @@ export class JobQueue extends Resource implements IJobQueue {
       schedulingPolicyArn: this._schedulingPolicy?.schedulingPolicyRef.schedulingPolicyArn,
       jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(props?.jobStateTimeLimitActions),
     });
-
-    this.jobQueueArn = this.getResourceArnAttribute(resource.attrJobQueueArn, {
-      service: 'batch',
-      resource: 'job-queue',
-      resourceName: this.physicalName,
-    });
-    this.jobQueueName = Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
   }

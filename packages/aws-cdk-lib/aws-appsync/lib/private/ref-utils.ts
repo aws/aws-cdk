@@ -1,8 +1,8 @@
 import { Fn, UnscopedValidationError } from '../../../core';
-import { IGraphQLApiRef, IApiRef, IFunctionConfigurationRef } from '../../../interfaces/generated/aws-appsync-interfaces.generated';
-import { IApi } from '../api-base';
-import { IAppsyncFunction } from '../appsync-function';
-import { IGraphqlApi } from '../graphqlapi-base';
+import type { IGraphQLApiRef, IApiRef, IFunctionConfigurationRef } from '../../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IApi } from '../api-base';
+import type { IAppsyncFunction } from '../appsync-function';
+import type { IGraphqlApi } from '../graphqlapi-base';
 
 /**
  * Converts an IGraphQLApiRef to IGraphqlApi, validating that it implements the full interface
@@ -16,18 +16,12 @@ export function toIGraphqlApi(api: IGraphQLApiRef): IGraphqlApi {
 
 function isGraphQlApi(apiRef: IGraphQLApiRef): apiRef is IGraphqlApi {
   const api = apiRef as any;
-  if (typeof api.apiId !== 'string' || typeof api.arn !== 'string' || typeof api.addNoneDataSource !== 'function') {
-    return false;
-  }
-  return true;
+  return ('apiId' in api && 'arn' in api && 'addNoneDataSource' in api);
 }
 
 function isIApi(apiRef: IApiRef): apiRef is IApi {
   const api = apiRef as any;
-  if (typeof api.apiId !== 'string' || typeof api.apiArn !== 'string' || typeof api.addDynamoDbDataSource !== 'function') {
-    return false;
-  }
-  return true;
+  return ('apiId' in api && 'apiArn' in api && 'addDynamoDbDataSource' in api);
 }
 
 /**

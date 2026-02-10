@@ -1,14 +1,18 @@
 import { Construct } from 'constructs';
-import { DnsValidatedCertificate, ICertificate, Certificate, CertificateValidation } from '../../aws-certificatemanager';
-import { CloudFrontWebDistribution, Distribution, IDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
+import type { ICertificate } from '../../aws-certificatemanager';
+import { DnsValidatedCertificate, Certificate, CertificateValidation } from '../../aws-certificatemanager';
+import type { IDistribution } from '../../aws-cloudfront';
+import { CloudFrontWebDistribution, Distribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
 import { S3StaticWebsiteOrigin } from '../../aws-cloudfront-origins';
-import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '../../aws-route53';
+import type { IHostedZone } from '../../aws-route53';
+import { ARecord, AaaaRecord, RecordTarget } from '../../aws-route53';
 import { CloudFrontTarget } from '../../aws-route53-targets';
 import { BlockPublicAccess, Bucket, RedirectProtocol } from '../../aws-s3';
 import { ArnFormat, RemovalPolicy, Stack, Token, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION } from '../../cx-api';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Properties to configure an HTTPS Redirect
@@ -47,7 +51,7 @@ export interface HttpsRedirectProps {
    *
    * @default - A new certificate is created in us-east-1 (N. Virginia)
    */
-  readonly certificate?: ICertificate;
+  readonly certificate?: ICertificateRef;
 }
 
 /**
@@ -61,7 +65,7 @@ export class HttpsRedirect extends Construct {
     const domainNames = props.recordNames ?? [props.zone.zoneName];
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new ValidationError(`The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }

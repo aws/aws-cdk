@@ -1,8 +1,10 @@
 import { Aws } from 'aws-cdk-lib';
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import { Construct } from 'constructs';
+import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
 
 /******************************************************************************
@@ -215,7 +217,7 @@ export class AssetToolSchema extends ToolSchema {
   public bind(scope: Construct): void {
     // If the same AssetToolSchema is used multiple times, retain only the first instantiation
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Schema', {
+      this.asset = new s3_assets.Asset(scope, `Schema${md5hash(this.path)}`, {
         path: this.path,
         ...this.options,
       });

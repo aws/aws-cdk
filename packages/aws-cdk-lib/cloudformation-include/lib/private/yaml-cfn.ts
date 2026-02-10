@@ -1,5 +1,5 @@
 import * as yaml from 'yaml';
-import * as yaml_cst from 'yaml/parse-cst';
+import type * as yaml_cst from 'yaml/parse-cst';
 import * as yaml_types from 'yaml/types';
 
 /**

@@ -1,7 +1,8 @@
-import { Construct, IConstruct } from 'constructs';
-import { Alarm, ComparisonOperator } from './alarm';
-import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
-import { CreateAlarmOptionsBase } from './private/alarm-options';
+import type { Construct, IConstruct } from 'constructs';
+import type { ComparisonOperator } from './alarm';
+import { Alarm } from './alarm';
+import type { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
+import type { CreateAlarmOptionsBase } from './private/alarm-options';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
 import { Stats } from './stats';
@@ -1247,7 +1248,7 @@ interface IModifiableMetric {
 }
 
 function isModifiableMetric(m: any): m is IModifiableMetric {
-  return typeof m === 'object' && m !== null && !!m.with;
+  return typeof m === 'object' && m !== null && 'with' in m;
 }
 
 interface IMetricWithPeriod {
@@ -1255,7 +1256,7 @@ interface IMetricWithPeriod {
 }
 
 function isMetricWithPeriod(m: any): m is IMetricWithPeriod {
-  return typeof m === 'object' && m !== null && !!m.period;
+  return typeof m === 'object' && m !== null && 'period' in m;
 }
 
 // Polyfill for string.matchAll(regexp)

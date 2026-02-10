@@ -1,12 +1,14 @@
-import { Construct } from 'constructs';
-import { IDomainName } from './domain-name';
-import { IStage } from './stage';
-import { CfnApiMapping, CfnApiMappingProps } from '.././index';
-import { IResource, Resource } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IDomainName } from './domain-name';
+import type { IStage } from './stage';
+import type { CfnApiMappingProps } from '.././index';
+import { CfnApiMapping } from '.././index';
+import type { IResource } from '../../../core';
+import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApiMappingReference, IApiMappingRef, IApiRef, IDomainNameRef } from '../../../interfaces/generated/aws-apigatewayv2-interfaces.generated';
+import type { ApiMappingReference, IApiMappingRef, IApiRef, IDomainNameRef } from '../../../interfaces/generated/aws-apigatewayv2-interfaces.generated';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource
@@ -83,12 +85,15 @@ export class ApiMapping extends Resource implements IApiMapping {
     class Import extends Resource implements IApiMapping {
       public readonly apiMappingId = attrs.apiMappingId;
       public get apiMappingRef(): ApiMappingReference {
-        if (!attrs.domainName) {
-          throw new ValidationError('domainName was not supplied when calling ApiMapping.fromApiMappingAttributes()', this);
-        }
+        const self = this;
         return {
           apiMappingId: this.apiMappingId,
-          domainName: attrs.domainName,
+          get domainName() {
+            if (!attrs.domainName) {
+              throw new ValidationError('Cannot use object in this API: \'domainName\' was not supplied when calling ApiMapping.fromApiMappingAttributes()', self);
+            }
+            return attrs.domainName;
+          },
         };
       }
     }
@@ -149,16 +154,19 @@ export class ApiMapping extends Resource implements IApiMapping {
    */
   public get domainName(): IDomainName {
     const ret = this._domainName as IDomainName;
-    if (!!ret.regionalDomainName && !!ret.regionalHostedZoneId) {
+    if ('regionalDomainName' in ret && 'regionalHostedZoneId' in ret) {
       return ret;
     }
     throw new ValidationError(`Supplied domainName (${this._domainName.constructor.name}) does not implement IDomainName`, this);
   }
 
   public get apiMappingRef(): ApiMappingReference {
+    const self = this;
     return {
       apiMappingId: this.apiMappingId,
-      domainName: this._domainName.domainNameRef.domainName,
+      get domainName(): string {
+        return self._domainName.domainNameRef.domainName;
+      },
     };
   }
 

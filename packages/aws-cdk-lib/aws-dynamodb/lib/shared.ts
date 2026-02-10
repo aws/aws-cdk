@@ -1,10 +1,11 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import type { GlobalSecondaryIndexProps } from './table';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IResource, ValidationError } from '../../core';
-import { ITableRef } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as iam from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import type { IResource } from '../../core';
+import { ValidationError } from '../../core';
+import type { ITableRef } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
  * Supported DynamoDB table operations.

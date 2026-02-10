@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { ContainerOverride, EphemeralStorageOverride, InferenceAcceleratorOverride } from './ecs-task-properties';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import type { ContainerOverride, EphemeralStorageOverride, InferenceAcceleratorOverride } from './ecs-task-properties';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as ec2 from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import * as events from '../../aws-events';
@@ -268,7 +269,7 @@ export class EcsTask implements events.IRuleTarget {
   /**
    * Allows using tasks as target of EventBridge events
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const arn = this.cluster.clusterArn;
     const role = this.role;
     const taskCount = this.taskCount;
@@ -323,7 +324,7 @@ export class EcsTask implements events.IRuleTarget {
     };
   }
 
-  private createInput(rule: events.IRule): Record<string, any> {
+  private createInput(rule: events.IRuleRef): Record<string, any> {
     const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
       .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
 

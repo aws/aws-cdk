@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { CfnRoute } from './appmesh.generated';
+import type { Construct } from 'constructs';
+import type { CfnRoute } from './appmesh.generated';
 
 /**
  * Configuration for `QueryParameterMatch`

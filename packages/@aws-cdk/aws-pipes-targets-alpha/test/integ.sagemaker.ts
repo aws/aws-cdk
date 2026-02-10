@@ -1,10 +1,11 @@
-import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { SageMakerTarget } from '../lib/sagemaker';
 
 /*
@@ -42,6 +43,7 @@ interface FakePipelineProps {
 }
 
 class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
+  public readonly pipelineRef: sagemaker.PipelineReference;
   public readonly pipelineArn;
   public readonly pipelineName;
 
@@ -125,6 +127,8 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
       resourceName: pipeline.pipelineName,
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
+
+    this.pipelineRef = { pipelineName: this.pipelineName };
   }
 
   public grantStartPipelineExecution(grantee: iam.IGrantable): iam.Grant {

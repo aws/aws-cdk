@@ -1,6 +1,6 @@
 import { toCloudFormation } from './util';
 import { ArtifactMetadataEntryType } from '../../cloud-assembly-schema';
-import { CloudAssembly } from '../../cx-api';
+import type { CloudAssembly } from '../../cx-api';
 import { App, Aws, CfnMapping, CfnResource, CfnOutput, Fn, Stack } from '../lib';
 
 describe('mappings', () => {

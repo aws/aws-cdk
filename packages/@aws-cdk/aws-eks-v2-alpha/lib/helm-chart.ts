@@ -1,7 +1,8 @@
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { CustomResource, Duration, Names, Stack } from 'aws-cdk-lib/core';
+import type { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import type { Duration, RemovalPolicy } from 'aws-cdk-lib/core';
+import { CustomResource, Names, Stack, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
 /**
@@ -91,6 +92,20 @@ export interface HelmChartOptions {
    * @default - CRDs are installed if not already present
    */
   readonly skipCrds?: boolean;
+
+  /**
+   * The removal policy applied to the custom resource that manages the Helm chart.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -135,21 +150,22 @@ export class HelmChart extends Construct {
 
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
     if (!provider) {
-      throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
+      throw new ValidationError('Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
-      throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
+      throw new ValidationError('Helm chart timeout cannot be higher than 15 minutes.', this);
     }
 
     if (!this.chart && !this.chartAsset) {
-      throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
+      throw new ValidationError("Either 'chart' or 'chartAsset' must be specified to install a helm chart", this);
     }
 
     if (this.chartAsset && (this.repository || this.version)) {
-      throw new Error(
+      throw new ValidationError(
         "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
+        this,
       );
     }
 
@@ -167,6 +183,7 @@ export class HelmChart extends Construct {
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
+      removalPolicy: props.removalPolicy,
       properties: {
         ClusterName: props.cluster.clusterName,
         Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name

@@ -1,6 +1,7 @@
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
-import * as codebuild from '../../aws-codebuild';
-import * as events from '../../aws-events';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
+import type * as codebuild from '../../aws-codebuild';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 
 /**
@@ -38,7 +39,7 @@ export class CodeBuildProject implements events.IRuleTarget {
   /**
    * Allows using build projects as event rule targets.
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
     }

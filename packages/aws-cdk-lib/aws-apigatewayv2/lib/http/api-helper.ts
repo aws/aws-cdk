@@ -1,4 +1,4 @@
-import { IHttpApiRef } from './api';
+import type { IHttpApiRef } from './api';
 import { ArnFormat, Stack, Token, ValidationError } from '../../../core';
 
 /**
@@ -37,6 +37,8 @@ export class HttpApiHelper {
 
     return Stack.of(this.httpApi).formatArn({
       service: 'execute-api',
+      account: this.httpApi.env.account,
+      region: this.httpApi.env.region,
       resource: this.httpApi.apiRef.apiId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${stage ?? '*'}/${method ?? '*'}${path ?? '/*'}`,

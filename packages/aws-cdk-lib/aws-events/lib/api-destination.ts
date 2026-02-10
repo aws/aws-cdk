@@ -1,9 +1,15 @@
-import { Construct } from 'constructs';
-import { HttpMethod, IConnection } from './connection';
+import type { Construct } from 'constructs';
+import type { IConnection } from './connection';
+import { HttpMethod } from './connection';
+import type { IConnectionRef } from './events.generated';
 import { CfnApiDestination } from './events.generated';
-import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
+import { toIConnection } from './private/ref-utils';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { ApiDestinationReference, IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The event API Destination properties
@@ -25,7 +31,7 @@ export interface ApiDestinationProps {
   /**
    * The ARN of the connection to use for the API destination
    */
-  readonly connection: IConnection;
+  readonly connection: IConnectionRef;
 
   /**
    * The URL to the HTTP invocation endpoint for the API destination..
@@ -50,7 +56,7 @@ export interface ApiDestinationProps {
 /**
  * Interface for API Destinations
  */
-export interface IApiDestination extends IResource {
+export interface IApiDestination extends IResource, IApiDestinationRef {
   /**
    * The Name of the Api Destination created.
    * @attribute
@@ -83,7 +89,7 @@ export interface ApiDestinationAttributes {
   /**
    * The Connection to associate with the Api Destination
    */
-  readonly connection: IConnection;
+  readonly connection: IConnectionRef;
   /**
    * The Amazon Resource Name (ARN) of an API destination in resource format.
    *
@@ -113,7 +119,7 @@ export class ApiDestination extends Resource implements IApiDestination {
     scope: Construct,
     id: string,
     attrs: ApiDestinationAttributes,
-  ): ApiDestination {
+  ): IApiDestination {
     const apiDestinationName = Stack.of(scope).splitArn(
       attrs.apiDestinationArn, ArnFormat.SLASH_RESOURCE_NAME,
     ).resourceName;
@@ -122,11 +128,22 @@ export class ApiDestination extends Resource implements IApiDestination {
       throw new UnscopedValidationError(`Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
     }
 
-    class Import extends Resource implements ApiDestination {
+    class Import extends Resource implements IApiDestination {
       public readonly apiDestinationArn = attrs.apiDestinationArn;
       public readonly apiDestinationName = apiDestinationName!;
       public readonly apiDestinationArnForPolicy = attrs.apiDestinationArnForPolicy;
-      public readonly connection = attrs.connection;
+      private readonly _importConnection = attrs.connection;
+
+      public get connection(): IConnection {
+        return toIConnection(this._importConnection);
+      }
+
+      public get apiDestinationRef(): ApiDestinationReference {
+        return {
+          apiDestinationName: this.apiDestinationName,
+          apiDestinationArn: this.apiDestinationArn,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -134,25 +151,53 @@ export class ApiDestination extends Resource implements IApiDestination {
   /**
    * The Connection to associate with Api Destination
    */
-  public readonly connection: IConnection;
+  private readonly _connection: IConnectionRef;
+
+  /**
+   * The CfnApiDestination resource
+   */
+  private readonly _resource: CfnApiDestination;
 
   /**
    * The Name of the Api Destination created.
    * @attribute
    */
-  public readonly apiDestinationName: string;
+  @memoizedGetter
+  public get apiDestinationName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * The ARN of the Api Destination created.
    * @attribute
    */
-  public readonly apiDestinationArn: string;
+  @memoizedGetter
+  public get apiDestinationArn(): string {
+    return this._resource.attrArn;
+  }
 
   /**
    * The Amazon Resource Name (ARN) of an API destination in resource format.
    * @attribute
    */
-  public readonly apiDestinationArnForPolicy?: string;
+  @memoizedGetter
+  public get apiDestinationArnForPolicy(): string | undefined {
+    return this._resource.attrArnForPolicy;
+  }
+
+  /**
+   * The Connection to associate with Api Destination
+   */
+  public get connection(): IConnection {
+    return toIConnection(this._connection);
+  }
+
+  public get apiDestinationRef(): ApiDestinationReference {
+    return {
+      apiDestinationName: this.apiDestinationName,
+      apiDestinationArn: this.apiDestinationArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ApiDestinationProps) {
     super(scope, id, {
@@ -161,19 +206,15 @@ export class ApiDestination extends Resource implements IApiDestination {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.connection = props.connection;
+    this._connection = props.connection;
 
-    let apiDestination = new CfnApiDestination(this, 'ApiDestination', {
-      connectionArn: this.connection.connectionArn,
+    this._resource = new CfnApiDestination(this, 'ApiDestination', {
+      connectionArn: this._connection.connectionRef.connectionArn,
       description: props.description,
       httpMethod: props.httpMethod ?? HttpMethod.POST,
       invocationEndpoint: props.endpoint,
       invocationRateLimitPerSecond: props.rateLimitPerSecond,
       name: this.physicalName,
     });
-
-    this.apiDestinationName = this.getResourceNameAttribute(apiDestination.ref);
-    this.apiDestinationArn = apiDestination.attrArn;
-    this.apiDestinationArnForPolicy = apiDestination.attrArnForPolicy;
   }
 }

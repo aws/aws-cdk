@@ -25,7 +25,15 @@
           "Fn::Join": [
            "",
            [
-            "arn:aws:bedrock-agentcore:us-east-1:",
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
             {
              "Ref": "AWS::AccountId"
             },
@@ -109,9 +117,13 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:s3:::",
+           "arn:",
            {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            },
            "/*"
           ]
@@ -121,9 +133,13 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:s3:::",
+           "arn:",
            {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            }
           ]
          ]
@@ -162,7 +178,6 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolName": "target-integ-test-gateway-gw-userpool",
     "UsernameConfiguration": {
      "CaseSensitive": false
     },
@@ -176,28 +191,70 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
+  "TestGatewayUserPoolResourceServer7A34B6B2": {
+   "Type": "AWS::Cognito::UserPoolResourceServer",
+   "Properties": {
+    "Identifier": "BedrockAgentCoreTargetIntegTest-TestGateway-BB6A518A",
+    "Name": "BedrockAgentCoreTargetIntegTest-TestGateway-BB6A518A",
+    "Scopes": [
+     {
+      "ScopeDescription": "Read access to gateway tools",
+      "ScopeName": "read"
+     },
+     {
+      "ScopeDescription": "Write access to gateway tools",
+      "ScopeName": "write"
+     }
+    ],
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
   "TestGatewayUserPoolDefaultClient3AC9C728": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
     "AllowedOAuthFlows": [
-     "implicit",
-     "code"
+     "client_credentials"
     ],
     "AllowedOAuthFlowsUserPoolClient": true,
     "AllowedOAuthScopes": [
-     "profile",
-     "phone",
-     "email",
-     "openid",
-     "aws.cognito.signin.user.admin"
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "TestGatewayUserPoolResourceServer7A34B6B2"
+        },
+        "/read"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "TestGatewayUserPoolResourceServer7A34B6B2"
+        },
+        "/write"
+       ]
+      ]
+     }
     ],
-    "CallbackURLs": [
-     "https://example.com"
-    ],
-    "ClientName": "target-integ-test-gateway-gw-client",
+    "GenerateSecret": true,
     "SupportedIdentityProviders": [
      "COGNITO"
     ],
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
+  "TestGatewayUserPoolDomainB64B616E": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "bedrockagentcoretargetintegtest-testgateway-bb6a518a",
     "UserPoolId": {
      "Ref": "TestGatewayUserPool545AA49A"
     }
@@ -217,7 +274,11 @@
        "Fn::Join": [
         "",
         [
-         "https://cognito-idp.us-east-1.amazonaws.com/",
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
          {
           "Ref": "TestGatewayUserPool545AA49A"
          },
@@ -390,7 +451,7 @@
           [
            "s3://",
            {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            },
            "/986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c.json"
           ]

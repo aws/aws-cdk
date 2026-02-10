@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor } from '../lib';
+import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
+import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -1060,6 +1061,21 @@ test('create a Add Key transformer against a log group', () => {
         },
       },
     ],
+  });
+});
+
+test('enable deletion protection', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new LogGroup(stack, 'LogGroup', {
+    deletionProtectionEnabled: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    DeletionProtectionEnabled: true,
   });
 });
 
