@@ -1,4 +1,4 @@
-import { IAlarm, IAlarmRule } from './alarm-base';
+import type { IAlarm, IAlarmRule } from './alarm-base';
 import { Token, UnscopedValidationError } from '../../core';
 import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
