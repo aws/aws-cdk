@@ -3,6 +3,7 @@ import type { IDataProcessor } from './processor';
 import type * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type * as s3 from '../../aws-s3';
+import type * as secrets from '../../aws-secretsmanager';
 import type * as cdk from '../../core';
 
 /**
@@ -198,4 +199,38 @@ export interface CommonDestinationProps extends DestinationLoggingProps {
    * @default - source records will not be backed up to S3.
    */
   readonly s3Backup?: DestinationS3BackupProps;
+}
+
+/**
+ * The configuration that defines how you access secrets for destinations.
+ */
+export interface SecretsManagerProps {
+  /**
+   * Specifies whether you want to use the secrets manager feature.
+   * When set as true the secrets manager configuration overwrites the existing secrets in the destination configuration.
+   * When it's set to false Firehose falls back to the credentials in the destination configuration.
+   *
+   * @default - true if `secret` is specified, false otherwise
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * Specifies the role that Firehose assumes when calling the Secrets Manager API operation.
+   * When you provide the role, it overrides any destination specific role defined in the destination configuration.
+   * If you do not provide the then we use the destination specific role.
+   * This parameter is required for Splunk.
+   *
+   * @default - the destination specific role will be used
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * The secret that stores your credentials.
+   * It must be in the same region as the Firehose stream and the role.
+   * The secret can reside in a different account than the Firehose stream and role as Firehose supports cross-account secret access.
+   * This parameter is required when `enabled` is set to true.
+   *
+   * @default - no secret is used
+   */
+  readonly secret?: secrets.ISecret;
 }

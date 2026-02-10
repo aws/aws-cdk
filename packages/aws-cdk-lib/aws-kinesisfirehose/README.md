@@ -125,6 +125,48 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 });
 ```
 
+### HTTP Endpoint
+
+Defining a delivery stream with an HTTP endpoint destination:
+
+```ts
+const httpDestination = new firehose.HttpEndpoint({
+  url: 'https://example.com/',
+  name: 'MyEndpointName', // HTTP endpoint name - optional
+  parameters: { // Parameters - optional
+    'deployment-context': 'pre-prod-gamma',
+  },
+  contentEncoding: firehose.ContentEncoding.GZIP, // Content encoding - optional
+  retryDuration: Duration.minutes(10), // Retry duration - optional
+});
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: httpDestination,
+});
+```
+
+You can either choose to enter the access key directly or retrieve the secret from AWS Secrets Manager to authenticate the HTTP endpoint.
+
+Specify an access key directly:
+```ts
+const httpDestination = new firehose.HttpEndpoint({
+  url: 'https://example.com/',
+  accessKey: 'plaintext-access-key',
+});
+```
+
+Retrieve a secret from AWS Secrets Manager:
+```ts
+import * as secrets from 'aws-cdk-lib/aws-secretsmanager';
+declare const secret: secrets.ISecret;
+const httpDestination = new firehose.HttpEndpoint({
+  url: 'https://example.com/',
+  secretsManager: { secret },
+});
+```
+
+Learn more about HTTP endpoint destination, see [Configure destination settings for HTTP Endpoint](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-http)
+
 ## Data Format Conversion
 
 Data format conversion allows automatic conversion of inputs from JSON to either Parquet or ORC.
