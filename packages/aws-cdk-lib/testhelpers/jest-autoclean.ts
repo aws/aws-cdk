@@ -11,4 +11,4 @@
  */
 import { CloudAssembly } from '../cx-api';
 
-afterAll(CloudAssembly.cleanupTemporaryDirectories);
+afterEach(CloudAssembly.cleanupTemporaryDirectories);
