@@ -1,5 +1,5 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';

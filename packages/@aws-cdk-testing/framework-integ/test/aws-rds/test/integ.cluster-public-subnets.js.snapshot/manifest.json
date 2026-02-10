@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/945f69ae4a68399880a4080d48859f46771ac3a17d0670b5d10eb0f4f13b73a7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fcff77077bd99b70554d73f3692b36788513123c95c2cb5aeb25b2b4ea5134e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -353,7 +353,6 @@
                 "combineImportAndExportRoles": true
               },
               "writer": "*",
-              "removalPolicy": "destroy",
               "vpc": "*",
               "vpcSubnets": {
                 "subnetType": "Public"
@@ -472,7 +471,6 @@
                 "combineImportAndExportRoles": true
               },
               "writer": "*",
-              "removalPolicy": "destroy",
               "vpc": "*",
               "vpcSubnets": {
                 "subnetType": "Public"
@@ -591,7 +589,6 @@
                 "combineImportAndExportRoles": true
               },
               "writer": "*",
-              "removalPolicy": "destroy",
               "vpc": "*",
               "vpcSubnets": {
                 "subnetType": "Public"

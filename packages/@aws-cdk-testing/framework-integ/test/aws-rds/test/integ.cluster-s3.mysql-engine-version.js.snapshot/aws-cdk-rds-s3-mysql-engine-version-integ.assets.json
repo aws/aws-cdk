@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "42e177194e4b968d879c6865a3a8a922c2d20577a2d6a5f48e67e056cd58a635": {
+    "849bcb45be3b7549f34ea47533f62c2a036f64c6751cc7b2d9db7198a8fd0015": {
       "displayName": "aws-cdk-rds-s3-mysql-engine-version-integ Template",
       "source": {
         "path": "aws-cdk-rds-s3-mysql-engine-version-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8297d77f": {
+        "current_account-current_region-0745f795": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "42e177194e4b968d879c6865a3a8a922c2d20577a2d6a5f48e67e056cd58a635.json",
+          "objectKey": "849bcb45be3b7549f34ea47533f62c2a036f64c6751cc7b2d9db7198a8fd0015.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

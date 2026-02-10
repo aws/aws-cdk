@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App } from 'aws-cdk-lib';
 import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';

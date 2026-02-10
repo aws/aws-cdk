@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7f5f98282c8c6f8c2e75c01fac74a86bb77de19a4b55ab242faa4d397b7f40b6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a239bc5dfdb83ffc6d58bd87c68ff7619dd47737fd138319dc8404e5a8cd880.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -307,7 +307,6 @@
               },
               "instanceType": "*",
               "vpc": "*",
-              "removalPolicy": "destroy",
               "engineLifecycleSupport": "open-source-rds-extended-support"
             }
           }
@@ -1505,7 +1504,6 @@
               },
               "instanceType": "*",
               "vpc": "*",
-              "removalPolicy": "destroy",
               "engineLifecycleSupport": "open-source-rds-extended-support-disabled"
             }
           }
@@ -1555,7 +1553,6 @@
               "sourceDatabaseInstance": "*",
               "instanceType": "*",
               "vpc": "*",
-              "removalPolicy": "destroy",
               "engineLifecycleSupport": "open-source-rds-extended-support-disabled"
             }
           }

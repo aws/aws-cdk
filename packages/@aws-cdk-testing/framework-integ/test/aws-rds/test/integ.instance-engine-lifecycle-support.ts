@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
-import { App, Stack } from 'aws-cdk-lib';
+import { App } from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { InstanceSnapshoter } from './snapshoter';

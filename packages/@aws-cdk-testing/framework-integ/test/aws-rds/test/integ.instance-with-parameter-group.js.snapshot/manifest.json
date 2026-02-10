@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0743f8cbee6e3a5698b82835c8e48e82bfe018b7f48d6500543cfff766bd552b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b73f2d690050cb1e0e584392bdc9170b612148fba2c086f1eafd3fb57bfaeb8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -324,7 +324,6 @@
                 "defaultUsername": "*"
               },
               "description": "*",
-              "removalPolicy": "destroy",
               "name": "*"
             }
           },
@@ -363,8 +362,7 @@
               "multiAz": false,
               "publiclyAccessible": true,
               "iamAuthentication": true,
-              "parameterGroup": "*",
-              "removalPolicy": "destroy"
+              "parameterGroup": "*"
             }
           }
         ],

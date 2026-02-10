@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e1fd2e82db55d4782a0f8c44d8dbea6f633e1c8ac4b2dd5d293fcc0c1ec2007f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/857a3a8acb8ff92a65935bedbb92bcc9a69d837274f3cd33aa5da97745acac0f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -359,8 +359,7 @@
               "monitoringInterval": "*",
               "enableClusterLevelEnhancedMonitoring": true,
               "storageType": "aurora-iopt1",
-              "cloudwatchLogsExports": "*",
-              "removalPolicy": "destroy"
+              "cloudwatchLogsExports": "*"
             }
           }
         ],
@@ -476,60 +475,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "DatabaseCluster168limitlessSubnets30AC1262": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessSubnets30AC1262",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DatabaseCluster168limitlessSecurityGroupF99FFC3A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessSecurityGroupF99FFC3A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DatabaseCluster168limitlessMonitoringRoleB9251B2E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessMonitoringRoleB9251B2E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DatabaseCluster168limitlessSecret13E5F591": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessSecret13E5F591",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DatabaseCluster168limitlessSecretAttachment62201C99": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessSecretAttachment62201C99",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DatabaseCluster168limitless05206D79": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitless05206D79",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

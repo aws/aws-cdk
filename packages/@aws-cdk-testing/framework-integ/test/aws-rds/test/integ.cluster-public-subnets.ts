@@ -1,7 +1,7 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import type { StackProps } from 'aws-cdk-lib';
-import { App, Stack } from 'aws-cdk-lib';
+import { App } from 'aws-cdk-lib';
 import { SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40e2da59fbcda8927d4b1cea80336dd8e30dc19635c0dbb21c818ae5244acbf6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2aa9af6fb41af8312a68a9674b89cf5bf3c7e2397eef4f0b2dd69f43614fad9c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -280,8 +280,7 @@
               "vpc": "*",
               "vpcSubnets": {
                 "subnetType": "Isolated"
-              },
-              "removalPolicy": "destroy"
+              }
             }
           }
         ],
@@ -377,8 +376,7 @@
               "vpcSubnets": {
                 "subnetType": "Isolated"
               },
-              "allocatedStorage": "*",
-              "removalPolicy": "destroy"
+              "allocatedStorage": "*"
             }
           }
         ],

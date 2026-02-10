@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2b544fa2c042758f2bfb7bded05ce7807faad2efc15b7a7b82aa651623457e7f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba47fc3cdf3dd3d43c8ec12a8416773011bbcc339410d6f2dfe86529f93ae09b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -355,7 +355,6 @@
               "serverlessV2MaxCapacity": "*",
               "serverlessV2MinCapacity": "*",
               "writer": "*",
-              "removalPolicy": "destroy",
               "vpc": "*"
             }
           }

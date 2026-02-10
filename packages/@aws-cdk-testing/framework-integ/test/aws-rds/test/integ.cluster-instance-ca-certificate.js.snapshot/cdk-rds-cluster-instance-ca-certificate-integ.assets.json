@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "feb42f86bf615d30c15054ba492cc42c17a9a5145789be76902758c7b517cd20": {
+    "c2c15d35821f335e94da0e0aa25224e4c96f4177264e222dbf28abe1e79728ce": {
       "displayName": "cdk-rds-cluster-instance-ca-certificate-integ Template",
       "source": {
         "path": "cdk-rds-cluster-instance-ca-certificate-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9bceb06c": {
+        "current_account-current_region-6e30b512": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "feb42f86bf615d30c15054ba492cc42c17a9a5145789be76902758c7b517cd20.json",
+          "objectKey": "c2c15d35821f335e94da0e0aa25224e4c96f4177264e222dbf28abe1e79728ce.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

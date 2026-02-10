@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b2426e4baeb100de6626bc33fac8491e5a7eb420a796871e682708f688cc6fc7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bf3aef06edff211e3ad94e6bb5842c6fb906fb092f2761c03e32b586c83805f2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -354,8 +354,7 @@
               },
               "writer": "*",
               "vpc": "*",
-              "cloudwatchLogsExports": "*",
-              "removalPolicy": "destroy"
+              "cloudwatchLogsExports": "*"
             }
           }
         ],
@@ -469,8 +468,7 @@
               },
               "writer": "*",
               "vpc": "*",
-              "cloudwatchLogsExports": "*",
-              "removalPolicy": "destroy"
+              "cloudwatchLogsExports": "*"
             }
           }
         ],
@@ -610,7 +608,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48f9d0d8378c2d7a9b6bf7c45e446269db3d699110ed47a8da9c7fa4ecd1d006.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b47439343c28ac06acd6bf1f9eb849144b1e820e3c24ea950f66769cd14e1035.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

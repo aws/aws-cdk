@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, Duration } from 'aws-cdk-lib';
+import { App, Duration } from 'aws-cdk-lib';
 import { ClusterInstance, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import * as iam from 'aws-cdk-lib/aws-iam';

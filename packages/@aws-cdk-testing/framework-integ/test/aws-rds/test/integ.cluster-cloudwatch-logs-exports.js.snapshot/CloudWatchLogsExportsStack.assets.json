@@ -15,16 +15,16 @@
         }
       }
     },
-    "b2426e4baeb100de6626bc33fac8491e5a7eb420a796871e682708f688cc6fc7": {
+    "bf3aef06edff211e3ad94e6bb5842c6fb906fb092f2761c03e32b586c83805f2": {
       "displayName": "CloudWatchLogsExportsStack Template",
       "source": {
         "path": "CloudWatchLogsExportsStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a3cce895": {
+        "current_account-current_region-c94b351f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b2426e4baeb100de6626bc33fac8491e5a7eb420a796871e682708f688cc6fc7.json",
+          "objectKey": "bf3aef06edff211e3ad94e6bb5842c6fb906fb092f2761c03e32b586c83805f2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

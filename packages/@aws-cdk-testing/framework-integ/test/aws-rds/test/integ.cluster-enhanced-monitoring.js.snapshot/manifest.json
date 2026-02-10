@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/220d9cbaad02efba0c237f415d571eb94113fc97a3c62c1f330bb4396b0ec85e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6da4ecae369055f8d44019b3f3e8a5cbea9cb500915888556b0d3998316453e2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -330,8 +330,7 @@
               "serverlessV2MinCapacity": "*",
               "serverlessV2MaxCapacity": "*",
               "monitoringInterval": "*",
-              "enableClusterLevelEnhancedMonitoring": true,
-              "removalPolicy": "destroy"
+              "enableClusterLevelEnhancedMonitoring": true
             }
           }
         ],

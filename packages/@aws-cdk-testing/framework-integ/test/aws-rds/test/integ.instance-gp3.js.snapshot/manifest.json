@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a7722ef6f23f27cb9ce8117781c7ade0d7e350c7f03973ee7f88d3810c7fe0d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8e52766f2fd140770971c8f3e4822b0ca60e4e8b21573e0a97ef36e84cb6555.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -308,8 +308,7 @@
               "instanceType": "*",
               "vpc": "*",
               "allocatedStorage": "*",
-              "storageType": "gp3",
-              "removalPolicy": "destroy"
+              "storageType": "gp3"
             }
           }
         ],

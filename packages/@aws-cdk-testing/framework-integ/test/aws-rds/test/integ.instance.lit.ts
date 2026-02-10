@@ -51,7 +51,6 @@ class DatabaseInstanceStack extends IntegTestBaseStack {
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: INTEG_TEST_LATEST_ORACLE }),
-      licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,

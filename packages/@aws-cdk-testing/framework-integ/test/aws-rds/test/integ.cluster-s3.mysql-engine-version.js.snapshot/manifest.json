@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/42e177194e4b968d879c6865a3a8a922c2d20577a2d6a5f48e67e056cd58a635.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/849bcb45be3b7549f34ea47533f62c2a036f64c6751cc7b2d9db7198a8fd0015.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -312,9 +312,7 @@
         "/aws-cdk-rds-s3-mysql-engine-version-integ/ImportExportBucket": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
+            "data": "*"
           }
         ],
         "/aws-cdk-rds-s3-mysql-engine-version-integ/ImportExportBucket/Resource": [

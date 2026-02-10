@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/deedf76d2a7cc33218dd8b4eb8843c59fd3996bd5d47f794b5c81b534682c151.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/800729bb3265ccb824dcb90db3bab19a90e4cad368c7b550219c086882772afb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -330,8 +330,7 @@
               "publiclyAccessible": true,
               "iamAuthentication": true,
               "cloudwatchLogsExports": "*",
-              "cloudwatchLogsRetention": 90,
-              "removalPolicy": "destroy"
+              "cloudwatchLogsRetention": 90
             }
           }
         ],

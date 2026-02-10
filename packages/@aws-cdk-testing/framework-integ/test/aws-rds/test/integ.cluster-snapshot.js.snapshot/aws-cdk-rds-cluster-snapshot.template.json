@@ -14,7 +14,9 @@
       "Value": "aws-cdk-rds-cluster-snapshot/VPC"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
@@ -46,7 +48,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1RouteTableFEE4B781": {
    "Type": "AWS::EC2::RouteTable",
@@ -60,7 +64,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -71,7 +77,9 @@
     "SubnetId": {
      "Ref": "VPCPublicSubnet1SubnetB4246D30"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1DefaultRoute91CEF279": {
    "Type": "AWS::EC2::Route",
@@ -86,7 +94,9 @@
    },
    "DependsOn": [
     "VPCVPCGW99B986DC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1EIP6AD938E8": {
    "Type": "AWS::EC2::EIP",
@@ -98,7 +108,9 @@
       "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1NATGatewayE0556630": {
    "Type": "AWS::EC2::NatGateway",
@@ -122,7 +134,9 @@
    "DependsOn": [
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -154,7 +168,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2RouteTable6F1A15F1": {
    "Type": "AWS::EC2::RouteTable",
@@ -168,7 +184,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2RouteTableAssociation5A808732": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -179,7 +197,9 @@
     "SubnetId": {
      "Ref": "VPCPublicSubnet2Subnet74179F39"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2DefaultRouteB7481BBA": {
    "Type": "AWS::EC2::Route",
@@ -194,7 +214,9 @@
    },
    "DependsOn": [
     "VPCVPCGW99B986DC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2EIP4947BC00": {
    "Type": "AWS::EC2::EIP",
@@ -206,7 +228,9 @@
       "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2NATGateway3C070193": {
    "Type": "AWS::EC2::NatGateway",
@@ -230,7 +254,9 @@
    "DependsOn": [
     "VPCPublicSubnet2DefaultRouteB7481BBA",
     "VPCPublicSubnet2RouteTableAssociation5A808732"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -262,7 +288,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet1RouteTableBE8A6027": {
    "Type": "AWS::EC2::RouteTable",
@@ -276,7 +304,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet1RouteTableAssociation347902D1": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -287,7 +317,9 @@
     "SubnetId": {
      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet1DefaultRouteAE1D6490": {
    "Type": "AWS::EC2::Route",
@@ -299,7 +331,9 @@
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet2SubnetCFCDAA7A": {
    "Type": "AWS::EC2::Subnet",
@@ -331,7 +365,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet2RouteTable0A19E10E": {
    "Type": "AWS::EC2::RouteTable",
@@ -345,7 +381,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -356,7 +394,9 @@
     "SubnetId": {
      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
    "Type": "AWS::EC2::Route",
@@ -368,7 +408,9 @@
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCIGWB7E252D3": {
    "Type": "AWS::EC2::InternetGateway",
@@ -379,7 +421,9 @@
       "Value": "aws-cdk-rds-cluster-snapshot/VPC"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCVPCGW99B986DC": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -390,7 +434,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SourceClusterSubnetsA3F9E0D8": {
    "Type": "AWS::RDS::DBSubnetGroup",
@@ -404,7 +450,9 @@
       "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SourceClusterSecurityGroup37BA323A": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -420,7 +468,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SourceClusterSecret60A70349": {
    "Type": "AWS::SecretsManager::Secret",
@@ -456,7 +506,9 @@
      "Ref": "SourceCluster32940E28"
     },
     "TargetType": "AWS::RDS::DBCluster"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SourceCluster32940E28": {
    "Type": "AWS::RDS::DBCluster",
@@ -552,7 +604,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F": {
    "Type": "AWS::IAM::Policy",
@@ -621,7 +675,9 @@
       "Ref": "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterOnEventHandler2EFCD3AF": {
    "Type": "AWS::Lambda::Function",
@@ -644,7 +700,9 @@
    "DependsOn": [
     "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
     "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterOnEventHandlerLogGroup90039F17": {
    "Type": "AWS::Logs::LogGroup",
@@ -662,8 +720,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD": {
    "Type": "AWS::IAM::Role",
@@ -694,7 +752,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D": {
    "Type": "AWS::IAM::Policy",
@@ -759,7 +819,9 @@
       "Ref": "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterIsCompleteHandlerBB5051A9": {
    "Type": "AWS::Lambda::Function",
@@ -782,7 +844,9 @@
    "DependsOn": [
     "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
     "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036": {
    "Type": "AWS::Logs::LogGroup",
@@ -800,8 +864,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0": {
    "Type": "AWS::IAM::Role",
@@ -832,7 +896,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751": {
    "Type": "AWS::IAM::Policy",
@@ -919,7 +985,9 @@
       "Ref": "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B": {
    "Type": "AWS::Lambda::Function",
@@ -967,7 +1035,9 @@
    "DependsOn": [
     "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
     "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4": {
    "Type": "AWS::Logs::LogGroup",
@@ -985,8 +1055,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200": {
    "Type": "AWS::IAM::Role",
@@ -1017,7 +1087,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0": {
    "Type": "AWS::IAM::Policy",
@@ -1097,7 +1169,9 @@
       "Ref": "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6": {
    "Type": "AWS::Lambda::Function",
@@ -1142,7 +1216,9 @@
    "DependsOn": [
     "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
     "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE": {
    "Type": "AWS::Logs::LogGroup",
@@ -1160,8 +1236,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691": {
    "Type": "AWS::IAM::Role",
@@ -1192,7 +1268,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67": {
    "Type": "AWS::IAM::Policy",
@@ -1272,7 +1350,9 @@
       "Ref": "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3": {
    "Type": "AWS::Lambda::Function",
@@ -1317,7 +1397,9 @@
    "DependsOn": [
     "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
     "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A": {
    "Type": "AWS::Logs::LogGroup",
@@ -1335,8 +1417,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC": {
    "Type": "AWS::IAM::Role",
@@ -1353,7 +1435,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28": {
    "Type": "AWS::IAM::Policy",
@@ -1415,7 +1499,9 @@
       "Ref": "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -1452,7 +1538,9 @@
    "DependsOn": [
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ClusterSnapshoterSnapshot4EBB28EE": {
    "Type": "Custom::Snapshoter",
@@ -1509,7 +1597,9 @@
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "RestoredClusterSecurityGroup8469D544": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -1551,7 +1641,9 @@
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "RestoredClusterSecurityGroupfromawscdkrdsclustersnapshotRestoredClusterRotationSingleUserSecurityGroupAAF1D148IndirectPort23278485": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -1608,7 +1700,9 @@
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "awscdkrdsclustersnapshotRestoredClusterSnapshotSecretA38D39563fdaad7efa858a3daf9490cf0a702aeb": {
    "Type": "AWS::SecretsManager::Secret",
@@ -1696,7 +1790,9 @@
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "RestoredClusterSnapshotSecretAttachmentRotationScheduleEBC4DA76": {
    "Type": "AWS::SecretsManager::RotationSchedule",
@@ -1739,7 +1835,9 @@
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "RestoredClusterSnapshotSecretPolicy18A6F5D5": {
    "Type": "AWS::SecretsManager::ResourcePolicy",
@@ -1801,7 +1899,9 @@
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "RestoredClusterBDABFB2B": {
    "Type": "AWS::RDS::DBCluster",
@@ -1947,7 +2047,9 @@
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
     "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "RestoredClusterRotationSingleUser48DDFFD0": {
    "Type": "AWS::Serverless::Application",

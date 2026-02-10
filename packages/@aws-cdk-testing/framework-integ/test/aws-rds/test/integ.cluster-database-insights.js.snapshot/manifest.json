@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9b87a8e009fe998a9e0893a91eb53f39fd4f7c67536acaecf79ef23d3d1ae80.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c81f081a6aef542fe09bdf33bf7ebc55865ff7e0fa5cf13b6ffc900681462f0e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -328,8 +328,7 @@
               "writer": "*",
               "vpc": "*",
               "databaseInsightsMode": "advanced",
-              "performanceInsightRetention": 465,
-              "removalPolicy": "destroy"
+              "performanceInsightRetention": 465
             }
           },
           {

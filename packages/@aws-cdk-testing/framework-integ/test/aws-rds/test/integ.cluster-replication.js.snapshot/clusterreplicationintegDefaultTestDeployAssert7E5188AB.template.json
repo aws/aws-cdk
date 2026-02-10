@@ -54,7 +54,7 @@
     "outputPaths": [
      "DBClusters.0.ReplicationSourceIdentifier"
     ],
-    "salt": "1770666232474"
+    "salt": "1770714142573"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

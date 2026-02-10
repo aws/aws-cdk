@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7fa25b94feff6a300015f688b6084a1baa6b827f216d02896f9c9e142757ca0d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec344acd1eb542c7d84b5a2bc4a875aa70fce4a0e2d4bea81c4bbabe7b257a7a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -325,8 +325,7 @@
                 "supportsReadReplicaBackups": "*",
                 "defaultUsername": "*"
               },
-              "vpc": "*",
-              "removalPolicy": "destroy"
+              "vpc": "*"
             }
           }
         ],
