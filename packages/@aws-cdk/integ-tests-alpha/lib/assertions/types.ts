@@ -1,7 +1,7 @@
-import { IApiCall } from './api-call-base';
-import { ExpectedResult, ActualResult } from './common';
-import { FetchOptions } from './providers';
-import { LambdaInvokeFunctionProps } from './sdk';
+import type { IApiCall } from './api-call-base';
+import type { ExpectedResult, ActualResult } from './common';
+import type { FetchOptions } from './providers';
+import type { LambdaInvokeFunctionProps } from './sdk';
 
 /**
  * Interface that allows for registering a list of assertions

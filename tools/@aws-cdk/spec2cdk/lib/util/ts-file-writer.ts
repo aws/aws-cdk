@@ -1,4 +1,4 @@
-import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
+import type { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import * as log from './log';
 

@@ -1,13 +1,14 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnConfigurationSetEventDestination } from './ses.generated';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
-import * as sns from '../../aws-sns';
-import { Aws, IResource, Resource, Stack, ValidationError } from '../../core';
+import type * as firehose from '../../aws-kinesisfirehose';
+import type * as sns from '../../aws-sns';
+import type { IResource } from '../../core';
+import { Aws, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IConfigurationSetRef, IConfigurationSetEventDestinationRef, ConfigurationSetEventDestinationReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IConfigurationSetRef, IConfigurationSetEventDestinationRef, ConfigurationSetEventDestinationReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A configuration set event destination
