@@ -1,13 +1,9 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import {
-  AuroraMysqlEngineVersion,
-  ClusterInstance,
-  DatabaseCluster,
-  DatabaseClusterEngine,
-} from 'aws-cdk-lib/aws-rds';
+import { ClusterInstance, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-volume-iops-metric');
@@ -16,7 +12,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const cluster = new DatabaseCluster(stack, 'Cluster', {
   engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_3_11_1,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   vpc,
   writer: ClusterInstance.serverlessV2('writer'),

@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -20,7 +21,7 @@ const instanceProps = {
 };
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   vpc,
   writer: rds.ClusterInstance.provisioned('Instance1', {
@@ -37,7 +38,7 @@ cluster.addRotationSingleUser();
 
 const clusterWithCustomRotationOptions = new rds.DatabaseCluster(stack, 'CustomRotationOptions', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   vpc,
   writer: rds.ClusterInstance.provisioned('Instance1', {

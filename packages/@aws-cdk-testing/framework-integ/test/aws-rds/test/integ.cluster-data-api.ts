@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -16,7 +17,7 @@ const role = new iam.Role(stack, 'Role', {
 const user = new iam.User(stack, 'User');
 
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_17_6 }),
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: INTEG_TEST_LATEST_AURORA_POSTGRES }),
   vpc,
   writer: rds.ClusterInstance.serverlessV2('writer'),
   serverlessV2MinCapacity: 0.5,

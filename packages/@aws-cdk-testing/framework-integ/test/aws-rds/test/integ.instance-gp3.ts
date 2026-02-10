@@ -1,8 +1,9 @@
 import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
-import { DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion, StorageType } from 'aws-cdk-lib/aws-rds';
+import { DatabaseInstance, DatabaseInstanceEngine, StorageType } from 'aws-cdk-lib/aws-rds';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -11,7 +12,7 @@ class TestStack extends Stack {
     const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     new DatabaseInstance(this, 'Instance', {
-      engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_4_7 }),
+      engine: DatabaseInstanceEngine.mysql({ version: INTEG_TEST_LATEST_MYSQL }),
       instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.SMALL),
       vpc,
       allocatedStorage: 1000,

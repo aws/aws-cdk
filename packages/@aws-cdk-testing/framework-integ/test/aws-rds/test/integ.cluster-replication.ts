@@ -1,7 +1,8 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, RemovalPolicy, Stack, Duration } from 'aws-cdk-lib';
-import { AuroraMysqlEngineVersion, ClusterInstance, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
+import { ClusterInstance, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
@@ -13,7 +14,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 const primaryCluster = new DatabaseCluster(stack, 'PrimaryDatabase', {
   vpc,
   engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_3_11_1,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   writer: ClusterInstance.provisioned('WriterInstance', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
@@ -27,7 +28,7 @@ const primaryCluster = new DatabaseCluster(stack, 'PrimaryDatabase', {
 const replicaCluster = new DatabaseCluster(stack, 'ReplicaDatabase', {
   vpc,
   engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_3_11_1,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   writer: ClusterInstance.provisioned('ReplicaInstance', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),

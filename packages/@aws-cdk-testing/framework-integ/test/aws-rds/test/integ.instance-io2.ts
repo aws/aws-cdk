@@ -1,7 +1,8 @@
 import { InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion, StorageType } from 'aws-cdk-lib/aws-rds';
+import { DatabaseInstance, DatabaseInstanceEngine, StorageType } from 'aws-cdk-lib/aws-rds';
 
 const app = new App();
 const stack = new Stack(app, 'integRdsInstanceIo2');
@@ -9,7 +10,7 @@ const stack = new Stack(app, 'integRdsInstanceIo2');
 const vpc = new Vpc(stack, 'Vpc', { natGateways: 0 });
 
 new DatabaseInstance(stack, 'Instance', {
-  engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_4_7 }),
+  engine: DatabaseInstanceEngine.mysql({ version: INTEG_TEST_LATEST_MYSQL }),
   instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.SMALL),
   vpc,
   vpcSubnets: {

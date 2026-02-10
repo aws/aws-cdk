@@ -1,9 +1,10 @@
 import * as kms from 'aws-cdk-lib/aws-kms';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { DatabaseSecret, DatabaseCluster, DatabaseClusterEngine, Credentials, ClusterInstance, AuroraMysqlEngineVersion } from 'aws-cdk-lib/aws-rds';
+import { DatabaseSecret, DatabaseCluster, DatabaseClusterEngine, Credentials, ClusterInstance } from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-integ-secret-rotation');
@@ -25,7 +26,7 @@ const secret = new DatabaseSecret(stack, 'test-secret', {
 // @ts-ignore - cluster is used implicitly by secret rotation
 const cluster = new DatabaseCluster(stack, 'Database', {
   engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_3_11_1,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   credentials: Credentials.fromSecret(secret),
   storageEncryptionKey: kmsKey,

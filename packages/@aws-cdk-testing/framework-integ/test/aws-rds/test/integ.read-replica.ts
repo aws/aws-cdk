@@ -1,4 +1,5 @@
 import type { SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_MYSQL, INTEG_TEST_LATEST_POSTGRES } from './db-versions';
 import { InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, Duration, Stack } from 'aws-cdk-lib';
@@ -28,7 +29,7 @@ class TestStack extends Stack {
     const vpcSubnets: SubnetSelection = { subnetType: SubnetType.PRIVATE_ISOLATED };
 
     const postgresSource = new rds.DatabaseInstance(this, 'PostgresSource', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_18_1 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: INTEG_TEST_LATEST_POSTGRES }),
       backupRetention: Duration.days(5),
       instanceType,
       vpc,
@@ -43,7 +44,7 @@ class TestStack extends Stack {
     });
 
     const mysqlSource = new rds.DatabaseInstance(this, 'MysqlSource', {
-      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_7 }),
+      engine: rds.DatabaseInstanceEngine.mysql({ version: INTEG_TEST_LATEST_MYSQL }),
       backupRetention: Duration.days(5),
       instanceType,
       vpc,
@@ -51,7 +52,7 @@ class TestStack extends Stack {
     });
 
     const parameterGroup = new rds.ParameterGroup(this, 'ReplicaParameterGroup', {
-      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_7 }),
+      engine: rds.DatabaseInstanceEngine.mysql({ version: INTEG_TEST_LATEST_MYSQL }),
       parameters: {
         wait_timeout: '86400',
       },

@@ -1,12 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_POSTGRES } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
-import {
-  DatabaseInstance,
-  DatabaseInsightsMode,
-  PerformanceInsightRetention,
-  PostgresEngineVersion,
-  DatabaseInstanceEngine,
-} from 'aws-cdk-lib/aws-rds';
+import { DatabaseInstance, DatabaseInsightsMode, PerformanceInsightRetention, DatabaseInstanceEngine } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends cdk.Stack {
@@ -16,7 +11,7 @@ class TestStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
     new DatabaseInstance(this, 'PostgresInstanceAdvanced', {
-      engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_18_1 }),
+      engine: DatabaseInstanceEngine.postgres({ version: INTEG_TEST_LATEST_POSTGRES }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       vpc,
       allocatedStorage: 100,
@@ -25,7 +20,7 @@ class TestStack extends cdk.Stack {
     });
 
     new DatabaseInstance(this, 'PostgresInstanceStandard', {
-      engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_18_1 }),
+      engine: DatabaseInstanceEngine.postgres({ version: INTEG_TEST_LATEST_POSTGRES }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       vpc,
       allocatedStorage: 100,

@@ -433,10 +433,7 @@
         "/cdk-rds-read-replica/ReplicaParameterGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ReplicaParameterGroup4BE5EE70",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ReplicaParameterGroup4BE5EE70"
           }
         ],
         "/cdk-rds-read-replica/MysqlReplica": [
@@ -491,10 +488,7 @@
         "/cdk-rds-read-replica/MysqlReplica/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlReplica87D29F78",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "MysqlReplica87D29F78"
           }
         ],
         "/cdk-rds-read-replica/DBRole": [

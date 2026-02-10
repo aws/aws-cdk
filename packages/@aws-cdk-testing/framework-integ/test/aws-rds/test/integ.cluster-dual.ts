@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -19,7 +20,7 @@ const instanceProps = {
   isFromLegacyInstanceProps: true,
 };
 new rds.DatabaseCluster(stack, 'DualstackCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_11_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
   credentials: rds.Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   writer: rds.ClusterInstance.provisioned('Instance1', {
     ...instanceProps,
@@ -36,7 +37,7 @@ new rds.DatabaseCluster(stack, 'DualstackCluster', {
 });
 
 new rds.DatabaseCluster(stack, 'Ipv4Cluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_11_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
   credentials: rds.Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   vpc,

@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
 import * as integTests from '@aws-cdk/integ-tests-alpha';
 import type * as constructs from 'constructs';
@@ -18,7 +19,7 @@ class RollingInstanceUpdateTestStack extends cdk.Stack {
 
     new rds.DatabaseCluster(this, 'DatabaseCluster', {
       engine: rds.DatabaseClusterEngine.auroraMysql({
-        version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
+        version: INTEG_TEST_LATEST_AURORA_MYSQL,
       }),
       instances: 3,
       instanceProps: {

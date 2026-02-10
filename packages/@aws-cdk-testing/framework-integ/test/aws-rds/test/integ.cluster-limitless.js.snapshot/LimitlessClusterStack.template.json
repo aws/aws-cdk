@@ -507,10 +507,10 @@
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
    ]
   },
-  "DatabaseCluster168limitlessSubnets30AC1262": {
+  "DatabaseCluster169limitlessSubnets2FA5CA29": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for DatabaseCluster16.8-limitless database",
+    "DBSubnetGroupDescription": "Subnets for DatabaseCluster16.9-limitless database",
     "SubnetIds": [
      {
       "Ref": "VpcPrivateSubnet1Subnet536B997A"
@@ -521,7 +521,7 @@
     ]
    }
   },
-  "DatabaseCluster168limitlessSecurityGroupF99FFC3A": {
+  "DatabaseCluster169limitlessSecurityGroup092DF9D2": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -537,7 +537,7 @@
     }
    }
   },
-  "DatabaseCluster168limitlessMonitoringRoleB9251B2E": {
+  "DatabaseCluster169limitlessMonitoringRole751B52C2": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -568,7 +568,7 @@
     ]
    }
   },
-  "DatabaseCluster168limitlessSecret13E5F591": {
+  "DatabaseCluster169limitlessSecret6EC679E9": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -592,39 +592,39 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster168limitlessSecretAttachment62201C99": {
+  "DatabaseCluster169limitlessSecretAttachment1EF19F0E": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "DatabaseCluster168limitlessSecret13E5F591"
+     "Ref": "DatabaseCluster169limitlessSecret6EC679E9"
     },
     "TargetId": {
-     "Ref": "DatabaseCluster168limitless05206D79"
+     "Ref": "DatabaseCluster169limitlessE9A42B52"
     },
     "TargetType": "AWS::RDS::DBCluster"
    }
   },
-  "DatabaseCluster168limitless05206D79": {
+  "DatabaseCluster169limitlessE9A42B52": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "ClusterScalabilityType": "limitless",
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-postgresql16",
     "DBSubnetGroupName": {
-     "Ref": "DatabaseCluster168limitlessSubnets30AC1262"
+     "Ref": "DatabaseCluster169limitlessSubnets2FA5CA29"
     },
     "EnableCloudwatchLogsExports": [
      "postgresql"
     ],
     "Engine": "aurora-postgresql",
-    "EngineVersion": "16.8-limitless",
+    "EngineVersion": "16.9-limitless",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "DatabaseCluster168limitlessSecret13E5F591"
+        "Ref": "DatabaseCluster169limitlessSecret6EC679E9"
        },
        ":SecretString:password::}}"
       ]
@@ -636,7 +636,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "DatabaseCluster168limitlessSecret13E5F591"
+        "Ref": "DatabaseCluster169limitlessSecret6EC679E9"
        },
        ":SecretString:username::}}"
       ]
@@ -645,7 +645,7 @@
     "MonitoringInterval": 60,
     "MonitoringRoleArn": {
      "Fn::GetAtt": [
-      "DatabaseCluster168limitlessMonitoringRoleB9251B2E",
+      "DatabaseCluster169limitlessMonitoringRole751B52C2",
       "Arn"
      ]
     },
@@ -656,7 +656,7 @@
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "DatabaseCluster168limitlessSecurityGroupF99FFC3A",
+       "DatabaseCluster169limitlessSecurityGroup092DF9D2",
        "GroupId"
       ]
      }

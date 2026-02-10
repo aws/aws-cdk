@@ -1,4 +1,5 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
@@ -31,7 +32,7 @@ export class TestStack extends Stack {
 
     testCases.forEach((p: TestCaseProps, i) =>
       new rds.DatabaseCluster(this, `Integ-Cluster-${i}`, {
-        engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_11_1 }),
+        engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
         writer: p.writer,
         removalPolicy: RemovalPolicy.DESTROY,
         vpc,

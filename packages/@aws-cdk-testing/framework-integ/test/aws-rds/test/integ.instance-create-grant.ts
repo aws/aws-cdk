@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { INTEG_TEST_LATEST_POSTGRES } from './db-versions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -12,7 +13,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_18_1,
+    version: INTEG_TEST_LATEST_POSTGRES,
   }),
   vpc,
   credentials: rds.Credentials.fromUsername('postgres'),

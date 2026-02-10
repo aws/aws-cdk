@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -23,7 +24,7 @@ class PostgresS3TestStack extends cdk.Stack {
 
     new rds.DatabaseCluster(this, 'PostgresDatabase', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
-        version: rds.AuroraPostgresEngineVersion.VER_17_6,
+        version: INTEG_TEST_LATEST_AURORA_POSTGRES,
       }),
       readers: [rds.ClusterInstance.provisioned('ReaderInstance', instanceProps)],
       writer: rds.ClusterInstance.provisioned('WriterInstance', instanceProps),

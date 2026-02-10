@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
 
@@ -11,7 +12,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
 
     new rds.DatabaseInstance(this, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_7 }),
+      engine: rds.DatabaseInstanceEngine.mysql({ version: INTEG_TEST_LATEST_MYSQL }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
       credentials: rds.Credentials.fromGeneratedSecret('admin', { excludeCharacters: '!&*^#@()' }),
       vpc,

@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -26,7 +27,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 
 const sourceInstance = new rds.DatabaseInstance(stack, 'SourceInstance', {
   engine: rds.DatabaseInstanceEngine.mysql({
-    version: rds.MysqlEngineVersion.VER_8_4_7,
+    version: INTEG_TEST_LATEST_MYSQL,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   vpc,

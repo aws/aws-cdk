@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -21,7 +22,7 @@ const subnetGroup = new rds.SubnetGroup(stack, 'SubnetGroup', {
 // ServerlessV2 uses different units: 0.5-128 ACUs (each ACU = 2GB RAM)
 new rds.DatabaseCluster(stack, 'Serverless Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_11_1,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   writer: rds.ClusterInstance.serverlessV2('writer'),
   serverlessV2MinCapacity: 0.5, // Minimum capacity

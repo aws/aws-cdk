@@ -1,14 +1,8 @@
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import {
-  AuroraMysqlEngineVersion,
-  ClusterInstance,
-  DatabaseCluster,
-  DatabaseClusterEngine,
-  DatabaseInsightsMode,
-  PerformanceInsightRetention,
-} from 'aws-cdk-lib/aws-rds';
+import { ClusterInstance, DatabaseCluster, DatabaseClusterEngine, DatabaseInsightsMode, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
 
 const app = new App();
 const stack = new Stack(app, 'aws-cdk-rds-cluster-database-insights');
@@ -16,7 +10,7 @@ const vpc = new Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: fal
 
 new DatabaseCluster(stack, 'Cluster', {
   engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_3_11_1,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   writer: ClusterInstance.provisioned('writer', {
     instanceType: InstanceType.of(InstanceClass.R7G, InstanceSize.LARGE),

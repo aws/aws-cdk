@@ -1,8 +1,9 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Credentials, DatabaseCluster, DatabaseClusterEngine, AuroraPostgresEngineVersion, DBClusterStorageType, ClusterInstance } from 'aws-cdk-lib/aws-rds';
+import { Credentials, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType, ClusterInstance } from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-io-integ');
@@ -10,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-io-integ');
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const cluster = new DatabaseCluster(stack, 'Database', {
-  engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_17_6 }),
+  engine: DatabaseClusterEngine.auroraPostgres({ version: INTEG_TEST_LATEST_AURORA_POSTGRES }),
   credentials: Credentials.fromUsername('adminuser', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   vpc,
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },

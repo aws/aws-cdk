@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_MARIADB } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -13,7 +14,7 @@ const kmsKey = new kms.Key(stack, 'SecretEncryptionKey');
 
 const mariaDBInstance = new rds.DatabaseInstance(stack, 'mariaDBInstance', {
   engine: rds.DatabaseInstanceEngine.mariaDb({
-    version: rds.MariaDbEngineVersion.VER_11_8_5,
+    version: INTEG_TEST_LATEST_MARIADB,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   credentials: rds.Credentials.fromUsername('master', {

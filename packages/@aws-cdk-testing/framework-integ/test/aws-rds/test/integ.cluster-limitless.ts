@@ -1,10 +1,11 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_POSTGRES_LIMITLESS } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
-import { AuroraPostgresEngineVersion, ClusterScalabilityType, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
+import { ClusterScalabilityType, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const versions = [
-  AuroraPostgresEngineVersion.VER_16_8_LIMITLESS,
+  INTEG_TEST_LATEST_AURORA_POSTGRES_LIMITLESS,
 ];
 
 class TestStack extends cdk.Stack {

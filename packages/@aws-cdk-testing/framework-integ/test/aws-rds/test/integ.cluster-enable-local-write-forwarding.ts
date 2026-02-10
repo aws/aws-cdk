@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib/core';
+import { INTEG_TEST_LATEST_AURORA_MYSQL, INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -9,7 +10,7 @@ const stack = new cdk.Stack(app, 'EnableLocalWriteForwardingClusterStack');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 new rds.DatabaseCluster(stack, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_11_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   readers: [
     rds.ClusterInstance.serverlessV2('readerInstance1'),
@@ -19,7 +20,7 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
 });
 
 new rds.DatabaseCluster(stack, 'DatabaseClusterPostgresql', {
-  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_17_6 }),
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: INTEG_TEST_LATEST_AURORA_POSTGRES }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   readers: [
     rds.ClusterInstance.serverlessV2('readerInstance1'),

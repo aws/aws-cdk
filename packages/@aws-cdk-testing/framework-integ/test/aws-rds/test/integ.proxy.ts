@@ -1,4 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_POSTGRES } from './db-versions';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -11,7 +12,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const dbInstance = new rds.DatabaseInstance(stack, 'DBInstance', {
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_18_1,
+    version: INTEG_TEST_LATEST_POSTGRES,
   }),
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
