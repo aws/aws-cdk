@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as events from 'aws-cdk-lib/aws-events';
 import { CfnEventBusLogsMixin } from '../../../lib/services/aws-events/mixins';
 import '../../../lib/with';
@@ -24,11 +25,16 @@ const logGroup = new logs.LogGroup(stack, 'DeliveryLogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+// KMS Key for Bucket encryption
+const key = new kms.Key(stack, 'DeliveryBucketKey', {
+  enabled: true,
+});
+
 // S3 Bucket Destination
 const bucket = new s3.Bucket(stack, 'DeliveryBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
-  encryption: s3.BucketEncryption.S3_MANAGED,
+  encryptionKey: key,
 });
 
 // Setup error logs delivery to Cloudwatch
@@ -37,6 +43,8 @@ eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toLogGroup(logGroup));
 eventBus.with(CfnEventBusLogsMixin.INFO_LOGS.toLogGroup(logGroup));
 // Setup error logs delivery to S3
 eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toS3(bucket));
+// Setup info logs delivery to S3
+eventBus.with(CfnEventBusLogsMixin.INFO_LOGS.toS3(bucket, { encryptionKey: key }));
 
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],

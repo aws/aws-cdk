@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
-import * as cloudfront from '../../aws-cloudfront';
-import * as route53 from '../../aws-route53';
+import type { IConstruct } from 'constructs';
+import type * as cloudfront from '../../aws-cloudfront';
+import type * as route53 from '../../aws-route53';
 import { Aws, CfnMapping, Stack } from '../../core';
 
 /**

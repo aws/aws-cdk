@@ -2,9 +2,10 @@ import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 
 /**
  * Interface representing a created or an imported `SecurityConfiguration`.
@@ -171,12 +172,6 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
   }
 
   /**
-   * The name of the security configuration.
-   * @attribute
-   */
-  public readonly securityConfigurationName: string;
-
-  /**
    * The KMS key used in CloudWatch encryption if it requires a kms key.
    */
   public readonly cloudWatchEncryptionKey?: kms.IKeyRef;
@@ -190,6 +185,8 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
    * The KMS key used in S3 encryption if it requires a kms key.
    */
   public readonly s3EncryptionKey?: kms.IKeyRef;
+
+  private resource: CfnSecurityConfiguration;
 
   constructor(scope: constructs.Construct, id: string, props: SecurityConfigurationProps = {}) {
     super(scope, id, {
@@ -250,6 +247,11 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
       },
     });
 
-    this.securityConfigurationName = this.getResourceNameAttribute(resource.ref);
+    this.resource = resource;
+  }
+
+  @memoizedGetter
+  public get securityConfigurationName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 }

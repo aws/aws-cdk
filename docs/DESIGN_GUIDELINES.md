@@ -334,38 +334,203 @@ expanding its surface area. It also allows the **Key** class to change its
 behavior (i.e. add an IAM action to enable encryption of certain types of keys)
 without affecting the API of the consumer.
 
-#### What type to use to accept other constructs (resources) as parameters
+#### Defining construct interfaces: interface types
 
-In order to model the concept of owned and unowned constructs, all constructs
-in the AWS Construct Library should always have a corresponding **construct
-interface**. This interface includes the API of the construct
-_[awslint:construct-interface]_.
+In order to model the concept of owned and unowned constructs, and allow
+multiple implementations of each, we will almost exclusively be referencing
+constructs and resources by their *interfaces*, instead of by their *class*.
 
-Construct interfaces must extend the **IConstruct** interface in order to allow
-consumers to take advantage of common resource capabilities such as unique IDs,
-paths, scopes, etc _[awslint:construct-interface-extends-iconstruct]_.
+For every resource, a **reference interface** is automatically generated (ex.
+`IBucketRef`). This interface defines the bare minimum information necessary
+to "point to" a resource.
 
-Constructs that directly represent AWS resources (most of the constructs in the
-AWS Construct Library) should extend **IResource** (which, transitively, extends
-**IConstruct**) _[awslint:resource-interface-extends-resource]_.
+For example:
 
-Using object references instead of attribute references provides a richer API,
-but also introduces an inherent challenge: there are different types of classes
-that represent different flavors of a resource with different capabilities:
+```ts
+/**
+ * Indicates that this resource can be referenced as a Bucket.
+ */
+export interface IBucketRef extends IConstruct, IEnvironmentAware {
+  /**
+   * A reference to a Bucket resource.
+   */
+  readonly bucketRef: BucketReference;
+}
 
-- Is it an L1?
-- Is it an AWS-written L2?
-- Is it an custom L2, for use inside an organization?
-- Is it perhaps not an **owned resource** but a **referenced resource** (i.e.,
-  is it a resource created and managed by your CDK app and the underlying
-  CloudFormation stack, or does it already exist in the account as something
-  immutable we are only allowed to point to but not change).
+/**
+ * A reference to a Bucket resource.
+ */
+export interface BucketReference {
+  /**
+   * The BucketName of the Bucket resource.
+   */
+  readonly bucketName: string;
 
-To accept an as wide array as possible of type of input resource objects, your
-constructs should pose as little requirements on its parameters as possible. To
-that end, we prefer accepting **interfaces** over **classes**, and interfaces
-with **fewer members** over interfaces with **more members**. "Fewer members"
-means "fewer requirements", so easier to implement on a lot of classes!
+  /**
+   * The ARN of the Bucket resource.
+   */
+  readonly bucketArn: string;
+}
+```
+
+Additionally, constructs typically implement a handwritten **resource
+interface** (ex. `IBucket`). This interface extends the reference interface with
+additional L2 API convenience functions _[awslint:construct-interface]_,
+which give access to additional CloudFormation attributes or helper classes:
+
+For example:
+
+```ts
+interface IBucket extends IResource, IBucketRef {
+  /**
+   * The URL of the static website.
+   * @attribute
+   */
+  readonly bucketWebsiteUrl: string;
+
+  /**
+   * Grant permissions on this bucket
+   */
+  readonly grant: BucketGrants;
+
+  /**
+   * Returns an ARN that represents an object in the bucket
+   */
+  arnForObjects(keyPattern: string): string;
+
+  // ... more members here ...
+}
+```
+
+#### Defining construct interfaces: what goes onto the resource interface
+
+An L2 construct can have a lot of additional features that it provides to its
+consumers. Here is a (non-exhaustive) set:
+
+- CloudFormation attribute getters (ex: `bucketWebsiteUrl`)
+- Helper functions to calculate something (ex: `arnForObjects`)
+- Helper functions to create new constructs that relate to the given resource
+  (ex: `addEventNotification`)
+- Functions to grant permissions to perform actions on the given resource (ex: `grantRead` or `grant.read`).
+- Functions to build event patterns based on things that happen to the given resource (ex: `onCloudTrailPutObject`).
+- Functions to build metric objects based on metrics of the given resource (ex: `metricBucketSize` or `metrics.bucketSize`).
+
+Traditionally, we used to put all of these features directly on the L2 resource
+interface; that led to huge L2 interfaces and it being impossible to benefit
+from these features with alternative class implementations or L1 resource
+classes.
+
+To make it possible to use those features as widely as possible, we will start
+to move each category off to a separate class, and we will expose that class via
+the resource interface. New resource interfaces will be designed like this,
+and old interfaces will be migrated to the new style over time (When we migrate,
+the old functions will remain in place and forward to the new style implementation).
+
+```ts
+// This shows a hypothetical new design for the IBucket interface
+// This is required for new interfaces and still have to migrate the old
+// interfaces to the new style (in practice, `IBucket` hasn't been migrated yet)
+export interface IBucket extends IResource, IBucketRef {
+
+  // ✅ Attribute getters stay on the resource interface
+
+  /**
+   * The URL of the static website.
+   * @attribute
+   */
+  readonly bucketWebsiteUrl: string;
+
+  // 👉 Helper functions that only need public information move to a separate class
+  readonly helpers: BucketHelpers;
+
+  // 👉 Helper functions to create new constructs that relate to this resource
+  readonly create: BucketCreateHelpers;
+
+  // 👉 Helper functions to grant permissions for a Bucket
+  // The BucketGrants class can be code-generated (see the "Grants" section below).
+  readonly grants: BucketGrants;
+
+  // 👉 Helper functions to obtain metrics for a Bucket.
+  // The BucketMetrics class will be automatically generated from an external source, and does not need to be handwritten.
+  readonly metrics: BucketMetrics;
+
+  // 👉 Helper functions to obtain event patterns for a Bucket.
+  // The BucketEvents class will be automatically generated from an external source, and does not need to be handwritten.
+  readonly events: BucketEvents;
+}
+
+export class BucketHelpers {
+  public static of(bucket: IBucketRef) { /* ... */ }
+
+  /**
+   * Returns an ARN that represents an object in the bucket
+   */
+  arnForObjects(keyPattern: string): string { /* ... */ }
+}
+
+export class BucketCreateHelpers {
+  public static of(bucket: IBucketRef) { /* ... */ }
+
+  /**
+   * Adds a bucket notification event destination.
+   */
+  eventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) { /* ... */ }
+}
+
+// This class can be handwritten or generated. Generation should be preferred for
+// simple resources.
+export class BucketGrants {
+  public static of(bucket: IBucketRef) { /* ... */ }
+
+  /**
+   * Grant read permissions for this bucket and it's contents to an IAM
+   * principal (Role/Group/User).
+   */
+  public read(identity: IGrantable, objectsKeyPattern: any = '*') { /* ... */ }
+}
+
+// This class will be generated.
+export class BucketMetrics {
+  public static of(bucket: IBucketRef) { /* ... */ }
+
+  /**
+   * The size of this bucket
+   */
+  public bucketSize(options?: MetricsOptions): IMetric { /* ... */ }
+}
+
+// This class will be generated.
+export class BucketEvents {
+  public static of(bucket: IBucketRef) { /* ... */ }
+
+  /**
+   * An event for whenever an object is added to this bucket
+   */
+  public onPutObject(options?: PutObjectOptions): EventPattern { /* ... */ }
+}
+```
+
+#### Consuming construct interfaces: what interface type to choose
+
+When accepting constructs and resources as parameters (both in a function, as
+well as in a `Props` *struct* that is a parameter to a function), you should
+accept them by an interface, not by their class. This makes it possible to
+accept different types of objects that represent a real-world resource, each
+with different capabilities. Some examples of different types of objects are:
+
+- An L1
+- An AWS-written L2
+- A custom L2, for use inside an organization
+- Not an **owned resource** (i.e., a resource created and managed by
+  your CDK app and the underlying CloudFormation Stack) but a **referenced
+  resource** (i a resource that already exist in the account, that we are
+  allowed to point to but not change).
+
+When choosing an interface to accept, we want to accept an as wide array as
+possible of type of input resource objects.  This means your construct should
+pose as little requirements on its parameters as possible.  You should prefer
+interfaces with **fewer members** over interfaces with **more members**. "Fewer
+members" means "fewer requirements", so easier to implement on a lot of classes!
 Unfortunately, it also means fewer guarantees, so pick your interface type
 according to what plan to do with the input construct.
 
@@ -401,6 +566,13 @@ derivable from the reference interface already.
 For example, `bucket.arnForObjects('file.zip')` just takes the bucket's name and
 constructs a larger formatted string from it. You can write this as a standalone
 helper function, or as a collection of helper functions on a class.
+
+There should be a helper class with these kinds of functions already for this
+resource (see `BucketHelpers` in the example above). If there isn't, write a
+new one.
+
+If this applies to your use case, you can accept an `IBucketRef` type and
+construct the helper class yourself.
 
 ```ts
 var bucket: IBucket;
@@ -438,6 +610,9 @@ export interface MyConstructProps {
   readonly role: IRoleRef & IGrantable;
 }
 ```
+
+**If the feature needs the object's cooperation and it hasn't been
+generalized**: accept the resource interface for now (`IBucket`).
 
 #### Abstract Base
 
@@ -787,7 +962,7 @@ CloudFormation type (e.g. **string**, **string[]**) _[awslint:attribute-type]_.
   them or manipulate them), they can be used interchangeably.
 
 If needed, you can query whether an object includes unresolved tokens by using
-the **Token.unresolved(x)** method.
+the **Token.isUnresolved(x)** method.
 
 To ensure users are aware that the value returned by attribute properties should
 be treated as an opaque token, the JSDoc “@returns” annotation should begin with
@@ -962,7 +1137,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   attribute to another. For example, given a name, it would need to render the
   ARN of the resource. Therefore, if **from\<Attribute\>** methods expect to be
   able to parse their input, they must verify that the input (e.g. ARN, name)
-  doesn't have unresolved tokens (using **Token.unresolved**). Preferably, they
+  doesn't have unresolved tokens (using **Token.isUnresolved**). Preferably, they
   can use **Stack.parseArn** to achieve this purpose.
 
 If a resource has an ARN attribute, it should implement at least a **fromFooArn**
@@ -1165,9 +1340,50 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 }
 ```
 
-The `TopicGrants` class, and many others, are generated automatically. But if there
-is no auto-generated grants class for a resource, you can implement it manually,
-following the same patterns.
+The `TopicGrants` class, and many others, are generated automatically from the `grants.json`
+file present at the root of each individual module (`packages/aws-sns` for SNS constructs and
+so on). The `grants.json` file has the following general structure:
+
+```json
+{
+  "resources": {
+    "Topic": {
+      "hasResourcePolicy": true,
+      "grants": {
+        "publish": {
+          "actions": ["sns:Publish"],
+          "keyActions": ["kms:Decrypt", "kms:GenerateDataKey*"],
+          "docSummary": "Grant topic publishing permissions to the given identity"
+        },
+        "subscribe": {
+          "actions": ["sns:Subscribe"],
+          "arnFormat": "${topicArn}/*"
+        }
+      }
+    }
+  }
+}
+```
+
+where:
+
+* `Topic` - the class to generate grants for. This will lead to a class named TopicGrants.
+* `hasResourcePolicy` - indicates whether the resource supports a resource policy. When true, all auto-generated methods in the Grants class will attempt to add statements to the resource policy when applicable. When false, the methods will only modify the principal's policy.
+* `publish` - the name of a grant.
+* `actions` - the actions to encompass in the grant.
+* `keyActions` - if the resource has an associated KMS key, also grant these permissions on the key. Notice that the resource must implement the `iam.IEncryptedResource` interface for this to work.
+* `docSummary` - the public documentation for the method.
+* `arnFormat` - In some cases, the policy applies to a specific ARN patterns, rather than just the ARN of the resource.
+
+In some cases, however, it might not be possible to specify the grant details using the `grants.json`
+file. This is usually the case when grants require additional logic, such as checking whether the
+resource is owned or unowned, or when the grant needs to modify the resource policy of the resource
+(if it has one). In these cases, you can implement the grants class manually.
+
+Historically, grant methods were implemented directly on the resource construct interface (e.g.
+`sns.ITopic.grantPublish(principal)`). For backward compatibility reasons, these methods are still
+present on the resource interfaces, but new grant implementations are only allowed through the Grants
+classes [_awslint:no-grants_].
 
 ### Metrics
 

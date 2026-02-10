@@ -3,9 +3,10 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Configuration settings for intelligent automatic scaling that uses target tracking.
@@ -395,21 +396,6 @@ export class GameServerGroup extends GameServerGroupBase {
   }
 
   /**
-   * The name of the game server group
-   */
-  public readonly gameServerGroupName: string;
-
-  /**
-   * The ARN of the game server group.
-   */
-  public readonly gameServerGroupArn: string;
-
-  /**
-   * The ARN of the generated AutoScaling group
-   */
-  public readonly autoScalingGroupArn: string;
-
-  /**
    * The IAM role that allows Amazon GameLift to access your Amazon EC2 Auto Scaling groups.
    */
   public readonly role: iam.IRole;
@@ -428,6 +414,8 @@ export class GameServerGroup extends GameServerGroupBase {
    * The game server group's subnets.
    */
   public readonly vpcSubnets?: ec2.SubnetSelection;
+
+  private resource: CfnGameServerGroup;
 
   constructor(scope: Construct, id: string, props: GameServerGroupProps) {
     super(scope, id, {
@@ -477,7 +465,7 @@ export class GameServerGroup extends GameServerGroupBase {
     });
     this.grantPrincipal = this.role;
 
-    const resource = new CfnGameServerGroup(this, 'Resource', {
+    this.resource = new CfnGameServerGroup(this, 'Resource', {
       gameServerGroupName: this.physicalName,
       autoScalingPolicy: this.parseAutoScalingPolicy(props),
       deleteOption: props.deleteOption,
@@ -490,15 +478,26 @@ export class GameServerGroup extends GameServerGroupBase {
       roleArn: this.role.roleArn,
       vpcSubnets: subnetIds,
     });
+  }
 
-    this.gameServerGroupName = this.getResourceNameAttribute(resource.ref);
-    this.gameServerGroupArn = this.getResourceArnAttribute(resource.attrGameServerGroupArn, {
+  @memoizedGetter
+  public get gameServerGroupName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get gameServerGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrGameServerGroupArn, {
       service: 'gamelift',
       resource: 'gameservergroup',
       resourceName: this.physicalName,
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
-    this.autoScalingGroupArn = this.getResourceArnAttribute(resource.attrAutoScalingGroupArn, {
+  }
+
+  @memoizedGetter
+  public get autoScalingGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrAutoScalingGroupArn, {
       service: 'autoscaling',
       resource: 'autoScalingGroup',
       resourceName: this.physicalName,

@@ -1,5 +1,5 @@
 import * as cdk from '../../../core';
-import { CfnDeliveryStream } from '../kinesisfirehose.generated';
+import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
  * An output format to be used in Firehose record format conversion.

@@ -1,11 +1,13 @@
 import * as os from 'os';
 import * as path from 'path';
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
-import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
+import type { BundlingOptions } from './types';
+import { OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
-import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
+import type { Architecture, AssetCode } from '../../aws-lambda';
+import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';

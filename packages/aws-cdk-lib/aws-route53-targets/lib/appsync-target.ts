@@ -1,6 +1,6 @@
 import { CloudFrontTarget } from './cloudfront-target';
-import { GraphqlApi } from '../../aws-appsync';
-import {
+import type { GraphqlApi } from '../../aws-appsync';
+import type {
   AliasRecordTargetConfig,
   IAliasRecordTarget,
   IHostedZone,
