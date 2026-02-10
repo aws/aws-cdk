@@ -290,9 +290,13 @@ would do for an instance of `Key`: add statements to the `keyPolicy` property.
 But if you want to customize this behavior, you can register an instance of `IResourcePolicyFactory`
 for the `AWS::KMS::Key` CloudFormation type:
 
-```ts
+
+```ts nofixture
+import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk/aws-iam'; 
+import { Construct, IConstruct } from 'constructs';
+
 declare const scope: Construct;
-class MyFactory implements iam.IResourcePolicyFactory {
+class MyFactory implements IResourcePolicyFactory {
   forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     return {
       addToResourcePolicy(statement: PolicyStatement) {
@@ -303,7 +307,7 @@ class MyFactory implements iam.IResourcePolicyFactory {
   }
 }
 
-iam.ResourceWithPolicies.register(scope, 'AWS::KMS::Key', new MyFactory());
+ResourceWithPolicies.register(scope, 'AWS::KMS::Key', new MyFactory());
 ```
 
 `IResourcePolicyFactory` is responsible for converting a construct into a `IResourceWithPolicyV2`,
