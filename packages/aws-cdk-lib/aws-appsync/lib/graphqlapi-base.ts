@@ -1,4 +1,4 @@
-import type { AwsIamConfig } from './data-source';
+import type { AwsIamConfig, DataSourceMetricsConfig } from './data-source';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -8,7 +8,6 @@ import {
   ElasticsearchDataSource,
   OpenSearchDataSource,
   EventBridgeDataSource,
-  DataSourceMetricsConfig,
 } from './data-source';
 import type { ExtendedResolverProps } from './resolver';
 import { Resolver } from './resolver';
