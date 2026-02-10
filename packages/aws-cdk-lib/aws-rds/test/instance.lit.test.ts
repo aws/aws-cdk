@@ -3,7 +3,7 @@
  * "BRING_YOUR_OWN_LICENSE" in dev accounts
  */
 
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as targets from '../../aws-events-targets';
@@ -18,6 +18,7 @@ describe('database instance with BYOL', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
 
+    // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       parameters: {
@@ -25,6 +26,7 @@ describe('database instance with BYOL', () => {
       },
     });
 
+    // Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       configurations: [
@@ -39,8 +41,10 @@ describe('database instance with BYOL', () => {
       ],
     });
 
+    // Allow connections to OEM
     optionGroup.optionConnections.OEM.connections.allowDefaultPortFromAnyIpv4();
 
+    // Database instance with production values
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
@@ -61,21 +65,26 @@ describe('database instance with BYOL', () => {
         'listener',
       ],
       cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
-      autoMinorVersionUpgrade: true,
+      autoMinorVersionUpgrade: true, // required to be true if LOCATOR is used in the option group
       optionGroup,
       parameterGroup,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
+    // Allow connections on default port from any IPV4
     instance.connections.allowDefaultPortFromAnyIpv4();
+
+    // Rotate the master user password every 30 days
     instance.addRotationSingleUser();
 
+    // Add alarm for high CPU
     new cloudwatch.Alarm(stack, 'HighCPU', {
       metric: instance.metricCPUUtilization(),
       threshold: 90,
       evaluationPeriods: 1,
     });
 
+    // Trigger Lambda function on instance availability events
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
@@ -132,5 +141,30 @@ describe('database instance with BYOL', () => {
         },
       },
     });
+
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Handler: 'index.handler',
+      Runtime: 'nodejs20.x',
+    });
+
+    template.hasResourceProperties('AWS::EC2::VPC', {
+      EnableDnsHostnames: true,
+      EnableDnsSupport: true,
+    });
+
+    template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      CidrIp: '0.0.0.0/0',
+      IpProtocol: 'tcp',
+      FromPort: Match.objectLike({ 'Fn::GetAtt': Match.arrayWith(['Endpoint.Port']) }),
+      ToPort: Match.objectLike({ 'Fn::GetAtt': Match.arrayWith(['Endpoint.Port']) }),
+    });
+
+    template.hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"syscdk"}',
+      },
+    });
+
+    template.resourceCountIs('AWS::SecretsManager::RotationSchedule', 1);
   });
 });
