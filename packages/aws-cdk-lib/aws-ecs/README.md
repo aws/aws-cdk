@@ -621,6 +621,54 @@ newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'pas
 The task execution role is automatically granted read permissions on the secrets/parameters. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
 
+#### Importing existing secrets for ECS
+
+When importing existing secrets from AWS Secrets Manager for use with ECS, you must use `Secret.fromSecretCompleteArn()` with the full ARN including the 6-character suffix that AWS automatically appends to secret names.
+
+**Correct approach:**
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+// Get the complete ARN from AWS CLI:
+// aws secretsmanager describe-secret --secret-id my-secret-name --query ARN --output text
+
+const importedSecret = secretsmanager.Secret.fromSecretCompleteArn(
+  this,
+  'ImportedSecret',
+  'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret-abc123' // Complete ARN with suffix
+);
+
+// This works with ECS
+const container = taskDefinition.addContainer('MyContainer', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryLimitMiB: 512,
+  secrets: {
+    MY_SECRET: ecs.Secret.fromSecretsManager(importedSecret),
+  },
+});
+```
+
+**Methods that don't work with ECS:**
+```ts
+// These will cause ECS deployment failures with "Access Denied" errors
+const secret1 = secretsmanager.Secret.fromSecretNameV2(this, 'Secret', 'my-secret-name');
+const secret2 = secretsmanager.Secret.fromSecretPartialArn(this, 'Secret', 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret');
+```
+
+**Why this matters:**
+- ECS task definitions require exact ARNs in the `ValueFrom` field and don't support wildcards
+- `fromSecretNameV2()` and `fromSecretPartialArn()` don't include the 6-character suffix
+- IAM policies work with wildcards (`-??????`) but ECS task definitions don't
+- This causes "Access Denied" errors during container startup
+
+**Getting the complete ARN:**
+```bash
+# Use AWS CLI to get the complete ARN with suffix
+aws secretsmanager describe-secret --secret-id my-secret-name --query ARN --output text
+```
+
+For more details, see the [AWS Secrets Manager troubleshooting guide](https://docs.aws.amazon.com/secretsmanager/latest/userguide/troubleshoot.html#ARN_secretnamehyphen).
+
 ### Linux parameters
 
 To apply additional linux-specific options related to init process and memory management to the container, use the `linuxParameters` property:
