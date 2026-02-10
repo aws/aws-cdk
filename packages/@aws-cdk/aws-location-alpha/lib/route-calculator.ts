@@ -83,7 +83,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
     const parsedArn = Stack.of(scope).splitArn(routeCalculatorArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new UnscopedValidationError(`Route Calculator Arn ${routeCalculatorArn} does not have a resource name.`);
+      throw new UnscopedValidationError('RouteCalculatorArnRoutecalculatorarn', `Route Calculator Arn ${routeCalculatorArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IRouteCalculator {
@@ -123,16 +123,16 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
     addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError('Description1000CharactersReceived', `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.routeCalculatorName !== undefined && !Token.isUnresolved(props.routeCalculatorName)) {
       if (props.routeCalculatorName.length < 1 || props.routeCalculatorName.length > 100) {
-        throw new ValidationError(`\`routeCalculatorName\` must be between 1 and 100 characters, got: ${props.routeCalculatorName.length} characters.`, this);
+        throw new ValidationError('Routecalculatorname100CharactersGot', `\`routeCalculatorName\` must be between 1 and 100 characters, got: ${props.routeCalculatorName.length} characters.`, this);
       }
 
       if (!/^[-._\w]+$/.test(props.routeCalculatorName)) {
-        throw new ValidationError(`\`routeCalculatorName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.routeCalculatorName}.`, this);
+        throw new ValidationError('RoutecalculatornameContainAlphanumericCharacters', `\`routeCalculatorName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.routeCalculatorName}.`, this);
       }
     }
 

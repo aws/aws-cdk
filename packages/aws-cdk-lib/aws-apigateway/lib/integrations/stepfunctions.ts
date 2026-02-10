@@ -152,7 +152,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     if (this.stateMachine instanceof sfn.StateMachine) {
       const stateMachineType = (this.stateMachine as sfn.StateMachine).stateMachineType;
       if (stateMachineType !== sfn.StateMachineType.EXPRESS) {
-        throw new ValidationError('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', method);
+        throw new ValidationError('StateMachineTypeExpress', 'State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', method);
       }
 
       // if not imported, extract the name from the CFN layer to reach the

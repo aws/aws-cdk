@@ -37,6 +37,6 @@ export function validateAllProps<T>(scope: Construct, className: string, props: 
 
   if (validationErrors.length > 0) {
     const errorMessage = `${className} initialization failed due to the following validation error(s):\n${validationErrors.map(error => `- ${error}`).join('\n')}`;
-    throw new ValidationError(errorMessage, scope);
+    throw new ValidationError('InitializationFailedValidation', errorMessage, scope);
   }
 }

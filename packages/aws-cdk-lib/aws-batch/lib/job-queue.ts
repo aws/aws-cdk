@@ -259,7 +259,7 @@ export class JobQueue extends Resource implements IJobQueue {
       }
 
       public addComputeEnvironment(_computeEnvironment: IComputeEnvironmentRef, _order: number): void {
-        throw new ValidationError(`cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
+        throw new ValidationError('AddComputeenvironmentsImportedJobqueue', `cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
       }
     }
 
@@ -355,7 +355,7 @@ export class JobQueue extends Resource implements IJobQueue {
       const maxTimeSeconds = jobStateTimeLimitAction.maxTime.toSeconds();
 
       if (maxTimeSeconds < 600 || maxTimeSeconds > 86400) {
-        throw new ValidationError(`maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`, scope);
+        throw new ValidationError('Maxtime60086400Seconds', `maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`, scope);
       }
 
       return {

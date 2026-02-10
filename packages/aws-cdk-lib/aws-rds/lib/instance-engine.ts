@@ -146,7 +146,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
 
   public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone && !this.supportsTimezone) {
-      throw new ValidationError(`timezone property can not be configured for ${this.engineType}`, scope);
+      throw new ValidationError('TimezonePropertyConfiguredEnginetype', `timezone property can not be configured for ${this.engineType}`, scope);
     }
     return {
       features: this.features,
@@ -720,7 +720,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
 
   public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
-      throw new ValidationError(`domain property cannot be configured for ${this.engineType}`, scope);
+      throw new ValidationError('DomainPropertyConfiguredEnginetype', `domain property cannot be configured for ${this.engineType}`, scope);
     }
     return super.bindToInstance(scope, options);
   }
@@ -3195,7 +3195,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     const s3Role = options.s3ImportRole ?? options.s3ExportRole;
     if (s3Role) {
       if (options.s3ImportRole && options.s3ExportRole && options.s3ImportRole !== options.s3ExportRole) {
-        throw new ValidationError('S3 import and export roles must be the same for SQL Server engines', scope);
+        throw new ValidationError('ImportExportRolesSame', 'S3 import and export roles must be the same for SQL Server engines', scope);
       }
 
       if (!optionGroup) {

@@ -205,12 +205,12 @@ export class DomainName extends Resource implements IDomainName {
     addConstructMetadata(this, props);
 
     if (props.domainName === '') {
-      throw new ValidationError('empty string for domainName not allowed', scope);
+      throw new ValidationError('EmptyStringDomainnameAllowed', 'empty string for domainName not allowed', scope);
     }
 
     // validation for ownership certificate
     if (props.ownershipCertificate && !props.mtls) {
-      throw new ValidationError('ownership certificate can only be used with mtls domains', scope);
+      throw new ValidationError('OwnershipCertificateUsedMtls', 'ownership certificate can only be used with mtls domains', scope);
     }
 
     const mtlsConfig = this.configureMTLS(props.mtls);
@@ -258,7 +258,7 @@ export class DomainName extends Resource implements IDomainName {
   private validateEndpointType(endpointType: string | undefined) : void {
     for (let config of this.domainNameConfigurations) {
       if (endpointType && endpointType == config.endpointType) {
-        throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
+        throw new ValidationError('EndpointTypeEndpointtypeAlready', `an endpoint with type ${endpointType} already exists`, this);
       }
     }
   }

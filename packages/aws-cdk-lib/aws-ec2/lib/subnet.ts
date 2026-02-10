@@ -54,7 +54,7 @@ export abstract class SubnetFilter {
    * Executes the subnet filtering logic, returning a filtered set of subnets.
    */
   public selectSubnets(_subnets: ISubnet[]): ISubnet[] {
-    throw new UnscopedValidationError('Cannot select subnets with an abstract SubnetFilter. `selectSubnets` needs to be implmemented.');
+    throw new UnscopedValidationError('SelectSubnetsAbstractSubnetfilter', 'Cannot select subnets with an abstract SubnetFilter. `selectSubnets` needs to be implmemented.');
   }
 }
 

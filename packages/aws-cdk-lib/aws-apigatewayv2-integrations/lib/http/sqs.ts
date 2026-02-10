@@ -53,7 +53,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
 
   public bind(options: apigwv2.HttpRouteIntegrationBindOptions): apigwv2.HttpRouteIntegrationConfig {
     if (this.props.subtype && !this.props.subtype.startsWith('SQS-')) {
-      throw new ValidationError('Subtype must start with `SQS_`', options.scope);
+      throw new ValidationError('SubtypeStartSqs', 'Subtype must start with `SQS_`', options.scope);
     }
 
     const invokeRole = new iam.Role(options.scope, 'InvokeRole', {
@@ -90,7 +90,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
       case apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE:
         return 'sqs:PurgeQueue';
       default:
-        throw new ValidationError(`Unsupported subtype: ${this.subtype}`, scope);
+        throw new ValidationError('UnsupportedSubtypeSubtype', `Unsupported subtype: ${this.subtype}`, scope);
     }
   }
 
@@ -111,7 +111,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
         return new apigwv2.ParameterMapping()
           .custom('QueueUrl', this.props.queue.queueUrl);
       default:
-        throw new ValidationError(`Unsupported subtype: ${this.subtype}`, scope);
+        throw new ValidationError('UnsupportedSubtypeSubtype', `Unsupported subtype: ${this.subtype}`, scope);
     }
   }
 }

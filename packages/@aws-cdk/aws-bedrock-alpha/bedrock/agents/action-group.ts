@@ -191,8 +191,7 @@ export class AgentActionGroup {
 
   private validateProps(props: AgentActionGroupProps) {
     if (props.parentActionGroupSignature && (props.description || props.apiSchema || props.executor)) {
-      throw new ValidationError(
-        'When parentActionGroupSignature is specified, you must leave the description, ' +
+      throw new ValidationError('ParentactiongroupsignatureSpecifiedLeaveDescription', 'When parentActionGroupSignature is specified, you must leave the description, ' +
           'apiSchema, and actionGroupExecutor fields blank for this action group',
       );
     }

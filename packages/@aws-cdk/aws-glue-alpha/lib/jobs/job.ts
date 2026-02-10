@@ -489,7 +489,7 @@ export abstract class Job extends JobBase {
       const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
-          throw new cdk.ValidationError(`The ${arg} argument is reserved by Glue. Don't set it`, this);
+          throw new cdk.ValidationError('ArgArgumentReservedGlue', `The ${arg} argument is reserved by Glue. Don't set it`, this);
         }
       });
     }

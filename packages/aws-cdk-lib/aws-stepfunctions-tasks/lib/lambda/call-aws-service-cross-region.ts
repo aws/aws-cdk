@@ -143,11 +143,11 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     if (props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      throw new ValidationError('The RUN_JOB integration pattern is not supported for CallAwsServiceCrossRegion', this);
+      throw new ValidationError('RunJobIntegrationPattern', 'The RUN_JOB integration pattern is not supported for CallAwsServiceCrossRegion', this);
     }
 
     if (!Token.isUnresolved(props.action) && !props.action.startsWith(props.action[0]?.toLowerCase())) {
-      throw new ValidationError(`action must be camelCase, got: ${props.action}`, this);
+      throw new ValidationError('ActionCamelcaseGotProps', `action must be camelCase, got: ${props.action}`, this);
     }
 
     // props.service expects a service name in the AWS SDK for JavaScript v3 format.

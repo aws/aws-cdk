@@ -185,7 +185,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     if (obj === undefined) { return; }
 
     if (Token.isUnresolved(obj)) {
-      throw new UnscopedValidationError("This shouldn't happen anymore");
+      throw new UnscopedValidationError('ShouldnHappenAnymore', "This shouldn't happen anymore");
     }
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);
@@ -273,7 +273,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         return;
     }
 
-    throw new UnscopedValidationError(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
+    throw new UnscopedValidationError('UnexpectedTypeHintResolvedtypehint', `Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
   }
 
   /**

@@ -144,8 +144,7 @@ export class ContextProvider {
     };
 
     if (Object.values(props).find(x => Token.isUnresolved(x))) {
-      throw new ValidationError(
-        `Cannot determine scope for context provider ${options.provider}.\n` +
+      throw new ValidationError('DetermineScopeContextProvider', `Cannot determine scope for context provider ${options.provider}.\n` +
         'This usually happens when one or more of the provider props have unresolved tokens', scope);
     }
 
@@ -158,13 +157,13 @@ export class ContextProvider {
 
   public static getValue(scope: Construct, options: GetContextValueOptions): GetContextValueResult {
     if ((options.mustExist !== undefined) && (options.ignoreErrorOnMissingContext !== undefined)) {
-      throw new ValidationError('Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'', scope);
+      throw new ValidationError('SupplyOneMustexistIgnoreerroronmissingcontext', 'Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'', scope);
     }
 
     const stack = Stack.of(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
-      throw new ValidationError(`Cannot retrieve value from context provider ${options.provider} since account/region ` +
+      throw new ValidationError('RetrieveValueContextProvider', `Cannot retrieve value from context provider ${options.provider} since account/region ` +
                       'are not specified at the stack level. Configure "env" with an account and region when ' +
                       'you define your stack.' +
                       'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.', scope);

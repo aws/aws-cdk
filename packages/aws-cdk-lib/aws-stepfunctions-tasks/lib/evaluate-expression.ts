@@ -141,7 +141,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.
   const uuid = guidsMap[runtimeKey];
 
   if (!uuid) {
-    throw new UnscopedValidationError(`The runtime ${runtime?.name} is currently not supported.`);
+    throw new UnscopedValidationError('RuntimeRuntimeNameCurrently', `The runtime ${runtime?.name} is currently not supported.`);
   }
 
   return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {

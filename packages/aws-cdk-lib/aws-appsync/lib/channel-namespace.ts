@@ -210,7 +210,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   constructor(scope: Construct, id: string, props: ChannelNamespaceProps) {
     if (props.channelNamespaceName !== undefined && !Token.isUnresolved(props.channelNamespaceName)) {
       if (props.channelNamespaceName.length < 1 || props.channelNamespaceName.length > 50) {
-        throw new ValidationError(`\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`, scope);
+        throw new ValidationError('ChannelnamespacenameCharactersGotProps', `\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`, scope);
       }
     }
 
@@ -326,7 +326,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   private validateAuthorizationConfig(apiAuthProviders: AppSyncAuthorizationType[], channelAuthModeTypes: AppSyncAuthorizationType[]) {
     for (const mode of channelAuthModeTypes) {
       if (!apiAuthProviders.find((authProvider) => authProvider === mode)) {
-        throw new ValidationError(`API is missing authorization configuration for ${mode}`, this);
+        throw new ValidationError('ApiMissingAuthorizationConfiguration', `API is missing authorization configuration for ${mode}`, this);
       }
     }
   }
@@ -338,35 +338,35 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     // Handle the case where behavior is direct but Lambda is not the data source
     if (props.publishHandlerConfig?.direct) {
       if (!props.publishHandlerConfig.dataSource) {
-        throw new ValidationError('No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
+        throw new ValidationError('DataSourceProvidedAws', 'No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
       }
       if (props.publishHandlerConfig.dataSource.resource.type !== AppSyncDataSourceType.LAMBDA) {
-        throw new ValidationError('Direct integration is only supported for AWS_LAMBDA data sources.', this);
+        throw new ValidationError('DirectIntegrationSupportedAws', 'Direct integration is only supported for AWS_LAMBDA data sources.', this);
       }
     }
 
     if (props.subscribeHandlerConfig?.direct) {
       if (!props.subscribeHandlerConfig.dataSource) {
-        throw new ValidationError('No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
+        throw new ValidationError('DataSourceProvidedAws', 'No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
       }
       if (props.subscribeHandlerConfig.dataSource.resource.type !== AppSyncDataSourceType.LAMBDA) {
-        throw new ValidationError('Direct integration is only supported for AWS_LAMBDA data sources.', this);
+        throw new ValidationError('DirectIntegrationSupportedAws', 'Direct integration is only supported for AWS_LAMBDA data sources.', this);
       }
     }
 
     // Handle the case where behavior is direct for both publish and subscribe, but code handler is provided
     if (props.publishHandlerConfig?.direct && props.subscribeHandlerConfig?.direct && props.code) {
-      throw new ValidationError('Code handlers are not supported when both publish and subscribe use the Direct data source behavior', this);
+      throw new ValidationError('CodeHandlersSupportedPublish', 'Code handlers are not supported when both publish and subscribe use the Direct data source behavior', this);
     }
 
     // Handle the case where behavior is code and Lambda invoke type is specified
     if (!props.publishHandlerConfig?.direct && props.publishHandlerConfig?.lambdaInvokeType) {
-      throw new ValidationError('LambdaInvokeType is only supported for Direct handler behavior type', this);
+      throw new ValidationError('LambdainvoketypeSupportedDirectHandler', 'LambdaInvokeType is only supported for Direct handler behavior type', this);
     }
 
     // Handle the case where behavior is code and Lambda invoke type is specified
     if (!props.subscribeHandlerConfig?.direct && props.subscribeHandlerConfig?.lambdaInvokeType) {
-      throw new ValidationError('LambdaInvokeType is only supported for Direct handler behavior type', this);
+      throw new ValidationError('LambdainvoketypeSupportedDirectHandler', 'LambdaInvokeType is only supported for Direct handler behavior type', this);
     }
   }
 

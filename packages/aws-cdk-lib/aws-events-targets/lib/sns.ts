@@ -61,7 +61,7 @@ export class SnsTopic implements events.IRuleTarget {
     } else {
       // role can't be passed when authorizeUsingRole is false
       if (this.props.role) {
-        throw new ValidationError('Cannot provide a role when authorizeUsingRole is false', rule);
+        throw new ValidationError('ProvideRoleAuthorizeusingroleFalse', 'Cannot provide a role when authorizeUsingRole is false', rule);
       }
       // deduplicated automatically
       this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));

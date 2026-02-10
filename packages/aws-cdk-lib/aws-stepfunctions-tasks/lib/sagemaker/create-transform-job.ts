@@ -189,7 +189,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
    */
   public get role(): iam.IRole {
     if (this._role === undefined) {
-      throw new ValidationError('role not available yet--use the object in a Task first', this);
+      throw new ValidationError('RoleAvailableYetObject', 'role not available yet--use the object in a Task first', this);
     }
     return this._role;
   }
@@ -213,11 +213,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private renderModelClientOptions(options: ModelClientOptions): { [key: string]: any } {
     const retries = options.invocationsMaxRetries;
     if (!Token.isUnresolved(retries) && retries? (retries < 0 || retries > 3): false) {
-      throw new ValidationError(`invocationsMaxRetries should be between 0 and 3. Received: ${retries}.`, this);
+      throw new ValidationError('InvocationsmaxretriesReceivedRetries', `invocationsMaxRetries should be between 0 and 3. Received: ${retries}.`, this);
     }
     const timeout = options.invocationsTimeout?.toSeconds();
     if (!Token.isUnresolved(timeout) && timeout? (timeout < 1 || timeout > 3600): false) {
-      throw new ValidationError(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`, this);
+      throw new ValidationError('Invocationstimeout3600SecondsReceived', `invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`, this);
     }
     return {
       ModelClientConfig: {

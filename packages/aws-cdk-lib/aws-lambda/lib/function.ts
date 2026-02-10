@@ -992,16 +992,16 @@ export class Function extends FunctionBase {
 
     if (props.functionName && !Token.isUnresolved(props.functionName)) {
       if (props.functionName.length > 64) {
-        throw new ValidationError(`Function name can not be longer than 64 characters but has ${props.functionName.length} characters.`, this);
+        throw new ValidationError('FunctionNameLongerCharacters', `Function name can not be longer than 64 characters but has ${props.functionName.length} characters.`, this);
       }
       if (!/^[a-zA-Z0-9-_]+$/.test(props.functionName)) {
-        throw new ValidationError(`Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`, this);
+        throw new ValidationError('FunctionNamePropsFunctionname', `Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`, this);
       }
     }
 
     if (props.description && !Token.isUnresolved(props.description)) {
       if (props.description.length > 256) {
-        throw new ValidationError(`Function description can not be longer than 256 characters but has ${props.description.length} characters.`, this);
+        throw new ValidationError('FunctionDescriptionLonger256', `Function description can not be longer than 256 characters but has ${props.description.length} characters.`, this);
       }
     }
 
@@ -1031,10 +1031,10 @@ export class Function extends FunctionBase {
       const config = props.filesystem.config;
       if (!Token.isUnresolved(config.localMountPath)) {
         if (!/^\/mnt\/[a-zA-Z0-9-_.]+$/.test(config.localMountPath)) {
-          throw new ValidationError(`Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given ${config.localMountPath}.`, this);
+          throw new ValidationError('LocalMountPathMatch', `Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given ${config.localMountPath}.`, this);
         }
         if (config.localMountPath.length > 160) {
-          throw new ValidationError(`Local mount path can not be longer than 160 characters but has ${config.localMountPath.length} characters.`, this);
+          throw new ValidationError('LocalMountPathLonger', `Local mount path can not be longer than 160 characters but has ${config.localMountPath.length} characters.`, this);
         }
       }
       if (config.policies) {
@@ -1099,16 +1099,16 @@ export class Function extends FunctionBase {
     }
 
     if (props.architecture && props.architectures !== undefined) {
-      throw new ValidationError('Either architecture or architectures must be specified but not both.', this);
+      throw new ValidationError('EitherArchitectureArchitecturesSpecified', 'Either architecture or architectures must be specified but not both.', this);
     }
     if (props.architectures && props.architectures.length > 1) {
-      throw new ValidationError('Only one architecture must be specified.', this);
+      throw new ValidationError('OneArchitectureSpecified', 'Only one architecture must be specified.', this);
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
     if (props.ephemeralStorageSize && !props.ephemeralStorageSize.isUnresolved()
       && (props.ephemeralStorageSize.toMebibytes() < 512 || props.ephemeralStorageSize.toMebibytes() > 10240)) {
-      throw new ValidationError(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`, this);
+      throw new ValidationError('EphemeralStorageSize512', `Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`, this);
     }
 
     const effectiveRuntime = props.runtime === Runtime.NODEJS_LATEST ? determineLatestNodeRuntime(this) : props.runtime;
@@ -1172,7 +1172,7 @@ export class Function extends FunctionBase {
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {
-        throw new ValidationError('Layers are not supported for container image functions', this);
+        throw new ValidationError('LayersSupportedContainerImage', 'Layers are not supported for container image functions', this);
       }
 
       this.addLayers(...props.layers);
@@ -1185,15 +1185,15 @@ export class Function extends FunctionBase {
     // Log retention
     if (props.logRemovalPolicy) {
       if (props.logGroup) {
-        throw new ValidationError('Cannot use `logRemovalPolicy` and `logGroup` together. Please set the removal policy on the logGroup directly', this);
+        throw new ValidationError('LogremovalpolicyLoggroupTogetherPlease', 'Cannot use `logRemovalPolicy` and `logGroup` together. Please set the removal policy on the logGroup directly', this);
       } else if (FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LAMBDA_LOGGROUP)) {
-        throw new ValidationError('Cannot use `logRemovalPolicy` and `@aws-cdk/aws-lambda:useCdkManagedLogGroup` flag together. Please set the removal policy on the automatically created log group directly', this);
+        throw new ValidationError('LogremovalpolicyAwsCdkAws', 'Cannot use `logRemovalPolicy` and `@aws-cdk/aws-lambda:useCdkManagedLogGroup` flag together. Please set the removal policy on the automatically created log group directly', this);
       }
     }
 
     if (props.logRetention) {
       if (props.logGroup) {
-        throw new ValidationError('CDK does not support setting logRetention and logGroup', this);
+        throw new ValidationError('CdkSupportSettingLogretention', 'CDK does not support setting logRetention and logGroup', this);
       }
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
@@ -1226,7 +1226,7 @@ export class Function extends FunctionBase {
 
     if (props.filesystem) {
       if (!props.vpc) {
-        throw new ValidationError('Cannot configure \'filesystem\' without configuring a VPC.', this);
+        throw new ValidationError('ConfigureFilesystemWithoutConfiguring', 'Cannot configure \'filesystem\' without configuring a VPC.', this);
       }
       const config = props.filesystem.config;
       if (config.dependency) {
@@ -1291,7 +1291,7 @@ export class Function extends FunctionBase {
       'LAMBDA_RUNTIME_DIR',
     ];
     if (reservedEnvironmentVariables.includes(key)) {
-      throw new ValidationError(`${key} environment variable is reserved by the lambda runtime and can not be set manually. See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html`, this);
+      throw new ValidationError('KeyEnvironmentVariableReserved', `${key} environment variable is reserved by the lambda runtime and can not be set manually. See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html`, this);
     }
     this.environment[key] = { value, ...options };
     return this;
@@ -1304,24 +1304,24 @@ export class Function extends FunctionBase {
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
     if (props.logFormat && props.loggingFormat) {
-      throw new ValidationError('Only define LogFormat or LoggingFormat, not both.', this);
+      throw new ValidationError('DefineLogformatLoggingformat', 'Only define LogFormat or LoggingFormat, not both.', this);
     }
 
     if (props.applicationLogLevel && props.applicationLogLevelV2) {
-      throw new ValidationError('Only define applicationLogLevel or applicationLogLevelV2, not both.', this);
+      throw new ValidationError('DefineApplicationloglevelApplicationloglevelv2', 'Only define applicationLogLevel or applicationLogLevelV2, not both.', this);
     }
 
     if (props.systemLogLevel && props.systemLogLevelV2) {
-      throw new ValidationError('Only define systemLogLevel or systemLogLevelV2, not both.', this);
+      throw new ValidationError('DefineSystemloglevelSystemloglevelv2', 'Only define systemLogLevel or systemLogLevelV2, not both.', this);
     }
 
     if (props.applicationLogLevel || props.applicationLogLevelV2 || props.systemLogLevel || props.systemLogLevelV2) {
       if (props.logFormat !== LogFormat.JSON && props.loggingFormat === undefined) {
-        throw new ValidationError(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`, this);
+        throw new ValidationError('ApplicationloglevelSystemloglevelLogformatLogformat', `To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`, this);
       }
 
       if (props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
-        throw new ValidationError(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`, this);
+        throw new ValidationError('ApplicationloglevelSystemloglevelLoggingformatLoggingformat', `To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`, this);
       }
     }
 
@@ -1359,7 +1359,7 @@ export class Function extends FunctionBase {
   @MethodMetadata()
   public invalidateVersionBasedOn(x: string) {
     if (Token.isUnresolved(x)) {
-      throw new ValidationError('invalidateVersionOn: input may not contain unresolved tokens', this);
+      throw new ValidationError('InvalidateversiononInputContainUnresolved', 'invalidateVersionOn: input may not contain unresolved tokens', this);
     }
     this.hashMixins.push(x);
   }
@@ -1375,11 +1375,11 @@ export class Function extends FunctionBase {
   public addLayers(...layers: ILayerVersion[]): void {
     for (const layer of layers) {
       if (this._layers.length === 5) {
-        throw new ValidationError('Unable to add layer: this lambda function already uses 5 layers.', this);
+        throw new ValidationError('UnableAddLayerLambda', 'Unable to add layer: this lambda function already uses 5 layers.', this);
       }
       if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
         const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
-        throw new ValidationError(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`, this);
+        throw new ValidationError('LambdaFunctionUsesRuntime', `This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`, this);
       }
 
       // Currently no validations for compatible architectures since Lambda service
@@ -1491,7 +1491,7 @@ export class Function extends FunctionBase {
     }
     const envKeys = Object.keys(this.environment);
     if (envKeys.length !== 0) {
-      throw new ValidationError(`The function ${this.node.path} contains environment variables [${envKeys}] and is not compatible with Lambda@Edge. \
+      throw new ValidationError('FunctionNodePathContains', `The function ${this.node.path} contains environment variables [${envKeys}] and is not compatible with Lambda@Edge. \
 Environment variables can be marked for removal when used in Lambda@Edge by setting the \'removeInEdge\' property in the \'addEnvironment()\' API.`, this);
     }
 
@@ -1527,19 +1527,19 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     if (props.runtime === Runtime.FROM_IMAGE) {
-      throw new ValidationError("ADOT Lambda layer can't be configured with container image package type", this);
+      throw new ValidationError('AdotLambdaLayerConfigured', "ADOT Lambda layer can't be configured with container image package type", this);
     }
 
     // This is not the complete list of incompatible runtimes and layer types. We are only
     // checking for common mistakes on a best-effort basis.
     if (this.runtime === Runtime.GO_1_X) {
-      throw new ValidationError('Runtime go1.x is not supported by the ADOT Lambda Go SDK', this);
+      throw new ValidationError('RuntimeGo1SupportedAdot', 'Runtime go1.x is not supported by the ADOT Lambda Go SDK', this);
     }
 
     // The Runtime is Python and Adot is set it requires a different EXEC_WRAPPER than the other code bases.
     if (this.runtime.family === RuntimeFamily.PYTHON &&
       props.adotInstrumentation.execWrapper.valueOf() !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
-      throw new ValidationError('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER', this);
+      throw new ValidationError('PythonAdotLambdaLayer', 'Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER', this);
     }
 
     this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
@@ -1602,47 +1602,47 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    */
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
     if (props.securityGroup && props.securityGroups) {
-      throw new ValidationError('Only one of the function props, securityGroup or securityGroups, is allowed', this);
+      throw new ValidationError('OneFunctionPropsSecuritygroup', 'Only one of the function props, securityGroup or securityGroups, is allowed', this);
     }
 
     const hasSecurityGroups = props.securityGroups && props.securityGroups.length > 0;
     if (!props.vpc) {
       if (props.allowAllOutbound !== undefined) {
-        throw new ValidationError('Cannot configure \'allowAllOutbound\' without configuring a VPC', this);
+        throw new ValidationError('ConfigureAllowalloutboundWithoutConfiguring', 'Cannot configure \'allowAllOutbound\' without configuring a VPC', this);
       }
       if (props.securityGroup) {
-        throw new ValidationError('Cannot configure \'securityGroup\' without configuring a VPC', this);
+        throw new ValidationError('ConfigureSecuritygroupWithoutConfiguring', 'Cannot configure \'securityGroup\' without configuring a VPC', this);
       }
       if (hasSecurityGroups) {
-        throw new ValidationError('Cannot configure \'securityGroups\' without configuring a VPC', this);
+        throw new ValidationError('ConfigureSecuritygroupsWithoutConfiguring', 'Cannot configure \'securityGroups\' without configuring a VPC', this);
       }
       if (props.vpcSubnets) {
-        throw new ValidationError('Cannot configure \'vpcSubnets\' without configuring a VPC', this);
+        throw new ValidationError('ConfigureVpcsubnetsWithoutConfiguring', 'Cannot configure \'vpcSubnets\' without configuring a VPC', this);
       }
       if (props.ipv6AllowedForDualStack) {
-        throw new ValidationError('Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC', this);
+        throw new ValidationError('ConfigureIpv6allowedfordualstackWithoutConfiguring', 'Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC', this);
       }
       if (props.allowAllIpv6Outbound !== undefined) {
-        throw new ValidationError('Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC', this);
+        throw new ValidationError('ConfigureAllowallipv6outboundWithoutConfiguring', 'Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC', this);
       }
       return undefined;
     }
 
     if (props.allowAllOutbound !== undefined) {
       if (props.securityGroup) {
-        throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
+        throw new ValidationError('ConfigureAllowalloutboundDirectlySupplied', 'Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
       }
       if (hasSecurityGroups) {
-        throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups.', this);
+        throw new ValidationError('ConfigureAllowalloutboundDirectlySupplied', 'Configure \'allowAllOutbound\' directly on the supplied SecurityGroups.', this);
       }
     }
 
     if (props.allowAllIpv6Outbound !== undefined) {
       if (props.securityGroup) {
-        throw new ValidationError('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup.', this);
+        throw new ValidationError('ConfigureAllowallipv6outboundDirectlySupplied', 'Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup.', this);
       }
       if (hasSecurityGroups) {
-        throw new ValidationError('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups.', this);
+        throw new ValidationError('ConfigureAllowallipv6outboundDirectlySupplied', 'Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups.', this);
       }
     }
 
@@ -1677,7 +1677,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of selectedSubnets.subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
-        throw new ValidationError('Lambda Functions in a public subnet can NOT access the internet. ' +
+        throw new ValidationError('LambdaFunctionsPublicSubnet', 'Lambda Functions in a public subnet can NOT access the internet. ' +
           'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true', this);
       }
     }
@@ -1703,13 +1703,13 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   private renderDurableConfig(config: DurableConfig): CfnFunction.DurableConfigProperty {
     Annotations.of(this).addInfoV2('aws-lambda:Function.DurableConfig', 'Modifying an existing lambda to use durability will trigger a resource replacement');
     if (!config.executionTimeout.isUnresolved() && (config.executionTimeout.toSeconds() < 1 || config.executionTimeout.toSeconds() > 31622400)) {
-      throw new ValidationError(`executionTimeout must be between 1 and 31622400 seconds, got ${config.executionTimeout.toSeconds()}`, this);
+      throw new ValidationError('Executiontimeout31622400SecondsGot', `executionTimeout must be between 1 and 31622400 seconds, got ${config.executionTimeout.toSeconds()}`, this);
     }
 
     let retentionDays: number | undefined;
     if (config.retentionPeriod) {
       if (!config.retentionPeriod.isUnresolved() && (config.retentionPeriod.toDays() < 1 || config.retentionPeriod.toDays() > 90)) {
-        throw new ValidationError(`retentionPeriodInDays must be between 1 and 90 days, got ${config.retentionPeriod.toDays()}`, this);
+        throw new ValidationError('RetentionperiodindaysDaysGotConfig', `retentionPeriodInDays must be between 1 and 90 days, got ${config.retentionPeriod.toDays()}`, this);
       }
       retentionDays = config.retentionPeriod.toDays();
     }
@@ -1734,19 +1734,19 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only supports published Lambda versions. Ignore if function already has published versions.');
 
     if (!props.runtime.supportsSnapStart) {
-      throw new ValidationError(`SnapStart currently not supported by runtime ${props.runtime.name}`, this);
+      throw new ValidationError('SnapstartCurrentlySupportedRuntime', `SnapStart currently not supported by runtime ${props.runtime.name}`, this);
     }
 
     if (props.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
-      throw new ValidationError('SnapStart is not supported for functions with tenant isolation mode', this);
+      throw new ValidationError('SnapstartSupportedFunctionsTenant', 'SnapStart is not supported for functions with tenant isolation mode', this);
     }
 
     if (props.filesystem) {
-      throw new ValidationError('SnapStart is currently not supported using EFS', this);
+      throw new ValidationError('SnapstartCurrentlySupportedEfs', 'SnapStart is currently not supported using EFS', this);
     }
 
     if (props.ephemeralStorageSize && props.ephemeralStorageSize?.toMebibytes() > 512) {
-      throw new ValidationError('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage', this);
+      throw new ValidationError('SnapstartCurrentlySupported512', 'SnapStart is currently not supported using more than 512 MiB Ephemeral Storage', this);
     }
 
     return props.snapStart._render();
@@ -1764,7 +1764,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
     if (props.deadLetterTopic && (props.deadLetterQueue || props.deadLetterQueueEnabled !== undefined)) {
-      throw new ValidationError('deadLetterQueue and deadLetterTopic cannot be specified together at the same time', this);
+      throw new ValidationError('DeadletterqueueDeadlettertopicSpecifiedTogether', 'deadLetterQueue and deadLetterTopic cannot be specified together at the same time', this);
     }
 
     let deadLetterQueue: sqs.IQueue | sns.ITopic;
@@ -1814,7 +1814,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
   private validateProfiling(props: FunctionProps) {
     if (!props.runtime.supportsCodeGuruProfiling) {
-      throw new ValidationError(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`, this);
+      throw new ValidationError('CodeguruProfilingSupportedRuntime', `CodeGuru profiling is not supported by runtime ${props.runtime.name}`, this);
     }
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_NAME
       || props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN
@@ -1868,20 +1868,20 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   const codeType = [code.inlineCode, code.s3Location, code.image];
 
   if (codeType.filter(x => !!x).length !== 1) {
-    throw new UnscopedValidationError('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
+    throw new UnscopedValidationError('LambdaCodeSpecifyExactly', 'lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
   }
 
   if (!!code.image === (props.handler !== Handler.FROM_IMAGE)) {
-    throw new UnscopedValidationError('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
+    throw new UnscopedValidationError('HandlerHandlerImageImage', 'handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   if (!!code.image === (props.runtime !== Runtime.FROM_IMAGE)) {
-    throw new UnscopedValidationError('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
+    throw new UnscopedValidationError('RuntimeRuntimeImageImage', 'runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   // if this is inline code, check that the runtime supports
   if (code.inlineCode && !props.runtime.supportsInlineCode) {
-    throw new UnscopedValidationError(`Inline source not allowed for ${props.runtime!.name}`);
+    throw new UnscopedValidationError('InlineSourceAllowedProps', `Inline source not allowed for ${props.runtime!.name}`);
   }
 }
 

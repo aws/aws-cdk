@@ -286,14 +286,14 @@ export class ServerlessCache extends ServerlessCacheBase {
     const stack = Stack.of(scope);
 
     if (attrs.serverlessCacheArn && attrs.serverlessCacheName) {
-      throw new ValidationError('Only one of serverlessCacheArn or serverlessCacheName can be provided.', scope);
+      throw new ValidationError('OneServerlesscachearnServerlesscachenameProvided', 'Only one of serverlessCacheArn or serverlessCacheName can be provided.', scope);
     }
 
     if (attrs.serverlessCacheArn) {
       arn = attrs.serverlessCacheArn;
       const extractedServerlessCacheName = stack.splitArn(attrs.serverlessCacheArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!extractedServerlessCacheName) {
-        throw new ValidationError('Unable to extract serverless cache name from ARN.', scope);
+        throw new ValidationError('UnableExtractServerlessCache', 'Unable to extract serverless cache name from ARN.', scope);
       }
       name = extractedServerlessCacheName;
     } else if (attrs.serverlessCacheName) {
@@ -304,7 +304,7 @@ export class ServerlessCache extends ServerlessCacheBase {
         resourceName: attrs.serverlessCacheName,
       });
     } else {
-      throw new ValidationError('One of serverlessCacheName or serverlessCacheArn is required.', scope);
+      throw new ValidationError('OneServerlesscachenameServerlesscachearnRequired', 'One of serverlessCacheName or serverlessCacheArn is required.', scope);
     }
 
     class Import extends ServerlessCacheBase {
@@ -344,7 +344,7 @@ export class ServerlessCache extends ServerlessCacheBase {
               defaultPort = ec2.Port.tcp(11211);
               break;
             default:
-              throw new ValidationError(`Unsupported cache engine: ${this.engine}`, scope);
+              throw new ValidationError('UnsupportedCacheEngineEngine', `Unsupported cache engine: ${this.engine}`, scope);
           }
 
           this.connections = new ec2.Connections({
@@ -490,11 +490,11 @@ export class ServerlessCache extends ServerlessCacheBase {
     if (!description || Token.isUnresolved(description)) return;
 
     if (description.length > 255) {
-      throw new ValidationError(`Description must not exceed 255 characters, currently has ${description.length}`, this);
+      throw new ValidationError('DescriptionExceed255Characters', `Description must not exceed 255 characters, currently has ${description.length}`, this);
     }
 
     if (description.includes('<') || description.includes('>')) {
-      throw new ValidationError('Description must not contain < or > characters', this);
+      throw new ValidationError('DescriptionContainCharacters', 'Description must not contain < or > characters', this);
     }
   }
 
@@ -508,17 +508,17 @@ export class ServerlessCache extends ServerlessCacheBase {
 
     if (limits.dataStorageMinimumSize && !limits.dataStorageMinimumSize.isUnresolved() &&
       (limits.dataStorageMinimumSize.toGibibytes() < DATA_STORAGE_MIN_GB || limits.dataStorageMinimumSize.toGibibytes() > DATA_STORAGE_MAX_GB)) {
-      throw new ValidationError('Data storage minimum must be between 1 and 5000 GB.', this);
+      throw new ValidationError('DataStorageMinimum5000', 'Data storage minimum must be between 1 and 5000 GB.', this);
     }
     if (limits.dataStorageMaximumSize && !limits.dataStorageMaximumSize.isUnresolved() &&
       (limits.dataStorageMaximumSize.toGibibytes() < DATA_STORAGE_MIN_GB || limits.dataStorageMaximumSize.toGibibytes() > DATA_STORAGE_MAX_GB)) {
-      throw new ValidationError('Data storage maximum must be between 1 and 5000 GB.', this);
+      throw new ValidationError('DataStorageMaximum5000', 'Data storage maximum must be between 1 and 5000 GB.', this);
     }
 
     if (limits.dataStorageMinimumSize && limits.dataStorageMaximumSize &&
       !limits.dataStorageMinimumSize.isUnresolved() && !limits.dataStorageMaximumSize.isUnresolved() &&
       limits.dataStorageMinimumSize.toGibibytes() > limits.dataStorageMaximumSize.toGibibytes()) {
-      throw new ValidationError('Data storage minimum cannot be greater than maximum', this);
+      throw new ValidationError('DataStorageMinimumGreater', 'Data storage minimum cannot be greater than maximum', this);
     }
   }
 
@@ -532,17 +532,17 @@ export class ServerlessCache extends ServerlessCacheBase {
 
     if (limits.requestRateLimitMinimum !== undefined && !Token.isUnresolved(limits.requestRateLimitMinimum) &&
       (limits.requestRateLimitMinimum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMinimum > REQUEST_RATE_MAX_ECPU)) {
-      throw new ValidationError('Request rate minimum must be between 1,000 and 15,000,000 ECPUs per second', this);
+      throw new ValidationError('RequestRateMinimum000', 'Request rate minimum must be between 1,000 and 15,000,000 ECPUs per second', this);
     }
     if (limits.requestRateLimitMaximum !== undefined && !Token.isUnresolved(limits.requestRateLimitMaximum) &&
       (limits.requestRateLimitMaximum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMaximum > REQUEST_RATE_MAX_ECPU)) {
-      throw new ValidationError('Request rate maximum must be between 1,000 and 15,000,000 ECPUs per second', this);
+      throw new ValidationError('RequestRateMaximum000', 'Request rate maximum must be between 1,000 and 15,000,000 ECPUs per second', this);
     }
 
     if (!Token.isUnresolved(limits.requestRateLimitMinimum) && !Token.isUnresolved(limits.requestRateLimitMaximum) &&
       limits.requestRateLimitMinimum !== undefined && limits.requestRateLimitMaximum !== undefined &&
       limits.requestRateLimitMinimum > limits.requestRateLimitMaximum) {
-      throw new ValidationError('Request rate minimum cannot be greater than maximum', this);
+      throw new ValidationError('RequestRateMinimumGreater', 'Request rate minimum cannot be greater than maximum', this);
     }
   }
 
@@ -555,7 +555,7 @@ export class ServerlessCache extends ServerlessCacheBase {
     if (!Token.isUnresolved(backup?.backupRetentionLimit) && backup?.backupRetentionLimit !== undefined) {
       const limit = backup.backupRetentionLimit;
       if (limit < 1 || limit > 35) {
-        throw new ValidationError('Backup retention limit must be between 1 and 35 days', this);
+        throw new ValidationError('BackupRetentionLimitDays', 'Backup retention limit must be between 1 and 35 days', this);
       }
     }
 
@@ -563,19 +563,19 @@ export class ServerlessCache extends ServerlessCacheBase {
       const name = backup.backupNameBeforeDeletion;
 
       if (!/^[a-zA-Z]/.test(name)) {
-        throw new ValidationError('Final backup name must begin with a letter', this);
+        throw new ValidationError('FinalBackupNameBegin', 'Final backup name must begin with a letter', this);
       }
 
       if (!/^[a-zA-Z0-9-]+$/.test(name)) {
-        throw new ValidationError('Final backup name must contain only ASCII letters, digits, and hyphens', this);
+        throw new ValidationError('FinalBackupNameContain', 'Final backup name must contain only ASCII letters, digits, and hyphens', this);
       }
 
       if (name.endsWith('-')) {
-        throw new ValidationError('Final backup name must not end with a hyphen', this);
+        throw new ValidationError('FinalBackupNameEnd', 'Final backup name must not end with a hyphen', this);
       }
 
       if (name.includes('--')) {
-        throw new ValidationError('Final backup name must not contain two consecutive hyphens', this);
+        throw new ValidationError('FinalBackupNameContain', 'Final backup name must not contain two consecutive hyphens', this);
       }
     }
   }
@@ -590,11 +590,11 @@ export class ServerlessCache extends ServerlessCacheBase {
     if (!userGroup) return;
 
     if (engine === CacheEngine.MEMCACHED_LATEST) {
-      throw new ValidationError('User groups cannot be used with Memcached engines. Only Redis and Valkey engines support user groups.', this);
+      throw new ValidationError('UserGroupsUsedMemcached', 'User groups cannot be used with Memcached engines. Only Redis and Valkey engines support user groups.', this);
     }
 
     if (engine === CacheEngine.REDIS_LATEST && userGroup.engine !== UserEngine.REDIS) {
-      throw new ValidationError('Redis cache can only use Redis user groups.', this);
+      throw new ValidationError('RedisCacheRedisUser', 'Redis cache can only use Redis user groups.', this);
     }
   }
 
@@ -688,7 +688,7 @@ export class ServerlessCache extends ServerlessCacheBase {
     ] = schedule.expressionString.substr(5).slice(0, -1).split(' ');
 
     if (dayExpression != WILD_CARD || monthExpression != WILD_CARD || yearExpression != WILD_CARD || weekDayExpression != '?') {
-      throw new ValidationError('For now, only daily backup time is available (supports just hour and minute). Day, month, year, and weekDay are not allowed', this);
+      throw new ValidationError('NowDailyBackupTime', 'For now, only daily backup time is available (supports just hour and minute). Day, month, year, and weekDay are not allowed', this);
     }
 
     const hour = hourExpression == WILD_CARD ? '0' : hourExpression;

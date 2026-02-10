@@ -104,7 +104,7 @@ export type ValidationFn<T> = (param: T) => string[];
 export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T): T {
   const errors = validationFn(param);
   if (errors.length > 0) {
-    throw new ValidationError(errors.join('\n'));
+    throw new ValidationError('ValidationError', errors.join('\n'));
   }
   return param;
 }

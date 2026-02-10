@@ -443,18 +443,18 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       switch (key) {
         case 'target_group_health.dns_failover.minimum_healthy_targets.count':
           if ((!Number.isInteger(+value) || +value < 1) && value !== 'off') {
-            throw new ValidationError(`${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
+            throw new ValidationError('KeyIntegerGreaterOff', `${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
           }
           break;
         case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count':
           if (!Number.isInteger(+value) || +value < 1) {
-            throw new ValidationError(`${key} must be an integer greater than 0. Received: ${value}`, this);
+            throw new ValidationError('KeyIntegerGreaterReceived', `${key} must be an integer greater than 0. Received: ${value}`, this);
           }
           break;
         case 'target_group_health.dns_failover.minimum_healthy_targets.percentage':
         case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage':
           if ((!Number.isInteger(+value) || +value < 1 || +value > 100) && value !== 'off') {
-            throw new ValidationError(`${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
+            throw new ValidationError('KeyInteger100Off', `${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
           }
           break;
         default:
@@ -470,12 +470,12 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
     if (this.targetType !== undefined && this.targetType !== props.targetType) {
-      throw new ValidationError(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
+      throw new ValidationError('AlreadyTypeTargettypeAdding', `Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
     }
     this.targetType = props.targetType;
 
     if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
-      throw new ValidationError('TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
+      throw new ValidationError('TargetgroupContainOneLambda', 'TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
     }
 
     if (props.targetJson) {

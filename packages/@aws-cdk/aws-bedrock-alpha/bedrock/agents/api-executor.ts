@@ -54,7 +54,7 @@ export class ActionGroupExecutor {
 
   private constructor(lambdaFunction?: IFunction, customControl?: CustomControl) {
     if (lambdaFunction && customControl) {
-      throw new ValidationError('ActionGroupExecutor cannot have both lambdaFunction and customControl defined - they are mutually exclusive.');
+      throw new ValidationError('ActiongroupexecutorLambdafunctionCustomcontrolDefined', 'ActionGroupExecutor cannot have both lambdaFunction and customControl defined - they are mutually exclusive.');
     }
     this.lambdaFunction = lambdaFunction;
     this.customControl = customControl;

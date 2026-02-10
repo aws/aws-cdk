@@ -316,7 +316,7 @@ export class VpnConnection extends VpnConnectionBase {
     }
 
     if (!Token.isUnresolved(props.ip) && !net.isIPv4(props.ip)) {
-      throw new ValidationError(`The \`ip\` ${props.ip} is not a valid IPv4 address.`, this);
+      throw new ValidationError('PropsValidIpv4Address', `The \`ip\` ${props.ip} is not a valid IPv4 address.`, this);
     }
 
     const type = VpnConnectionType.IPSEC_1;
@@ -335,31 +335,31 @@ export class VpnConnection extends VpnConnectionBase {
     // Validate tunnel options
     if (props.tunnelOptions) {
       if (props.tunnelOptions.length > 2) {
-        throw new ValidationError('Cannot specify more than two `tunnelOptions`', this);
+        throw new ValidationError('SpecifyTwoTunneloptions', 'Cannot specify more than two `tunnelOptions`', this);
       }
 
       if (props.tunnelOptions.length === 2 &&
         props.tunnelOptions[0].tunnelInsideCidr === props.tunnelOptions[1].tunnelInsideCidr &&
         props.tunnelOptions[0].tunnelInsideCidr !== undefined) {
-        throw new ValidationError(`Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`, this);
+        throw new ValidationError('SamePropsTunneloptionsTunnelinsidecidr', `Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`, this);
       }
 
       props.tunnelOptions.forEach((options, index) => {
         if (options.preSharedKey && options.preSharedKeySecret) {
-          throw new ValidationError("Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.", this);
+          throw new ValidationError('SpecifyMostOnePresharedkey', "Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.", this);
         }
 
         if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
-          throw new ValidationError(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`, this);
+          throw new ValidationError('PresharedkeyOptionsPresharedkeyTunnel', `The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`, this);
         }
 
         if (options.tunnelInsideCidr) {
           if (RESERVED_TUNNEL_INSIDE_CIDR.includes(options.tunnelInsideCidr)) {
-            throw new ValidationError(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`, this);
+            throw new ValidationError('TunnelinsidecidrOptionsTunnelinsidecidrTunnel', `The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`, this);
           }
 
           if (!/^169\.254\.\d{1,3}\.\d{1,3}\/30$/.test(options.tunnelInsideCidr)) {
-            throw new ValidationError(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`, this);
+            throw new ValidationError('TunnelinsidecidrOptionsTunnelinsidecidrTunnel', `The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`, this);
           }
         }
       });

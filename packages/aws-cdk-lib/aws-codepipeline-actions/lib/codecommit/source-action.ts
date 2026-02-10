@@ -169,7 +169,7 @@ export class CodeCommitSourceAction extends Action {
   constructor(props: CodeCommitSourceActionProps) {
     const branch = props.branch ?? CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME;
     if (!branch) {
-      throw new UnscopedValidationError("'branch' parameter cannot be an empty string");
+      throw new UnscopedValidationError('BranchParameterEmptyString', "'branch' parameter cannot be an empty string");
     }
 
     if (props.codeBuildCloneOutput === true) {

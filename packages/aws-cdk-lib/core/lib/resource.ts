@@ -123,7 +123,7 @@ export abstract class Resource extends Construct implements IResource {
     super(scope, id);
 
     if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
-      throw new ValidationError(`Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`, this);
+      throw new ValidationError('SupplyMostOneAccount', `Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`, this);
     }
 
     Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
@@ -206,7 +206,7 @@ export abstract class Resource extends Construct implements IResource {
   public _enableCrossEnvironment(): void {
     if (!this._allowCrossEnvironment) {
       // error out - a deploy-time name cannot be used across environments
-      throw new ValidationError(`Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
+      throw new ValidationError('ResourceNodePathCross', `Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
         "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`", this);
     }
 
@@ -229,7 +229,7 @@ export abstract class Resource extends Construct implements IResource {
   public applyRemovalPolicy(policy: RemovalPolicy) {
     const child = this.node.defaultChild;
     if (!child || !CfnResource.isCfnResource(child)) {
-      throw new ValidationError('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.', this);
+      throw new ValidationError('ApplyRemovalpolicyChildCfnresource', 'Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.', this);
     }
     child.applyRemovalPolicy(policy);
   }

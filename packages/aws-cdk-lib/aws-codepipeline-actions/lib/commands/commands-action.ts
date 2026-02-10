@@ -71,11 +71,11 @@ export class CommandsAction extends Action {
     });
 
     if (props.commands.length < 1 || props.commands.length > 50) {
-      throw new cdk.UnscopedValidationError(`The length of the commands array must be between 1 and 50, got: ${props.commands.length}`);
+      throw new cdk.UnscopedValidationError('LengthCommandsArrayGot', `The length of the commands array must be between 1 and 50, got: ${props.commands.length}`);
     }
 
     if (props.outputVariables !== undefined && (props.outputVariables.length < 1 || props.outputVariables.length > 15)) {
-      throw new cdk.UnscopedValidationError(`The length of the outputVariables array must be between 1 and 15, got: ${props.outputVariables.length}`);
+      throw new cdk.UnscopedValidationError('LengthOutputvariablesArrayGot', `The length of the outputVariables array must be between 1 and 15, got: ${props.outputVariables.length}`);
     }
 
     this.outputVariables = props.outputVariables || [];
@@ -89,7 +89,7 @@ export class CommandsAction extends Action {
    */
   public variable(variableName: string): string {
     if (!this.outputVariables.includes(variableName)) {
-      throw new cdk.UnscopedValidationError(`Variable '${variableName}' is not exported by \`outputVariables\`, exported variables: ${this.outputVariables.join(', ')}`);
+      throw new cdk.UnscopedValidationError('VariableVariablenameExportedOutputvariables', `Variable '${variableName}' is not exported by \`outputVariables\`, exported variables: ${this.outputVariables.join(', ')}`);
     }
     return this.variableExpression(variableName);
   }

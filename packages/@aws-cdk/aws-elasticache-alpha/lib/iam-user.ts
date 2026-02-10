@@ -90,7 +90,7 @@ export class IamUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (this.userName !== this.userId) {
-      throw new ValidationError('For IAM authentication, userName must be equal to userId.', this);
+      throw new ValidationError('IamAuthenticationUsernameEqual', 'For IAM authentication, userName must be equal to userId.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

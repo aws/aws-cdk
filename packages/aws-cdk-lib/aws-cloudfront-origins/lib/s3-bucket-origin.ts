@@ -264,7 +264,7 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
     if (!this.originAccessIdentity) {
-      throw new UnscopedValidationError('Origin access identity cannot be undefined');
+      throw new UnscopedValidationError('OriginAccessIdentityUndefined', 'Origin access identity cannot be undefined');
     }
     return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.cloudFrontOriginAccessIdentityRef.cloudFrontOriginAccessIdentityId}` };
   }

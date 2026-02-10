@@ -66,13 +66,13 @@ export class MixinApplicator {
           applyMixin(construct, mixin);
           applications.push({ construct, mixin });
         } else if (this.expectAll) {
-          throw new ValidationError(`Mixin ${mixin.constructor.name} could not be applied to ${construct.constructor.name} but was required to.`, this.scope);
+          throw new ValidationError('MixinMixinConstructorName', `Mixin ${mixin.constructor.name} could not be applied to ${construct.constructor.name} but was required to.`, this.scope);
         }
       }
     }
 
     if (this.expectAny && applications.length <= 0) {
-      throw new ValidationError('At least one mixin application was required, but none of the provided mixins could be applied to any selected construct.', this.scope);
+      throw new ValidationError('LeastOneMixinApplication', 'At least one mixin application was required, but none of the provided mixins could be applied to any selected construct.', this.scope);
     }
 
     // record all applications

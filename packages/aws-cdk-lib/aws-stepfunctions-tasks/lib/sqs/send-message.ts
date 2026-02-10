@@ -100,7 +100,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
 
     if (props.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new cdk.ValidationError('Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.', this);
+        throw new cdk.ValidationError('TaskTokenRequiredMessagebody', 'Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.', this);
       }
     }
 

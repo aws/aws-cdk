@@ -113,7 +113,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
    */
   public _attachToApi(restApi: IRestApi): void {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new ValidationError('Cannot attach authorizer to two different rest APIs', restApi);
+      throw new ValidationError('AttachAuthorizerTwoDifferent', 'Cannot attach authorizer to two different rest APIs', restApi);
     }
 
     this.restApiId = restApi.restApiId;
@@ -137,7 +137,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
     return Lazy.string({
       produce: () => {
         if (!this.restApiId) {
-          throw new ValidationError(`Authorizer (${this.node.path}) must be attached to a RestApi`, this);
+          throw new ValidationError('AuthorizerNodePathAttached', `Authorizer (${this.node.path}) must be attached to a RestApi`, this);
         }
         return this.restApiId;
       },

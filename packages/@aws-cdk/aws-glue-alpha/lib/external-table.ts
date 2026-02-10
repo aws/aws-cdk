@@ -86,7 +86,7 @@ export class ExternalTable extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new ValidationError(`Duplicate storage parameter key: ${param.key}`, this);
+              throw new ValidationError('DuplicateStorageParameterKey', `Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;

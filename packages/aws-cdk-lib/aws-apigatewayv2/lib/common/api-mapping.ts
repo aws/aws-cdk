@@ -90,7 +90,7 @@ export class ApiMapping extends Resource implements IApiMapping {
           apiMappingId: this.apiMappingId,
           get domainName() {
             if (!attrs.domainName) {
-              throw new ValidationError('Cannot use object in this API: \'domainName\' was not supplied when calling ApiMapping.fromApiMappingAttributes()', self);
+              throw new ValidationError('ObjectApiDomainnameSupplied', 'Cannot use object in this API: \'domainName\' was not supplied when calling ApiMapping.fromApiMappingAttributes()', self);
             }
             return attrs.domainName;
           },
@@ -125,11 +125,11 @@ export class ApiMapping extends Resource implements IApiMapping {
     // So casting to 'any'
     let stage = props.stage ?? (props.api as any).defaultStage;
     if (!stage) {
-      throw new ValidationError('stage property must be specified', scope);
+      throw new ValidationError('StagePropertySpecified', 'stage property must be specified', scope);
     }
 
     if (props.apiMappingKey === '') {
-      throw new ValidationError('empty string for api mapping key not allowed', scope);
+      throw new ValidationError('EmptyStringApiMapping', 'empty string for api mapping key not allowed', scope);
     }
 
     const apiMappingProps: CfnApiMappingProps = {
@@ -157,7 +157,7 @@ export class ApiMapping extends Resource implements IApiMapping {
     if ('regionalDomainName' in ret && 'regionalHostedZoneId' in ret) {
       return ret;
     }
-    throw new ValidationError(`Supplied domainName (${this._domainName.constructor.name}) does not implement IDomainName`, this);
+    throw new ValidationError('SuppliedDomainnameDomainnameConstructor', `Supplied domainName (${this._domainName.constructor.name}) does not implement IDomainName`, this);
   }
 
   public get apiMappingRef(): ApiMappingReference {

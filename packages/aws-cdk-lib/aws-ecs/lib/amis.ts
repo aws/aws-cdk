@@ -132,15 +132,15 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) { // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
-        throw new UnscopedValidationError('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
+        throw new UnscopedValidationError('AmazonLinuxSupportSpecial', 'Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
-        throw new UnscopedValidationError('"windowsVersion" and Linux image "generation" cannot be both set');
+        throw new UnscopedValidationError('WindowsversionLinuxImageGeneration', '"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
         this.generation = props.generation;
       }
     } else if (props && props.windowsVersion) {
       if (this.hwType !== AmiHardwareType.STANDARD) {
-        throw new UnscopedValidationError('Windows Server does not support special hardware type');
+        throw new UnscopedValidationError('WindowsServerSupportSpecial', 'Windows Server does not support special hardware type');
       } else {
         this.windowsVersion = props.windowsVersion;
       }
@@ -165,7 +165,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.additionalCacheKey = props?.additionalCacheKey;
 
     if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
-      throw new UnscopedValidationError('"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+      throw new UnscopedValidationError('AdditionalcachekeyCachedincontextFalseEffect', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
     }
   }
 
@@ -288,7 +288,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     } else if (props.generation) {
       this.generation = props.generation;
     } else {
-      throw new UnscopedValidationError('This error should never be thrown');
+      throw new UnscopedValidationError('ErrorNeverThrown', 'This error should never be thrown');
     }
 
     // set the SSM parameter name
@@ -307,7 +307,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     this.additionalCacheKey = props.additionalCacheKey;
 
     if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
-      throw new UnscopedValidationError('"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+      throw new UnscopedValidationError('AdditionalcachekeyCachedincontextFalseEffect', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
     }
   }
 
@@ -435,7 +435,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
     this.additionalCacheKey = props.additionalCacheKey;
 
     if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
-      throw new UnscopedValidationError('"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+      throw new UnscopedValidationError('AdditionalcachekeyCachedincontextFalseEffect', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
     }
   }
 

@@ -49,11 +49,11 @@ export class NonIpInstance extends InstanceBase {
 
     const discoveryType = props.service.discoveryType || defaultDiscoveryType(props.service.namespace);
     if (discoveryType !== DiscoveryType.API) {
-      throw new ValidationError('This type of instance can only be registered for HTTP namespaces.', this);
+      throw new ValidationError('TypeInstanceRegisteredHttp', 'This type of instance can only be registered for HTTP namespaces.', this);
     }
 
     if (props.customAttributes === undefined || Object.keys(props.customAttributes).length === 0) {
-      throw new ValidationError('You must specify at least one custom attribute for this instance type.', this);
+      throw new ValidationError('SpecifyLeastOneCustom', 'You must specify at least one custom attribute for this instance type.', this);
     }
 
     const resource = new CfnInstance(this, 'Resource', {

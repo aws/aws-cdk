@@ -76,11 +76,11 @@ export interface DataFormatConversionProps {
 export class S3Bucket implements IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
-      throw new cdk.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
+      throw new cdk.UnscopedValidationError('DestinationsSupportBackupmodeFailed', 'S3 destinations do not support BackupMode.FAILED');
     }
 
     if (this.props.dataFormatConversion && this.props.compression) {
-      throw new cdk.UnscopedValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
+      throw new cdk.UnscopedValidationError('DataRecordFormatConversion', 'When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
     }
   }
 
@@ -98,7 +98,7 @@ export class S3Bucket implements IDestination {
     }) ?? {};
 
     if (this.props.processor && this.props.processors) {
-      throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+      throw new cdk.ValidationError('SpecifyEitherProcessorsProcessor', "You can specify either 'processors' or 'processor', not both.", scope);
     }
     const dataProcessors = this.props.processor ? [this.props.processor] : this.props.processors;
 
@@ -107,10 +107,10 @@ export class S3Bucket implements IDestination {
     const fileExtension = this.props.fileExtension;
     if (fileExtension && !cdk.Token.isUnresolved(fileExtension)) {
       if (!fileExtension.startsWith('.')) {
-        throw new cdk.ValidationError("fileExtension must start with '.'", scope);
+        throw new cdk.ValidationError('FileextensionStart', "fileExtension must start with '.'", scope);
       }
       if (/[^0-9a-z!\-_.*'()]/.test(fileExtension)) {
-        throw new cdk.ValidationError("fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
+        throw new cdk.ValidationError('FileextensionContainAllowedCharacters', "fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
       }
     }
 

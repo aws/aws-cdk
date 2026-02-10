@@ -196,7 +196,7 @@ describe('validation-helpers tests', () => {
 
   describe('ValidationError', () => {
     test('Should be an instance of Error', () => {
-      const error = new ValidationError('Test error');
+      const error = new ValidationError('TestError', 'Test error');
       expect(error).toBeInstanceOf(Error);
       expect(error.name).toBe('ValidationError');
       expect(error.message).toBe('Test error');

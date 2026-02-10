@@ -38,10 +38,10 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
     if (props.timeout && !cdk.Token.isUnresolved(props.timeout)) {
       if (props.timeout.toMilliseconds() < cdk.Duration.seconds(1).toMilliseconds()) {
-        throw new cdk.ValidationError(`The timeout for the handler must be BETWEEN 1 second and 15 minutes, got ${props.timeout.toMilliseconds()} milliseconds.`, this);
+        throw new cdk.ValidationError('TimeoutHandlerSecondMinutes', `The timeout for the handler must be BETWEEN 1 second and 15 minutes, got ${props.timeout.toMilliseconds()} milliseconds.`, this);
       }
       if (props.timeout.toSeconds() > cdk.Duration.minutes(15).toSeconds()) {
-        throw new cdk.ValidationError(`The timeout for the handler must be between 1 second and 15 minutes, got ${props.timeout.toSeconds()} seconds.`, this);
+        throw new cdk.ValidationError('TimeoutHandlerSecondMinutes', `The timeout for the handler must be between 1 second and 15 minutes, got ${props.timeout.toSeconds()} seconds.`, this);
       }
     }
 
@@ -105,14 +105,12 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
         if (cluster.secret) {
           adminUser = cluster.secret;
         } else {
-          throw new cdk.ValidationError(
-            'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)',
+          throw new cdk.ValidationError('AdministrativeAccessRedshiftCluster', 'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)',
             this,
           );
         }
       } else {
-        throw new cdk.ValidationError(
-          'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported',
+        throw new cdk.ValidationError('AdministrativeAccessRedshiftCluster', 'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported',
           this,
         );
       }

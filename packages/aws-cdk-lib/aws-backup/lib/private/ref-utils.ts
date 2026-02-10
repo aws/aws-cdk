@@ -8,7 +8,7 @@ import type { IBackupVault } from '../vault';
  */
 export function toIBackupVault(vault: IBackupVaultRef): IBackupVault {
   if (!('backupVaultName' in vault) || !('backupVaultArn' in vault) || !('grant' in vault)) {
-    throw new UnscopedValidationError(`'vault' instance should implement IBackupVault, but doesn't: ${vault.constructor.name}`);
+    throw new UnscopedValidationError('VaultInstanceImplementIbackupvault', `'vault' instance should implement IBackupVault, but doesn't: ${vault.constructor.name}`);
   }
   return vault as IBackupVault;
 }

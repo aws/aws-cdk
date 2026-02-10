@@ -104,7 +104,7 @@ export abstract class Authorization {
    */
   public static oauth(props: OAuthAuthorizationProps): Authorization {
     if (![HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT].includes(props.httpMethod)) {
-      throw new UnscopedValidationError('httpMethod must be one of GET, POST, PUT');
+      throw new UnscopedValidationError('HttpmethodOnePostPut', 'httpMethod must be one of GET, POST, PUT');
     }
 
     return new class extends Authorization {

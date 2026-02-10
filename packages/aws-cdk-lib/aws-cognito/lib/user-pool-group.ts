@@ -91,7 +91,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
         return {
           groupName,
           get userPoolId(): string {
-            throw new UnscopedValidationError('userPoolId is not available on imported UserPoolGroup.');
+            throw new UnscopedValidationError('UserpoolidAvailableImportedUserpoolgroup', 'userPoolId is not available on imported UserPoolGroup.');
           },
         };
       }
@@ -119,13 +119,13 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&
       (props.description.length > 2048)) {
-      throw new ValidationError(`\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError('Description2048CharactersReceived', `\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.precedence !== undefined &&
       !Token.isUnresolved(props.precedence) &&
       (props.precedence < 0 || props.precedence > 2 ** 31 - 1)) {
-      throw new ValidationError(`\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
+      throw new ValidationError('PrecedenceReceivedPropsPrecedence', `\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
     }
 
     if (
@@ -133,7 +133,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       !Token.isUnresolved(props.groupName) &&
       !/^[\p{L}\p{M}\p{S}\p{N}\p{P}]{1,128}$/u.test(props.groupName)
     ) {
-      throw new ValidationError('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
+      throw new ValidationError('Groupname128CharactersInclude', '\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
     }
 
     const resource = new CfnUserPoolGroup(this, 'Resource', {

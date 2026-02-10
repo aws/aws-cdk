@@ -21,7 +21,7 @@ export function parseTableBucketArn(construct: IConstruct, props: TableBucketAtt
     });
   }
 
-  throw new cdk.ValidationError('Cannot determine bucket ARN. At least `tableBucketArn` is needed', construct);
+  throw new cdk.ValidationError('DetermineBucketArnLeast', 'Cannot determine bucket ARN. At least `tableBucketArn` is needed', construct);
 }
 
 export function parseTableBucketName(construct: IConstruct, props: TableBucketAttributes): string {
@@ -38,7 +38,7 @@ export function parseTableBucketName(construct: IConstruct, props: TableBucketAt
     }
   }
 
-  throw new cdk.ValidationError('tableBucketName is required and could not be inferred from context', construct);
+  throw new cdk.ValidationError('TablebucketnameRequiredInferredContext', 'tableBucketName is required and could not be inferred from context', construct);
 }
 
 export function parseTableBucketRegion(construct: IConstruct, props: TableBucketAttributes): string | undefined {

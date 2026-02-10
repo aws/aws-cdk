@@ -73,7 +73,7 @@ export class SubscriptionFilter extends Resource {
       !Token.isUnresolved(props.destination) &&
       !(props.destination instanceof KinesisDestination)
     ) {
-      throw new ValidationError('distribution property can only be used with KinesisDestination.', this);
+      throw new ValidationError('DistributionPropertyUsedKinesisdestination', 'distribution property can only be used with KinesisDestination.', this);
     }
 
     const destProps = props.destination.bind(this, props.logGroup);

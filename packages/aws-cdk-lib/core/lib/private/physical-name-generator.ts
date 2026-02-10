@@ -15,12 +15,12 @@ export function generatePhysicalName(resource: IResource): string {
 
   const region: string = stack.region;
   if (Token.isUnresolved(region) || !region) {
-    throw new ValidationError(`Cannot generate a physical name for ${Node.of(resource).path}, because the region is un-resolved or missing`, resource);
+    throw new ValidationError('GeneratePhysicalNameNode', `Cannot generate a physical name for ${Node.of(resource).path}, because the region is un-resolved or missing`, resource);
   }
 
   const account: string = stack.account;
   if (Token.isUnresolved(account) || !account) {
-    throw new ValidationError(`Cannot generate a physical name for ${Node.of(resource).path}, because the account is un-resolved or missing`, resource);
+    throw new ValidationError('GeneratePhysicalNameNode', `Cannot generate a physical name for ${Node.of(resource).path}, because the account is un-resolved or missing`, resource);
   }
 
   const parts = [stackPart, idPart]
@@ -89,7 +89,7 @@ export class GeneratedWhenNeededMarker implements IResolvable {
   }
 
   public resolve(_ctx: IResolveContext): never {
-    throw new UnscopedValidationError('Invalid physical name passed to CloudFormation. Use "this.physicalName" instead');
+    throw new UnscopedValidationError('InvalidPhysicalNamePassed', 'Invalid physical name passed to CloudFormation. Use "this.physicalName" instead');
   }
 
   public toString(): string {

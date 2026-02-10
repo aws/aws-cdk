@@ -100,7 +100,7 @@ export class BucketNotifications extends Construct {
         break;
 
       default:
-        throw new ValidationError('Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type], this);
+        throw new ValidationError('UnsupportedNotificationTargetType', 'Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type], this);
     }
   }
 
@@ -210,12 +210,12 @@ function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotificati
 
   for (const rule of filters) {
     if (!rule.suffix && !rule.prefix) {
-      throw new ValidationError('NotificationKeyFilter must specify `prefix` and/or `suffix`', scope);
+      throw new ValidationError('NotificationkeyfilterSpecifyPrefixSuffix', 'NotificationKeyFilter must specify `prefix` and/or `suffix`', scope);
     }
 
     if (rule.suffix) {
       if (hasSuffix) {
-        throw new ValidationError('Cannot specify more than one suffix rule in a filter.', scope);
+        throw new ValidationError('SpecifyOneSuffixRule', 'Cannot specify more than one suffix rule in a filter.', scope);
       }
       renderedRules.push({ Name: 'suffix', Value: rule.suffix });
       hasSuffix = true;
@@ -223,7 +223,7 @@ function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotificati
 
     if (rule.prefix) {
       if (hasPrefix) {
-        throw new ValidationError('Cannot specify more than one prefix rule in a filter.', scope);
+        throw new ValidationError('SpecifyOnePrefixRule', 'Cannot specify more than one prefix rule in a filter.', scope);
       }
       renderedRules.push({ Name: 'prefix', Value: rule.prefix });
       hasPrefix = true;

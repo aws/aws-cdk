@@ -116,7 +116,7 @@ export class BatchJob implements events.IRuleTarget {
 
   private validateJobName(rule: IConstruct, name?: string) {
     if (!Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 128)) {
-      throw new ValidationError(`Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`, rule);
+      throw new ValidationError('InvalidJobnameValueName', `Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`, rule);
     }
   }
 }

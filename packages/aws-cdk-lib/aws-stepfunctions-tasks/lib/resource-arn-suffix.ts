@@ -15,7 +15,7 @@ resourceArnSuffix.set(sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN, '.waitF
 
 export function getResourceArn(service: string, api: string, integrationPattern: sfn.ServiceIntegrationPattern): string {
   if (!service || !api) {
-    throw new UnscopedValidationError("Both 'service' and 'api' must be provided to build the resource ARN.");
+    throw new UnscopedValidationError('ServiceApiProvidedBuild', "Both 'service' and 'api' must be provided to build the resource ARN.");
   }
   return `arn:${Aws.PARTITION}:states:::${service}:${api}` +
         (integrationPattern ? resourceArnSuffix.get(integrationPattern) : '');

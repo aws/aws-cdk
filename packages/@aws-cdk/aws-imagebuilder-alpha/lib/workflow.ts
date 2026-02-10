@@ -637,18 +637,17 @@ export class Workflow extends WorkflowBase {
       attrs.workflowArn !== undefined &&
       (attrs.workflowName !== undefined || attrs.workflowType !== undefined || attrs.workflowVersion !== undefined)
     ) {
-      throw new cdk.ValidationError(
-        'a workflowName, workflowType, or workflowVersion cannot be provided when a workflowArn is provided',
+      throw new cdk.ValidationError('WorkflownameWorkflowtypeWorkflowversionProvided', 'a workflowName, workflowType, or workflowVersion cannot be provided when a workflowArn is provided',
         scope,
       );
     }
 
     if (attrs.workflowArn === undefined && (attrs.workflowName === undefined || attrs.workflowType === undefined)) {
-      throw new cdk.ValidationError('either workflowArn, or workflowName and workflowType is required', scope);
+      throw new cdk.ValidationError('EitherWorkflowarnWorkflownameWorkflowtype', 'either workflowArn, or workflowName and workflowType is required', scope);
     }
 
     if (attrs.workflowType && cdk.Token.isUnresolved(attrs.workflowType)) {
-      throw new cdk.ValidationError('workflowType cannot be an unresolved token', scope);
+      throw new cdk.ValidationError('WorkflowtypeUnresolvedToken', 'workflowType cannot be an unresolved token', scope);
     }
 
     const workflowArn = (() => {
@@ -674,15 +673,13 @@ export class Workflow extends WorkflowBase {
       ).resourceName!;
 
       if (cdk.Token.isUnresolved(workflowNameTypeVersion)) {
-        throw new cdk.ValidationError(
-          'the workflowName, workflowType, and workflowVersion in the workflowArn cannot be an unresolved token',
+        throw new cdk.ValidationError('WorkflownameWorkflowtypeWorkflowversionWorkflowarn', 'the workflowName, workflowType, and workflowVersion in the workflowArn cannot be an unresolved token',
           scope,
         );
       }
 
       if (workflowNameTypeVersion.split('/').length < 3) {
-        throw new cdk.ValidationError(
-          'the workflow ARN must end with <workflow-type>/<workflow-name>/<workflow-version>',
+        throw new cdk.ValidationError('WorkflowArnEndWorkflow', 'the workflow ARN must end with <workflow-type>/<workflow-name>/<workflow-version>',
           scope,
         );
       }
@@ -777,19 +774,19 @@ export class Workflow extends WorkflowBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('the workflowName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError('WorkflownameLonger128Characters', 'the workflowName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('the workflowName cannot contain spaces', this);
+      throw new cdk.ValidationError('WorkflownameContainSpaces', 'the workflowName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('the workflowName cannot contain underscores', this);
+      throw new cdk.ValidationError('WorkflownameContainUnderscores', 'the workflowName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('the workflowName must be lowercase', this);
+      throw new cdk.ValidationError('WorkflownameLowercase', 'the workflowName must be lowercase', this);
     }
   }
 }

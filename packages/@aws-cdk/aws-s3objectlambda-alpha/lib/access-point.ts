@@ -152,16 +152,16 @@ export interface AccessPointAttributes {
  */
 function validateAccessPointName(name: string): void {
   if (name.length < 3 || name.length > 50) {
-    throw new UnscopedValidationError('Access point name must be between 3 and 50 characters long');
+    throw new UnscopedValidationError('AccessPointNameCharacters', 'Access point name must be between 3 and 50 characters long');
   }
   if (name.endsWith('-s3alias')) {
-    throw new UnscopedValidationError('Access point name cannot end with the suffix -s3alias');
+    throw new UnscopedValidationError('AccessPointNameEnd', 'Access point name cannot end with the suffix -s3alias');
   }
   if (name[0] === '-' || name[name.length - 1] === '-') {
-    throw new UnscopedValidationError('Access point name cannot begin or end with a dash');
+    throw new UnscopedValidationError('AccessPointNameBegin', 'Access point name cannot begin or end with a dash');
   }
   if (!/^[0-9a-z](.(?![\.A-Z_]))+[0-9a-z]$/.test(name)) {
-    throw new UnscopedValidationError('Access point name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods');
+    throw new UnscopedValidationError('AccessPointNameBegin', 'Access point name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods');
   }
 }
 
@@ -180,7 +180,7 @@ export class AccessPoint extends AccessPointBase {
   public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     const arn = core.Arn.split(attrs.accessPointArn, core.ArnFormat.SLASH_RESOURCE_NAME);
     if (!arn.resourceName) {
-      throw new UnscopedValidationError('Unable to parse access point name');
+      throw new UnscopedValidationError('UnableParseAccessPoint', 'Unable to parse access point name');
     }
     const name = arn.resourceName;
     class Import extends AccessPointBase {

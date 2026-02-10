@@ -220,7 +220,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
       return this._precreatedPolicy.managedPolicyArn;
     }
     if (!this._resource) {
-      throw new ValidationError('Cannot access managedPolicyArn when synthesis is prevented', this);
+      throw new ValidationError('AccessManagedpolicyarnSynthesisPrevented', 'Cannot access managedPolicyArn when synthesis is prevented', this);
     }
     return this.getResourceArnAttribute(this._resource.ref, {
       region: '', // IAM is global in each partition
@@ -246,7 +246,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
       return this.node.id;
     }
     if (!this._resource) {
-      throw new ValidationError('Cannot access managedPolicyName when synthesis is prevented', this);
+      throw new ValidationError('AccessManagedpolicynameSynthesisPrevented', 'Cannot access managedPolicyName when synthesis is prevented', this);
     }
     return this.getResourceNameAttribute(Stack.of(this).splitArn(this._resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
   }
@@ -396,7 +396,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // cf. https://github.com/aws/aws-cdk/issues/32980
     const arn = Lazy.string({
       produce: () => {
-        throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', _managedPolicy);
+        throw new ValidationError('GrantOperationNeedsAdd', 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', _managedPolicy);
       },
     });
     this.policyFragment = new ArnPrincipal(arn).policyFragment;
@@ -407,7 +407,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a trust policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', this._managedPolicy);
+    throw new ValidationError('GrantOperationNeedsAdd', 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', this._managedPolicy);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

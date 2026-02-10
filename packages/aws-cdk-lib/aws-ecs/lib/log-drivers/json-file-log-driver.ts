@@ -51,7 +51,7 @@ export class JsonFileLogDriver extends LogDriver {
 
     // Validation
     if (props.maxFile && props.maxFile < 0) {
-      throw new UnscopedValidationError('`maxFile` must be a positive integer.');
+      throw new UnscopedValidationError('MaxfilePositiveInteger', '`maxFile` must be a positive integer.');
     }
   }
 

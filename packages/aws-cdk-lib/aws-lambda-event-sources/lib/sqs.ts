@@ -89,18 +89,18 @@ export class SqsEventSource implements lambda.IEventSource {
   constructor(readonly queue: sqs.IQueue, private readonly props: SqsEventSourceProps = { }) {
     if (this.props.maxBatchingWindow !== undefined) {
       if (queue.fifo) {
-        throw new ValidationError('Batching window is not supported for FIFO queues', queue);
+        throw new ValidationError('BatchingWindowSupportedFifo', 'Batching window is not supported for FIFO queues', queue);
       }
       if (!this.props.maxBatchingWindow.isUnresolved() && this.props.maxBatchingWindow.toSeconds() > 300) {
-        throw new ValidationError(`Maximum batching window must be 300 seconds or less (given ${this.props.maxBatchingWindow.toHumanString()})`, queue);
+        throw new ValidationError('MaximumBatchingWindow300', `Maximum batching window must be 300 seconds or less (given ${this.props.maxBatchingWindow.toHumanString()})`, queue);
       }
     }
     if (this.props.batchSize !== undefined && !Token.isUnresolved(this.props.batchSize)) {
       if (this.props.maxBatchingWindow !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {
-        throw new ValidationError(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize}) when batching window is specified.`, queue);
+        throw new ValidationError('MaximumBatchSize10000', `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize}) when batching window is specified.`, queue);
       }
       if (this.props.maxBatchingWindow === undefined && (this.props.batchSize < 1 || this.props.batchSize > 10)) {
-        throw new ValidationError(`Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`, queue);
+        throw new ValidationError('MaximumBatchSizeInclusive', `Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`, queue);
       }
     }
   }
@@ -135,7 +135,7 @@ export class SqsEventSource implements lambda.IEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new ValidationError('SqsEventSource is not yet bound to an event source mapping', this.queue);
+      throw new ValidationError('SqseventsourceYetBoundEvent', 'SqsEventSource is not yet bound to an event source mapping', this.queue);
     }
     return this._eventSourceMappingId;
   }
@@ -145,7 +145,7 @@ export class SqsEventSource implements lambda.IEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new ValidationError('SqsEventSource is not yet bound to an event source mapping', this.queue);
+      throw new ValidationError('SqseventsourceYetBoundEvent', 'SqsEventSource is not yet bound to an event source mapping', this.queue);
     }
     return this._eventSourceMappingArn;
   }

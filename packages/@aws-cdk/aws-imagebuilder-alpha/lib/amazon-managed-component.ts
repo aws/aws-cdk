@@ -208,11 +208,11 @@ export abstract class AmazonManagedComponent {
     component: string,
   ) {
     if (opts.platform === undefined) {
-      throw new cdk.ValidationError(`a platform is required for ${component}`, scope);
+      throw new cdk.ValidationError('PlatformRequiredComponent', `a platform is required for ${component}`, scope);
     }
 
     if (cdk.Token.isUnresolved(opts.platform)) {
-      throw new cdk.ValidationError(`platform cannot be a token for ${component}`, scope);
+      throw new cdk.ValidationError('PlatformTokenComponent', `platform cannot be a token for ${component}`, scope);
     }
   }
 
@@ -227,7 +227,7 @@ export abstract class AmazonManagedComponent {
     const componentName = config.supportedPlatforms[opts.platform];
 
     if (!componentName) {
-      throw new cdk.ValidationError(`${opts.platform} is not a supported platform for ${config.component}`, scope);
+      throw new cdk.ValidationError('OptsPlatformSupportedPlatform', `${opts.platform} is not a supported platform for ${config.component}`, scope);
     }
 
     return this.fromAmazonManagedComponentAttributes(scope, id, {

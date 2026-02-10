@@ -240,16 +240,16 @@ export class Fleet extends Resource implements IFleet {
       }
 
       public get computeType(): FleetComputeType {
-        throw new UnscopedValidationError('Cannot retrieve computeType property from an imported Fleet');
+        throw new UnscopedValidationError('RetrieveComputetypePropertyImported', 'Cannot retrieve computeType property from an imported Fleet');
       }
       public get environmentType(): EnvironmentType {
-        throw new UnscopedValidationError('Cannot retrieve environmentType property from an imported Fleet');
+        throw new UnscopedValidationError('RetrieveEnvironmenttypePropertyImported', 'Cannot retrieve environmentType property from an imported Fleet');
       }
       public get computeConfiguration(): ComputeConfiguration | undefined {
-        throw new UnscopedValidationError('Cannot retrieve computeConfiguration property from an imported Fleet');
+        throw new UnscopedValidationError('RetrieveComputeconfigurationPropertyImported', 'Cannot retrieve computeConfiguration property from an imported Fleet');
       }
       public get connections(): ec2.Connections {
-        throw new UnscopedValidationError('Cannot retrieve connections property from an imported Fleet');
+        throw new UnscopedValidationError('RetrieveConnectionsPropertyImported', 'Cannot retrieve connections property from an imported Fleet');
       }
     }
 
@@ -306,7 +306,7 @@ export class Fleet extends Resource implements IFleet {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('Only VPC-associated Fleets have security groups to manage. Supply the "vpc" parameter when creating the Fleet', this);
+      throw new ValidationError('VpcAssociatedFleetsSecurity', 'Only VPC-associated Fleets have security groups to manage. Supply the "vpc" parameter when creating the Fleet', this);
     }
     return this._connections;
   }
@@ -338,15 +338,15 @@ export class Fleet extends Resource implements IFleet {
 
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
-        throw new ValidationError(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`, this);
+        throw new ValidationError('FleetNameShorterCharacters', `Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`, this);
       }
       if (props.fleetName.length > 128) {
-        throw new ValidationError(`Fleet name can not be longer than 128 characters but has ${props.fleetName.length} characters.`, this);
+        throw new ValidationError('FleetNameLonger128', `Fleet name can not be longer than 128 characters but has ${props.fleetName.length} characters.`, this);
       }
     }
 
     if ((props.baseCapacity ?? 1) < 1) {
-      throw new ValidationError('baseCapacity must be greater than or equal to 1', this);
+      throw new ValidationError('BasecapacityGreaterEqual', 'baseCapacity must be greater than or equal to 1', this);
     }
 
     let computeConfiguration: CfnFleet.ComputeConfigurationProperty | undefined;
@@ -358,9 +358,9 @@ export class Fleet extends Resource implements IFleet {
           props.computeConfiguration.machineType ||
           props.computeConfiguration.memory ||
           props.computeConfiguration.vCpu !== undefined)) {
-        throw new ValidationError('At least one compute configuration criteria must be specified if computeType is ATTRIBUTE_BASED', this);
+        throw new ValidationError('LeastOneComputeConfiguration', 'At least one compute configuration criteria must be specified if computeType is ATTRIBUTE_BASED', this);
       } else if (props.computeConfiguration?.instanceType) {
-        throw new ValidationError('instanceType can only be specified in computeConfiguration if computeType is CUSTOM_INSTANCE_TYPE', this);
+        throw new ValidationError('InstancetypeSpecifiedComputeconfigurationComputetype', 'instanceType can only be specified in computeConfiguration if computeType is CUSTOM_INSTANCE_TYPE', this);
       }
 
       // Despite what the CloudFormation schema says, the numeric properties are not optional.
@@ -382,9 +382,9 @@ export class Fleet extends Resource implements IFleet {
       };
     } else if (props.computeType === FleetComputeType.CUSTOM_INSTANCE_TYPE) {
       if (!props.computeConfiguration?.instanceType) {
-        throw new ValidationError('instanceType must be specified in computeConfiguration if computeType is CUSTOM_INSTANCE_TYPE', this);
+        throw new ValidationError('InstancetypeSpecifiedComputeconfigurationComputetype', 'instanceType must be specified in computeConfiguration if computeType is CUSTOM_INSTANCE_TYPE', this);
       } else if (props.computeConfiguration.machineType || props.computeConfiguration.memory || props.computeConfiguration.vCpu) {
-        throw new ValidationError('computeConfiguration attributes can only be used if computeType is ATTRIBUTE_BASED', this);
+        throw new ValidationError('ComputeconfigurationAttributesUsedComputetype', 'computeConfiguration attributes can only be used if computeType is ATTRIBUTE_BASED', this);
       }
       const diskGiB = props.computeConfiguration.disk?.toGibibytes();
       this.validatePositiveInteger(diskGiB, 'disk size');
@@ -394,7 +394,7 @@ export class Fleet extends Resource implements IFleet {
         instanceType: props.computeConfiguration.instanceType.toString(),
       };
     } else if (props.computeConfiguration) {
-      throw new ValidationError(`computeConfiguration can only be specified if computeType is ATTRIBUTE_BASED or CUSTOM_INSTANCE_TYPE, got: ${props.computeType}`, this);
+      throw new ValidationError('ComputeconfigurationSpecifiedComputetypeAttribute', `computeConfiguration can only be specified if computeType is ATTRIBUTE_BASED or CUSTOM_INSTANCE_TYPE, got: ${props.computeType}`, this);
     }
 
     const vpcConfiguration = this.configureVpc(props);
@@ -429,15 +429,15 @@ export class Fleet extends Resource implements IFleet {
 
   private validatePositiveInteger(value: number | undefined, fieldName: string) {
     if (value !== undefined && !Token.isUnresolved(value) && (value < 0 || !Number.isInteger(value))) {
-      throw new ValidationError(`${fieldName} must be a positive integer, got: ${value}`, this);
+      throw new ValidationError('FieldnamePositiveIntegerGot', `${fieldName} must be a positive integer, got: ${value}`, this);
     }
   }
 
   private configureVpc(props: FleetProps): { fleetVpcConfig: CfnFleet.VpcConfigProperty; policyDependables: Array<IDependable> } | undefined {
     if (props.securityGroups && !props.vpc) {
-      throw new ValidationError('Cannot configure securityGroups without configuring a VPC', this);
+      throw new ValidationError('ConfigureSecuritygroupsWithoutConfiguring', 'Cannot configure securityGroups without configuring a VPC', this);
     } else if (props.subnetSelection && !props.vpc) {
-      throw new ValidationError('Cannot configure subnetSelection without configuring a VPC', this);
+      throw new ValidationError('ConfigureSubnetselectionWithoutConfiguring', 'Cannot configure subnetSelection without configuring a VPC', this);
     } else if (!props.vpc) {
       return undefined;
     }

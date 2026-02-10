@@ -68,17 +68,17 @@ class TextInferenceConfiguration extends PromptInferenceConfiguration {
 
     // Validate maxTokens if provided
     if (props.maxTokens !== undefined && props.maxTokens <= 0) {
-      throw new ValidationError('maxTokens must be a positive number');
+      throw new ValidationError('MaxtokensPositiveNumber', 'maxTokens must be a positive number');
     }
 
     // Validate temperature range if provided
     if (props.temperature !== undefined && (props.temperature < 0.0 || props.temperature > 1.0)) {
-      throw new ValidationError('temperature must be between 0.0 and 1.0');
+      throw new ValidationError('Temperature', 'temperature must be between 0.0 and 1.0');
     }
 
     // Validate topP range if provided
     if (props.topP !== undefined && (props.topP < 0.0 || props.topP > 1.0)) {
-      throw new ValidationError('topP must be between 0.0 and 1.0');
+      throw new ValidationError('Topp', 'topP must be between 0.0 and 1.0');
     }
   }
 

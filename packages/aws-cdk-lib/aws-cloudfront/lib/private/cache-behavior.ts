@@ -31,10 +31,10 @@ export class CacheBehavior {
 
     if (props.enableGrpc) {
       if (props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
-        throw new UnscopedValidationError('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
+        throw new UnscopedValidationError('AllowedmethodsAllowedmethodsAllowEnablegrpc', '\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
       }
       if (props.edgeLambdas !== undefined && props.edgeLambdas.length > 0) {
-        throw new UnscopedValidationError('\'edgeLambdas\' cannot be specified if \'enableGrpc\' is true');
+        throw new UnscopedValidationError('EdgelambdasSpecifiedEnablegrpcTrue', '\'edgeLambdas\' cannot be specified if \'enableGrpc\' is true');
       }
     }
 
@@ -84,7 +84,7 @@ export class CacheBehavior {
   private validateEdgeLambdas(edgeLambdas?: EdgeLambda[]) {
     const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
     if (edgeLambdas && edgeLambdas.some(lambda => lambda.includeBody && !includeBodyEventTypes.includes(lambda.eventType))) {
-      throw new UnscopedValidationError('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+      throw new UnscopedValidationError('IncludebodyTrueOriginRequest', '\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
     }
   }
 

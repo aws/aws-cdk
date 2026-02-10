@@ -252,7 +252,7 @@ export class ApiKey extends Resource implements IApiKey {
     const parsedArn = Stack.of(scope).splitArn(apiKeyArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new UnscopedValidationError(`API Key Arn ${apiKeyArn} does not have a resource name.`);
+      throw new UnscopedValidationError('ApiKeyArnApikeyarn', `API Key Arn ${apiKeyArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IApiKey {
@@ -292,34 +292,34 @@ export class ApiKey extends Resource implements IApiKey {
     addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError('Description1000CharactersReceived', `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.apiKeyName !== undefined && !Token.isUnresolved(props.apiKeyName)) {
       if (props.apiKeyName.length < 1 || props.apiKeyName.length > 100) {
-        throw new ValidationError(`\`apiKeyName\` must be between 1 and 100 characters, got: ${props.apiKeyName.length} characters.`, this);
+        throw new ValidationError('Apikeyname100CharactersGot', `\`apiKeyName\` must be between 1 and 100 characters, got: ${props.apiKeyName.length} characters.`, this);
       }
 
       if (!/^[-._\w]+$/.test(props.apiKeyName)) {
-        throw new ValidationError(`\`apiKeyName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.apiKeyName}.`, this);
+        throw new ValidationError('ApikeynameContainAlphanumericCharacters', `\`apiKeyName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.apiKeyName}.`, this);
       }
     }
 
     if (props.expireTime !== undefined && props.noExpiry === true) {
-      throw new ValidationError('`expireTime` must not be set when `noExpiry` has value true.', this);
+      throw new ValidationError('ExpiretimeNoexpiryValueTrue', '`expireTime` must not be set when `noExpiry` has value true.', this);
     }
 
     if (props.expireTime === undefined && props.noExpiry !== true) {
-      throw new ValidationError('`expireTime` must be set when `noExpiry` is false or undefined.', this);
+      throw new ValidationError('ExpiretimeNoexpiryFalseUndefined', '`expireTime` must be set when `noExpiry` is false or undefined.', this);
     }
 
     if (!props.allowMapsActions && !props.allowPlacesActions && !props.allowRoutesActions) {
-      throw new ValidationError('At least one of `allowMapsActions`, `allowPlacesActions`, or `allowRoutesActions` must be specified.', this);
+      throw new ValidationError('LeastOneAllowmapsactionsAllowplacesactions', 'At least one of `allowMapsActions`, `allowPlacesActions`, or `allowRoutesActions` must be specified.', this);
     }
 
     if (props.allowReferers !== undefined &&
       (props.allowReferers.length < 1 || props.allowReferers.length > 5)) {
-      throw new ValidationError(`\`allowReferers\` must be between 1 and 5 elements, got: ${props.allowReferers.length} elements.`, this);
+      throw new ValidationError('AllowreferersElementsGotProps', `\`allowReferers\` must be between 1 and 5 elements, got: ${props.allowReferers.length} elements.`, this);
     }
 
     const apiKey = new CfnAPIKey(this, 'Resource', {

@@ -33,6 +33,6 @@ export function validatePercentage(name: string, value?: number) {
   }
 
   if (value < 0 || value > 100 || !Number.isInteger(value)) {
-    throw new UnscopedValidationError(`'${name}': must be a whole number between 0 and 100, got: ${value}`);
+    throw new UnscopedValidationError('NameWholeNumber100', `'${name}': must be a whole number between 0 and 100, got: ${value}`);
   }
 }

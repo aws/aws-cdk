@@ -135,7 +135,7 @@ export abstract class LambdaInsightsVersion {
         // or if the version is not available for the Lambda Architecture
         const versionExists = RegionInfo.regions.some(regionInfo => regionInfo.cloudwatchLambdaInsightsArn(insightsVersion, arch));
         if (!versionExists) {
-          throw new ValidationError(`Insights version ${insightsVersion} does not exist.`, fn);
+          throw new ValidationError('InsightsVersionInsightsversionExist', `Insights version ${insightsVersion} does not exist.`, fn);
         }
         return {
           arn: getVersionArn(scope, insightsVersion, arch),
@@ -173,7 +173,7 @@ function getVersionArn(scope: IConstruct, insightsVersion: string, architecture?
   if (region !== undefined && !Token.isUnresolved(region)) {
     const arn = RegionInfo.get(region).cloudwatchLambdaInsightsArn(insightsVersion, arch);
     if (arn === undefined) {
-      throw new ValidationError(`Insights version ${insightsVersion} is not supported in region ${region}`, scope);
+      throw new ValidationError('InsightsVersionInsightsversionSupported', `Insights version ${insightsVersion} is not supported in region ${region}`, scope);
     }
     return arn;
   }

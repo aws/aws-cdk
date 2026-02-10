@@ -29,7 +29,7 @@ export class FeatureFlags {
     const context = Node.of(this.construct).tryGetContext(featureFlag);
     if (cxapi.CURRENT_VERSION_EXPIRED_FLAGS.includes(featureFlag)) {
       if (context !== undefined) {
-        throw new UnscopedValidationError(`Unsupported feature flag '${featureFlag}'. This flag existed on CDKv1 but has been removed in CDKv2.`
+        throw new UnscopedValidationError('UnsupportedFeatureFlagFeatureflag', `Unsupported feature flag '${featureFlag}'. This flag existed on CDKv1 but has been removed in CDKv2.`
           + ' CDK will now behave as the same as when the flag is enabled.');
       }
       return true;

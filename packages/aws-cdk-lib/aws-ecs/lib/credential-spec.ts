@@ -11,7 +11,7 @@ export class CredentialSpec {
    */
   protected static arnForS3Object(bucket: IBucket, key: string) {
     if (!key) {
-      throw new ValidationError('key is undefined', bucket);
+      throw new ValidationError('KeyUndefined', 'key is undefined', bucket);
     }
 
     return bucket.arnForObjects(key);

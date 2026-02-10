@@ -35,20 +35,20 @@ export class SqsSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.queue)) {
-      throw new ValidationError('The supplied Queue object must be an instance of Construct', topic);
+      throw new ValidationError('SuppliedQueueObjectInstance', 'The supplied Queue object must be an instance of Construct', topic);
     }
     const snsServicePrincipal = new iam.ServicePrincipal('sns.amazonaws.com');
 
     // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
     if (this.queue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
-      throw new ValidationError('SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription', topic);
+      throw new ValidationError('SqsQueueEncryptedAws', 'SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription', topic);
     }
 
     // if the dead-letter queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
     if (this.props.deadLetterQueue && this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
-      throw new ValidationError('SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue', topic);
+      throw new ValidationError('SqsQueueEncryptedAws', 'SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue', topic);
     }
 
     // add a statement to the queue resource policy which allows this topic

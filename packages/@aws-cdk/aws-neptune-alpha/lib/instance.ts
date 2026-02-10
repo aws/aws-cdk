@@ -300,7 +300,7 @@ export class InstanceType {
     if (cdk.Token.isUnresolved(instanceType) || instanceType.startsWith('db.')) {
       this._instanceType = instanceType;
     } else {
-      throw new cdk.UnscopedValidationError(`instance type must start with 'db.'; (got ${instanceType})`);
+      throw new cdk.UnscopedValidationError('InstanceTypeStartGot', `instance type must start with 'db.'; (got ${instanceType})`);
     }
   }
 }

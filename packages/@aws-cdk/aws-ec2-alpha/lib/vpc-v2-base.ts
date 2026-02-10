@@ -604,7 +604,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    */
   public addNatGateway(options: NatGatewayOptions): NatGateway {
     if (options.connectivityType === NatConnectivityType.PUBLIC && !this._internetGatewayId) {
-      throw new ValidationError('Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC', this);
+      throw new ValidationError('AddPublicNatGateway', 'Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC', this);
     }
     return new NatGateway(this, `NATGateway-${options.subnet.node.id}`, {
       vpc: this,

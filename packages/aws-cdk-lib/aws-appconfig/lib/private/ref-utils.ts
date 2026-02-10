@@ -11,7 +11,7 @@ export function toIEnvironment(environment: IEnvironmentRef): IEnvironment {
   if ('addDeployment' in environment && 'applicationId' in environment && 'environmentId' in environment) {
     return environment as IEnvironment;
   }
-  throw new UnscopedValidationError(`'environment' instance should implement IEnvironment, but doesn't: ${environment.constructor.name}`);
+  throw new UnscopedValidationError('EnvironmentInstanceImplementIenvironment', `'environment' instance should implement IEnvironment, but doesn't: ${environment.constructor.name}`);
 }
 
 /**
@@ -22,5 +22,5 @@ export function toIDeploymentStrategy(deploymentStrategy: IDeploymentStrategyRef
   if ('deploymentStrategyId' in deploymentStrategy && 'deploymentStrategyArn' in deploymentStrategy) {
     return deploymentStrategy as IDeploymentStrategy;
   }
-  throw new UnscopedValidationError(`'deploymentStrategy' instance should implement IDeploymentStrategy, but doesn't: ${deploymentStrategy.constructor.name}`);
+  throw new UnscopedValidationError('DeploymentstrategyInstanceImplementIdeploymentstrategy', `'deploymentStrategy' instance should implement IDeploymentStrategy, but doesn't: ${deploymentStrategy.constructor.name}`);
 }

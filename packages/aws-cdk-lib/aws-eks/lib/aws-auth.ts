@@ -47,7 +47,7 @@ export class AwsAuth extends Construct {
     const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
 
     if (!supportConfigMap) {
-      throw new ValidationError('ConfigMap not supported in the AuthenticationMode', this);
+      throw new ValidationError('ConfigmapSupportedAuthenticationmode', 'ConfigMap not supported in the AuthenticationMode', this);
     }
 
     this.stack = Stack.of(this);
@@ -125,7 +125,7 @@ export class AwsAuth extends Construct {
       // a dependency on the cluster, allowing those resources to be in a different stack,
       // will create a circular dependency. granted, it won't always be the case,
       // but we opted for the more cautious and restrictive approach for now.
-      throw new ValidationError(`${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`, this);
+      throw new ValidationError('ConstructNodePathDefined', `${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`, this);
     }
   }
 

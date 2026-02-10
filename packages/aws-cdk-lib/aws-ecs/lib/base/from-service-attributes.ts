@@ -31,7 +31,7 @@ export interface ServiceAttributes {
 
 export function fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
   if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
-    throw new ValidationError('You can only specify either serviceArn or serviceName.', scope);
+    throw new ValidationError('SpecifyEitherServicearnServicename', 'You can only specify either serviceArn or serviceName.', scope);
   }
 
   const newArnFormat = FeatureFlags.of(scope).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);

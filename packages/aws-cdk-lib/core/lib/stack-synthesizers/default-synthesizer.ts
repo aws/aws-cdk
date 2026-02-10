@@ -370,7 +370,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     function validateNoToken<A extends keyof DefaultStackSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new UnscopedValidationError(`DefaultStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+        throw new UnscopedValidationError('DefaultstacksynthesizerPropertyKeyContain', `DefaultStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
           '${Qualifier}',
           cxapi.EnvironmentPlaceholders.CURRENT_REGION,
           cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
@@ -547,7 +547,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
    */
   public get deployRoleArn(): string {
     if (!this._deployRoleArn) {
-      throw new UnscopedValidationError('deployRoleArn getter can only be called after the synthesizer has been bound to a Stack');
+      throw new UnscopedValidationError('DeployrolearnGetterCalledAfter', 'deployRoleArn getter can only be called after the synthesizer has been bound to a Stack');
     }
     return this._deployRoleArn;
   }
@@ -557,7 +557,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
    */
   public get cloudFormationExecutionRoleArn(): string {
     if (!this._cloudFormationExecutionRoleArn) {
-      throw new UnscopedValidationError('cloudFormationExecutionRoleArn getter can only be called after the synthesizer has been bound to a Stack');
+      throw new UnscopedValidationError('CloudformationexecutionrolearnGetterCalledAfter', 'cloudFormationExecutionRoleArn getter can only be called after the synthesizer has been bound to a Stack');
     }
     return this._cloudFormationExecutionRoleArn;
   }

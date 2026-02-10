@@ -815,7 +815,7 @@ export class EndpointAccess {
      */
     public readonly _config: EndpointAccessConfig) {
     if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
-      throw new UnscopedValidationError('CIDR blocks can only be configured when public access is enabled');
+      throw new UnscopedValidationError('CidrBlocksConfiguredPublic', 'CIDR blocks can only be configured when public access is enabled');
     }
   }
 
@@ -829,7 +829,7 @@ export class EndpointAccess {
     if (!this._config.privateAccess) {
       // when private access is disabled, we can't restric public
       // access since it will render the kubectl provider unusable.
-      throw new UnscopedValidationError('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+      throw new UnscopedValidationError('RestricPublicAccessEndpoint', 'Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
     }
     return new EndpointAccess({
       ...this._config,
@@ -1218,7 +1218,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
     if (typeof cdk8sChart.toJson !== 'function') {
-      throw new ValidationError(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`, this);
+      throw new ValidationError('InvalidCdk8sChartContain', `Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`, this);
     }
 
     const manifest = new KubernetesManifest(this, id, {
@@ -1300,7 +1300,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
-      throw new ValidationError('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false', this);
+      throw new ValidationError('SpecifyBootstrapoptionsBootstrapenabledFalse', 'Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false', this);
     }
 
     if (bootstrapEnabled) {
@@ -1730,7 +1730,7 @@ export class Cluster extends ClusterBase {
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
-      throw new ValidationError('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.', this);
+      throw new ValidationError('EksClusterSelectMultiple', 'eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.', this);
     }
 
     // Get subnetIds for all selected subnets
@@ -1770,12 +1770,12 @@ export class Cluster extends ClusterBase {
     if (!hasPendingLookup) {
       if (privateSubnets.length === 0 && publicAccessDisabled) {
         // no private subnets and no public access at all, no good.
-        throw new ValidationError('Vpc must contain private subnets when public endpoint access is disabled', this);
+        throw new ValidationError('VpcContainPrivateSubnets', 'Vpc must contain private subnets when public endpoint access is disabled', this);
       }
 
       if (privateSubnets.length === 0 && publicAccessRestricted) {
       // no private subnets and public access is restricted, no good.
-        throw new ValidationError('Vpc must contain private subnets when public endpoint access is restricted', this);
+        throw new ValidationError('VpcContainPrivateSubnets', 'Vpc must contain private subnets when public endpoint access is restricted', this);
       }
     }
 
@@ -1783,21 +1783,21 @@ export class Cluster extends ClusterBase {
 
     if (!hasPendingLookup) {
       if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
-        throw new ValidationError('Cannot place cluster handler in the VPC since no private subnets could be selected', this);
+        throw new ValidationError('PlaceClusterHandlerVpc', 'Cannot place cluster handler in the VPC since no private subnets could be selected', this);
       }
     }
 
     if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {
-      throw new ValidationError('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true', this);
+      throw new ValidationError('SpecifyClusterhandlersecuritygroupWithoutPlaceclusterhandlerinvpc', 'Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true', this);
     }
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
-      throw new ValidationError('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6', this);
+      throw new ValidationError('SpecifyServiceipv4cidrIpfamilyEqual', 'Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6', this);
     }
 
     // Check if the cluster name exceeds 100 characters
     if (!Token.isUnresolved(this.physicalName) && this.physicalName.length > 100) {
-      throw new ValidationError('Cluster name cannot be more than 100 characters', this);
+      throw new ValidationError('ClusterName100Characters', 'Cluster name cannot be more than 100 characters', this);
     }
 
     this.validateRemoteNetworkConfig(props);
@@ -1856,7 +1856,7 @@ export class Cluster extends ClusterBase {
 
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
       if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
-        throw new ValidationError('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.', this);
+        throw new ValidationError('PrivateEndpointAccessRequires', 'Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.', this);
       }
 
       this.kubectlPrivateSubnets = privateSubnets;
@@ -2057,7 +2057,7 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
-      throw new ValidationError('bootstrapOptions is not supported for Bottlerocket', this);
+      throw new ValidationError('BootstrapoptionsSupportedBottlerocket', 'bootstrapOptions is not supported for Bottlerocket', this);
     }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
@@ -2276,7 +2276,7 @@ export class Cluster extends ClusterBase {
     // wanted to avoid resource tear down, we decided for now that we will only
     // support a single EKS cluster per CFN stack.
     if (this.stack.node.tryFindChild(uid)) {
-      throw new ValidationError('Only a single EKS cluster can be defined within a CloudFormation stack', this);
+      throw new ValidationError('SingleEksClusterDefined', 'Only a single EKS cluster can be defined within a CloudFormation stack', this);
     }
 
     return new KubectlProvider(this.stack, uid, { cluster: this, removalPolicy });
@@ -2419,8 +2419,7 @@ export class Cluster extends ClusterBase {
       for (let i = 0; i < cidrs.length; i++) {
         for (let j = i + 1; j < cidrs.length; j++) {
           if (ec2.NetworkUtils.validateCidrPairOverlap(cidrs[i], cidrs[j])) {
-            throw new ValidationError(
-              `CIDR ${cidrs[i]} should not overlap with another CIDR in remote ${networkType} network #${index + 1}`,
+            throw new ValidationError('CidrCidrsOverlapAnother', `CIDR ${cidrs[i]} should not overlap with another CIDR in remote ${networkType} network #${index + 1}`,
               this,
             );
           }
@@ -2435,8 +2434,7 @@ export class Cluster extends ClusterBase {
         if (resolvedCidrs[j].length === 0) continue;
         const [overlap, cidr1, cidr2] = ec2.NetworkUtils.validateCidrBlocksOverlap(resolvedCidrs[i], resolvedCidrs[j]);
         if (overlap) {
-          throw new ValidationError(
-            `CIDR block ${cidr1} in remote ${networkType} network #${i + 1} should not overlap with CIDR block ${cidr2} in remote ${networkType} network #${j + 1}`,
+          throw new ValidationError('CidrBlockCidr1Remote', `CIDR block ${cidr1} in remote ${networkType} network #${i + 1} should not overlap with CIDR block ${cidr2} in remote ${networkType} network #${j + 1}`,
             this,
           );
         }
@@ -2458,8 +2456,7 @@ export class Cluster extends ClusterBase {
 
         const [overlap, nodeCidr, podCidr] = ec2.NetworkUtils.validateCidrBlocksOverlap(nodeCidrs, podCidrs);
         if (overlap) {
-          throw new ValidationError(
-            `Remote node network CIDR block ${nodeCidr} should not overlap with remote pod network CIDR block ${podCidr}`,
+          throw new ValidationError('RemoteNodeNetworkCidr', `Remote node network CIDR block ${nodeCidr} should not overlap with remote pod network CIDR block ${podCidr}`,
             this,
           );
         }
@@ -2718,55 +2715,55 @@ class ImportedCluster extends ClusterBase {
 
   public get vpc() {
     if (!this.props.vpc) {
-      throw new ValidationError('"vpc" is not defined for this imported cluster', this);
+      throw new ValidationError('VpcDefinedImportedCluster', '"vpc" is not defined for this imported cluster', this);
     }
     return this.props.vpc;
   }
 
   public get clusterSecurityGroup(): ec2.ISecurityGroup {
     if (!this._clusterSecurityGroup) {
-      throw new ValidationError('"clusterSecurityGroup" is not defined for this imported cluster', this);
+      throw new ValidationError('ClustersecuritygroupDefinedImportedCluster', '"clusterSecurityGroup" is not defined for this imported cluster', this);
     }
     return this._clusterSecurityGroup;
   }
 
   public get clusterSecurityGroupId(): string {
     if (!this.props.clusterSecurityGroupId) {
-      throw new ValidationError('"clusterSecurityGroupId" is not defined for this imported cluster', this);
+      throw new ValidationError('ClustersecuritygroupidDefinedImportedCluster', '"clusterSecurityGroupId" is not defined for this imported cluster', this);
     }
     return this.props.clusterSecurityGroupId;
   }
 
   public get clusterEndpoint(): string {
     if (!this.props.clusterEndpoint) {
-      throw new ValidationError('"clusterEndpoint" is not defined for this imported cluster', this);
+      throw new ValidationError('ClusterendpointDefinedImportedCluster', '"clusterEndpoint" is not defined for this imported cluster', this);
     }
     return this.props.clusterEndpoint;
   }
 
   public get clusterCertificateAuthorityData(): string {
     if (!this.props.clusterCertificateAuthorityData) {
-      throw new ValidationError('"clusterCertificateAuthorityData" is not defined for this imported cluster', this);
+      throw new ValidationError('ClustercertificateauthoritydataDefinedImportedCluster', '"clusterCertificateAuthorityData" is not defined for this imported cluster', this);
     }
     return this.props.clusterCertificateAuthorityData;
   }
 
   public get clusterEncryptionConfigKeyArn(): string {
     if (!this.props.clusterEncryptionConfigKeyArn) {
-      throw new ValidationError('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster', this);
+      throw new ValidationError('ClusterencryptionconfigkeyarnDefinedImportedCluster', '"clusterEncryptionConfigKeyArn" is not defined for this imported cluster', this);
     }
     return this.props.clusterEncryptionConfigKeyArn;
   }
 
   public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this.props.openIdConnectProvider) {
-      throw new ValidationError('"openIdConnectProvider" is not defined for this imported cluster', this);
+      throw new ValidationError('OpenidconnectproviderDefinedImportedCluster', '"openIdConnectProvider" is not defined for this imported cluster', this);
     }
     return this.props.openIdConnectProvider;
   }
 
   public get awsAuth(): AwsAuth {
-    throw new ValidationError('"awsAuth" is not supported on imported clusters', this);
+    throw new ValidationError('AwsauthSupportedImportedClusters', '"awsAuth" is not supported on imported clusters', this);
   }
 }
 

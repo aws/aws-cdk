@@ -153,7 +153,7 @@ class EcrDockerCredential extends DockerCredential {
     super(opts.usages);
 
     if (repositories.length === 0) {
-      throw new UnscopedValidationError('must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
+      throw new UnscopedValidationError('SupplyLeastOneEcr', 'must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
     }
     this.registryDomain = Fn.select(0, Fn.split('/', repositories[0].repositoryUri));
   }

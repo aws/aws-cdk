@@ -335,7 +335,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
    */
   public get loadBalancer(): NetworkLoadBalancer {
     if (!this._networkLoadBalancer) {
-      throw new ValidationError('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer', this);
+      throw new ValidationError('LoadbalancerAccessedClassConstructed', '.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer', this);
     }
     return this._networkLoadBalancer;
   }
@@ -363,12 +363,12 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new ValidationError('You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
+      throw new ValidationError('SpecifyEitherVpcCluster', 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
-      throw new ValidationError('You must specify a desiredCount greater than 0', this);
+      throw new ValidationError('SpecifyDesiredcountGreater', 'You must specify a desiredCount greater than 0', this);
     }
 
     this.desiredCount = props.desiredCount || 1;
@@ -398,7 +398,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new ValidationError('A Route53 hosted domain zone name is required to configure the specified domain name', this);
+        throw new ValidationError('Route53HostedDomainZone', 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
       switch (props.recordType ?? NetworkLoadBalancedServiceRecordType.ALIAS) {

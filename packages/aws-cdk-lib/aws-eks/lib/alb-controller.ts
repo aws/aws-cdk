@@ -377,7 +377,7 @@ export class AlbController extends Construct {
     });
 
     if (props.version.custom && !props.policy) {
-      throw new ValidationError("'albControllerOptions.policy' is required when using a custom controller version", this);
+      throw new ValidationError('AlbcontrolleroptionsPolicyRequiredCustom', "'albControllerOptions.policy' is required when using a custom controller version", this);
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions

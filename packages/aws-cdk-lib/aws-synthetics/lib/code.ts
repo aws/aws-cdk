@@ -93,7 +93,7 @@ export class AssetCode extends Code {
     super();
 
     if (!fs.existsSync(this.assetPath)) {
-      throw new UnscopedValidationError(`${this.assetPath} is not a valid path`);
+      throw new UnscopedValidationError('AssetpathValidPath', `${this.assetPath} is not a valid path`);
     }
   }
 
@@ -130,7 +130,7 @@ export class AssetCode extends Code {
    */
   private validateCanaryAsset(scope: Construct, handler: string, family: RuntimeFamily, runtimeName?: string) {
     if (!this.asset) {
-      throw new ValidationError("'validateCanaryAsset' must be called after 'this.asset' is instantiated", scope);
+      throw new ValidationError('ValidatecanaryassetCalledAfterAsset', "'validateCanaryAsset' must be called after 'this.asset' is instantiated", scope);
     }
 
     // Get the staged (or copied) asset path.
@@ -140,7 +140,7 @@ export class AssetCode extends Code {
 
     if (path.extname(assetPath) !== '.zip') {
       if (!fs.lstatSync(assetPath).isDirectory()) {
-        throw new ValidationError(`Asset must be a .zip file or a directory (${this.assetPath})`, scope);
+        throw new ValidationError('AssetZipFileDirectory', `Asset must be a .zip file or a directory (${this.assetPath})`, scope);
       }
 
       const filename = handler.split('.')[0];
@@ -173,20 +173,19 @@ export class AssetCode extends Code {
               ? `"nodejs/node_modules/${nodeFilename}"` // < 11.0: Only legacy path
               : `"${nodeFilename}" or "nodejs/node_modules/${nodeFilename}"`; // >= 11.0: Root OR legacy path
 
-            throw new ValidationError(
-              `The canary resource requires that the handler is present at ${expectedLocation} but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`,
+            throw new ValidationError('CanaryResourceRequiresHandler', `The canary resource requires that the handler is present at ${expectedLocation} but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`,
               scope,
             );
           }
         }
         // Requires the canary handler file to have the extension '.js', '.mjs', or '.cjs' for the playwright runtime.
         if (family === RuntimeFamily.NODEJS && runtimeName.includes('playwright') && !hasValidExtension) {
-          throw new ValidationError(`The canary resource requires that the handler is present at one of the following extensions: ${playwrightValidExtensions.join(', ')} but not found at ${this.assetPath}`, scope);
+          throw new ValidationError('CanaryResourceRequiresHandler', `The canary resource requires that the handler is present at one of the following extensions: ${playwrightValidExtensions.join(', ')} but not found at ${this.assetPath}`, scope);
         }
       }
       // Requires the asset directory to have the structure 'python/{canary-handler-name}.py' for the Python runtime.
       if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
-        throw new ValidationError(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`, scope);
+        throw new ValidationError('CanaryResourceRequiresHandler', `The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`, scope);
       }
     }
   }
@@ -200,13 +199,13 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new UnscopedValidationError('Canary inline code cannot be empty');
+      throw new UnscopedValidationError('CanaryInlineCodeEmpty', 'Canary inline code cannot be empty');
     }
   }
 
   public bind(scope: Construct, handler: string, _family: RuntimeFamily, _runtimeName?: string): CodeConfig {
     if (handler !== 'index.handler') {
-      throw new ValidationError(`The handler for inline code must be "index.handler" (got "${handler}")`, scope);
+      throw new ValidationError('HandlerInlineCodeIndex', `The handler for inline code must be "index.handler" (got "${handler}")`, scope);
     }
 
     return {

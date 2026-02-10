@@ -172,7 +172,7 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
   /** Implement the ec2.IConnectable interface, using the _connections field. */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('An imported ExampleResource cannot manage its security groups', this);
+      throw new ValidationError('ImportedExampleresourceManageSecurity', 'An imported ExampleResource cannot manage its security groups', this);
     }
     return this._connections;
   }
@@ -439,7 +439,7 @@ export class ExampleResource extends ExampleResourceBase {
     if (props.waitConditionHandleName !== undefined &&
         !Token.isUnresolved(props.waitConditionHandleName) &&
         !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
-      throw new ValidationError('waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
+      throw new ValidationError('WaitconditionhandlenameNonEmptyContain', 'waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
         `got: '${props.waitConditionHandleName}'`, this);
     }
 

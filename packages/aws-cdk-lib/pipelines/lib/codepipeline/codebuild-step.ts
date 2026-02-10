@@ -263,7 +263,7 @@ export class CodeBuildStep extends ShellStep {
    */
   public get project(): codebuild.IProject {
     if (!this._project) {
-      throw new UnscopedValidationError('Call pipeline.buildPipeline() before reading this property');
+      throw new UnscopedValidationError('CallPipelineBuildpipelineBefore', 'Call pipeline.buildPipeline() before reading this property');
     }
     return this._project;
   }
@@ -319,7 +319,7 @@ export class CodeBuildStep extends ShellStep {
    */
   public exportedVariable(variableName: string): string {
     if (this.exportedVarsRendered && !this.exportedVariables.has(variableName)) {
-      throw new UnscopedValidationError('exportVariable(): Pipeline has already been produced, cannot call this function anymore');
+      throw new UnscopedValidationError('ExportvariablePipelineAlreadyProduced', 'exportVariable(): Pipeline has already been produced, cannot call this function anymore');
     }
 
     this.exportedVariables.add(variableName);

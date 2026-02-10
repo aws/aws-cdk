@@ -146,7 +146,7 @@ export class Tracker extends Resource implements ITracker {
     const parsedArn = Stack.of(scope).splitArn(trackerArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new UnscopedValidationError(`Tracker Arn ${trackerArn} does not have a resource name.`);
+      throw new UnscopedValidationError('TrackerArnTrackerarnResource', `Tracker Arn ${trackerArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements ITracker {
@@ -186,16 +186,16 @@ export class Tracker extends Resource implements ITracker {
     addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError('Description1000CharactersReceived', `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.trackerName !== undefined && !Token.isUnresolved(props.trackerName)) {
       if (props.trackerName.length < 1 || props.trackerName.length > 100) {
-        throw new ValidationError(`\`trackerName\` must be between 1 and 100 characters, got: ${props.trackerName.length} characters.`, this);
+        throw new ValidationError('Trackername100CharactersGot', `\`trackerName\` must be between 1 and 100 characters, got: ${props.trackerName.length} characters.`, this);
       }
 
       if (!/^[-._\w]+$/.test(props.trackerName)) {
-        throw new ValidationError(`\`trackerName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.trackerName}.`, this);
+        throw new ValidationError('TrackernameContainAlphanumericCharacters', `\`trackerName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.trackerName}.`, this);
       }
     }
 
@@ -203,7 +203,7 @@ export class Tracker extends Resource implements ITracker {
       && !props.kmsKey
       && props.kmsKeyEnableGeospatialQueries
     ) {
-      throw new ValidationError('`kmsKeyEnableGeospatialQueries` can only be enabled that are configured to use an AWS KMS customer managed key', this);
+      throw new ValidationError('KmskeyenablegeospatialqueriesEnabledConfiguredAws', '`kmsKeyEnableGeospatialQueries` can only be enabled that are configured to use an AWS KMS customer managed key', this);
     }
 
     const tracker = new CfnTracker(this, 'Resource', {

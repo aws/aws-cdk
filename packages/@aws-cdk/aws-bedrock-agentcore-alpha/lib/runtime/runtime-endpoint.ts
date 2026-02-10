@@ -283,7 +283,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     // Combine and throw if any errors
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'));
+      throw new ValidationError('ValidationError', allErrors.join('\n'));
     }
   }
 
@@ -306,7 +306,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       });
 
       if (errors.length > 0) {
-        throw new ValidationError(errors.join('\n'));
+        throw new ValidationError('ValidationError', errors.join('\n'));
       }
     }
   }
@@ -331,7 +331,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new ValidationError('ValidationError', patternErrors.join('\n'));
     }
   }
 
@@ -354,7 +354,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new ValidationError('ValidationError', patternErrors.join('\n'));
     }
   }
 
@@ -388,11 +388,11 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       // Combine key errors and throw if any
       const keyErrors = [...keyLengthErrors, ...keyPatternErrors];
       if (keyErrors.length > 0) {
-        throw new ValidationError(keyErrors.join('\n'));
+        throw new ValidationError('ValidationError', keyErrors.join('\n'));
       }
 
       if (value === undefined || value === null) {
-        throw new ValidationError(`Tag value for key "${key}" cannot be null or undefined`);
+        throw new ValidationError('TagValueKeyKey', `Tag value for key "${key}" cannot be null or undefined`);
       }
 
       // Validate tag value length
@@ -414,7 +414,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       // Combine value errors and throw if any
       const valueErrors = [...valueLengthErrors, ...valuePatternErrors];
       if (valueErrors.length > 0) {
-        throw new ValidationError(valueErrors.join('\n'));
+        throw new ValidationError('ValidationError', valueErrors.join('\n'));
       }
     }
   }

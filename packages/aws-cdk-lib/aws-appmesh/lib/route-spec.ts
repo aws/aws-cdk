@@ -450,7 +450,7 @@ class HttpRouteSpec extends RouteSpec {
       const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
 
       if (httpRetryEvents.length + tcpRetryEvents.length === 0) {
-        throw new cdk.UnscopedValidationError('You must specify one value for at least one of `httpRetryEvents` or `tcpRetryEvents`');
+        throw new cdk.UnscopedValidationError('SpecifyOneValueLeast', 'You must specify one value for at least one of `httpRetryEvents` or `tcpRetryEvents`');
       }
 
       this.retryPolicy = {
@@ -558,7 +558,7 @@ class GrpcRouteSpec extends RouteSpec {
       const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
 
       if (grpcRetryEvents.length + httpRetryEvents.length + tcpRetryEvents.length === 0) {
-        throw new cdk.UnscopedValidationError('You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents` or `tcpRetryEvents`');
+        throw new cdk.UnscopedValidationError('SpecifyOneValueLeast', 'You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents` or `tcpRetryEvents`');
       }
 
       this.retryPolicy = {
@@ -580,7 +580,7 @@ class GrpcRouteSpec extends RouteSpec {
     validateGrpcMatchArrayLength(scope, metadata);
 
     if (methodName && !serviceName) {
-      throw new cdk.ValidationError('If you specify a method name, you must also specify a service name', scope);
+      throw new cdk.ValidationError('SpecifyMethodNameAlso', 'If you specify a method name, you must also specify a service name', scope);
     }
 
     return {

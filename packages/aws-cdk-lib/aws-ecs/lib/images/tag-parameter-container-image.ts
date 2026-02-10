@@ -42,7 +42,7 @@ export class TagParameterContainerImage extends ContainerImage {
         if (this.imageTagParameter) {
           return this.imageTagParameter.logicalId;
         } else {
-          throw new cdk.UnscopedValidationError('TagParameterContainerImage must be used in a container definition when using tagParameterName');
+          throw new cdk.UnscopedValidationError('TagparametercontainerimageUsedContainerDefinition', 'TagParameterContainerImage must be used in a container definition when using tagParameterName');
         }
       },
     });
@@ -58,7 +58,7 @@ export class TagParameterContainerImage extends ContainerImage {
         if (this.imageTagParameter) {
           return this.imageTagParameter.valueAsString;
         } else {
-          throw new cdk.UnscopedValidationError('TagParameterContainerImage must be used in a container definition when using tagParameterValue');
+          throw new cdk.UnscopedValidationError('TagparametercontainerimageUsedContainerDefinition', 'TagParameterContainerImage must be used in a container definition when using tagParameterValue');
         }
       },
     });

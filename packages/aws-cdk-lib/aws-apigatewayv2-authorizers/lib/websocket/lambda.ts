@@ -52,7 +52,7 @@ export class WebSocketLambdaAuthorizer implements IWebSocketRouteAuthorizer {
 
   public bind(options: WebSocketRouteAuthorizerBindOptions): WebSocketRouteAuthorizerConfig {
     if (this.webSocketApi && (this.webSocketApi.apiId !== options.route.webSocketApi.apiId)) {
-      throw new ValidationError('Cannot attach the same authorizer to multiple Apis', options.scope);
+      throw new ValidationError('AttachSameAuthorizerMultiple', 'Cannot attach the same authorizer to multiple Apis', options.scope);
     }
 
     if (!this.authorizer) {

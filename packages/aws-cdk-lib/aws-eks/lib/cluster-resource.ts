@@ -53,7 +53,7 @@ export class ClusterResource extends Construct {
     super(scope, id);
 
     if (!props.roleArn) {
-      throw new ValidationError('"roleArn" is required', this);
+      throw new ValidationError('RolearnRequired', '"roleArn" is required', this);
     }
 
     const provider = ClusterResourceProvider.getOrCreate(this, {

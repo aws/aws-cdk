@@ -115,7 +115,7 @@ export class FirewallRuleGroupAssociation extends Resource {
     addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.priority) && (props.priority <= 100 || props.priority >= 9000)) {
-      throw new ValidationError(`Priority must be greater than 100 and less than 9000, got ${props.priority}`, this);
+      throw new ValidationError('PriorityGreater1009000', `Priority must be greater than 100 and less than 9000, got ${props.priority}`, this);
     }
 
     const association = new CfnFirewallRuleGroupAssociation(this, 'Resource', {

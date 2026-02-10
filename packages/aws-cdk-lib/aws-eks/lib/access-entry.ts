@@ -452,7 +452,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
     if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
         !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
-      throw new ValidationError(`Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
+      throw new ValidationError('AccessEntryTypeAccessentrytype', `Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
     }
   }
 

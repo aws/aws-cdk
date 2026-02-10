@@ -61,11 +61,11 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(scope: Construct, replicaRegion: string) {
         const stackRegion = Stack.of(scope).region;
         if (Token.isUnresolved(stackRegion)) {
-          throw new ValidationError('Replica SSE specification cannot be rendered in a region agnostic stack', scope);
+          throw new ValidationError('ReplicaSseSpecificationRendered', 'Replica SSE specification cannot be rendered in a region agnostic stack', scope);
         }
 
         if (replicaKeyArns.hasOwnProperty(stackRegion)) {
-          throw new ValidationError(`KMS key for deployment region ${stackRegion} cannot be defined in 'replicaKeyArns'`, scope);
+          throw new ValidationError('KmsKeyDeploymentRegion', `KMS key for deployment region ${stackRegion} cannot be defined in 'replicaKeyArns'`, scope);
         }
 
         if (replicaRegion === stackRegion) {
@@ -76,7 +76,7 @@ export abstract class TableEncryptionV2 {
 
         const regionInReplicaKeyArns = replicaKeyArns.hasOwnProperty(replicaRegion);
         if (!regionInReplicaKeyArns) {
-          throw new ValidationError(`KMS key for ${replicaRegion} was not found in 'replicaKeyArns'`, scope);
+          throw new ValidationError('KmsKeyReplicaregionFound', `KMS key for ${replicaRegion} was not found in 'replicaKeyArns'`, scope);
         }
 
         return {

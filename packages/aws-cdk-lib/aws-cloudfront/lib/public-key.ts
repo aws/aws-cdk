@@ -71,7 +71,7 @@ export class PublicKey extends Resource implements IPublicKey {
     addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
-      throw new ValidationError(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
+      throw new ValidationError('PublicKeyPemFormat', `Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
     }
 
     const resource = new CfnPublicKey(this, 'Resource', {

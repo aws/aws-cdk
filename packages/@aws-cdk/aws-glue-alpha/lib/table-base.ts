@@ -292,7 +292,7 @@ export abstract class TableBase extends Resource implements ITable {
   public addPartitionIndex(index: PartitionIndex) {
     const numPartitions = this.partitionIndexCustomResources.length;
     if (numPartitions >= 3) {
-      throw new ValidationError('Maximum number of partition indexes allowed is 3', this);
+      throw new ValidationError('MaximumNumberPartitionIndexes', 'Maximum number of partition indexes allowed is 3', this);
     }
     this.validatePartitionIndex(index);
 
@@ -338,14 +338,14 @@ export abstract class TableBase extends Resource implements ITable {
 
   private validatePartitionIndex(index: PartitionIndex) {
     if (index.indexName !== undefined && (index.indexName.length < 1 || index.indexName.length > 255)) {
-      throw new ValidationError(`Index name must be between 1 and 255 characters, but got ${index.indexName.length}`, this);
+      throw new ValidationError('IndexName255Characters', `Index name must be between 1 and 255 characters, but got ${index.indexName.length}`, this);
     }
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
-      throw new ValidationError('The table must have partition keys to create a partition index', this);
+      throw new ValidationError('TablePartitionKeysCreate', 'The table must have partition keys to create a partition index', this);
     }
     const keyNames = this.partitionKeys.map(pk => pk.name);
     if (!index.keyNames.every(k => keyNames.includes(k))) {
-      throw new ValidationError(`All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
+      throw new ValidationError('IndexKeysAlsoPartition', `All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
     }
   }
 
@@ -359,8 +359,7 @@ export abstract class TableBase extends Resource implements ITable {
 
     // Validate that partition keys exist
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
-      throw new ValidationError(
-        'The table must have partition keys to use partition projection',
+      throw new ValidationError('TablePartitionKeysPartition', 'The table must have partition keys to use partition projection',
         this,
       );
     }
@@ -371,8 +370,7 @@ export abstract class TableBase extends Resource implements ITable {
     for (const [columnName, config] of Object.entries(this.partitionProjection)) {
       // Validate that column is a partition key
       if (!partitionKeyNames.includes(columnName)) {
-        throw new ValidationError(
-          `Partition projection column "${columnName}" must be a partition key. ` +
+        throw new ValidationError('PartitionProjectionColumnColumnname', `Partition projection column "${columnName}" must be a partition key. ` +
           `Partition keys are: ${partitionKeyNames.join(', ')}`,
           this,
         );
@@ -384,8 +382,7 @@ export abstract class TableBase extends Resource implements ITable {
       // Check for conflicts with manually specified parameters
       const conflictingKeys = Object.keys(generatedParams).filter(key => key in this.parameters);
       if (conflictingKeys.length > 0) {
-        throw new ValidationError(
-          `Partition projection parameters conflict with manually specified parameters: ${conflictingKeys.join(', ')}. ` +
+        throw new ValidationError('PartitionProjectionParametersConflict', `Partition projection parameters conflict with manually specified parameters: ${conflictingKeys.join(', ')}. ` +
           'Use the partitionProjection property instead of manually specifying projection parameters.',
           this,
         );
@@ -397,8 +394,7 @@ export abstract class TableBase extends Resource implements ITable {
 
     // Check for conflict with projection.enabled
     if ('projection.enabled' in this.parameters) {
-      throw new ValidationError(
-        'Parameter "projection.enabled" conflicts with partitionProjection configuration. ' +
+      throw new ValidationError('ParameterProjectionEnabledConflicts', 'Parameter "projection.enabled" conflicts with partitionProjection configuration. ' +
         'Use the partitionProjection property instead of manually specifying projection.enabled.',
         this,
       );
@@ -440,13 +436,13 @@ export abstract class TableBase extends Resource implements ITable {
 
 function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   if (columns.length === 0) {
-    throw new UnscopedValidationError('you must specify at least one column for the table');
+    throw new UnscopedValidationError('SpecifyLeastOneColumn', 'you must specify at least one column for the table');
   }
   // Check there is at least one column and no duplicated column names or partition keys.
   const names = new Set<string>();
   (columns.concat(partitionKeys || [])).forEach(column => {
     if (names.has(column.name)) {
-      throw new UnscopedValidationError(`column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
+      throw new UnscopedValidationError('ColumnNamesPartitionKeys', `column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
     }
     names.add(column.name);
   });

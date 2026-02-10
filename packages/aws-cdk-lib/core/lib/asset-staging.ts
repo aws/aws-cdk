@@ -176,14 +176,14 @@ export class AssetStaging extends Construct {
     };
 
     if (!fs.existsSync(this.sourcePath)) {
-      throw new ValidationError(`Cannot find asset at ${this.sourcePath}`, this);
+      throw new ValidationError('FindAssetSourcepath', `Cannot find asset at ${this.sourcePath}`, this);
     }
 
     this.sourceStats = fs.statSync(this.sourcePath);
 
     const outdir = Stage.of(this)?.assetOutdir;
     if (!outdir) {
-      throw new ValidationError('unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope', this);
+      throw new ValidationError('UnableDetermineCloudAssembly', 'unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope', this);
     }
     this.assetOutdir = outdir;
 
@@ -288,7 +288,7 @@ export class AssetStaging extends Construct {
     const stagedPath = this.renderStagedPath(this.sourcePath, targetPath);
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
-      throw new ValidationError(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`, this);
+      throw new ValidationError('AssetSourcepathExpectedEither', `Asset ${this.sourcePath} is expected to be either a directory or a regular file`, this);
     }
 
     this.stageAsset(this.sourcePath, stagedPath, 'copy');
@@ -308,7 +308,7 @@ export class AssetStaging extends Construct {
    */
   private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
     if (!this.sourceStats.isDirectory()) {
-      throw new ValidationError(`Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
+      throw new ValidationError('AssetSourcepathExpectedDirectory', `Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
     }
 
     if (skip) {
@@ -408,7 +408,7 @@ export class AssetStaging extends Construct {
       fs.mkdirSync(targetPath);
       FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
     } else {
-      throw new ValidationError(`Unknown file type: ${sourcePath}`, this);
+      throw new ValidationError('UnknownFileTypeSourcepath', `Unknown file type: ${sourcePath}`, this);
     }
   }
 
@@ -476,12 +476,12 @@ export class AssetStaging extends Construct {
       // Success, rename the tempDir into place
       fs.renameSync(tempDir, bundleDir);
     } catch (err) {
-      throw new ValidationError(`Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`, this);
+      throw new ValidationError('FailedBundleAssetNode', `Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`, this);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
       const outputDir = localBundling ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
-      throw new ValidationError(`Bundling did not produce any output. Check that content is written to ${outputDir}.`, this);
+      throw new ValidationError('BundlingProduceAnyOutput', `Bundling did not produce any output. Check that content is written to ${outputDir}.`, this);
     }
   }
 
@@ -509,11 +509,11 @@ export class AssetStaging extends Construct {
       case AssetHashType.BUNDLE:
       case AssetHashType.OUTPUT:
         if (!outputDir) {
-          throw new ValidationError(`Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`, this);
+          throw new ValidationError('HashtypeHashTypeBundling', `Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`, this);
         }
         return FileSystem.fingerprint(outputDir, this.fingerprintOptions);
       default:
-        throw new ValidationError('Unknown asset hash type.', this);
+        throw new ValidationError('UnknownAssetHashType', 'Unknown asset hash type.', this);
     }
   }
 
@@ -545,10 +545,10 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
     : (assetHashType ?? AssetHashType.SOURCE);
 
   if (customSourceFingerprint && hashType !== AssetHashType.CUSTOM) {
-    throw new ValidationError(`Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`, scope);
+    throw new ValidationError('SpecifyAssethashtypeAssethashtypeAssethash', `Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`, scope);
   }
   if (hashType === AssetHashType.CUSTOM && !customSourceFingerprint) {
-    throw new ValidationError('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.', scope);
+    throw new ValidationError('AssethashSpecifiedAssethashtypeAssethashtype', '`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.', scope);
   }
 
   return hashType;
@@ -606,11 +606,11 @@ function sanitizeHashValue(key: string, value: any): any {
  */
 function findSingleFile(scope: Construct, directory: string, archiveOnly: boolean): string | undefined {
   if (!fs.existsSync(directory)) {
-    throw new ValidationError(`Directory ${directory} does not exist.`, scope);
+    throw new ValidationError('DirectoryDirectoryExist', `Directory ${directory} does not exist.`, scope);
   }
 
   if (!fs.statSync(directory).isDirectory()) {
-    throw new ValidationError(`${directory} is not a directory.`, scope);
+    throw new ValidationError('DirectoryDirectory', `${directory} is not a directory.`, scope);
   }
 
   const content = fs.readdirSync(directory);
@@ -650,7 +650,7 @@ function determineBundledAsset(scope: Construct, bundleDir: string, outputType: 
     case BundlingOutput.ARCHIVED:
     case BundlingOutput.SINGLE_FILE:
       if (!archiveFile) {
-        throw new ValidationError('Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`', scope);
+        throw new ValidationError('BundlingOutputDirectoryExpected', 'Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`', scope);
       }
       return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
   }

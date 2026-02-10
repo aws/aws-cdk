@@ -41,7 +41,7 @@ export class ApplicationListenerCertificate extends Construct {
     super(scope, id);
 
     if (!props.certificateArns && !props.certificates) {
-      throw new ValidationError('At least one of \'certificateArns\' or \'certificates\' is required', this);
+      throw new ValidationError('LeastOneCertificatearnsCertificates', 'At least one of \'certificateArns\' or \'certificates\' is required', this);
     }
 
     const certificates = [

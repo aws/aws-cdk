@@ -71,7 +71,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   const sourceStage = Stage.of(sourceStack);
   const targetStage = Stage.of(targetStack);
   if (sourceStage !== targetStage) {
-    throw new UnscopedValidationError(`You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
+    throw new UnscopedValidationError('DependencySourceNodePath', `You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
   }
 
   // find the deepest common stack between the two elements
@@ -118,7 +118,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   // `source` is a direct or indirect nested stack of `target`, and this is not
   // possible (nested stacks cannot depend on their parents).
   if (commonStack === target) {
-    throw new UnscopedValidationError(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`);
+    throw new UnscopedValidationError('NestedStackSourcestackNode', `Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`);
   }
 
   // we have a common stack from which we can reach both `source` and `target`

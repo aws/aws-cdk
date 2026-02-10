@@ -22,7 +22,7 @@ export function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): 
  */
 export function ensurePositiveInteger(val: number) {
   if (!Token.isUnresolved(val) && Number.isInteger(val) && val < 0) {
-    throw new UnscopedValidationError(`\`${val}\` must be a positive integer.`);
+    throw new UnscopedValidationError('ValPositiveInteger', `\`${val}\` must be a positive integer.`);
   }
 }
 
@@ -31,7 +31,7 @@ export function ensurePositiveInteger(val: number) {
  */
 export function ensureInRange(val: number, start: number, end: number) {
   if (!Token.isUnresolved(val) && !(val >= start && val <= end)) {
-    throw new UnscopedValidationError(`\`${val}\` must be within range ${start}:${end}`);
+    throw new UnscopedValidationError('ValWithinRangeStart', `\`${val}\` must be within range ${start}:${end}`);
   }
 }
 

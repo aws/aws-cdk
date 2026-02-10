@@ -15,7 +15,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
     const { region } = Stack.of(this.bucket.stack);
 
     if (Token.isUnresolved(region)) {
-      throw new ValidationError([
+      throw new ValidationError('RecordAliasRegionAgnostic', [
         'Cannot use an S3 record alias in region-agnostic stacks.',
         'You must specify a specific region when you define the stack',
         '(see https://docs.aws.amazon.com/cdk/latest/guide/environments.html)',
@@ -25,7 +25,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
     const { s3StaticWebsiteHostedZoneId: hostedZoneId, s3StaticWebsiteEndpoint: dnsName } = RegionInfo.get(region);
 
     if (!hostedZoneId || !dnsName) {
-      throw new ValidationError(`Bucket website target is not supported for the "${region}" region`, record);
+      throw new ValidationError('BucketWebsiteTargetSupported', `Bucket website target is not supported for the "${region}" region`, record);
     }
 
     return { hostedZoneId, dnsName, evaluateTargetHealth: this.props?.evaluateTargetHealth };

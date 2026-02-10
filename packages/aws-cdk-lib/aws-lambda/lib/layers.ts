@@ -115,7 +115,7 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
 
   public addPermission(id: string, permission: LayerVersionPermission) {
     if (permission.organizationId != null && permission.accountId !== '*') {
-      throw new ValidationError(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`, this);
+      throw new ValidationError('OrganizationidSpecifiedAwsaccountidPermission', `OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`, this);
     }
 
     new CfnLayerVersionPermission(this, id, {
@@ -187,7 +187,7 @@ export class LayerVersion extends LayerVersionBase {
    */
   public static fromLayerVersionAttributes(scope: Construct, id: string, attrs: LayerVersionAttributes): ILayerVersion {
     if (attrs.compatibleRuntimes && attrs.compatibleRuntimes.length === 0) {
-      throw new ValidationError('Attempted to import a Lambda layer that supports no runtime!', scope);
+      throw new ValidationError('AttemptedImportLambdaLayer', 'Attempted to import a Lambda layer that supports no runtime!', scope);
     }
 
     class Import extends LayerVersionBase {
@@ -209,16 +209,16 @@ export class LayerVersion extends LayerVersionBase {
     addConstructMetadata(this, props);
 
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
-      throw new ValidationError('Attempted to define a Lambda layer that supports no runtime!', this);
+      throw new ValidationError('AttemptedDefineLambdaLayer', 'Attempted to define a Lambda layer that supports no runtime!', this);
     }
 
     // Allow usage of the code in this context...
     const code = props.code.bind(this);
     if (code.inlineCode) {
-      throw new ValidationError('Inline code is not supported for AWS Lambda layers', this);
+      throw new ValidationError('InlineCodeSupportedAws', 'Inline code is not supported for AWS Lambda layers', this);
     }
     if (!code.s3Location) {
-      throw new ValidationError('Code must define an S3 location', this);
+      throw new ValidationError('CodeDefineLocation', 'Code must define an S3 location', this);
     }
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {

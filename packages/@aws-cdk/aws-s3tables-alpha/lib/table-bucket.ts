@@ -511,8 +511,7 @@ export class TableBucket extends TableBucketBase {
     }
 
     if (errors.length > 0) {
-      throw new UnscopedValidationError(
-        `Invalid S3 table bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`,
+      throw new UnscopedValidationError('InvalidTableBucketName', `Invalid S3 table bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`,
       );
     }
   }
@@ -557,8 +556,7 @@ export class TableBucket extends TableBucketBase {
     }
 
     if (errors.length > 0) {
-      throw new UnscopedValidationError(
-        `Invalid UnreferencedFileRemovalProperty})${EOL}${errors.join(EOL)}`,
+      throw new UnscopedValidationError('InvalidUnreferencedfileremovalpropertyEolErrors', `Invalid UnreferencedFileRemovalProperty})${EOL}${errors.join(EOL)}`,
       );
     }
   }
@@ -679,10 +677,10 @@ export class TableBucket extends TableBucketBase {
           },
         };
       } else {
-        throw new UnscopedValidationError('Expected encryption = `KMS` with user provided encryption key');
+        throw new UnscopedValidationError('ExpectedEncryptionKmsUser', 'Expected encryption = `KMS` with user provided encryption key');
       }
     }
-    throw new UnscopedValidationError(`Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
+    throw new UnscopedValidationError('UnknownEncryptionConfigurationDetected', `Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
   }
 
   /**

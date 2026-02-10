@@ -273,7 +273,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
 
 function toIDatabaseCluster(cluster: IDBClusterRef): IDatabaseCluster {
   if (!('clusterIdentifier' in cluster) || !('connections' in cluster)) {
-    throw new cdk.UnscopedValidationError(`'cluster' instance should implement IDatabaseCluster, but doesn't: ${cluster.constructor.name}`);
+    throw new cdk.UnscopedValidationError('ClusterInstanceImplementIdatabasecluster', `'cluster' instance should implement IDatabaseCluster, but doesn't: ${cluster.constructor.name}`);
   }
   return cluster as IDatabaseCluster;
 }

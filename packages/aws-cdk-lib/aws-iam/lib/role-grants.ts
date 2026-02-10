@@ -24,7 +24,7 @@ export class RoleGrants {
   public assumeRole(identity: IPrincipal): Grant {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new ValidationError('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this.role);
+      throw new ValidationError('ServiceAccountPrincipalGrantassumerole', 'Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this.role);
     }
     return Grant.addToPrincipal({
       grantee: identity,

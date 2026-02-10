@@ -51,7 +51,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
-      throw new ValidationError('JWT discovery URL must end with /.well-known/openid-configuration');
+      throw new ValidationError('JwtDiscoveryUrlEnd', 'JWT discovery URL must end with /.well-known/openid-configuration');
     }
     return new JwtAuthorizerConfiguration(discoveryUrl, allowedClients, allowedAudience, allowedScopes, customClaims);
   }
@@ -96,7 +96,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
-      throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
+      throw new ValidationError('OauthDiscoveryUrlEnd', 'OAuth discovery URL must end with /.well-known/openid-configuration');
     }
     return new OAuthAuthorizerConfiguration(discoveryUrl, clientId, allowedAudience, allowedScopes, customClaims);
   }

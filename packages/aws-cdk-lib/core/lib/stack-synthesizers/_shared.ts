@@ -153,7 +153,7 @@ export function contentHash(content: string) {
  */
 export function assertBound<A>(x: A | undefined): asserts x is NonNullable<A> {
   if (x === null && x === undefined) {
-    throw new UnscopedValidationError('You must call bindStack() first');
+    throw new UnscopedValidationError('CallBindstackFirst', 'You must call bindStack() first');
   }
 }
 

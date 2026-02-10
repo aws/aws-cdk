@@ -90,7 +90,7 @@ export class TarballImageAsset extends Construct implements IAsset {
     super(scope, id);
 
     if (!fs.existsSync(props.tarballFile)) {
-      throw new ValidationError(`Cannot find file at ${props.tarballFile}`, this);
+      throw new ValidationError('FindFilePropsTarballfile', `Cannot find file at ${props.tarballFile}`, this);
     }
 
     const stagedTarball = new AssetStaging(this, 'Staging', { sourcePath: props.tarballFile });

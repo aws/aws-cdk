@@ -299,7 +299,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
     if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
-      throw new ValidationError('CIDR block should be within the range of VPC', this);
+      throw new ValidationError('CidrBlockWithinRange', 'CIDR block should be within the range of VPC', this);
     }
 
     let overlap: boolean = false;
@@ -316,15 +316,15 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     }
 
     if (overlap || overlapIpv6) {
-      throw new ValidationError('CIDR block should not overlap with existing subnet blocks', this);
+      throw new ValidationError('CidrBlockOverlapExisting', 'CIDR block should not overlap with existing subnet blocks', this);
     }
 
     if (props.assignIpv6AddressOnCreation && !props.ipv6CidrBlock) {
-      throw new ValidationError('IPv6 CIDR block is required when assigning IPv6 address on creation', this);
+      throw new ValidationError('Ipv6CidrBlockRequired', 'IPv6 CIDR block is required when assigning IPv6 address on creation', this);
     }
 
     if (props.mapPublicIpOnLaunch === true && props.subnetType !== SubnetType.PUBLIC) {
-      throw new ValidationError('mapPublicIpOnLaunch can only be set to true for public subnets', this);
+      throw new ValidationError('MappubliciponlaunchTruePublicSubnets', 'mapPublicIpOnLaunch can only be set to true for public subnets', this);
     }
 
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -483,7 +483,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
   if (findFunctionType) {
     findFunctionType(vpc, subnet);
   } else {
-    throw new UnscopedValidationError(`Unsupported subnet type: ${type}`);
+    throw new UnscopedValidationError('UnsupportedSubnetTypeType', `Unsupported subnet type: ${type}`);
   }
 
   /**
@@ -511,7 +511,7 @@ function validateSupportIpv6(vpc: IVpcV2) {
   secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6Pool !== undefined)) {
       return true;
     } else {
-      throw new UnscopedValidationError('To use IPv6, the VPC must enable IPv6 support.');
+      throw new UnscopedValidationError('Ipv6VpcEnableIpv6', 'To use IPv6, the VPC must enable IPv6 support.');
     }
   } else {return false;}
 }
@@ -548,7 +548,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
   // If no IPv4 is assigned as secondary address
   if (allCidrs.length === 0) {
-    throw new UnscopedValidationError('No secondary IP address attached to VPC');
+    throw new UnscopedValidationError('SecondaryAddressAttachedVpc', 'No secondary IP address attached to VPC');
   }
 
   return allCidrs.some(c => c.containsCidr(subnetCidrBlock));

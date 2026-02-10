@@ -156,7 +156,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new ValidationError('apiEndpoint is not configured on the imported WebSocketApi.', scope);
+          throw new ValidationError('ApiendpointConfiguredImportedWebsocketapi', 'apiEndpoint is not configured on the imported WebSocketApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -244,7 +244,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   @MethodMetadata()
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new UnscopedValidationError(`Path must start with '/': ${path}`);
+      throw new UnscopedValidationError('PathStartPath', `Path must start with '/': ${path}`);
     }
 
     if (method && method.toUpperCase() === 'ANY') {

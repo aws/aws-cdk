@@ -150,21 +150,20 @@ export class HelmChart extends Construct {
 
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
     if (!provider) {
-      throw new ValidationError('Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
+      throw new ValidationError('KubectlProviderDefinedCluster', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
-      throw new ValidationError('Helm chart timeout cannot be higher than 15 minutes.', this);
+      throw new ValidationError('HelmChartTimeoutHigher', 'Helm chart timeout cannot be higher than 15 minutes.', this);
     }
 
     if (!this.chart && !this.chartAsset) {
-      throw new ValidationError("Either 'chart' or 'chartAsset' must be specified to install a helm chart", this);
+      throw new ValidationError('EitherChartChartassetSpecified', "Either 'chart' or 'chartAsset' must be specified to install a helm chart", this);
     }
 
     if (this.chartAsset && (this.repository || this.version)) {
-      throw new ValidationError(
-        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
+      throw new ValidationError('NeitherRepositoryNorVersion', "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
         this,
       );
     }

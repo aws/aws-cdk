@@ -326,7 +326,7 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     // check if domain name is 64 characters or less
     if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
-      throw new ValidationError('Domain name must be 64 characters or less', this);
+      throw new ValidationError('DomainNameCharacters', 'Domain name must be 64 characters or less', this);
     }
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
@@ -390,13 +390,13 @@ function renderDomainValidation(scope: Construct, validation: CertificateValidat
       for (const domainName of domainNames) {
         const validationDomain = validation.props.validationDomains?.[domainName];
         if (!validationDomain && Token.isUnresolved(domainName)) {
-          throw new ValidationError('When using Tokens for domain names, \'validationDomains\' needs to be supplied', scope);
+          throw new ValidationError('TokensDomainNamesValidationdomains', 'When using Tokens for domain names, \'validationDomains\' needs to be supplied', scope);
         }
         domainValidation.push({ domainName, validationDomain: validationDomain ?? apexDomain(domainName) });
       }
       break;
     default:
-      throw new ValidationError(`Unknown validation method ${validation.method}`, scope);
+      throw new ValidationError('UnknownValidationMethodValidation', `Unknown validation method ${validation.method}`, scope);
   }
 
   return domainValidation.length !== 0 ? domainValidation : undefined;

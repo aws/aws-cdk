@@ -113,7 +113,7 @@ export function addLambdaPermission(rule: events.IRuleRef, handler: lambda.IFunc
  */
 export function addToDeadLetterQueueResourcePolicy(rule: events.IRuleRef, queue: sqs.IQueue) {
   if (!sameEnvDimension(rule.env.region, queue.env.region)) {
-    throw new ValidationError(`Cannot assign Dead Letter Queue in region ${queue.env.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${rule.env.region}. Both the queue and the rule must be in the same region.`, rule);
+    throw new ValidationError('AssignDeadLetterQueue', `Cannot assign Dead Letter Queue in region ${queue.env.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${rule.env.region}. Both the queue and the rule must be in the same region.`, rule);
   }
 
   // Skip Resource Policy creation if the Queue is not in the same account.

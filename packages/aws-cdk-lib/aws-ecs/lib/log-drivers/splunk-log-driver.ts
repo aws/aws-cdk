@@ -136,7 +136,7 @@ export class SplunkLogDriver extends LogDriver {
     super();
 
     if (!props.token && !props.secretToken) {
-      throw new UnscopedValidationError('Please provide either token or secretToken.');
+      throw new UnscopedValidationError('PleaseProvideEitherToken', 'Please provide either token or secretToken.');
     }
     if (props.gzipLevel) {
       ensureInRange(props.gzipLevel, -1, 9);

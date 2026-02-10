@@ -135,7 +135,7 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
 
   constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
     if (props.topics && props.topics.length > 5) {
-      throw new ValidationError('At most 5 topics can be specified.', scope);
+      throw new ValidationError('MostTopicsSpecified', 'At most 5 topics can be specified.', scope);
     }
 
     super(scope, id, {

@@ -61,7 +61,7 @@ export class AssetEnvironmentFile extends EnvironmentFile {
     }
 
     if (!this.asset.isFile) {
-      throw new ValidationError(`Asset must be a single file (${this.path})`, scope);
+      throw new ValidationError('AssetSingleFilePath', `Asset must be a single file (${this.path})`, scope);
     }
 
     return {
@@ -84,7 +84,7 @@ export class S3EnvironmentFile extends EnvironmentFile {
     super();
 
     if (!bucket.bucketName) {
-      throw new ValidationError('bucketName is undefined for the provided bucket', bucket);
+      throw new ValidationError('BucketnameUndefinedProvidedBucket', 'bucketName is undefined for the provided bucket', bucket);
     }
 
     this.bucketName = bucket.bucketName;

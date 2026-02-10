@@ -104,7 +104,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('You must specify either a taskDefinition or taskImageOptions, not both.', this);
+      throw new ValidationError('SpecifyEitherTaskdefinitionTaskimageoptions', 'You must specify either a taskDefinition or taskImageOptions, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -136,7 +136,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new ValidationError('You must specify one of: taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskdefinitionImage', 'You must specify one of: taskDefinition or image', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;

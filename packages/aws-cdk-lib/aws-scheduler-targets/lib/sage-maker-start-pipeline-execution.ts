@@ -47,7 +47,7 @@ export class SageMakerStartPipelineExecution extends ScheduleTargetBase implemen
     super(props, pipeline.pipelineArn);
 
     if (props.pipelineParameterList !== undefined && props.pipelineParameterList.length > 200) {
-      throw new ValidationError(`pipelineParameterList length must be between 0 and 200, got ${props.pipelineParameterList.length}`, pipeline);
+      throw new ValidationError('PipelineparameterlistLength200Got', `pipelineParameterList length must be between 0 and 200, got ${props.pipelineParameterList.length}`, pipeline);
     }
   }
 

@@ -157,10 +157,10 @@ export abstract class ScheduleTargetBase {
     if (maximumEventAge) {
       maxAge = maximumEventAge.toSeconds({ integral: true });
       if (maxAge > maxMaxAge) {
-        throw new UnscopedValidationError('Maximum event age is 1 day');
+        throw new UnscopedValidationError('MaximumEventAgeDay', 'Maximum event age is 1 day');
       }
       if (maxAge < minMaxAge) {
-        throw new UnscopedValidationError('Minimum event age is 1 minute');
+        throw new UnscopedValidationError('MinimumEventAgeMinute', 'Minimum event age is 1 minute');
       }
     }
     let maxAttempts = 185;

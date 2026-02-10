@@ -170,6 +170,6 @@ function findParentStack(scope: Construct): cdk.Stack {
     const parentStack = cdk.Stack.of(scope);
     return parentStack as cdk.Stack;
   } catch {
-    throw new ValidationError('Product stacks must be defined within scope of another non-product stack', scope);
+    throw new ValidationError('ProductStacksDefinedWithin', 'Product stacks must be defined within scope of another non-product stack', scope);
   }
 }

@@ -39,7 +39,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
 
     const wildcardCountsInPath = this.props?.path?.match( /\*/g )?.length ?? 0;
     if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
-      throw new ValidationError('The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
+      throw new ValidationError('NumberWildcardsPathMatch', 'The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
     }
 
     const httpApiArn = this._httpApi.arnForExecuteApi(

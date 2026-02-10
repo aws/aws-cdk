@@ -151,7 +151,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-us-gov') {
       return `arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/${this.applicationName}`;
     } else {
-      throw new UnscopedValidationError(`unsupported partition: ${partition}`);
+      throw new UnscopedValidationError('UnsupportedPartitionPartition', `unsupported partition: ${partition}`);
     }
   }
 
@@ -167,7 +167,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-us-gov') {
       return '1.1.213';
     } else {
-      throw new UnscopedValidationError(`unsupported partition: ${partition}`);
+      throw new UnscopedValidationError('UnsupportedPartitionPartition', `unsupported partition: ${partition}`);
     }
   }
 }
@@ -278,11 +278,11 @@ export class SecretRotation extends Construct {
     super(scope, id);
 
     if (!props.target.connections.defaultPort) {
-      throw new ValidationError('The `target` connections must have a default port range.', this);
+      throw new ValidationError('TargetConnectionsDefaultPort', 'The `target` connections must have a default port range.', this);
     }
 
     if (props.application.isMultiUser && !props.masterSecret) {
-      throw new ValidationError('The `masterSecret` must be specified for application using the multi user scheme.', this);
+      throw new ValidationError('MastersecretSpecifiedApplicationMulti', 'The `masterSecret` must be specified for application using the multi user scheme.', this);
     }
 
     // Max length of 64 chars, get the last 64 chars

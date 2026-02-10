@@ -100,11 +100,11 @@ class CidrIPv4 implements IPeer {
       const cidrMatch = cidrIp.match(/^(\d{1,3}\.){3}\d{1,3}(\/\d+)?$/);
 
       if (!cidrMatch) {
-        throw new UnscopedValidationError(`Invalid IPv4 CIDR: "${cidrIp}"`);
+        throw new UnscopedValidationError('InvalidIpv4CidrCidrip', `Invalid IPv4 CIDR: "${cidrIp}"`);
       }
 
       if (!cidrMatch[2]) {
-        throw new UnscopedValidationError(`CIDR mask is missing in IPv4: "${cidrIp}". Did you mean "${cidrIp}/32"?`);
+        throw new UnscopedValidationError('CidrMaskMissingIpv4', `CIDR mask is missing in IPv4: "${cidrIp}". Did you mean "${cidrIp}/32"?`);
       }
     }
 
@@ -147,11 +147,11 @@ class CidrIPv6 implements IPeer {
       const cidrMatch = cidrIpv6.match(/^([\da-f]{0,4}:){2,7}([\da-f]{0,4})?(\/\d+)?$/);
 
       if (!cidrMatch) {
-        throw new UnscopedValidationError(`Invalid IPv6 CIDR: "${cidrIpv6}"`);
+        throw new UnscopedValidationError('InvalidIpv6CidrCidripv6', `Invalid IPv6 CIDR: "${cidrIpv6}"`);
       }
 
       if (!cidrMatch[3]) {
-        throw new UnscopedValidationError(`CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
+        throw new UnscopedValidationError('CidrMaskMissingIpv6', `CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
       }
     }
 
@@ -225,7 +225,7 @@ class SecurityGroupId implements IPeer {
       const securityGroupMatch = securityGroupId.match(/^sg-[a-z0-9]{8,17}$/);
 
       if (!securityGroupMatch) {
-        throw new UnscopedValidationError(`Invalid security group ID: "${securityGroupId}"`);
+        throw new UnscopedValidationError('InvalidSecurityGroupSecuritygroupid', `Invalid security group ID: "${securityGroupId}"`);
       }
     }
 
@@ -233,7 +233,7 @@ class SecurityGroupId implements IPeer {
       const accountNumberMatch = sourceSecurityGroupOwnerId.match(/^[0-9]{12}$/);
 
       if (!accountNumberMatch) {
-        throw new UnscopedValidationError(`Invalid security group owner ID: "${sourceSecurityGroupOwnerId}"`);
+        throw new UnscopedValidationError('InvalidSecurityGroupOwner', `Invalid security group owner ID: "${sourceSecurityGroupOwnerId}"`);
       }
     }
     this.uniqueId = securityGroupId;

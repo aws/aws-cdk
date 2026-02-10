@@ -305,7 +305,7 @@ export class NatGatewayProvider extends NatProvider {
       && !Token.isUnresolved(this.props.eipAllocationIds)
       && this.props.eipAllocationIds.length < options.natSubnets.length
     ) {
-      throw new UnscopedValidationError(`Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
+      throw new UnscopedValidationError('EnoughNatGatewayEip', `Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
     }
 
     // Create the NAT gateways
@@ -353,11 +353,11 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
     super();
 
     if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
-      throw new UnscopedValidationError('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+      throw new UnscopedValidationError('SpecifyDefaultallowedtrafficDefaultallowedtrafficPrefer', 'Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
     }
 
     if (props.keyName && props.keyPair) {
-      throw new UnscopedValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new UnscopedValidationError('SpecifyKeynameKeypairPrefer', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
     }
   }
 
@@ -412,7 +412,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
    */
   public get securityGroup(): ISecurityGroup {
     if (!this._securityGroup) {
-      throw new UnscopedValidationError('Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+      throw new UnscopedValidationError('PassNatinstanceproviderVpcBefore', 'Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
     }
     return this._securityGroup;
   }
@@ -422,7 +422,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new UnscopedValidationError('Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+      throw new UnscopedValidationError('PassNatinstanceproviderVpcBefore', 'Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
     }
     return this._connections;
   }
@@ -460,7 +460,7 @@ class PrefSet<A> {
 
   public pick(pref: string): A {
     if (this.vals.length === 0) {
-      throw new UnscopedValidationError('Cannot pick, set is empty');
+      throw new UnscopedValidationError('PickEmpty', 'Cannot pick, set is empty');
     }
 
     if (pref in this.map) { return this.map[pref]; }
@@ -508,11 +508,11 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
     super();
 
     if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
-      throw new UnscopedValidationError('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+      throw new UnscopedValidationError('SpecifyDefaultallowedtrafficDefaultallowedtrafficPrefer', 'Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
     }
 
     if (props.keyName && props.keyPair) {
-      throw new UnscopedValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new UnscopedValidationError('SpecifyKeynameKeypairPrefer', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
     }
   }
 
@@ -573,7 +573,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
    */
   public get securityGroup(): ISecurityGroup {
     if (!this._securityGroup) {
-      throw new UnscopedValidationError('Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+      throw new UnscopedValidationError('PassNatinstanceproviderVpcBefore', 'Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
     }
     return this._securityGroup;
   }
@@ -583,7 +583,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new UnscopedValidationError('Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+      throw new UnscopedValidationError('PassNatinstanceproviderVpcBefore', 'Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
     }
     return this._connections;
   }
@@ -633,7 +633,7 @@ function pickN(i: number, xs: string[]) {
   if (Token.isUnresolved(xs)) { return Fn.select(i, xs); }
 
   if (i >= xs.length) {
-    throw new UnscopedValidationError(`Cannot get element ${i} from ${xs}`);
+    throw new UnscopedValidationError('Element', `Cannot get element ${i} from ${xs}`);
   }
 
   return xs[i];

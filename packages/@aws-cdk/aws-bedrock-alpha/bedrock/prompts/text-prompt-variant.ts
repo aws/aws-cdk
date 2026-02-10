@@ -30,7 +30,7 @@ export interface TextPromptVariantProps extends CommonPromptVariantProps {
  */
 export function createTextPromptVariant(props: TextPromptVariantProps): IPromptVariant {
   if (!props.promptText || props.promptText.trim() === '') {
-    throw new ValidationError('promptText cannot be empty');
+    throw new ValidationError('PrompttextEmpty', 'promptText cannot be empty');
   }
 
   return {

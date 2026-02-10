@@ -68,17 +68,17 @@ export class ImportSubnetGroup {
     this.groups = this.subnetIds.length / this.availabilityZones.length;
 
     if (Math.floor(this.groups) !== this.groups) {
-      throw new UnscopedValidationError(`Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
+      throw new UnscopedValidationError('NumberIdfieldSubnetidsLength', `Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
     }
     if (this.routeTableIds.length !== this.subnetIds.length && routeTableIds != null) {
       // We don't err if no routeTableIds were provided to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
 
-      throw new UnscopedValidationError(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+      throw new UnscopedValidationError('NumberRoutetableidfieldRoutetableidsLength', `Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
     if (this.ipv4CidrBlocks.length !== this.subnetIds.length && ipv4CidrBlocks != null) {
       // We don't err if no ipv4CidrBlocks were provided to maintain backwards-compatibility.
 
-      throw new UnscopedValidationError(`Number of ${ipv4CidrBlockField} (${this.ipv4CidrBlocks.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+      throw new UnscopedValidationError('NumberIpv4cidrblockfieldIpv4cidrblocksLength', `Number of ${ipv4CidrBlockField} (${this.ipv4CidrBlocks.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
 
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
@@ -107,7 +107,7 @@ export class ImportSubnetGroup {
 
     // If given, must match given subnets
     if (names.length !== this.groups) {
-      throw new UnscopedValidationError(`${fieldName} must have an entry for every corresponding subnet group, got: ${JSON.stringify(names)}`);
+      throw new UnscopedValidationError('FieldnameEntryEveryCorresponding', `${fieldName} must have an entry for every corresponding subnet group, got: ${JSON.stringify(names)}`);
     }
 
     return names;

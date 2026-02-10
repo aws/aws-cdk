@@ -68,7 +68,7 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new cdk.ValidationError(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+      throw new cdk.ValidationError('AssetAlreadyAssociatedAnother', `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
         'Create a new Code instance for every stack.', scope);
     }
 
@@ -86,7 +86,7 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new cdk.UnscopedValidationError('AppSync Inline code cannot be empty');
+      throw new cdk.UnscopedValidationError('AppsyncInlineCodeEmpty', 'AppSync Inline code cannot be empty');
     }
   }
 

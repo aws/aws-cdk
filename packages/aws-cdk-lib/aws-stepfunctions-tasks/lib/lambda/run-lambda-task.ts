@@ -76,12 +76,12 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new ValidationError(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Lambda.`, lambdaFunction);
+      throw new ValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Lambda.`, lambdaFunction);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
         && !sfn.FieldUtils.containsTaskToken(props.payload)) {
-      throw new ValidationError('Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)', lambdaFunction);
+      throw new ValidationError('TaskTokenMissingPayload', 'Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)', lambdaFunction);
     }
   }
 

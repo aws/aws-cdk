@@ -168,7 +168,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
     const family = props.engine.parameterGroupFamily;
     if (!family) {
-      throw new ValidationError("ParameterGroup cannot be used with an engine that doesn't specify a version", this);
+      throw new ValidationError('ParametergroupUsedEngineDoesn', "ParameterGroup cannot be used with an engine that doesn't specify a version", this);
     }
     this.family = family;
     this.description = props.description;

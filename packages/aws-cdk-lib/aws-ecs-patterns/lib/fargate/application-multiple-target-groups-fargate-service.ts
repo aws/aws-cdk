@@ -63,7 +63,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('You must specify only one of TaskDefinition or TaskImageOptions.', this);
+      throw new ValidationError('SpecifyOneTaskdefinitionTaskimageoptions', 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -94,10 +94,10 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
         }
       }
     } else {
-      throw new ValidationError('You must specify one of: taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskdefinitionImage', 'You must specify one of: taskDefinition or image', this);
     }
     if (!this.taskDefinition.defaultContainer) {
-      throw new ValidationError('At least one essential container must be specified', this);
+      throw new ValidationError('LeastOneEssentialContainer', 'At least one essential container must be specified', this);
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({

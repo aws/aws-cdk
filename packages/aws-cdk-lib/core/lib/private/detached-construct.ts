@@ -30,7 +30,7 @@ export abstract class DetachedConstruct extends Construct implements IConstruct 
     // to avoid TS2611 error (property vs accessor conflict with base class)
     Object.defineProperty(this, 'node', {
       enumerable: false,
-      get() { throw new UnscopedValidationError(errorMessage); },
+      get() { throw new UnscopedValidationError('DetachedConstructAccess', errorMessage); },
     });
 
     // Despite extending Construct, DetachedConstruct doesn't work like one.
@@ -43,6 +43,6 @@ export abstract class DetachedConstruct extends Construct implements IConstruct 
   }
 
   public get env(): ResourceEnvironment {
-    throw new UnscopedValidationError(this.errorMessage);
+    throw new UnscopedValidationError('DetachedConstructAccess', this.errorMessage);
   }
 }

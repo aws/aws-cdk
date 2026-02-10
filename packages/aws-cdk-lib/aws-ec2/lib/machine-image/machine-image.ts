@@ -504,18 +504,18 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
       kernel = AmazonLinuxKernel.KERNEL5_X;
       if (props && props.storage) {
-        throw new UnscopedValidationError('Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+        throw new UnscopedValidationError('StorageParameterExistSsm', 'Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
       if (props && props.virtualization) {
-        throw new UnscopedValidationError('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+        throw new UnscopedValidationError('VirtualizationParameterExistSsm', 'Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
     } else if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2023) {
       kernel = AmazonLinuxKernel.KERNEL6_1;
       if (props && props.storage) {
-        throw new UnscopedValidationError('Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+        throw new UnscopedValidationError('StorageParameterExistSsm', 'Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
       if (props && props.virtualization) {
-        throw new UnscopedValidationError('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+        throw new UnscopedValidationError('VirtualizationParameterExistSsm', 'Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
     } else {
       virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
@@ -626,7 +626,7 @@ export class GenericLinuxImage implements IMachineImage {
     }
     const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!imageId) {
-      throw new ValidationError(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
+      throw new ValidationError('UnableFindAmiAmi', `Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
     }
     return {
       imageId,
@@ -663,7 +663,7 @@ export class GenericWindowsImage implements IMachineImage {
     }
     const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!imageId) {
-      throw new ValidationError(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
+      throw new ValidationError('UnableFindAmiAmi', `Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
     }
     return {
       imageId,
@@ -716,7 +716,7 @@ export class LookupMachineImage implements IMachineImage {
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {
-      throw new ValidationError(`Response to AMI lookup invalid, got: ${value}`, scope);
+      throw new ValidationError('ResponseAmiLookupInvalid', `Response to AMI lookup invalid, got: ${value}`, scope);
     }
 
     const osType = this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX;

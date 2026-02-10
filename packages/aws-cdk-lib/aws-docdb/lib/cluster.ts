@@ -399,35 +399,35 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       public get instanceIdentifiers(): string[] {
         if (!this._instanceIdentifiers) {
-          throw new UnscopedValidationError('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
+          throw new UnscopedValidationError('AccessInstanceidentifiersImportedCluster', 'Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
         }
         return this._instanceIdentifiers;
       }
 
       public get clusterEndpoint(): Endpoint {
         if (!this._clusterEndpoint) {
-          throw new UnscopedValidationError('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+          throw new UnscopedValidationError('AccessClusterendpointImportedCluster', 'Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
         }
         return this._clusterEndpoint;
       }
 
       public get clusterReadEndpoint(): Endpoint {
         if (!this._clusterReadEndpoint) {
-          throw new UnscopedValidationError('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+          throw new UnscopedValidationError('AccessClusterreadendpointImportedCluster', 'Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
         }
         return this._clusterReadEndpoint;
       }
 
       public get instanceEndpoints(): Endpoint[] {
         if (!this._instanceEndpoints) {
-          throw new UnscopedValidationError('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
+          throw new UnscopedValidationError('AccessInstanceendpointsImportedCluster', 'Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
         }
         return this._instanceEndpoints;
       }
 
       public get securityGroupId(): string {
         if (!this._securityGroupId) {
-          throw new UnscopedValidationError('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
+          throw new UnscopedValidationError('AccessSecuritygroupidImportedCluster', 'Cannot access `securityGroupId` of an imported cluster without securityGroupId');
         }
         return this._securityGroupId;
       }
@@ -515,11 +515,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Validate exactly one of instanceType or serverlessV2ScalingConfiguration is provided
     if (!props.instanceType && !props.serverlessV2ScalingConfiguration) {
-      throw new ValidationError('Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified', this);
+      throw new ValidationError('EitherInstancetypeProvisionedClusters', 'Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified', this);
     }
     const isServerless = !!props.serverlessV2ScalingConfiguration;
     if (isServerless && props.instanceType) {
-      throw new ValidationError('Cannot specify both instanceType and serverlessV2ScalingConfiguration', this);
+      throw new ValidationError('SpecifyInstancetypeServerlessv2scalingconfiguration', 'Cannot specify both instanceType and serverlessV2ScalingConfiguration', this);
     }
 
     this.vpc = props.vpc;
@@ -532,7 +532,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // We cannot test whether the subnets are in different AZs, but at least we can test the amount.
     // See https://docs.aws.amazon.com/documentdb/latest/developerguide/replication.html#replication.high-availability
     if (subnetIds.length < 2) {
-      throw new ValidationError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
+      throw new ValidationError('ClusterRequiresLeastSubnets', `Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
@@ -582,12 +582,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
     const storageEncrypted = props.storageEncrypted ?? true;
 
     if (props.kmsKey && !storageEncrypted) {
-      throw new ValidationError('KMS key supplied but storageEncrypted is false', this);
+      throw new ValidationError('KmsKeySuppliedStorageencrypted', 'KMS key supplied but storageEncrypted is false', this);
     }
 
     const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
     if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
-      throw new ValidationError(`Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`, this);
+      throw new ValidationError('InvalidEngineVersionProps', `Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`, this);
     }
 
     if (
@@ -595,12 +595,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
       && props.engineVersion !== undefined
       && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
     ) {
-      throw new ValidationError(`I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`, this);
+      throw new ValidationError('OptimizedStorageSupportedStarting', `I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`, this);
     }
 
     // Validate engine version for serverless clusters: https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-serverless-limitations.html
     if (isServerless && props.engineVersion !== undefined && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_SERVERLESS) {
-      throw new ValidationError(`DocumentDB serverless requires engine version 5.0.0 or higher, got '${props.engineVersion}'`, this);
+      throw new ValidationError('DocumentdbServerlessRequiresEngine', `DocumentDB serverless requires engine version 5.0.0 or higher, got '${props.engineVersion}'`, this);
     }
 
     // Create the DocDB cluster
@@ -655,7 +655,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     if (!isServerless) {
       const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
       if (instanceCount < 1) {
-        throw new ValidationError('At least one instance is required for provisioned clusters', this);
+        throw new ValidationError('LeastOneInstanceRequired', 'At least one instance is required for provisioned clusters', this);
       }
 
       const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
@@ -713,7 +713,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   private getInstanceRemovalPolicy(props: DatabaseClusterProps) {
     if (props.instanceRemovalPolicy === RemovalPolicy.SNAPSHOT) {
-      throw new ValidationError('AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy', this);
+      throw new ValidationError('AwsDocdbDbinstanceSupport', 'AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy', this);
     }
     if (props.instanceRemovalPolicy) return props.instanceRemovalPolicy;
     return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
@@ -722,7 +722,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   private getSecurityGroupRemovalPolicy(props: DatabaseClusterProps) {
     if (props.securityGroupRemovalPolicy === RemovalPolicy.SNAPSHOT) {
-      throw new ValidationError('AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy', this);
+      throw new ValidationError('AwsEc2SecuritygroupSupport', 'AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy', this);
     }
     if (props.securityGroupRemovalPolicy) return props.securityGroupRemovalPolicy;
     return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
@@ -738,13 +738,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
   @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('Cannot add single user rotation for a cluster without secret.', this);
+      throw new ValidationError('AddSingleUserRotation', 'Cannot add single user rotation for a cluster without secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new ValidationError('A single user rotation was already added to this cluster.', this);
+      throw new ValidationError('SingleUserRotationAlready', 'A single user rotation was already added to this cluster.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -764,7 +764,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('Cannot add multi user rotation for a cluster without secret.', this);
+      throw new ValidationError('AddMultiUserRotation', 'Cannot add multi user rotation for a cluster without secret.', this);
     }
     return new secretsmanager.SecretRotation(this, id, {
       secret: options.secret,

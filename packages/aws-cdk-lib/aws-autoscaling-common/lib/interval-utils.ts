@@ -31,12 +31,12 @@ export function normalizeIntervals(intervals: ScalingInterval[], changesAreAbsol
  */
 function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalingInterval[] {
   if (intervals.length < 2) {
-    throw new UnscopedValidationError('Require at least 2 intervals');
+    throw new UnscopedValidationError('RequireLeastIntervals', 'Require at least 2 intervals');
   }
 
   for (const interval of intervals) {
     if (interval.lower === undefined && interval.upper === undefined) {
-      throw new UnscopedValidationError(`Must supply at least one of 'upper' or 'lower', got: ${JSON.stringify(interval)}`);
+      throw new UnscopedValidationError('SupplyLeastOneUpper', `Must supply at least one of 'upper' or 'lower', got: ${JSON.stringify(interval)}`);
     }
   }
 
@@ -56,7 +56,7 @@ function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalin
   if (intervals[lastIndex].upper === undefined) { intervals[lastIndex] = { ...intervals[lastIndex], upper: Infinity }; }
   for (const interval of intervals) {
     if (interval.lower === undefined || interval.upper === undefined) {
-      throw new UnscopedValidationError(`Could not determine the lower and upper bounds for ${JSON.stringify(interval)}`);
+      throw new UnscopedValidationError('DetermineLowerUpperBounds', `Could not determine the lower and upper bounds for ${JSON.stringify(interval)}`);
     }
   }
 
@@ -65,7 +65,7 @@ function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalin
   // Validate that we have nonoverlapping intervals now.
   for (let i = 0; i < completeIntervals.length - 1; i++) {
     if (overlap(completeIntervals[i], completeIntervals[i + 1])) {
-      throw new UnscopedValidationError(`Two intervals overlap: ${JSON.stringify(completeIntervals[i])} and ${JSON.stringify(completeIntervals[i + 1])}`);
+      throw new UnscopedValidationError('TwoIntervalsOverlapJson', `Two intervals overlap: ${JSON.stringify(completeIntervals[i])} and ${JSON.stringify(completeIntervals[i + 1])}`);
     }
   }
 
@@ -149,7 +149,7 @@ function combineUndefineds(intervals: CompleteScalingInterval[]) {
 function validateAtMostOneUndefined(intervals: CompleteScalingInterval[]) {
   const undef = intervals.filter(x => x.change === undefined);
   if (undef.length > 1) {
-    throw new UnscopedValidationError(`Can have at most one no-change interval, got ${JSON.stringify(undef)}`);
+    throw new UnscopedValidationError('MostOneChangeInterval', `Can have at most one no-change interval, got ${JSON.stringify(undef)}`);
   }
 }
 

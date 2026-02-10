@@ -452,13 +452,13 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
       get userPoolClientSecret(): SecretValue {
-        throw new ValidationError('UserPool Client Secret is not available for imported Clients', this);
+        throw new ValidationError('UserpoolClientSecretAvailable', 'UserPool Client Secret is not available for imported Clients', this);
       }
       public get userPoolClientRef(): UserPoolClientReference {
         return {
           clientId: userPoolClientId,
           get userPoolId(): string {
-            throw new UnscopedValidationError('userPoolId is not available on UserPoolClient.fromUserPoolClientId().');
+            throw new UnscopedValidationError('UserpoolidAvailableUserpoolclientFromuserpoolclientid', 'userPoolId is not available on UserPoolClient.fromUserPoolClientId().');
           },
         };
       }
@@ -502,7 +502,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     this.userPool = props.userPool;
 
     if (props.disableOAuth && props.oAuth) {
-      throw new ValidationError('OAuth settings cannot be specified when disableOAuth is set.', this);
+      throw new ValidationError('OauthSettingsSpecifiedDisableoauth', 'OAuth settings cannot be specified when disableOAuth is set.', this);
     }
 
     this.oAuthFlows = props.oAuth?.flows ?? {
@@ -515,23 +515,23 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       if (callbackUrls === undefined) {
         callbackUrls = ['https://example.com'];
       } else if (callbackUrls.length === 0) {
-        throw new ValidationError('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.', this);
+        throw new ValidationError('CallbackurlEmptyCodegrantImplicitgrant', 'callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.', this);
       }
     }
 
     if (props.oAuth?.defaultRedirectUri && !Token.isUnresolved(props.oAuth.defaultRedirectUri)) {
       if (callbackUrls && !callbackUrls.includes(props.oAuth.defaultRedirectUri)) {
-        throw new ValidationError('defaultRedirectUri must be included in callbackUrls.', this);
+        throw new ValidationError('DefaultredirecturiIncludedCallbackurls', 'defaultRedirectUri must be included in callbackUrls.', this);
       }
 
       const defaultRedirectUriPattern = /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u;
       if (!defaultRedirectUriPattern.test(props.oAuth.defaultRedirectUri)) {
-        throw new ValidationError(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${props.oAuth.defaultRedirectUri}`, this);
+        throw new ValidationError('DefaultredirecturiMatch1024Pattern', `defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${props.oAuth.defaultRedirectUri}`, this);
       }
     }
 
     if (!props.generateSecret && props.enablePropagateAdditionalUserContextData) {
-      throw new ValidationError('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.', this);
+      throw new ValidationError('ActivateEnablepropagateadditionalusercontextdataAppClient', 'Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.', this);
     }
 
     this._generateSecret = props.generateSecret;
@@ -570,14 +570,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
    */
   public get userPoolClientName(): string {
     if (this._userPoolClientName === undefined) {
-      throw new ValidationError('userPoolClientName is available only if specified on the UserPoolClient during initialization', this);
+      throw new ValidationError('UserpoolclientnameAvailableSpecifiedUserpoolclient', 'userPoolClientName is available only if specified on the UserPoolClient during initialization', this);
     }
     return this._userPoolClientName;
   }
 
   public get userPoolClientSecret(): SecretValue {
     if (!this._generateSecret) {
-      throw new ValidationError('userPoolClientSecret is available only if generateSecret is set to true.', this);
+      throw new ValidationError('UserpoolclientsecretAvailableGeneratesecretTrue', 'userPoolClientSecret is available only if generateSecret is set to true.', this);
     }
 
     const isEnableLogUserPoolClientSecret = FeatureFlags.of(this).isEnabled(cxapi.LOG_USER_POOL_CLIENT_SECRET_VALUE);
@@ -633,7 +633,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   private configureOAuthFlows(): string[] | undefined {
     if ((this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) && this.oAuthFlows.clientCredentials) {
-      throw new ValidationError('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.', this);
+      throw new ValidationError('ClientcredentialsOauthFlowSelected', 'clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.', this);
     }
     const oAuthFlows: string[] = [];
     if (this.oAuthFlows.clientCredentials) { oAuthFlows.push('client_credentials'); }
@@ -718,7 +718,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
     if (value === undefined) { return; }
     if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
-      throw new ValidationError(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`, this);
+      throw new ValidationError('NameDurationMinTohumanstring', `${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`, this);
     }
   }
 
@@ -728,14 +728,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       analytics.application &&
         (analytics.applicationId || analytics.externalId || analytics.role)
     ) {
-      throw new ValidationError('Either `application` or all of `applicationId`, `externalId` and `role` must be specified.', this);
+      throw new ValidationError('EitherApplicationApplicationidExternalid', 'Either `application` or all of `applicationId`, `externalId` and `role` must be specified.', this);
     }
 
     if (
       !analytics.application &&
         (!analytics.applicationId || !analytics.externalId || !analytics.role)
     ) {
-      throw new ValidationError('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.', this);
+      throw new ValidationError('EitherApplicationidExternalidRole', 'Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.', this);
     }
 
     return {

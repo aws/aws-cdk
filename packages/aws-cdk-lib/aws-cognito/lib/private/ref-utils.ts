@@ -8,7 +8,7 @@ import type { IUserPoolIdentityProvider } from '../user-pool-idp';
  */
 export function toIUserPool(ref: IUserPoolRef): IUserPool {
   if (!isIUserPool(ref)) {
-    throw new UnscopedValidationError(`'userPool' instance should implement IUserPool, but doesn't: ${ref.constructor.name}`);
+    throw new UnscopedValidationError('UserpoolInstanceImplementIuserpool', `'userPool' instance should implement IUserPool, but doesn't: ${ref.constructor.name}`);
   }
   return ref;
 }

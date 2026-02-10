@@ -43,7 +43,7 @@ export class GlobalAcceleratorTarget extends GlobalAcceleratorDomainTarget {
 
 function toIAccelerator(accelerator: IAcceleratorRef): globalaccelerator.IAccelerator {
   if (!('dnsName' in accelerator) || typeof (accelerator as any).dnsName !== 'string') {
-    throw new UnscopedValidationError(`'accelerator' instance should implement IAccelerator, but doesn't: ${accelerator.constructor.name}`);
+    throw new UnscopedValidationError('AcceleratorInstanceImplementIaccelerator', `'accelerator' instance should implement IAccelerator, but doesn't: ${accelerator.constructor.name}`);
   }
   return accelerator as globalaccelerator.IAccelerator;
 }

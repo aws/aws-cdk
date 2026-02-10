@@ -236,7 +236,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('Cannot manage network access without configuring a VPC', this);
+      throw new ValidationError('ManageNetworkAccessWithout', 'Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }

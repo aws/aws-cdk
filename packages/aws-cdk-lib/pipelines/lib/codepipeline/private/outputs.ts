@@ -17,11 +17,11 @@ export function namespaceStepOutputs(step: Step, stage: cp.IStage, name: string)
   for (const output of StepOutput.producedStepOutputs(step)) {
     ret = namespaceName(stage, name);
     if (output.engineName !== CODEPIPELINE_ENGINE_NAME) {
-      throw new ValidationError(`Found unrecognized output type: ${output.engineName}`, stage.pipeline);
+      throw new ValidationError('FoundUnrecognizedOutputType', `Found unrecognized output type: ${output.engineName}`, stage.pipeline);
     }
 
     if (typeof output.engineSpecificInformation !== 'string') {
-      throw new ValidationError(`CodePipeline requires that 'engineSpecificInformation' is a string, got: ${JSON.stringify(output.engineSpecificInformation)}`, stage.pipeline);
+      throw new ValidationError('CodepipelineRequiresEnginespecificinformationString', `CodePipeline requires that 'engineSpecificInformation' is a string, got: ${JSON.stringify(output.engineSpecificInformation)}`, stage.pipeline);
     }
     output.defineResolution(`#{${ret}.${output.engineSpecificInformation}}`);
   }

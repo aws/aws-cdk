@@ -192,7 +192,7 @@ export abstract class ScheduledTaskBase extends Construct {
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
     if (props.desiredTaskCount !== undefined && props.desiredTaskCount < 1) {
-      throw new ValidationError('You must specify a desiredTaskCount greater than 0', this);
+      throw new ValidationError('SpecifyDesiredtaskcountGreater', 'You must specify a desiredTaskCount greater than 0', this);
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE_WITH_EGRESS };

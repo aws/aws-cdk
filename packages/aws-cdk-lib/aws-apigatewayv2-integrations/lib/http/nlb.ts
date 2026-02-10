@@ -33,7 +33,7 @@ export class HttpNlbIntegration extends HttpPrivateIntegration {
       vpc = this.listener.loadBalancer.vpc;
     }
     if (!vpc) {
-      throw new ValidationError('The vpcLink property must be specified when using an imported Network Listener.', options.scope);
+      throw new ValidationError('VpclinkPropertySpecifiedImported', 'The vpcLink property must be specified when using an imported Network Listener.', options.scope);
     }
 
     const vpcLink = this._configureVpcLink(options, {

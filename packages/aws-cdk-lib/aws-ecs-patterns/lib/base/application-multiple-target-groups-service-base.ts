@@ -436,7 +436,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
         for (const listenerProps of lbProps.listeners) {
           const protocol = this.createListenerProtocol(listenerProps.protocol, listenerProps.certificate);
           if (listenerProps.certificate !== undefined && protocol !== undefined && protocol !== ApplicationProtocol.HTTPS) {
-            throw new ValidationError('The HTTPS protocol must be used when a certificate is given', this);
+            throw new ValidationError('HttpsProtocolUsedCertificate', 'The HTTPS protocol must be used when a certificate is given', this);
           }
           protocolType.add(protocol);
           const listener = this.configListener(protocol, {
@@ -496,7 +496,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
         return listener;
       }
     }
-    throw new ValidationError(`Listener ${name} is not defined. Did you define listener with name ${name}?`, this);
+    throw new ValidationError('ListenerNameDefinedDefine', `Listener ${name} is not defined. Did you define listener with name ${name}?`, this);
   }
 
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: ApplicationTargetProps[]): ApplicationTargetGroup {
@@ -524,7 +524,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       this.targetGroups.push(targetGroup);
     }
     if (this.targetGroups.length === 0) {
-      throw new ValidationError('At least one target group should be specified.', this);
+      throw new ValidationError('LeastOneTargetGroup', 'At least one target group should be specified.', this);
     }
     return this.targetGroups[0];
   }
@@ -566,20 +566,20 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
   private validateInput(props: ApplicationMultipleTargetGroupsServiceBaseProps) {
     if (props.cluster && props.vpc) {
-      throw new ValidationError('You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
+      throw new ValidationError('SpecifyEitherVpcCluster', 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
-      throw new ValidationError('You must specify a desiredCount greater than 0', this);
+      throw new ValidationError('SpecifyDesiredcountGreater', 'You must specify a desiredCount greater than 0', this);
     }
 
     if (props.loadBalancers) {
       if (props.loadBalancers.length === 0) {
-        throw new ValidationError('At least one load balancer must be specified', this);
+        throw new ValidationError('LeastOneLoadBalancer', 'At least one load balancer must be specified', this);
       }
       for (const lbProps of props.loadBalancers) {
         if (lbProps.listeners.length === 0) {
-          throw new ValidationError('At least one listener must be specified', this);
+          throw new ValidationError('LeastOneListenerSpecified', 'At least one listener must be specified', this);
         }
       }
     }
@@ -590,7 +590,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       if (prop.idleTimeout) {
         const idleTimeout = prop.idleTimeout.toSeconds();
         if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
-          throw new ValidationError('Load balancer idle timeout must be between 1 and 4000 seconds.', this);
+          throw new ValidationError('LoadBalancerIdleTimeout', 'Load balancer idle timeout must be between 1 and 4000 seconds.', this);
         }
       }
     }
@@ -614,7 +614,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
   private createListenerCertificate(listenerName: string, certificate?: ICertificate, domainName?: string, domainZone?: IHostedZone): ICertificate {
     if (typeof domainName === 'undefined' || typeof domainZone === 'undefined') {
-      throw new ValidationError('A domain name and zone is required when using the HTTPS protocol', this);
+      throw new ValidationError('DomainNameZoneRequired', 'A domain name and zone is required when using the HTTPS protocol', this);
     }
 
     if (certificate !== undefined) {
@@ -640,7 +640,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof name !== 'undefined') {
       if (typeof zone === 'undefined') {
-        throw new ValidationError('A Route53 hosted domain zone name is required to configure the specified domain name', this);
+        throw new ValidationError('Route53HostedDomainZone', 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
       const record = new ARecord(this, `DNS${loadBalancer.node.id}`, {

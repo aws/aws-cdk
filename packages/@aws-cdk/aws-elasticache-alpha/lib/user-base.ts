@@ -158,14 +158,14 @@ export abstract class UserBase extends Resource implements IUser {
     const stack = Stack.of(scope);
 
     if (attrs.userArn && attrs.userId) {
-      throw new ValidationError('Only one of userArn or userId can be provided.', scope);
+      throw new ValidationError('OneUserarnUseridProvided', 'Only one of userArn or userId can be provided.', scope);
     }
 
     if (attrs.userArn) {
       userArn = attrs.userArn;
       const extractedUserId = stack.splitArn(attrs.userArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!extractedUserId) {
-        throw new ValidationError('Unable to extract user id from ARN.', scope);
+        throw new ValidationError('UnableExtractUserArn', 'Unable to extract user id from ARN.', scope);
       }
       userId = extractedUserId;
     } else if (attrs.userId) {
@@ -176,7 +176,7 @@ export abstract class UserBase extends Resource implements IUser {
         resourceName: attrs.userId,
       });
     } else {
-      throw new ValidationError('One of userId or userArn is required.', scope);
+      throw new ValidationError('OneUseridUserarnRequired', 'One of userId or userArn is required.', scope);
     }
 
     class Import extends Resource implements IUser {

@@ -52,7 +52,7 @@ export class FirehoseLogDestination implements IAccessLogDestination {
    */
   public bind(stage: IStageRef): AccessLogDestinationConfig {
     if (!this.stream.deliveryStreamName?.startsWith('amazon-apigateway-')) {
-      throw new ValidationError(`Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
+      throw new ValidationError('FirehoseDeliveryStreamName', `Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
     }
     return {
       destinationArn: this.stream.attrArn,

@@ -60,11 +60,11 @@ export class CnameInstance extends InstanceBase {
     addConstructMetadata(this, props);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {
-      throw new ValidationError('Namespace associated with Service must be a DNS Namespace.', this);
+      throw new ValidationError('NamespaceAssociatedServiceDns', 'Namespace associated with Service must be a DNS Namespace.', this);
     }
 
     if (props.service.dnsRecordType !== DnsRecordType.CNAME) {
-      throw new ValidationError('A `CnameIntance` can only be used with a service using a `CNAME` record.', this);
+      throw new ValidationError('CnameintanceUsedServiceCname', 'A `CnameIntance` can only be used with a service using a `CNAME` record.', this);
     }
 
     const resource = new CfnInstance(this, 'Resource', {

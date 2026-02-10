@@ -9,7 +9,7 @@ import type { IGraphqlApi } from '../graphqlapi-base';
  */
 export function toIGraphqlApi(api: IGraphQLApiRef): IGraphqlApi {
   if (!isGraphQlApi(api)) {
-    throw new UnscopedValidationError(`'api' instance should implement IGraphqlApi, but doesn't: ${api.constructor?.name ?? 'unknown'}`);
+    throw new UnscopedValidationError('ApiInstanceImplementIgraphqlapi', `'api' instance should implement IGraphqlApi, but doesn't: ${api.constructor?.name ?? 'unknown'}`);
   }
   return api;
 }
@@ -29,7 +29,7 @@ function isIApi(apiRef: IApiRef): apiRef is IApi {
  */
 export function toIApi(api: IApiRef): IApi {
   if (!isIApi(api)) {
-    throw new UnscopedValidationError(`'api' instance should implement IApi, but doesn't: ${api.constructor?.name ?? 'unknown'}`);
+    throw new UnscopedValidationError('ApiInstanceImplementIapi', `'api' instance should implement IApi, but doesn't: ${api.constructor?.name ?? 'unknown'}`);
   }
   return api;
 }

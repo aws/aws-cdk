@@ -38,11 +38,11 @@ export const buildImageScanningConfiguration = <
   props: PropsT,
 ): OutputT | undefined => {
   if (!props.recipe._isContainerRecipe() && props.imageScanningEcrRepository !== undefined) {
-    throw new cdk.ValidationError('imageScanningEcrRepository is only supported for container recipe builds', scope);
+    throw new cdk.ValidationError('ImagescanningecrrepositorySupportedContainerRecipe', 'imageScanningEcrRepository is only supported for container recipe builds', scope);
   }
 
   if (!props.recipe._isContainerRecipe() && props.imageScanningEcrTags !== undefined) {
-    throw new cdk.ValidationError('imageScanningEcrTags is only supported for container recipe builds', scope);
+    throw new cdk.ValidationError('ImagescanningecrtagsSupportedContainerRecipe', 'imageScanningEcrTags is only supported for container recipe builds', scope);
   }
 
   const ecrConfiguration: CfnImagePipeline.EcrConfigurationProperty = {

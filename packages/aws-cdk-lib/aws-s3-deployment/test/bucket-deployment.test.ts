@@ -1743,7 +1743,7 @@ function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
     }
   }
 
-  throw new UnscopedValidationError(`File ${relativePath} not found in any of the assets of the assembly`);
+  throw new UnscopedValidationError('FileRelativepathFoundAny', `File ${relativePath} not found in any of the assets of the assembly`);
 }
 
 test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {

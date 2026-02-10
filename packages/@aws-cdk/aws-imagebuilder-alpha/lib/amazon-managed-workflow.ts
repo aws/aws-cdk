@@ -114,7 +114,7 @@ export class AmazonManagedWorkflow {
     attrs: AmazonManagedWorkflowAttributes,
   ): IWorkflow {
     if (cdk.Token.isUnresolved(attrs.workflowType)) {
-      throw new cdk.ValidationError('workflowType cannot be a token', scope);
+      throw new cdk.ValidationError('WorkflowtypeToken', 'workflowType cannot be a token', scope);
     }
 
     return Workflow.fromWorkflowArn(

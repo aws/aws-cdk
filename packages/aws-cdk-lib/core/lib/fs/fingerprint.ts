@@ -92,7 +92,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
         _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));
       }
     } else {
-      throw new UnscopedValidationError(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
+      throw new UnscopedValidationError('UnableHashSymbolicpathNeither', `Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
     }
   }
 

@@ -123,18 +123,18 @@ export class ChatMessage {
 export function createChatPromptVariant(props: ChatPromptVariantProps): IPromptVariant {
   // Validate that messages array is not empty
   if (!props.messages || props.messages.length === 0) {
-    throw new ValidationError('At least one message must be provided');
+    throw new ValidationError('LeastOneMessageProvided', 'At least one message must be provided');
   }
 
   // Validate that the first message is a user message
   if (props.messages[0].role !== ChatMessageRole.USER) {
-    throw new ValidationError('The first message must be a User message');
+    throw new ValidationError('FirstMessageUserMessage', 'The first message must be a User message');
   }
 
   // Validate that at least one user message exists
   const hasUserMessage = props.messages.some(message => message.role === ChatMessageRole.USER);
   if (!hasUserMessage) {
-    throw new ValidationError('At least one User message must be provided');
+    throw new ValidationError('LeastOneUserMessage', 'At least one User message must be provided');
   }
 
   // Validate alternating pattern if more than one message
@@ -144,8 +144,7 @@ export function createChatPromptVariant(props: ChatPromptVariantProps): IPromptV
       const previousRole = props.messages[i - 1].role;
 
       if (currentRole === previousRole) {
-        throw new ValidationError(
-          `Messages must alternate between User and Assistant roles. Found consecutive ${currentRole} messages at positions ${i} and ${i + 1}`,
+        throw new ValidationError('MessagesAlternateUserAssistant', `Messages must alternate between User and Assistant roles. Found consecutive ${currentRole} messages at positions ${i} and ${i + 1}`,
         );
       }
     }

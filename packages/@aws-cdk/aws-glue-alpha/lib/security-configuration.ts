@@ -199,7 +199,7 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
     addConstructMetadata(this, props);
 
     if (!props.s3Encryption && !props.cloudWatchEncryption && !props.jobBookmarksEncryption) {
-      throw new cdk.ValidationError('One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined', this);
+      throw new cdk.ValidationError('OneCloudwatchencryptionJobbookmarksencryptionS3encryption', 'One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined', this);
     }
 
     const kmsKeyCreationRequired =

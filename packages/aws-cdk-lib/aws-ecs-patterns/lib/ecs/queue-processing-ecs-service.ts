@@ -108,7 +108,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     if (!props.image) {
-      throw new ValidationError('image must be specified for EC2 queue processing service', this);
+      throw new ValidationError('ImageSpecifiedEc2Queue', 'image must be specified for EC2 queue processing service', this);
     }
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';

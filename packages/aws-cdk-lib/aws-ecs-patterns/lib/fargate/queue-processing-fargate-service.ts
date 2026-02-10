@@ -80,7 +80,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     if (props.taskDefinition && props.image) {
-      throw new ValidationError('You must specify only one of taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskdefinitionImage', 'You must specify only one of taskDefinition or image', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.image) {
@@ -103,7 +103,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
         healthCheck: props.healthCheck,
       });
     } else {
-      throw new ValidationError('You must specify one of: taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskdefinitionImage', 'You must specify one of: taskDefinition or image', this);
     }
 
     // The desiredCount should be removed from the fargate service when the feature flag is removed.

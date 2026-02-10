@@ -169,11 +169,11 @@ export class HttpStage extends HttpStageBase {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new ValidationError('url is not available for imported stages.', scope);
+        throw new ValidationError('UrlAvailableImportedStages', 'url is not available for imported stages.', scope);
       }
 
       get domainUrl(): string {
-        throw new ValidationError('domainUrl is not available for imported stages.', scope);
+        throw new ValidationError('DomainurlAvailableImportedStages', 'domainUrl is not available for imported stages.', scope);
       }
 
       /**
@@ -245,7 +245,7 @@ export class HttpStage extends HttpStageBase {
 
   public get domainUrl(): string {
     if (!this._apiMapping) {
-      throw new ValidationError('domainUrl is not available when no API mapping is associated with the Stage', this);
+      throw new ValidationError('DomainurlAvailableApiMapping', 'domainUrl is not available when no API mapping is associated with the Stage', this);
     }
     return this._apiMapping.domainUrl;
   }

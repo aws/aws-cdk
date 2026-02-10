@@ -36,7 +36,7 @@ export class UnknownPrincipal implements IPrincipal {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new UnscopedValidationError(`Cannot get policy fragment of ${Node.of(this.resource).path}, resource imported without a role`);
+    throw new UnscopedValidationError('PolicyFragmentNodeResource', `Cannot get policy fragment of ${Node.of(this.resource).path}, resource imported without a role`);
   }
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {

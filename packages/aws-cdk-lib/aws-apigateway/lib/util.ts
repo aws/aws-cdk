@@ -8,13 +8,13 @@ const ALLOWED_METHODS = ['ANY', ...ALL_METHODS];
 
 export function validateHttpMethod(method: string, messagePrefix: string = '') {
   if (!ALLOWED_METHODS.includes(method)) {
-    throw new UnscopedValidationError(`${messagePrefix}Invalid HTTP method "${method}". Allowed methods: ${ALLOWED_METHODS.join(',')}`);
+    throw new UnscopedValidationError('MessageprefixInvalidHttpMethod', `${messagePrefix}Invalid HTTP method "${method}". Allowed methods: ${ALLOWED_METHODS.join(',')}`);
   }
 }
 
 export function parseMethodOptionsPath(originalPath: string): { resourcePath: string; httpMethod: string } {
   if (!originalPath.startsWith('/')) {
-    throw new UnscopedValidationError(`Method options path must start with '/': ${originalPath}`);
+    throw new UnscopedValidationError('MethodOptionsPathStart', `Method options path must start with '/': ${originalPath}`);
   }
 
   const path = originalPath.slice(1); // trim trailing '/'
@@ -22,7 +22,7 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
   const components = path.split('/');
 
   if (components.length < 2) {
-    throw new UnscopedValidationError(`Method options path must include at least two components: /{resource}/{method} (i.e. /foo/bar/GET): ${path}`);
+    throw new UnscopedValidationError('MethodOptionsPathInclude', `Method options path must include at least two components: /{resource}/{method} (i.e. /foo/bar/GET): ${path}`);
   }
 
   const httpMethod = components.pop()!.toUpperCase(); // last component is an HTTP method
@@ -45,11 +45,11 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
 
 export function parseAwsApiCall(path?: string, action?: string, actionParams?: { [key: string]: string }): { apiType: string; apiValue: string } {
   if (actionParams && !action) {
-    throw new UnscopedValidationError('"actionParams" requires that "action" will be set');
+    throw new UnscopedValidationError('ActionparamsRequiresAction', '"actionParams" requires that "action" will be set');
   }
 
   if (path && action) {
-    throw new UnscopedValidationError(`"path" and "action" are mutually exclusive (path="${path}", action="${action}")`);
+    throw new UnscopedValidationError('PathActionMutuallyExclusive', `"path" and "action" are mutually exclusive (path="${path}", action="${action}")`);
   }
 
   if (path) {
@@ -70,18 +70,18 @@ export function parseAwsApiCall(path?: string, action?: string, actionParams?: {
     };
   }
 
-  throw new UnscopedValidationError('Either "path" or "action" are required');
+  throw new UnscopedValidationError('EitherPathActionRequired', 'Either "path" or "action" are required');
 }
 
 export function validateInteger(property: number | undefined, messagePrefix: string) {
   if (property && !Number.isInteger(property)) {
-    throw new UnscopedValidationError(`${messagePrefix} should be an integer`);
+    throw new UnscopedValidationError('MessageprefixInteger', `${messagePrefix} should be an integer`);
   }
 }
 
 export function validateDouble(property: number | undefined, messagePrefix: string) {
   if (property && isNaN(property) && isNaN(parseFloat(property.toString()))) {
-    throw new UnscopedValidationError(`${messagePrefix} should be an double`);
+    throw new UnscopedValidationError('MessageprefixDouble', `${messagePrefix} should be an double`);
   }
 }
 

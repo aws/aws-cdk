@@ -647,7 +647,7 @@ export class Repository extends RepositoryBase {
     }
 
     if (this.triggers.find(prop => prop.name === name)) {
-      throw new ValidationError(`Unable to set repository trigger named ${name} because trigger names must be unique`, this);
+      throw new ValidationError('UnableRepositoryTriggerNamed', `Unable to set repository trigger named ${name} because trigger names must be unique`, this);
     }
 
     this.triggers.push({

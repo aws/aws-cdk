@@ -49,7 +49,7 @@ export class Intrinsic implements IResolvable {
 
   constructor(value: any, options: IntrinsicProps = {}) {
     if (isFunction(value)) {
-      throw new UnscopedValidationError(`Argument to Intrinsic must be a plain value object, got ${value}`);
+      throw new UnscopedValidationError('ArgumentIntrinsicPlainValue', `Argument to Intrinsic must be a plain value object, got ${value}`);
     }
 
     this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];

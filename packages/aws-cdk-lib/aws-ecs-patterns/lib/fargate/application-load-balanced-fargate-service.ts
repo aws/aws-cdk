@@ -91,7 +91,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('You must specify either a taskDefinition or an image, not both.', this);
+      throw new ValidationError('SpecifyEitherTaskdefinitionImage', 'You must specify either a taskDefinition or an image, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -132,7 +132,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new ValidationError('You must specify one of: taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskdefinitionImage', 'You must specify one of: taskDefinition or image', this);
     }
 
     this.validateHealthyPercentage('minHealthyPercent', props.minHealthyPercent);
@@ -145,7 +145,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       !Token.isUnresolved(props.maxHealthyPercent) &&
       props.minHealthyPercent >= props.maxHealthyPercent
     ) {
-      throw new ValidationError('Minimum healthy percent must be less than maximum healthy percent.', this);
+      throw new ValidationError('MinimumHealthyPercentMaximum', 'Minimum healthy percent must be less than maximum healthy percent.', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
@@ -179,7 +179,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   private validateHealthyPercentage(name: string, value?: number) {
     if (value === undefined || Token.isUnresolved(value)) { return; }
     if (!Number.isInteger(value) || value < 0) {
-      throw new ValidationError(`${name}: Must be a non-negative integer; received ${value}`, this);
+      throw new ValidationError('NameNonNegativeInteger', `${name}: Must be a non-negative integer; received ${value}`, this);
     }
   }
 
@@ -188,11 +188,11 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       return;
     }
     if (containerCpu > cpu) {
-      throw new ValidationError(`containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`, this);
+      throw new ValidationError('ContainercpuCpuReceivedContainercpu', `containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`, this);
     }
     // If containerCPU is 0, it is not an error.
     if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
-      throw new ValidationError(`containerCpu must be a non-negative integer; received ${containerCpu}`, this);
+      throw new ValidationError('ContainercpuNonNegativeInteger', `containerCpu must be a non-negative integer; received ${containerCpu}`, this);
     }
   }
 
@@ -201,10 +201,10 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       return;
     }
     if (containerMemoryLimitMiB > memoryLimitMiB) {
-      throw new ValidationError(`containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`, this);
+      throw new ValidationError('ContainermemorylimitmibMemorylimitmibReceivedContainermemorylimitmib', `containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`, this);
     }
     if (containerMemoryLimitMiB <= 0 || !Number.isInteger(containerMemoryLimitMiB)) {
-      throw new ValidationError(`containerMemoryLimitMiB must be a positive integer; received ${containerMemoryLimitMiB}`, this);
+      throw new ValidationError('ContainermemorylimitmibPositiveIntegerReceived', `containerMemoryLimitMiB must be a positive integer; received ${containerMemoryLimitMiB}`, this);
     }
   }
 }

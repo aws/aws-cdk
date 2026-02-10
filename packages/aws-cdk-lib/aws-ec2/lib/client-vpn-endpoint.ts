@@ -361,33 +361,32 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       const clientCidr = new CidrBlock(props.cidr);
       const vpcCidr = new CidrBlock(props.vpc.vpcCidrBlock);
       if (vpcCidr.containsCidr(clientCidr)) {
-        throw new ValidationError('The client CIDR cannot overlap with the local CIDR of the VPC', this);
+        throw new ValidationError('ClientCidrOverlapLocal', 'The client CIDR cannot overlap with the local CIDR of the VPC', this);
       }
     }
 
     if (props.dnsServers && props.dnsServers.length > 2) {
-      throw new ValidationError('A client VPN endpoint can have up to two DNS servers', this);
+      throw new ValidationError('ClientVpnEndpointTwo', 'A client VPN endpoint can have up to two DNS servers', this);
     }
 
     if (props.logging == false && (props.logGroup || props.logStream)) {
-      throw new ValidationError('Cannot specify `logGroup` or `logStream` when logging is disabled', this);
+      throw new ValidationError('SpecifyLoggroupLogstreamLogging', 'Cannot specify `logGroup` or `logStream` when logging is disabled', this);
     }
 
     if (props.clientConnectionHandler
       && !Token.isUnresolved(props.clientConnectionHandler.functionName)
       && !props.clientConnectionHandler.functionName.startsWith('AWSClientVPN-')) {
-      throw new ValidationError('The name of the Lambda function must begin with the `AWSClientVPN-` prefix', this);
+      throw new ValidationError('NameLambdaFunctionBegin', 'The name of the Lambda function must begin with the `AWSClientVPN-` prefix', this);
     }
 
     if (props.clientLoginBanner
       && !Token.isUnresolved(props.clientLoginBanner)
       && props.clientLoginBanner.length > 1400) {
-      throw new ValidationError(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`, this);
+      throw new ValidationError('MaximumLengthClientLogin', `The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`, this);
     }
 
     if (props.clientRouteEnforcementOptions?.enforced && props.splitTunnel) {
-      throw new ValidationError(
-        'Client Route Enforcement cannot be enabled when splitTunnel is true.',
+      throw new ValidationError('ClientRouteEnforcementEnabled', 'Client Route Enforcement cannot be enabled when splitTunnel is true.',
         this,
       );
     }
@@ -449,7 +448,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     const subnetIds = props.vpc.selectSubnets(props.vpcSubnets).subnetIds;
 
     if (Token.isUnresolved(subnetIds)) {
-      throw new ValidationError('Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.', this);
+      throw new ValidationError('AssociateSubnetsVpcImported', 'Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.', this);
     }
 
     for (const [idx, subnetId] of Object.entries(subnetIds)) {
@@ -515,7 +514,7 @@ function renderAuthenticationOptions(
   }
 
   if (authenticationOptions.length === 0) {
-    throw new UnscopedValidationError('A client VPN endpoint must use at least one authentication option');
+    throw new UnscopedValidationError('ClientVpnEndpointLeast', 'A client VPN endpoint must use at least one authentication option');
   }
   return authenticationOptions;
 }

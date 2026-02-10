@@ -19,7 +19,7 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    */
   public scaleOnUtilization(options: UtilizationScalingOptions) {
     if ( !Token.isUnresolved(options.utilizationTarget) && (options.utilizationTarget < 0.1 || options.utilizationTarget > 0.9)) {
-      throw new ValidationError(`Utilization Target should be between 0.1 and 0.9. Found ${options.utilizationTarget}.`, this);
+      throw new ValidationError('UtilizationTargetFoundOptions', `Utilization Target should be between 0.1 and 0.9. Found ${options.utilizationTarget}.`, this);
     }
     super.doScaleToTrackMetric('Tracking', {
       targetValue: options.utilizationTarget,

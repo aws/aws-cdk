@@ -118,11 +118,11 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
   private validateExecutionParameters(executionParameters?: string[]) {
     if (executionParameters === undefined || cdk.Token.isUnresolved(executionParameters)) return;
     if (executionParameters.length == 0) {
-      throw new ValidationError('\'executionParameters\' must be a non-empty list', this);
+      throw new ValidationError('ExecutionparametersNonEmptyList', '\'executionParameters\' must be a non-empty list', this);
     }
     const invalidExecutionParameters = executionParameters.some(p => p.length < 1 || p.length > 1024);
     if (invalidExecutionParameters) {
-      throw new ValidationError('\'executionParameters\' items\'s length must be between 1 and 1024 characters', this);
+      throw new ValidationError('ExecutionparametersItemsLength1024', '\'executionParameters\' items\'s length must be between 1 and 1024 characters', this);
     }
   }
 
@@ -130,11 +130,11 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     if (resultReuseConfigurationMaxAge === undefined || cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)) return;
     const maxAgeInMillis = resultReuseConfigurationMaxAge.toMilliseconds();
     if (maxAgeInMillis > 0 && maxAgeInMillis < cdk.Duration.minutes(1).toMilliseconds()) {
-      throw new ValidationError(`resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got ${maxAgeInMillis} ms`, this);
+      throw new ValidationError('ResultreuseconfigurationmaxageGreaterEqualMinute', `resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got ${maxAgeInMillis} ms`, this);
     }
     const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
     if (maxAgeInMinutes > 10080) {
-      throw new ValidationError(`resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`, this);
+      throw new ValidationError('ResultreuseconfigurationmaxageEither10080Minutes', `resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`, this);
     }
   }
 

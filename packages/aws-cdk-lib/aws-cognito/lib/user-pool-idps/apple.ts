@@ -64,7 +64,7 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
     // Exactly one of the properties must be configured
     if ((!props.privateKey && !props.privateKeyValue) ||
       (props.privateKey && props.privateKeyValue)) {
-      throw new ValidationError('Exactly one of "privateKey" or "privateKeyValue" must be configured.', this);
+      throw new ValidationError('ExactlyOnePrivatekeyPrivatekeyvalue', 'Exactly one of "privateKey" or "privateKeyValue" must be configured.', this);
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {

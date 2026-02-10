@@ -924,7 +924,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     origins.forEach(origin => {
       if (!origin.s3OriginConfig && !origin.customOriginConfig) {
-        throw new cdk.ValidationError(`Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`, this);
+        throw new cdk.ValidationError('OriginOriginDomainnameMissing', `Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`, this);
       }
     });
     const originGroupsDistConfig =
@@ -937,13 +937,13 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
     if (defaultBehaviors.length !== 1) {
-      throw new cdk.ValidationError('There can only be one default behavior across all sources. [ One default behavior per distribution ].', this);
+      throw new cdk.ValidationError('ThereOneDefaultBehavior', 'There can only be one default behavior across all sources. [ One default behavior per distribution ].', this);
     }
 
     const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
     for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
       if (!behavior.pathPattern) {
-        throw new cdk.ValidationError('pathPattern is required for all non-default behaviors', this);
+        throw new cdk.ValidationError('PathpatternRequiredNonDefault', 'pathPattern is required for all non-default behaviors', this);
       }
       otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
     }
@@ -967,7 +967,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     };
 
     if (props.aliasConfiguration && props.viewerCertificate) {
-      throw new cdk.ValidationError([
+      throw new cdk.ValidationError('AliasconfigurationViewercertificatePropertiesPlease', [
         'You cannot set both aliasConfiguration and viewerCertificate properties.',
         'Please only use viewerCertificate, as aliasConfiguration is deprecated.',
       ].join(' '), this);
@@ -993,7 +993,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
 
         if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
-          throw new cdk.ValidationError(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`, this);
+          throw new cdk.ValidationError('MinimumprotocolversionCompabtibleSslmethodSslsupportmethod', `${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`, this);
         }
       }
     } else {
@@ -1092,7 +1092,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     if (input.lambdaFunctionAssociations) {
       const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
       if (input.lambdaFunctionAssociations.some(fna => fna.includeBody && !includeBodyEventTypes.includes(fna.eventType))) {
-        throw new cdk.ValidationError('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.', this);
+        throw new cdk.ValidationError('IncludebodyTrueOriginRequest', '\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.', this);
       }
 
       toReturn = Object.assign(toReturn, {
@@ -1122,14 +1122,12 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       !originConfig.s3OriginSource &&
       !originConfig.customOriginSource
     ) {
-      throw new cdk.ValidationError(
-        'There must be at least one origin source - either an s3OriginSource, a customOriginSource',
+      throw new cdk.ValidationError('ThereLeastOneOrigin', 'There must be at least one origin source - either an s3OriginSource, a customOriginSource',
         this,
       );
     }
     if (originConfig.customOriginSource && originConfig.s3OriginSource) {
-      throw new cdk.ValidationError(
-        'There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.',
+      throw new cdk.ValidationError('ThereS3originsourceCustomoriginsourceSame', 'There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.',
         this,
       );
     }
@@ -1139,7 +1137,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       originConfig.s3OriginSource?.originHeaders,
       originConfig.customOriginSource?.originHeaders,
     ].filter(x => x).length > 1) {
-      throw new cdk.ValidationError('Only one originHeaders field allowed across origin and failover origins', this);
+      throw new cdk.ValidationError('OneOriginheadersFieldAllowed', 'Only one originHeaders field allowed across origin and failover origins', this);
     }
 
     if ([
@@ -1147,7 +1145,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       originConfig.s3OriginSource?.originPath,
       originConfig.customOriginSource?.originPath,
     ].filter(x => x).length > 1) {
-      throw new cdk.ValidationError('Only one originPath field allowed across origin and failover origins', this);
+      throw new cdk.ValidationError('OneOriginpathFieldAllowed', 'Only one originPath field allowed across origin and failover origins', this);
     }
 
     if ([
@@ -1155,7 +1153,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       originConfig.s3OriginSource?.originShieldRegion,
       originConfig.customOriginSource?.originShieldRegion,
     ].filter(x => x).length > 1) {
-      throw new cdk.ValidationError('Only one originShieldRegion field allowed across origin and failover origins', this);
+      throw new cdk.ValidationError('OneOriginshieldregionFieldAllowed', 'Only one originShieldRegion field allowed across origin and failover origins', this);
     }
 
     const headers = originConfig.originHeaders ?? originConfig.s3OriginSource?.originHeaders ?? originConfig.customOriginSource?.originHeaders;
@@ -1196,12 +1194,12 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     const connectionAttempts = originConfig.connectionAttempts ?? 3;
     if (connectionAttempts < 1 || 3 < connectionAttempts || !Number.isInteger(connectionAttempts)) {
-      throw new cdk.ValidationError('connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.', this);
+      throw new cdk.ValidationError('ConnectionattemptsSpecifyNumberAttempts', 'connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.', this);
     }
 
     const connectionTimeout = (originConfig.connectionTimeout || cdk.Duration.seconds(10)).toSeconds();
     if (connectionTimeout < 1 || 10 < connectionTimeout || !Number.isInteger(connectionTimeout)) {
-      throw new cdk.ValidationError('connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).', this);
+      throw new cdk.ValidationError('ConnectiontimeoutSpecifyNumberSeconds', 'connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).', this);
     }
 
     const originProperty: CfnDistribution.OriginProperty = {

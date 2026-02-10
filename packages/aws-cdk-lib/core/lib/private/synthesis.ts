@@ -294,7 +294,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
   }
 
-  throw new UnscopedValidationError('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
+  throw new UnscopedValidationError('DetectedPossibleInfiniteLoop', 'We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'abort-recursion' | 'nothing' {
     const node = construct.node;
@@ -317,8 +317,7 @@ function invokeAspectsV2(root: IConstruct) {
       // If the last invoked Aspect has a higher priority than the current one, throw an error:
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
-        throw new UnscopedValidationError(
-          `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (added at ${lastInvokedAspect.construct.node.path} with priority ${lastInvokedAspect.priority}) was already invoked on this node.`,
+        throw new UnscopedValidationError('InvokeAspectAspectapplicationAspect', `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (added at ${lastInvokedAspect.construct.node.path} with priority ${lastInvokedAspect.priority}) was already invoked on this node.`,
         );
       }
 
@@ -477,7 +476,7 @@ function validateTree(root: IConstruct) {
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-    throw new UnscopedValidationError(`Validation failed with the following errors:\n  ${errorList}`);
+    throw new UnscopedValidationError('ValidationFailedFollowingErrors', `Validation failed with the following errors:\n  ${errorList}`);
   }
 }
 

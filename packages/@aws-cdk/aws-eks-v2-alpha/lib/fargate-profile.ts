@@ -172,11 +172,11 @@ export class FargateProfile extends Construct implements ITaggable {
     }
 
     if (props.selectors.length < 1) {
-      throw new ValidationError('Fargate profile requires at least one selector', this);
+      throw new ValidationError('FargateProfileRequiresLeast', 'Fargate profile requires at least one selector', this);
     }
 
     if (props.selectors.length > 5) {
-      throw new ValidationError('Fargate profile supports up to five selectors', this);
+      throw new ValidationError('FargateProfileSupportsFive', 'Fargate profile supports up to five selectors', this);
     }
 
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');

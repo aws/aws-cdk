@@ -285,12 +285,12 @@ export class NestedStack extends Stack {
  */
 function findParentStack(scope: Construct): Stack {
   if (!scope) {
-    throw new UnscopedValidationError('Nested stacks cannot be defined as a root construct');
+    throw new UnscopedValidationError('NestedStacksDefinedRoot', 'Nested stacks cannot be defined as a root construct');
   }
 
   const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
-    throw new UnscopedValidationError('Nested stacks must be defined within scope of another non-nested stack');
+    throw new UnscopedValidationError('NestedStacksDefinedWithin', 'Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return parentStack as Stack;

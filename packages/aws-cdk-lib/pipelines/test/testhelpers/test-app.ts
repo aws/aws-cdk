@@ -212,7 +212,7 @@ export class MultipleFileAssetsApp extends Stage {
       const displayName = props.displayNames ? props.displayNames[i] : undefined;
       const fn = fileNames[i];
       if (!fn) {
-        throw new ValidationError(`Got more displayNames than we have fileNames: ${i + 1}`, this);
+        throw new ValidationError('GotDisplaynamesFilenames', `Got more displayNames than we have fileNames: ${i + 1}`, this);
       }
 
       new s3_assets.Asset(stack, `Asset${i + 1}`, {

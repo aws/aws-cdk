@@ -50,15 +50,15 @@ export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
 export class RunEcsEc2Task extends EcsRunTaskBase {
   constructor(props: RunEcsEc2TaskProps) {
     if (!props.taskDefinition.isEc2Compatible) {
-      throw new UnscopedValidationError('Supplied TaskDefinition is not configured for compatibility with EC2');
+      throw new UnscopedValidationError('SuppliedTaskdefinitionConfiguredCompatibility', 'Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
     if (!props.cluster.hasEc2Capacity) {
-      throw new UnscopedValidationError('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+      throw new UnscopedValidationError('ClusterServiceNeedsEc2', 'Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }
 
     if (!props.taskDefinition.defaultContainer) {
-      throw new UnscopedValidationError('A TaskDefinition must have at least one essential container');
+      throw new UnscopedValidationError('TaskdefinitionLeastOneEssential', 'A TaskDefinition must have at least one essential container');
     }
 
     super({
@@ -85,7 +85,7 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
  */
 function validateNoNetworkingProps(props: RunEcsEc2TaskProps) {
   if (props.subnets !== undefined || props.securityGroup !== undefined) {
-    throw new UnscopedValidationError('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
+    throw new UnscopedValidationError('VpcplacementSecuritygroupUsedAwsvpc', 'vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
   }
 }
 

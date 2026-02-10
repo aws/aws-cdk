@@ -99,7 +99,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
     super(scope, id, props);
 
     if (props.scheduledEc2TaskDefinitionOptions && props.scheduledEc2TaskImageOptions) {
-      throw new ValidationError('You must specify either a scheduledEc2TaskDefinitionOptions or scheduledEc2TaskOptions, not both.', this);
+      throw new ValidationError('SpecifyEitherScheduledec2taskdefinitionoptionsScheduledec2taskoptions', 'You must specify either a scheduledEc2TaskDefinitionOptions or scheduledEc2TaskOptions, not both.', this);
     } else if (props.scheduledEc2TaskDefinitionOptions) {
       this.taskDefinition = props.scheduledEc2TaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledEc2TaskImageOptions) {
@@ -119,7 +119,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
         logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
-      throw new ValidationError('You must specify a taskDefinition or image', this);
+      throw new ValidationError('SpecifyTaskdefinitionImage', 'You must specify a taskDefinition or image', this);
     }
 
     this.task = this.addTaskDefinitionToEventTarget(this.taskDefinition);

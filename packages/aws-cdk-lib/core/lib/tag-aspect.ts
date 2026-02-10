@@ -123,7 +123,7 @@ export class Tag extends TagBase {
   constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
     if (value === undefined) {
-      throw new UnscopedValidationError(`Tag '${key}' must have a value`);
+      throw new UnscopedValidationError('TagKeyValue', `Tag '${key}' must have a value`);
     }
     this.value = value;
   }

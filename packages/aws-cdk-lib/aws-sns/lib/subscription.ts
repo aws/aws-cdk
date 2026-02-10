@@ -124,12 +124,12 @@ export class Subscription extends Resource {
         SubscriptionProtocol.FIREHOSE,
       ]
         .indexOf(props.protocol) < 0) {
-      throw new ValidationError('Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.', this);
+      throw new ValidationError('RawMessageDeliveryEnabled', 'Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.', this);
     }
 
     if (props.filterPolicy) {
       if (Object.keys(props.filterPolicy).length > 5) {
-        throw new ValidationError('A filter policy can have a maximum of 5 attribute names.', this);
+        throw new ValidationError('FilterPolicyMaximumAttribute', 'A filter policy can have a maximum of 5 attribute names.', this);
       }
 
       this.filterPolicy = Object.entries(props.filterPolicy)
@@ -141,17 +141,17 @@ export class Subscription extends Resource {
       let total = 1;
       Object.values(this.filterPolicy).forEach(filter => { total *= filter.length; });
       if (total > 150) {
-        throw new ValidationError(`The total combination of values (${total}) must not exceed 150.`, this);
+        throw new ValidationError('TotalCombinationValuesTotal', `The total combination of values (${total}) must not exceed 150.`, this);
       }
     } else if (props.filterPolicyWithMessageBody) {
       if (Object.keys(props.filterPolicyWithMessageBody).length > 5) {
-        throw new ValidationError('A filter policy can have a maximum of 5 attribute names.', this);
+        throw new ValidationError('FilterPolicyMaximumAttribute', 'A filter policy can have a maximum of 5 attribute names.', this);
       }
       this.filterPolicyWithMessageBody = props.filterPolicyWithMessageBody;
     }
 
     if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
-      throw new ValidationError('Subscription role arn is required field for subscriptions with a firehose protocol.', this);
+      throw new ValidationError('SubscriptionRoleArnRequired', 'Subscription role arn is required field for subscriptions with a firehose protocol.', this);
     }
 
     // Format filter policy
@@ -176,7 +176,7 @@ export class Subscription extends Resource {
 
   private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy, protocol: SubscriptionProtocol): any {
     if (![SubscriptionProtocol.HTTP, SubscriptionProtocol.HTTPS].includes(protocol)) {
-      throw new ValidationError(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`, this);
+      throw new ValidationError('DeliveryPolicySupportedHttp', `Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`, this);
     }
     const { healthyRetryPolicy, throttlePolicy } = deliveryPolicy;
     if (healthyRetryPolicy) {
@@ -185,45 +185,45 @@ export class Subscription extends Resource {
       const maxDelayTarget = healthyRetryPolicy.maxDelayTarget;
       if (minDelayTarget !== undefined) {
         if (minDelayTarget.toMilliseconds() % 1000 !== 0) {
-          throw new ValidationError(`minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`, this);
+          throw new ValidationError('MindelaytargetWholeNumberSeconds', `minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`, this);
         }
         const minDelayTargetSecs = minDelayTarget.toSeconds();
         if (minDelayTargetSecs < 1 || minDelayTargetSecs > delayTargetLimitSecs) {
-          throw new ValidationError(`minDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${minDelayTargetSecs}s`, this);
+          throw new ValidationError('MindelaytargetDelaytargetlimitsecsSecondsInclusive', `minDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${minDelayTargetSecs}s`, this);
         }
       }
       if (maxDelayTarget !== undefined) {
         if (maxDelayTarget.toMilliseconds() % 1000 !== 0) {
-          throw new ValidationError(`maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`, this);
+          throw new ValidationError('MaxdelaytargetWholeNumberSeconds', `maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`, this);
         }
         const maxDelayTargetSecs = maxDelayTarget.toSeconds();
         if (maxDelayTargetSecs < 1 || maxDelayTargetSecs > delayTargetLimitSecs) {
-          throw new ValidationError(`maxDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${maxDelayTargetSecs}s`, this);
+          throw new ValidationError('MaxdelaytargetDelaytargetlimitsecsSecondsInclusive', `maxDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${maxDelayTargetSecs}s`, this);
         }
         if ((minDelayTarget !== undefined) && minDelayTarget.toSeconds() > maxDelayTargetSecs) {
-          throw new ValidationError('minDelayTarget must not exceed maxDelayTarget', this);
+          throw new ValidationError('MindelaytargetExceedMaxdelaytarget', 'minDelayTarget must not exceed maxDelayTarget', this);
         }
       }
 
       const numRetriesLimit = 100;
       if (healthyRetryPolicy.numRetries && (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit)) {
-        throw new ValidationError(`numRetries must be between 0 and ${numRetriesLimit} inclusive, got: ${healthyRetryPolicy.numRetries}`, this);
+        throw new ValidationError('NumretriesNumretrieslimitInclusiveGot', `numRetries must be between 0 and ${numRetriesLimit} inclusive, got: ${healthyRetryPolicy.numRetries}`, this);
       }
       const { numNoDelayRetries, numMinDelayRetries, numMaxDelayRetries } = healthyRetryPolicy;
       if (numNoDelayRetries && (numNoDelayRetries < 0 || !Number.isInteger(numNoDelayRetries))) {
-        throw new ValidationError(`numNoDelayRetries must be an integer zero or greater, got: ${numNoDelayRetries}`, this);
+        throw new ValidationError('NumnodelayretriesIntegerZeroGreater', `numNoDelayRetries must be an integer zero or greater, got: ${numNoDelayRetries}`, this);
       }
       if (numMinDelayRetries && (numMinDelayRetries < 0 || !Number.isInteger(numMinDelayRetries))) {
-        throw new ValidationError(`numMinDelayRetries must be an integer zero or greater, got: ${numMinDelayRetries}`, this);
+        throw new ValidationError('NummindelayretriesIntegerZeroGreater', `numMinDelayRetries must be an integer zero or greater, got: ${numMinDelayRetries}`, this);
       }
       if (numMaxDelayRetries && (numMaxDelayRetries < 0 || !Number.isInteger(numMaxDelayRetries))) {
-        throw new ValidationError(`numMaxDelayRetries must be an integer zero or greater, got: ${numMaxDelayRetries}`, this);
+        throw new ValidationError('NummaxdelayretriesIntegerZeroGreater', `numMaxDelayRetries must be an integer zero or greater, got: ${numMaxDelayRetries}`, this);
       }
     }
     if (throttlePolicy) {
       const maxReceivesPerSecond = throttlePolicy.maxReceivesPerSecond;
       if (maxReceivesPerSecond !== undefined && (maxReceivesPerSecond < 1 || !Number.isInteger(maxReceivesPerSecond))) {
-        throw new ValidationError(`maxReceivesPerSecond must be an integer greater than zero, got: ${maxReceivesPerSecond}`, this);
+        throw new ValidationError('MaxreceivespersecondIntegerGreaterZero', `maxReceivesPerSecond must be an integer greater than zero, got: ${maxReceivesPerSecond}`, this);
       }
     }
     return {
@@ -348,7 +348,7 @@ function buildFilterPolicyWithMessageBody(
 
   // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
   if (totalCombinationValues[0] > 150) {
-    throw new ValidationError(`The total combination of values (${totalCombinationValues}) must not exceed 150.`, scope);
+    throw new ValidationError('TotalCombinationValuesTotalcombinationvalues', `The total combination of values (${totalCombinationValues}) must not exceed 150.`, scope);
   }
 
   return result;

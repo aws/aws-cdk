@@ -162,7 +162,7 @@ export class ShellStep extends Step {
     if (props.input) {
       const fileSet = props.input.primaryOutput;
       if (!fileSet) {
-        throw new UnscopedValidationError(`'${id}': primary input should be a step that has produced a file set, got ${props.input}`);
+        throw new UnscopedValidationError('PrimaryInputStepProduced', `'${id}': primary input should be a step that has produced a file set, got ${props.input}`);
       }
       this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory: '.', fileSet });
@@ -170,12 +170,12 @@ export class ShellStep extends Step {
 
     for (const [directory, step] of Object.entries(props.additionalInputs ?? {})) {
       if (directory === '.') {
-        throw new UnscopedValidationError(`'${id}': input for directory '.' should be passed via 'input' property`);
+        throw new UnscopedValidationError('InputDirectoryPassedVia', `'${id}': input for directory '.' should be passed via 'input' property`);
       }
 
       const fileSet = step.primaryOutput;
       if (!fileSet) {
-        throw new UnscopedValidationError(`'${id}': additionalInput for directory '${directory}' should be a step that has produced a file set, got ${step}`);
+        throw new UnscopedValidationError('AdditionalinputDirectoryDirectoryStep', `'${id}': additionalInput for directory '${directory}' should be a step that has produced a file set, got ${step}`);
       }
       this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory, fileSet });
@@ -202,7 +202,7 @@ export class ShellStep extends Step {
   public primaryOutputDirectory(directory: string): FileSet {
     if (this._primaryOutputDirectory !== undefined) {
       if (this._primaryOutputDirectory !== directory) {
-        throw new UnscopedValidationError(`${this}: primaryOutputDirectory is '${this._primaryOutputDirectory}', cannot be changed to '${directory}'`);
+        throw new UnscopedValidationError('PrimaryoutputdirectoryPrimaryoutputdirectoryChangedDirectory', `${this}: primaryOutputDirectory is '${this._primaryOutputDirectory}', cannot be changed to '${directory}'`);
       }
 
       return this.primaryOutput!;

@@ -142,7 +142,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     addConstructMetadata(this, props);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
-      throw new ValidationError('VPC Endpoint Service must have at least one load balancer specified.', this);
+      throw new ValidationError('VpcEndpointServiceLeast', 'VPC Endpoint Service must have at least one load balancer specified.', this);
     }
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
@@ -152,7 +152,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.allowedRegions = props.allowedRegions;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
-      throw new ValidationError('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead', this);
+      throw new ValidationError('WhitelistedprincipalsDeprecatedPleaseAllowedprincipals', '`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead', this);
     }
     this.allowedPrincipals = props.allowedPrincipals ?? props.whitelistedPrincipals ?? [];
     this.whitelistedPrincipals = this.allowedPrincipals;

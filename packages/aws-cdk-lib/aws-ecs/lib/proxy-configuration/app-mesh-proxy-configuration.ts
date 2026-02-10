@@ -80,7 +80,7 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
     super();
     if (props.properties) {
       if (!props.properties.ignoredUID && !props.properties.ignoredGID) {
-        throw new UnscopedValidationError('At least one of ignoredUID or ignoredGID should be specified.');
+        throw new UnscopedValidationError('LeastOneIgnoreduidIgnoredgid', 'At least one of ignoredUID or ignoredGID should be specified.');
       }
     }
   }

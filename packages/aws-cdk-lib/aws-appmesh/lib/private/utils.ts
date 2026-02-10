@@ -102,11 +102,11 @@ export function validateHttpMatchArrayLength(scope: Construct, headers?: HeaderM
   const MAX_LENGTH = 10;
 
   if (headers && (headers.length < MIN_LENGTH || headers.length > MAX_LENGTH)) {
-    throw new ValidationError(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`, scope);
+    throw new ValidationError('NumberHeadersProvidedMatching', `Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`, scope);
   }
 
   if (queryParameters && (queryParameters.length < MIN_LENGTH || queryParameters.length > MAX_LENGTH)) {
-    throw new ValidationError(`Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`, scope);
+    throw new ValidationError('NumberQueryParametersProvided', `Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`, scope);
   }
 }
 
@@ -118,7 +118,7 @@ export function validateGrpcMatchArrayLength(scope: Construct, metadata?: Header
   const MAX_LENGTH = 10;
 
   if (metadata && (metadata.length < MIN_LENGTH || metadata.length > MAX_LENGTH)) {
-    throw new ValidationError(`Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${metadata.length}`, scope);
+    throw new ValidationError('NumberMetadataProvidedMatching', `Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${metadata.length}`, scope);
   }
 }
 
@@ -127,7 +127,7 @@ export function validateGrpcMatchArrayLength(scope: Construct, metadata?: Header
  */
 export function validateGrpcRouteMatch(scope: Construct, match: GrpcRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined && match.port === undefined) {
-    throw new ValidationError('At least one gRPC route match property must be provided', scope);
+    throw new ValidationError('LeastOneGrpcRoute', 'At least one gRPC route match property must be provided', scope);
   }
 }
 
@@ -136,6 +136,6 @@ export function validateGrpcRouteMatch(scope: Construct, match: GrpcRouteMatch):
  */
 export function validateGrpcGatewayRouteMatch(scope: Construct, match: GrpcGatewayRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.hostname === undefined && match.port === undefined) {
-    throw new ValidationError('At least one gRPC gateway route match property beside rewriteRequestHostname must be provided', scope);
+    throw new ValidationError('LeastOneGrpcGateway', 'At least one gRPC gateway route match property beside rewriteRequestHostname must be provided', scope);
   }
 }

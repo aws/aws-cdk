@@ -542,8 +542,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     amiDistributions.forEach((amiDistribution) => {
       const region = amiDistribution.region ?? cdk.Stack.of(this).region;
       if (this.amiDistributionsByRegion[region]) {
-        throw new cdk.ValidationError(
-          `duplicate AMI distribution found for region "${region}"; only one AMI distribution per region is allowed`,
+        throw new cdk.ValidationError('DuplicateAmiDistributionFound', `duplicate AMI distribution found for region "${region}"; only one AMI distribution per region is allowed`,
           this,
         );
       }
@@ -562,8 +561,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     containerDistributions.forEach((containerDistribution) => {
       const region = containerDistribution.region ?? cdk.Stack.of(this).region;
       if (this.containerDistributionsByRegion[region]) {
-        throw new cdk.ValidationError(
-          `duplicate Container distribution found for region "${region}"; only one Container distribution per region is allowed`,
+        throw new cdk.ValidationError('DuplicateContainerDistributionFound', `duplicate Container distribution found for region "${region}"; only one Container distribution per region is allowed`,
           this,
         );
       }
@@ -578,19 +576,19 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError('DistributionconfigurationnameLonger128Characters', 'The distributionConfigurationName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot contain spaces', this);
+      throw new cdk.ValidationError('DistributionconfigurationnameContainSpaces', 'The distributionConfigurationName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot contain underscores', this);
+      throw new cdk.ValidationError('DistributionconfigurationnameContainUnderscores', 'The distributionConfigurationName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('The distributionConfigurationName must be lowercase', this);
+      throw new cdk.ValidationError('DistributionconfigurationnameLowercase', 'The distributionConfigurationName must be lowercase', this);
     }
   }
 
@@ -610,7 +608,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       !Object.keys(this.amiDistributionsByRegion).length &&
       !Object.keys(this.containerDistributionsByRegion).length
     ) {
-      throw new cdk.ValidationError('You must specify at least one AMI or container distribution', this);
+      throw new cdk.ValidationError('SpecifyLeastOneAmi', 'You must specify at least one AMI or container distribution', this);
     }
 
     const distributionByRegion: { [region: string]: CfnDistributionConfiguration.DistributionProperty } = {};
@@ -639,8 +637,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     distributions.forEach((distribution) => {
       const { region: _, ...distributionWithoutRegion } = distribution;
       if (!Object.entries(distributionWithoutRegion).some(([__, value]) => value !== undefined)) {
-        throw new cdk.ValidationError(
-          `at least one distribution property must be set for region "${distribution.region}"`,
+        throw new cdk.ValidationError('LeastOneDistributionProperty', `at least one distribution property must be set for region "${distribution.region}"`,
           this,
         );
       }
@@ -713,8 +710,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
           !cdk.Token.isUnresolved(fastLaunchConfiguration.maxParallelLaunches) &&
           fastLaunchConfiguration.maxParallelLaunches < MIN_PARALLEL_LAUNCHES
         ) {
-          throw new cdk.ValidationError(
-            `you must specify a maximum parallel launch count of at least ${MIN_PARALLEL_LAUNCHES}`,
+          throw new cdk.ValidationError('SpecifyMaximumParallelLaunch', `you must specify a maximum parallel launch count of at least ${MIN_PARALLEL_LAUNCHES}`,
             this,
           );
         }
@@ -753,8 +749,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     const launchTemplateConfigurations = amiDistribution.launchTemplates?.map(
       (launchTemplateConfiguration): CfnDistributionConfiguration.LaunchTemplateConfigurationProperty => {
         if (!launchTemplateConfiguration.launchTemplate.launchTemplateId) {
-          throw new cdk.ValidationError(
-            'You must reference launch templates by ID in launch template configurations',
+          throw new cdk.ValidationError('ReferenceLaunchTemplatesLaunch', 'You must reference launch templates by ID in launch template configurations',
             this,
           );
         }

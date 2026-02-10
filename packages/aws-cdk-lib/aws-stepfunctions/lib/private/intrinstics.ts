@@ -254,7 +254,7 @@ export class IntrinsicParser {
   }
 
   private raiseError(message: string): never {
-    throw new UnscopedValidationError(`Invalid JSONPath expression: ${message} at index ${this.i} in ${JSON.stringify(this.expression)}`);
+    throw new UnscopedValidationError('InvalidJsonpathExpressionMessage', `Invalid JSONPath expression: ${message} at index ${this.i} in ${JSON.stringify(this.expression)}`);
   }
 }
 

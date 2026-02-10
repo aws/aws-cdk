@@ -7,7 +7,7 @@ import type { ISchedulingPolicy } from '../scheduling-policy';
  */
 export function toISchedulingPolicy(policy: ISchedulingPolicyRef): ISchedulingPolicy {
   if (!('schedulingPolicyArn' in policy) || !('schedulingPolicyName' in policy)) {
-    throw new UnscopedValidationError(`'schedulingPolicy' instance should implement ISchedulingPolicy, but doesn't: ${policy.constructor.name}`);
+    throw new UnscopedValidationError('SchedulingpolicyInstanceImplementIschedulingpolicy', `'schedulingPolicy' instance should implement ISchedulingPolicy, but doesn't: ${policy.constructor.name}`);
   }
   return policy as ISchedulingPolicy;
 }

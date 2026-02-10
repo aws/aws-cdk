@@ -105,7 +105,7 @@ export class Stage implements IStage {
 
     // check for duplicate Actions and names
     if (this._actions.find(a => a.actionName === actionName)) {
-      throw new cdk.ValidationError(`Stage ${this.stageName} already contains an action with name '${actionName}'`, this.scope);
+      throw new cdk.ValidationError('StageStagenameAlreadyContains', `Stage ${this.stageName} already contains an action with name '${actionName}'`, this.scope);
     }
 
     this._actions.push(this.attachActionToPipeline(action));

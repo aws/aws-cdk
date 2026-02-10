@@ -257,7 +257,7 @@ export class GaugeWidget extends ConcreteWidget {
     this.copyMetricWarnings(...this.metrics);
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
+      throw new cdk.UnscopedValidationError('SpecifyValueEndAlso', 'If you specify a value for end, you must also specify a value for start.');
     }
   }
 
@@ -462,7 +462,7 @@ export class GraphWidget extends ConcreteWidget {
     props.verticalAnnotations?.forEach(annotation => {
       const date = annotation.date;
       if (!GraphWidget.isIso8601(date)) {
-        throw new cdk.UnscopedValidationError(`Given date ${date} is not in ISO 8601 format`);
+        throw new cdk.UnscopedValidationError('GivenDateDateIso', `Given date ${date} is not in ISO 8601 format`);
       }
     });
     this.props = props;
@@ -471,11 +471,11 @@ export class GraphWidget extends ConcreteWidget {
     this.copyMetricWarnings(...this.leftMetrics, ...this.rightMetrics);
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
+      throw new cdk.UnscopedValidationError('SpecifyValueEndAlso', 'If you specify a value for end, you must also specify a value for start.');
     }
 
     if (props.displayLabelsOnChart && props.view !== GraphWidgetView.PIE) {
-      throw new cdk.UnscopedValidationError('displayLabelsOnChart can currently only be set to true if view is GraphWidgetView.PIE');
+      throw new cdk.UnscopedValidationError('DisplaylabelsonchartCurrentlyTrueView', 'displayLabelsOnChart can currently only be set to true if view is GraphWidgetView.PIE');
     }
   }
 
@@ -784,7 +784,7 @@ export class TableWidget extends ConcreteWidget {
     this.copyMetricWarnings(...this.metrics);
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
+      throw new cdk.UnscopedValidationError('SpecifyValueEndAlso', 'If you specify a value for end, you must also specify a value for start.');
     }
   }
 
@@ -914,11 +914,11 @@ export class SingleValueWidget extends ConcreteWidget {
     this.copyMetricWarnings(...props.metrics);
 
     if (props.setPeriodToTimeRange && props.sparkline) {
-      throw new cdk.UnscopedValidationError('You cannot use setPeriodToTimeRange with sparkline');
+      throw new cdk.UnscopedValidationError('SetperiodtotimerangeSparkline', 'You cannot use setPeriodToTimeRange with sparkline');
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
+      throw new cdk.UnscopedValidationError('SpecifyValueEndAlso', 'If you specify a value for end, you must also specify a value for start.');
     }
   }
 

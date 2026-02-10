@@ -9,7 +9,7 @@ export class FieldIndexPolicy {
 
   constructor(props: FieldIndexPolicyProps) {
     if (props.fields.length > 20) {
-      throw new UnscopedValidationError('A maximum of 20 fields can be indexed per log group');
+      throw new UnscopedValidationError('MaximumFieldsIndexedPer', 'A maximum of 20 fields can be indexed per log group');
     }
     this.fieldIndexPolicyProps = props;
   }

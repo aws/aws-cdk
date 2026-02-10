@@ -98,7 +98,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     addConstructMetadata(this, props);
 
     if (props.routeKey != '$connect' && props.authorizer) {
-      throw new ValidationError('You can only set a WebSocket authorizer to a $connect route.', scope);
+      throw new ValidationError('WebsocketAuthorizerConnectRoute', 'You can only set a WebSocket authorizer to a $connect route.', scope);
     }
 
     this.webSocketApi = props.webSocketApi;

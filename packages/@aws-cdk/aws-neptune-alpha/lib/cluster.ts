@@ -545,7 +545,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new ValidationError('Cannot grant permissions when IAM authentication is disabled', this);
+      throw new ValidationError('GrantPermissionsIamAuthentication', 'Cannot grant permissions when IAM authentication is disabled', this);
     }
 
     this.enableIamAuthentication = true;
@@ -651,7 +651,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
-      throw new ValidationError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
+      throw new ValidationError('ClusterRequiresLeastSubnets', `Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
     }
 
     this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
@@ -672,7 +672,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     const storageEncrypted = props.storageEncrypted ?? true;
 
     if (props.kmsKey && !storageEncrypted) {
-      throw new ValidationError('KMS key supplied but storageEncrypted is false', this);
+      throw new ValidationError('KmsKeySuppliedStorageencrypted', 'KMS key supplied but storageEncrypted is false', this);
     }
 
     const deletionProtection = props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
@@ -680,7 +680,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     this.enableIamAuthentication = props.iamAuthentication;
 
     if (props.instanceType === InstanceType.SERVERLESS && !props.serverlessScalingConfiguration) {
-      throw new ValidationError('You need to specify a serverless scaling configuration with a db.serverless instance type.', this);
+      throw new ValidationError('NeedSpecifyServerlessScaling', 'You need to specify a serverless scaling configuration with a db.serverless instance type.', this);
     }
 
     this.validateServerlessScalingConfiguration(props.serverlessScalingConfiguration);
@@ -737,7 +737,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     // Create the instances
     const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
     if (instanceCount < 1) {
-      throw new ValidationError('At least one instance is required', this);
+      throw new ValidationError('LeastOneInstanceRequired', 'At least one instance is required', this);
     }
 
     for (let i = 0; i < instanceCount; i++) {
@@ -777,13 +777,13 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
   private validateServerlessScalingConfiguration(serverlessScalingConfiguration?: ServerlessScalingConfiguration) {
     if (!serverlessScalingConfiguration) return;
     if (serverlessScalingConfiguration.minCapacity < 1) {
-      throw new ValidationError(`ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`, this);
+      throw new ValidationError('ServerlessscalingconfigurationMincapacityGreaterEqual', `ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`, this);
     }
     if (serverlessScalingConfiguration.maxCapacity < 2.5 || serverlessScalingConfiguration.maxCapacity > 128) {
-      throw new ValidationError(`ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received ${serverlessScalingConfiguration.maxCapacity}`, this);
+      throw new ValidationError('ServerlessscalingconfigurationMaxcapacity128Received', `ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received ${serverlessScalingConfiguration.maxCapacity}`, this);
     }
     if (serverlessScalingConfiguration.minCapacity >= serverlessScalingConfiguration.maxCapacity) {
-      throw new ValidationError(`ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +
+      throw new ValidationError('ServerlessscalingconfigurationMincapacityServerlessscalingconfigurationMincapacity', `ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +
         `must be less than serverlessScalingConfiguration maxCapacity ${serverlessScalingConfiguration.maxCapacity}`, this);
     }
   }

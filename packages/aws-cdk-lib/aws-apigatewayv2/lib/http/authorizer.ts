@@ -174,11 +174,11 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     let authorizerPayloadFormatVersion = props.payloadFormatVersion;
 
     if (props.type === HttpAuthorizerType.JWT && (!props.jwtAudience || props.jwtAudience.length === 0 || !props.jwtIssuer)) {
-      throw new ValidationError('jwtAudience and jwtIssuer are mandatory for JWT authorizers', scope);
+      throw new ValidationError('JwtaudienceJwtissuerMandatoryJwt', 'jwtAudience and jwtIssuer are mandatory for JWT authorizers', scope);
     }
 
     if (props.type === HttpAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new ValidationError('authorizerUri is mandatory for Lambda authorizers', scope);
+      throw new ValidationError('AuthorizeruriMandatoryLambdaAuthorizers', 'authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
     /**

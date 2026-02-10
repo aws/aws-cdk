@@ -276,7 +276,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
 
     if (props.computeRole) {
       if (!isSSR) {
-        throw new ValidationError('`computeRole` can only be specified for `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
+        throw new ValidationError('ComputeroleSpecifiedPlatformWeb', '`computeRole` can only be specified for `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
       }
       computedRole = props.computeRole;
     } else if (isSSR) {
@@ -611,7 +611,7 @@ export interface CustomResponseHeader {
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[], scope: IConstruct): string {
   // Defensive assertion - should never happen due to call site validation
   if (customHeaders.length === 0) {
-    throw new ValidationError('renderCustomResponseHeaders called with empty array', scope);
+    throw new ValidationError('RendercustomresponseheadersCalledEmptyArray', 'renderCustomResponseHeaders called with empty array', scope);
   }
 
   const hasAppRoot = customHeaders[0].appRoot !== undefined;
@@ -619,7 +619,7 @@ function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[], scop
 
   for (const customHeader of customHeaders) {
     if ((customHeader.appRoot !== undefined) !== hasAppRoot) {
-      throw new ValidationError('appRoot must be either be present or absent across all custom response headers', scope);
+      throw new ValidationError('ApprootEitherPresentAbsent', 'appRoot must be either be present or absent across all custom response headers', scope);
     }
 
     const baseIndentation = ' '.repeat(hasAppRoot ? 6 : 2);

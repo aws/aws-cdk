@@ -210,7 +210,7 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
           schemaName: 'OpenAPI schema for target',
         });
         if (errors.length > 0) {
-          throw new ValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+          throw new ValidationError('OpenapiSchemaValidationFailed', `OpenAPI schema validation failed:\n${errors.join('\n')}`);
         }
       } else if (this.apiSchema instanceof AssetApiSchema) {
         // For asset schemas (local files)
@@ -221,14 +221,13 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
             schemaName: `OpenAPI schema from file ${this.apiSchema._getFilePath()}`,
           });
           if (errors.length > 0) {
-            throw new ValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+            throw new ValidationError('OpenapiSchemaValidationFailed', `OpenAPI schema validation failed:\n${errors.join('\n')}`);
           }
         } catch (e) {
           if (e instanceof ValidationError) {
             throw e;
           }
-          throw new ValidationError(
-            `Failed to read OpenAPI schema from ${this.apiSchema._getFilePath()}: ${e instanceof Error ? e.message : String(e)}`,
+          throw new ValidationError('FailedReadOpenapiSchema', `Failed to read OpenAPI schema from ${this.apiSchema._getFilePath()}: ${e instanceof Error ? e.message : String(e)}`,
           );
         }
       }
@@ -394,13 +393,12 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
     );
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'));
+      throw new ValidationError('ValidationError', errors.join('\n'));
     }
 
     // Additional helpful validation for common URL encoding issues
     if (endpoint.includes(' ') || endpoint.includes('<') || endpoint.includes('>')) {
-      throw new ValidationError(
-        'MCP server endpoint contains characters that should be URL-encoded. ' +
+      throw new ValidationError('McpServerEndpointContains', 'MCP server endpoint contains characters that should be URL-encoded. ' +
         'Please ensure the URL is properly encoded before passing to the construct.',
       );
     }

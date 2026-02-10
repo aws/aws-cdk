@@ -85,11 +85,11 @@ export class EventInvokeConfig extends Resource {
     addConstructMetadata(this, props);
 
     if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
-      throw new ValidationError('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.', this);
+      throw new ValidationError('MaximumeventageRepresentDuration21600', '`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.', this);
     }
 
     if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 2)) {
-      throw new ValidationError('`retryAttempts` must be between 0 and 2.', this);
+      throw new ValidationError('Retryattempts', '`retryAttempts` must be between 0 and 2.', this);
     }
 
     new CfnEventInvokeConfig(this, 'Resource', {

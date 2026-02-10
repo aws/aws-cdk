@@ -198,7 +198,7 @@ export abstract class Stats {
 
 function assertPercentage(x?: number) {
   if (x !== undefined && (x < 0 || x > 100)) {
-    throw new UnscopedValidationError(`Expecting a percentage, got: ${x}`);
+    throw new UnscopedValidationError('ExpectingPercentageGot', `Expecting a percentage, got: ${x}`);
   }
 }
 

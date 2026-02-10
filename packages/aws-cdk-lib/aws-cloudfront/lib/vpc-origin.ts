@@ -180,12 +180,12 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    */
   public static fromVpcOriginAttributes(scope: Construct, id: string, attrs: VpcOriginAttributes): IVpcOrigin {
     if (!attrs.vpcOriginArn && !attrs.vpcOriginId) {
-      throw new ValidationError('Either vpcOriginId or vpcOriginArn must be provided in VpcOriginAttributes', scope);
+      throw new ValidationError('EitherVpcoriginidVpcoriginarnProvided', 'Either vpcOriginId or vpcOriginArn must be provided in VpcOriginAttributes', scope);
     }
     const vpcOriginId = attrs.vpcOriginId
       ?? Stack.of(scope).splitArn(attrs.vpcOriginArn!, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!vpcOriginId) {
-      throw new ValidationError(`No VPC origin ID found in ARN: '${attrs.vpcOriginArn}'`, scope);
+      throw new ValidationError('VpcOriginFoundArn', `No VPC origin ID found in ARN: '${attrs.vpcOriginArn}'`, scope);
     }
 
     const vpcOriginArn = attrs.vpcOriginArn ?? Stack.of(scope).formatArn({
@@ -264,7 +264,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
 
   private validatePortNumber(port: number | undefined, attrName: string) {
     if (port && !Token.isUnresolved(port) && !([80, 443].includes(port) || (port >= 1024 && port <= 65535))) {
-      throw new ValidationError(`'${attrName}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
+      throw new ValidationError('Attrname443Value1024', `'${attrName}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
     }
   }
 }

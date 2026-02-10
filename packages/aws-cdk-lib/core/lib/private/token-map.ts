@@ -151,7 +151,7 @@ export class TokenMap {
     const tokenIndex = extractTokenDouble(x);
     if (tokenIndex === undefined) { return undefined; }
     const t = this.numberTokenMap.get(tokenIndex);
-    if (t === undefined) { throw new UnscopedValidationError('Encoded representation of unknown number Token found'); }
+    if (t === undefined) { throw new UnscopedValidationError('EncodedRepresentationUnknownNumber', 'Encoded representation of unknown number Token found'); }
     return t;
   }
 
@@ -163,7 +163,7 @@ export class TokenMap {
   public lookupToken(key: string): IResolvable {
     const token = this.stringTokenMap.get(key);
     if (!token) {
-      throw new UnscopedValidationError(`Unrecognized token key: ${key}`);
+      throw new UnscopedValidationError('UnrecognizedTokenKeyKey', `Unrecognized token key: ${key}`);
     }
     return token;
   }

@@ -35,7 +35,7 @@ export class Artifact {
     validation.validateArtifactName(artifactName);
 
     if (artifactFiles !== undefined && (artifactFiles.length < 1 || artifactFiles.length > 10)) {
-      throw new UnscopedValidationError(`The length of the artifactFiles array must be between 1 and 10, got: ${artifactFiles.length}`);
+      throw new UnscopedValidationError('LengthArtifactfilesArrayGot', `The length of the artifactFiles array must be between 1 and 10, got: ${artifactFiles.length}`);
     }
 
     this._artifactName = artifactName;
@@ -133,7 +133,7 @@ export class Artifact {
   /** @internal */
   protected _setName(name: string) {
     if (this._artifactName) {
-      throw new UnscopedValidationError(`Artifact already has name '${this._artifactName}', cannot override it`);
+      throw new UnscopedValidationError('ArtifactAlreadyNameArtifactname', `Artifact already has name '${this._artifactName}', cannot override it`);
     } else {
       this._artifactName = name;
     }

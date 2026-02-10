@@ -42,7 +42,7 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.deliveryStream)) {
-      throw new ValidationError('The supplied delivery stream object must be an instance of Construct', topic);
+      throw new ValidationError('SuppliedDeliveryStreamObject', 'The supplied delivery stream object must be an instance of Construct', topic);
     }
 
     // Permissions based on SNS documentation:

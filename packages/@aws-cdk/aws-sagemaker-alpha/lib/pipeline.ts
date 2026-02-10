@@ -24,12 +24,12 @@ function validatePipelineName(pipelineName: string, scope: Construct): void {
 
   // Check length constraints (1-256 characters)
   if (!pipelineName || pipelineName.length === 0 || pipelineName.length > 256) {
-    throw new ValidationError(`Invalid pipeline name: "${pipelineName}". Pipeline name must be between 1-256 characters.`, scope);
+    throw new ValidationError('InvalidPipelineNamePipelinename', `Invalid pipeline name: "${pipelineName}". Pipeline name must be between 1-256 characters.`, scope);
   }
 
   // Pattern from AWS docs: ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$
   if (!/^[a-zA-Z0-9](-*[a-zA-Z0-9])*$/.test(pipelineName)) {
-    throw new ValidationError(`Invalid pipeline name: "${pipelineName}". Pipeline name must match pattern: ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$`, scope);
+    throw new ValidationError('InvalidPipelineNamePipelinename', `Invalid pipeline name: "${pipelineName}". Pipeline name must match pattern: ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$`, scope);
   }
 }
 
@@ -137,7 +137,7 @@ export class Pipeline extends Resource implements IPipeline {
         region: attrs.region,
       });
     } else {
-      throw new ValidationError('Either pipelineArn or pipelineName must be provided', scope);
+      throw new ValidationError('EitherPipelinearnPipelinenameProvided', 'Either pipelineArn or pipelineName must be provided', scope);
     }
 
     class Import extends Resource implements IPipeline {
@@ -190,7 +190,7 @@ export class Pipeline extends Resource implements IPipeline {
     addConstructMetadata(this, props);
     // Suppress unused parameter warning
     void props;
-    throw new ValidationError('Pipeline construct cannot be instantiated directly. Use Pipeline.fromPipelineArn() or Pipeline.fromPipelineName() to import existing pipelines.', scope);
+    throw new ValidationError('PipelineConstructInstantiatedDirectly', 'Pipeline construct cannot be instantiated directly. Use Pipeline.fromPipelineArn() or Pipeline.fromPipelineName() to import existing pipelines.', scope);
   }
 
   /**

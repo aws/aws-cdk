@@ -28,12 +28,12 @@ export abstract class Schedule {
     if (duration.isUnresolved()) {
       const validDurationUnit = ['minute', 'minutes', 'hour', 'hours', 'day', 'days'];
       if (validDurationUnit.indexOf(duration.unitLabel()) === -1) {
-        throw new UnscopedValidationError("Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'");
+        throw new UnscopedValidationError('AllowedUnitsSchedulingMinute', "Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'");
       }
       return new LiteralSchedule(`rate(${duration.formatTokenToNumber()})`);
     }
     if (duration.toMinutes() === 0) {
-      throw new UnscopedValidationError('Duration cannot be 0');
+      throw new UnscopedValidationError('Duration', 'Duration cannot be 0');
     }
 
     let rate = maybeRate(duration.toDays({ integral: false }), 'day');
@@ -47,7 +47,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new UnscopedValidationError('Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new UnscopedValidationError('SupplyDayWeekdayMost', 'Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');

@@ -591,7 +591,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (this.definition.schema) {
       return this.definition.schema;
     }
-    throw new ValidationError('Schema does not exist for AppSync merged APIs.', this);
+    throw new ValidationError('SchemaExistAppsyncMerged', 'Schema does not exist for AppSync merged APIs.', this);
   }
 
   /**
@@ -634,19 +634,19 @@ export class GraphqlApi extends GraphqlApiBase {
     this.validateAuthorizationProps(modes);
 
     if (!props.schema && !props.definition) {
-      throw new ValidationError('You must specify a GraphQL schema or source APIs in property definition.', this);
+      throw new ValidationError('SpecifyGraphqlSchemaSource', 'You must specify a GraphQL schema or source APIs in property definition.', this);
     }
     if ((props.schema !== undefined) === (props.definition !== undefined)) {
-      throw new ValidationError('You cannot specify both properties schema and definition.', this);
+      throw new ValidationError('SpecifyPropertiesSchemaDefinition', 'You cannot specify both properties schema and definition.', this);
     }
     if (props.queryDepthLimit !== undefined && (props.queryDepthLimit < 0 || props.queryDepthLimit > 75)) {
-      throw new ValidationError('You must specify a query depth limit between 0 and 75.', this);
+      throw new ValidationError('SpecifyQueryDepthLimit', 'You must specify a query depth limit between 0 and 75.', this);
     }
     if (props.resolverCountLimit !== undefined && (props.resolverCountLimit < 0 || props.resolverCountLimit > 10000)) {
-      throw new ValidationError('You must specify a resolver count limit between 0 and 10000.', this);
+      throw new ValidationError('SpecifyResolverCountLimit', 'You must specify a resolver count limit between 0 and 10000.', this);
     }
     if (!Token.isUnresolved(props.ownerContact) && props.ownerContact !== undefined && (props.ownerContact.length > 256)) {
-      throw new ValidationError('You must specify `ownerContact` as a string of 256 characters or less.', this);
+      throw new ValidationError('SpecifyOwnercontactString256', 'You must specify `ownerContact` as a string of 256 characters or less.', this);
     }
 
     this.definition = props.schema ? Definition.fromSchema(props.schema) : props.definition!;
@@ -800,24 +800,24 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
-      throw new ValidationError('You can only have a single AWS Lambda function configured to authorize your API.', this);
+      throw new ValidationError('SingleAwsLambdaFunction', 'You can only have a single AWS Lambda function configured to authorize your API.', this);
     }
     modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
-        throw new ValidationError('Missing OIDC Configuration', this);
+        throw new ValidationError('MissingOidcConfiguration', 'Missing OIDC Configuration', this);
       }
       if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
-        throw new ValidationError('Missing User Pool Configuration', this);
+        throw new ValidationError('MissingUserPoolConfiguration', 'Missing User Pool Configuration', this);
       }
       if (mode.authorizationType === AuthorizationType.LAMBDA && !mode.lambdaAuthorizerConfig) {
-        throw new ValidationError('Missing Lambda Configuration', this);
+        throw new ValidationError('MissingLambdaConfiguration', 'Missing Lambda Configuration', this);
       }
     });
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
-      throw new ValidationError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html', this);
+      throw new ValidationError('DuplicateApiKeyConfiguration', 'You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html', this);
     }
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
-      throw new ValidationError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html', this);
+      throw new ValidationError('DuplicateIamConfigurationSee', 'You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html', this);
     }
   }
 
@@ -840,16 +840,16 @@ export class GraphqlApi extends GraphqlApiBase {
   @MethodMetadata()
   public addEnvironmentVariable(key: string, value: string) {
     if (this.definition.sourceApiOptions) {
-      throw new ValidationError('Environment variables are not supported for merged APIs', this);
+      throw new ValidationError('EnvironmentVariablesSupportedMerged', 'Environment variables are not supported for merged APIs', this);
     }
     if (!Token.isUnresolved(key) && !/^[A-Za-z]+\w*$/.test(key)) {
-      throw new ValidationError(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`, this);
+      throw new ValidationError('KeyKeyBeginLetter', `Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`, this);
     }
     if (!Token.isUnresolved(key) && (key.length < 2 || key.length > 64)) {
-      throw new ValidationError(`Key '${key}' must be between 2 and 64 characters long, got ${key.length}`, this);
+      throw new ValidationError('KeyKeyCharactersLong', `Key '${key}' must be between 2 and 64 characters long, got ${key.length}`, this);
     }
     if (!Token.isUnresolved(value) && value.length > 512) {
-      throw new ValidationError(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`, this);
+      throw new ValidationError('ValueKeyTooLong', `Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`, this);
     }
 
     this.environmentVariables[key] = value;
@@ -942,7 +942,7 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public get appSyncDomainName(): string {
     if (!this.domainNameResource) {
-      throw new ValidationError('Cannot retrieve the appSyncDomainName without a domainName configuration', this);
+      throw new ValidationError('RetrieveAppsyncdomainnameWithoutDomainname', 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
     }
     return this.domainNameResource.attrAppSyncDomainName;
   }
