@@ -10,14 +10,10 @@ import type {
   IResourceWithPolicyV2,
   PolicyStatement,
 } from '../../aws-iam';
-import {
-  DefaultEncryptedResourceFactories,
-  DefaultPolicyFactories,
-  PolicyDocument,
-} from '../../aws-iam';
+import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../aws-iam';
 import type { CfnKey } from '../../aws-kms';
 import { KeyGrants } from '../../aws-kms';
-import { Token, ValidationError } from '../../core';
+import { ValidationError } from '../../core';
 import { findClosestRelatedResource } from '../../core/lib/helpers-internal';
 import type { ResourceEnvironment } from '../../interfaces';
 
@@ -37,6 +33,7 @@ export class QueueWithPolicyFactory implements IResourcePolicyFactory {
 class CfnQueueWithPolicy implements IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
   private policy?: CfnQueuePolicy;
+  private policyDocument?: PolicyDocument;
 
   constructor(private readonly queue: CfnQueue) {
     this.env = queue.env;
@@ -50,14 +47,14 @@ class CfnQueueWithPolicy implements IResourceWithPolicyV2 {
       });
     }
 
-    if (Token.isResolved(this.policy.policyDocument)) {
-      const policyDocument = PolicyDocument.fromJson(this.policy.policyDocument ?? { Statement: [] });
-      policyDocument.addStatements(statement);
-      this.policy.policyDocument = policyDocument.toJSON();
-
-      return { statementAdded: true, policyDependable: this.policy };
+    if (!this.policyDocument) {
+      this.policyDocument = PolicyDocument.fromJson(this.policy.policyDocument ?? { Statement: [] });
     }
-    return { statementAdded: false };
+
+    this.policyDocument.addStatements(statement);
+    this.policy.policyDocument = this.policyDocument.toJSON();
+
+    return { statementAdded: true, policyDependable: this.policy };
   }
 }
 

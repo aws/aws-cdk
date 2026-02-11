@@ -5,26 +5,28 @@ import type { IBucketRef } from './s3.generated';
 import { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import type {
   AddToResourcePolicyResult,
+  GrantOnKeyResult,
   IEncryptedResource,
+  IEncryptedResourceFactory,
   IGrantable,
+  IResourcePolicyFactory,
   IResourceWithPolicyV2,
   PolicyStatement,
-  IResourcePolicyFactory, IEncryptedResourceFactory, GrantOnKeyResult,
 } from '../../aws-iam';
 import {
-  EncryptedResources,
-
+  AnyPrincipal,
   DefaultEncryptedResourceFactories,
-  AnyPrincipal, DefaultPolicyFactories, Grant, PolicyDocument, ResourceWithPolicies,
+  DefaultPolicyFactories,
+  EncryptedResources,
+  Grant,
+  PolicyDocument,
+  ResourceWithPolicies,
 } from '../../aws-iam';
 import type * as iam from '../../aws-iam/lib/grant';
 import { type CfnKey, KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
-import { FeatureFlags, Lazy, Token, ValidationError } from '../../core';
-import {
-  findClosestRelatedResource,
-  findL1FromRef,
-} from '../../core/lib/helpers-internal';
+import { FeatureFlags, Lazy, ValidationError } from '../../core';
+import { findClosestRelatedResource, findL1FromRef } from '../../core/lib/helpers-internal';
 import * as cxapi from '../../cx-api/index';
 
 /**
@@ -330,6 +332,7 @@ export class BucketWithPolicyFactory implements IResourcePolicyFactory {
 class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
   private policy?: CfnBucketPolicy;
+  private policyDocument?: PolicyDocument;
 
   constructor(private readonly bucket: CfnBucket) {
     this.env = bucket.env;
@@ -343,14 +346,14 @@ class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
       });
     }
 
-    if (Token.isResolved(this.policy.policyDocument)) {
-      const policyDocument = PolicyDocument.fromJson(this.policy.policyDocument ?? { Statement: [] });
-      policyDocument.addStatements(statement);
-      this.policy.policyDocument = policyDocument.toJSON();
-
-      return { statementAdded: true, policyDependable: this.policy };
+    if (!this.policyDocument) {
+      this.policyDocument = PolicyDocument.fromJson(this.policy.policyDocument ?? { Statement: [] });
     }
-    return { statementAdded: false };
+
+    this.policyDocument.addStatements(statement);
+    this.policy.policyDocument = this.policyDocument.toJSON();
+
+    return { statementAdded: true, policyDependable: this.policy };
   }
 }
 

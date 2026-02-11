@@ -3,8 +3,8 @@ import type { ITableRef } from './dynamodb.generated';
 import { CfnTable } from './dynamodb.generated';
 import * as perms from './perms';
 import type { IResourcePolicyFactory, IResourceWithPolicyV2 } from '../../aws-iam';
+import { PolicyDocument, DefaultPolicyFactories } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { DefaultPolicyFactories } from '../../aws-iam';
 import { type CfnKey, KeyGrants } from '../../aws-kms';
 import type { ResourceEnvironment } from '../../core';
 import { Stack, Token, ValidationError } from '../../core';
@@ -229,23 +229,28 @@ export class TablePolicyFactory implements IResourcePolicyFactory {
 
 class CfnTableWithPolicy implements iam.IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
+  private policyDocument?: PolicyDocument;
 
   constructor(private readonly table: CfnTable) {
     this.env = table.env;
   }
 
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    if (Token.isResolved(this.table.resourcePolicy)) {
-      const current = this.table.resourcePolicy?.policyDocument ?? { Statement: [] };
-      const policyDocument = iam.PolicyDocument.fromJson(current);
-      policyDocument.addStatements(statement);
-      this.table.resourcePolicy = {
-        policyDocument: policyDocument.toJSON(),
-      };
-
-      return { statementAdded: true, policyDependable: this.table };
+    if (!this.policyDocument) {
+      if (Token.isResolved(this.table.resourcePolicy)) {
+        this.policyDocument = PolicyDocument.fromJson(this.table.resourcePolicy?.policyDocument ?? { Statement: [] });
+      } else {
+        // If the resource policy is not resolved, we cannot safely add statements to it
+        return { statementAdded: false };
+      }
     }
-    return { statementAdded: false };
+
+    this.policyDocument.addStatements(statement);
+    this.table.resourcePolicy = {
+      policyDocument: this.policyDocument.toJSON(),
+    };
+
+    return { statementAdded: true, policyDependable: this.table };
   }
 }
 
