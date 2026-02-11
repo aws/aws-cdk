@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "06eb7cf8af5cffaabec9d0fe8535793f3a0e525a5c69b73bb9a4b3e751e6a44e": {
       "displayName": "aws-cdk-bedrock-agent-existing-role-1 Template",
