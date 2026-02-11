@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
     "dd9140945011edcbce692a37f5f7cbd8334730c6955bb30907758d7bda777b77": {
+      "displayName": "aws-cdk-elbv2-integ Template",
       "source": {
         "path": "aws-cdk-elbv2-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-west-2": {
+        "current_account-us-west-2-5a6c65cc": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
           "objectKey": "dd9140945011edcbce692a37f5f7cbd8334730c6955bb30907758d7bda777b77.json",
           "region": "us-west-2",
