@@ -1,5 +1,3 @@
-
-/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import type {
   StackProps,
@@ -7,6 +5,7 @@ import type {
 } from 'aws-cdk-lib';
 import {
   App,
+  PhysicalName,
   Stack,
   Stage,
   RemovalPolicy,
@@ -16,11 +15,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
-const regionalBuckets: {[key: string]: string} = {
-  'us-east-1': 'us-east-1-newpipeline-with-cross-region-replication-buckets',
-  'us-west-2': 'us-west-2-newpipeline-with-cross-region-replication-buckets',
-};
-
 interface CrossRegionReplicationBuckets {
   [key: string]: s3.Bucket;
 }
@@ -28,11 +22,11 @@ interface CrossRegionReplicationBuckets {
 class RegionalS3Stack extends Stack {
   public bucket: s3.Bucket;
 
-  constructor(scope: Construct, id: string, props?: StackProps, bucketName?: string) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     this.bucket = new s3.Bucket(this, 'RegionalBucket', {
-      bucketName: bucketName,
+      bucketName: PhysicalName.GENERATE_IF_NEEDED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
@@ -47,21 +41,22 @@ class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps, crossRegionReplicationBuckets?: CrossRegionReplicationBuckets) {
     super(scope, id, props);
 
+    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+      autoDeleteObjects: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub(
-          'jose-clickup/cdk-pipelines-demo',
-          'main',
-        ),
+        input: pipelines.CodePipelineSource.s3(sourceBucket, 'key'),
         commands: ['npm ci', 'npm run build', 'npx cdk synth'],
       }),
       crossRegionReplicationBuckets,
     });
 
     const wave = pipeline.addWave('MultiRegion');
-    for (const region in regionalBuckets) {
-      wave.addStage(new AppStage(this, region, { env: { region: region } }));
-    }
+    wave.addStage(new AppStage(this, 'us-east-1', { env: { region: 'us-east-1' } }));
+    wave.addStage(new AppStage(this, 'us-west-2', { env: { region: 'us-west-2' } }));
   }
 }
 
@@ -82,17 +77,21 @@ const app = new App({
   },
 });
 
+const account = process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT;
+
 const usEast1S3Stack = new RegionalS3Stack(app, 'usEast1S3Stack', {
   env: {
+    account,
     region: 'us-east-1',
   },
-}, regionalBuckets['us-east-1']);
+});
 
 const usWest2S3Stack = new RegionalS3Stack(app, 'usWest2S3Stack', {
   env: {
+    account,
     region: 'us-west-2',
   },
-}, regionalBuckets['us-west-2']);
+});
 
 const crossRegionReplicationBuckets = {
   'us-east-1': usEast1S3Stack.bucket,
@@ -101,6 +100,7 @@ const crossRegionReplicationBuckets = {
 
 const pipelineStack = new PipelineStack(app, 'PipelineStack', {
   env: {
+    account,
     region: 'us-east-1',
   },
 }, crossRegionReplicationBuckets);
