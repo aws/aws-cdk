@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-ec2-volume-1');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 new ec2.Volume(stack, 'TestVolume', {
-  availabilityZone: 'us-east-1a',
+  availabilityZone: stack.availabilityZones[0],
   size: cdk.Size.gibibytes(1),
   volumeType: ec2.EbsDeviceVolumeType.GP3,
   throughput: 200,

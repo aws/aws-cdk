@@ -591,7 +591,7 @@
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
-    "InstanceType": "t3.nano",
+    "InstanceType": "t3.micro",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -682,7 +682,7 @@
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
-    "InstanceType": "t3.nano",
+    "InstanceType": "t3.micro",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -773,7 +773,7 @@
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amiminimalkernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
-    "InstanceType": "t3.nano",
+    "InstanceType": "t3.micro",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -890,7 +890,7 @@
       ]
      ]
     },
-    "InstanceType": "t3.nano",
+    "InstanceType": "t3.micro",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -932,7 +932,7 @@
        ]
       ]
      },
-     "InstanceType": "t3.nano",
+     "InstanceType": "t3.micro",
      "TagSpecifications": [
       {
        "ResourceType": "instance",

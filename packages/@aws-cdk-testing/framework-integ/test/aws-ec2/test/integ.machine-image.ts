@@ -16,7 +16,7 @@ export class TestCase extends Stack {
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     const vpc = new ec2.Vpc(this, 'Vpc');
 
-    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO);
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO);
 
     new ec2.Instance(this, 'amzn2', {
       instanceType,
