@@ -653,16 +653,6 @@
    ]
   }
  },
- "Outputs": {
-  "ExportsOutputRefFunction76856677C48862D5": {
-   "Value": {
-    "Ref": "Function76856677"
-   },
-   "Export": {
-    "Name": "FunctionCapacityProviderAllFieldsStack:ExportsOutputRefFunction76856677C48862D5"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

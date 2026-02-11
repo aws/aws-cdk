@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/71ed1304f752262111d799e1c378c7128c082b3212850e541b88acbd36eff604.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/281f051e8c69714a64d02a06f49c21da270515045ba9f7a43d23ca9e9d6ec368.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -444,12 +444,6 @@
             "data": "Function76856677"
           }
         ],
-        "/FunctionCapacityProviderMinimalStack/Exports/Output{\"Ref\":\"Function76856677\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefFunction76856677C48862D5"
-          }
-        ],
         "/FunctionCapacityProviderMinimalStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -460,15 +454,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "FunctionLogGroup55B80E27": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionLogGroup55B80E27",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -491,7 +476,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58cb597ffbff0ffb8f9073bf00ab81a8992d98ecf2509bbe440448f82a553785.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -504,48 +489,9 @@
         }
       },
       "dependencies": [
-        "FunctionCapacityProviderMinimalStack",
         "FunctionCapacityProviderMinimalTestDefaultTestDeployAssertBF6B9172.assets"
       ],
       "metadata": {
-        "/FunctionCapacityProviderMinimalTest/DefaultTest/DeployAssert/AwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/FunctionCapacityProviderMinimalTest/DefaultTest/DeployAssert/AwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d"
-          }
-        ],
-        "/FunctionCapacityProviderMinimalTest/DefaultTest/DeployAssert/AwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d"
-          }
-        ],
-        "/FunctionCapacityProviderMinimalTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/FunctionCapacityProviderMinimalTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
         "/FunctionCapacityProviderMinimalTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
