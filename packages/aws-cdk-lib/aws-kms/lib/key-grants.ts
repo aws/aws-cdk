@@ -1,6 +1,6 @@
 import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
-import type { IGrantable, } from '../../aws-iam';
+import type { IGrantable } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { FeatureFlags, Stack } from '../../core';
 import * as cxapi from '../../cx-api';

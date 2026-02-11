@@ -22,7 +22,7 @@ import {
 } from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
-import type { Attribute, GlobalSecondaryIndexProps, LocalSecondaryIndexProps, } from '../lib';
+import type { Attribute, GlobalSecondaryIndexProps, LocalSecondaryIndexProps } from '../lib';
 import {
   ApproximateCreationDateTimePrecision,
   AttributeType,

@@ -1,8 +1,8 @@
 import type { GrantReplicationPermissionProps } from './bucket';
 import * as perms from './perms';
 import type { IBucketRef } from './s3.generated';
-import type { IEncryptedResource, IGrantable, IResourceWithPolicyV2, } from '../../aws-iam';
-import { AnyPrincipal, EncryptedResources, Grant, ResourceWithPolicies, } from '../../aws-iam';
+import type { IEncryptedResource, IGrantable, IResourceWithPolicyV2 } from '../../aws-iam';
+import { AnyPrincipal, EncryptedResources, Grant, ResourceWithPolicies } from '../../aws-iam';
 import type * as iam from '../../aws-iam/lib/grant';
 import { FeatureFlags, Lazy, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api/index';
