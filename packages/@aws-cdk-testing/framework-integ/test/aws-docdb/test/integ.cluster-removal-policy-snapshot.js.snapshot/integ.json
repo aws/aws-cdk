@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "48.0.0",
   "testCases": {
     "aws-cdk-docdb-removal-policy-snapshot-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-docdb-removal-policy-snapshot-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkdocdbremovalpolicysnapshotintegDefaultTestDeployAssertF3753098"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

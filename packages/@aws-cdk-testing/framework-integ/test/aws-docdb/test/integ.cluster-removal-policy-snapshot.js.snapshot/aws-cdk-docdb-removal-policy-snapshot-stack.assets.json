@@ -1,13 +1,14 @@
 {
-  "version": "34.0.0",
+  "version": "48.0.0",
   "files": {
     "b904b14d6955261a0572cd8fee5c1051667909a92d6b5391973f3e04b4f57531": {
+      "displayName": "aws-cdk-docdb-removal-policy-snapshot-stack Template",
       "source": {
         "path": "aws-cdk-docdb-removal-policy-snapshot-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-5b5521b6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "b904b14d6955261a0572cd8fee5c1051667909a92d6b5391973f3e04b4f57531.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
