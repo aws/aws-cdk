@@ -60,4 +60,3 @@ read*lock
 
 # jsii-rosetta files
 type-fingerprints.txt
-packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/import-certificates-handler/ca.srl
