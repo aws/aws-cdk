@@ -1,17 +1,8 @@
-import type { IConstruct } from 'constructs';
 import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
-import type {
-  AddToResourcePolicyResult,
-  IGrantable,
-  IResourceWithPolicyV2,
-  PolicyStatement,
-  IResourcePolicyFactory,
-} from '../../aws-iam';
+import type { IGrantable, } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { DefaultPolicyFactories } from '../../aws-iam';
-import type { ResourceEnvironment } from '../../core';
-import { Token, FeatureFlags, Stack, ValidationError } from '../../core';
+import { FeatureFlags, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
 
@@ -196,45 +187,5 @@ export class KeyGrants {
       return keyStack.account !== identityStack.account && this.resource.env.account !== identityStack.account;
     }
     return keyStack.account !== identityStack.account;
-  }
-}
-
-/**
- * Factory to create a resource policy for a KMS Key.
- */
-export class KeyWithPolicyFactory implements IResourcePolicyFactory {
-  static {
-    DefaultPolicyFactories.set('AWS::KMS::Key', new KeyWithPolicyFactory());
-  }
-
-  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
-    if (!CfnKey.isCfnKey(resource)) {
-      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnKey`, resource);
-    }
-
-    return new CfnKeyWithPolicy(resource);
-  }
-}
-
-class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
-  public readonly env: ResourceEnvironment;
-  private policyDocument?: iam.PolicyDocument;
-
-  constructor(private readonly key: CfnKey) {
-    this.env = key.env;
-  }
-
-  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-    if (Token.isResolved(this.key.keyPolicy)) {
-      if (this.policyDocument == null) {
-        this.policyDocument = iam.PolicyDocument.fromJson(this.key.keyPolicy ?? { Statement: [] });
-      }
-
-      this.policyDocument.addStatements(statement);
-      this.key.keyPolicy = this.policyDocument.toJSON();
-
-      return { statementAdded: true, policyDependable: this.policyDocument };
-    }
-    return { statementAdded: false };
   }
 }

@@ -1,5 +1,4 @@
 import type { IConstruct } from 'constructs';
-import { CfnTopic, CfnTopicPolicy } from './sns.generated';
 import type {
   AddToResourcePolicyResult,
   GrantOnKeyResult,
@@ -9,22 +8,19 @@ import type {
   IResourcePolicyFactory,
   IResourceWithPolicyV2,
   PolicyStatement,
-} from '../../aws-iam';
-import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../aws-iam';
-import type { CfnKey } from '../../aws-kms';
-import { KeyGrants } from '../../aws-kms';
-import { ValidationError } from '../../core';
-import { findClosestRelatedResource } from '../../core/lib/helpers-internal';
-import type { ResourceEnvironment } from '../../interfaces';
+} from '../../../aws-iam';
+import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../../aws-iam';
+import type { CfnKey } from '../../../aws-kms';
+import { KeyGrants } from '../../../aws-kms';
+import { ValidationError } from '../../../core';
+import { findClosestRelatedResource } from '../../../core/lib/helpers-internal';
+import type { ResourceEnvironment } from '../../../interfaces';
+import { CfnTopic, CfnTopicPolicy } from '../sns.generated';
 
 /**
  * Factory to create a resource policy for a Topic.
  */
-export class TopicWithPolicyFactory implements IResourcePolicyFactory {
-  static {
-    DefaultPolicyFactories.set('AWS::SNS::Topic', new TopicWithPolicyFactory());
-  }
-
+class TopicWithPolicyFactory implements IResourcePolicyFactory {
   public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     return ifCfnTopic(resource, (r) => new CfnTopicWithPolicy(r));
   }
@@ -61,11 +57,7 @@ class CfnTopicWithPolicy implements IResourceWithPolicyV2 {
 /**
  * Factory for creating encrypted SNS Topic wrappers
  */
-export class EncryptedTopicFactory implements IEncryptedResourceFactory {
-  static {
-    DefaultEncryptedResourceFactories.set('AWS::SNS::Topic', new EncryptedTopicFactory());
-  }
-
+class EncryptedTopicFactory implements IEncryptedResourceFactory {
   public forConstruct(resource: IConstruct): IEncryptedResource {
     return ifCfnTopic(resource, (r) => new EncryptedCfnTopic(r));
   }
@@ -105,3 +97,6 @@ function tryFindKmsKeyForTopic(topic: CfnTopic): CfnKey | undefined {
     (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
   );
 }
+
+DefaultPolicyFactories.set('AWS::SNS::Topic', new TopicWithPolicyFactory());
+DefaultEncryptedResourceFactories.set('AWS::SNS::Topic', new EncryptedTopicFactory());

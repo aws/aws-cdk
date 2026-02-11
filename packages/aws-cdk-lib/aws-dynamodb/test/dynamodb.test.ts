@@ -7,30 +7,37 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { App, ArnFormat, Aws, CfnDeletionPolicy, Duration, Fn, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
+import {
+  App,
+  ArnFormat,
+  Aws,
+  CfnDeletionPolicy,
+  Duration,
+  Fn,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Tags,
+} from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
-import type {
-  Attribute,
-  GlobalSecondaryIndexProps,
-  LocalSecondaryIndexProps,
-} from '../lib';
+import type { Attribute, GlobalSecondaryIndexProps, LocalSecondaryIndexProps, } from '../lib';
 import {
-  TableGrants, TablePolicyFactory,
-
+  ApproximateCreationDateTimePrecision,
   AttributeType,
   BillingMode,
+  CfnTable,
+  ContributorInsightsMode,
+  InputCompressionType,
+  InputFormat,
+  Operation,
   ProjectionType,
   StreamViewType,
   Table,
   TableClass,
   TableEncryption,
-  Operation,
-  CfnTable,
-  InputCompressionType,
-  InputFormat,
-  ApproximateCreationDateTimePrecision,
-  ContributorInsightsMode,
+  TableGrants,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -5036,32 +5043,7 @@ test('Throws when more than four multi-attribute sort keys are specified', () =>
 });
 
 describe('L1 table grants', () => {
-  test('grant read permission to service principal (L1) with policy decorator', () => {
-    const stack = new Stack();
-    iam.ResourceWithPolicies.register(stack, 'AWS::DynamoDB::Table', new TablePolicyFactory());
-    const table = new CfnTable(stack, 'Table', {
-      keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
-      attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
-    });
-    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
-
-    TableGrants.fromTable(table).readData(principal);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
-      ResourcePolicy: {
-        PolicyDocument: {
-          Statement: Match.arrayWith([{
-            Action: ['dynamodb:BatchGetItem', 'dynamodb:Query', 'dynamodb:GetItem', 'dynamodb:Scan', 'dynamodb:ConditionCheckItem', 'dynamodb:DescribeTable'],
-            Effect: 'Allow',
-            Principal: { Service: 'lambda.amazonaws.com' },
-            Resource: '*',
-          }]),
-        },
-      },
-    });
-  });
-
-  test('grant read permission to service principal (L1) without policy decorator', () => {
+  test('grant read permission to service principal (L1)', () => {
     const stack = new Stack();
     const table = new CfnTable(stack, 'Table', {
       keySchema: [{ attributeName: 'id', keyType: 'HASH' }],

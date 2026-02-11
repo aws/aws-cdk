@@ -1,5 +1,4 @@
 import type { IConstruct } from 'constructs';
-import { CfnQueue, CfnQueuePolicy } from './sqs.generated';
 import type {
   AddToResourcePolicyResult,
   GrantOnKeyResult,
@@ -9,22 +8,19 @@ import type {
   IResourcePolicyFactory,
   IResourceWithPolicyV2,
   PolicyStatement,
-} from '../../aws-iam';
-import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../aws-iam';
-import type { CfnKey } from '../../aws-kms';
-import { KeyGrants } from '../../aws-kms';
-import { ValidationError } from '../../core';
-import { findClosestRelatedResource } from '../../core/lib/helpers-internal';
-import type { ResourceEnvironment } from '../../interfaces';
+} from '../../../aws-iam';
+import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../../aws-iam';
+import type { CfnKey } from '../../../aws-kms';
+import { KeyGrants } from '../../../aws-kms';
+import { ValidationError } from '../../../core';
+import { findClosestRelatedResource } from '../../../core/lib/helpers-internal';
+import type { ResourceEnvironment } from '../../../interfaces';
+import { CfnQueue, CfnQueuePolicy } from '../sqs.generated';
 
 /**
  * Factory to create a resource policy for a Queue.
  */
-export class QueueWithPolicyFactory implements IResourcePolicyFactory {
-  static {
-    DefaultPolicyFactories.set('AWS::SQS::Queue', new QueueWithPolicyFactory());
-  }
-
+class QueueWithPolicyFactory implements IResourcePolicyFactory {
   public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     return ifCfnQueue(resource, (r) => new CfnQueueWithPolicy(r));
   }
@@ -61,11 +57,7 @@ class CfnQueueWithPolicy implements IResourceWithPolicyV2 {
 /**
  * Factory for creating encrypted SQS Queue wrappers
  */
-export class EncryptedQueueFactory implements IEncryptedResourceFactory {
-  static {
-    DefaultEncryptedResourceFactories.set('AWS::SQS::Queue', new EncryptedQueueFactory());
-  }
-
+class EncryptedQueueFactory implements IEncryptedResourceFactory {
   public forConstruct(resource: IConstruct): IEncryptedResource {
     return ifCfnQueue(resource, (r) => new EncryptedCfnQueue(r));
   }
@@ -105,3 +97,6 @@ function tryFindKmsKeyForQueue(queue: CfnQueue): CfnKey | undefined {
     (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
   );
 }
+
+DefaultPolicyFactories.set('AWS::SQS::Queue', new QueueWithPolicyFactory());
+DefaultEncryptedResourceFactories.set('AWS::SQS::Queue', new EncryptedQueueFactory());

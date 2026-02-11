@@ -1,11 +1,11 @@
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { ResourceWithPolicies, ServicePrincipal } from '../../aws-iam';
+import { ServicePrincipal } from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as kms from '../lib';
-import { KeyWithPolicyFactory, KeySpec, KeyUsage } from '../lib';
+import { KeySpec, KeyUsage } from '../lib';
 import { KeyGrants } from '../lib/key-grants';
 
 const ADMIN_ACTIONS: string[] = [
@@ -382,7 +382,6 @@ describe('key policies', () => {
   test('grant encrypt permission to service principal (L1)', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    ResourceWithPolicies.register(stack, 'AWS::KMS::Key', new KeyWithPolicyFactory());
     const key = new kms.CfnKey(stack, 'Key', {
       keyPolicy: {
         Statement: [
@@ -497,7 +496,6 @@ describe('key policies', () => {
   test('grant multiple permissions to an L1', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    ResourceWithPolicies.register(stack, 'AWS::KMS::Key', new KeyWithPolicyFactory());
     const key = new kms.CfnKey(stack, 'Key', {
       keyPolicy: {
         Statement: [

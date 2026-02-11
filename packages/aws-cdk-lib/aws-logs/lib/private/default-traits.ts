@@ -1,26 +1,22 @@
 import type { IConstruct } from 'constructs';
-import { CfnLogGroup, CfnResourcePolicy } from './logs.generated';
 import type {
   AddToResourcePolicyResult,
   IResourcePolicyFactory,
   IResourceWithPolicyV2,
   PolicyStatement,
-} from '../../aws-iam';
+} from '../../../aws-iam';
 import {
   DefaultPolicyFactories,
   PolicyDocument,
-} from '../../aws-iam';
-import { Names, ValidationError } from '../../core';
-import type { ResourceEnvironment } from '../../interfaces';
+} from '../../../aws-iam';
+import { Names, ValidationError } from '../../../core';
+import type { ResourceEnvironment } from '../../../interfaces';
+import { CfnLogGroup, CfnResourcePolicy } from '../logs.generated';
 
 /**
  * Factory to create a resource policy for a Bucket.
  */
-export class LogGroupWithPolicyFactory implements IResourcePolicyFactory {
-  static {
-    DefaultPolicyFactories.set('AWS::Logs::LogGroup', new LogGroupWithPolicyFactory());
-  }
-
+class LogGroupWithPolicyFactory implements IResourcePolicyFactory {
   public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
     return ifCfnLogGroup(resource, (r) => new CfnLogGroupWithPolicy(r));
   }
@@ -62,3 +58,4 @@ function ifCfnLogGroup<A>(resource: IConstruct, factory: (r: CfnLogGroup) => A):
   return factory(resource);
 }
 
+DefaultPolicyFactories.set('AWS::Logs::LogGroup', new LogGroupWithPolicyFactory());

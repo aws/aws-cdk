@@ -1,5 +1,7 @@
+// Side-effect import to make sure that the default traits are registered before any of the constructs are used.
+import './private/default-traits';
+
 export * from './cross-account-destination';
-export * from './grants';
 export * from './log-group';
 export * from './log-stream';
 export * from './metric-filter';
