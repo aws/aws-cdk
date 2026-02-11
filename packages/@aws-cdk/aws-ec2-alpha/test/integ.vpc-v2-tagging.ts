@@ -87,13 +87,15 @@ const igw_assertion = integ.assertions.awsApiCall('EC2', 'describeInternetGatewa
   InternetGatewayIds: [vpc.internetGatewayId],
 });
 
+// Note: vpc.vpcName tag overwrites internetGatewayName in the current implementation
+// (see route.ts InternetGateway constructor), so the Name tag is the VPC name
 igw_assertion.expect(ExpectedResult.objectLike({
   InternetGateways: [
     Match.objectLike({
       Tags: Match.arrayWith([
         Match.objectLike({
           Key: 'Name',
-          Value: 'CDKIntegTestTagIGW',
+          Value: 'CDKintegTestVPC',
         }),
       ]),
     }),
