@@ -31,7 +31,6 @@ export interface OpenIdConnectProviderProps {
 /**
  * Initialization properties for `OidcProviderNative`.
  */
-// awslint:ignore:props-physical-name
 export interface OidcProviderNativeProps extends OpenIdConnectProviderProps {}
 
 /**

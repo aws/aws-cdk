@@ -1934,6 +1934,8 @@
     "interface-extends-ref:aws-cdk-lib.aws_iam.IEncryptedResource",
     "interface-extends-ref:aws-cdk-lib.aws_iam.IIdentity",
     "interface-extends-ref:aws-cdk-lib.aws_iam.IResourceWithPolicy",
-    "interface-extends-ref:aws-cdk-lib.aws_servicediscovery.INamespace"
+    "interface-extends-ref:aws-cdk-lib.aws_servicediscovery.INamespace",
+    "props-physical-name:aws-cdk-lib.aws_eks_v2.OidcProviderNativeProps",
+    "props-physical-name:aws-cdk-lib.aws_eks_v2.OpenIdConnectProviderProps"
   ]
 }
