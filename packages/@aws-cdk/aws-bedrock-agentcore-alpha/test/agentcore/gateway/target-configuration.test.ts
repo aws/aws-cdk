@@ -827,14 +827,13 @@ describe('Target Configuration Tests', () => {
         const result = config.bind(stack, gateway);
         expect(result.bound).toBe(true);
 
+        // Verify that execute-api:Invoke permission is granted to the gateway role
+        // Note: apigateway:GET (GetExport) is NOT required on the gateway role since
+        // AgentCore Gateway calls GetExport using Forward Access Session with caller credentials
         const template = Template.fromStack(stack);
         template.hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: Match.arrayWith([
-              Match.objectLike({
-                Action: 'apigateway:GET',
-                Effect: 'Allow',
-              }),
               Match.objectLike({
                 Action: 'execute-api:Invoke',
                 Effect: 'Allow',

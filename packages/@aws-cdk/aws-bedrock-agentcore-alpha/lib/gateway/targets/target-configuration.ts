@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as cdk from 'aws-cdk-lib';
 import { Token } from 'aws-cdk-lib';
 import type { IRestApi } from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -612,6 +611,11 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
   public readonly targetType = McpTargetType.API_GATEWAY;
 
   /**
+   * The REST API reference
+   */
+  private readonly _restApi: IRestApi;
+
+  /**
    * The ID of the REST API
    */
   public readonly restApiId: string;
@@ -633,6 +637,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
 
   constructor(props: ApiGatewayTargetConfigurationProps) {
     super();
+    this._restApi = props.restApi;
     this.restApiId = props.restApi.restApiId;
     this.stage = props.stage ?? props.restApi.deploymentStage.stageName;
     this.apiGatewayToolConfiguration = props.apiGatewayToolConfiguration;
@@ -649,29 +654,16 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
    * @param gateway The gateway that will use this target
    */
   public bind(_scope: Construct, gateway: IGateway): TargetConfigurationConfig {
-    // Grant permission to export the API definition
-    // The gateway needs to call GetExport to retrieve the Rest api definition ,
-    // for more info: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html#gateway-target-api-gateway-outbound
-    gateway.role.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['apigateway:GET'],
-        resources: [
-          `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}::/restapis/${this.restApiId}/stages/${this.stage}/exports/*`,
-          `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}::/restapis/${this.restApiId}`,
-        ],
-      }),
-    );
-
     // Grant permission to invoke the API Gateway REST API
-    // This is required for IAM-based outbound authorization
     // The gateway role needs this permission to make API calls to the REST API endpoints
+    // For more info on granting permission: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html#gateway-target-api-gateway-outbound
+
     gateway.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['execute-api:Invoke'],
         resources: [
-          `arn:${cdk.Aws.PARTITION}:execute-api:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:${this.restApiId}/${this.stage}/*/*`,
+          this._restApi.arnForExecuteApi('*', '/*', this.stage),
         ],
       }),
     );
