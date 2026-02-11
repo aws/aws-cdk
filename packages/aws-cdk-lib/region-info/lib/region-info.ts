@@ -191,6 +191,17 @@ export class RegionInfo {
   }
 
   /**
+   * The ARN of the Application Signals Lambda layer for the given runtime.
+   *
+   * Application Signals layers are architecture-agnostic and work with both x86_64 and arm64.
+   *
+   * @param runtime the Lambda runtime (e.g. 'python', 'nodejs', 'java', 'dotnet')
+   */
+  public applicationSignalsLambdaLayerArn(runtime: string): string | undefined {
+    return Fact.find(this.name, FactName.applicationSignalsLambdaLayer(runtime));
+  }
+
+  /**
    * The ARN of the Parameters and Secrets Lambda layer for the given lambda architecture.
    *
    * @param version the layer version

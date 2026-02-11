@@ -1320,6 +1320,82 @@ const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0.layerArn(fn.stack,
 
 When using the `AdotLambdaLayerPythonSdkVersion` the `AdotLambdaExecWrapper` needs to be `AdotLambdaExecWrapper.INSTRUMENT_HANDLER` as per [AWS Distro for OpenTelemetry Lambda Support For Python](https://aws-otel.github.io/docs/getting-started/lambda/lambda-python)
 
+## CloudWatch Application Signals
+
+AWS Lambda supports [CloudWatch Application Signals](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Application-Signals.html) for application performance monitoring. Application Signals automatically instruments your Lambda functions using enhanced AWS Distro for OpenTelemetry (ADOT) libraries to collect telemetry data including requests, availability, latency, errors, and faults.
+
+### Using Application Signals with Lambda Functions
+
+To enable Application Signals for your Lambda function, use the `adotInstrumentation` property with the appropriate Application Signals layer version and the `APPLICATION_SIGNALS` exec wrapper. You also need to attach the required IAM policy to the function's execution role.
+
+Here's an example for a Python Lambda function:
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset('lambda'),
+  adotInstrumentation: {
+    layerVersion: lambda.AdotLayerVersion.fromApplicationSignalsPythonLayerVersion(
+      lambda.ApplicationSignalsLambdaLayerPythonVersion.LATEST
+    ),
+    execWrapper: lambda.AdotLambdaExecWrapper.APPLICATION_SIGNALS,
+  },
+});
+
+// Add the required IAM policy
+fn.role?.addManagedPolicy(
+  iam.ManagedPolicy.fromAwsManagedPolicyName(
+    'CloudWatchLambdaApplicationSignalsExecutionRolePolicy'
+  )
+);
+```
+
+For Node.js functions:
+
+```ts
+const fn = new lambda.Function(this, 'MyNodeFunction', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset('lambda'),
+  adotInstrumentation: {
+    layerVersion: lambda.AdotLayerVersion.fromApplicationSignalsNodeJsLayerVersion(
+      lambda.ApplicationSignalsLambdaLayerNodeJsVersion.LATEST
+    ),
+    execWrapper: lambda.AdotLambdaExecWrapper.APPLICATION_SIGNALS,
+  },
+});
+
+fn.role?.addManagedPolicy(
+  iam.ManagedPolicy.fromAwsManagedPolicyName(
+    'CloudWatchLambdaApplicationSignalsExecutionRolePolicy'
+  )
+);
+```
+
+### Available Application Signals Layer Versions
+
+Application Signals layers are available for the following runtimes:
+
+- **Python**: `ApplicationSignalsLambdaLayerPythonVersion.LATEST`
+- **Node.js**: `ApplicationSignalsLambdaLayerNodeJsVersion.LATEST`
+- **Java**: `ApplicationSignalsLambdaLayerJavaVersion.LATEST`
+- **.NET**: `ApplicationSignalsLambdaLayerDotNetVersion.LATEST`
+
+Application Signals layers are architecture-agnostic (work with both x86_64 and arm64) and automatically use the latest available build for each AWS region. Simply use the `LATEST` constant to get the most recent Application Signals features.
+
+### Differences from Standard ADOT Layers
+
+Application Signals layers are specifically designed for CloudWatch Application Signals and differ from the standard ADOT layers (`AdotLambdaLayerJavaScriptSdkVersion`, `AdotLambdaLayerPythonSdkVersion`, etc.) in the following ways:
+
+- **Pre-built dashboards**: Automatically generates standardized dashboards showing key metrics (throughput, availability, latency, faults, and errors) without manual configuration
+- **Correlated telemetry**: Automatically correlates metrics, traces, and logs to help identify and troubleshoot performance issues
+- **Service-level objectives (SLOs)**: Enables creation and tracking of SLOs to monitor performance against business goals
+- **Application topology visualization**: Provides visual representation of your application's dependencies and their connectivity
+- **No code changes required**: Uses the `/opt/otel-instrument` wrapper for automatic instrumentation without modifying your function code
+
+For more information, see the [Application Signals documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Application-Signals-Enable-LambdaMain.html).
+
 ## Lambda with Profiling
 
 The following code configures the lambda function with CodeGuru profiling. By default, this creates a new CodeGuru
