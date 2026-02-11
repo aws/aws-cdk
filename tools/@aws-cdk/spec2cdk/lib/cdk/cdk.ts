@@ -1,4 +1,5 @@
-import { $E, $T, expr, Expression, ExternalModule, IScope, ThingSymbol, Type } from '@cdklabs/typewriter';
+import type { Expression, IScope } from '@cdklabs/typewriter';
+import { $E, $T, expr, ExternalModule, ThingSymbol, Type } from '@cdklabs/typewriter';
 
 export class CdkCore extends ExternalModule {
   public readonly helpers = new CdkInternalHelpers(this);

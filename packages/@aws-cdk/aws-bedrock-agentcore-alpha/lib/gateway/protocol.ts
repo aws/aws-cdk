@@ -1,4 +1,4 @@
-import { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /******************************************************************************
  *                                 Enums

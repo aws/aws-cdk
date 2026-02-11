@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { IEventSourceDlq } from './dlq';
-import { IFunction } from './function-base';
-import { CfnEventSourceMapping, EventSourceMappingReference, IEventSourceMappingRef } from './lambda.generated';
-import { ISchemaRegistry } from './schema-registry';
+import type { Construct } from 'constructs';
+import type { IEventSourceDlq } from './dlq';
+import type { IFunction } from './function-base';
+import type { EventSourceMappingReference, IEventSourceMappingRef } from './lambda.generated';
+import { CfnEventSourceMapping } from './lambda.generated';
+import type { ISchemaRegistry } from './schema-registry';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

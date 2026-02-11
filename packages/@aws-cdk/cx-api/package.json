@@ -80,7 +80,8 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.7.3"
+    "semver": "^7.7.3",
+    "@aws-cdk/cloud-assembly-api": "^2.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": ">=45.0.0"
@@ -108,7 +109,8 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "bundledDependencies": [
-    "semver"
+    "semver",
+    "@aws-cdk/cloud-assembly-api"
   ],
   "engines": {
     "node": ">= 18.0.0"

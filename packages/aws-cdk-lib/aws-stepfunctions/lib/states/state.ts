@@ -1,9 +1,11 @@
-import { IConstruct, Construct, Node } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { Token, UnscopedValidationError } from '../../../core';
-import { Condition } from '../condition';
+import type { Condition } from '../condition';
 import { FieldUtils } from '../fields';
-import { StateGraph } from '../state-graph';
-import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
+import type { StateGraph } from '../state-graph';
+import type { CatchProps, IChainable, INextable, ProcessorConfig, RetryProps } from '../types';
+import { Errors, ProcessorMode, QueryLanguage } from '../types';
 
 /**
  * Properties shared by all states

@@ -118,19 +118,18 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
    * Check if this mixin supports the given construct (has vendedLogs property)
    */
   public supports(construct: constructs.IConstruct): construct is service.CfnThing {
-    return (cdk.CfnResource.isCfnResource(construct) && (construct.cfnResourceType === "AWS::Some::Resource"));
+    return (cdk.CfnResource.isCfnResource(construct) && service.CfnThing.isCfnThing(construct));
   }
 
   /**
    * Apply vended logs configuration to the construct
    */
-  public applyTo(resource: constructs.IConstruct): constructs.IConstruct {
+  public applyTo(resource: constructs.IConstruct): void {
     if (!this.supports(resource)) {
-      return resource;
+      return;
     }
     const sourceArn = service.CfnThing.arnForThing(resource);
     this.logDelivery.bind(resource, this.logType, sourceArn);
-    return resource;
   }
 }"
 `;

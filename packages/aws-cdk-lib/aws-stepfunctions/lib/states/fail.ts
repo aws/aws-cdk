@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { renderJsonPath, State, StateBaseProps } from './state';
+import type { StateBaseProps } from './state';
+import { renderJsonPath, State } from './state';
 import { Token } from '../../../core';
-import { INextable, QueryLanguage } from '../types';
+import type { INextable } from '../types';
+import { QueryLanguage } from '../types';
 
 interface FailBaseOptions {
   /**

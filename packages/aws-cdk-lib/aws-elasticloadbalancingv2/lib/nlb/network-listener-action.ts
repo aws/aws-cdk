@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { INetworkListenerRef } from './network-listener';
-import { INetworkTargetGroup } from './network-target-group';
-import { Duration } from '../../../core';
+import type { Construct } from 'constructs';
+import type { INetworkListenerRef } from './network-listener';
+import type { INetworkTargetGroup } from './network-target-group';
+import type { Duration } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
-import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
+import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import type { IListenerAction } from '../shared/listener-action';
 
 /**
  * What to do when a client makes a request to a listener

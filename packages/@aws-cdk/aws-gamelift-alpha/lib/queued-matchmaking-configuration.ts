@@ -5,9 +5,10 @@ import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IGameSessionQueue } from './game-session-queue';
-import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
+import type { Construct } from 'constructs';
+import type { IGameSessionQueue } from './game-session-queue';
+import type { MatchmakingConfigurationProps, GameProperty, IMatchmakingConfiguration } from './matchmaking-configuration';
+import { MatchmakingConfigurationBase } from './matchmaking-configuration';
 
 /**
  * Properties for a new queued matchmaking configuration

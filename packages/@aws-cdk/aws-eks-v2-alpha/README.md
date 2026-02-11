@@ -711,6 +711,36 @@ declare const cluster: eks.Cluster;
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ```
 
+### Hybrid Nodes
+
+When you create an Amazon EKS cluster, you can configure it to leverage the [EKS Hybrid Nodes](https://aws.amazon.com/eks/hybrid-nodes/) feature, allowing you to use your on-premises and edge infrastructure as nodes in your EKS cluster. Refer to the Hyrid Nodes [networking documentation](https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-networking.html) to configure your on-premises network, node and pod CIDRs, access control, etc before creating your EKS Cluster.
+
+Once you have identified the on-premises node and pod (optional) CIDRs you will use for your hybrid nodes and the workloads running on them, you can specify them during cluster creation using the `remoteNodeNetworks` and `remotePodNetworks` (optional) properties:
+
+```ts
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+
+new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_34,
+  remoteNodeNetworks: [
+    {
+      cidrs: ['10.0.0.0/16'],
+    },
+  ],
+  remotePodNetworks: [
+    {
+      cidrs: ['192.168.0.0/16'],
+    },
+  ],
+});
+```
+
+### Self-Managed Add-ons
+
+Amazon EKS automatically installs self-managed add-ons such as the Amazon VPC CNI plugin for Kubernetes, kube-proxy, and CoreDNS for every cluster. You can change the default configuration of the add-ons and update them when desired. If you wish to create a cluster without the default add-ons, set `bootstrapSelfManagedAddons` as `false`. When this is set to false, make sure to install the necessary alternatives which provide functionality that enables pod and service operations for your EKS cluster.
+
+> Changing the value of `bootstrapSelfManagedAddons` after the EKS cluster creation will result in a replacement of the cluster.
+
 ## Permissions and Security
 
 In the new EKS module, `ConfigMap` is deprecated. Clusters created by the new module will use `API` as authentication mode. Access Entry will be the only way for granting permissions to specific IAM users and roles.
@@ -777,6 +807,34 @@ cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
   }),
 ]);
 ```
+
+#### Access Entry Types
+
+You can optionally specify an access entry type when granting access. This is particularly useful for EKS Auto Mode clusters with custom node roles, which require the `EC2` type:
+
+```ts
+declare const cluster: eks.Cluster;
+declare const nodeRole: iam.Role;
+
+// Grant access with EC2 type for Auto Mode node role
+cluster.grantAccess('nodeAccess', nodeRole.roleArn, [
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAutoNodePolicy', {
+    accessScopeType: eks.AccessScopeType.CLUSTER,
+  }),
+], { accessEntryType: eks.AccessEntryType.EC2 });
+```
+
+The following access entry types are supported:
+
+- `STANDARD` - Default type for standard IAM principals (default when not specified)
+- `FARGATE_LINUX` - For Fargate profiles
+- `EC2_LINUX` - For EC2 Linux worker nodes
+- `EC2_WINDOWS` - For EC2 Windows worker nodes
+- `EC2` - For EKS Auto Mode node roles
+- `HYBRID_LINUX` - For EKS Hybrid Nodes
+- `HYPERPOD_LINUX` - For Amazon SageMaker HyperPod
+
+**Note**: Access entries with type `EC2`, `HYBRID_LINUX`, or `HYPERPOD_LINUX` cannot have access policies attached per AWS EKS API constraints. For these types, use the `AccessEntry` construct directly with an empty access policies array.
 
 By default, the cluster creator role will be granted the cluster admin permissions. You can disable it by setting 
 `bootstrapClusterCreatorAdminPermissions` to false. 
