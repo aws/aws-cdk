@@ -20,17 +20,15 @@ export class BucketPolicyStatementsMixin extends Mixin {
     return CfnBucketPolicy.isCfnBucketPolicy(construct);
   }
 
-  public applyTo(policy: IConstruct): IConstruct {
+  public applyTo(policy: IConstruct): void {
     if (!this.supports(policy)) {
-      return policy;
+      return;
     }
 
     const policyDocument = this.getPolicyDocument(policy);
     policyDocument.addStatements(...this.statements);
 
     policy.policyDocument = policyDocument;
-
-    return policy;
   }
 
   /**

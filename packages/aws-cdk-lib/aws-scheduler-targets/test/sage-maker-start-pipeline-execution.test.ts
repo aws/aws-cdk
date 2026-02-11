@@ -1,10 +1,12 @@
 import { Template } from '../../assertions';
-import { AccountRootPrincipal, Grant, IGrantable, Role } from '../../aws-iam';
-import { IPipeline, PipelineReference } from '../../aws-sagemaker';
+import type { IGrantable } from '../../aws-iam';
+import { AccountRootPrincipal, Grant, Role } from '../../aws-iam';
+import type { IPipeline, PipelineReference } from '../../aws-sagemaker';
 import { ScheduleExpression, Schedule, ScheduleGroup } from '../../aws-scheduler';
 import * as sqs from '../../aws-sqs';
 import { App, Duration, Resource, Stack } from '../../core';
-import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from '../lib';
+import type { SageMakerPipelineParameter } from '../lib';
+import { SageMakerStartPipelineExecution } from '../lib';
 
 describe('schedule target', () => {
   let app: App;
