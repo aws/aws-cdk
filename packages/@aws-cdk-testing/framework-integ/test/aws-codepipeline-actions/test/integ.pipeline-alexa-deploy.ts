@@ -1,6 +1,7 @@
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, SecretValue, Stack } from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 const app = new App({
@@ -48,6 +49,11 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
     sourceStage,
     deployStage,
   ],
+});
+
+new IntegTest(app, 'integ.pipeline-alexa-deploy', {
+  testCases: [stack],
+  regions: ['us-east-1'],
 });
 
 app.synth();
