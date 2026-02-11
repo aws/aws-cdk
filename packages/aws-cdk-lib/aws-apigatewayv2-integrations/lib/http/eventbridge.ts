@@ -15,11 +15,16 @@ export interface HttpEventBridgeIntegrationProps {
    * incoming request body to contain the fields `Detail`, `DetailType`, and
    * `Source`.
    *
+   * The `EventBusName` is automatically included from `eventBusRef` in all cases,
+   * even when a custom `parameterMapping` is provided (unless explicitly overridden).
+   * This ensures consistency and eliminates redundant configuration.
+   *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html
    *
    * @default - set `Detail` to `$request.body.Detail`,
-   * `DetailType` to `$request.body.DetailType`, and `Source` to `$request.body.Source`.
+   * `DetailType` to `$request.body.DetailType`, `Source` to `$request.body.Source`,
+   * and `EventBusName` to the event bus name from `eventBusRef`.
    */
   readonly parameterMapping?: apigwv2.ParameterMapping;
 
@@ -73,26 +78,34 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
       }),
     );
 
+    // Ensure EventBusName is always included from eventBusRef, even if custom parameterMapping is provided
+    const parameterMapping = this.props.parameterMapping ?? this.createDefaultParameterMapping(options.scope);
+    if (!('EventBusName' in parameterMapping.mappings)) {
+      parameterMapping.custom('EventBusName', this.props.eventBusRef.eventBusName);
+    }
+
     return {
       payloadFormatVersion: apigwv2.PayloadFormatVersion.VERSION_1_0,
       type: apigwv2.HttpIntegrationType.AWS_PROXY,
       subtype: this.subtype,
       credentials: apigwv2.IntegrationCredentials.fromRole(invokeRole),
       connectionType: apigwv2.HttpConnectionType.INTERNET,
-      parameterMapping: this.props.parameterMapping ?? this.createDefaultParameterMapping(options.scope),
+      parameterMapping,
     };
   }
 
   private createDefaultParameterMapping(scope: IConstruct): apigwv2.ParameterMapping {
     switch (this.subtype) {
       case apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS:
-        // Default mapping includes only the required PutEvents parameters: Detail, DetailType, and Source.
-        // Optional parameters (for example, EventBusName, Time, Resources) are intentionally omitted.
+        // Default mapping includes the required PutEvents parameters: Detail, DetailType, and Source.
+        // EventBusName is automatically included from eventBusRef to avoid redundant configuration.
+        // Other optional parameters (for example, Time, Resources) are intentionally omitted.
         // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html#EventBridge-PutEvents
         return new apigwv2.ParameterMapping()
           .custom('Detail', '$request.body.Detail')
           .custom('DetailType', '$request.body.DetailType')
-          .custom('Source', '$request.body.Source');
+          .custom('Source', '$request.body.Source')
+          .custom('EventBusName', this.props.eventBusRef.eventBusName);
       default:
         throw new ValidationError(`Unsupported subtype: ${this.subtype}`, scope);
     }

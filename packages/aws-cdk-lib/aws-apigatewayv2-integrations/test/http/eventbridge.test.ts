@@ -59,6 +59,7 @@ describe('EventBridgeIntegration', () => {
         Detail: '$request.body.Detail',
         DetailType: '$request.body.DetailType',
         Source: '$request.body.Source',
+        EventBusName: stack.resolve(bus.eventBusName),
       },
     });
   });
@@ -86,6 +87,7 @@ describe('EventBridgeIntegration', () => {
       PayloadFormatVersion: '1.0',
       RequestParameters: {
         test: 'testValue',
+        EventBusName: stack.resolve(bus.eventBusName),
       },
     });
   });
@@ -107,6 +109,31 @@ describe('EventBridgeIntegration', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationSubtype: HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS,
+    });
+  });
+
+  test('EventBusName can be explicitly overridden in parameterMapping', () => {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const api = new HttpApi(stack, 'HttpApi');
+    const bus = new events.EventBus(stack, 'Bus');
+
+    new HttpRoute(stack, 'EventBridgeRoute', {
+      httpApi: api,
+      integration: new HttpEventBridgeIntegration('Integration', {
+        eventBusRef: bus.eventBusRef,
+        parameterMapping: new ParameterMapping()
+          .custom('EventBusName', 'custom-bus-name')
+          .custom('Detail', '$request.body.Detail'),
+      }),
+      routeKey: HttpRouteKey.with('/events'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      RequestParameters: {
+        EventBusName: 'custom-bus-name',
+        Detail: '$request.body.Detail',
+      },
     });
   });
 
