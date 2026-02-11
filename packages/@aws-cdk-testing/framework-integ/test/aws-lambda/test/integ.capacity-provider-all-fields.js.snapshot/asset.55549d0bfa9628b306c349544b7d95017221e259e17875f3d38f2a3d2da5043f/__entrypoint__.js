@@ -129,7 +129,6 @@ async function defaultSendHttpRequest(options, requestBody) {
     });
 }
 function defaultLog(fmt, ...params) {
-    // eslint-disable-next-line no-console
     console.log(fmt, ...params);
 }
 function withRetries(options, fn) {
