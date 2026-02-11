@@ -1,13 +1,19 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "ImportedRoleTest/DefaultTest": {
       "stacks": [
         "integ-iam-imported-role-role-stack",
         "integ-iam-imported-role-3"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "ImportedRoleTestAssertions",
       "assertionStackName": "ImportedRoleTestAssertions"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
