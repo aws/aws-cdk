@@ -1,4 +1,3 @@
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { testFixture } from './util';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
@@ -1161,27 +1160,6 @@ describe('node group', () => {
       ],
       CapacityType: 'ON_DEMAND',
     });
-  });
-
-  testDeprecated('throws when both instanceTypes and instanceType defined', () => {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-
-    // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      ...commonProps,
-    });
-    // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      instanceType: new ec2.InstanceType('m5.large'),
-      instanceTypes: [
-        new ec2.InstanceType('m5.large'),
-        new ec2.InstanceType('t3.large'),
-        new ec2.InstanceType('c5.large'),
-      ],
-      capacityType: eks.CapacityType.SPOT,
-    })).toThrow(/"instanceType is deprecated, please use "instanceTypes" only/);
   });
 
   test('create nodegroup with neither instanceTypes nor instanceType defined', () => {

@@ -1631,7 +1631,6 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
     const hasInferentiaOrTrainiumInstanceType = [
-      options?.instanceType,
       ...options?.instanceTypes ?? [],
     ].some(i => i && (nodeTypeForInstanceType(i) === NodeType.INFERENTIA ||
       nodeTypeForInstanceType(i) === NodeType.TRAINIUM));

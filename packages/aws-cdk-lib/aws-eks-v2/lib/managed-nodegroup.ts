@@ -9,7 +9,7 @@ import { CfnNodegroup } from '../../aws-eks';
 import type { IRole } from '../../aws-iam';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import type { IResource, RemovalPolicy } from '../../core';
-import { Resource, Annotations, withResolved, FeatureFlags, ValidationError, RemovalPolicies, UnscopedValidationError } from '../../core';
+import { Resource, withResolved, FeatureFlags, ValidationError, RemovalPolicies, UnscopedValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -279,15 +279,6 @@ export interface NodegroupOptions {
    */
   readonly forceUpdate?: boolean;
   /**
-   * The instance type to use for your node group. Currently, you can specify a single instance type for a node group.
-   * The default value for this parameter is `t3.medium`. If you choose a GPU instance type, be sure to specify the
-   * `AL2_x86_64_GPU`, `BOTTLEROCKET_ARM_64_NVIDIA`, or `BOTTLEROCKET_x86_64_NVIDIA` with the amiType parameter.
-   *
-   * @default t3.medium
-   * @deprecated Use `instanceTypes` instead.
-   */
-  readonly instanceType?: InstanceType;
-  /**
    * The instance types to use for your node group.
    * @default t3.medium will be used according to the cloudformation document.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
@@ -477,17 +468,9 @@ export class Nodegroup extends Resource implements INodegroup {
       throw new ValidationError('diskSize must be specified within the launch template', this);
     }
 
-    if (props.instanceType && props.instanceTypes) {
-      throw new ValidationError('"instanceType is deprecated, please use "instanceTypes" only.', this);
-    }
-
-    if (props.instanceType) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:managedNodeGroupDeprecatedInstanceType', '"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
-    }
-    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
     let possibleAmiTypes: NodegroupAmiType[] = [];
 
-    if (instanceTypes && instanceTypes.length > 0) {
+    if (props.instanceTypes && props.instanceTypes.length > 0) {
       /**
        * if the user explicitly configured instance types, we can't caculate the expected ami type as we support
        * Amazon Linux 2, Bottlerocket, and Windows now. However we can check:
@@ -495,7 +478,7 @@ export class Nodegroup extends Resource implements INodegroup {
        * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM).
        * 2. user-specified amiType should be included in `possibleAmiTypes`.
        */
-      possibleAmiTypes = getPossibleAmiTypes(instanceTypes);
+      possibleAmiTypes = getPossibleAmiTypes(props.instanceTypes);
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
@@ -504,7 +487,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
-      instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
+      props.instanceTypes.filter(isWindowsSupportedInstanceType).length < props.instanceTypes.length) {
         throw new ValidationError('The specified instanceType does not support Windows workloads. '
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
         + 'R3 instances aren\'t supported for Windows workloads.', this);
@@ -561,7 +544,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // note that we don't check if a launch template is configured here (even though it might configure instance types as well)
       // because this doesn't have a default value, meaning the user had to explicitly configure this.
-      instanceTypes: instanceTypes?.map(t => t.toString()),
+      instanceTypes: props.instanceTypes?.map(t => t.toString()),
       labels: props.labels,
       taints: props.taints,
       launchTemplate: props.launchTemplateSpec,
