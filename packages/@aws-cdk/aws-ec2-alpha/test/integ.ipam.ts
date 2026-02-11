@@ -20,6 +20,8 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-integ-ipam');
 
 const ipam = new Ipam(stack, 'IpamTest');
 
+/** Test Ipv4 Primary and Secondary address IpvIPAM */
+
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
   ipv4ProvisionedCidrs: ['10.2.0.0/16'],
