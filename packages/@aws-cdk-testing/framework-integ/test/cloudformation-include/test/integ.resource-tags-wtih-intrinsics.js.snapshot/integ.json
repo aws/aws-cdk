@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "ResourceTagIntrinsicStack/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ResourceTagIntrinsicStack/DefaultTest/DeployAssert",
       "assertionStackName": "ResourceTagIntrinsicStackDefaultTestDeployAssert069A8F1A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

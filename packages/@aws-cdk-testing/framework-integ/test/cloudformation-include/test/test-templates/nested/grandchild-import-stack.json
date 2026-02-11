@@ -7,20 +7,7 @@
   },
   "Resources": {
     "BucketImport": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Fn::Join": [
-            "-",
-            [
-              "bucket-name-prefix",
-              {
-                "Ref": "MyBucketParameter"
-              }
-            ]
-          ]
-        }
-      }
+      "Type": "AWS::S3::Bucket"
     }
   }
 }

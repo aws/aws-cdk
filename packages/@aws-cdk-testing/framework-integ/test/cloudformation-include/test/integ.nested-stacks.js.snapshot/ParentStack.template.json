@@ -3,6 +3,9 @@
   "ChildStack": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
+    "Parameters": {
+     "MyBucketParameter": "some-magic-bucket-name"
+    },
     "TemplateURL": {
      "Fn::Join": [
       "",
@@ -19,12 +22,9 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50.json"
+       "/c0d22265c2b45b2a34de0829e1ce292b40c10aad0ff00de7a6108d5d9a36dac9.json"
       ]
      ]
-    },
-    "Parameters": {
-     "MyBucketParameter": "some-magic-bucket-name"
     }
    }
   }
