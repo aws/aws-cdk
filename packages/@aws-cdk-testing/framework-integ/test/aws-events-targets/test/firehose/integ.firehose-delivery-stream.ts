@@ -30,6 +30,12 @@ event.addTarget(new targets.FirehoseDeliveryStream(deliveryStream));
 
 const testCase = new IntegTest(app, 'firehose-event-target-integ', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // Bucket deletion may fail due to race condition with autoDeleteObjects custom resource
+      expectError: true,
+    },
+  },
 });
 
 const s3ApiCall = testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
