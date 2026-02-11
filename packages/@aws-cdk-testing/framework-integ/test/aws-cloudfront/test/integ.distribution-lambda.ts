@@ -1,17 +1,24 @@
+/**
+ * This test uses Lambda@Edge which requires us-east-1.
+ * A cleanup custom resource handles replica deletion on teardown.
+ * See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
+ */
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
+import { EdgeLambdaCleanup } from './edge-lambda-cleanup/construct';
 
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
-const stack = new cdk.Stack(app, 'integ-distribution-lambda', { env: { region: 'us-east-1' } });
+const stack = new cdk.Stack(app, 'integ-distribution-lambda');
 
-const lambdaFunction = new lambda.Function(stack, 'Lambda', {
+const edgeFunction = new lambda.Function(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
   runtime: STANDARD_NODEJS_RUNTIME,
@@ -22,10 +29,15 @@ new cloudfront.Distribution(stack, 'Dist', {
     origin: new TestOrigin('www.example.com'),
     cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
     edgeLambdas: [{
-      functionVersion: lambdaFunction.currentVersion,
+      functionVersion: edgeFunction.currentVersion,
       eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
     }],
   },
 });
 
-app.synth();
+new EdgeLambdaCleanup(stack, 'Cleanup', { functions: [edgeFunction], runtime: STANDARD_NODEJS_RUNTIME });
+
+new IntegTest(app, 'integ-distribution-lambda-test', {
+  testCases: [stack],
+  regions: ['us-east-1'],
+});

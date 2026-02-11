@@ -1,15 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "integ.distribution-lambda": {
+    "integ-distribution-lambda-test/DefaultTest": {
       "stacks": [
         "integ-distribution-lambda"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "integ-distribution-lambda-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integdistributionlambdatestDefaultTestDeployAssert88EBE2E4"
     }
   },
-  "synthContext": {},
-  "enableLookups": false,
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1033.0"
 }

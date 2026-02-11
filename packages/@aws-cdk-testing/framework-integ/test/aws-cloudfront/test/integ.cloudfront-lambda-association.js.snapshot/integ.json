@@ -1,15 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "integ.cloudfront-lambda-association": {
+    "integ-cloudfront-lambda-association/DefaultTest": {
       "stacks": [
         "aws-cdk-cloudfront"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "integ-cloudfront-lambda-association/DefaultTest/DeployAssert",
+      "assertionStackName": "integcloudfrontlambdaassociationDefaultTestDeployAssertF6AC76CE"
     }
   },
-  "synthContext": {},
-  "enableLookups": false,
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1033.0"
 }
