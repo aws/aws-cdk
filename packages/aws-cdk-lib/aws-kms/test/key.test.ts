@@ -1491,6 +1491,21 @@ describe('SM2', () => {
   });
 });
 
+test.each([
+  [true, true],
+  [false, false],
+  [undefined, Match.absent()],
+])('bypassPolicyLockoutSafetyCheck is set to %s', (input, expected) => {
+  const stack = new cdk.Stack();
+  new kms.Key(stack, 'MyKey', {
+    bypassPolicyLockoutSafetyCheck: input,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    BypassPolicyLockoutSafetyCheck: expected,
+  });
+});
+
 describe('ML-DSA', () => {
   let stack: cdk.Stack;
 
@@ -1504,7 +1519,7 @@ describe('ML-DSA', () => {
     [KeySpec.ML_DSA_87, 'ML_DSA_87'],
   ])('%s is not valid for default usage', (keySpec: KeySpec) => {
     expect(() => new kms.Key(stack, 'Key1', { keySpec }))
-      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'ENCRYPT_DECRYPT\'`);
+      .toThrow(`key spec '${keySpec}' is not valid with usage 'ENCRYPT_DECRYPT'`);
   });
 
   test.each([

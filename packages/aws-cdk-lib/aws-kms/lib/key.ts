@@ -566,6 +566,20 @@ export interface KeyProps {
    * @default - 30 days
    */
   readonly pendingWindow?: Duration;
+
+  /**
+   * Skips ("bypasses") the key policy lockout safety check.
+   *
+   * Setting this value to true increases the risk that the KMS key becomes unmanageable.
+   * Do not set this value to true indiscriminately.
+   *
+   * Use this parameter only when you intend to prevent the principal that is making the request
+   * from making a subsequent PutKeyPolicy request on the KMS key.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#prevent-unmanageable-key
+   */
+  readonly bypassPolicyLockoutSafetyCheck?: boolean;
 }
 
 /**
@@ -881,6 +895,7 @@ export class Key extends KeyBase {
       keyPolicy: this.policy,
       multiRegion: props.multiRegion,
       pendingWindowInDays: pendingWindowInDays,
+      bypassPolicyLockoutSafetyCheck: props.bypassPolicyLockoutSafetyCheck,
     });
 
     this.keyArn = resource.attrArn;
