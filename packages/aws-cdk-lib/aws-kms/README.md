@@ -117,7 +117,7 @@ const myKeyLookup = kms.Key.fromLookup(this, 'MyKeyLookup', {
 const role = new iam.Role(this, 'MyRole', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
-myKeyLookup.grants.encryptDecrypt(role);
+myKeyLookup.grantEncryptDecrypt(role);
 ```
 
 Note that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not have
@@ -292,7 +292,7 @@ for the `AWS::KMS::Key` CloudFormation type:
 
 
 ```ts nofixture
-import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk/aws-iam'; 
+import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam'; 
 import { Construct, IConstruct } from 'constructs';
 
 declare const scope: Construct;
