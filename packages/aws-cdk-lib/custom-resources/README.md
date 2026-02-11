@@ -303,7 +303,7 @@ make sure your custom resource behaves correctly in all cases:
     receive a `Delete` event to clean up the previous instance of the resource.
 * During `Delete`:
   * If your `Create` takes a long time to complete, it is possible **that
-    another resource may causefail during this time**. If that happens, CloudFormation
+    another resource may fail during this time**. If that happens, CloudFormation
     will stop waiting for the Create call to complete and send you a `Delete`
     event. Because the original Create event never finished, it doesn't know
     about the resource's physical ID, and will invent one. The `PhysicalId` it
