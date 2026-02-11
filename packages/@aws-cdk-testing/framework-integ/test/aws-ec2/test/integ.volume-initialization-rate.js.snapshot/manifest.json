@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8417324dc01be6ef330cb2d948f2fa0e21b001be74cb1bd11e1faafefa7d7b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2821c9695c183f8342ae13a2c0f09760b8e0bd2387329c38c492db3741030cf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,18 +34,28 @@
         "volume-initialization-rate-stack.assets"
       ],
       "metadata": {
-        "/volume-initialization-rate-stack/SnapshotProvider": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
+              "entry": "*",
               "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "entry": "*"
             }
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotProvider/ServiceRole": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Handler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -85,13 +95,13 @@
             }
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotProvider/ServiceRole/Resource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshotProviderServiceRoleA2DF3C0C"
+            "data": "SnapshotProviderHandlerServiceRoleFF00CA3B"
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotProvider/ServiceRole/DefaultPolicy": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Handler/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -121,19 +131,19 @@
             }
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotProvider/ServiceRole/DefaultPolicy/Resource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshotProviderServiceRoleDefaultPolicyC4C3FE93"
+            "data": "SnapshotProviderHandlerServiceRoleDefaultPolicy9829E406"
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotProvider/Resource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshotProviderABC26AF9"
+            "data": "SnapshotProviderHandler36BDD770"
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotProvider/LogGroup": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Handler/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -141,13 +151,13 @@
             }
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotProvider/LogGroup/Resource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Handler/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshotProviderLogGroupDE5BD68F"
+            "data": "SnapshotProviderHandlerLogGroupCA728552"
           }
         ],
-        "/volume-initialization-rate-stack/Provider/framework-onEvent": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -177,7 +187,7 @@
             }
           }
         ],
-        "/volume-initialization-rate-stack/Provider/framework-onEvent/ServiceRole": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -225,13 +235,13 @@
             }
           }
         ],
-        "/volume-initialization-rate-stack/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventServiceRole9FF04296"
+            "data": "SnapshotProviderframeworkonEventServiceRoleBC575D66"
           }
         ],
-        "/volume-initialization-rate-stack/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -269,19 +279,19 @@
             }
           }
         ],
-        "/volume-initialization-rate-stack/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
+            "data": "SnapshotProviderframeworkonEventServiceRoleDefaultPolicy93F4DFCE"
           }
         ],
-        "/volume-initialization-rate-stack/Provider/framework-onEvent/Resource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEvent83C1D0A7"
+            "data": "SnapshotProviderframeworkonEvent9E28A114"
           }
         ],
-        "/volume-initialization-rate-stack/Provider/framework-onEvent/LogGroup": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -289,13 +299,13 @@
             }
           }
         ],
-        "/volume-initialization-rate-stack/Provider/framework-onEvent/LogGroup/Resource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventLogGroup683073A3"
+            "data": "SnapshotProviderframeworkonEventLogGroupC20E42B4"
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotResource": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -309,10 +319,10 @@
             "data": "*"
           }
         ],
-        "/volume-initialization-rate-stack/SnapshotResource/Default": [
+        "/volume-initialization-rate-stack/SnapshotProvider/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshotResource"
+            "data": "SnapshotProviderABC26AF9"
           }
         ],
         "/volume-initialization-rate-stack/Volume": [

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "SnapshotProviderServiceRoleA2DF3C0C": {
+  "SnapshotProviderHandlerServiceRoleFF00CA3B": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
     ]
    }
   },
-  "SnapshotProviderServiceRoleDefaultPolicyC4C3FE93": {
+  "SnapshotProviderHandlerServiceRoleDefaultPolicy9829E406": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -51,24 +51,27 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "SnapshotProviderServiceRoleDefaultPolicyC4C3FE93",
+    "PolicyName": "SnapshotProviderHandlerServiceRoleDefaultPolicy9829E406",
     "Roles": [
      {
-      "Ref": "SnapshotProviderServiceRoleA2DF3C0C"
+      "Ref": "SnapshotProviderHandlerServiceRoleFF00CA3B"
      }
     ]
    }
   },
-  "SnapshotProviderABC26AF9": {
+  "SnapshotProviderHandler36BDD770": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\nconst { EC2Client, CreateVolumeCommand, CreateSnapshotCommand, DeleteVolumeCommand, DeleteSnapshotCommand, DescribeSnapshotsCommand, DescribeVolumesCommand } = require('@aws-sdk/client-ec2');\nconst ec2 = new EC2Client();\nconst sleep = (ms) => new Promise(r => setTimeout(r, ms));\nexports.handler = async (event) => {\n  if (event.RequestType === 'Delete') {\n    const snapshotId = event.PhysicalResourceId;\n    try { await ec2.send(new DeleteSnapshotCommand({ SnapshotId: snapshotId })); } catch (e) {}\n    return { PhysicalResourceId: snapshotId };\n  }\n  const az = event.ResourceProperties.AvailabilityZone;\n  const vol = await ec2.send(new CreateVolumeCommand({ AvailabilityZone: az, Size: 1, VolumeType: 'gp3' }));\n  // Wait for volume to be available\n  for (let i = 0; i < 60; i++) {\n    const desc = await ec2.send(new DescribeVolumesCommand({ VolumeIds: [vol.VolumeId] }));\n    if (desc.Volumes[0].State === 'available') break;\n    await sleep(5000);\n  }\n  const snap = await ec2.send(new CreateSnapshotCommand({ VolumeId: vol.VolumeId }));\n  // Wait for snapshot to complete\n  for (let i = 0; i < 60; i++) {\n    const desc = await ec2.send(new DescribeSnapshotsCommand({ SnapshotIds: [snap.SnapshotId] }));\n    if (desc.Snapshots[0].State === 'completed') break;\n    await sleep(10000);\n  }\n  await ec2.send(new DeleteVolumeCommand({ VolumeId: vol.VolumeId }));\n  return { PhysicalResourceId: snap.SnapshotId, Data: { SnapshotId: snap.SnapshotId } };\n};\n"
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1f7aa137561b2d20160472ca5c2566ccbacefecb93fc6d0126f8054d1a3e5035.zip"
     },
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "SnapshotProviderServiceRoleA2DF3C0C",
+      "SnapshotProviderHandlerServiceRoleFF00CA3B",
       "Arn"
      ]
     },
@@ -76,11 +79,11 @@
     "Timeout": 600
    },
    "DependsOn": [
-    "SnapshotProviderServiceRoleDefaultPolicyC4C3FE93",
-    "SnapshotProviderServiceRoleA2DF3C0C"
+    "SnapshotProviderHandlerServiceRoleDefaultPolicy9829E406",
+    "SnapshotProviderHandlerServiceRoleFF00CA3B"
    ]
   },
-  "SnapshotProviderLogGroupDE5BD68F": {
+  "SnapshotProviderHandlerLogGroupCA728552": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -89,7 +92,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "SnapshotProviderABC26AF9"
+        "Ref": "SnapshotProviderHandler36BDD770"
        }
       ]
      ]
@@ -99,7 +102,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "ProviderframeworkonEventServiceRole9FF04296": {
+  "SnapshotProviderframeworkonEventServiceRoleBC575D66": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -130,7 +133,7 @@
     ]
    }
   },
-  "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133": {
+  "SnapshotProviderframeworkonEventServiceRoleDefaultPolicy93F4DFCE": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -141,7 +144,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "SnapshotProviderABC26AF9",
+          "SnapshotProviderHandler36BDD770",
           "Arn"
          ]
         },
@@ -151,7 +154,7 @@
           [
            {
             "Fn::GetAtt": [
-             "SnapshotProviderABC26AF9",
+             "SnapshotProviderHandler36BDD770",
              "Arn"
             ]
            },
@@ -166,7 +169,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "SnapshotProviderABC26AF9",
+         "SnapshotProviderHandler36BDD770",
          "Arn"
         ]
        }
@@ -174,15 +177,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
+    "PolicyName": "SnapshotProviderframeworkonEventServiceRoleDefaultPolicy93F4DFCE",
     "Roles": [
      {
-      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
+      "Ref": "SnapshotProviderframeworkonEventServiceRoleBC575D66"
      }
     ]
    }
   },
-  "ProviderframeworkonEvent83C1D0A7": {
+  "SnapshotProviderframeworkonEvent9E28A114": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -191,12 +194,12 @@
      },
      "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (volume-initialization-rate-stack/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (volume-initialization-rate-stack/SnapshotProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "SnapshotProviderABC26AF9",
+        "SnapshotProviderHandler36BDD770",
         "Arn"
        ]
       }
@@ -209,7 +212,7 @@
     },
     "Role": {
      "Fn::GetAtt": [
-      "ProviderframeworkonEventServiceRole9FF04296",
+      "SnapshotProviderframeworkonEventServiceRoleBC575D66",
       "Arn"
      ]
     },
@@ -217,11 +220,11 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
-    "ProviderframeworkonEventServiceRole9FF04296"
+    "SnapshotProviderframeworkonEventServiceRoleDefaultPolicy93F4DFCE",
+    "SnapshotProviderframeworkonEventServiceRoleBC575D66"
    ]
   },
-  "ProviderframeworkonEventLogGroup683073A3": {
+  "SnapshotProviderframeworkonEventLogGroupC20E42B4": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -230,7 +233,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "ProviderframeworkonEvent83C1D0A7"
+        "Ref": "SnapshotProviderframeworkonEvent9E28A114"
        }
       ]
      ]
@@ -240,12 +243,12 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "SnapshotResource": {
+  "SnapshotProviderABC26AF9": {
    "Type": "AWS::CloudFormation::CustomResource",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "ProviderframeworkonEvent83C1D0A7",
+      "SnapshotProviderframeworkonEvent9E28A114",
       "Arn"
      ]
     },
@@ -256,7 +259,9 @@
        "Fn::GetAZs": ""
       }
      ]
-    }
+    },
+    "VolumeSize": "1",
+    "VolumeType": "gp3"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -276,7 +281,7 @@
     "Size": 1,
     "SnapshotId": {
      "Fn::GetAtt": [
-      "SnapshotResource",
+      "SnapshotProviderABC26AF9",
       "SnapshotId"
      ]
     },

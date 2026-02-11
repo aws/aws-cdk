@@ -1,8 +1,22 @@
 {
   "version": "48.0.0",
   "files": {
+    "1f7aa137561b2d20160472ca5c2566ccbacefecb93fc6d0126f8054d1a3e5035": {
+      "displayName": "SnapshotProvider/Handler/Code",
+      "source": {
+        "path": "asset.1f7aa137561b2d20160472ca5c2566ccbacefecb93fc6d0126f8054d1a3e5035",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-03613e03": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1f7aa137561b2d20160472ca5c2566ccbacefecb93fc6d0126f8054d1a3e5035.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
     "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e": {
-      "displayName": "Provider/framework-onEvent/Code",
+      "displayName": "SnapshotProvider/Provider/framework-onEvent/Code",
       "source": {
         "path": "asset.d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e",
         "packaging": "zip"
@@ -15,16 +29,16 @@
         }
       }
     },
-    "f8417324dc01be6ef330cb2d948f2fa0e21b001be74cb1bd11e1faafefa7d7b5": {
+    "e2821c9695c183f8342ae13a2c0f09760b8e0bd2387329c38c492db3741030cf": {
       "displayName": "volume-initialization-rate-stack Template",
       "source": {
         "path": "volume-initialization-rate-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-2f1d736d": {
+        "current_account-current_region-f0816af6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f8417324dc01be6ef330cb2d948f2fa0e21b001be74cb1bd11e1faafefa7d7b5.json",
+          "objectKey": "e2821c9695c183f8342ae13a2c0f09760b8e0bd2387329c38c492db3741030cf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
