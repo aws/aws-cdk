@@ -1,6 +1,6 @@
 /**
  * This test uses Lambda@Edge which requires us-east-1.
- * A cleanup custom resource handles replica deletion on teardown.
+ * Lambda@Edge replicas cannot be immediately deleted during stack teardown.
  * See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
  */
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -9,7 +9,6 @@ import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
-import { EdgeLambdaCleanup } from './edge-lambda-cleanup/construct';
 
 const app = new cdk.App({
   postCliContext: {
@@ -35,9 +34,13 @@ new cloudfront.Distribution(stack, 'Dist', {
   },
 });
 
-new EdgeLambdaCleanup(stack, 'Cleanup', { functions: [edgeFunction], runtime: STANDARD_NODEJS_RUNTIME });
-
 new IntegTest(app, 'integ-distribution-lambda-test', {
   testCases: [stack],
   regions: ['us-east-1'],
+  cdkCommandOptions: {
+    destroy: {
+      // Lambda@Edge replicas cannot be immediately deleted; expect destroy to fail
+      expectError: true,
+    },
+  },
 });

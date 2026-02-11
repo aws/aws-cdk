@@ -16,46 +16,16 @@
         }
       }
     },
-    "a0d7840e90d7ae8acb4d11e76cd98ca688db5cfdf4b2bf71392ea8ab5e0ddbd2": {
-      "displayName": "Cleanup/Handler/Code",
-      "source": {
-        "path": "asset.a0d7840e90d7ae8acb4d11e76cd98ca688db5cfdf4b2bf71392ea8ab5e0ddbd2",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-eu-west-1-43c765e3": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "a0d7840e90d7ae8acb4d11e76cd98ca688db5cfdf4b2bf71392ea8ab5e0ddbd2.zip",
-          "region": "eu-west-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
-        }
-      }
-    },
-    "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e": {
-      "displayName": "Cleanup/Provider/framework-onEvent/Code",
-      "source": {
-        "path": "asset.d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-eu-west-1-99915091": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip",
-          "region": "eu-west-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
-        }
-      }
-    },
-    "89bdbb72a98a12f9854bab0acdef972a14d6037d13417d13495566cc1ecc321a": {
+    "937394c8d0a6e575548b6362ddc21f7a02d4d4b3bff17e372a39ed6b1e4d74b1": {
       "displayName": "integ-distribution-lambda-cross-region Template",
       "source": {
         "path": "integ-distribution-lambda-cross-region.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-west-1-60c86a74": {
+        "current_account-eu-west-1-b7e8c8e5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "89bdbb72a98a12f9854bab0acdef972a14d6037d13417d13495566cc1ecc321a.json",
+          "objectKey": "937394c8d0a6e575548b6362ddc21f7a02d4d4b3bff17e372a39ed6b1e4d74b1.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }

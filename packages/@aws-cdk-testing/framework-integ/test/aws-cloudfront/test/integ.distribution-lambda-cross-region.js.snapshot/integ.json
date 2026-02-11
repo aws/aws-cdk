@@ -5,9 +5,6 @@
       "stacks": [
         "integ-distribution-lambda-cross-region"
       ],
-      "regions": [
-        "eu-west-1"
-      ],
       "diffAssets": true,
       "assertionStack": "cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485"

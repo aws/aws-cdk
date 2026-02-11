@@ -51,9 +51,7 @@
    },
    "DependsOn": [
     "LambdaServiceRoleA8ED4D3B"
-   ],
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ]
   },
   "LambdaLogGroupB7A19430": {
    "Type": "AWS::Logs::LogGroup",
