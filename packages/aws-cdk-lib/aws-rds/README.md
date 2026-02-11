@@ -658,9 +658,7 @@ Automatic backups of read replica instances are only supported for MySQL and Mar
 automatic backups are disabled for read replicas and can only be enabled (using `backupRetention`)
 if also enabled on the source instance.
 
-Creating a "production" Oracle database instance with option and parameter groups:
-
-[example of setting up a production oracle instance](test/integ.instance.lit.ts)
+For more information on configuring Oracle database instances, see [option groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithOptionGroups.html) and [parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/parameter-groups-overview.html).
 
 Use the `storageType` property to specify the [type of storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 to use for the instance:
@@ -914,7 +912,7 @@ instance.addRotationSingleUser({
 });
 ```
 
-[example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
+For more information on setting up master password rotation for a cluster, see [Set up automatic rotation for Amazon RDS secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_turn-on-for-db.html).
 
 The multi user rotation scheme is also available:
 
