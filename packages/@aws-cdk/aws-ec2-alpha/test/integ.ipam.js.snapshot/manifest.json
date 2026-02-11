@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/65ed256fc764a5ddcf22524a7197e1520cca4d0188cf246c8dab797ba9f106bb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29ed3acc6ec00a84d6f3230d7be5eb79385342bcdb19315d8e66e9a9c94b3651.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,7 +55,10 @@
         "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PrivatePool0/PrivatePool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPrivatePool039C763DC"
+            "data": "IpamTestPrivatePool039C763DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0": [
@@ -71,13 +74,19 @@
         "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0/PublicPool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0C44B7C49"
+            "data": "IpamTestPublicPool0C44B7C49",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0/PublicPool0Cidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0PublicPool0CidrC57CE00C"
+            "data": "IpamTestPublicPool0PublicPool0CidrC57CE00C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1": [
@@ -101,7 +110,10 @@
         "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1/ipv4IpamCidr/ipv4IpamCidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1ipv4IpamCidr451A5376"
+            "data": "VPCintegtest1ipv4IpamCidr451A5376",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1/Ipv6IpamCidr": [
@@ -113,7 +125,10 @@
         "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1/Ipv6IpamCidr/Ipv6IpamCidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1Ipv6IpamCidr2E5BBFED"
+            "data": "VPCintegtest1Ipv6IpamCidr2E5BBFED",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet": [
@@ -125,7 +140,10 @@
         "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetSubnet77337845"
+            "data": "testsbubnetSubnet77337845",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet/RouteTable": [
@@ -143,292 +161,10 @@
         "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetRouteTableAssociationD6D083FA"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Function": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "entry": "*",
-              "handler": "*",
-              "timeout": "*",
-              "initialPolicy": "*",
-              "code": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "entry": "*",
-              "handler": "*",
-              "timeout": "*",
-              "initialPolicy": "*"
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Function/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Function/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanupFunctionServiceRole7E64A6D1"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Function/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanupFunctionServiceRoleDefaultPolicyDD3B3BF8"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Function/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanupFunction003A33EA"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Function/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Function/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanupFunctionLogGroupE0C56728"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Provider/framework-onEvent": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "description": "*",
-              "runtime": "*",
-              "handler": "*",
-              "timeout": "*",
-              "loggingFormat": "JSON",
-              "applicationLogLevelV2": "FATAL",
-              "logGroup": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "securityGroups": "*",
-              "role": "*",
-              "functionName": "*",
-              "environmentEncryption": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Provider/framework-onEvent/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Provider/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanupProviderframeworkonEventServiceRole4393AF60"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanupProviderframeworkonEventServiceRoleDefaultPolicy3A83FB3B"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Provider/framework-onEvent/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanupProviderframeworkonEvent14259F3A"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Provider/framework-onEvent/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Provider/framework-onEvent/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanupProviderframeworkonEventLogGroupF6FCB4AB"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Resource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanup1C3DDC12"
+            "data": "testsbubnetRouteTableAssociationD6D083FA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/BootstrapVersion": [
@@ -441,51 +177,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "IpamCleanupFnServiceRole58DCCBDE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamCleanupFnServiceRole58DCCBDE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "IpamCleanupFnServiceRoleDefaultPolicyA090BBB0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamCleanupFnServiceRoleDefaultPolicyA090BBB0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "IpamCleanupFn5E044491": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamCleanupFn5E044491",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "IpamCleanupFnLogGroup57CF72FE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamCleanupFnLogGroup57CF72FE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "IpamPoolCleanup": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanup",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

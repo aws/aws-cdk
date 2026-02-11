@@ -12,7 +12,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { AddressFamily, AwsServiceName, IpCidr, Ipam, IpamPoolPublicIpSource, SubnetV2 } from '../lib';
-import { IpamPoolCleanup } from './ipam-pool-cleanup';
 import * as vpc_v2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
@@ -33,7 +32,7 @@ const pool2 = ipam.publicScope.addPool('PublicPool0', {
   locale: stack.region,
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
-const poolCidr = pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 });
+pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 });
 
 const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
@@ -60,15 +59,12 @@ new SubnetV2(stack, 'testsbubnet', {
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
-// Ensures clean stack teardown by waiting for IPAM pool allocations to drain
-// before CloudFormation attempts to deprovision the pool CIDR.
-// See ipam-pool-cleanup.ts for details on the CloudFormation ordering issue.
-new IpamPoolCleanup(stack, 'IpamPoolCleanup', {
-  ipamPool: pool2,
-  vpc,
-  poolCidr,
-});
-
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // IPAM pool allocations cannot be immediately released; expect destroy to fail
+      expectError: true,
+    },
+  },
 });
