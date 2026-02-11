@@ -3,7 +3,7 @@
   "testCases": {
     "ApplicationAssociatorTest/DefaultTest": {
       "stacks": [
-        "integ-appregistry-no-stackid"
+        "integ-appregistry-all-stacks"
       ],
       "assertionStack": "ApplicationAssociatorTest/DefaultTest/DeployAssert",
       "assertionStackName": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9"
