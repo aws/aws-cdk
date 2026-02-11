@@ -19,7 +19,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c5adcffb96a3522eb8a42f7d9a02a401482046a2930e2b086ecf0e8666a24579.zip"
+     "S3Key": "fdbbabeab76a41188fbdf182a8c09848a1ea72525524d7bc2c373c6e1eb2c1c4.zip"
     }
    },
    "DependsOn": [
@@ -95,7 +95,7 @@
       "Value": "t3.micro"
      }
     ],
-    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.1 running Node.js 20",
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.3 running Node.js 20",
     "VersionLabel": {
      "Ref": "ApplicationVersion"
     }
@@ -185,7 +185,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip"
+     "S3Key": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip"
     },
     "Handler": "index.handler",
     "Role": {
