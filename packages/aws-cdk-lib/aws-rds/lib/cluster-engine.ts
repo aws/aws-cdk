@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as semver from 'semver';
-import { IEngine } from './engine';
-import { EngineVersion } from './engine-version';
-import { IParameterGroup, ParameterGroup } from './parameter-group';
-import * as iam from '../../aws-iam';
+import type { IEngine } from './engine';
+import type { EngineVersion } from './engine-version';
+import type { IParameterGroup } from './parameter-group';
+import { ParameterGroup } from './parameter-group';
+import type * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ValidationError } from '../../core/lib/errors';
 
@@ -1327,6 +1328,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_9_LIMITLESS = AuroraPostgresEngineVersion.of('16.9-limitless', '16', { s3Import: true, s3Export: true });
   /** Version "16.10". */
   public static readonly VER_16_10 = AuroraPostgresEngineVersion.of('16.10', '16', { s3Import: true, s3Export: true });
+  /** Version "16.11". */
+  public static readonly VER_16_11 = AuroraPostgresEngineVersion.of('16.11', '16', { s3Import: true, s3Export: true });
 
   /**
    * Version "17.1"

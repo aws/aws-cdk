@@ -34,5 +34,5 @@ export interface Environment {
 // For backwards compatibility with TypeScript users
 // (Note that `import { ... } from '...'; export { ... }` behaves differently in jsii
 // than `export { ... } from '...'`, and we need the former).
-import { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
+import type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
 export type { IEnvironmentAware, ResourceEnvironment };

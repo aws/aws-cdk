@@ -10,7 +10,7 @@ import * as s3 from '../../../aws-s3';
 import { Stack, Lazy, App } from '../../../core';
 import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import * as cpactions from '../../lib';
-import { CodeCommitSourceActionProps } from '../../lib';
+import type { CodeCommitSourceActionProps } from '../../lib';
 
 /* eslint-disable @stylistic/quote-props */
 

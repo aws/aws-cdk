@@ -367,12 +367,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -411,12 +405,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/ClusternodePoolRole/Resource": [
@@ -556,12 +544,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -730,12 +712,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
