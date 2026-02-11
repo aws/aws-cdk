@@ -710,6 +710,87 @@ new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
 });
 ```
 
+### Additional Storage Volumes
+
+For RDS for Oracle and RDS for SQL Server, you can attach up to three additional storage volumes
+to provision up to 256 TiB of total storage. This allows you to scale storage beyond the limits
+of a single volume.
+
+Volume names are automatically assigned based on the array index: `rdsdbdata2`, `rdsdbdata3`, `rdsdbdata4`.
+For SQL Server, these are automatically mapped to drive letters `H:\`, `I:\`, `J:\` respectively.
+
+```ts
+import { Size } from 'aws-cdk-lib/core';
+
+declare const vpc: ec2.Vpc;
+
+// Oracle example
+new rds.DatabaseInstance(this, 'OracleInstance', {
+  engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19 }),
+  // Additional storage volumes require instance types with at least 64 GiB memory
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.XLARGE2),
+  vpc,
+  allocatedStorage: 200,
+  storageType: rds.StorageType.GP3,
+  additionalStorageVolumes: [
+    {
+      allocatedStorage: Size.gibibytes(200),
+      storageType: rds.StorageType.GP3,
+      iops: 12000,
+      storageThroughput: Size.mebibytes(500),
+    },
+    {
+      allocatedStorage: Size.gibibytes(300),
+      storageType: rds.StorageType.IO2,
+      iops: 20000,
+    },
+  ],
+});
+
+// SQL Server example
+new rds.DatabaseInstance(this, 'SqlServerInstance', {
+  engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.XLARGE2),
+  vpc,
+  allocatedStorage: 200,
+  storageType: rds.StorageType.GP3,
+  additionalStorageVolumes: [
+    {
+      allocatedStorage: Size.gibibytes(200),
+      storageType: rds.StorageType.GP3,
+      iops: 3000,
+      storageThroughput: Size.mebibytes(125),
+    },
+    {
+      allocatedStorage: Size.gibibytes(300),
+      storageType: rds.StorageType.IO2,
+      iops: 5000,
+    },
+  ],
+});
+```
+
+**Requirements and Constraints:**
+
+- **Supported engines**: Oracle and SQL Server only
+- **Storage types**: Only `GP3` and `IO2` are supported for additional volumes
+- **Oracle requirements**:
+  - Instance types must have at least 64 GiB of memory (e.g., r5.2xlarge, r6i.2xlarge)
+  - Burstable instance types (t2, t3) are not supported
+  - Primary storage must be at least 200 GiB
+  - Additional volume storage: 200 - 65,536 GiB
+- **SQL Server requirements**:
+  - Additional volume storage: 20 - 65,536 GiB
+- **GP3 IOPS** (baseline IOPS provided by AWS, no explicit value set by CDK):
+  - Oracle: 12,000 IOPS baseline (storage >= 200 GiB exceeds striping threshold)
+  - SQL Server: 3,000 IOPS baseline (no volume striping support)
+- **GP3 Throughput** (baseline throughput provided by AWS):
+  - Oracle: 500 MiB/s baseline (storage >= 200 GiB exceeds striping threshold)
+  - SQL Server: 125 MiB/s baseline (no volume striping support)
+- **IO2 IOPS**: Default is 1,000 IOPS if not specified
+- **Maximum throughput/IOPS ratio** (GP3 only): 0.25
+
+For more information, see [Adding storage volumes](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.AdditionalVolumes.html) and [Amazon RDS DB instance storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html).
 
 Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for the instance:
