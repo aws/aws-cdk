@@ -10,12 +10,12 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const ruleSet = new gamelift.MatchmakingRuleSet(this, 'StandaloneMatchmakingConfiguration', {
-      matchmakingRuleSetName: 'my-test-ruleset',
+      matchmakingRuleSetName: 'my-test-ruleset-smc',
       content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset', 'ruleset.json')),
     });
 
     const matchmakingConfiguration = new gamelift.StandaloneMatchmakingConfiguration(this, 'MyStandaloneMatchmakingConfiguration', {
-      matchmakingConfigurationName: 'test-config-name',
+      matchmakingConfigurationName: 'test-config-smc',
       ruleSet: ruleSet,
       customEventData: 'event-data',
       description: 'test description',
@@ -34,6 +34,7 @@ const app = new cdk.App();
 const stack = new TestStack(app, 'aws-gamelift-standalone-matchmaking-configuration');
 new IntegTest(app, 'StandaloneMatchmakingConfiguration', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2', 'eu-west-1', 'eu-west-2', 'eu-central-1', 'ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2', 'ca-central-1', 'sa-east-1'],
 });
 
 app.synth();
