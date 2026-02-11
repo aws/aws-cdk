@@ -313,6 +313,7 @@
     "./aws-ecs-patterns": "./aws-ecs-patterns/index.js",
     "./aws-efs": "./aws-efs/index.js",
     "./aws-eks": "./aws-eks/index.js",
+    "./aws-eks-v2": "./aws-eks-v2/index.js",
     "./aws-elasticache": "./aws-elasticache/index.js",
     "./aws-elasticbeanstalk": "./aws-elasticbeanstalk/index.js",
     "./aws-elasticloadbalancing": "./aws-elasticloadbalancing/index.js",
