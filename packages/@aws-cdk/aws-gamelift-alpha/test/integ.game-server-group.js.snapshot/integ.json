@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "48.0.0",
   "testCases": {
     "GameServerGroup/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "GameServerGroup/DefaultTest/DeployAssert",
       "assertionStackName": "GameServerGroupDefaultTestDeployAssertA631B19B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

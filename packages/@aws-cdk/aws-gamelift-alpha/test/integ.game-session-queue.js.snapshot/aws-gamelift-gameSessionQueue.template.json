@@ -158,7 +158,6 @@
   "MyGameSessionQueue1A15CE31": {
    "Type": "AWS::GameLift::GameSessionQueue",
    "Properties": {
-    "Name": "test-gameSessionQueue",
     "CustomEventData": "test-event-data",
     "Destinations": [
      {
@@ -214,10 +213,12 @@
     ],
     "FilterConfiguration": {
      "AllowedLocations": [
-      "eu-west-1",
-      "eu-west-2"
+      {
+       "Ref": "AWS::Region"
+      }
      ]
     },
+    "Name": "test-gameSessionQueue",
     "NotificationTarget": {
      "Ref": "MyTopic86869434"
     },
@@ -229,8 +230,9 @@
     ],
     "PriorityConfiguration": {
      "LocationOrder": [
-      "eu-west-1",
-      "eu-west-2"
+      {
+       "Ref": "AWS::Region"
+      }
      ],
      "PriorityOrder": [
       "LATENCY",
