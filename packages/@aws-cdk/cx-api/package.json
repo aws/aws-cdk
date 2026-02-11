@@ -80,8 +80,8 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.7.3",
-    "@aws-cdk/cloud-assembly-api": "^2.0.0"
+    "semver": "^7.7.4",
+    "@aws-cdk/cloud-assembly-api": "^2.0.1"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": ">=45.0.0"
