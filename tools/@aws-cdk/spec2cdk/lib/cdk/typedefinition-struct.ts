@@ -1,8 +1,9 @@
-import { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, expr, FreeFunction, Module, PropertySpec, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
+import type { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
+import type { ClassType, PropertySpec } from '@cdklabs/typewriter';
+import { expr, FreeFunction, Module, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
 import { CloudFormationMapping } from './cloudformation-mapping';
-import { RelationshipDecider } from './relationship-decider';
-import { TypeConverter } from './type-converter';
+import type { RelationshipDecider } from './relationship-decider';
+import type { TypeConverter } from './type-converter';
 import { TypeDefinitionDecider } from './typedefinition-decider';
 import { cloudFormationDocLink, flattenFunctionNameFromType, structNameFromTypeDefinition } from '../naming';
 import { splitDocumentation } from '../util';

@@ -1,9 +1,16 @@
+/**
+ * Unit tests that depend on 'aws-cdk-lib' having been compiled using jsii
+ */
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1 } from '../lib';
+import type { IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, PolicyValidationPluginReportBeta1 } from '../lib';
+import { App, Stack, Stage, Resource } from '../lib';
+import { JSII_RUNTIME_SYMBOL } from '../lib/constants';
+import { MetadataType } from '../lib/metadata-type';
 import { formatAnalytics, parseAnalytics } from '../lib/private/metadata-resource';
-import { ConstructInfo } from '../lib/private/runtime-info';
+import type { ConstructInfo } from '../lib/private/runtime-info';
+import { constructAnalyticsFromScope } from '../lib/private/stack-metadata';
 
 describe('MetadataResource', () => {
   let app: App;
@@ -136,6 +143,60 @@ describe('MetadataResource', () => {
     expect(stackAnalytics(stage2, stack2.stackName)).toMatch(/policyValidation.{plugin12,plugin1}/);
   });
 
+  test('metadata types are filtered correctly', () => {
+    const construct = new TestConstruct(stack, 'Test');
+    construct.node.addMetadata(MetadataType.CONSTRUCT, { hello: 'world' });
+    construct.node.addMetadata(MetadataType.METHOD, {
+      bool: true,
+      nested: { foo: 'bar' },
+      arr: [1, 2, 3],
+      str: 'foo',
+      arrOfObjects: [{ foo: { hello: 'world' } }],
+    });
+    construct.node.addMetadata(MetadataType.FEATURE_FLAG, 'foobar');
+    construct.node.addMetadata('hello', { bool: true, nested: { foo: 'bar' }, arr: [1, 2, 3], str: 'foo' });
+
+    const analytics = constructAnalyticsFromScope(construct);
+    expect(analytics).toBeDefined();
+    expect(analytics.length).toBe(2); // TestConstruct + jsii-runtime
+    expect(analytics[0].fqn).toEqual('@amzn/core.TestConstruct');
+    expect(analytics[0].additionalTelemetry).toBeDefined();
+    expect(analytics[0].additionalTelemetry).toEqual([
+      { hello: 'world' },
+      {
+        bool: true,
+        nested: { foo: 'bar' },
+        arr: [1, 2, 3],
+        str: 'foo',
+        arrOfObjects: [{ foo: { hello: 'world' } }],
+      },
+      'foobar',
+    ]);
+  });
+
+  test('mixin metadata is always collected', () => {
+    const construct = new TestConstruct(stack, 'Test');
+    construct.node.addMetadata(MetadataType.MIXIN, { mixin: '@aws-cdk/mixins-preview.TestMixin' });
+
+    const analytics = constructAnalyticsFromScope(construct);
+    expect(analytics[0].metadata).toEqual([{ mixin: '@aws-cdk/mixins-preview.TestMixin' }]);
+  });
+
+  test('mixin metadata is included even without feature flag', () => {
+    const appWithoutFlag = new App({
+      analyticsReporting: true,
+      postCliContext: {
+        [ENABLE_ADDITIONAL_METADATA_COLLECTION]: false,
+      },
+    });
+    const stackWithoutFlag = new Stack(appWithoutFlag, 'Stack');
+    const construct = new TestConstruct(stackWithoutFlag, 'Test');
+    construct.node.addMetadata(MetadataType.MIXIN, { mixin: '@aws-cdk/mixins-preview.TestMixin' });
+
+    const analytics = constructAnalyticsFromScope(construct);
+    expect(analytics[0].metadata).toEqual([{ mixin: '@aws-cdk/mixins-preview.TestMixin' }]);
+  });
+
   function stackAnalytics(stage: Stage = app, stackName: string = 'Stack') {
     let stackArtifact;
     if (App.isApp(stage)) {
@@ -197,15 +258,15 @@ describe('formatAnalytics', () => {
   });
 
   it.each([
-    [true, '1.2.3!aws-cdk-lib.Construct[{\"custom\":{\"foo\":\"bar\"}}]'],
-    [false, '1.2.3!aws-cdk-lib.Construct'],
+    [[{ custom: { foo: 'bar' } }], '1.2.3!aws-cdk-lib.Construct[{\"custom\":{\"foo\":\"bar\"}}]'],
+    [[], '1.2.3!aws-cdk-lib.Construct'],
     [undefined, '1.2.3!aws-cdk-lib.Construct'],
-  ])('format analytics with metadata and enabled additional telemetry', (enableAdditionalTelemtry, output) => {
-    const constructInfo = [
-      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3', metadata: [{ custom: { foo: 'bar' } }] },
+  ])('format analytics with metadata and enabled additional telemetry', (additionalTelemetry, output) => {
+    const constructAnalytics = [
+      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3', additionalTelemetry },
     ];
 
-    expect(plaintextConstructsFromAnalytics(formatAnalytics(constructInfo, enableAdditionalTelemtry))).toMatch(output);
+    expect(plaintextConstructsFromAnalytics(formatAnalytics(constructAnalytics))).toMatch(output);
   });
 
   test('ensure gzip is encoded with "unknown" operating system to maintain consistent output across systems', () => {
@@ -263,9 +324,7 @@ function plaintextConstructsFromAnalytics(analytics: string) {
   return zlib.gunzipSync(Buffer.from(analytics.split(':')[2], 'base64')).toString('utf-8');
 }
 
-const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
-
-class TestConstruct extends Construct {
+class TestConstruct extends Resource {
   // @ts-ignore
   private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: 'FakeVersion.2.3' };
 }

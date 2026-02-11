@@ -1,5 +1,5 @@
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 
 export type ModernTestGitHubNpmPipelineProps = Partial<cdkp.CodePipelineProps> & Partial<cdkp.ShellStepProps>;

@@ -1,11 +1,12 @@
-import { Construct, IConstruct } from 'constructs';
-import { IApplicationListener } from './application-listener';
-import { IApplicationTargetGroup } from './application-target-group';
+import type { Construct, IConstruct } from 'constructs';
+import type { IApplicationListener } from './application-listener';
+import type { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
-import { Duration, SecretValue, Token, Tokenization } from '../../../core';
+import type { Duration, SecretValue } from '../../../core';
+import { Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
-import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
+import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import type { IListenerAction } from '../shared/listener-action';
 
 /**
  * What to do when a client makes a request to a listener

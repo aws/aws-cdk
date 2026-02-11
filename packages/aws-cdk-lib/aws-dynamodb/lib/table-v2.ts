@@ -1,43 +1,51 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
-import { Billing } from './billing';
-import { Capacity } from './capacity';
+import type { Billing } from './billing';
+import type { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
-import { TableEncryptionV2 } from './encryption';
+import type { TableEncryptionV2 } from './encryption';
 
-import {
+import type {
   Attribute,
-  BillingMode,
   LocalSecondaryIndexProps,
-  ProjectionType,
   SecondaryIndexProps,
-  StreamViewType,
   PointInTimeRecoverySpecification,
   TableClass,
   WarmThroughput,
-  MultiRegionConsistency,
   ContributorInsightsSpecification,
-  validateContributorInsights,
   KeySchema,
+} from './shared';
+import {
+  BillingMode,
+  ProjectionType,
+  StreamViewType,
+  MultiRegionConsistency,
+  validateContributorInsights,
   parseKeySchema,
 } from './shared';
-import { ITableV2, TableBaseV2 } from './table-v2-base';
-import { AddToResourcePolicyResult, PolicyDocument, PolicyStatement } from '../../aws-iam';
-import { IStream } from '../../aws-kinesis';
-import { IKey, Key } from '../../aws-kms';
+import type { ITableV2 } from './table-v2-base';
+import { TableBaseV2 } from './table-v2-base';
+import type { AddToResourcePolicyResult, PolicyStatement } from '../../aws-iam';
+import { PolicyDocument } from '../../aws-iam';
+import type { IStream } from '../../aws-kinesis';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
+import type {
+  CfnTag,
+  RemovalPolicy,
+} from '../../core';
 import {
   ArnFormat,
-  CfnTag,
   FeatureFlags,
   Lazy,
   PhysicalName,
-  RemovalPolicy,
   Stack,
   TagManager,
   TagType,
   Token,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -621,26 +629,6 @@ export class TableV2 extends TableBaseV2 {
     return new Import(tableArn, tableName, attrs.tableId, attrs.tableStreamArn);
   }
 
-  /**
-   * @attribute
-   */
-  public readonly tableArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableName: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableStreamArn?: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableId?: string;
-
   public readonly encryptionKey?: IKey;
 
   /**
@@ -657,6 +645,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly hasSortKey: boolean;
   private readonly tableOptions: TableOptionsV2;
   private readonly encryption?: TableEncryptionV2;
+  private readonly resource: CfnGlobalTable;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
@@ -677,6 +666,30 @@ export class TableV2 extends TableBaseV2 {
   private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
+
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get tableStreamArn(): string | undefined {
+    return this.resource.attrStreamArn;
+  }
+
+  @memoizedGetter
+  public get tableId(): string | undefined {
+    return this.resource.attrTableId;
+  }
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
@@ -722,7 +735,7 @@ export class TableV2 extends TableBaseV2 {
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
     this.resourcePolicy = props.resourcePolicy;
 
-    const resource = new CfnGlobalTable(this, 'Resource', {
+    this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
@@ -745,16 +758,7 @@ export class TableV2 extends TableBaseV2 {
         : undefined,
       warmThroughput: props.warmThroughput ?? undefined,
     });
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
-    });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
-    this.tableId = resource.attrTableId;
-    this.tableStreamArn = resource.attrStreamArn;
+    this.resource.applyRemovalPolicy(props.removalPolicy);
 
     props.replicas?.forEach(replica => this.addReplica(replica));
 

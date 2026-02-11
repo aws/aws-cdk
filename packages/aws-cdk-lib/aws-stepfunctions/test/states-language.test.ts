@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import * as iam from '../../aws-iam';
+import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
 

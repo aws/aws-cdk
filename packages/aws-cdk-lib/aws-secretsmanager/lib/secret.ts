@@ -1,14 +1,16 @@
-import { IConstruct, Construct } from 'constructs';
+import type { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
-import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
+import type { RotationScheduleOptions } from './rotation-schedule';
+import { RotationSchedule } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretsManagerSecretOptions, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
+import type { IResolveContext, IResource, ResourceProps, SecretsManagerSecretOptions } from '../../core';
+import { ArnFormat, FeatureFlags, Fn, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { ISecretRef, SecretReference, ISecretTargetAttachmentRef, SecretTargetAttachmentReference } from '../../interfaces/generated/aws-secretsmanager-interfaces.generated';
+import type { ISecretRef, SecretReference, ISecretTargetAttachmentRef, SecretTargetAttachmentReference } from '../../interfaces/generated/aws-secretsmanager-interfaces.generated';
 
 const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
 
@@ -392,6 +394,9 @@ abstract class SecretBase extends Resource implements ISecret {
 
   public get secretFullArn(): string | undefined { return this.secretArn; }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
@@ -426,6 +431,9 @@ abstract class SecretBase extends Resource implements ISecret {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const result = iam.Grant.addToPrincipalOrResource({
@@ -697,6 +705,8 @@ export class Secret extends SecretBase {
       default: RemovalPolicy.DESTROY,
     });
 
+    // Implementation too finicky to move to getter
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
     this.secretArn = this.getResourceArnAttribute(resource.ref, {
       service: 'secretsmanager',
       resource: 'secret',

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { Stack, App, RemovalPolicy } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftEnv extends Stack {
@@ -42,17 +43,9 @@ const app = new App({
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
 });
 
-const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  },
-});
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
 
 new RedshiftEnv(stack, 'redshift-exclude-characters-integ');
 
