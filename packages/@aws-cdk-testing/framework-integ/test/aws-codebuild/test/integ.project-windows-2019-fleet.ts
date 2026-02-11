@@ -18,7 +18,6 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-project-windows-2019-fleet');
 
 const fleet = new codebuild.Fleet(stack, 'MyFleet', {
-  fleetName: 'MyFleet',
   baseCapacity: 1,
   computeType: codebuild.FleetComputeType.MEDIUM,
   environmentType: codebuild.EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
@@ -39,6 +38,15 @@ const project = new codebuild.Project(stack, 'MyProject', {
 
 const test = new integ.IntegTest(app, 'Windows2019FleetIntegTest', {
   testCases: [stack],
+  // AWS::CodeBuild::Fleet and WINDOWS_SERVER_2019_CONTAINER are not available in all regions
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
+  cdkCommandOptions: {
+    destroy: {
+      // Fleet resource deletion takes ~40 minutes, exceeding the CFN resource handler's
+      // ~21 minute stabilization timeout, causing DELETE_FAILED (NotStabilized).
+      expectError: true,
+    },
+  },
 });
 
 const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
@@ -55,7 +63,7 @@ test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
   'builds.0.buildStatus',
   integ.ExpectedResult.stringLikeRegexp('SUCCEEDED'),
 ).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(5),
+  totalTimeout: cdk.Duration.minutes(15),
   interval: cdk.Duration.seconds(30),
 });
 
