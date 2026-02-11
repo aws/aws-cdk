@@ -1,15 +1,16 @@
 {
-  "version": "30.1.0",
+  "version": "48.0.0",
   "files": {
-    "19dd33f3c17e59cafd22b9459b0a8d9bedbd42252737fedb06b2bcdbcf7809cc": {
+    "759ab3208e24d99ef7ae31faa3b9f9b9119525877fcece0badeb2b6e23905210": {
+      "displayName": "AppRegistryAllStacksAppStack Template",
       "source": {
-        "path": "integservicecatalogappregistryapplicationresourcesStack4399A149.template.json",
+        "path": "AppRegistryAllStacksAppStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-efebc54d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "19dd33f3c17e59cafd22b9459b0a8d9bedbd42252737fedb06b2bcdbcf7809cc.json",
+          "objectKey": "759ab3208e24d99ef7ae31faa3b9f9b9119525877fcece0badeb2b6e23905210.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

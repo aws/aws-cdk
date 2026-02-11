@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "2834aa8143610db1c681b2b5c6c4a651bbdf5649fe395ccdc3d44032c2d94d7b": {
-      "displayName": "integ-servicecatalogappregistry-attribute-group Template",
+    "a696fcf319000f85d9e4f6f18b544f3226d3ee0d7517f63dc0fd208815a7ea84": {
+      "displayName": "integappregistrydisableurlresourcesStack8E3FAD61 Template",
       "source": {
-        "path": "integ-servicecatalogappregistry-attribute-group.template.json",
+        "path": "integappregistrydisableurlresourcesStack8E3FAD61.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ca05bd55": {
+        "current_account-current_region-02ca770f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2834aa8143610db1c681b2b5c6c4a651bbdf5649fe395ccdc3d44032c2d94d7b.json",
+          "objectKey": "a696fcf319000f85d9e4f6f18b544f3226d3ee0d7517f63dc0fd208815a7ea84.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

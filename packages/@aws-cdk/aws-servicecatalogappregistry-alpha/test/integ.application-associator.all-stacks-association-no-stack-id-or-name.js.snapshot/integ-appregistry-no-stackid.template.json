@@ -1,36 +1,14 @@
 {
- "Description": "Stack to create AppRegistry application",
  "Resources": {
-  "DefaultCdkApplication4573D5A3": {
-   "Type": "AWS::ServiceCatalogAppRegistry::Application",
-   "Properties": {
-    "Name": "AppRegistryAssociatedApplication",
-    "Description": "Application containing stacks deployed via CDK.",
-    "Tags": {
-     "managedBy": "CDK_Application_Associator"
-    }
-   }
-  },
   "AppRegistryAssociation": {
    "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
    "Properties": {
-    "Application": {
-     "Fn::GetAtt": [
-      "DefaultCdkApplication4573D5A3",
-      "Id"
-     ]
-    },
+    "Application": "AppRegistryNoStackIdApp",
     "Resource": {
      "Ref": "AWS::StackId"
     },
     "ResourceType": "CFN_STACK"
    }
-  }
- },
- "Outputs": {
-  "DefaultCdkApplicationApplicationManagerUrl27C138EF": {
-   "Description": "Application manager url for the application created.",
-   "Value": "https://us-east-1.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-AppRegistryAssociatedApplication"
   }
  },
  "Parameters": {

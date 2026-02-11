@@ -1,12 +1,18 @@
 {
-  "version": "30.0.0",
+  "version": "48.0.0",
   "testCases": {
     "ApplicationAssociatorTest/DefaultTest": {
       "stacks": [
-        "integ-servicecatalogappregistry-application"
+        "integ-appregistry-no-stackid"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "ApplicationAssociatorTest/DefaultTest/DeployAssert",
       "assertionStackName": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

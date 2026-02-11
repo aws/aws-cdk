@@ -3,7 +3,7 @@
   "testCases": {
     "ApplicationAssociatorTest/DefaultTest": {
       "stacks": [
-        "integ-appregistry-disable-url"
+        "integ-appregistry-all-stacks"
       ],
       "cdkCommandOptions": {
         "destroy": {
