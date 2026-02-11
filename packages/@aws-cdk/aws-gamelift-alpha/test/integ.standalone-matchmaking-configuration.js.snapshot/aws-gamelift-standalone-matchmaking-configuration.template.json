@@ -40,17 +40,17 @@
    "Type": "AWS::GameLift::MatchmakingConfiguration",
    "Properties": {
     "AcceptanceRequired": true,
-    "Name": "test-config-name",
-    "RequestTimeoutSeconds": 30,
-    "RuleSetName": {
-     "Ref": "StandaloneMatchmakingConfigurationC77F3149"
-    },
     "AcceptanceTimeoutSeconds": 30,
     "CustomEventData": "event-data",
     "Description": "test description",
     "FlexMatchMode": "STANDALONE",
+    "Name": "test-config-name",
     "NotificationTarget": {
      "Ref": "MyStandaloneMatchmakingConfigurationTopicDEF24815"
+    },
+    "RequestTimeoutSeconds": 30,
+    "RuleSetName": {
+     "Ref": "StandaloneMatchmakingConfigurationC77F3149"
     }
    }
   }

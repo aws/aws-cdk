@@ -24,6 +24,9 @@ const app = new cdk.App();
 const stack = new TestStack(app, 'aws-gamelift-matchmaking-ruleset');
 new IntegTest(app, 'MatchmakingRuleSet', {
   testCases: [stack],
+  // FlexMatch matchmaker and rule sets are only supported in select regions
+  // https://docs.aws.amazon.com/gameliftservers/latest/developerguide/gamelift-regions.html
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1', 'eu-central-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-southeast-2'],
 });
 
 app.synth();

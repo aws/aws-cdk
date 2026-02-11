@@ -150,7 +150,6 @@
   "MyGameSessionQueue1A15CE31": {
    "Type": "AWS::GameLift::GameSessionQueue",
    "Properties": {
-    "Name": "test-gameSessionQueue",
     "Destinations": [
      {
       "DestinationArn": {
@@ -177,7 +176,8 @@
        ]
       }
      }
-    ]
+    ],
+    "Name": "test-gameSessionQueue"
    }
   },
   "MyQueuedMatchmakingConfigurationTopicBAC3E679": {
@@ -213,11 +213,6 @@
    "Type": "AWS::GameLift::MatchmakingConfiguration",
    "Properties": {
     "AcceptanceRequired": true,
-    "Name": "test-config-name",
-    "RequestTimeoutSeconds": 30,
-    "RuleSetName": {
-     "Ref": "QueuedMatchmakingConfiguration84BDFE18"
-    },
     "AcceptanceTimeoutSeconds": 30,
     "AdditionalPlayerCount": 3,
     "BackfillMode": "MANUAL",
@@ -256,8 +251,13 @@
       ]
      }
     ],
+    "Name": "test-config-name",
     "NotificationTarget": {
      "Ref": "MyQueuedMatchmakingConfigurationTopicBAC3E679"
+    },
+    "RequestTimeoutSeconds": 30,
+    "RuleSetName": {
+     "Ref": "QueuedMatchmakingConfiguration84BDFE18"
     }
    }
   }
