@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "4636265aea892e832b5e0cb359cccc97658a863c8be0165959eebf885ab8bc1e": {
-      "displayName": "aws-gamelift-standalone-matchmaking-configuration Template",
+    "ad10547e28c959e05f43dd478726f327b057ed185f608300613cf9bc2d8d71c9": {
+      "displayName": "aws-gamelift-matchmaking-ruleset Template",
       "source": {
-        "path": "aws-gamelift-standalone-matchmaking-configuration.template.json",
+        "path": "aws-gamelift-matchmaking-ruleset.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9864e255": {
+        "current_account-current_region-60ba368f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4636265aea892e832b5e0cb359cccc97658a863c8be0165959eebf885ab8bc1e.json",
+          "objectKey": "ad10547e28c959e05f43dd478726f327b057ed185f608300613cf9bc2d8d71c9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
