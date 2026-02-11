@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
+import type { AccessEntryReference, IAccessEntryRef } from '../../aws-eks';
 import { CfnAccessEntry } from '../../aws-eks';
 import type { IResource, RemovalPolicy } from '../../core';
 import { Resource, Aws, Lazy, ValidationError, Token } from '../../core';
@@ -17,7 +18,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * @property {string} accessEntryName - The name of the access entry.
  * @property {string} accessEntryArn - The Amazon Resource Name (ARN) of the access entry.
  */
-export interface IAccessEntry extends IResource {
+export interface IAccessEntry extends IResource, IAccessEntryRef {
   /**
    * The name of the access entry.
    * @attribute
@@ -358,6 +359,16 @@ export class AccessEntry extends Resource implements IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
+
+      public get accessEntryRef(): AccessEntryReference {
+        return {
+          accessEntryArn: this.accessEntryArn,
+          // eslint-disable-next-line @cdklabs/no-throw-default-error
+          get clusterName(): string { throw new Error('Cannot access clusterName from this AccessEntry; it has been created without knowledge of it'); },
+          // eslint-disable-next-line @cdklabs/no-throw-default-error
+          get principalArn(): string { throw new Error('Cannot access principalArn from this AccessEntry; it has been created without knowledge of it'); },
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -424,6 +435,14 @@ export class AccessEntry extends Resource implements IAccessEntry {
     this.validateAccessPoliciesForRestrictedTypes(newAccessPolicies, this.accessEntryType);
     // add newAccessPolicies to this.accessPolicies
     this.accessPolicies.push(...newAccessPolicies);
+  }
+
+  public get accessEntryRef(): AccessEntryReference {
+    return {
+      accessEntryArn: this.accessEntryArn,
+      clusterName: this.cluster.clusterName,
+      principalArn: this.principal,
+    };
   }
 
   /**

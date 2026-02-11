@@ -4,6 +4,7 @@ import type { ICluster } from './cluster';
 import { Cluster, IpFamily } from './cluster';
 import type { ISecurityGroup, SubnetSelection } from '../../aws-ec2';
 import { InstanceType, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
+import type { INodegroupRef, NodegroupReference } from '../../aws-eks';
 import { CfnNodegroup } from '../../aws-eks';
 import type { IRole } from '../../aws-iam';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
@@ -18,7 +19,7 @@ import { isGpuInstanceType } from './private/nodegroup';
 /**
  * NodeGroup interface
  */
-export interface INodegroup extends IResource {
+export interface INodegroup extends IResource, INodegroupRef {
   /**
    * Name of the nodegroup
    * @attribute
@@ -418,6 +419,11 @@ export class Nodegroup extends Resource implements INodegroup {
   public static fromNodegroupName(scope: Construct, id: string, nodegroupName: string): INodegroup {
     class Import extends Resource implements INodegroup {
       public readonly nodegroupName = nodegroupName;
+
+      public get nodegroupRef(): NodegroupReference {
+        // eslint-disable-next-line @cdklabs/no-throw-default-error
+        throw new Error('Cannot use Nodegroup.fromNodegroupName() in this API');
+      }
     }
     return new Import(scope, id);
   }
@@ -619,6 +625,16 @@ export class Nodegroup extends Resource implements INodegroup {
     } else {
       return this.getResourceNameAttribute(this.resource.ref);
     }
+  }
+
+  public get nodegroupRef(): NodegroupReference {
+    return {
+      nodegroupArn: this.nodegroupArn,
+      get nodegroupId(): string {
+        // eslint-disable-next-line @cdklabs/no-throw-default-error
+        throw new Error('Cannot get nodegroupId from this NodeGroup');
+      },
+    };
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {

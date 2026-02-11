@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
+import type { AddonReference, IAddonRef } from '../../aws-eks';
 import { CfnAddon } from '../../aws-eks';
 import type { IResource, RemovalPolicy } from '../../core';
 import { ArnFormat, Resource, Stack, Fn } from '../../core';
@@ -10,7 +11,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an Amazon EKS Add-On.
  */
-export interface IAddon extends IResource {
+export interface IAddon extends IResource, IAddonRef {
   /**
    * Name of the Add-On.
    * @attribute
@@ -108,12 +109,21 @@ export class Addon extends Resource implements IAddon {
    */
   public static fromAddonAttributes(scope: Construct, id: string, attrs: AddonAttributes): IAddon {
     class Import extends Resource implements IAddon {
+      private readonly clusterName = attrs.clusterName;
       public readonly addonName = attrs.addonName;
       public readonly addonArn = Stack.of(scope).formatArn({
         service: 'eks',
         resource: 'addon',
         resourceName: `${attrs.clusterName}/${attrs.addonName}`,
       });
+
+      public get addonRef(): AddonReference {
+        return {
+          addonArn: this.addonArn,
+          addonName: this.addonName,
+          clusterName: this.clusterName,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -131,6 +141,17 @@ export class Addon extends Resource implements IAddon {
     class Import extends Resource implements IAddon {
       public readonly addonName = Fn.select(1, splitResourceName);
       public readonly addonArn = addonArn;
+
+      public get addonRef(): AddonReference {
+        return {
+          addonArn: this.addonArn,
+          addonName: this.addonName,
+          get clusterName(): string {
+            // eslint-disable-next-line @cdklabs/no-throw-default-error
+            throw new Error('Cannot access clusterName, addon has been created without knowledge of its cluster');
+          },
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -182,5 +203,13 @@ export class Addon extends Resource implements IAddon {
       resource: 'addon',
       resourceName: `${this.clusterName}/${this.addonName}/`,
     });
+  }
+
+  public get addonRef(): AddonReference {
+    return {
+      addonArn: this.addonArn,
+      addonName: this.addonName,
+      clusterName: this.clusterName,
+    };
   }
 }

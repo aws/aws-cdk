@@ -30,6 +30,7 @@ import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-da
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import { CfnCluster } from '../../aws-eks';
+import type { ClusterReference, IClusterRef } from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import * as ssm from '../../aws-ssm';
@@ -48,7 +49,7 @@ const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.Inst
 /**
  * An EKS cluster
  */
-export interface ICluster extends IResource, ec2.IConnectable {
+export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
   /**
    * The VPC in which this Cluster was created
    */
@@ -959,6 +960,13 @@ abstract class ClusterBase extends Resource implements ICluster {
       // be deleted before the controller.
       Node.of(this.albController).addDependency(autoScalingGroup);
     }
+  }
+
+  public get clusterRef(): ClusterReference {
+    return {
+      clusterArn: this.clusterArn,
+      clusterName: this.clusterName,
+    };
   }
 }
 
