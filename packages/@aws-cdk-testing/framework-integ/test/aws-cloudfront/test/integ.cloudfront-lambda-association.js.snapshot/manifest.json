@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a1e1d21d00f1f5826c4673fd1bdead6f013e3ab32c930d3660c633898e3e8ae6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61f68e381d3c70a7be8755265f4b68b3a7716913ad9ffc28717dc241cbe087bb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -131,7 +131,7 @@
             "data": "MyDistributionCFDistributionDE147309"
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanup": [
+        "/aws-cdk-cloudfront/Cleanup/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -154,7 +154,7 @@
             }
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanup/ServiceRole": [
+        "/aws-cdk-cloudfront/Cleanup/Handler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -194,13 +194,13 @@
             }
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanup/ServiceRole/Resource": [
+        "/aws-cdk-cloudfront/Cleanup/Handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EdgeCleanupServiceRoleBD766FF3"
+            "data": "CleanupHandlerServiceRole27A5F63B"
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanup/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-cloudfront/Cleanup/Handler/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -230,19 +230,19 @@
             }
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanup/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-cloudfront/Cleanup/Handler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EdgeCleanupServiceRoleDefaultPolicyF3E79DDF"
+            "data": "CleanupHandlerServiceRoleDefaultPolicy45429DC6"
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanup/Resource": [
+        "/aws-cdk-cloudfront/Cleanup/Handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EdgeCleanupBF87C3A2"
+            "data": "CleanupHandlerF892EFD1"
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanupProvider/framework-onEvent": [
+        "/aws-cdk-cloudfront/Cleanup/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -272,7 +272,7 @@
             }
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanupProvider/framework-onEvent/ServiceRole": [
+        "/aws-cdk-cloudfront/Cleanup/Provider/framework-onEvent/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -320,13 +320,13 @@
             }
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanupProvider/framework-onEvent/ServiceRole/Resource": [
+        "/aws-cdk-cloudfront/Cleanup/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EdgeCleanupProviderframeworkonEventServiceRoleD1A661A8"
+            "data": "CleanupProviderframeworkonEventServiceRoleB720B68B"
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanupProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-cloudfront/Cleanup/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -364,28 +364,28 @@
             }
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanupProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-cloudfront/Cleanup/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EdgeCleanupProviderframeworkonEventServiceRoleDefaultPolicy80C83C86"
+            "data": "CleanupProviderframeworkonEventServiceRoleDefaultPolicy39813450"
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanupProvider/framework-onEvent/Resource": [
+        "/aws-cdk-cloudfront/Cleanup/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EdgeCleanupProviderframeworkonEventAD3FE5AB"
+            "data": "CleanupProviderframeworkonEventF80A3986"
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanupCR": [
+        "/aws-cdk-cloudfront/Cleanup/CR": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-cloudfront/EdgeCleanupCR/Default": [
+        "/aws-cdk-cloudfront/Cleanup/CR/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EdgeCleanupCR"
+            "data": "CleanupCRD0C66E8D"
           }
         ],
         "/aws-cdk-cloudfront/BootstrapVersion": [
@@ -398,6 +398,69 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "EdgeCleanupServiceRoleBD766FF3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeCleanupServiceRoleBD766FF3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EdgeCleanupServiceRoleDefaultPolicyF3E79DDF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeCleanupServiceRoleDefaultPolicyF3E79DDF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EdgeCleanupBF87C3A2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeCleanupBF87C3A2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EdgeCleanupProviderframeworkonEventServiceRoleD1A661A8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeCleanupProviderframeworkonEventServiceRoleD1A661A8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EdgeCleanupProviderframeworkonEventServiceRoleDefaultPolicy80C83C86": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeCleanupProviderframeworkonEventServiceRoleDefaultPolicy80C83C86",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EdgeCleanupProviderframeworkonEventAD3FE5AB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeCleanupProviderframeworkonEventAD3FE5AB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EdgeCleanupCR": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeCleanupCR",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

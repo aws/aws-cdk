@@ -24,7 +24,6 @@ __export(index_exports, {
 });
 module.exports = __toCommonJS(index_exports);
 var import_client_lambda = require("@aws-sdk/client-lambda");
-var lambda = new import_client_lambda.Lambda();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event));
   if (event.RequestType !== "Delete") {
@@ -34,9 +33,11 @@ async function handler(event) {
   const maxRetries = 50;
   const baseDelay = 1e4;
   for (const arn of functionArns) {
+    const arnRegion = arn.split(":")[3];
+    const client = new import_client_lambda.Lambda({ region: arnRegion });
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        await lambda.deleteFunction({ FunctionName: arn });
+        await client.deleteFunction({ FunctionName: arn });
         console.log(`Deleted ${arn}`);
         break;
       } catch (err) {
