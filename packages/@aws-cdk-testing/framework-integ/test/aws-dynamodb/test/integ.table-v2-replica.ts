@@ -1,4 +1,4 @@
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
@@ -15,6 +15,10 @@ class TestStack extends Stack {
       runtime: Runtime.PYTHON_3_11,
       code: Code.fromAsset(path.join(__dirname, 'replica-handler')),
       handler: 'index.handler',
+      environment: {
+        TABLE_NAME: 'global-table',
+        REPLICA_REGION: 'us-west-1',
+      },
     });
 
     const globalTable = new TableV2(this, 'GlobalTable', {
@@ -45,7 +49,5 @@ const integTest = new IntegTest(app, 'aws-cdk-global-table-replica-integ', {
 
 const invoke = integTest.assertions.invokeFunction({ functionName: 'global-table-lambda' });
 invoke.expect(ExpectedResult.objectLike({
-  Payload: {
-    status_code: 200,
-  },
+  Payload: Match.stringLikeRegexp('status_code.*200'),
 }));

@@ -12,7 +12,6 @@ class TestStack extends Stack {
     const stream = new Stream(this, 'Stream');
 
     new TableV2(this, 'GlobalTable', {
-      tableName: 'my-global-table',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
       billing: Billing.onDemand(),

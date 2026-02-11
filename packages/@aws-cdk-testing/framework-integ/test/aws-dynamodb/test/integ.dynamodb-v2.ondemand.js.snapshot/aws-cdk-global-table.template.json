@@ -178,7 +178,6 @@
     "StreamSpecification": {
      "StreamViewType": "NEW_AND_OLD_IMAGES"
     },
-    "TableName": "my-global-table",
     "TimeToLiveSpecification": {
      "AttributeName": "attr",
      "Enabled": true

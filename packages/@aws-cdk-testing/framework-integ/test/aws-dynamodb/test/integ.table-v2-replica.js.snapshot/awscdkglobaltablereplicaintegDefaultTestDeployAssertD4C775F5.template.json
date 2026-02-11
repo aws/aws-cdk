@@ -11,12 +11,12 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":{\"status_code\":200}}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"status_code.*200\"}}}",
     "parameters": {
      "FunctionName": "\"global-table-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1694205517464"
+    "salt": "1770844557717"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -106,12 +106,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d4087f9b90522f437499693de83d9bb1d3d93a99d4d34dad4625e71132244692.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

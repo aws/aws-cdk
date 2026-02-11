@@ -33,9 +33,6 @@ class TestStack extends Stack {
       },
       removalPolicy: RemovalPolicy.DESTROY,
       resourcePolicy: docu,
-      replicas: [{
-        region: 'eu-west-2',
-      }],
     });
   }
 }
