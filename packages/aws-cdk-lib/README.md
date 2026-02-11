@@ -524,6 +524,24 @@ For an exhaustive list of ARN formats used in AWS, see [AWS ARNs and
 Namespaces](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html)
 in the AWS General Reference.
 
+## Names
+
+The `Names` class provides utilities for generating unique resource names for constructs.
+
+### uniqueResourceName
+
+The `uniqueResourceName()` method generates CloudFormation-compatible unique identifiers for constructs based on their path. The name includes a human-readable portion rendered from path components and a hash suffix.
+
+#### Using Discriminators
+
+When you need to generate multiple unique names from the same construct (for example, when creating multiple child resources that require unique physical names before the child constructs are initialized), use the `discriminator` option:
+
+The discriminator is included in the hash calculation but not in the human-readable portion, ensuring:
+
+- Different discriminators produce different unique names
+- Output length remains consistent
+- The discriminator doesn't appear in the generated name
+
 ## Dependencies
 
 ### Construct Dependencies
