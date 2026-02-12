@@ -48,7 +48,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "STANDARD",
     "FARGATE_LINUX",
     "EC2_LINUX",
-    "EC2_WINDOWS"
+    "EC2_WINDOWS",
+    "EC2",
+    "HYBRID_LINUX",
+    "HYPERPOD_LINUX"
   ],
   "AccessKeyStatus": [
     "Active",
@@ -1120,6 +1123,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "DatabaseInsightsMode": [
     "standard",
     "advanced"
+  ],
+  "DateIntervalUnit": [
+    "YEARS",
+    "MONTHS",
+    "WEEKS",
+    "DAYS",
+    "HOURS",
+    "MINUTES",
+    "SECONDS"
   ],
   "DateTimeFormat": [
     "yyyy-MM-dd'T'HH:mm:ss'Z'",
@@ -3058,6 +3070,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "PartitionDateSource": [
     "EventTime",
     "DeliveryTime"
+  ],
+  "PartitionProjectionType": [
+    "integer",
+    "date",
+    "enum",
+    "injected"
   ],
   "PasskeyUserVerification": [
     "preferred",
