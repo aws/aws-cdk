@@ -289,7 +289,6 @@ function grantsConfigForModule(moduleName: string, modulePath: string, isStable:
   const config = readGrantsConfig(grantsFileLocation);
   return config == null ? undefined : config;
 }
-
 function readGrantsConfig(dir: string): string | undefined {
   try {
     return fs.readFileSync(path.join(dir, 'grants.json'), 'utf-8');
