@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { CfnConsumableResource } from './batch.generated';
 import type { IResource } from '../../core';
-import { Resource, ValidationError } from '../../core';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import type { IConsumableResourceRef, ConsumableResourceReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
@@ -72,9 +72,10 @@ export class ConsumableResource extends Resource implements IConsumableResource 
    * Import an existing consumable resource from its ARN
    */
   public static fromConsumableResourceArn(scope: Construct, id: string, consumableResourceArn: string): IConsumableResource {
+    const stack = Stack.of(scope);
     class Import extends Resource implements IConsumableResource {
       public readonly consumableResourceArn = consumableResourceArn;
-      public readonly consumableResourceName = consumableResourceArn.split('/').pop()!;
+      public readonly consumableResourceName = stack.splitArn(consumableResourceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public get consumableResourceRef(): ConsumableResourceReference {
         return {
           consumableResourceArn: this.consumableResourceArn,
