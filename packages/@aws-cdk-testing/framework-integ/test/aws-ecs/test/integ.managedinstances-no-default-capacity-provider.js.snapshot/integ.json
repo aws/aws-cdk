@@ -5,6 +5,11 @@
       "stacks": [
         "integ-managedinstances-no-default-capacity-provider"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "ManagedInstancesCapacityProviders/DefaultTest/DeployAssert",
       "assertionStackName": "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88"
     }

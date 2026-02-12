@@ -530,33 +530,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "InfrastructureRoleB0C76DC8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InfrastructureRoleB0C76DC8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "InstanceRole3CCE2F1D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InstanceRole3CCE2F1D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "InstanceProfile9F2F41CB": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InstanceProfile9F2F41CB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-managedinstances-capacity-provider"
