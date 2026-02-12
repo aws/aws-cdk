@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "363fcfee21919c2d1b81b2bce2345af9e946429f13cfaa0093b8342d674b6ae0": {
       "displayName": "integ-apprunner-auto-scaling-configuration Template",

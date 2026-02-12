@@ -1,4 +1,6 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { APPRUNNER_SUPPORTED_REGIONS } from './apprunner-supported-regions';
 import { Service, Source } from '../lib';
 
 const app = new cdk.App();
@@ -21,3 +23,8 @@ new cdk.CfnOutput(stack, 'ServiceName', { value: service1.serviceName });
 new cdk.CfnOutput(stack, 'ServiceId', { value: service1.serviceId });
 new cdk.CfnOutput(stack, 'ServiceStatus', { value: service1.serviceStatus });
 new cdk.CfnOutput(stack, 'ServiceArn', { value: service1.serviceArn });
+
+new integ.IntegTest(app, 'AppRunnerEcrPublic', {
+  testCases: [stack],
+  regions: APPRUNNER_SUPPORTED_REGIONS,
+});

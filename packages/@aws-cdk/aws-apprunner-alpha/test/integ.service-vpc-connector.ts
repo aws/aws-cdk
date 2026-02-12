@@ -1,6 +1,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { APPRUNNER_SUPPORTED_REGIONS } from './apprunner-supported-regions';
 import { Service, Source, VpcConnector } from '../lib';
 
 const app = new cdk.App();
@@ -35,7 +36,7 @@ new cdk.CfnOutput(stack, 'ServiceURL', { value: `https://${service.serviceUrl}` 
 // AppRunner is only available in specific regions
 new integ.IntegTest(app, 'AppRunnerVpcConnector', {
   testCases: [stack],
-  regions: ['ap-northeast-1', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2', 'eu-central-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'us-east-1', 'us-east-2', 'us-west-2'],
+  regions: APPRUNNER_SUPPORTED_REGIONS,
 });
 
 app.synth();

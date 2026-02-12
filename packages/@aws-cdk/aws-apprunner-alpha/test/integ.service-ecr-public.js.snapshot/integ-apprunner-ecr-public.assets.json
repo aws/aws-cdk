@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "53346c74d391dd0bcb5df5b8d0854537eef2cbe81db61b92d753b19be36c9c5d": {
       "displayName": "integ-apprunner-ecr-public Template",
