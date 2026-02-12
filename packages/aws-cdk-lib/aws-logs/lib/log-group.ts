@@ -240,6 +240,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Give permissions to create and write to streams in this log group
    *
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
@@ -248,6 +251,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   /**
    * Give permissions to read and filter events from this log group
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
    *
    * [disable-awslint:no-grants]
    */
