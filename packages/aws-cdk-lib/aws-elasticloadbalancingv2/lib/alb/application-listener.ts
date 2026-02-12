@@ -7,6 +7,7 @@ import type { IApplicationLoadBalancer } from './application-load-balancer';
 import type { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ApplicationTargetGroup } from './application-target-group';
 import type { ListenerCondition } from './conditions';
+import type { ListenerTransform } from './transforms';
 
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
@@ -25,7 +26,6 @@ import { ApplicationProtocol, IpAddressType } from '../shared/enums';
 import type { IListenerCertificate } from '../shared/listener-certificate';
 import { ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
-import { ListenerTransform } from './transforms';
 
 /**
  * Basic properties for an ApplicationListener

@@ -1,5 +1,5 @@
 import { UnscopedValidationError } from '../../../core/lib/errors';
-import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import type { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 
 /**
  * Properties for a rewrite rule
