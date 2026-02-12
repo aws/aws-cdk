@@ -500,13 +500,13 @@ export class DestinationLogsDelivery implements ILogsDelivery {
     });
 
     delivery.node.addDependency(deliverySource);
-    const deliveryDestination = logs.CfnDeliveryDestination.fromDeliveryDestinationName(container, 'Destination', 
+    const deliveryDestination = logs.CfnDeliveryDestination.fromDeliveryDestinationName(container, 'Destination',
       this.destination.deliveryDestinationRef.deliveryDestinationName);
 
     return {
       deliverySource,
       deliveryDestination,
-      delivery
+      delivery,
     };
   }
 }

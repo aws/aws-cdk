@@ -230,13 +230,13 @@ class LogsHelper extends ClassType {
       }
     }
     const toDest = this.addMethod({
-    name: 'toDestination',
-    returnType: mixin.type,
-    docs: {
-      summary: `Delivers logs to a pre-created delivery destination \nSupported destinations are ${destinations.join(', ')}\n` +
-      'You are responsible for setting up the correct permissions for your delivery destination, toDestinaion() does not set up any permissions for you.\n' +
-      'Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().'
-    },
+      name: 'toDestination',
+      returnType: mixin.type,
+      docs: {
+        summary: `Delivers logs to a pre-created delivery destination \nSupported destinations are ${destinations.join(', ')}\n` +
+        'You are responsible for setting up the correct permissions for your delivery destination, toDestinaion() does not set up any permissions for you.\n' +
+        'Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().',
+      },
     });
 
     const paramDest = toDest.addParameter({

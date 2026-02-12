@@ -175,6 +175,36 @@ distribution
   .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup));
 ```
 
+Configures vended logs delivery for supported resources when a pre-created destination is provided
+```typescript
+import '@aws-cdk/mixins-preview/with';
+import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
+
+// Create CloudFront distribution
+declare const bucket: s3.Bucket;
+const distribution = new cloudfront.Distribution(scope, 'Distribution', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+  },
+});
+
+// Create destination bucket
+const bucket = new s3.Bucket(scope, 'DeliveryBucket');
+// Add permissions to bucket to facilitate log delivery
+const bucketPolicy = new s3.BucketPolict(scope, 'DeliveryBucketPolicy', {
+  document: iam.PolicyDocument(),
+});
+// Create S3 delivery destination for logs
+const destination = new logs.CfnDeliveryDestination(scope, 'Destination', {
+  deliveryResourceArn: bucket.bucketArn,
+  deliveryDestinationType: 'S3',
+  name: 'unique-destination-name',
+});
+
+distribution
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
+```
+
 ### L1 Property Mixins
 
 For every CloudFormation resource, CDK Mixins automatically generates type-safe property mixins. These allow you to apply L1 properties with full TypeScript support:
