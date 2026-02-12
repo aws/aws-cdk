@@ -851,6 +851,8 @@ The following deletion protection levels are available:
 * `DeletionProtection.PREVENT_FORCE_DELETION` - Prevents force deletion operations. This allows deletion of empty Auto Scaling groups but blocks force deletion that would terminate all instances.
 * `DeletionProtection.PREVENT_ALL_DELETION` - Prevents all deletion operations. This provides the strongest protection and requires explicitly disabling deletion protection before the Auto Scaling group can be deleted.
 
+**Note:** When using `PREVENT_ALL_DELETION`, you must first update the deletion protection setting before deleting the CloudFormation stack containing the Auto Scaling group.
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
