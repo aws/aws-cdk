@@ -1,8 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Amplify } from '@aws-sdk/client-amplify';
-import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
+import type { Amplify } from '@aws-sdk/client-amplify';
+import type { S3 } from '@aws-sdk/client-s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { AmplifyJobId, IsCompleteResponse, ResourceEvent, ResourceHandler } from './common';
+import type { AmplifyJobId, IsCompleteResponse, ResourceEvent } from './common';
+import { ResourceHandler } from './common';
 
 export interface AmplifyAssetDeploymentProps {
   AppId: string;

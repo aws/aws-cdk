@@ -1,7 +1,7 @@
 import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
-import { DockerCacheOption } from './assets';
+import type { DockerCacheOption } from './assets';
 import { ExecutionError, UnscopedValidationError } from './errors';
 import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';

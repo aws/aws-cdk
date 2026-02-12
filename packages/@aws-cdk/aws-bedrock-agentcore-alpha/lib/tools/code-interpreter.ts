@@ -1,24 +1,31 @@
+import type {
+  IResource,
+  ResourceProps,
+} from 'aws-cdk-lib';
 import {
   Arn,
   ArnFormat,
-  IResource,
   Lazy,
+  Names,
   Resource,
   ValidationError,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
-import {
+import type { ICodeInterpreterCustomRef, CodeInterpreterCustomReference } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
@@ -58,7 +65,7 @@ const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
 /**
  * Interface for CodeInterpreterCustom resources
  */
-export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable, ICodeInterpreterCustomRef {
   /**
    * The ARN of the code interpreter resource
    * @attribute
@@ -178,6 +185,16 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * A reference to a CodeInterpreterCustom resource.
+   */
+  public get codeInterpreterCustomRef(): CodeInterpreterCustomReference {
+    return {
+      codeInterpreterId: this.codeInterpreterId,
+      codeInterpreterArn: this.codeInterpreterArn,
+    };
+  }
+
+  /**
    * An accessor for the Connections object that will fail if this Browser does not have a VPC
    * configured.
    */
@@ -194,8 +211,8 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    */
   protected _connections: ec2.Connections | undefined;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**
@@ -210,7 +227,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.codeInterpreterArn],
+      resourceArns: [this.codeInterpreterCustomRef.codeInterpreterArn],
       actions: actions,
     });
   }
@@ -288,7 +305,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.codeInterpreterArn },
+      dimensionsMap: { ...dimensions, Resource: this.codeInterpreterCustomRef.codeInterpreterArn },
       ...props,
     };
     return this.configureMetric(metricProps);
@@ -433,9 +450,9 @@ export interface CodeInterpreterCustomProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * The name must start with a letter and can be up to 48 characters long
    * Pattern: [a-zA-Z][a-zA-Z0-9_]{0,47}
-   * @required - Yes
+   * @default - auto generate
    */
-  readonly codeInterpreterCustomName: string;
+  readonly codeInterpreterCustomName?: string;
 
   /**
    * Optional description for the code interpreter
@@ -627,15 +644,23 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
   // ------------------------------------------------------
   private readonly __resource: agent_core.CfnCodeInterpreterCustom;
 
-  constructor(scope: Construct, id: string, props: CodeInterpreterCustomProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: CodeInterpreterCustomProps = {}) {
+    super(scope, id, {
+      // Maximum name length of 48 characters is chosen even when no max name mentioned in documentation below,
+      // due to failure in CF deployment when more than 48 characters used
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-codeinterpretercustom.html#cfn-bedrockagentcore-codeinterpretercustom-name
+      physicalName: props.codeInterpreterCustomName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
+        }),
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------
-    this.name = props.codeInterpreterCustomName;
+    this.name = this.physicalName;
     this.description = props.description;
     this.networkConfiguration = props.networkConfiguration ?? CodeInterpreterNetworkConfiguration.usingPublicNetwork();
     this.executionRole = props.executionRole ?? this._createCodeInterpreterRole();

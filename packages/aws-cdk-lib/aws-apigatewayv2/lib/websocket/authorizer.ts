@@ -1,12 +1,13 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
-import { IWebSocketRoute } from './route';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi } from './api';
+import type { IWebSocketRoute } from './route';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IAuthorizer } from '../common';
-import { AuthorizerReference, CfnAuthorizer } from '../index';
+import type { IAuthorizer } from '../common';
+import type { AuthorizerReference } from '../index';
+import { CfnAuthorizer } from '../index';
 
 /**
  * Supported Authorizer types
