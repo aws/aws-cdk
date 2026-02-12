@@ -1304,4 +1304,22 @@ describe('Destination Delivery', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
   });
+
+  test('able to make delivery when destination is imported cross stack', () => {
+    const destName = 'my-cool-xray-dest'
+    const crossStack = new Stack();
+
+    new CfnDeliveryDestination(crossStack, 'Dest', {
+      name: destName,
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destCrossStack = CfnDeliveryDestination.fromDeliveryDestinationName(stack, 'CrossStackDest', destName);
+
+    const destLogs = new DestinationLogsDelivery(destCrossStack);
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+  });
 });

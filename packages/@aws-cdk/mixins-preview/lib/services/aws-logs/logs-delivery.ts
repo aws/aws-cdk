@@ -21,7 +21,7 @@ export interface ILogsDeliveryConfig {
   /**
    *  The logs delivery destination.
    */
-  readonly deliveryDestination?: logs.IDeliveryDestinationRef;
+  readonly deliveryDestination: logs.IDeliveryDestinationRef;
   /**
    *  The logs delivery
    */
@@ -500,10 +500,13 @@ export class DestinationLogsDelivery implements ILogsDelivery {
     });
 
     delivery.node.addDependency(deliverySource);
+    const deliveryDestination = logs.CfnDeliveryDestination.fromDeliveryDestinationName(container, 'Destination', 
+      this.destination.deliveryDestinationRef.deliveryDestinationName);
 
     return {
       deliverySource,
-      delivery,
+      deliveryDestination,
+      delivery
     };
   }
 }
