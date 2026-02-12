@@ -827,6 +827,7 @@
 | @aws-cdk/aws-stepfunctions | TaskProps.​parameters | replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish) |
 | @aws-cdk/aws-stepfunctions | TaskProps.​resultPath | replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish) |
 | @aws-cdk/aws-stepfunctions | TaskProps.​timeout | replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish) |
+| @aws-cdk/aws-stepfunctions | DistributedMapBaseOptions.​resultWriter | This property does not function correctly. Use `resultWriterV2` instead. |
 | @aws-cdk/aws-ecs-patterns | ApplicationLoadBalancedServiceBase.​desiredCount | Use `internalDesiredCount` instead. |
 | @aws-cdk/aws-ecs-patterns | ApplicationMultipleTargetGroupsServiceBase.​desiredCount | Use `internalDesiredCount` instead. |
 | @aws-cdk/aws-ecs-patterns | NetworkLoadBalancedServiceBase.​desiredCount | Use `internalDesiredCount` instead. |

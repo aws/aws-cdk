@@ -66,7 +66,8 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
   /**
    * Configuration for S3 location in which to save Map Run results
    *
-   * @deprecated Use {@link resultWriterV2}
+   * @deprecated This property has never functioned correctly and will be removed in a future release.
+   * Use {@link resultWriterV2} instead, which provides the correct implementation.
    * @default - No resultWriter
    */
   readonly resultWriter?: ResultWriter;
@@ -205,6 +206,12 @@ export class DistributedMap extends MapBase implements INextable {
     this.processorMode = ProcessorMode.DISTRIBUTED;
   }
 
+  /**
+   * Returns the appropriate ResultWriter configuration based on feature flag state.
+   *
+   * When the V2 feature flag is enabled, uses resultWriterV2. Otherwise, uses the
+   * deprecated resultWriter property (which will produce a validation error if set).
+   */
   private getResultWriter(): ResultWriterV2 | ResultWriter | undefined {
     return FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2)
       ? this.resultWriterV2
@@ -243,6 +250,10 @@ export class DistributedMap extends MapBase implements INextable {
 
     if (this.itemReader) {
       errors.push(...this.itemReader.validateItemReader());
+    }
+
+    if (this.resultWriter) {
+      errors.push('The `resultWriter` property is deprecated and does not function correctly. Use `resultWriterV2` instead.');
     }
 
     if (this.resultWriterV2) {
