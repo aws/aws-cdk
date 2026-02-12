@@ -1,4 +1,3 @@
-import type { IConstruct } from 'constructs';
 import type {
   AddToResourcePolicyResult,
   IResourcePolicyFactory,
@@ -9,6 +8,7 @@ import {
   DefaultPolicyFactories,
   PolicyDocument,
 } from '../../../aws-iam';
+import type { CfnResource } from '../../../core';
 import { Token, ValidationError } from '../../../core';
 import type { ResourceEnvironment } from '../../../interfaces';
 import { CfnKey } from '../kms.generated';
@@ -17,7 +17,7 @@ import { CfnKey } from '../kms.generated';
  * Factory to create a resource policy for a KMS Key.
  */
 class KeyWithPolicyFactory implements IResourcePolicyFactory {
-  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     if (!CfnKey.isCfnKey(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnKey`, resource);
     }

@@ -3,7 +3,7 @@ import { Dependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import type { IGrantable, IPrincipal } from './principals';
 import type { IEnvironmentAware } from '../../core';
-import { CfnResource, UnscopedValidationError } from '../../core';
+import { CfnResource } from '../../core';
 import * as cdk from '../../core';
 import { Traits } from '../../core/lib/helpers-internal';
 
@@ -517,7 +517,7 @@ export interface IResourcePolicyFactory {
    * Create an IResourceWithPolicyV2 from a construct
    * @param resource the construct to be wrapped as an IResourceWithPolicyV2.
    */
-  forConstruct(resource: IConstruct): IResourceWithPolicyV2;
+  forResource(resource: CfnResource): IResourceWithPolicyV2;
 }
 
 /**
@@ -539,7 +539,7 @@ export interface IEncryptedResourceFactory {
    *
    * @param resource the construct to be wrapped as an IEncryptedResource.
    */
-  forConstruct(resource: IConstruct): IEncryptedResource;
+  forResource(resource: CfnResource): IEncryptedResource;
 }
 
 /**
@@ -643,12 +643,8 @@ export class DefaultPolicyFactories {
    * Register a default factory for a given CloudFormation resource type
    * @param type the CloudFormation resource type (e.g., 'AWS::DynamoDB::Table')
    * @param factory the factory to register for this resource type
-   * @throws UnscopedValidationError if a factory is already registered for this resource type
    */
   public static set(type: string, factory: IResourcePolicyFactory) {
-    if (DefaultPolicyFactories.map.has(type)) {
-      throw new UnscopedValidationError(`A resource policy factory for resource type '${type}' is already registered.`);
-    }
     DefaultPolicyFactories.map.set(type, factory);
   }
 
@@ -681,9 +677,6 @@ export class DefaultEncryptedResourceFactories {
    * @param factory the factory to register for this resource type
    */
   public static set(type: string, factory: IEncryptedResourceFactory) {
-    if (DefaultEncryptedResourceFactories.map.has(type)) {
-      throw new UnscopedValidationError(`An encrypted resource factory for resource type '${type}' is already registered.`);
-    }
     DefaultEncryptedResourceFactories.map.set(type, factory);
   }
 

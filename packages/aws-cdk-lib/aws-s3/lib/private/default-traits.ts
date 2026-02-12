@@ -12,8 +12,8 @@ import type {
 import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../../aws-iam';
 import type { CfnKey } from '../../../aws-kms';
 import { KeyGrants } from '../../../aws-kms';
+import type { CfnResource, ResourceEnvironment } from '../../../core';
 import { ValidationError } from '../../../core';
-import type { ResourceEnvironment } from '../../../core/index';
 import { findClosestRelatedResource, findL1FromRef } from '../../../core/lib/helpers-internal';
 import type { IBucketRef } from '../s3.generated';
 import { CfnBucket, CfnBucketPolicy } from '../s3.generated';
@@ -22,7 +22,7 @@ import { CfnBucket, CfnBucketPolicy } from '../s3.generated';
  * Factory to create an encrypted resource for a Bucket.
  */
 class EncryptedBucketFactory implements IEncryptedResourceFactory {
-  public forConstruct(resource: IConstruct): IEncryptedResource {
+  public forResource(resource: CfnResource): IEncryptedResource {
     return ifCfnBucket(resource, (r) => new EncryptedCfnBucket(r));
   }
 }
@@ -46,7 +46,7 @@ class EncryptedCfnBucket implements IEncryptedResource {
  * Factory to create a resource policy for a Bucket.
  */
 class BucketWithPolicyFactory implements IResourcePolicyFactory {
-  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     return ifCfnBucket(resource, (r) => new CfnBucketWithPolicy(r));
   }
 }

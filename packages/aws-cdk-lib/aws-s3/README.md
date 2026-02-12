@@ -182,9 +182,9 @@ import { Construct, IConstruct } from 'constructs';
 
 declare const scope: Construct;
 class MyFactory implements IResourcePolicyFactory {
-  forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  forResource(resource: CfnResource): IResourceWithPolicyV2 {
     return {
-      env: { account: '123456789012', region: 'us-east-1' },
+      env: resource.env,
       addToResourcePolicy(statement: PolicyStatement) {
         // custom implementation to add the statement to the resource policy
         return { statementAdded: true, policyDependable: resource };

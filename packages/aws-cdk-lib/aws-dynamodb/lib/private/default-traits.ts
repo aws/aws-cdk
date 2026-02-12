@@ -14,8 +14,8 @@ import {
 } from '../../../aws-iam';
 import type { CfnKey } from '../../../aws-kms';
 import { KeyGrants } from '../../../aws-kms';
+import type { CfnResource, ResourceEnvironment } from '../../../core';
 import { Token, ValidationError } from '../../../core';
-import type { ResourceEnvironment } from '../../../core/index';
 import { findClosestRelatedResource, findL1FromRef } from '../../../core/lib/helpers-internal';
 import { CfnTable } from '../dynamodb.generated';
 import type { ITableRef } from '../dynamodb.generated';
@@ -38,7 +38,7 @@ class TablePolicyFactory implements IResourcePolicyFactory {
    * Converts a DynamoDB table construct into an IResourceWithPolicyV2 that can be used
    * for adding resource-based policy statements.
    */
-  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     if (!CfnTable.isCfnTable(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
     }
@@ -89,7 +89,7 @@ class CfnTableWithPolicy implements IResourceWithPolicyV2 {
  * table access.
  */
 class EncryptedTableFactory implements IEncryptedResourceFactory {
-  public forConstruct(resource: IConstruct): IEncryptedResource {
+  public forResource(resource: CfnResource): IEncryptedResource {
     if (!CfnTable.isCfnTable(resource)) {
       throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
     }

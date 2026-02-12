@@ -9,6 +9,7 @@ import {
   DefaultPolicyFactories,
   PolicyDocument,
 } from '../../../aws-iam';
+import type { CfnResource } from '../../../core';
 import { Names, ValidationError } from '../../../core';
 import type { ResourceEnvironment } from '../../../interfaces';
 import { CfnLogGroup, CfnResourcePolicy } from '../logs.generated';
@@ -17,7 +18,7 @@ import { CfnLogGroup, CfnResourcePolicy } from '../logs.generated';
  * Factory to create a resource policy for a Bucket.
  */
 class LogGroupWithPolicyFactory implements IResourcePolicyFactory {
-  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     return ifCfnLogGroup(resource, (r) => new CfnLogGroupWithPolicy(r));
   }
 }

@@ -12,6 +12,7 @@ import type {
 import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../../aws-iam';
 import type { CfnKey } from '../../../aws-kms';
 import { KeyGrants } from '../../../aws-kms';
+import type { CfnResource } from '../../../core';
 import { ValidationError } from '../../../core';
 import { findClosestRelatedResource } from '../../../core/lib/helpers-internal';
 import type { ResourceEnvironment } from '../../../interfaces';
@@ -21,7 +22,7 @@ import { CfnQueue, CfnQueuePolicy } from '../sqs.generated';
  * Factory to create a resource policy for a Queue.
  */
 class QueueWithPolicyFactory implements IResourcePolicyFactory {
-  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     return ifCfnQueue(resource, (r) => new CfnQueueWithPolicy(r));
   }
 }
@@ -58,7 +59,7 @@ class CfnQueueWithPolicy implements IResourceWithPolicyV2 {
  * Factory for creating encrypted SQS Queue wrappers
  */
 class EncryptedQueueFactory implements IEncryptedResourceFactory {
-  public forConstruct(resource: IConstruct): IEncryptedResource {
+  public forResource(resource: CfnResource): IEncryptedResource {
     return ifCfnQueue(resource, (r) => new EncryptedCfnQueue(r));
   }
 }

@@ -6,7 +6,7 @@ import { ValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 
 interface ITraitFactory<T> {
-  forConstruct(resource: IConstruct): T;
+  forResource(resource: CfnResource): T;
 }
 
 export class Traits<
@@ -35,7 +35,7 @@ export class Traits<
       factory = this.defaultFactoryFor(resource.cfnResourceType);
     }
     if (factory != null) {
-      const trait = factory.forConstruct(resource);
+      const trait = factory.forResource(resource);
       this.instances.set(resource, trait);
       return trait;
     }

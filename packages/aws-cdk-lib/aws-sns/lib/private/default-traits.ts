@@ -12,6 +12,7 @@ import type {
 import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../../aws-iam';
 import type { CfnKey } from '../../../aws-kms';
 import { KeyGrants } from '../../../aws-kms';
+import type { CfnResource } from '../../../core';
 import { ValidationError } from '../../../core';
 import { findClosestRelatedResource } from '../../../core/lib/helpers-internal';
 import type { ResourceEnvironment } from '../../../interfaces';
@@ -21,7 +22,7 @@ import { CfnTopic, CfnTopicPolicy } from '../sns.generated';
  * Factory to create a resource policy for a Topic.
  */
 class TopicWithPolicyFactory implements IResourcePolicyFactory {
-  public forConstruct(resource: IConstruct): IResourceWithPolicyV2 {
+  public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     return ifCfnTopic(resource, (r) => new CfnTopicWithPolicy(r));
   }
 }
@@ -58,7 +59,7 @@ class CfnTopicWithPolicy implements IResourceWithPolicyV2 {
  * Factory for creating encrypted SNS Topic wrappers
  */
 class EncryptedTopicFactory implements IEncryptedResourceFactory {
-  public forConstruct(resource: IConstruct): IEncryptedResource {
+  public forResource(resource: CfnResource): IEncryptedResource {
     return ifCfnTopic(resource, (r) => new EncryptedCfnTopic(r));
   }
 }
