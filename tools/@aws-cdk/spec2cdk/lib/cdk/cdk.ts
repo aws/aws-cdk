@@ -92,6 +92,7 @@ export class Interfaces extends ExternalModule {
   public readonly IBucketRef = Type.fromName(this, 'aws_s3.IBucketRef');
   public readonly ILogGroupRef = Type.fromName(this, 'aws_logs.ILogGroupRef');
   public readonly IDeliveryStreamRef = Type.fromName(this, 'aws_kinesisfirehose.IDeliveryStreamRef');
+  public readonly IDeliveryDestinationRef = Type.fromName(this, 'aws_logs.IDeliveryDestinationRef');
 }
 
 export class CdkInternalHelpers extends ExternalModule {

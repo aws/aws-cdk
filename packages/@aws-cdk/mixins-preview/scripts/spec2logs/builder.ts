@@ -224,6 +224,27 @@ class LogsHelper extends ClassType {
           break;
       }
     }
+    const toDest = this.addMethod({
+      name: 'toDestination',
+      returnType: mixin.type,
+      docs: {
+        summary: 'Delivers logs to a pre-created delivery destination',
+        remarks: `Supported destinations are ${this.log.destinations.map(d => d.destinationType).join(', ')}\n` +
+        'You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.\n' +
+        'Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().',
+      },
+    });
+
+    const paramDest = toDest.addParameter({
+      name: 'destination',
+      type: CDK_INTERFACES.IDeliveryDestinationRef,
+    });
+
+    toDest.addBody(stmt.block(
+      stmt.ret(
+        mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.DestLogsDelivery, paramDest)),
+      ),
+    ));
 
     mixin.addProperty({
       name: this.log.logType,
