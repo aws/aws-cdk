@@ -257,7 +257,7 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 
 #### Auto Validation threshold
 
-[Auto Validation](https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html) automatically reviews all outbound email addresses before sending and only delivers messages to recipients meeting your selected validation threshold. This protects sender reputation by preventing sends to invalid or risky addresses.
+Auto validation automatically reviews all outbound email addresses before sending and only delivers messages to recipients meeting your selected validation threshold. This protects sender reputation by preventing sends to invalid or risky addresses.
 
 You can override the account-level Auto Validation settings at the configuration set level using `confidenceVerdictThreshold`:
 
