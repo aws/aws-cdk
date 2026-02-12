@@ -1,7 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 const scriptPath = path.join(__dirname, '../../check-peer-dependencies.ts');
 
@@ -18,7 +18,7 @@ describe('check-peer-dependencies', () => {
 
   function runScript(packageDir) {
     try {
-      execSync(`npx ts-node ${scriptPath} ${packageDir}`, {
+      execFileSync('npx', ['ts-node', scriptPath, packageDir], {
         cwd: path.join(__dirname, '../../..'),
         encoding: 'utf8',
         stdio: 'pipe',
