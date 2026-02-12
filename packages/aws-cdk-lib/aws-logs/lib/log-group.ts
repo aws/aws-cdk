@@ -1,18 +1,24 @@
-import { Construct } from 'constructs';
-import { DataProtectionPolicy } from './data-protection-policy';
-import { FieldIndexPolicy } from './field-index-policy';
+import type { Construct } from 'constructs';
+import type { DataProtectionPolicy } from './data-protection-policy';
+import type { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
 import { LogGroupGrants } from './logs-grants.generated';
-import { CfnLogGroup, ILogGroupRef, LogGroupReference } from './logs.generated';
+import type { ILogGroupRef, LogGroupReference } from './logs.generated';
+import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
-import { FilterPattern, IFilterPattern } from './pattern';
+import type { IFilterPattern } from './pattern';
+import { FilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
-import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
-import { IProcessor, Transformer } from './transformer';
+import type { ILogSubscriptionDestination } from './subscription-filter';
+import { SubscriptionFilter } from './subscription-filter';
+import type { IProcessor } from './transformer';
+import { Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { RemovalPolicy } from '../../core';
+import { Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -234,6 +240,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Give permissions to create and write to streams in this log group
    *
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
@@ -242,6 +251,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   /**
    * Give permissions to read and filter events from this log group
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
    *
    * [disable-awslint:no-grants]
    */
@@ -544,6 +556,14 @@ export interface LogGroupProps {
   readonly dataProtectionPolicy?: DataProtectionPolicy;
 
   /**
+   * Indicates whether deletion protection is enabled for this log group. When enabled,
+   * deletion protection blocks all deletion operations until it is explicitly disabled.
+   *
+   * @default false
+   */
+  readonly deletionProtectionEnabled?: boolean;
+
+  /**
    * Field Index Policies for this log group.
    *
    * @default - no field index policies for this log group.
@@ -643,15 +663,28 @@ export class LogGroup extends LogGroupBase {
     return new Import(scope, id);
   }
 
+  private readonly resource: CfnLogGroup;
+
   /**
    * The ARN of this log group
    */
-  public readonly logGroupArn: string;
+  @memoizedGetter
+  public get logGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * The name of this log group
    */
-  public readonly logGroupName: string;
+  @memoizedGetter
+  public get logGroupName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
     super(scope, id, {
@@ -678,7 +711,7 @@ export class LogGroup extends LogGroupBase {
       });
     }
 
-    const resource = new CfnLogGroup(this, 'Resource', {
+    this.resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyRef.keyArn,
       logGroupClass,
       logGroupName: this.physicalName,
@@ -690,18 +723,11 @@ export class LogGroup extends LogGroupBase {
         Statement: dataProtectionPolicy?.statement,
         Configuration: dataProtectionPolicy?.configuration,
       } : undefined,
+      deletionProtectionEnabled: props.deletionProtectionEnabled,
       ...(props.fieldIndexPolicies && { fieldIndexPolicies: fieldIndexPolicies }),
     });
 
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.logGroupArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'logs',
-      resource: 'log-group',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-    this.logGroupName = this.getResourceNameAttribute(resource.ref);
+    this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 }
 

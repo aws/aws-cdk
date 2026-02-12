@@ -1,33 +1,41 @@
-import { Construct } from 'constructs';
-import { IAuroraClusterInstance, IClusterInstance, InstanceType } from './aurora-cluster-instance';
-import { ClusterEngineConfig, IClusterEngine } from './cluster-engine';
-import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
+import type { Construct } from 'constructs';
+import type { IAuroraClusterInstance, IClusterInstance } from './aurora-cluster-instance';
+import { InstanceType } from './aurora-cluster-instance';
+import type { ClusterEngineConfig, IClusterEngine } from './cluster-engine';
+import type { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseInsightsMode } from './database-insights-mode';
 import { Endpoint } from './endpoint';
-import { NetworkType } from './instance';
-import { IParameterGroup, ParameterGroup } from './parameter-group';
+import type { NetworkType } from './instance';
+import type { IParameterGroup } from './parameter-group';
+import { ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
-import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
-import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
-import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
-import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import type { BackupProps, Credentials, InstanceProps, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
+import { PerformanceInsightRetention } from './props';
+import type { DatabaseProxyOptions } from './proxy';
+import { DatabaseProxy, ProxyTarget } from './proxy';
+import type { CfnDBClusterProps } from './rds.generated';
+import { CfnDBCluster, CfnDBInstance } from './rds.generated';
+import type { ISubnetGroup } from './subnet-group';
+import { SubnetGroup } from './subnet-group';
 import { validateDatabaseClusterProps } from './validate-database-insights';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
+import type { IRole } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Annotations, ArnFormat, ContextProvider, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
+import type { Duration } from '../../core';
+import { Annotations, ArnFormat, ContextProvider, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { aws_rds } from '../../interfaces';
+import type { aws_rds } from '../../interfaces';
 import { toISubnetGroup } from './private/ref-utils';
 
 /**
@@ -1168,6 +1176,32 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public metricACUUtilization(props?: cloudwatch.MetricOptions) {
     return this.metric('ACUUtilization', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk read I/O operations per second.
+   *
+   * This metric is only available for Aurora database clusters.
+   * For non-Aurora RDS clusters, this metric will not return any data
+   * in CloudWatch.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricVolumeReadIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeReadIOPs', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk write I/O operations per second.
+   *
+   * This metric is only available for Aurora database clusters.
+   * For non-Aurora RDS clusters, this metric will not return any data
+   * in CloudWatch.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricVolumeWriteIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('VolumeWriteIOPs', { statistic: 'Average', ...props });
   }
 
   private validateServerlessScalingConfig(config: ClusterEngineConfig): void {

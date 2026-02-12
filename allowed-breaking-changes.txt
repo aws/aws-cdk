@@ -8,6 +8,9 @@ change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
 # of the `properties` field is already unreliable for exhaustive checking.
 weakened:aws-cdk-lib.cloud_assembly_schema.ArtifactManifest
 
+# Manifest class became abstract in cloud-assembly-schema v50+
+made-abstract:aws-cdk-lib.cloud_assembly_schema.Manifest
+
 # Adding any new context queries will add to the ContextQueryProperties type,
 # which changes the signature of MissingContext.
 weakened:@aws-cdk/cloud-assembly-schema.MissingContext
@@ -4126,5 +4129,34 @@ removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketIntegration.integrationRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketRoute.routeRef
 removed:aws-cdk-lib.aws_apigatewayv2.IWebSocketStage.stageRef
 
+# Had to revert these
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.Ec2Action.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.LambdaAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SnsAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch_actions.SsmIncidentAction.bind
+incompatible-argument:aws-cdk-lib.aws_cloudwatch.IAlarmAction.bind
+
 # This type must needs be weakened
 changed-type:aws-cdk-lib.aws_ses.EventDestination.bus
+
+# CloudFormation has always required SecurityGroups for ManagedInstancesCapacityProvider.
+# Making it required in TypeScript catches the error at compile time instead of deploy time.
+strengthened:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps
+
+# IEncryptedResource was too strongly typed for practical use.
+# We need to weaken it and align with other traits.
+# See: https://github.com/aws/aws-cdk/pull/36787
+incompatible-argument:aws-cdk-lib.aws_iam.GrantableResources.isEncryptedResource
+base-types:aws-cdk-lib.aws_iam.IEncryptedResource
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.applyRemovalPolicy
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.node
+removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
+
+# These enum keys were auto-generated without underscores (ERRORCOUNT, KAFKAMETRICS).
+# The correct keys are ERROR_COUNT and KAFKA_METRICS. Safe to remove as these enums
+# were not usable without the feature implementation.
+removed:aws-cdk-lib.aws_lambda.MetricType.ERRORCOUNT
+removed:aws-cdk-lib.aws_lambda.MetricType.KAFKAMETRICS

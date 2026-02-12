@@ -1,4 +1,107 @@
 {
+ "Mappings": {
+  "EbsHostedZoneMapping": {
+   "af-south-1": {
+    "hostedZoneId": "Z1EI3BVKMKK4AM"
+   },
+   "ap-east-1": {
+    "hostedZoneId": "ZPWYUBWRU171A"
+   },
+   "ap-northeast-1": {
+    "hostedZoneId": "Z1R25G3KIG2GBW"
+   },
+   "ap-northeast-2": {
+    "hostedZoneId": "Z3JE5OI70TWKCP"
+   },
+   "ap-northeast-3": {
+    "hostedZoneId": "ZNE5GEY1TIAGY"
+   },
+   "ap-south-1": {
+    "hostedZoneId": "Z18NTBI3Y7N9TZ"
+   },
+   "ap-south-2": {
+    "hostedZoneId": "Z10223522IBWPBF2C2FJS"
+   },
+   "ap-southeast-1": {
+    "hostedZoneId": "Z16FZ9L249IFLT"
+   },
+   "ap-southeast-2": {
+    "hostedZoneId": "Z2PCDNR3VC2G1N"
+   },
+   "ap-southeast-3": {
+    "hostedZoneId": "Z05913172VM7EAZB40TA8"
+   },
+   "ap-southeast-4": {
+    "hostedZoneId": "Z0666869LC74UHAO5YE4"
+   },
+   "ap-southeast-5": {
+    "hostedZoneId": "Z01812971H0QCYWSL7WOH"
+   },
+   "ap-southeast-6": {
+    "hostedZoneId": "Z01144401H1NECCLJDD4D"
+   },
+   "ap-southeast-7": {
+    "hostedZoneId": "Z1R25G3KIG2GBW"
+   },
+   "ca-central-1": {
+    "hostedZoneId": "ZJFCZL7SSZB5I"
+   },
+   "ca-west-1": {
+    "hostedZoneId": "Z1021028356Y0CYS11DQI"
+   },
+   "eu-central-1": {
+    "hostedZoneId": "Z1FRNW7UH4DEZJ"
+   },
+   "eu-central-2": {
+    "hostedZoneId": "Z00227012FSHBMZNNSJJI"
+   },
+   "eu-north-1": {
+    "hostedZoneId": "Z23GO28BZ5AETM"
+   },
+   "eu-south-1": {
+    "hostedZoneId": "Z10VDYYOA2JFKM"
+   },
+   "eu-south-2": {
+    "hostedZoneId": "Z23GO28BZ5AETM"
+   },
+   "eu-west-1": {
+    "hostedZoneId": "Z2NYPWQ7DFZAZH"
+   },
+   "eu-west-2": {
+    "hostedZoneId": "Z1GKAAAUGATPF1"
+   },
+   "eu-west-3": {
+    "hostedZoneId": "Z5WN6GAYWG5OB"
+   },
+   "il-central-1": {
+    "hostedZoneId": "Z02941091PERNCB1MI5H7"
+   },
+   "me-south-1": {
+    "hostedZoneId": "Z2BBTEKR2I36N2"
+   },
+   "sa-east-1": {
+    "hostedZoneId": "Z10X7K2B4QSOFV"
+   },
+   "us-east-1": {
+    "hostedZoneId": "Z117KPS5GTRQ2G"
+   },
+   "us-east-2": {
+    "hostedZoneId": "Z14LCN19Q5QHIC"
+   },
+   "us-gov-east-1": {
+    "hostedZoneId": "Z35TSARG0EJ4VU"
+   },
+   "us-gov-west-1": {
+    "hostedZoneId": "Z4KAURWC4UUUG"
+   },
+   "us-west-1": {
+    "hostedZoneId": "Z1LQECGX5PH1X"
+   },
+   "us-west-2": {
+    "hostedZoneId": "Z38NKT9BP95V3O"
+   }
+  }
+ },
  "Resources": {
   "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
@@ -6,27 +109,26 @@
    "DeletionPolicy": "Delete"
   },
   "Application": {
-   "Type": "AWS::ElasticBeanstalk::Application",
-   "Properties": {
-    "ApplicationName": "MyApplication"
-   }
+   "Type": "AWS::ElasticBeanstalk::Application"
   },
   "ApplicationVersion": {
    "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
    "Properties": {
-    "ApplicationName": "MyApplication",
+    "ApplicationName": {
+     "Ref": "Application"
+    },
     "SourceBundle": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c5adcffb96a3522eb8a42f7d9a02a401482046a2930e2b086ecf0e8666a24579.zip"
+     "S3Key": "fdbbabeab76a41188fbdf182a8c09848a1ea72525524d7bc2c373c6e1eb2c1c4.zip"
     }
    },
    "DependsOn": [
     "Application"
    ]
   },
-  "MyApplicationawselasticbeanstalkec2roleA466279A": {
+  "EbsEc2Role8269CA5F": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -57,13 +159,12 @@
     ]
    }
   },
-  "MyApplicationawselasticbeanstalkec2instanceprofile": {
+  "EbsInstanceProfile": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "InstanceProfileName": "MyApplication-aws-elasticbeanstalk-ec2-instance-profile",
     "Roles": [
      {
-      "Ref": "MyApplicationawselasticbeanstalkec2roleA466279A"
+      "Ref": "EbsEc2Role8269CA5F"
      }
     ]
    }
@@ -71,13 +172,16 @@
   "Environment": {
    "Type": "AWS::ElasticBeanstalk::Environment",
    "Properties": {
-    "ApplicationName": "MyApplication",
-    "EnvironmentName": "MyEnvironment",
+    "ApplicationName": {
+     "Ref": "Application"
+    },
     "OptionSettings": [
      {
       "Namespace": "aws:autoscaling:launchconfiguration",
       "OptionName": "IamInstanceProfile",
-      "Value": "MyApplication-aws-elasticbeanstalk-ec2-instance-profile"
+      "Value": {
+       "Ref": "EbsInstanceProfile"
+      }
      },
      {
       "Namespace": "aws:autoscaling:asg",
@@ -95,7 +199,7 @@
       "Value": "t3.micro"
      }
     ],
-    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.1 running Node.js 20",
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.3 running Node.js 20",
     "VersionLabel": {
      "Ref": "ApplicationVersion"
     }
@@ -113,7 +217,7 @@
       "Arn"
      ]
     },
-    "Create": "{\"service\":\"ElasticBeanstalk\",\"action\":\"describeEnvironments\",\"parameters\":{\"EnvironmentNames\":[\"MyEnvironment\"]},\"physicalResourceId\":{\"id\":\"EnvironmentUrl\"},\"logApiResponseData\":false}",
+    "Create": "{\"service\":\"ElasticBeanstalk\",\"action\":\"describeEnvironments\",\"parameters\":{\"EnvironmentNames\":[]},\"physicalResourceId\":{\"id\":\"EnvironmentUrl\"},\"logApiResponseData\":false}",
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
@@ -185,7 +289,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip"
+     "S3Key": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -217,7 +321,15 @@
        "Environments.0.CNAME"
       ]
      },
-     "HostedZoneId": "Z117KPS5GTRQ2G"
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "EbsHostedZoneMapping",
+       {
+        "Ref": "AWS::Region"
+       },
+       "hostedZoneId"
+      ]
+     }
     },
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
@@ -241,7 +353,15 @@
       ]
      },
      "EvaluateTargetHealth": true,
-     "HostedZoneId": "Z117KPS5GTRQ2G"
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "EbsHostedZoneMapping",
+       {
+        "Ref": "AWS::Region"
+       },
+       "hostedZoneId"
+      ]
+     }
     },
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"

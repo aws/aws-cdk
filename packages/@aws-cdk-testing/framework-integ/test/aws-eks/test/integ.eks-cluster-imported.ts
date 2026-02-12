@@ -1,9 +1,12 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import {
-  App, CfnOutput, Stack, StackProps, Duration,
+import type {
+  StackProps,
   custom_resources as cr,
+} from 'aws-cdk-lib';
+import {
+  App, CfnOutput, Stack, Duration,
   aws_iam as iam,
   aws_ec2 as ec2,
 } from 'aws-cdk-lib';
@@ -13,7 +16,7 @@ import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {

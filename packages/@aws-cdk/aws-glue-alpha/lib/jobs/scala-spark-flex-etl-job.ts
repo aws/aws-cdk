@@ -1,11 +1,13 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import * as cdk from 'aws-cdk-lib/core';
+import type * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Code } from '../code';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
 import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '../constants';
-import { SparkJob, SparkJobProps } from './spark-job';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
  * Flex Jobs class
@@ -77,8 +79,7 @@ export interface ScalaSparkFlexEtlJobProps extends SparkJobProps {
 export class ScalaSparkFlexEtlJob extends SparkJob {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ScalaSparkFlexEtlJob';
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  private resource: CfnJob;
 
   /**
    * ScalaSparkFlexEtlJob constructor
@@ -94,7 +95,7 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -116,10 +117,16 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
       jobRunQueuingEnabled: false,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

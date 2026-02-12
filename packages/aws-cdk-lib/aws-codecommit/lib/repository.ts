@@ -1,12 +1,15 @@
-import { Construct } from 'constructs';
-import { Code } from './code';
+import type { Construct } from 'constructs';
+import type { Code } from './code';
 import { RepositoryGrants } from './codecommit-grants.generated';
-import { CfnRepository, IRepositoryRef, RepositoryReference } from './codecommit.generated';
+import type { IRepositoryRef, RepositoryReference } from './codecommit.generated';
+import { CfnRepository } from './codecommit.generated';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { ArnFormat, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -372,6 +375,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.pull()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPull(grantee: iam.IGrantable) {
@@ -379,6 +385,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.pullPush()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPullPush(grantee: iam.IGrantable) {
@@ -386,6 +395,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
@@ -576,12 +588,36 @@ export class Repository extends RepositoryBase {
     return new Import(scope, id);
   }
 
-  public readonly repositoryArn: string;
-  public readonly repositoryName: string;
-  public readonly repositoryCloneUrlHttp: string;
-  public readonly repositoryCloneUrlSsh: string;
-  public readonly repositoryCloneUrlGrc: string;
+  private readonly resource: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
+
+  @memoizedGetter
+  public get repositoryArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'codecommit',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get repositoryName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get repositoryCloneUrlHttp(): string {
+    return this.resource.attrCloneUrlHttp;
+  }
+
+  @memoizedGetter
+  public get repositoryCloneUrlSsh(): string {
+    return this.resource.attrCloneUrlSsh;
+  }
+
+  @memoizedGetter
+  public get repositoryCloneUrlGrc(): string {
+    return makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
+  }
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
@@ -590,22 +626,13 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const repository = new CfnRepository(this, 'Resource', {
+    this.resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
       code: (props.code?.bind(this))?.code,
       kmsKeyId: props.kmsKey?.keyRef.keyArn,
     });
-
-    this.repositoryName = this.getResourceNameAttribute(repository.attrName);
-    this.repositoryArn = this.getResourceArnAttribute(repository.attrArn, {
-      service: 'codecommit',
-      resource: this.physicalName,
-    });
-    this.repositoryCloneUrlHttp = repository.attrCloneUrlHttp;
-    this.repositoryCloneUrlSsh = repository.attrCloneUrlSsh;
-    this.repositoryCloneUrlGrc = makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
   }
 
   /**

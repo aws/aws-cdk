@@ -1,8 +1,6 @@
 import { Construct } from 'constructs';
 import { DistributionGrants } from './cloudfront-grants.generated';
-import {
-  CfnDistribution,
-  CfnMonitoringSubscription,
+import type {
   DistributionReference,
   ICachePolicyRef,
   IDistributionRef,
@@ -11,21 +9,27 @@ import {
   IRealtimeLogConfigRef,
   IResponseHeadersPolicyRef,
 } from './cloudfront.generated';
-import { FunctionAssociation } from './function';
-import { GeoRestriction } from './geo-restriction';
-import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
+import {
+  CfnDistribution,
+  CfnMonitoringSubscription,
+} from './cloudfront.generated';
+import type { FunctionAssociation } from './function';
+import type { GeoRestriction } from './geo-restriction';
+import type { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as iam from '../../aws-iam';
+import type * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
+import type {
+  Duration,
+  IResource,
+} from '../../core';
 import {
   Annotations,
   ArnFormat,
-  Duration,
   FeatureFlags,
-  IResource,
   Lazy,
   Names,
   Resource,
@@ -36,7 +40,7 @@ import {
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Interface for CloudFront distributions
@@ -338,6 +342,9 @@ export class Distribution extends Resource implements IDistribution {
       }
 
       /**
+       *
+       * The use of this method is discouraged. Please use `grants.createInvalidation()` instead.
+       *
        * [disable-awslint:no-grants]
        */
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {

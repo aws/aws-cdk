@@ -61,14 +61,14 @@ myTopic.addSubscription(new subscriptions.SqsSubscription(queue));
 Note that subscriptions of queues in different accounts need to be manually confirmed by
 reading the initial message from the queue and visiting the link found in it.
 
- The `grantSubscribe` method adds a policy statement to the topic's resource policy, allowing the specified principal to perform the `sns:Subscribe` action.
+ The `topic.grants.subscribe` method adds a policy statement to the topic's resource policy, allowing the specified principal to perform the `sns:Subscribe` action.
  It's useful when you want to allow entities, such as another AWS account or resources created later, to subscribe to the topic at their own pace, separating permission granting from the actual subscription process.
 
 ```ts
 declare const accountPrincipal: iam.AccountPrincipal;
 const myTopic = new sns.Topic(this, 'MyTopic');
 
-myTopic.grantSubscribe(accountPrincipal);
+myTopic.grants.subscribe(accountPrincipal);
 ```
 
 ### Filter policy
@@ -231,6 +231,23 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
   topics: [topic],
   policyDocument,
 });
+```
+
+A simpler and more general way of achieving the same result is to use the
+`TopicGrants` class:
+
+```ts 
+const topic = new sns.Topic(this, 'Topic');
+
+// This would work the same way if topic was a CfnTopic (L1)
+sns.TopicGrants.fromTopic(topic).subscribe(new iam.AnyPrincipal()); 
+```
+
+For convenience, if you are using an L2, you can also call `grants` on the topic: 
+
+```ts 
+const topic = new sns.Topic(this, 'Topic'); 
+topic.grants.subscribe(new iam.AnyPrincipal());
 ```
 
 ### Enforce encryption of data in transit when publishing to a topic

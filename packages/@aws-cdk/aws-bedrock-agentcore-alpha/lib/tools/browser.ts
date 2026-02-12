@@ -1,28 +1,35 @@
+import type {
+  IResource,
+  ResourceProps,
+} from 'aws-cdk-lib';
 import {
   Arn,
   ArnFormat,
-  IResource,
   Lazy,
   Resource,
   Token,
   Stack,
   ValidationError,
+  Names,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
-import {
+import type { BrowserCustomReference, IBrowserCustomRef } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Location } from 'aws-cdk-lib/aws-s3';
+import type { Location } from 'aws-cdk-lib/aws-s3';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
@@ -81,7 +88,7 @@ export enum BrowserSigning {
 /**
  * Interface for Browser resources
  */
-export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnectable, IBrowserCustomRef {
   /**
    * The ARN of the browser resource
    * @attribute
@@ -212,6 +219,17 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    * The principal to grant permissions to
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * A reference to a BrowserCustom resource.
+   */
+  public get browserCustomRef(): BrowserCustomReference {
+    return {
+      browserId: this.browserId,
+      browserArn: this.browserArn,
+    };
+  }
+
   /**
    * An accessor for the Connections object that will fail if this Browser does not have a VPC
    * configured.
@@ -229,8 +247,8 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    */
   protected _connections: ec2.Connections | undefined;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**
@@ -245,7 +263,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.browserArn],
+      resourceArns: [this.browserCustomRef.browserArn],
       actions: actions,
     });
   }
@@ -308,7 +326,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.browserArn },
+      dimensionsMap: { ...dimensions, Resource: this.browserCustomRef.browserArn },
       ...props,
     };
     return this.configureMetric(metricProps);
@@ -513,9 +531,9 @@ export interface BrowserCustomProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * The name must start with a letter and can be up to 48 characters long
    * Pattern: [a-zA-Z][a-zA-Z0-9_]{0,47}
-   * @required - Yes
+   * @default - auto generate
    */
-  readonly browserCustomName: string;
+  readonly browserCustomName?: string;
 
   /**
    * Optional description for the browser
@@ -731,22 +749,30 @@ export class BrowserCustom extends BrowserCustomBase {
   // ------------------------------------------------------
   // CONSTRUCTOR
   // ------------------------------------------------------
-  constructor(scope: Construct, id: string, props: BrowserCustomProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: BrowserCustomProps = {}) {
+    super(scope, id, {
+      // Maximum name length of 48 characters is chosen even when no max name mentioned in documentation below,
+      // due to failure in CF deployment when more than 48 characters used
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-browsercustom.html#cfn-bedrockagentcore-browsercustom-name
+      physicalName: props?.browserCustomName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
+        }),
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------
-    this.name = props.browserCustomName;
-    this.description = props.description;
-    this.networkConfiguration = props.networkConfiguration ?? BrowserNetworkConfiguration.usingPublicNetwork();
-    this.recordingConfig = props.recordingConfig ?? { enabled: false };
-    this.executionRole = props.executionRole ?? this._createBrowserRole();
+    this.name = this.physicalName;
+    this.description = props?.description;
+    this.networkConfiguration = props?.networkConfiguration ?? BrowserNetworkConfiguration.usingPublicNetwork();
+    this.recordingConfig = props?.recordingConfig ?? { enabled: false };
+    this.executionRole = props?.executionRole ?? this._createBrowserRole();
     this.grantPrincipal = this.executionRole;
-    this.tags = props.tags;
-    this.browserSigning = props.browserSigning ?? BrowserSigning.DISABLED;
+    this.tags = props?.tags;
+    this.browserSigning = props?.browserSigning ?? BrowserSigning.DISABLED;
 
     // Validate browser name
     throwIfInvalid(this._validateBrowserName, this.name);

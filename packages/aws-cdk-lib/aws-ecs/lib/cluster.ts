@@ -1,42 +1,47 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { ClusterGrants } from './cluster-grants';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
+import type {
+  IClusterRef,
+  ClusterReference,
+} from './ecs.generated';
 import {
   CfnCluster,
   CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
-  IClusterRef,
-  ClusterReference,
 } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { InstanceRequirementsConfig } from '../../aws-ec2';
+import type { InstanceRequirementsConfig } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IKey, IKeyRef } from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as kms from '../../aws-kms';
+import type * as logs from '../../aws-logs';
+import type * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
+import type {
+  IResource,
+  IAspect,
+  Size,
+} from '../../core';
 import {
   Aws,
   Duration,
-  IResource,
   Resource,
   Stack,
   Aspects,
   ArnFormat,
-  IAspect,
   Token,
   Names,
   Annotations,
   ValidationError,
-  Size,
   Lazy,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -210,16 +215,6 @@ export class Cluster extends Resource implements ICluster {
   public readonly vpc: ec2.IVpc;
 
   /**
-   * The Amazon Resource Name (ARN) that identifies the cluster.
-   */
-  public readonly clusterArn: string;
-
-  /**
-   * The name of the cluster.
-   */
-  public readonly clusterName: string;
-
-  /**
    * Collection of grant methods for a Cluster
    */
   public readonly grants = ClusterGrants.fromCluster(this);
@@ -269,6 +264,20 @@ export class Cluster extends Resource implements ICluster {
    * CfnCluster instance
    */
   private _cfnCluster: CfnCluster;
+
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.getResourceArnAttribute(this._cfnCluster.attrArn, {
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(this._cfnCluster.ref);
+  }
 
   /**
    * Constructs a new instance of the Cluster class.
@@ -322,13 +331,6 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings,
       configuration: this.renderClusterConfiguration(),
     });
-
-    this.clusterArn = this.getResourceArnAttribute(this._cfnCluster.attrArn, {
-      service: 'ecs',
-      resource: 'cluster',
-      resourceName: this.physicalName,
-    });
-    this.clusterName = this.getResourceNameAttribute(this._cfnCluster.ref);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
@@ -1452,7 +1454,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly fargateEphemeralStorageKmsKey?: IKey;
+  readonly fargateEphemeralStorageKmsKey?: kms.IKey;
 
   /**
    * Customer KMS Key used to encrypt ECS managed Storage.
@@ -1461,7 +1463,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly kmsKey?: IKeyRef;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -1492,6 +1494,21 @@ export enum PropagateManagedInstancesTags {
    * Do not propagate tags
    */
   NONE = 'NONE',
+}
+
+/**
+ * The capacity option type for instances launched by a Managed Instances Capacity Provider.
+ */
+export enum CapacityOptionType {
+  /**
+   * Launch instances as On-Demand instances
+   */
+  ON_DEMAND = 'ON_DEMAND',
+
+  /**
+   * Launch instances as Spot instances
+   */
+  SPOT = 'SPOT',
 }
 
 /**
@@ -1546,11 +1563,8 @@ export interface ManagedInstancesCapacityProviderProps {
   /**
    * The security groups to associate with the launched EC2 instances.
    * These security groups control the network traffic allowed to and from the instances.
-   * If not specified, the default security group of the VPC containing the subnets will be used.
-   *
-   * @default - default security group of the VPC
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
    * The size of the task volume storage attached to each instance.
@@ -1590,6 +1604,14 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default PropagateManagedInstancesTags.NONE - no tag propagation
    */
   readonly propagateTags?: PropagateManagedInstancesTags;
+
+  /**
+   * Specifies the capacity option type for instances launched by this capacity provider.
+   * This determines whether instances are launched as On-Demand or Spot instances.
+   *
+   * @default - `ON_DEMAND`
+   */
+  readonly capacityOptionType?: CapacityOptionType;
 }
 
 /**
@@ -1650,6 +1672,10 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       throw new ValidationError('Subnets are required and should be non-empty.', this);
     }
 
+    if (props.securityGroups.length === 0) {
+      throw new ValidationError('Security groups cannot be an empty array. Provide at least one security group.', this);
+    }
+
     // Create or use provided infrastructure role
     const roleId = `${id}Role`;
     this.infrastructureRole = props.infrastructureRole ?? new iam.Role(this, roleId, {
@@ -1681,6 +1707,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     const managedInstancesProviderConfig: CfnCapacityProvider.ManagedInstancesProviderProperty = {
       infrastructureRoleArn: this.infrastructureRole.roleArn,
       instanceLaunchTemplate: {
+        capacityOptionType: props.capacityOptionType,
         ec2InstanceProfileArn: this.ec2InstanceProfile.instanceProfileArn,
         networkConfiguration: {
           subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),

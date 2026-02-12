@@ -1,4 +1,4 @@
-import * as appscaling from '../lib';
+import type * as appscaling from '../lib';
 
 /**
  * Arbitrary (valid) array of intervals

@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { DistributionGrants } from './cloudfront-grants.generated';
-import { CfnDistribution, DistributionReference } from './cloudfront.generated';
+import type { DistributionReference } from './cloudfront.generated';
+import { CfnDistribution } from './cloudfront.generated';
+import type { IDistribution } from './distribution';
 import {
   HttpVersion,
-  IDistribution,
   LambdaEdgeEventType,
   OriginProtocolPolicy,
   PriceClass,
@@ -11,18 +12,18 @@ import {
   SSLMethod,
   ViewerProtocolPolicy,
 } from './distribution';
-import { FunctionAssociation } from './function';
-import { GeoRestriction } from './geo-restriction';
+import type { FunctionAssociation } from './function';
+import type { GeoRestriction } from './geo-restriction';
 import { formatDistributionArn } from './private/utils';
 import * as certificatemanager from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
-import { ICloudFrontOriginAccessIdentityRef, IKeyGroupRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICloudFrontOriginAccessIdentityRef, IKeyGroupRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 /**
  * HTTP status code to failover to second origin
@@ -793,6 +794,9 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       }
 
       /**
+       *
+       * The use of this method is discouraged. Please use `grants.createInvalidation()` instead.
+       *
        * [disable-awslint:no-grants]
        */
       public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {

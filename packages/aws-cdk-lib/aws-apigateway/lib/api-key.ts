@@ -1,12 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ApiKeyGrants } from './apigateway-grants.generated';
-import { ApiKeyReference, CfnApiKey, IApiKeyRef, IStageRef } from './apigateway.generated';
-import { ResourceOptions } from './resource';
-import { IRestApi } from './restapi';
-import { IStage } from './stage';
-import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
-import * as iam from '../../aws-iam';
-import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../core';
+import type { ApiKeyReference, IApiKeyRef, IStageRef } from './apigateway.generated';
+import { CfnApiKey } from './apigateway.generated';
+import type { ResourceOptions } from './resource';
+import type { IRestApi } from './restapi';
+import type { IStage } from './stage';
+import type { QuotaSettings, ThrottleSettings, UsagePlanPerApiStage } from './usage-plan';
+import { UsagePlan } from './usage-plan';
+import type * as iam from '../../aws-iam';
+import type { IResource as IResourceBase } from '../../core';
+import { ArnFormat, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -108,6 +111,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -118,6 +124,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all write operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -128,6 +137,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read and write operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.readWrite()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
