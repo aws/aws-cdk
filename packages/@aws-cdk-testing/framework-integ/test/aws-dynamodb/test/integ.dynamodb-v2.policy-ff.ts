@@ -28,7 +28,8 @@ class TestStack extends Stack {
     // Table with resource policy and feature flag resourcePolicyPerReplica enabled.
     // Replica removed: CloudFormation does not allow creating a replica and setting
     // a resource-based policy in the same stack operation, even when the policy is
-    // scoped to the primary region only.
+    // scoped to the primary region only. A two-stack approach also fails because
+    // addToResourcePolicy mutates the table's CFN resource in the original stack.
     new dynamodb.TableV2(this, 'TableTestV2-1', {
       partitionKey: {
         name: 'id',
