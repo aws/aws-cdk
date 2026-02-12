@@ -1,24 +1,28 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { IConstruct, Construct, Node } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
-import { Arn, ArnComponents, ArnFormat } from './arn';
+import type { ArnComponents, ArnFormat } from './arn';
+import { Arn } from './arn';
 import { Aspects } from './aspect';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
+import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
-import { Environment } from './environment';
+import type { Environment, ResourceEnvironment } from './environment';
 import { FeatureFlags } from './feature-flags';
-import { PermissionsBoundary, PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
+import type { PermissionsBoundary } from './permissions-boundary';
+import { PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
-import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
+import type { IPropertyInjector } from './prop-injectors';
+import { PropertyInjectors } from './prop-injectors';
 import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
@@ -987,7 +991,7 @@ export class Stack extends Construct implements ITaggable {
       const cycleDescription = cycle.map((cycleReason) => {
         return cycleReason.description;
       }).join(', ');
-      // eslint-disable-next-line max-len
+
       throw new ValidationError(`'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.description}) would create a cyclic reference.`, this);
     }
 
@@ -1405,7 +1409,6 @@ export class Stack extends Construct implements ITaggable {
     let transform: string | string[] | undefined;
 
     if (this.templateOptions.transform) {
-      // eslint-disable-next-line max-len
       Annotations.of(this).addWarningV2('@aws-cdk/core:stackDeprecatedTransform', 'This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
@@ -1634,6 +1637,16 @@ export class Stack extends Construct implements ITaggable {
   public removeStackTag(tagName: string) {
     this.tags.removeTag(tagName, 0);
   }
+
+  /**
+   * The environment this Stack deploys to
+   */
+  public get env(): ResourceEnvironment {
+    return {
+      account: this.account,
+      region: this.region,
+    };
+  }
 }
 
 function merge(template: any, fragment: any): void {
@@ -1861,21 +1874,24 @@ function count(xs: string[]): Record<string, number> {
 // These imports have to be at the end to prevent circular imports
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
-import { addDependency, Element } from './deps';
+import type { Element } from './deps';
+import { addDependency } from './deps';
 import { Names } from './names';
 import { Reference } from './reference';
-import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT, isReusableStackSynthesizer } from './stack-synthesizers';
+import type { IResolvable } from './resolvable';
+import type { IStackSynthesizer, ISynthesisSession } from './stack-synthesizers';
+import { DefaultStackSynthesizer, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT, isReusableStackSynthesizer } from './stack-synthesizers';
 import { StringSpecializer } from './helpers-internal/string-specializer';
 import { Stage } from './stage';
-import { ITaggable, TagManager } from './tag-manager';
+import type { ITaggable } from './tag-manager';
+import { TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
 import { getExportable, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
 import { Fact, RegionInfo } from '../../region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
-import { Intrinsic } from './private/intrinsic';
+import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, ValidationError } from './errors';
 /* eslint-enable import/order */

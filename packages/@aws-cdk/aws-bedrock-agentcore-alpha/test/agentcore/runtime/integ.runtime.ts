@@ -6,9 +6,11 @@
 /// !cdk-integ aws-cdk-bedrock-agentcore-runtime
 
 import * as path from 'path';
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
+import * as cdk from 'aws-cdk-lib';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-runtime');
@@ -17,9 +19,9 @@ const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-runtime');
 // This uses a minimal test application with no external dependencies
 const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, 'testArtifact'),
+  { platform: assets.Platform.LINUX_ARM64 },
 );
 
-// Create a single runtime (similar to the working strands example)
 const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
   runtimeName: 'integ_test_runtime',
   description: 'Integration test runtime for BedrockAgentCore',
@@ -59,13 +61,16 @@ const taggedEndpoint = new agentcore.RuntimeEndpoint(stack, 'TaggedEndpoint', {
   },
 });
 
-// Create version 2 endpoint
-const v2Endpoint = new agentcore.RuntimeEndpoint(stack, 'V2Endpoint', {
-  endpointName: 'v2_endpoint',
-  agentRuntimeId: runtime.agentRuntimeId,
-  agentRuntimeVersion: '2',
-  description: 'Version 2 endpoint',
+// Test grant methods to verify sub-resource permissions
+const testFunction = new lambda.Function(stack, 'TestInvokerFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('def handler(event, context): return {"statusCode": 200}'),
+  description: 'Test function to verify runtime grant permissions with sub-resources',
 });
+
+// Grant invoke permissions - this will include sub-resource wildcard in IAM policy
+runtime.grantInvoke(testFunction);
 
 // Output runtime and endpoint information for verification
 new cdk.CfnOutput(stack, 'RuntimeId', {
@@ -88,14 +93,7 @@ new cdk.CfnOutput(stack, 'TaggedEndpointId', {
   description: 'Tagged endpoint ID',
 });
 
-new cdk.CfnOutput(stack, 'V2EndpointId', {
-  value: v2Endpoint.endpointId,
-  description: 'Version 2 endpoint ID',
-});
-
-// Create the integration test
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeTest', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
 });
-
-app.synth();

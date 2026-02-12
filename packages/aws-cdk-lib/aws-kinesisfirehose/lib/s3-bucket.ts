@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
-import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
-import { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
+import type { Construct } from 'constructs';
+import type { CommonDestinationProps, CommonDestinationS3Props } from './common';
+import { BackupMode } from './common';
+import type { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import type { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
+import type { IBucket } from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig, createTimezoneName } from './private/helpers';
 import * as cdk from '../../core';
 
@@ -75,7 +76,7 @@ export interface DataFormatConversionProps {
  * An S3 bucket destination for data from an Amazon Data Firehose delivery stream.
  */
 export class S3Bucket implements IDestination {
-  constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
+  constructor(private readonly bucket: IBucket, private readonly props: S3BucketProps = {}) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
       throw new cdk.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
     }

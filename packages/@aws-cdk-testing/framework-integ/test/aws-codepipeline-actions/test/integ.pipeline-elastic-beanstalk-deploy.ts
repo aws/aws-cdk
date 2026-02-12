@@ -2,13 +2,15 @@ import * as path from 'path';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
+import type { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as deploy from 'aws-cdk-lib/aws-s3-deployment';
-import { App, Fn, RemovalPolicy, ResourceEnvironment, Stack, UnscopedValidationError } from 'aws-cdk-lib';
+import type { ResourceEnvironment } from 'aws-cdk-lib';
+import { App, Fn, RemovalPolicy, Stack, UnscopedValidationError } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
-import { Node } from 'constructs';
+import type { Node } from 'constructs';
+import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 /**
  * To validate that the deployment actually succeeds, perform the following actions:
@@ -93,8 +95,7 @@ const beanstalkApp = new elasticbeanstalk.CfnApplication(stack, 'beastalk-app', 
 const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', {
   applicationName: beanstalkApp.applicationName!,
   environmentName: 'codepipeline-test-env',
-  // see https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html#platforms-supported.nodejs
-  solutionStackName: '64bit Amazon Linux 2023 v6.6.2 running Node.js 20',
+  solutionStackName: SOLUTION_STACK_NAME.NODEJS_20,
   optionSettings: [
     {
       namespace: 'aws:autoscaling:launchconfiguration',

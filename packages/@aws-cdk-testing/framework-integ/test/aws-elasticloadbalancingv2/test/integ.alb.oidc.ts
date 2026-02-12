@@ -7,9 +7,11 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
-import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
+import type { StackProps } from 'aws-cdk-lib/core';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+import * as path from 'path';
 
 interface CognitoUserProps {
   userPool: cognito.UserPool;
@@ -184,7 +186,7 @@ const testUser = new CognitoUser(testCase, 'User', cognitoUserProps);
 // this function signs in to the website and returns text content of the authenticated page body
 const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-oidc-signin-handler',
-  code: lambda.Code.fromAsset('alb-oidc-signin-handler', { exclude: ['*.ts'] }),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'alb-oidc-signin-handler'), { exclude: ['*.ts'] }),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_20_X,
   environment: {

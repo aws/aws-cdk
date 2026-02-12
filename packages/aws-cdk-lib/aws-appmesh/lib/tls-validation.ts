@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { CfnVirtualNode } from './appmesh.generated';
-import * as acmpca from '../../aws-acmpca';
-import { ValidationError } from '../../core/lib/errors';
+import type { Construct } from 'constructs';
+import type { CfnVirtualNode } from './appmesh.generated';
+import type * as acmpca from '../../aws-acmpca';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents the properties needed to define TLS Validation context
@@ -63,7 +63,7 @@ export abstract class TlsValidationTrust {
   /**
    * TLS Validation Context Trust for ACM Private Certificate Authority (CA).
    */
-  public static acm(certificateAuthorities: acmpca.ICertificateAuthority[]): TlsValidationTrust {
+  public static acm(certificateAuthorities: acmpca.ICertificateAuthorityRef[]): TlsValidationTrust {
     return new TlsValidationAcmTrust(certificateAuthorities);
   }
 
@@ -89,14 +89,22 @@ export abstract class MutualTlsValidationTrust extends TlsValidationTrust {
 }
 
 class TlsValidationAcmTrust extends TlsValidationTrust {
+  private readonly _certificateAuthorities: acmpca.ICertificateAuthorityRef[];
+
+  constructor (certificateAuthorities: acmpca.ICertificateAuthorityRef[]) {
+    super();
+    this._certificateAuthorities = certificateAuthorities;
+  }
+
   /**
    * Contains information for your private certificate authority
    */
-  readonly certificateAuthorities: acmpca.ICertificateAuthority[];
+  public get certificateAuthorities(): acmpca.ICertificateAuthority[] {
+    if (this._certificateAuthorities.some((x) => !('certificateAuthorityArn' in x))) {
+      throw new UnscopedValidationError('Not all elements of \'certificateAuthorities\' parameter implement ICertificateAuthority');
+    }
 
-  constructor (certificateAuthorities: acmpca.ICertificateAuthority[]) {
-    super();
-    this.certificateAuthorities = certificateAuthorities;
+    return this._certificateAuthorities as acmpca.ICertificateAuthority[] ;
   }
 
   public bind(scope: Construct): TlsValidationTrustConfig {

@@ -5,7 +5,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import {
-  AwsManagedComponent,
   AwsMarketplaceComponent,
   Component,
   ComponentAction,
@@ -15,6 +14,7 @@ import {
   ComponentParameterType,
   ComponentPhaseName,
   ComponentSchemaVersion,
+  ComponentStepInputs,
   OSVersion,
   Platform,
 } from '../lib';
@@ -143,96 +143,6 @@ describe('Component', () => {
     expect(component.componentVersion).toEqual('1.2.3');
   });
 
-  test('AWS-managed component import by name', () => {
-    const component = AwsManagedComponent.fromAwsManagedComponentName(
-      stack,
-      'Component',
-      'amazon-cloudwatch-agent-linux',
-    );
-
-    expect(stack.resolve(component.componentArn)).toEqual({
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':imagebuilder:us-east-1:aws:component/amazon-cloudwatch-agent-linux/x.x.x',
-        ],
-      ],
-    });
-    expect(component.componentName).toEqual('amazon-cloudwatch-agent-linux');
-    expect(component.componentVersion).toEqual('x.x.x');
-  });
-
-  test('AWS-managed component import by attributes', () => {
-    const component = AwsManagedComponent.fromAwsManagedComponentAttributes(stack, 'Component', {
-      componentName: 'amazon-cloudwatch-agent-linux',
-      componentVersion: 'x.x.x',
-    });
-
-    expect(stack.resolve(component.componentArn)).toEqual({
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':imagebuilder:us-east-1:aws:component/amazon-cloudwatch-agent-linux/x.x.x',
-        ],
-      ],
-    });
-    expect(component.componentName).toEqual('amazon-cloudwatch-agent-linux');
-    expect(component.componentVersion).toEqual('x.x.x');
-  });
-
-  test('AWS-managed component pre-defined method import', () => {
-    const awsCliV2Linux = AwsManagedComponent.awsCliV2(stack, 'AwsCliV2Linux-Component', { platform: Platform.LINUX });
-    const awsCliV2Windows = AwsManagedComponent.awsCliV2(stack, 'AwsCliV2Windows-Component', {
-      platform: Platform.WINDOWS,
-    });
-    const helloWorldLinux = AwsManagedComponent.helloWorld(stack, 'HelloWorldLinux-Component', {
-      platform: Platform.LINUX,
-    });
-    const helloWorldWindows = AwsManagedComponent.helloWorld(stack, 'HelloWorldWindows-Component', {
-      platform: Platform.WINDOWS,
-    });
-    const python3Linux = AwsManagedComponent.python3(stack, 'Python3Linux-Component', { platform: Platform.LINUX });
-    const python3Windows = AwsManagedComponent.python3(stack, 'Python3Windows-Component', {
-      platform: Platform.WINDOWS,
-    });
-    const rebootLinux = AwsManagedComponent.reboot(stack, 'RebootLinux-Component', { platform: Platform.LINUX });
-    const rebootWindows = AwsManagedComponent.reboot(stack, 'RebootWindows-Component', { platform: Platform.WINDOWS });
-    const stigBuildLinux = AwsManagedComponent.stigBuild(stack, 'StigBuildLinux-Component', {
-      platform: Platform.LINUX,
-    });
-    const stigBuildWindows = AwsManagedComponent.stigBuild(stack, 'StigBuildWindows-Component', {
-      platform: Platform.WINDOWS,
-    });
-    const updateLinux = AwsManagedComponent.updateOS(stack, 'UpdateLinux-Component', { platform: Platform.LINUX });
-    const updateWindows = AwsManagedComponent.updateOS(stack, 'UpdateWindows-Component', {
-      platform: Platform.WINDOWS,
-    });
-
-    const expectedComponentArn = (componentName: string) => ({
-      'Fn::Join': [
-        '',
-        ['arn:', { Ref: 'AWS::Partition' }, `:imagebuilder:us-east-1:aws:component/${componentName}/x.x.x`],
-      ],
-    });
-
-    expect(stack.resolve(awsCliV2Linux.componentArn)).toEqual(expectedComponentArn('aws-cli-version-2-linux'));
-    expect(stack.resolve(awsCliV2Windows.componentArn)).toEqual(expectedComponentArn('aws-cli-version-2-windows'));
-    expect(stack.resolve(helloWorldLinux.componentArn)).toEqual(expectedComponentArn('hello-world-linux'));
-    expect(stack.resolve(helloWorldWindows.componentArn)).toEqual(expectedComponentArn('hello-world-windows'));
-    expect(stack.resolve(python3Linux.componentArn)).toEqual(expectedComponentArn('python-3-linux'));
-    expect(stack.resolve(python3Windows.componentArn)).toEqual(expectedComponentArn('python-3-windows'));
-    expect(stack.resolve(rebootLinux.componentArn)).toEqual(expectedComponentArn('reboot-linux'));
-    expect(stack.resolve(rebootWindows.componentArn)).toEqual(expectedComponentArn('reboot-windows'));
-    expect(stack.resolve(stigBuildLinux.componentArn)).toEqual(expectedComponentArn('stig-build-linux'));
-    expect(stack.resolve(stigBuildWindows.componentArn)).toEqual(expectedComponentArn('stig-build-windows'));
-    expect(stack.resolve(updateLinux.componentArn)).toEqual(expectedComponentArn('update-linux'));
-    expect(stack.resolve(updateWindows.componentArn)).toEqual(expectedComponentArn('update-windows'));
-  });
-
   test('AWS Marketplace component import by required attributes', () => {
     const component = AwsMarketplaceComponent.fromAwsMarketplaceComponentAttributes(stack, 'Component', {
       componentName: 'marketplace-component',
@@ -311,9 +221,9 @@ describe('Component', () => {
                   name: 'scope',
                   forEach: ['world', 'universe'],
                 },
-                inputs: {
+                inputs: ComponentStepInputs.fromObject({
                   commands: ['echo "Hello {{ scope.value }}!"'],
-                },
+                }),
               },
             ],
           },
@@ -331,9 +241,9 @@ describe('Component', () => {
                     updateBy: 1,
                   },
                 },
-                inputs: {
+                inputs: ComponentStepInputs.fromObject({
                   commands: ['echo "Hello {{ scope.index }} validate!"'],
-                },
+                }),
               },
             ],
           },
@@ -341,14 +251,11 @@ describe('Component', () => {
             name: ComponentPhaseName.TEST,
             steps: [
               {
-                name: 'hello-world-test',
-                action: ComponentAction.EXECUTE_BASH,
-                inputs: {
-                  commands: [
-                    'echo "Hello {{ Constant1 }} {{ Parameter1 }}!"',
-                    'echo "Hello {{ Constant2 }} {{ Parameter2 }}!"',
-                  ],
-                },
+                name: 'hello-world-download-test',
+                action: ComponentAction.WEB_DOWNLOAD,
+                inputs: ComponentStepInputs.fromList([
+                  { source: 'https://download.com/package.zip', destination: '/tmp/package.zip' },
+                ]),
               },
             ],
           },
@@ -426,12 +333,11 @@ phases:
             - echo "Hello {{ scope.index }} validate!"
   - name: test
     steps:
-      - name: hello-world-test
-        action: ExecuteBash
+      - name: hello-world-download-test
+        action: WebDownload
         inputs:
-          commands:
-            - echo "Hello {{ Constant1 }} {{ Parameter1 }}!"
-            - echo "Hello {{ Constant2 }} {{ Parameter2 }}!"
+          - source: https://download.com/package.zip
+            destination: /tmp/package.zip
 `,
           },
         }),
@@ -804,45 +710,6 @@ phases:
 
   test('throws a validation error when neither a componentArn and componentName are provided when importing by attributes', () => {
     expect(() => Component.fromComponentAttributes(stack, 'Component', {})).toThrow(cdk.ValidationError);
-  });
-
-  test('throws a validation error when importing an AWS-managed component with the platform attribute', () => {
-    expect(() =>
-      AwsManagedComponent.fromAwsManagedComponentAttributes(stack, 'Component', {
-        componentName: 'hello-world-linux',
-        platform: Platform.LINUX,
-      }),
-    ).toThrow(cdk.ValidationError);
-  });
-
-  test('throws a validation error when importing an AWS-managed component without the componentName attribute', () => {
-    expect(() => AwsManagedComponent.fromAwsManagedComponentAttributes(stack, 'Component', {})).toThrow(
-      cdk.ValidationError,
-    );
-  });
-
-  test('throws a validation error when importing a pre-defined AWS-managed component without the platform attribute', () => {
-    expect(() => AwsManagedComponent.helloWorld(stack, 'Component', {})).toThrow(cdk.ValidationError);
-  });
-
-  test('throws a validation error when importing a pre-defined AWS-managed component with an unresolved platform attribute', () => {
-    const platform = new cdk.CfnParameter(stack, 'Platform', { type: 'String' }).valueAsString;
-
-    expect(() => AwsManagedComponent.helloWorld(stack, 'Component', { platform: platform as Platform })).toThrow(
-      cdk.ValidationError,
-    );
-  });
-
-  test('throws a validation error when importing a pre-defined AWS-managed component with the componentName attribute', () => {
-    expect(() => AwsManagedComponent.helloWorld(stack, 'Component', { componentName: 'hello-world-linux' })).toThrow(
-      cdk.ValidationError,
-    );
-  });
-
-  test('throws a validation error when importing a pre-defined AWS-managed component with an unsupported platform provided', () => {
-    expect(() => AwsManagedComponent.helloWorld(stack, 'Component', { platform: Platform.MAC_OS })).toThrow(
-      cdk.ValidationError,
-    );
   });
 
   test('throws a validation error when the resource name is too long', () => {

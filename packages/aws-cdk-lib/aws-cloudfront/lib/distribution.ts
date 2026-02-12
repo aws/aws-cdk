@@ -1,8 +1,6 @@
 import { Construct } from 'constructs';
 import { DistributionGrants } from './cloudfront-grants.generated';
-import {
-  CfnDistribution,
-  CfnMonitoringSubscription,
+import type {
   DistributionReference,
   ICachePolicyRef,
   IDistributionRef,
@@ -11,22 +9,27 @@ import {
   IRealtimeLogConfigRef,
   IResponseHeadersPolicyRef,
 } from './cloudfront.generated';
-import { FunctionAssociation } from './function';
-import { GeoRestriction } from './geo-restriction';
-import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
+import {
+  CfnDistribution,
+  CfnMonitoringSubscription,
+} from './cloudfront.generated';
+import type { FunctionAssociation } from './function';
+import type { GeoRestriction } from './geo-restriction';
+import type { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
-import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as iam from '../../aws-iam';
+import type * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
+import type {
+  Duration,
+  IResource,
+} from '../../core';
 import {
   Annotations,
   ArnFormat,
-  Duration,
   FeatureFlags,
-  IResource,
   Lazy,
   Names,
   Resource,
@@ -37,6 +40,7 @@ import {
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Interface for CloudFront distributions
@@ -133,7 +137,7 @@ export interface DistributionProps {
    *
    * @default - the CloudFront wildcard certificate (*.cloudfront.net) will be used.
    */
-  readonly certificate?: acm.ICertificate;
+  readonly certificate?: ICertificateRef;
 
   /**
    * Any comments you want to include about the distribution.
@@ -329,11 +333,19 @@ export class Distribution extends Resource implements IDistribution {
       public get distributionArn(): string {
         return formatDistributionArn(this);
       }
+
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return grant(this, grantee, ...actions);
       }
+
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
-        return DistributionGrants._fromDistribution(this).createInvalidation(grantee);
+        return DistributionGrants.fromDistribution(this).createInvalidation(grantee);
       }
     }();
   }
@@ -346,7 +358,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Collection of grant methods for a Distribution
    */
-  public readonly grants = DistributionGrants._fromDistribution(this);
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
@@ -355,7 +367,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
-  private readonly certificate?: acm.ICertificate;
+  private readonly certificate?: ICertificateRef;
   private readonly publishAdditionalMetrics?: boolean;
   private webAclId?: string;
 
@@ -365,7 +377,7 @@ export class Distribution extends Resource implements IDistribution {
     addConstructMetadata(this, props);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new ValidationError(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }
@@ -662,6 +674,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Adds an IAM policy statement associated with this distribution to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
@@ -673,6 +686,7 @@ export class Distribution extends Resource implements IDistribution {
 
   /**
    * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
@@ -851,7 +865,7 @@ export class Distribution extends Resource implements IDistribution {
     } : undefined;
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate,
+  private renderViewerCertificate(certificate: ICertificateRef,
     minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
     const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
       ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
@@ -859,7 +873,7 @@ export class Distribution extends Resource implements IDistribution {
     const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 
     return {
-      acmCertificateArn: certificate.certificateArn,
+      acmCertificateArn: certificate.certificateRef.certificateId,
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };

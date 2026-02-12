@@ -1,7 +1,8 @@
-import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
-import { IAgentAlias } from '../agents/agent-alias';
-import { PromptTemplateConfiguration } from './prompt-template-configuration';
 import { PromptGenAiResource } from './prompt-genai-resource';
+import { PromptTemplateConfiguration } from './prompt-template-configuration';
+import type { CommonPromptVariantProps, IPromptVariant } from './prompt-variant';
+import { PromptTemplateType } from './prompt-variant';
+import type { IAgentAlias } from '../agents/agent-alias';
 import { ValidationError } from '../agents/validation-helpers';
 
 /**

@@ -1,5 +1,5 @@
 import { PROJECT_NUMBER } from './config';
-import { Github } from './github';
+import type { Github } from './github';
 
 export const PRIORITIES = {
   p0: 'P0',

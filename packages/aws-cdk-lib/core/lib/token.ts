@@ -1,12 +1,12 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { unresolved } from './private/encoding';
 import { Intrinsic } from './private/intrinsic';
 import { resolve } from './private/resolve';
 import { TokenMap } from './private/token-map';
-import { IResolvable, ITokenResolver, IResolveContext } from './resolvable';
-import { TokenizedStringFragments } from './string-fragments';
+import type { IResolvable, ITokenResolver, IResolveContext } from './resolvable';
+import type { TokenizedStringFragments } from './string-fragments';
 
 /**
  * An enum-like class that represents the result of comparing two Tokens.
@@ -318,6 +318,7 @@ export interface EncodingOptions {
 }
 
 export function isResolvableObject(x: any): x is IResolvable {
+  // eslint-disable-next-line @cdklabs/no-evaluating-typeguard
   return typeof(x) === 'object' && x !== null && typeof x.resolve === 'function';
 }
 

@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
+import type { PublicSubnet } from '../lib';
 import {
   AclCidr,
   AclTraffic,
@@ -23,7 +24,6 @@ import {
   Peer,
   Port,
   PrivateSubnet,
-  PublicSubnet,
   RouterType,
   Subnet,
   SubnetType,
@@ -368,7 +368,7 @@ describe('vpc', () => {
 
     test('with only reserved subnets as public subnets, should not create the internet gateway', () => {
       const stack = getTestStack();
-      const vpc = new Vpc(stack, 'TheVPC', {
+      new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
             subnetType: SubnetType.PRIVATE_ISOLATED,
@@ -387,7 +387,7 @@ describe('vpc', () => {
 
     test('with only reserved subnets as private subnets with egress, should not create the internet gateway', () => {
       const stack = getTestStack();
-      const vpc = new Vpc(stack, 'TheVPC', {
+      new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
             subnetType: SubnetType.PRIVATE_ISOLATED,
@@ -2305,7 +2305,6 @@ describe('vpc', () => {
       const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
 
       // THEN
-      // eslint-disable-next-line max-len
       expect(() => subnet.availabilityZone).toThrow("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
     });
 
@@ -2318,7 +2317,6 @@ describe('vpc', () => {
 
       // THEN
       expect(subnet.subnetId).toEqual('pub-1');
-      // eslint-disable-next-line max-len
       expect(() => subnet.availabilityZone).toThrow("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
     });
 
@@ -2742,7 +2740,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
     });
 
@@ -2760,7 +2758,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {
@@ -2779,7 +2777,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {
@@ -2803,7 +2801,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
     // WHEN
     stack.node.setContext(EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, true);
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {
@@ -2826,7 +2824,7 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
     stack.node.setContext(EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, true);
     // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
+    new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {

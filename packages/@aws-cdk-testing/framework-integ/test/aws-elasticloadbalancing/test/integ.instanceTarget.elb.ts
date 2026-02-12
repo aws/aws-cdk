@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';

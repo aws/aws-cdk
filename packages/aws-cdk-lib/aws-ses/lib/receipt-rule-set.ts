@@ -1,14 +1,17 @@
-import { Construct } from 'constructs';
-import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
+import type { Construct } from 'constructs';
+import type { ReceiptRuleOptions } from './receipt-rule';
+import { DropSpamReceiptRule, ReceiptRule } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
-import { IResource, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IReceiptRuleSetRef, ReceiptRuleSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A receipt rule set.
  */
-export interface IReceiptRuleSet extends IResource {
+export interface IReceiptRuleSet extends IResource, IReceiptRuleSetRef {
   /**
    * The receipt rule set name.
    * @attribute
@@ -57,6 +60,12 @@ abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
   public abstract readonly receiptRuleSetName: string;
 
   private lastAddedRule?: ReceiptRule;
+
+  public get receiptRuleSetRef(): ReceiptRuleSetReference {
+    return {
+      ruleSetName: this.receiptRuleSetName,
+    };
+  }
 
   /**
    * Adds a new receipt rule in this rule set. The new rule is added after

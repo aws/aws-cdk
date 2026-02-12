@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
-/* eslint-disable no-console */
+
 import type { AwsCredentialIdentityProvider } from '@smithy/types';
-import { AwsSdkCall } from './construct-types';
+import type { AwsSdkCall } from './construct-types';
 
 type Event = AWSLambda.CloudFormationCustomResourceEvent;
 
@@ -70,7 +70,6 @@ export function respond(
     console.log('Responding', JSON.stringify(filteredResponseObject));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const parsedUrl = require('url').parse(event.ResponseURL);
   const responseBody = JSON.stringify(responseObject);
   const requestOptions = {
@@ -85,7 +84,6 @@ export function respond(
 
   return new Promise((resolve, reject) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const request = require('https').request(requestOptions, resolve);
       request.on('error', reject);
       request.write(responseBody);

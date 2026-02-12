@@ -1,16 +1,18 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnBackupVault } from './backup.generated';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as sns from '../../aws-sns';
-import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type * as sns from '../../aws-sns';
+import type { Duration, IResource, RemovalPolicy } from '../../core';
+import { ArnFormat, Lazy, Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { BackupVaultReference, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * A backup vault
  */
-export interface IBackupVault extends IResource {
+export interface IBackupVault extends IResource, IBackupVaultRef {
   /**
    * The name of a logical container where backups are stored.
    *
@@ -200,9 +202,18 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
   public abstract readonly backupVaultName: string;
   public abstract readonly backupVaultArn: string;
 
+  public get backupVaultRef(): BackupVaultReference {
+    return {
+      backupVaultName: this.backupVaultName,
+      backupVaultArn: this.backupVaultArn,
+    };
+  }
+
   /**
    * Grant the actions defined in actions to the given grantee
    * on this Backup Vault resource.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant right to
    * @param actions The actions to grant

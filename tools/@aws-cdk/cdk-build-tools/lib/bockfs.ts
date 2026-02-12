@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 // A not-so-fake filesystem mock similar to mock-fs
 //
 // mock-fs is super convenient but we can't always use it:
@@ -77,7 +76,14 @@ namespace bockfs {
 }
 
 process.on('exit', () => {
-  fs.removeSync(bockFsRoot);
+  bockfs.restore();
 });
+
+// The above doesn't work in jest, so we need to do something else there as well
+if ('afterAll' in global) {
+  afterAll(() => {
+    bockfs.restore();
+  });
+}
 
 export = bockfs;

@@ -1,9 +1,12 @@
-import { Construct } from 'constructs';
-import { ScheduleGroupGrants } from './scheduler-grants.generated';
-import { CfnScheduleGroup, IScheduleGroupRef, ScheduleGroupReference } from './scheduler.generated';
+import type { Construct } from 'constructs';
+import { ScheduleGroupGrants } from './schedule-group-grants';
+import type { IScheduleGroupRef, ScheduleGroupReference } from './scheduler.generated';
+import { CfnScheduleGroup } from './scheduler.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { ArnFormat, Names, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -147,7 +150,7 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
   /**
    * Collection of grant methods for a ScheduleGroup
    */
-  public readonly grants = ScheduleGroupGrants._fromScheduleGroup(this);
+  public readonly grants = ScheduleGroupGrants.fromScheduleGroup(this);
 
   public get scheduleGroupRef(): ScheduleGroupReference {
     return {
@@ -251,6 +254,7 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
 
   /**
    * Grant the indicated permissions on this schedule group to the given principal
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -260,51 +264,28 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
     });
   }
 
-  // private arnForScheduleInGroup(scheduleName: string): string {
-  //   return Arn.format({
-  //     region: this.env.region,
-  //     account: this.env.account,
-  //     partition: Aws.PARTITION,
-  //     service: 'scheduler',
-  //     resource: 'schedule',
-  //     resourceName: this.scheduleGroupName + '/' + scheduleName,
-  //   });
-  // }
-
   /**
    * Grant list and get schedule permissions for schedules in this group to the given principal
+   * [disable-awslint:no-grants]
    */
   public grantReadSchedules(identity: iam.IGrantable) {
     return this.grants.readSchedules(identity);
-    // return iam.Grant.addToPrincipal({
-    //   grantee: identity,
-    //   actions: ['scheduler:GetSchedule', 'scheduler:ListSchedules'],
-    //   resourceArns: [this.arnForScheduleInGroup('*')],
-    // });
   }
 
   /**
    * Grant create and update schedule permissions for schedules in this group to the given principal
+   * [disable-awslint:no-grants]
    */
   public grantWriteSchedules(identity: iam.IGrantable): iam.Grant {
     return this.grants.writeSchedules(identity);
-    // return iam.Grant.addToPrincipal({
-    //   grantee: identity,
-    //   actions: ['scheduler:CreateSchedule', 'scheduler:UpdateSchedule'],
-    //   resourceArns: [this.arnForScheduleInGroup('*')],
-    // });
   }
 
   /**
    * Grant delete schedule permission for schedules in this group to the given principal
+   * [disable-awslint:no-grants]
    */
   public grantDeleteSchedules(identity: iam.IGrantable): iam.Grant {
     return this.grants.deleteSchedules(identity);
-    // return iam.Grant.addToPrincipal({
-    //   grantee: identity,
-    //   actions: ['scheduler:DeleteSchedule'],
-    //   resourceArns: [this.arnForScheduleInGroup('*')],
-    // });
   }
 }
 
@@ -361,7 +342,17 @@ export class ScheduleGroup extends ScheduleGroupBase {
   }
 
   public readonly scheduleGroupName: string;
-  public readonly scheduleGroupArn: string;
+
+  @memoizedGetter
+  public get scheduleGroupArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'scheduler',
+      resource: 'schedule-group',
+      resourceName: this.scheduleGroupName,
+    });
+  }
+
+  private readonly _resource: CfnScheduleGroup;
 
   public constructor(scope: Construct, id: string, props?: ScheduleGroupProps) {
     super(scope, id);
@@ -379,10 +370,6 @@ export class ScheduleGroup extends ScheduleGroupBase {
 
     resource.applyRemovalPolicy(props?.removalPolicy);
 
-    this.scheduleGroupArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'scheduler',
-      resource: 'schedule-group',
-      resourceName: this.scheduleGroupName,
-    });
+    this._resource = resource;
   }
 }

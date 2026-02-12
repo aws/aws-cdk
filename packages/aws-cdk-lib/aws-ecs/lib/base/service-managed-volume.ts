@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
-import { Size, Token, ValidationError } from '../../../core';
-import { BaseMountPoint, ContainerDefinition } from '../container-definition';
+import type * as kms from '../../../aws-kms';
+import type { Size } from '../../../core';
+import { Token, ValidationError } from '../../../core';
+import type { BaseMountPoint, ContainerDefinition } from '../container-definition';
 
 /**
  * Represents the Volume configuration for an ECS service.
@@ -301,8 +302,8 @@ export class ServiceManagedVolume extends Construct {
     if (throughput !== undefined) {
       if (volumeType !== ec2.EbsDeviceVolumeType.GP3) {
         throw new ValidationError(`'throughput' can only be configured with gp3 volume type, got ${volumeType}`, this);
-      } else if (!Token.isUnresolved(throughput) && throughput > 1000) {
-        throw new ValidationError(`'throughput' must be less than or equal to 1000 MiB/s, got ${throughput} MiB/s`, this);
+      } else if (!Token.isUnresolved(throughput) && throughput > 2000) {
+        throw new ValidationError(`'throughput' must be less than or equal to 2000 MiB/s, got ${throughput} MiB/s`, this);
       }
     }
 
@@ -320,7 +321,7 @@ export class ServiceManagedVolume extends Construct {
 
     // Validate IOPS range if specified.
     const iopsRanges: { [key: string]: { min: number; max: number } } = {};
-    iopsRanges[ec2.EbsDeviceVolumeType.GP3]= { min: 3000, max: 16000 };
+    iopsRanges[ec2.EbsDeviceVolumeType.GP3]= { min: 3000, max: 80000 };
     iopsRanges[ec2.EbsDeviceVolumeType.IO1]= { min: 100, max: 64000 };
     iopsRanges[ec2.EbsDeviceVolumeType.IO2]= { min: 100, max: 256000 };
     if (iops !== undefined && !Token.isUnresolved(iops)) {

@@ -1,6 +1,6 @@
-import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import { App, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import { CustomLayer, Map, PoliticalView, Style } from '../lib';
 
 class TestStack extends Stack {

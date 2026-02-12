@@ -1,22 +1,29 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './application-listener-rule';
-import { IApplicationLoadBalancer } from './application-load-balancer';
-import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
-import { ListenerCondition } from './conditions';
-import { ITrustStore } from './trust-store';
+import type { FixedResponse, RedirectResponse } from './application-listener-rule';
+import { ApplicationListenerRule } from './application-listener-rule';
+import type { IApplicationLoadBalancer } from './application-load-balancer';
+import type { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
+import { ApplicationTargetGroup } from './application-target-group';
+import type { ListenerCondition } from './conditions';
+
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Annotations, Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
+import type { Duration } from '../../../core';
+import { Annotations, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
-import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
-import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { BaseListenerLookupOptions, IListener } from '../shared/base-listener';
+import { BaseListener } from '../shared/base-listener';
+import type { HealthCheck } from '../shared/base-target-group';
+import type { ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, IpAddressType } from '../shared/enums';
+import type { IListenerCertificate } from '../shared/listener-certificate';
+import { ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 
 /**
@@ -130,7 +137,7 @@ export interface MutualAuthentication {
    *
    * @default - no trust store
    */
-  readonly trustStore?: ITrustStore;
+  readonly trustStore?: aws_elasticloadbalancingv2.ITrustStoreRef;
 
   /**
    * Indicates whether expired client certificates are ignored
@@ -239,6 +246,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     return new ImportedApplicationListener(scope, id, attrs);
   }
 
+  public readonly isApplicationListener = true;
+
   /**
    * Manage connections to this ApplicationListener
    */
@@ -287,7 +296,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
         mode: props.mutualAuthentication?.mutualAuthenticationMode,
-        trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
+        trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreRef.trustStoreArn,
       } : undefined,
     });
     // Enhanced CDK Analytics Telemetry
@@ -455,7 +464,6 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   @MethodMetadata()
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup', this);
     }
 
@@ -595,9 +603,22 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 }
 
 /**
+ * Indicates that this resource can be referenced as an ALB Listener
+ */
+export interface IApplicationListenerRef extends IListener {
+  /**
+   * Indicates that this is an ALB listener
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isApplicationListener: boolean;
+}
+
+/**
  * Properties to reference an existing listener
  */
-export interface IApplicationListener extends IListener, ec2.IConnectable {
+export interface IApplicationListener extends IListener, ec2.IConnectable, IApplicationListenerRef {
   /**
    * Add one or more certificates to this listener.
    * @deprecated use `addCertificates()`
@@ -686,6 +707,8 @@ export interface ApplicationListenerAttributes {
 }
 
 abstract class ExternalApplicationListener extends Resource implements IApplicationListener {
+  public readonly isApplicationListener = true;
+
   /**
    * Connections object.
    */
@@ -695,6 +718,15 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * ARN of the listener
    */
   public abstract readonly listenerArn: string;
+
+  /**
+   * A reference to this listener
+   */
+  public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+    return {
+      listenerArn: this.listenerArn,
+    };
+  }
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -760,7 +792,6 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * @returns The newly created target group
    */
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
-    // eslint-disable-next-line max-len
     throw new ValidationError('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.', this);
   }
 
@@ -808,6 +839,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
 class ImportedApplicationListener extends ExternalApplicationListener {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationListener';
+  public readonly isApplicationListener = true;
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 
@@ -830,6 +862,7 @@ class ImportedApplicationListener extends ExternalApplicationListener {
 class LookedUpApplicationListener extends ExternalApplicationListener {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationListener';
+  public readonly isApplicationListener = true;
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 

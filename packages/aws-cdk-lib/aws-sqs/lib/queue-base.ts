@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { QueuePolicy } from './policy';
 import { QueueGrants } from './sqs-grants.generated';
-import { IQueueRef, QueueReference } from './sqs.generated';
+import type { IQueueRef, QueueReference } from './sqs.generated';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IResource, Resource, ResourceProps } from '../../core';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import type { IResource, ResourceProps } from '../../core';
+import { Resource } from '../../core';
 
 /**
  * Represents an SQS queue
@@ -141,7 +142,7 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
   /**
    * Collection of grant methods for a Queue
    */
-  public readonly grants = QueueGrants._fromQueue(this);
+  public readonly grants = QueueGrants.fromQueue(this);
 
   /**
    * Controls automatic creation of policy objects.
@@ -209,6 +210,8 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *
    *   - kms:Decrypt
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
@@ -233,6 +236,8 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *  - kms:ReEncrypt*
    *  - kms:GenerateDataKey*
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant send rights to
    */
   public grantSendMessages(grantee: iam.IGrantable) {
@@ -248,6 +253,8 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant send rights to
    */
   public grantPurge(grantee: iam.IGrantable) {
@@ -257,6 +264,8 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
   /**
    * Grant the actions defined in queueActions to the identity Principal given
    * on this SQS queue resource.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant right to
    * @param actions The actions to grant

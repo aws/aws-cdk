@@ -1,7 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { ModuleDefinition } from '@aws-cdk/pkglint';
-import { namespaceToModuleDefinition, PackageBaseNames } from './util/jsii';
+import type { PackageBaseNames } from './util/jsii';
+import { namespaceToModuleDefinition } from './util/jsii';
 
 /**
  * A data structure holding information about a single scope in a generated module.
@@ -42,6 +43,15 @@ export interface ModuleMapLoadingOptions {
    * @default - for `aws-cdk-lib`
    */
   readonly packageBases?: PackageBaseNames;
+
+  /**
+   * Read namespaces from the current module map
+   *
+   * If false, ignore the existing values and always synthesize new ones.
+   *
+   * @default true
+   */
+  readonly respectOverrides?: boolean;
 }
 
 /**
@@ -56,7 +66,7 @@ export function readModuleMap(filepath: string, opts: ModuleMapLoadingOptions = 
       definition = namespaceToModuleDefinition(loaded.scopes[0].namespace, opts.packageBases);
 
       // update definition with values from targets
-      if (loaded.targets) {
+      if (loaded.targets && (opts.respectOverrides ?? true)) {
         definition = {
           ...definition,
           dotnetPackage: loaded.targets.dotnet?.namespace ?? definition.dotnetPackage,
@@ -80,7 +90,7 @@ export function readModuleMap(filepath: string, opts: ModuleMapLoadingOptions = 
   }, {});
 }
 
-const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
+export const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
 
 /**
  * Loads the global module map from the `aws-cdk-lib` package.

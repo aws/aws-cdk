@@ -7,9 +7,12 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Aws, Duration, Stack, Token } from '../../core';
+import type {
+  CfnDistribution,
+  IOrigin,
+} from '../lib';
 import {
   AllowedMethods,
-  CfnDistribution,
   Distribution,
   Endpoint,
   Function,
@@ -17,7 +20,6 @@ import {
   FunctionEventType,
   GeoRestriction,
   HttpVersion,
-  IOrigin,
   LambdaEdgeEventType,
   PriceClass,
   RealtimeLogConfig,
@@ -1283,7 +1285,7 @@ test('grants createInvalidation to L1', () => {
   });
 
   DistributionGrants.
-    _fromDistribution(distribution.node.defaultChild as CfnDistribution)
+    fromDistribution(distribution.node.defaultChild as CfnDistribution)
     .createInvalidation(role);
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1477,7 +1479,7 @@ describe('Distribution metrics tests', () => {
       additionalMetricsRequired: true,
       errorMetricName: `${errorCode} error rate`,
     })),
-  ];
+  ] as const;
 
   const defaultMetrics = [
     { name: 'Requests', method: 'metricRequests', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
@@ -1486,16 +1488,16 @@ describe('Distribution metrics tests', () => {
     { name: 'TotalErrorRate', method: 'metricTotalErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
     { name: '4xxErrorRate', method: 'metric4xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
     { name: '5xxErrorRate', method: 'metric5xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
-  ];
+  ] as const;
 
-  test.each(additionalMetrics.concat(defaultMetrics))('get %s metric', (metric) => {
+  test.each([... additionalMetrics, ...defaultMetrics])('get %s metric', (metric) => {
     const origin = defaultOrigin();
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       publishAdditionalMetrics: metric.additionalMetricsRequired,
     });
 
-    const metricObj = dist[metric.method]();
+    const metricObj = (dist as any)[metric.method]();
 
     expect(metricObj).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/CloudFront',
@@ -1514,7 +1516,7 @@ describe('Distribution metrics tests', () => {
     });
 
     expect(() => {
-      dist[metric.method]();
+      (dist as any)[metric.method]();
     }).toThrow(new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
   });
 });
@@ -1576,7 +1578,7 @@ describe('attachWebAclId', () => {
     test('does not validate unresolved token webAclId', () => {
       const origin = defaultOrigin();
 
-      const distribution = new Distribution(stack, 'MyDist', {
+      new Distribution(stack, 'MyDist', {
         defaultBehavior: { origin },
         webAclId: Token.asString({ Ref: 'SomeWebAcl' }), // unresolved token
       });

@@ -1,11 +1,11 @@
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -35,7 +35,7 @@ test('check that instantiation works', () => {
       AutomatedSnapshotRetentionPeriod: 1,
       Encrypted: true,
       NumberOfNodes: 2,
-      NodeType: 'dc2.large',
+      NodeType: 'ra3.large',
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
@@ -661,7 +661,7 @@ test.each([
       AutomatedSnapshotRetentionPeriod: 1,
       Encrypted: true,
       NumberOfNodes: 2,
-      NodeType: 'dc2.large',
+      NodeType: 'ra3.large',
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
@@ -693,7 +693,7 @@ test('resize type not set', () => {
       AutomatedSnapshotRetentionPeriod: 1,
       Encrypted: true,
       NumberOfNodes: 2,
-      NodeType: 'dc2.large',
+      NodeType: 'ra3.large',
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
@@ -725,7 +725,7 @@ test('elastic ip address', () => {
       AutomatedSnapshotRetentionPeriod: 1,
       Encrypted: true,
       NumberOfNodes: 2,
-      NodeType: 'dc2.large',
+      NodeType: 'ra3.large',
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },

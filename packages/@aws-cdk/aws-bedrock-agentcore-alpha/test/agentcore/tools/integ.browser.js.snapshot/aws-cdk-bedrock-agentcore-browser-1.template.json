@@ -20,6 +20,9 @@
   "Browser5046F7C9": {
    "Type": "AWS::BedrockAgentCore::BrowserCustom",
    "Properties": {
+    "BrowserSigning": {
+     "Enabled": false
+    },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "BrowserServiceRoleE2CB4014",
@@ -38,7 +41,6 @@
   "RecordingBucket03AEF6D2": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketName": "test-browser-recordings",
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -262,13 +264,16 @@
   "BrowserWithRecordingEAD45E5F": {
    "Type": "AWS::BedrockAgentCore::BrowserCustom",
    "Properties": {
+    "BrowserSigning": {
+     "Enabled": true
+    },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "BrowserWithRecordingServiceRole6F12B29B",
       "Arn"
      ]
     },
-    "Name": "browser_recording",
+    "Name": "browser_recording_integ",
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },

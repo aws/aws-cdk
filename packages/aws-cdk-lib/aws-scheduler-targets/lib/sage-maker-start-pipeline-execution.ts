@@ -1,7 +1,8 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IRole } from '../../aws-iam';
-import { IPipeline } from '../../aws-sagemaker';
-import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IRole } from '../../aws-iam';
+import type { IPipeline } from '../../aws-sagemaker';
+import type { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
 import { ValidationError } from '../../core';
 
 /**

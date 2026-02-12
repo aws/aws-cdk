@@ -1,4 +1,4 @@
-import { IResolvable } from '../../resolvable';
+import type { IResolvable } from '../../resolvable';
 
 // Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/core/cross-region-export-handlers/types.ts
 

@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { IEngine } from './engine';
+import type { Construct } from 'constructs';
+import type { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
-import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -41,7 +43,7 @@ export interface ParameterGroupInstanceConfig {
  * Represents both a cluster parameter group,
  * and an instance parameter group.
  */
-export interface IParameterGroup extends IResource {
+export interface IParameterGroup extends IResource, aws_rds.IDBParameterGroupRef, aws_rds.IDBClusterParameterGroupRef {
   /**
    * Method called when this Parameter Group is used when defining a database cluster.
    */
@@ -133,6 +135,18 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       public addParameter(_key: string, _value: string): boolean {
         return false;
       }
+
+      public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
+        return {
+          dbParameterGroupName: parameterGroupName,
+        };
+      }
+
+      public get dbClusterParameterGroupRef(): aws_rds.DBClusterParameterGroupReference {
+        return {
+          dbClusterParameterGroupName: parameterGroupName,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -211,5 +225,23 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   public addParameter(key: string, value: string): boolean {
     this.parameters[key] = value;
     return true;
+  }
+
+  /**
+   * A reference to this parameter group as a DB parameter group
+   */
+  public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
+    return {
+      dbParameterGroupName: this.instanceCfnGroup?.ref ?? this.name ?? '',
+    };
+  }
+
+  /**
+   * A reference to this parameter group as a DB cluster parameter group
+   */
+  public get dbClusterParameterGroupRef(): aws_rds.DBClusterParameterGroupReference {
+    return {
+      dbClusterParameterGroupName: this.clusterCfnGroup?.ref ?? this.name ?? '',
+    };
   }
 }

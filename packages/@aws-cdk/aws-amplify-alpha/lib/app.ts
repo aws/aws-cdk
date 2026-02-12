@@ -1,14 +1,17 @@
-import * as codebuild from 'aws-cdk-lib/aws-codebuild';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { IResource, Lazy, Resource, SecretValue, ValidationError } from 'aws-cdk-lib/core';
-import { Construct, IConstruct } from 'constructs';
 import { CfnApp } from 'aws-cdk-lib/aws-amplify';
-import { BasicAuth } from './basic-auth';
-import { Branch, BranchOptions } from './branch';
-import { Domain, DomainOptions } from './domain';
-import { renderEnvironmentVariables, isServerSideRendered } from './utils';
+import type * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import type { IResource, SecretValue } from 'aws-cdk-lib/core';
+import { Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct, IConstruct } from 'constructs';
+import type { BasicAuth } from './basic-auth';
+import type { BranchOptions } from './branch';
+import { Branch } from './branch';
+import type { DomainOptions } from './domain';
+import { Domain } from './domain';
+import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 
 /**
  * An Amplify Console application
@@ -297,7 +300,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild ?? true,
-        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables) }, { omitEmptyArray: true }), // eslint-disable-line max-len
+        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables) }, { omitEmptyArray: true }),
         enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview ?? true,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,

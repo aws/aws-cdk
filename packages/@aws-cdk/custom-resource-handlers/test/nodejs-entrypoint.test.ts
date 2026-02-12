@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
-import * as https from 'https';
+import type { OutgoingHttpHeaders } from 'http';
+import type * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
@@ -88,8 +89,8 @@ describe('nodejs entrypoint', () => {
       }));
 
       // THEN
-      const emptyLength = emptyDataRequest.headers?.['content-length'] as number;
-      const utf8Length = utf8DataRequest.headers?.['content-length'] as number;
+      const emptyLength = (emptyDataRequest.headers as OutgoingHttpHeaders)?.['content-length'] as number;
+      const utf8Length = (utf8DataRequest.headers as OutgoingHttpHeaders)?.['content-length'] as number;
       expect(utf8Length - emptyLength).toEqual(6);
     });
   });

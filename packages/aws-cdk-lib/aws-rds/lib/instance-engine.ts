@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import { IEngine } from './engine';
-import { EngineVersion } from './engine-version';
-import { IOptionGroup, OptionGroup } from './option-group';
-import * as iam from '../../aws-iam';
+import type { Construct } from 'constructs';
+import type { IEngine } from './engine';
+import type { EngineVersion } from './engine-version';
+import type { IOptionGroup } from './option-group';
+import { OptionGroup } from './option-group';
+import type * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ValidationError } from '../../core/lib/errors';
 
@@ -609,6 +610,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_22 = MariaDbEngineVersion.of('10.6.22', '10.6');
   /** Version "10.6.23". */
   public static readonly VER_10_6_23 = MariaDbEngineVersion.of('10.6.23', '10.6');
+  /** Version "10.6.24". */
+  public static readonly VER_10_6_24 = MariaDbEngineVersion.of('10.6.24', '10.6');
 
   /** Version "10.11" (only a major version, without a specific minor version). */
   public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
@@ -644,6 +647,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_11_13 = MariaDbEngineVersion.of('10.11.13', '10.11');
   /** Version "10.11.14". */
   public static readonly VER_10_11_14 = MariaDbEngineVersion.of('10.11.14', '10.11');
+  /** Version "10.11.15". */
+  public static readonly VER_10_11_15 = MariaDbEngineVersion.of('10.11.15', '10.11');
 
   /** Version "11.4.3". */
   public static readonly VER_11_4_3 = MariaDbEngineVersion.of('11.4.3', '11.4');
@@ -655,9 +660,13 @@ export class MariaDbEngineVersion {
   public static readonly VER_11_4_7 = MariaDbEngineVersion.of('11.4.7', '11.4');
   /** Version "11.4.8". */
   public static readonly VER_11_4_8 = MariaDbEngineVersion.of('11.4.8', '11.4');
+  /** Version "11.4.9". */
+  public static readonly VER_11_4_9 = MariaDbEngineVersion.of('11.4.9', '11.4');
 
   /** Version "11.8.3". */
   public static readonly VER_11_8_3 = MariaDbEngineVersion.of('11.8.3', '11.8');
+  /** Version "11.8.5". */
+  public static readonly VER_11_8_5 = MariaDbEngineVersion.of('11.8.5', '11.8');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -1079,6 +1088,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_42 = MysqlEngineVersion.of('8.0.42', '8.0');
   /** Version "8.0.43". */
   public static readonly VER_8_0_43 = MysqlEngineVersion.of('8.0.43', '8.0');
+  /** Version "8.0.44". */
+  public static readonly VER_8_0_44 = MysqlEngineVersion.of('8.0.44', '8.0');
   /** Version "8.4.3". */
   public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.4');
   /** Version "8.4.4". */

@@ -1,13 +1,16 @@
 import * as fs from 'fs';
-import { Arn, ArnFormat, IResolvable, IResource, Lazy, Resource, Token, ValidationError } from 'aws-cdk-lib';
+import type { IResolvable, IResource } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Lazy, Resource, Token, ValidationError } from 'aws-cdk-lib';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-import { Metric, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
+import type { MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
+import { Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IKey, Key } from 'aws-cdk-lib/aws-kms';
+import type { IKey } from 'aws-cdk-lib/aws-kms';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 // Internal Libs
 import * as filters from './guardrail-filters';
 import { GuardrailVersion } from './guardrail-version';
@@ -193,6 +196,7 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
 
   /**
    * Grant the given principal identity permissions to perform actions on this guardrail.
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
@@ -204,6 +208,7 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
 
   /**
    * Grant the given identity permissions to apply the guardrail.
+   * [disable-awslint:no-grants]
    */
   public grantApply(grantee: iam.IGrantable): iam.Grant {
     const baseGrant = this.grant(grantee, 'bedrock:ApplyGuardrail');
