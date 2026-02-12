@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-bail="--bail"
+bail="--nxBail"
 runtarget="build"
 run_tests="true"
 check_prereqs="true"
@@ -16,7 +16,7 @@ while [[ "${1:-}" != "" ]]; do
             exit 1
             ;;
         --no-bail)
-            bail="--no-bail"
+            bail=""
             ;;
         -f|--force)
             export CDK_BUILD="--force"
@@ -108,13 +108,13 @@ fi
 
 flags=""
 if [ "$ci" == "true" ]; then
-  flags="--stream --no-progress --skip-nx-cache"
+  flags="--skip-nx-cache"
   export FORCE_COLOR=false
 fi
 
 echo "============================================================================================="
 echo "building..."
-time npx lerna run $bail --concurrency=$concurrency $runtarget $flags || fail
+time npx nx run-many $bail --outputStyle=stream --parallel=$concurrency -t $runtarget $flags || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
