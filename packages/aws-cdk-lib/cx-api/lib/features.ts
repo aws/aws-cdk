@@ -148,6 +148,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT = '@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
 
@@ -1706,6 +1707,23 @@ export const FLAGS: Record<string, FlagInfo> = {
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'Default Lambda Function URL origins to dual-stack IPv4/IPv6',
+    detailsMd: `
+      When enabled, Lambda Function URL origins in CloudFront distributions will default to
+      dual-stack IPv4/IPv6 connectivity instead of IPv4-only. This aligns with Lambda Function
+      URLs' native dual-stack support and provides better connectivity options.
+
+      When disabled, maintains the current IPv4-only default behavior for backward compatibility.
+
+      Users can still explicitly set ipAddressType to override the default behavior.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.',
   },
 
   //////////////////////////////////////////////////////////////////////

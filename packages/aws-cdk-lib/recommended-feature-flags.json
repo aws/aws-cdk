@@ -78,6 +78,7 @@
   "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
   "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
   "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+  "@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault": true,
   "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
   "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
   "@aws-cdk/aws-route53-patterns:useDistribution": true
