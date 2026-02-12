@@ -2344,12 +2344,14 @@ When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OI
 
 Flag type: New default behavior
 
-When enabled, Lambda Function URL origins in CloudFront distributions will default to dual-stack IPv4/IPv6 connectivity instead of IPv4-only.
-This aligns with Lambda Function URLs' native dual-stack support and provides better connectivity options.
+When enabled, Lambda Function URL origins in CloudFront distributions will default to
+dual-stack IPv4/IPv6 connectivity instead of IPv4-only. This aligns with Lambda Function
+URLs' native dual-stack support and provides better connectivity options.
 
 When disabled, maintains the current IPv4-only default behavior for backward compatibility.
 
 Users can still explicitly set ipAddressType to override the default behavior.
+
 
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
