@@ -4,8 +4,9 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as route53 from 'aws-cdk-lib/aws-route53';
-import { App, Stack, StackProps, RemovalPolicy, UnscopedValidationError } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import { App, Stack, RemovalPolicy, UnscopedValidationError } from 'aws-cdk-lib/core';
+import type { StackProps } from 'aws-cdk-lib/core';
+import type { Construct } from 'constructs';
 
 interface AlbJwtStackProps extends StackProps {
   hostedZoneId: string;
