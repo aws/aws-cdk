@@ -461,6 +461,8 @@ export interface CommonAutoScalingGroupProps {
 
   /**
    * Deletion protection for the Auto Scaling group.
+   * 
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/resource-deletion-protection.html#asg-deletion-protection
    *
    * @default DeletionProtection.NONE
    */
