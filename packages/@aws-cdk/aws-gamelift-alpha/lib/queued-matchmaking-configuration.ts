@@ -2,11 +2,13 @@ import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IGameSessionQueue } from './game-session-queue';
-import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
+import type { Construct } from 'constructs';
+import type { IGameSessionQueue } from './game-session-queue';
+import type { MatchmakingConfigurationProps, GameProperty, IMatchmakingConfiguration } from './matchmaking-configuration';
+import { MatchmakingConfigurationBase } from './matchmaking-configuration';
 
 /**
  * Properties for a new queued matchmaking configuration
@@ -88,16 +90,6 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
   }
 
   /**
-   * The name of the matchmaking configuration.
-   */
-  public readonly matchmakingConfigurationName: string;
-
-  /**
-   * The ARN of the matchmaking configuration.
-   */
-  public readonly matchmakingConfigurationArn: string;
-
-  /**
    * The notification target for matchmaking events
    */
   public readonly notificationTarget?: sns.ITopic;
@@ -106,6 +98,11 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
    * A list of game session queue destinations
    */
   private readonly gameSessionQueues: IGameSessionQueue[] = [];
+
+  /**
+   * The underlying CfnMatchmakingConfiguration resource
+   */
+  private resource: gamelift.CfnMatchmakingConfiguration;
 
   constructor(scope: Construct, id: string, props: QueuedMatchmakingConfigurationProps) {
     super(scope, id, {
@@ -168,7 +165,7 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
     // Add all queues
     (props.gameSessionQueues || []).forEach(this.addGameSessionQueue.bind(this));
 
-    const resource = new gamelift.CfnMatchmakingConfiguration(this, 'Resource', {
+    this.resource = new gamelift.CfnMatchmakingConfiguration(this, 'Resource', {
       name: this.physicalName,
       acceptanceRequired: Boolean(props.requireAcceptance),
       acceptanceTimeoutSeconds: props.acceptanceTimeout && props.acceptanceTimeout.toSeconds(),
@@ -184,9 +181,16 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
       requestTimeoutSeconds: props.requestTimeout && props.requestTimeout.toSeconds() || cdk.Duration.seconds(300).toSeconds(),
       ruleSetName: props.ruleSet.matchmakingRuleSetName,
     });
+  }
 
-    this.matchmakingConfigurationName = this.getResourceNameAttribute(resource.ref);
-    this.matchmakingConfigurationArn = cdk.Stack.of(scope).formatArn({
+  @memoizedGetter
+  public get matchmakingConfigurationName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get matchmakingConfigurationArn(): string {
+    return cdk.Stack.of(this).formatArn({
       service: 'gamelift',
       resource: 'matchmakingconfiguration',
       resourceName: this.matchmakingConfigurationName,

@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Chain } from '..';
 import { State } from './state';
 import { Annotations } from '../../../core/';
-import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
+import type { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
 /**
  * Properties for defining a custom state definition

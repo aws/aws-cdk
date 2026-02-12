@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
-import { Grant, IGrantable } from '../../aws-iam';
-import { IPublicHostedZone } from '../../aws-route53';
+import type { IGrantable } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
+import type { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
-import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import type { IResource, SecretValue } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * An email identity
@@ -362,6 +364,8 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
   /**
    * Adds an IAM policy statement associated with this email identity to an IAM principal's policy.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow
    */
@@ -378,6 +382,8 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
    * Permits an IAM principal the send email action.
    *
    * Actions: SendEmail, SendRawEmail.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */

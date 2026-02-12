@@ -1,16 +1,20 @@
-import { Construct } from 'constructs';
-import { Architecture } from './architecture';
-import { EventInvokeConfigOptions } from './event-invoke-config';
-import { IFunction, QualifiedFunctionBase } from './function-base';
-import { extractQualifierFromArn, IVersion } from './lambda-version';
-import { AliasReference, CfnAlias, IAliasRef } from './lambda.generated';
+import type { Construct } from 'constructs';
+import type { Architecture } from './architecture';
+import type { EventInvokeConfigOptions } from './event-invoke-config';
+import type { IFunction } from './function-base';
+import { QualifiedFunctionBase } from './function-base';
+import type { IVersion } from './lambda-version';
+import { extractQualifierFromArn } from './lambda-version';
+import type { AliasReference, IAliasRef } from './lambda.generated';
+import { CfnAlias } from './lambda.generated';
 import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
-import { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
+import type { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
 import * as appscaling from '../../aws-applicationautoscaling';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -125,13 +129,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * @attribute
    */
   public readonly aliasName: string;
-  /**
-   * ARN of this alias
-   *
-   * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
-   * ARNs everywhere it accepts function names.
-   */
-  public readonly functionName: string;
+
+  private readonly alias: CfnAlias;
 
   public readonly lambda: IFunction;
 
@@ -145,7 +144,29 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
    * ARNs everywhere it accepts function names.
    */
-  public readonly functionArn: string;
+  @memoizedGetter
+  public get functionArn(): string {
+    return this.getResourceArnAttribute(this.alias.ref, {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: `${this.lambda.functionName}:${this.physicalName}`,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  /**
+   * ARN of this alias
+   *
+   * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
+   * ARNs everywhere it accepts function names.
+   */
+  @memoizedGetter
+  public get functionName(): string {
+    // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
+    // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
+    // an implicit dependency on the resource.
+    return `${this.stack.splitArn(this.functionArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!}:${this.aliasName}`;
+  }
 
   protected readonly qualifier: string;
 
@@ -170,7 +191,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       throw new ValidationError('Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
     }
 
-    const alias = new CfnAlias(this, 'Resource', {
+    this.alias = new CfnAlias(this, 'Resource', {
       name: this.aliasName,
       description: props.description,
       functionName: this.version.lambda.functionName,
@@ -188,14 +209,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency',
     }));
 
-    this.functionArn = this.getResourceArnAttribute(alias.ref, {
-      service: 'lambda',
-      resource: 'function',
-      resourceName: `${this.lambda.functionName}:${this.physicalName}`,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-
-    this.qualifier = extractQualifierFromArn(alias.ref);
+    this.qualifier = extractQualifierFromArn(this.alias.ref);
 
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       this.configureAsyncInvoke({
@@ -205,11 +219,6 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
         retryAttempts: props.retryAttempts,
       });
     }
-
-    // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
-    // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
-    // an implicit dependency on the resource.
-    this.functionName = `${this.stack.splitArn(this.functionArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!}:${this.aliasName}`;
   }
 
   public get aliasRef(): AliasReference {

@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { ILogGroup } from './log-group';
-import { IBucketRef } from '../../aws-s3';
+import type { Construct } from 'constructs';
+import type { IBucketRef } from '../../aws-s3';
 import { Stack, UnscopedValidationError } from '../../core';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Creates a data protection policy for CloudWatch Logs log groups.
@@ -27,7 +27,7 @@ export class DataProtectionPolicy {
     const findingsDestination: any = {};
     if (this.dataProtectionPolicyProps.logGroupAuditDestination) {
       findingsDestination.CloudWatchLogs = {
-        LogGroup: this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName,
+        LogGroup: this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupRef.logGroupName,
       };
     }
 
@@ -156,7 +156,7 @@ export interface DataProtectionPolicyProps {
    *
    * @default - no CloudWatch Logs audit destination
    */
-  readonly logGroupAuditDestination?: ILogGroup;
+  readonly logGroupAuditDestination?: ILogGroupRef;
 
   /**
    * S3 bucket to send audit findings to. The bucket must already exist.

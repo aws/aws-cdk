@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type { Construct } from 'constructs';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import { Stack } from '../../core';
 
 /**
@@ -65,7 +65,7 @@ export class SsmAction implements cloudwatch.IAlarmAction {
   /**
    * Returns an alarm action configuration to use an SSM OpsItem action as an alarm action
    */
-  bind(_scope: Construct, _alarm: cloudwatch.IAlarmRef): cloudwatch.AlarmActionConfig {
+  bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     if (this.category === undefined) {
       return { alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}` };
     } else {
@@ -84,7 +84,7 @@ export class SsmIncidentAction implements cloudwatch.IAlarmAction {
    * Returns an alarm action configuration to use an SSM Incident as an alarm action
    * based on an Incident Manager Response Plan
    */
-  bind(_scope: Construct, _alarm: cloudwatch.IAlarmRef): cloudwatch.AlarmActionConfig {
+  bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     return {
       alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm-incidents::${Stack.of(_scope).account}:response-plan/${this.responsePlanName}`,
     };

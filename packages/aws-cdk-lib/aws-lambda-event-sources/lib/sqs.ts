@@ -1,7 +1,8 @@
-import { IKey } from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import * as sqs from '../../aws-sqs';
-import { Duration, Names, Token, Annotations, ValidationError } from '../../core';
+import type { IKey } from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type * as sqs from '../../aws-sqs';
+import type { Duration } from '../../core';
+import { Names, Token, Annotations, ValidationError } from '../../core';
 
 export interface SqsEventSourceProps {
   /**

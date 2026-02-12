@@ -1,9 +1,9 @@
-import { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Expression } from '@cdklabs/typewriter';
 import {
   $E,
   ClassType,
   expr,
-  Expression,
   ExternalModule,
   InterfaceType,
   MemberVisibility,
@@ -11,9 +11,9 @@ import {
   stmt,
   Type,
 } from '@cdklabs/typewriter';
-import { PropertySpec } from '@cdklabs/typewriter/lib/property';
+import type { PropertySpec } from '@cdklabs/typewriter/lib/property';
 import { classNameFromResource } from '../naming';
-import { Referenceable } from './resource-class';
+import type { Referenceable } from './resource-class';
 
 const $this = $E(expr.this_());
 
@@ -30,7 +30,7 @@ export class GrantsModule extends Module {
     private readonly db: SpecDatabase,
     private readonly schema: GrantsFileSchema,
     private readonly iamModulePath: string,
-  ) {
+    public readonly isStable: boolean) {
     super(`${service.shortName}.grants`);
   }
 
@@ -264,9 +264,14 @@ export class GrantsModule extends Module {
     }
 
     if (hasContent) {
-      new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
-        .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
-      new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam', { fromLocation: this.iamModulePath });
+      if (this.isStable) {
+        new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
+          .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
+        new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam', { fromLocation: this.iamModulePath });
+      } else {
+        new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
+        new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
+      }
     }
   }
 }

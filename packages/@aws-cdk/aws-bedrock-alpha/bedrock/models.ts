@@ -12,8 +12,9 @@
  */
 
 import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
-import { IModel, FoundationModel, FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { IModel, FoundationModel, FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
 
 /**
  * The data type for the vectors when using a model to convert text into vector embeddings.
@@ -1007,6 +1008,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
 
   /**
    * Gives the appropriate policies to invoke and use the Foundation Model in the stack region.
+   * [disable-awslint:no-grants]
    */
   public grantInvoke(grantee: IGrantable): Grant {
     const grant = Grant.addToPrincipal({
@@ -1019,6 +1021,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
 
   /**
    * Gives the appropriate policies to invoke and use the Foundation Model in all regions.
+   * [disable-awslint:no-grants]
    */
   public grantInvokeAllRegions(grantee: IGrantable): Grant {
     const invokableArn = Arn.format({

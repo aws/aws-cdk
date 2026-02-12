@@ -1,8 +1,8 @@
 import { singletonEventRole } from './util';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
-import { IResource } from '../../core';
+import type * as firehose from '../../aws-kinesisfirehose';
+import type { IResource } from '../../core';
 
 /**
  * Customize the Amazon Data Firehose Stream Event Target
@@ -47,7 +47,7 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Firehose Stream as a
    * result from a Event Bridge event.
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.stream);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
@@ -98,7 +98,7 @@ export class KinesisFirehoseStreamV2 implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Firehose Stream as a
    * result from a Event Bridge event.
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.stream);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
@@ -125,7 +125,7 @@ export class FirehoseDeliveryStream implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Firehose Stream as a
    * result from a Event Bridge event.
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.deliveryStream);
     this.deliveryStream.grantPutRecords(role);
 

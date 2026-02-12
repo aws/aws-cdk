@@ -1,20 +1,23 @@
-import { Construct } from 'constructs';
-import {
-  CfnManagedPolicy,
+import type { Construct } from 'constructs';
+import type {
   IGroupRef,
   IManagedPolicyRef,
   IRoleRef,
   IUserRef,
   ManagedPolicyReference,
 } from './iam.generated';
+import {
+  CfnManagedPolicy,
+} from './iam.generated';
 import { PolicyDocument } from './policy-document';
-import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import type { PolicyStatement } from './policy-statement';
+import type { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ArnPrincipal } from './principals';
 import { undefinedIfEmpty } from './private/util';
-import { IRole } from './role';
-import { IUser } from './user';
+import type { IRole } from './role';
+import type { IUser } from './user';
 import { Arn, ArnFormat, Aws, Resource, Stack, ValidationError, Lazy } from '../../core';
-import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
+import { getCustomizeRolesConfig, memoizedGetter, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { DetachedConstruct } from '../../core/lib/private/detached-construct';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -202,11 +205,30 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   }
 
   /**
+   * The CfnManagedPolicy resource
+   */
+  private readonly _resource?: CfnManagedPolicy;
+
+  /**
    * Returns the ARN of this managed policy.
    *
    * @attribute
    */
-  public readonly managedPolicyArn: string;
+  @memoizedGetter
+  public get managedPolicyArn(): string {
+    if (this._precreatedPolicy) {
+      return this._precreatedPolicy.managedPolicyArn;
+    }
+    if (!this._resource) {
+      throw new ValidationError('Cannot access managedPolicyArn when synthesis is prevented', this);
+    }
+    return this.getResourceArnAttribute(this._resource.ref, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'policy',
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The policy document.
@@ -218,7 +240,16 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    *
    * @attribute
    */
-  public readonly managedPolicyName: string;
+  @memoizedGetter
+  public get managedPolicyName(): string {
+    if (this._precreatedPolicy) {
+      return this.node.id;
+    }
+    if (!this._resource) {
+      throw new ValidationError('Cannot access managedPolicyName when synthesis is prevented', this);
+    }
+    return this.getResourceNameAttribute(Stack.of(this).splitArn(this._resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+  }
 
   /**
    * The description of this policy.
@@ -256,14 +287,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     }
 
     const config = getCustomizeRolesConfig(this);
-    const _precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported'+id, id);
-    this.managedPolicyName = id;
-    this.managedPolicyArn = _precreatedPolicy.managedPolicyArn;
     if (config.enabled) {
-      this._precreatedPolicy = _precreatedPolicy;
+      this._precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported'+id, id);
     }
     if (!config.preventSynthesis) {
-      const resource = new CfnManagedPolicy(this, 'Resource', {
+      this._resource = new CfnManagedPolicy(this, 'Resource', {
         policyDocument: this.document,
         managedPolicyName: this.physicalName,
         description: this.description,
@@ -271,15 +299,6 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         roles: undefinedIfEmpty(() => this.roles.map(r => r.roleRef.roleName)),
         users: undefinedIfEmpty(() => this.users.map(u => u.userRef.userName)),
         groups: undefinedIfEmpty(() => this.groups.map(g => g.groupRef.groupName)),
-      });
-
-      // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
-      this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
-      this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'policy',
-        resourceName: this.physicalName,
       });
     }
 

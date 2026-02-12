@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnUserPoolResourceServer } from './cognito.generated';
-import { IUserPool } from './user-pool';
-import { IResource, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IUserPoolRef, IUserPoolResourceServerRef, UserPoolResourceServerReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a Cognito user pool resource server
  */
-export interface IUserPoolResourceServer extends IResource {
+export interface IUserPoolResourceServer extends IResource, IUserPoolResourceServerRef {
   /**
    * Resource server id
    * @attribute
@@ -80,7 +82,7 @@ export interface UserPoolResourceServerProps extends UserPoolResourceServerOptio
   /**
    * The user pool to add this resource server to
    */
-  readonly userPool: IUserPool;
+  readonly userPool: IUserPoolRef;
 }
 
 /**
@@ -97,12 +99,30 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
   public static fromUserPoolResourceServerId(scope: Construct, id: string, userPoolResourceServerId: string): IUserPoolResourceServer {
     class Import extends Resource implements IUserPoolResourceServer {
       public readonly userPoolResourceServerId = userPoolResourceServerId;
+
+      public get userPoolResourceServerRef(): UserPoolResourceServerReference {
+        return {
+          identifier: userPoolResourceServerId,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('userPoolId is not available on UserPoolResourceServer.fromUserPoolResourceServiceId().');
+          },
+        };
+      }
     }
 
     return new Import(scope, id);
   }
 
   public readonly userPoolResourceServerId: string;
+  private readonly _userPool: IUserPoolRef;
+  private readonly identifier: string;
+
+  public get userPoolResourceServerRef(): UserPoolResourceServerReference {
+    return {
+      userPoolId: this._userPool.userPoolRef.userPoolId,
+      identifier: this.identifier,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: UserPoolResourceServerProps) {
     super(scope, id, {
@@ -111,11 +131,14 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this._userPool = props.userPool;
+    this.identifier = this.physicalName;
+
     const resource = new CfnUserPoolResourceServer(this, 'Resource', {
       identifier: this.physicalName,
       name: props.userPoolResourceServerName ?? this.physicalName,
       scopes: props.scopes,
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: this._userPool.userPoolRef.userPoolId,
     });
 
     this.userPoolResourceServerId = resource.ref;
