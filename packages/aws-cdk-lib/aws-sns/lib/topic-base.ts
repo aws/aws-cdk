@@ -225,6 +225,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 
   /**
    * Grant topic publishing permissions to the given identity
+   *
+   * The use of this method is discouraged. Please use `grants.publish()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPublish(grantee: iam.IGrantable) {
@@ -233,6 +236,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 
   /**
    * Grant topic subscribing permissions to the given identity
+   *
+   * The use of this method is discouraged. Please use `grants.subscribe()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantSubscribe(grantee: iam.IGrantable) {
