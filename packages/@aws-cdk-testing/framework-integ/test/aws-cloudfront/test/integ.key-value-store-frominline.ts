@@ -3,7 +3,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-key-value-store');
+const stack = new cdk.Stack(app, 'integ-key-value-store-frominline');
 
 new cloudfront.KeyValueStore(stack, 'TestKeyValueStore', {
   comment: 'A test Key Value Store for CloudFront',
