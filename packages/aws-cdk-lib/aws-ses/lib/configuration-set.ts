@@ -198,6 +198,8 @@ export enum SuppressionReasons {
 /**
  * Confidence verdict threshold for suppression validation.
  *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ses-configurationset-overallconfidencethreshold.html
+ * 
  * This determines the confidence level threshold for suppression list validation.
  */
 export enum ConfidenceVerdictThreshold {
