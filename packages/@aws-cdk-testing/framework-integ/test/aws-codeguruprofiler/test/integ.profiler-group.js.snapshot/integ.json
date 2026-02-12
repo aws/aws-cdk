@@ -1,12 +1,25 @@
 {
-  "version": "30.1.0",
+  "version": "48.0.0",
   "testCases": {
     "cdk-code-guru-profiler-group/DefaultTest": {
       "stacks": [
         "ProfilerGroupIntegrationTest"
       ],
+      "regions": [
+        "ap-northeast-1",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "eu-central-1",
+        "eu-north-1",
+        "eu-west-1",
+        "eu-west-2",
+        "us-east-1",
+        "us-east-2",
+        "us-west-2"
+      ],
       "assertionStack": "cdk-code-guru-profiler-group/DefaultTest/DeployAssert",
       "assertionStackName": "cdkcodeguruprofilergroupDefaultTestDeployAssert05871DAC"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
