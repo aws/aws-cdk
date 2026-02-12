@@ -11,23 +11,26 @@
  *  and limitations under the License.
  */
 
-import { Arn, ArnFormat, Duration, IResource, Lazy, Resource, ResourceProps, Token, Names } from 'aws-cdk-lib';
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import { CfnMemory, CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
-import {
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Duration, Lazy, Resource, Token, Names } from 'aws-cdk-lib';
+import type { CfnMemoryProps, IMemoryRef, MemoryReference } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CfnMemory } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { IConstruct, Construct } from 'constructs';
+import type { IConstruct, Construct } from 'constructs';
 // Internal Libs
-import { IMemoryStrategy } from './memory-strategy';
+import type { IMemoryStrategy } from './memory-strategy';
 import { MemoryPerms } from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
 
@@ -75,7 +78,7 @@ const MEMORY_EXPIRATION_DAYS_MAX = 365;
 /**
  * Interface for Memory resources
  */
-export interface IMemory extends IResource, iam.IGrantable {
+export interface IMemory extends IResource, iam.IGrantable, IMemoryRef {
   /**
    * The ARN of the memory resource
    * @attribute
@@ -200,6 +203,15 @@ export abstract class MemoryBase extends Resource implements IMemory {
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * A reference to a Memory resource.
+   */
+  public get memoryRef(): MemoryReference {
+    return {
+      memoryArn: this.memoryArn,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
   }
@@ -216,7 +228,7 @@ export abstract class MemoryBase extends Resource implements IMemory {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.memoryArn],
+      resourceArns: [this.memoryRef.memoryArn],
       scope: this,
     });
   }
@@ -380,7 +392,7 @@ export abstract class MemoryBase extends Resource implements IMemory {
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.memoryArn },
+      dimensionsMap: { ...dimensions, Resource: this.memoryRef.memoryArn },
       ...props,
     };
     return this.configureMetric(metricProps);
@@ -878,7 +890,7 @@ export class Memory extends MemoryBase {
    * @default - undefined if no strategies are defined or array is empty
    * @internal This is an internal core function and should not be called directly.
    */
-  private _renderMemoryStrategies(): bedrockagentcore.CfnMemory.MemoryStrategyProperty[] | undefined {
+  private _renderMemoryStrategies(): CfnMemory.MemoryStrategyProperty[] | undefined {
     if (!this.memoryStrategies || this.memoryStrategies.length === 0) {
       return undefined;
     }

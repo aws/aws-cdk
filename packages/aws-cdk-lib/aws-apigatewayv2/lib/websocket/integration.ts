@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi, IWebSocketApiRef } from './api';
-import { IWebSocketRoute } from './route';
-import { CfnIntegration, IntegrationReference } from '.././index';
-import { IRole } from '../../../aws-iam';
-import { Duration, Resource } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi, IWebSocketApiRef } from './api';
+import type { IWebSocketRoute } from './route';
+import type { IntegrationReference } from '.././index';
+import { CfnIntegration } from '.././index';
+import type { IRole } from '../../../aws-iam';
+import type { Duration } from '../../../core';
+import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IIntegration } from '../common';
+import type { IIntegration } from '../common';
 
 /**
  * Represents an Integration for an WebSocket API.

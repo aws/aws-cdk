@@ -1,9 +1,10 @@
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
-import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import type { UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnApp } from 'aws-cdk-lib/aws-pinpoint';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * To set analytics config to UserPoolClient with Application ARN

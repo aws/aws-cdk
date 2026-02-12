@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as integTests from '@aws-cdk/integ-tests-alpha';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
 
 interface RollingInstanceUpdateTestStackProps extends cdk.StackProps {

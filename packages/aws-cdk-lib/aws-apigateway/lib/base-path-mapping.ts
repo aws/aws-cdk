@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
-import { CfnBasePathMapping, IDomainNameRef, IRestApiRef } from './apigateway.generated';
+import type { Construct } from 'constructs';
+import type { IDomainNameRef, IRestApiRef } from './apigateway.generated';
+import { CfnBasePathMapping } from './apigateway.generated';
 import { RestApiBase } from './restapi';
-import { Stage } from './stage';
+import type { Stage } from './stage';
 import { Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

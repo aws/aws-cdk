@@ -1,7 +1,8 @@
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { App, CfnParameter, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnParameter, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 

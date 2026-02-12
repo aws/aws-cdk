@@ -1,15 +1,16 @@
 import { EOL } from 'os';
-import { IConstruct, Construct } from 'constructs';
+import type { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
-import { LifecycleRule, TagStatus } from './lifecycle';
+import type { LifecycleRule } from './lifecycle';
+import { TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
+import type { IResource } from '../../core';
 import {
   Annotations,
   ArnFormat,
-  IResource,
   Lazy,
   RemovalPolicy,
   Resource,
@@ -28,7 +29,7 @@ import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
-import { IRepositoryRef, RepositoryReference } from '../../interfaces/generated/aws-ecr-interfaces.generated';
+import type { IRepositoryRef, RepositoryReference } from '../../interfaces/generated/aws-ecr-interfaces.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';

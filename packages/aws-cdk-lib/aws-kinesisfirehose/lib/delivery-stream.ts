@@ -1,10 +1,12 @@
-import { Construct, Node } from 'constructs';
-import { IDestination } from './destination';
-import { StreamEncryption } from './encryption';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { IDestination } from './destination';
+import type { StreamEncryption } from './encryption';
 import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
 import { DeliveryStreamGrants } from './kinesisfirehose-grants.generated';
-import { CfnDeliveryStream, DeliveryStreamReference, IDeliveryStreamRef } from './kinesisfirehose.generated';
-import { ISource } from './source';
+import type { DeliveryStreamReference, IDeliveryStreamRef } from './kinesisfirehose.generated';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import type { ISource } from './source';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';

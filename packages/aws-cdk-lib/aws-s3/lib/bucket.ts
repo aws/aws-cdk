@@ -1,29 +1,32 @@
 import { EOL } from 'os';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
-import { IBucketNotificationDestination } from './destination';
+import type { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule, StorageClass } from './rule';
-import { BucketReference, CfnBucket, IBucketRef } from './s3.generated';
+import type { LifecycleRule, StorageClass } from './rule';
+import type { BucketReference, IBucketRef } from './s3.generated';
+import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import type {
+  Duration,
+  IResource,
+  ResourceProps,
+} from '../../core';
 import {
   Annotations,
   CustomResource,
-  Duration,
   FeatureFlags,
   Fn,
-  IResource,
   Lazy,
   PhysicalName,
   RemovalPolicy,
   Resource,
-  ResourceProps,
   Stack,
   Tags,
   Token,

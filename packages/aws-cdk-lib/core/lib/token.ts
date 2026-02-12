@@ -1,12 +1,12 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { unresolved } from './private/encoding';
 import { Intrinsic } from './private/intrinsic';
 import { resolve } from './private/resolve';
 import { TokenMap } from './private/token-map';
-import { IResolvable, ITokenResolver, IResolveContext } from './resolvable';
-import { TokenizedStringFragments } from './string-fragments';
+import type { IResolvable, ITokenResolver, IResolveContext } from './resolvable';
+import type { TokenizedStringFragments } from './string-fragments';
 
 /**
  * An enum-like class that represents the result of comparing two Tokens.
@@ -62,6 +62,15 @@ export class Token {
    */
   public static isUnresolved(this: void, obj: any): boolean {
     return unresolved(obj);
+  }
+
+  /**
+   * The negation of `Token.isUnresolved()`. In TypeScript, narrows the type
+   * to exclude `IResolvable`.
+   * @param obj The object to test.
+   */
+  public static isResolved<A>(obj: A): obj is Exclude<A, IResolvable> {
+    return !Token.isUnresolved(obj);
   }
 
   /**

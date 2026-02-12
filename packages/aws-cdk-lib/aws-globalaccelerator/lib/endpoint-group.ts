@@ -1,12 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AcceleratorSecurityGroupPeer } from './_accelerator-security-group';
-import { IEndpoint } from './endpoint';
+import type { IEndpoint } from './endpoint';
 import * as ga from './globalaccelerator.generated';
-import * as ec2 from '../../aws-ec2';
+import type * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IEndpointGroupRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
+import type { IEndpointGroupRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
 /**
  * The interface of the EndpointGroup

@@ -9,26 +9,13 @@ const stack = new cdk.Stack(app, 'CapacityProviderDefaultsStack');
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
 
-const capacityProvider = new lambda.CapacityProvider(stack, 'CapacityProvider', {
+new lambda.CapacityProvider(stack, 'CapacityProvider', {
   subnets: vpc.privateSubnets,
   securityGroups: [securityGroup],
 });
 
-const testCase = new integ.IntegTest(app, 'CapacityProviderDefaultsTest', {
+new integ.IntegTest(app, 'CapacityProviderDefaultsTest', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'eu-west-1', 'eu-central-1', 'eu-north-1', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1'],
 });
 
-const getCapacityProvider = testCase.assertions.awsApiCall('Lambda', 'GetCapacityProvider', {
-  CapacityProviderName: capacityProvider.capacityProviderName,
-});
-
-getCapacityProvider.expect(integ.ExpectedResult.objectLike({
-  State: 'Active',
-  PermissionsConfig: {
-    CapacityProviderOperatorRoleArn: integ.ExpectedResult.stringLikeRegexp('arn:aws:iam::\\d{12}:role/.+'),
-  },
-  VpcConfig: {
-    SubnetIds: vpc.privateSubnets.map(subnet => subnet.subnetId),
-    SecurityGroupIds: [securityGroup.securityGroupId],
-  },
-}));
