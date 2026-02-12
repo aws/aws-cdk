@@ -104,8 +104,8 @@ describe('check-peer-dependencies', () => {
 
     const result = runScript(tmpDir);
     expect(result.success).toBe(false);
-    expect(result.stderr).toContain('foo requires peer bar@>=2.0.0');
-    expect(result.stderr).toContain('test-package does not include it');
+    expect(result.stderr).toContain('Peer dependency validation failed');
+    expect(result.stderr).toContain('foo requires peer bar@>=2.0.0, but test-package does not include it');
   });
 
   test('fails when peer dependency version is incompatible', () => {
@@ -130,8 +130,8 @@ describe('check-peer-dependencies', () => {
 
     const result = runScript(tmpDir);
     expect(result.success).toBe(false);
-    expect(result.stderr).toContain('foo requires peer bar@>=2.0.0');
-    expect(result.stderr).toContain('test-package has ^1.0.0');
+    expect(result.stderr).toContain('Peer dependency validation failed');
+    expect(result.stderr).toContain('foo requires peer bar@>=2.0.0, but test-package has ^1.0.0 (min: 1.0.0)');
   });
 
   test('handles prerelease versions correctly', () => {
@@ -202,8 +202,9 @@ describe('check-peer-dependencies', () => {
 
     const result = runScript(tmpDir);
     expect(result.success).toBe(false);
-    expect(result.stderr).toContain('bar@>=2.0.0');
-    expect(result.stderr).toContain('baz@>=1.0.0');
+    expect(result.stderr).toContain('Peer dependency validation failed');
+    expect(result.stderr).toContain('foo requires peer bar@>=2.0.0, but test-package has ^1.0.0 (min: 1.0.0)');
+    expect(result.stderr).toContain('foo requires peer baz@>=1.0.0, but test-package does not include it');
   });
 
   test('handles bundledDependencies spelling variant', () => {
