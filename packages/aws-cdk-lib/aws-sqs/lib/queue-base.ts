@@ -210,6 +210,9 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *
    *   - kms:Decrypt
    *
+   *
+   * The use of this method is discouraged. Please use `grants.consumeMessages()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant consume rights to
@@ -236,6 +239,9 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *  - kms:ReEncrypt*
    *  - kms:GenerateDataKey*
    *
+   *
+   * The use of this method is discouraged. Please use `grants.sendMessages()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant send rights to
@@ -252,6 +258,9 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *  - sqs:PurgeQueue
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.purge()` instead.
    *
    * [disable-awslint:no-grants]
    *
