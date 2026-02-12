@@ -1,10 +1,12 @@
 import { Template } from '../../assertions';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
+import { ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { CfnKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import * as sns from '../lib';
-import { TopicGrants } from '../lib/sns-grants.generated';
+import { TopicGrants } from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
 
@@ -288,7 +290,7 @@ describe('Topic', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    topic.grantPublish(user);
+    topic.grants.publish(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -324,6 +326,63 @@ describe('Topic', () => {
             'Action': 'sns:Publish',
             'Effect': 'Allow',
             'Resource': { Ref: 'Topic' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('give service principal permissions to publish to CfnTopic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.CfnTopic(stack, 'Topic');
+    const principal = new ServicePrincipal('some.service.amazonaws.com');
+
+    // WHEN
+    TopicGrants.fromTopic(topic).publish(principal);
+
+    // THEN
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::SNS::TopicPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: { Ref: 'Topic' },
+            Principal: { Service: 'some.service.amazonaws.com' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('give service principal permissions to publish to CfnTopic with encryption key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new CfnKey(stack, 'CustomKey', {
+      keyPolicy: { Statement: [] },
+    });
+    const topic = new sns.CfnTopic(stack, 'Topic', {
+      kmsMasterKeyId: key.attrKeyId,
+    });
+    const principal = new ServicePrincipal('some.service.amazonaws.com');
+
+    // WHEN
+    TopicGrants.fromTopic(topic).publish(principal);
+
+    // THEN
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Resource: '*',
+            Principal: { Service: 'some.service.amazonaws.com' },
           },
         ],
       },

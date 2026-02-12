@@ -31,14 +31,20 @@ export interface TableGrantsProps {
   /**
    * The encrypted resource on which actions will be allowed
    *
-   * @default - No permission is added to the KMS key, even if it exists
+   * @deprecated - Leave this field undefined. If the table is encrypted with a customer-managed KMS key, appropriate
+   * grants to the key will be automatically added.
+   *
+   * @default - A best-effort attempt will be made to discover an associated KMS key and grant permissions to it.
    */
   readonly encryptedResource?: iam.IEncryptedResource;
 
   /**
    * The resource with policy on which actions will be allowed
    *
-   * @default - No resource policy is created
+   * @deprecated - Leave this field undefined. A best-effort attempt will be made to discover a resource policy and add
+   * permissions to it.
+   *
+   * @default - A best-effort attempt will be made to discover a resource policy and add permissions to it.
    */
   readonly policyResource?: iam.IResourceWithPolicyV2;
 }
@@ -47,6 +53,13 @@ export interface TableGrantsProps {
  * A set of permissions to grant on a Table
  */
 export class TableGrants {
+  /**
+   * Creates a TableGrants object for a given table.
+   */
+  public static fromTable(table: ITableRef, regions?: string[], hasIndex?: boolean): TableGrants {
+    return new TableGrants({ table, regions, hasIndex });
+  }
+
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
   private readonly encryptedResource?: iam.IEncryptedResource;
@@ -54,8 +67,8 @@ export class TableGrants {
 
   constructor(props: TableGrantsProps) {
     this.table = props.table;
-    this.encryptedResource = props.encryptedResource;
-    this.policyResource = props.policyResource;
+    this.encryptedResource = props.encryptedResource ?? iam.EncryptedResources.of(this.table);
+    this.policyResource = props.policyResource ?? iam.ResourceWithPolicies.of(this.table);
 
     const stack = Stack.of(this.table);
 
