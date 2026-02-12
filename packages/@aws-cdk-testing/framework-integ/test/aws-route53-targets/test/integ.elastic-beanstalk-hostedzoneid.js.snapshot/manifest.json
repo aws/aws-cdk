@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/332f6558851aaff5a079272b1485bfdc2b668348d0adb571785a48c20a5d905e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e1db650939cc00dd59b0c9cf5255e45cc60e7ff7c28812b4e8c653a25c31ce0c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "cdk-route53-ebs-hostedzoneid-integ.assets"
       ],
       "metadata": {
+        "/cdk-route53-ebs-hostedzoneid-integ/EbsHostedZoneMapping": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EbsHostedZoneMapping"
+          }
+        ],
         "/cdk-route53-ebs-hostedzoneid-integ/HostedZone": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -57,10 +63,13 @@
         "/cdk-route53-ebs-hostedzoneid-integ/Application": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Application"
+            "data": "Application",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/cdk-route53-ebs-hostedzoneid-integ/MyTestApplication-aws-elasticbeanstalk-ec2-role": [
+        "/cdk-route53-ebs-hostedzoneid-integ/EbsEc2Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -91,16 +100,16 @@
             }
           }
         ],
-        "/cdk-route53-ebs-hostedzoneid-integ/MyTestApplication-aws-elasticbeanstalk-ec2-role/Resource": [
+        "/cdk-route53-ebs-hostedzoneid-integ/EbsEc2Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyTestApplicationawselasticbeanstalkec2roleAC559366"
+            "data": "EbsEc2Role8269CA5F"
           }
         ],
-        "/cdk-route53-ebs-hostedzoneid-integ/MyTestApplication-aws-elasticbeanstalk-ec2-instance-profile": [
+        "/cdk-route53-ebs-hostedzoneid-integ/EbsInstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyTestApplicationawselasticbeanstalkec2instanceprofile"
+            "data": "EbsInstanceProfile"
           }
         ],
         "/cdk-route53-ebs-hostedzoneid-integ/Environment": [
@@ -302,6 +311,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyTestApplicationawselasticbeanstalkec2roleAC559366": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTestApplicationawselasticbeanstalkec2roleAC559366",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyTestApplicationawselasticbeanstalkec2instanceprofile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTestApplicationawselasticbeanstalkec2instanceprofile",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

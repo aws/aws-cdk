@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "fdbbabeab76a41188fbdf182a8c09848a1ea72525524d7bc2c373c6e1eb2c1c4": {
       "displayName": "Asset",
@@ -29,16 +29,16 @@
         }
       }
     },
-    "aa665e34dd2e06fce07401a09629c92202da89dcfb9f368b5e299192044dd177": {
+    "cd7e3341e1ebe3a6e7528cd6e95f069a6f534b0daaca13a42d00919ad5820ac4": {
       "displayName": "aws-cdk-elasticbeanstalk-integ Template",
       "source": {
         "path": "aws-cdk-elasticbeanstalk-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-b2b1c8f5": {
+        "current_account-current_region-dcdb3f60": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "aa665e34dd2e06fce07401a09629c92202da89dcfb9f368b5e299192044dd177.json",
+          "objectKey": "cd7e3341e1ebe3a6e7528cd6e95f069a6f534b0daaca13a42d00919ad5820ac4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
