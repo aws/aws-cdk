@@ -190,10 +190,10 @@ describe('S3 Mixins', () => {
     });
   });
 
-  describe('BucketPublicAccessBlock', () => {
+  describe('BucketBlockPublicAccess', () => {
     test('applies to S3 bucket with defaults', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const mixin = new s3Mixins.BucketPublicAccessBlock();
+      const mixin = new s3Mixins.BucketBlockPublicAccess();
 
       expect(mixin.supports(bucket)).toBe(true);
       mixin.applyTo(bucket);
@@ -207,7 +207,7 @@ describe('S3 Mixins', () => {
 
     test('block ACLs public access only', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const mixin = new s3Mixins.BucketPublicAccessBlock(s3.BlockPublicAccess.BLOCK_ACLS_ONLY);
+      const mixin = new s3Mixins.BucketBlockPublicAccess(s3.BlockPublicAccess.BLOCK_ACLS_ONLY);
 
       expect(mixin.supports(bucket)).toBe(true);
       mixin.applyTo(bucket);
@@ -221,7 +221,7 @@ describe('S3 Mixins', () => {
 
     test('do not block public access and policy', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const mixin = new s3Mixins.BucketPublicAccessBlock(new s3.BlockPublicAccess({
+      const mixin = new s3Mixins.BucketBlockPublicAccess(new s3.BlockPublicAccess({
         blockPublicAcls: false,
         blockPublicPolicy: false,
       }));
@@ -240,7 +240,7 @@ describe('S3 Mixins', () => {
 
     test('apply block public access on l2 bucket', () => {
       const bucket = new s3.Bucket(stack, 'Bucket')
-        .with(new s3Mixins.BucketPublicAccessBlock());
+        .with(new s3Mixins.BucketBlockPublicAccess());
 
       const accessConfig = (bucket.node.defaultChild as s3.CfnBucket).publicAccessBlockConfiguration as any;
       expect(accessConfig.blockPublicAcls).toBe(true);
