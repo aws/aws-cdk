@@ -2,21 +2,22 @@ import { main } from '../lib/main';
 import * as integRunner from '../lib/integration-test-runner';
 import * as preflight from '../lib/preflight';
 
-// Mock the modules
-jest.mock('../lib/integration-test-runner');
-jest.mock('../lib/preflight');
-
 describe('main function', () => {
   let consoleLogSpy: jest.SpyInstance;
+  let deployIntegTestsSpy: jest.SpyInstance;
+  let shouldRunIntegTestsSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-    (integRunner.deployIntegTests as jest.Mock).mockResolvedValue(undefined);
+    deployIntegTestsSpy = jest.spyOn(integRunner, 'deployIntegTests').mockResolvedValue(undefined);
+    shouldRunIntegTestsSpy = jest.spyOn(preflight, 'shouldRunIntegTests');
   });
 
   afterEach(() => {
     consoleLogSpy.mockRestore();
+    deployIntegTestsSpy.mockRestore();
+    shouldRunIntegTestsSpy.mockRestore();
   });
 
   const baseConfig = {
@@ -29,11 +30,11 @@ describe('main function', () => {
     it('should skip preflight when GitHub context is not available', async () => {
       await main(baseConfig);
 
-      expect(preflight.shouldRunIntegTests).not.toHaveBeenCalled();
+      expect(shouldRunIntegTestsSpy).not.toHaveBeenCalled();
       expect(consoleLogSpy).toHaveBeenCalledWith(
         'GitHub context not available, skipping preflight check (manual run or workflow_dispatch)',
       );
-      expect(integRunner.deployIntegTests).toHaveBeenCalled();
+      expect(deployIntegTestsSpy).toHaveBeenCalled();
     });
 
     it('should skip preflight when only GITHUB_TOKEN is available', async () => {
@@ -42,8 +43,8 @@ describe('main function', () => {
         githubToken: 'test-token',
       });
 
-      expect(preflight.shouldRunIntegTests).not.toHaveBeenCalled();
-      expect(integRunner.deployIntegTests).toHaveBeenCalled();
+      expect(shouldRunIntegTestsSpy).not.toHaveBeenCalled();
+      expect(deployIntegTestsSpy).toHaveBeenCalled();
     });
 
     it('should skip preflight when GITHUB_REPOSITORY is missing', async () => {
@@ -53,8 +54,8 @@ describe('main function', () => {
         prNumber: '123',
       });
 
-      expect(preflight.shouldRunIntegTests).not.toHaveBeenCalled();
-      expect(integRunner.deployIntegTests).toHaveBeenCalled();
+      expect(shouldRunIntegTestsSpy).not.toHaveBeenCalled();
+      expect(deployIntegTestsSpy).toHaveBeenCalled();
     });
 
     it('should skip preflight when PR_NUMBER is missing', async () => {
@@ -64,12 +65,12 @@ describe('main function', () => {
         githubRepository: 'aws/aws-cdk',
       });
 
-      expect(preflight.shouldRunIntegTests).not.toHaveBeenCalled();
-      expect(integRunner.deployIntegTests).toHaveBeenCalled();
+      expect(shouldRunIntegTestsSpy).not.toHaveBeenCalled();
+      expect(deployIntegTestsSpy).toHaveBeenCalled();
     });
 
     it('should run preflight when all GitHub context is available', async () => {
-      (preflight.shouldRunIntegTests as jest.Mock).mockResolvedValue({
+      shouldRunIntegTestsSpy.mockResolvedValue({
         shouldRun: true,
         reason: 'PR has snapshot changes and is approved by CDK team member',
       });
@@ -81,17 +82,17 @@ describe('main function', () => {
         prNumber: '123',
       });
 
-      expect(preflight.shouldRunIntegTests).toHaveBeenCalledWith({
+      expect(shouldRunIntegTestsSpy).toHaveBeenCalledWith({
         githubToken: 'test-token',
         owner: 'aws',
         repo: 'aws-cdk',
         prNumber: 123,
       });
-      expect(integRunner.deployIntegTests).toHaveBeenCalled();
+      expect(deployIntegTestsSpy).toHaveBeenCalled();
     });
 
     it('should skip deployment when preflight returns shouldRun=false', async () => {
-      (preflight.shouldRunIntegTests as jest.Mock).mockResolvedValue({
+      shouldRunIntegTestsSpy.mockResolvedValue({
         shouldRun: false,
         reason: 'No snapshot changes detected in this PR',
       });
@@ -103,13 +104,13 @@ describe('main function', () => {
         prNumber: '456',
       });
 
-      expect(preflight.shouldRunIntegTests).toHaveBeenCalled();
+      expect(shouldRunIntegTestsSpy).toHaveBeenCalled();
       expect(consoleLogSpy).toHaveBeenCalledWith('Skipping integration test deployment.');
-      expect(integRunner.deployIntegTests).not.toHaveBeenCalled();
+      expect(deployIntegTestsSpy).not.toHaveBeenCalled();
     });
 
     it('should proceed with deployment when preflight returns shouldRun=true', async () => {
-      (preflight.shouldRunIntegTests as jest.Mock).mockResolvedValue({
+      shouldRunIntegTestsSpy.mockResolvedValue({
         shouldRun: true,
         reason: 'PR has snapshot changes and is approved by CDK team member',
       });
@@ -121,7 +122,7 @@ describe('main function', () => {
         prNumber: '789',
       });
 
-      expect(integRunner.deployIntegTests).toHaveBeenCalledWith({
+      expect(deployIntegTestsSpy).toHaveBeenCalledWith({
         atmosphereRoleArn: 'arn:aws:iam::123456789:role/test',
         endpoint: 'https://test-endpoint.com',
         pool: 'test-pool',
@@ -130,7 +131,7 @@ describe('main function', () => {
     });
 
     it('should log preflight result reason', async () => {
-      (preflight.shouldRunIntegTests as jest.Mock).mockResolvedValue({
+      shouldRunIntegTestsSpy.mockResolvedValue({
         shouldRun: true,
         reason: 'PR has snapshot changes and is approved by CDK team member @maintainer',
       });
@@ -172,7 +173,7 @@ describe('main function', () => {
     });
 
     it('should not validate env vars if preflight skips deployment', async () => {
-      (preflight.shouldRunIntegTests as jest.Mock).mockResolvedValue({
+      shouldRunIntegTestsSpy.mockResolvedValue({
         shouldRun: false,
         reason: 'No snapshot changes',
       });
@@ -184,7 +185,7 @@ describe('main function', () => {
         prNumber: '123',
       });
 
-      expect(integRunner.deployIntegTests).not.toHaveBeenCalled();
+      expect(deployIntegTestsSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -192,7 +193,7 @@ describe('main function', () => {
     it('should pass undefined batchSize when not provided', async () => {
       await main(baseConfig);
 
-      expect(integRunner.deployIntegTests).toHaveBeenCalledWith(
+      expect(deployIntegTestsSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           batchSize: undefined,
         }),
@@ -205,7 +206,7 @@ describe('main function', () => {
         batchSize: 5,
       });
 
-      expect(integRunner.deployIntegTests).toHaveBeenCalledWith(
+      expect(deployIntegTestsSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           batchSize: 5,
         }),
@@ -278,7 +279,7 @@ describe('main function', () => {
     });
 
     it('should accept valid repository and PR number', async () => {
-      (preflight.shouldRunIntegTests as jest.Mock).mockResolvedValue({
+      shouldRunIntegTestsSpy.mockResolvedValue({
         shouldRun: true,
         reason: 'Test',
       });
@@ -290,7 +291,7 @@ describe('main function', () => {
         prNumber: '12345',
       });
 
-      expect(preflight.shouldRunIntegTests).toHaveBeenCalledWith({
+      expect(shouldRunIntegTestsSpy).toHaveBeenCalledWith({
         githubToken: 'test-token',
         owner: 'aws',
         repo: 'aws-cdk',

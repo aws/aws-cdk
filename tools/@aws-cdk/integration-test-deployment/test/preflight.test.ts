@@ -5,12 +5,6 @@ import * as utils from '../lib/utils';
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
-// Mock getChangedSnapshots
-jest.mock('../lib/utils', () => ({
-  ...jest.requireActual('../lib/utils'),
-  getChangedSnapshots: jest.fn(),
-}));
-
 const defaultProps = {
   githubToken: 'test-token',
   owner: 'aws',
@@ -19,13 +13,20 @@ const defaultProps = {
 };
 
 describe('shouldRunIntegTests', () => {
+  let getChangedSnapshotsSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    getChangedSnapshotsSpy = jest.spyOn(utils, 'getChangedSnapshots');
+  });
+
+  afterEach(() => {
+    getChangedSnapshotsSpy.mockRestore();
   });
 
   describe('when no snapshot changes', () => {
     it('should not run and return appropriate reason', async () => {
-      (utils.getChangedSnapshots as jest.Mock).mockResolvedValue([]);
+      getChangedSnapshotsSpy.mockResolvedValue([]);
 
       const result = await shouldRunIntegTests(defaultProps);
 
@@ -37,7 +38,7 @@ describe('shouldRunIntegTests', () => {
 
   describe('when PR has snapshot changes', () => {
     beforeEach(() => {
-      (utils.getChangedSnapshots as jest.Mock).mockResolvedValue([
+      getChangedSnapshotsSpy.mockResolvedValue([
         'packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.js.snapshot',
       ]);
     });
@@ -166,7 +167,7 @@ describe('shouldRunIntegTests', () => {
 
   describe('error handling', () => {
     beforeEach(() => {
-      (utils.getChangedSnapshots as jest.Mock).mockResolvedValue(['some-snapshot']);
+      getChangedSnapshotsSpy.mockResolvedValue(['some-snapshot']);
     });
 
     it('should throw when reviews fetch fails', async () => {
