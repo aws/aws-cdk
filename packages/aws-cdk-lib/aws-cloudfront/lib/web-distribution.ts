@@ -794,6 +794,9 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       }
 
       /**
+       *
+       * The use of this method is discouraged. Please use `grants.createInvalidation()` instead.
+       *
        * [disable-awslint:no-grants]
        */
       public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {

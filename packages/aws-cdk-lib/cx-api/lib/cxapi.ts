@@ -42,16 +42,3 @@ export const CLI_VERSION_ENV = 'CDK_CLI_VERSION';
  * In the format "<package>@x.y.z", e.g  "aws-cdk@2.1006.0" or "@aws-cdk/toolkit-lib@1.0.0"
  */
 export const TOOLKIT_VERSION_ENV = 'CDK_TOOLKIT_VERSION';
-
-/**
- * If a context value is an object with this key, it indicates an error
- */
-export const PROVIDER_ERROR_KEY = '$providerError';
-
-/**
- * This SSM parameter does not invalidate the template
- *
- * If this string occurs in the description of an SSM parameter, the CLI
- * will not assume that the stack must always be redeployed.
- */
-export const SSMPARAM_NO_INVALIDATE = '[cdk:skip]';
