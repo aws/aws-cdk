@@ -1,18 +1,4 @@
 {
- "Resources": {
-  "functionF19B1A04": {
-   "Type": "AWS::CloudFront::Function",
-   "Properties": {
-    "AutoPublish": false,
-    "FunctionCode": "function handler(event) { return event.request }",
-    "FunctionConfig": {
-     "Comment": "eu-west-1integdistributionfunctionEBF560BA",
-     "Runtime": "cloudfront-js-1.0"
-    },
-    "Name": "eu-west-1integdistributionfunctionEBF560BA"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
