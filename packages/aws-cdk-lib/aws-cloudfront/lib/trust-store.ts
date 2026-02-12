@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { CfnTrustStore, ITrustStoreRef, TrustStoreReference } from './cloudfront.generated';
-import { IBucket } from '../../aws-s3';
-import { IResource, Names, Resource, Stack, Token, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import { CfnTrustStore } from './cloudfront.generated';
+import type { ITrustStoreRef, TrustStoreReference } from './cloudfront.generated';
+import type { IBucket } from '../../aws-s3';
+import type { IResource } from '../../core';
+import { Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

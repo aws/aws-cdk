@@ -18,7 +18,7 @@ import type { GeoRestriction } from './geo-restriction';
 import type { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
-import { ITrustStore } from './trust-store';
+import type { ITrustStore } from './trust-store';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type * as iam from '../../aws-iam';
 import type * as lambda from '../../aws-lambda';
