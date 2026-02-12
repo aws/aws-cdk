@@ -1306,7 +1306,7 @@ describe('Destination Delivery', () => {
   });
 
   test('able to make delivery when destination is imported cross stack', () => {
-    const destName = 'my-cool-xray-dest'
+    const destName = 'my-cool-xray-dest';
     const crossStack = new Stack();
 
     new CfnDeliveryDestination(crossStack, 'Dest', {
