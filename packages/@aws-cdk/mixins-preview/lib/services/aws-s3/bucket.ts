@@ -99,7 +99,7 @@ export class BucketVersioning implements IMixin {
  * S3-specific mixin for blocking public-access.
  * @mixin true
  */
-export class BucketPublicAccessBlock implements IMixin {
+export class BucketBlockPublicAccess implements IMixin {
   private readonly configOptions: s3.BlockPublicAccessOptions;
 
   constructor(publicAccessConfig: s3.BlockPublicAccess = s3.BlockPublicAccess.BLOCK_ALL) {
