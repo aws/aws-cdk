@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1764955734787"
+    "salt": "1770842103714"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -126,7 +126,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3878d762ed0376aeb69ae00db201cd0b3f9aa6ee77345155cd5220cb6441194b.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -165,7 +165,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1764955734789"
+    "salt": "1770842103716"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -197,7 +197,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1764955734789"
+    "salt": "1770842103716"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -213,22 +213,7 @@
     },
     "service": "Route53",
     "api": "GetHealthCheck",
-    "expected": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"CALCULATED\",\"ChildHealthChecks\":{\"$ArrayWith\":[\"",
-       {
-        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9"
-       },
-       "\",\"",
-       {
-        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7"
-       },
-       "\"]},\"HealthThreshold\":2,\"Inverted\":false,\"Disabled\":false}}}}"
-      ]
-     ]
-    },
+    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"CALCULATED\",\"HealthThreshold\":2,\"Inverted\":false,\"Disabled\":false}}}}",
     "parameters": {
      "HealthCheckId": {
       "Fn::Join": [
@@ -244,7 +229,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1764955734789"
+    "salt": "1770842103717"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -295,7 +280,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1764955734790"
+    "salt": "1770842103717"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -338,7 +323,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1764955734790"
+    "salt": "1770842103717"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
