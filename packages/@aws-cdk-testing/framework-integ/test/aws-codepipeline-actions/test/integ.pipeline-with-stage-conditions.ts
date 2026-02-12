@@ -13,7 +13,6 @@ const app = new cdk.App({
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
-    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 
