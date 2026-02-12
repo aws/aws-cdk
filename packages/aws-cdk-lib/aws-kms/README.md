@@ -292,8 +292,10 @@ for the `AWS::KMS::Key` CloudFormation type:
 
 
 ```ts nofixture
-import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam'; 
+import { CfnResource } from 'aws-cdk-lib';
+import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
 import { Construct, IConstruct } from 'constructs';
+
 
 declare const scope: Construct;
 class MyFactory implements IResourcePolicyFactory {

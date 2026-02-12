@@ -177,7 +177,8 @@ But if you want to customize this behavior, you can register an instance of `IRe
 for the `AWS::S3::Bucket` CloudFormation type:
 
 ```ts nofixture
-import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam'; 
+import { CfnResource } from 'aws-cdk-lib';
+import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
 import { Construct, IConstruct } from 'constructs';
 
 declare const scope: Construct;
