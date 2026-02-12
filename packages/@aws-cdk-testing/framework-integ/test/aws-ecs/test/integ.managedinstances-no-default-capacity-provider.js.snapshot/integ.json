@@ -5,12 +5,9 @@
       "stacks": [
         "integ-managedinstances-no-default-capacity-provider"
       ],
-      "regions": [
-        "us-west-2"
-      ],
       "assertionStack": "ManagedInstancesCapacityProviders/DefaultTest/DeployAssert",
       "assertionStackName": "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

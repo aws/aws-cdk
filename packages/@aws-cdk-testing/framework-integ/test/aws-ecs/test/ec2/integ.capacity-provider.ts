@@ -2,6 +2,7 @@ import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
   postCliContext: {
@@ -48,6 +49,16 @@ new ecs.Ec2Service(stack, 'EC2Service', {
       weight: 1,
     },
   ],
+});
+
+new integ.IntegTest(app, 'Ec2CapacityProviderTest', {
+  testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // EC2 capacity providers may still be in use during teardown
+      expectError: true,
+    },
+  },
 });
 
 app.synth();

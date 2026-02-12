@@ -1,5 +1,4 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -17,28 +16,6 @@ const cluster = new ecs.Cluster(stack, 'ManagedInstancesCluster', {
   enableFargateCapacityProviders: true,
 });
 
-// Create IAM roles required for FMI following Omakase specifications
-const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
-  roleName: 'AmazonECSInfrastructureRoleForOmakase',
-  assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
-  managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInfrastructureRolePolicyForManagedInstances'),
-  ],
-});
-
-const instanceRole = new iam.Role(stack, 'InstanceRole', {
-  roleName: 'AmazonECSInstanceRoleForOmakase',
-  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-  managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInstanceRolePolicyForManagedInstances'),
-  ],
-});
-
-const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
-  instanceProfileName: 'AmazonECSInstanceRoleForOmakase',
-  role: instanceRole,
-});
-
 // Create a security group for FMI instances
 const fmiSecurityGroup = new ec2.SecurityGroup(stack, 'ManagedInstancesSecurityGroup', {
   vpc,
@@ -46,19 +23,16 @@ const fmiSecurityGroup = new ec2.SecurityGroup(stack, 'ManagedInstancesSecurityG
   allowAllOutbound: true,
 });
 
-// Create MI Capacity Provider
+// Create MI Capacity Provider — let the construct create default instance profile
+// (must be prefixed with 'ecsInstanceRole' for the managed policy PassRole condition)
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'ManagedInstancesCapacityProvider', {
-  infrastructureRole: infrastructureRole,
   capacityOptionType: ecs.CapacityOptionType.SPOT,
-  ec2InstanceProfile: instanceProfile,
   subnets: vpc.privateSubnets,
   securityGroups: [fmiSecurityGroup],
   propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
   instanceRequirements: {
     vCpuCountMin: 1,
     memoryMin: cdk.Size.gibibytes(2),
-    cpuManufacturers: [ec2.CpuManufacturer.INTEL],
-    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
   },
 });
 
@@ -108,6 +82,12 @@ new ecs.FargateService(stack, 'ManagedInstancesService', {
 
 new integ.IntegTest(app, 'ManagedInstancesCapacityProviders', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/36071
+      expectError: true,
+    },
+  },
 });
 
 app.synth();

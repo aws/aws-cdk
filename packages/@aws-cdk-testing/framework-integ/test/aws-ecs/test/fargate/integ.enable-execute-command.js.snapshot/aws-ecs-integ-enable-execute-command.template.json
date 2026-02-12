@@ -576,7 +576,7 @@
       "HealthCheck": {
        "Command": [
         "CMD-SHELL",
-        "curl localhost:8000"
+        "curl localhost:80"
        ],
        "Interval": 60,
        "Retries": 3,

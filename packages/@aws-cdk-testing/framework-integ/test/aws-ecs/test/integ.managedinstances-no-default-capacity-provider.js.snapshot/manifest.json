@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "integ-managedinstances-no-default-capacity-provider.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7b3c6e30b8c0bf249b862e552da0dcb05d4d518dc804e22a432b39d673415f20.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f1f9d6216ffcf38ec3056999b12b0c3f12ed82ecc29bd654742a5f9867bfaf3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -331,156 +331,6 @@
             "data": "ManagedInstancesClusterDC139296"
           }
         ],
-        "/integ-managedinstances-no-default-capacity-provider/InfrastructureRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grantPassRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grant": [
-                "*",
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InfrastructureRole/ImportInfrastructureRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InfrastructureRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InfrastructureRoleB0C76DC8"
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InstanceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InstanceRole3CCE2F1D"
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InstanceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InstanceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InstanceRoleDefaultPolicy1531605C"
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InstanceProfile": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "instanceProfileName": "*",
-              "role": "*"
-            }
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/InstanceProfile/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InstanceProfile9F2F41CB"
-          }
-        ],
         "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -501,6 +351,62 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider/ManagedInstancesCapacityProviderRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider/ManagedInstancesCapacityProviderRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManagedInstancesCapacityProviderManagedInstancesCapacityProviderRoleDFF8AC23"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*",
+              "inlinePolicies": "*"
+            }
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManagedInstancesCapacityProviderInstanceRole675E7CC0"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider/InstanceProfile": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "instanceProfileName": "*",
+              "role": "*"
+            }
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider/InstanceProfile/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManagedInstancesCapacityProviderInstanceProfile1A23BEDA"
           }
         ],
         "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider/ManagedInstancesCapacityProvider": [
@@ -528,12 +434,6 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/integ-managedinstances-no-default-capacity-provider/TaskDef/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/integ-managedinstances-no-default-capacity-provider/TaskDef/TaskRole/Resource": [
@@ -588,6 +488,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "InfrastructureRoleB0C76DC8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InfrastructureRoleB0C76DC8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "InstanceRole3CCE2F1D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceRole3CCE2F1D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "InstanceRoleDefaultPolicy1531605C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceRoleDefaultPolicy1531605C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "InstanceProfile9F2F41CB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceProfile9F2F41CB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -653,6 +589,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -671,6 +608,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -782,7 +720,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -936,6 +874,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -967,16 +909,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": false,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1121,10 +1053,31 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1101.0"
 }
