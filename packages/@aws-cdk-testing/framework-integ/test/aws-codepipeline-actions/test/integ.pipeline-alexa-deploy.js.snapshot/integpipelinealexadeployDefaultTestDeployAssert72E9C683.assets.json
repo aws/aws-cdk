@@ -2,9 +2,9 @@
   "version": "50.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "cdkroute53ebshostedzoneidintegtestDefaultTestDeployAssert57827FC3 Template",
+      "displayName": "integpipelinealexadeployDefaultTestDeployAssert72E9C683 Template",
       "source": {
-        "path": "cdkroute53ebshostedzoneidintegtestDefaultTestDeployAssert57827FC3.template.json",
+        "path": "integpipelinealexadeployDefaultTestDeployAssert72E9C683.template.json",
         "packaging": "file"
       },
       "destinations": {
