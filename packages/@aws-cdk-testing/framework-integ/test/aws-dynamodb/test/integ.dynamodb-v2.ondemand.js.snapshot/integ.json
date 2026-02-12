@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "aws-cdk-global-table-integ/DefaultTest": {
+    "aws-cdk-global-table-ondemand-integ/DefaultTest": {
       "stacks": [
-        "aws-cdk-global-table"
+        "aws-cdk-global-table-ondemand"
       ],
       "regions": [
         "us-east-1"
       ],
       "stackUpdateWorkflow": false,
-      "assertionStack": "aws-cdk-global-table-integ/DefaultTest/DeployAssert",
-      "assertionStackName": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F"
+      "assertionStack": "aws-cdk-global-table-ondemand-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkglobaltableondemandintegDefaultTestDeployAssert303D85DB"
     }
   },
   "minimumCliVersion": "2.1033.0"

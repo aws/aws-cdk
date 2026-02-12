@@ -37,7 +37,7 @@ class TestStack extends Stack {
   }
 }
 
-const stack = new TestStack(app, 'ResourcePolicyTest-v2-FF', { env: { region: 'eu-west-1' } });
+const stack = new TestStack(app, 'ResourcePolicyTest-v2-FF');
 
 new IntegTest(app, 'table-v2-resource-policy-integ-test', {
   testCases: [stack],

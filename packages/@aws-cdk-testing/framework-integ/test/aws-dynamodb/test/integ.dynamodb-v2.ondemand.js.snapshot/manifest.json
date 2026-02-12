@@ -1,19 +1,19 @@
 {
   "version": "50.0.0",
   "artifacts": {
-    "aws-cdk-global-table.assets": {
+    "aws-cdk-global-table-ondemand.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-global-table.assets.json",
+        "file": "aws-cdk-global-table-ondemand.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-global-table": {
+    "aws-cdk-global-table-ondemand": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
-        "templateFile": "aws-cdk-global-table.template.json",
+        "templateFile": "aws-cdk-global-table-ondemand.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-global-table.assets"
+          "aws-cdk-global-table-ondemand.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
@@ -31,28 +31,28 @@
         }
       },
       "dependencies": [
-        "aws-cdk-global-table.assets"
+        "aws-cdk-global-table-ondemand.assets"
       ],
       "metadata": {
-        "/aws-cdk-global-table/Stream": [
+        "/aws-cdk-global-table-ondemand/Stream": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-global-table/Stream/Resource": [
+        "/aws-cdk-global-table-ondemand/Stream/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Stream790BDEE4"
           }
         ],
-        "/aws-cdk-global-table/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+        "/aws-cdk-global-table-ondemand/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
           }
         ],
-        "/aws-cdk-global-table/GlobalTable": [
+        "/aws-cdk-global-table-ondemand/GlobalTable": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -171,43 +171,40 @@
             }
           }
         ],
-        "/aws-cdk-global-table/GlobalTable/Resource": [
+        "/aws-cdk-global-table-ondemand/GlobalTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GlobalTable89F068B2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "GlobalTable89F068B2"
           }
         ],
-        "/aws-cdk-global-table/BootstrapVersion": [
+        "/aws-cdk-global-table-ondemand/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-global-table/CheckBootstrapVersion": [
+        "/aws-cdk-global-table-ondemand/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-global-table"
+      "displayName": "aws-cdk-global-table-ondemand"
     },
-    "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.assets": {
+    "awscdkglobaltableondemandintegDefaultTestDeployAssert303D85DB.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.assets.json",
+        "file": "awscdkglobaltableondemandintegDefaultTestDeployAssert303D85DB.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F": {
+    "awscdkglobaltableondemandintegDefaultTestDeployAssert303D85DB": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.template.json",
+        "templateFile": "awscdkglobaltableondemandintegDefaultTestDeployAssert303D85DB.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -216,7 +213,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.assets"
+          "awscdkglobaltableondemandintegDefaultTestDeployAssert303D85DB.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -225,23 +222,23 @@
         }
       },
       "dependencies": [
-        "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.assets"
+        "awscdkglobaltableondemandintegDefaultTestDeployAssert303D85DB.assets"
       ],
       "metadata": {
-        "/aws-cdk-global-table-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-global-table-ondemand-integ/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-global-table-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-global-table-ondemand-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-global-table-integ/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-global-table-ondemand-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

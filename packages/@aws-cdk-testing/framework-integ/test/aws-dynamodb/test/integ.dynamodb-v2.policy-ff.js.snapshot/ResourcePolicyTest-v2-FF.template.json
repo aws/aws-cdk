@@ -18,7 +18,9 @@
     ],
     "Replicas": [
      {
-      "Region": "eu-west-1",
+      "Region": {
+       "Ref": "AWS::Region"
+      },
       "ResourcePolicy": {
        "PolicyDocument": {
         "Statement": [
@@ -30,7 +32,11 @@
             "Fn::Join": [
              "",
              [
-              "arn:aws:iam::",
+              "arn:",
+              {
+               "Ref": "AWS::Partition"
+              },
+              ":iam::",
               {
                "Ref": "AWS::AccountId"
               },

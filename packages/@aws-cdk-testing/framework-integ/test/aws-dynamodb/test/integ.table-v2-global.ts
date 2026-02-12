@@ -82,7 +82,8 @@ class TestStack extends Stack {
 const app = new App();
 Tags.of(app).add('stage', 'IntegTest');
 new IntegTest(app, 'aws-cdk-global-table-integ', {
-  testCases: [new TestStack(app, 'aws-cdk-global-table', { env: { region: 'us-east-1' } })],
+  // Global tables with replicas require a region-aware stack
+  testCases: [new TestStack(app, 'aws-cdk-global-table', { env: { region: process.env.CDK_DEFAULT_REGION || 'us-east-1', account: process.env.CDK_DEFAULT_ACCOUNT } })],
   regions: ['us-east-1'],
   stackUpdateWorkflow: false,
 });

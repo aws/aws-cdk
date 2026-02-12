@@ -221,10 +221,7 @@
         "/aws-cdk-global-table/GlobalTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GlobalTable89F068B2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "GlobalTable89F068B2"
           }
         ],
         "/aws-cdk-global-table/BootstrapVersion": [

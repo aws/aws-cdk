@@ -2,9 +2,9 @@
   "version": "48.0.0",
   "files": {
     "a36f17a5092a854ad058abdf72ba2ebb36b6a999c2be59a3de9270cdefe7d42d": {
-      "displayName": "aws-cdk-global-table Template",
+      "displayName": "aws-cdk-global-table-ondemand Template",
       "source": {
-        "path": "aws-cdk-global-table.template.json",
+        "path": "aws-cdk-global-table-ondemand.template.json",
         "packaging": "file"
       },
       "destinations": {
