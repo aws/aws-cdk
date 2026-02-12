@@ -97,7 +97,7 @@ export interface AddonAttributes {
 @propertyInjectable
 export class Addon extends Resource implements IAddon {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.Addon';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.Addon';
 
   /**
    * Creates an `IAddon` instance from the given addon attributes.

@@ -402,7 +402,7 @@ export interface NodegroupProps extends NodegroupOptions {
 @propertyInjectable
 export class Nodegroup extends Resource implements INodegroup {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.Nodegroup';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.Nodegroup';
 
   /**
    * Import the Nodegroup from attributes

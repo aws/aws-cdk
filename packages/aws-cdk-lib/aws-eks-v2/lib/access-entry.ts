@@ -345,7 +345,7 @@ export interface AccessEntryProps {
 @propertyInjectable
 export class AccessEntry extends Resource implements IAccessEntry {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.AccessEntry';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.AccessEntry';
 
   /**
    * Imports an `AccessEntry` from its attributes.

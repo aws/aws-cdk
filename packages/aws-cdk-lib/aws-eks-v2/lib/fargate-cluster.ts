@@ -28,7 +28,7 @@ export interface FargateClusterProps extends ClusterCommonOptions {
 @propertyInjectable
 export class FargateCluster extends Cluster {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.FargateCluster';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.FargateCluster';
   /**
    * Fargate Profile that was created with the cluster.
    */

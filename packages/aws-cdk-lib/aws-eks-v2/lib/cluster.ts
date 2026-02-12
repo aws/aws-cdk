@@ -1035,7 +1035,7 @@ export interface GrantAccessOptions {
 @propertyInjectable
 export class Cluster extends ClusterBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.Cluster';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.Cluster';
 
   /**
    * Import an existing cluster
@@ -2146,7 +2146,7 @@ export interface AutoScalingGroupOptions {
 @propertyInjectable
 class ImportedCluster extends ClusterBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.ImportedCluster';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.ImportedCluster';
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();

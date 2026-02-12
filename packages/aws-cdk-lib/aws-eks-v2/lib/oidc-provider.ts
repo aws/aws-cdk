@@ -52,7 +52,7 @@ export interface OidcProviderNativeProps extends OpenIdConnectProviderProps {}
 @propertyInjectable
 export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.OpenIdConnectProvider';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.OpenIdConnectProvider';
 
   /**
    * Defines an OpenID Connect provider.
@@ -92,7 +92,7 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
 @propertyInjectable
 export class OidcProviderNative extends iam.OidcProviderNative {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.OidcProviderNative';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.OidcProviderNative';
 
   /**
    * Defines a native OpenID Connect provider.
