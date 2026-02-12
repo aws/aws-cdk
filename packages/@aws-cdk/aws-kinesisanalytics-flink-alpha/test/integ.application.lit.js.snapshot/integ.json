@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "48.0.0",
   "testCases": {
     "ApplicationTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ApplicationTest/DefaultTest/DeployAssert",
       "assertionStackName": "ApplicationTestDefaultTestDeployAssertF9C5F731"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
