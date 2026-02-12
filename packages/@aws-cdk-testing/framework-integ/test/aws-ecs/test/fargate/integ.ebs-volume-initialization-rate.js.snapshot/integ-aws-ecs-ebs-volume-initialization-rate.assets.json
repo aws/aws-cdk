@@ -1,16 +1,16 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "e5780a9fd1d1655f570512e48499fefee86dd7a239d657f66f0fa9346119822a": {
+    "fc7d5b7bb27524739ed00acdfd56c38dc906cc4026065baf989f591657a2f5ee": {
       "displayName": "integ-aws-ecs-ebs-volume-initialization-rate Template",
       "source": {
         "path": "integ-aws-ecs-ebs-volume-initialization-rate.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-fc00ba48": {
+        "current_account-current_region-337d0902": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e5780a9fd1d1655f570512e48499fefee86dd7a239d657f66f0fa9346119822a.json",
+          "objectKey": "fc7d5b7bb27524739ed00acdfd56c38dc906cc4026065baf989f591657a2f5ee.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

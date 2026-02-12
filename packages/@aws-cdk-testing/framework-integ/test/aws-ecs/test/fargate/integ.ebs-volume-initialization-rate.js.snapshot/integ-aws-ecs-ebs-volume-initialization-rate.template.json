@@ -214,6 +214,136 @@
     }
    }
   },
+  "SourceVolume1790F615": {
+   "Type": "AWS::EC2::Volume",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "MultiAttachEnabled": false,
+    "Size": 1,
+    "VolumeType": "gp3"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SnapshotFnServiceRole7B449F90": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "SnapshotFnServiceRoleDefaultPolicy2319C973": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:CreateSnapshot",
+        "ec2:DeleteSnapshot",
+        "ec2:DescribeSnapshots"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SnapshotFnServiceRoleDefaultPolicy2319C973",
+    "Roles": [
+     {
+      "Ref": "SnapshotFnServiceRole7B449F90"
+     }
+    ]
+   }
+  },
+  "SnapshotFn5B9E94C0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\nimport boto3, json, urllib.request, time\ndef send(event, context, status, data={}, physical_id=None):\n    body = json.dumps({'Status': status, 'Reason': 'See CloudWatch', 'PhysicalResourceId': physical_id or event.get('PhysicalResourceId','none'), 'StackId': event['StackId'], 'RequestId': event['RequestId'], 'LogicalResourceId': event['LogicalResourceId'], 'Data': data})\n    urllib.request.urlopen(urllib.request.Request(event['ResponseURL'], data=body.encode(), method='PUT', headers={'Content-Type':''}))\ndef handler(event, context):\n    ec2 = boto3.client('ec2')\n    try:\n        if event['RequestType'] == 'Delete':\n            snap_id = event['PhysicalResourceId']\n            try:\n                ec2.delete_snapshot(SnapshotId=snap_id)\n            except Exception:\n                pass\n            return send(event, context, 'SUCCESS', {}, snap_id)\n        vol_id = event['ResourceProperties']['VolumeId']\n        resp = ec2.create_snapshot(VolumeId=vol_id, Description='integ-test-ebs-init-rate')\n        snap_id = resp['SnapshotId']\n        ec2.get_waiter('snapshot_completed').wait(SnapshotIds=[snap_id])\n        return send(event, context, 'SUCCESS', {'SnapshotId': snap_id}, snap_id)\n    except Exception as e:\n        return send(event, context, 'FAILED', {'Error': str(e)})\n"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SnapshotFnServiceRole7B449F90",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 600
+   },
+   "DependsOn": [
+    "SnapshotFnServiceRoleDefaultPolicy2319C973",
+    "SnapshotFnServiceRole7B449F90"
+   ]
+  },
+  "SnapshotFnLogGroupA75F07B6": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "SnapshotFn5B9E94C0"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Snapshot": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SnapshotFn5B9E94C0",
+      "Arn"
+     ]
+    },
+    "VolumeId": {
+     "Ref": "SourceVolume1790F615"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "FargateCluster7CCD5F93": {
    "Type": "AWS::ECS::Cluster"
   },
@@ -354,7 +484,12 @@
         ]
        },
        "SizeInGiB": 1,
-       "SnapshotId": "snap-123456789abcdef0",
+       "SnapshotId": {
+        "Fn::GetAtt": [
+         "Snapshot",
+         "SnapshotId"
+        ]
+       },
        "VolumeInitializationRate": 200,
        "VolumeType": "gp3"
       },
