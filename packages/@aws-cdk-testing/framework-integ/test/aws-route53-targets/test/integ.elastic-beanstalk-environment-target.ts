@@ -16,7 +16,15 @@ class TestStack extends cdk.Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const appName = 'MyApplication';
+    // RegionInfo.get() requires a concrete region string at synth time, but stack.region
+    // is a Token (AWS::Region) when no explicit env is set. A CfnMapping lets us resolve
+    // the EB hosted zone ID at deploy time using Fn::FindInMap with AWS::Region.
+    const ebsHostedZoneMapping = new cdk.CfnMapping(this, 'EbsHostedZoneMapping');
+    for (const region of RegionInfo.regions) {
+      if (region.ebsEnvEndpointHostedZoneId) {
+        ebsHostedZoneMapping.setValue(region.name, 'hostedZoneId', region.ebsEnvEndpointHostedZoneId);
+      }
+    }
 
     const s3bucket = new s3.Bucket(this, 'Bucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -26,12 +34,10 @@ class TestStack extends cdk.Stack {
     });
     asset.node.addDependency(s3bucket);
 
-    const app = new elasticbeanstalk.CfnApplication(this, 'Application', {
-      applicationName: appName,
-    });
+    const app = new elasticbeanstalk.CfnApplication(this, 'Application', {});
 
     const appVersion = new elasticbeanstalk.CfnApplicationVersion(this, 'ApplicationVersion', {
-      applicationName: appName,
+      applicationName: app.ref,
       sourceBundle: {
         s3Bucket: asset.s3BucketName,
         s3Key: asset.s3ObjectKey,
@@ -40,47 +46,40 @@ class TestStack extends cdk.Stack {
     appVersion.node.addDependency(app);
     appVersion.node.addDependency(asset);
 
-    const instanceRole = new iam.Role(this, `${appName}-aws-elasticbeanstalk-ec2-role`, {
+    const instanceRole = new iam.Role(this, 'EbsEc2Role', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
+    instanceRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier'));
 
-    const managedPolicy = iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier');
-    instanceRole.addManagedPolicy(managedPolicy);
-
-    const instanceProfile = `${appName}-aws-elasticbeanstalk-ec2-instance-profile`;
-    new iam.CfnInstanceProfile(this, instanceProfile, {
-      instanceProfileName: instanceProfile,
+    const instanceProfile = new iam.CfnInstanceProfile(this, 'EbsInstanceProfile', {
       roles: [instanceRole.roleName],
     });
 
-    const optionSettingProperties: elasticbeanstalk.CfnEnvironment.OptionSettingProperty[] = [
-      {
-        namespace: 'aws:autoscaling:launchconfiguration',
-        optionName: 'IamInstanceProfile',
-        value: instanceProfile,
-      },
-      {
-        namespace: 'aws:autoscaling:asg',
-        optionName: 'MinSize',
-        value: '1',
-      },
-      {
-        namespace: 'aws:autoscaling:asg',
-        optionName: 'MaxSize',
-        value: '1',
-      },
-      {
-        namespace: 'aws:ec2:instances',
-        optionName: 'InstanceTypes',
-        value: 't3.micro',
-      },
-    ];
-
     const eb = new elasticbeanstalk.CfnEnvironment(this, 'Environment', {
-      applicationName: appName,
+      applicationName: app.ref,
       solutionStackName: SOLUTION_STACK_NAME.NODEJS_20,
-      environmentName: 'MyEnvironment',
-      optionSettings: optionSettingProperties,
+      optionSettings: [
+        {
+          namespace: 'aws:autoscaling:launchconfiguration',
+          optionName: 'IamInstanceProfile',
+          value: instanceProfile.ref,
+        },
+        {
+          namespace: 'aws:autoscaling:asg',
+          optionName: 'MinSize',
+          value: '1',
+        },
+        {
+          namespace: 'aws:autoscaling:asg',
+          optionName: 'MaxSize',
+          value: '1',
+        },
+        {
+          namespace: 'aws:ec2:instances',
+          optionName: 'InstanceTypes',
+          value: 't3.micro',
+        },
+      ],
       versionLabel: appVersion.ref,
     });
     eb.node.addDependency(app);
@@ -104,6 +103,8 @@ class TestStack extends cdk.Stack {
       zoneName: 'test.public',
     });
 
+    const hostedZoneId = ebsHostedZoneMapping.findInMap(cdk.Aws.REGION, 'hostedZoneId');
+
     const aliastWithoutHealthCheck = new route53.ARecord(this, 'Alias', {
       zone,
       recordName: 'without-health-check',
@@ -113,7 +114,7 @@ class TestStack extends cdk.Stack {
     });
     aliastWithoutHealthCheck.node.addDependency(getEnvironmentUrl);
     (aliastWithoutHealthCheck.node.defaultChild as route53.CfnRecordSet).aliasTarget = {
-      hostedZoneId: RegionInfo.get('us-east-1').ebsEnvEndpointHostedZoneId,
+      hostedZoneId,
       dnsName: getEnvironmentUrl.getResponseField('Environments.0.CNAME'),
     } as route53.CfnRecordSet.AliasTargetProperty;
 
@@ -128,7 +129,7 @@ class TestStack extends cdk.Stack {
     });
     aliasWithHealthCheck.node.addDependency(getEnvironmentUrl);
     (aliasWithHealthCheck.node.defaultChild as route53.CfnRecordSet).aliasTarget = {
-      hostedZoneId: RegionInfo.get('us-east-1').ebsEnvEndpointHostedZoneId,
+      hostedZoneId,
       dnsName: getEnvironmentUrl.getResponseField('Environments.0.CNAME'),
       evaluateTargetHealth: true,
     } as route53.CfnRecordSet.AliasTargetProperty;
@@ -144,5 +145,4 @@ const testCase = new TestStack(app, 'aws-cdk-elasticbeanstalk-integ');
 
 new IntegTest(app, 'aws-cdk-elasticbeanstalk-integ-test', {
   testCases: [testCase],
-  regions: ['us-east-1'],
 });
