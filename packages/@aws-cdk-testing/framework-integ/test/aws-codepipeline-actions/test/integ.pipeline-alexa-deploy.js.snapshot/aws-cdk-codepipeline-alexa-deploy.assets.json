@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "7a4b686e21bb811015b3d7280fa4ad5fbce5fb962c28248cbf9316e85213cea4": {
       "displayName": "aws-cdk-codepipeline-alexa-deploy Template",

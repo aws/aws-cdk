@@ -52,7 +52,6 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
 
 new IntegTest(app, 'integ.pipeline-alexa-deploy', {
   testCases: [stack],
-  regions: ['us-east-1'],
 });
 
 app.synth();
