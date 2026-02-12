@@ -1,7 +1,6 @@
 import type { Construct } from 'constructs';
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
-import type { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
@@ -37,9 +36,9 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    *
    * If your origin uses both IPv4 and IPv6 protocols, you can choose dualstack to help optimize reliability.
    *
-   * @default - OriginIpAddressType.DUALSTACK when feature flag @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault is enabled, otherwise OriginIpAddressType.IPV4
+   * @default - cloudfront.OriginIpAddressType.DUALSTACK when feature flag @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault is enabled, otherwise cloudfront.OriginIpAddressType.IPV4
    */
-  readonly ipAddressType?: OriginIpAddressType;
+  readonly ipAddressType?: cloudfront.OriginIpAddressType;
 }
 
 /**
@@ -71,7 +70,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
     return new FunctionUrlOriginWithOAC(lambdaFunctionUrl, props);
   }
 
-  private ipAddressType?: OriginIpAddressType;
+  private ipAddressType?: cloudfront.OriginIpAddressType;
 
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, private readonly props: FunctionUrlOriginProps = {}) {
     // Lambda Function URL is of the form 'https://<lambda-id>.lambda-url.<region>.on.aws/'
@@ -84,7 +83,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
     this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
 
     const defaultIpAddressType = cdk.FeatureFlags.of(lambdaFunctionUrl).isEnabled(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT)
-      ? OriginIpAddressType.DUALSTACK
+      ? cloudfront.OriginIpAddressType.DUALSTACK
       : undefined;
 
     this.ipAddressType = this.props.ipAddressType ?? defaultIpAddressType;
@@ -108,7 +107,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
   private originAccessControl?: cloudfront.IOriginAccessControlRef;
   private functionUrl: lambda.IFunctionUrl;
   private readonly props: FunctionUrlOriginWithOACProps;
-  private readonly ipAddressType?: OriginIpAddressType;
+  private readonly ipAddressType?: cloudfront.OriginIpAddressType;
 
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, props: FunctionUrlOriginWithOACProps = {}) {
     const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
@@ -122,7 +121,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
 
     const defaultIpAddressType = cdk.FeatureFlags.of(lambdaFunctionUrl).isEnabled(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT)
-      ? OriginIpAddressType.DUALSTACK
+      ? cloudfront.OriginIpAddressType.DUALSTACK
       : undefined;
     this.ipAddressType = props.ipAddressType ?? defaultIpAddressType;
   }
