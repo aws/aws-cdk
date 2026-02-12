@@ -23,7 +23,6 @@ const fmiSecurityGroup = new ec2.SecurityGroup(stack, 'ManagedInstancesSecurityG
 });
 
 // Create MI Capacity Provider — let the construct create default instance profile
-// (must be prefixed with 'ecsInstanceRole' for the managed policy PassRole condition)
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'ManagedInstancesCapacityProvider', {
   subnets: vpc.privateSubnets,
   securityGroups: [fmiSecurityGroup],

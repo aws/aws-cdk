@@ -55,7 +55,7 @@ new integ.IntegTest(app, 'Ec2CapacityProviderTest', {
   testCases: [stack],
   cdkCommandOptions: {
     destroy: {
-      // EC2 capacity providers may still be in use during teardown
+      // https://github.com/aws/aws-cdk/issues/19275
       expectError: true,
     },
   },
