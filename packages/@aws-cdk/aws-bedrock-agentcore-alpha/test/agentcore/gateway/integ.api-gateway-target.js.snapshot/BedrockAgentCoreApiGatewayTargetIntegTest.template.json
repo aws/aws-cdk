@@ -25,7 +25,15 @@
           "Fn::Join": [
            "",
            [
-            "arn:aws:bedrock-agentcore:us-east-1:",
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
             {
              "Ref": "AWS::AccountId"
             },
@@ -52,58 +60,21 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "apigateway:GET",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":apigateway:",
-           {
-            "Ref": "AWS::Region"
-           },
-           "::/restapis/",
-           {
-            "Ref": "TestRestApiB7B4EFDA"
-           },
-           "/stages/prod/exports/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":apigateway:",
-           {
-            "Ref": "AWS::Region"
-           },
-           "::/restapis/",
-           {
-            "Ref": "TestRestApiB7B4EFDA"
-           }
-          ]
-         ]
-        }
-       ]
-      },
-      {
        "Action": "execute-api:Invoke",
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
          "",
          [
-          "arn:aws:execute-api:us-east-1:",
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":execute-api:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
           {
            "Ref": "AWS::AccountId"
           },
@@ -244,7 +215,11 @@
        "Fn::Join": [
         "",
         [
-         "https://cognito-idp.us-east-1.amazonaws.com/",
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
          {
           "Ref": "TestGatewayUserPool545AA49A"
          },
@@ -353,7 +328,7 @@
     "Name": "integ-test-api-gateway-target"
    }
   },
-  "TestRestApiDeploymentE31B12659b3ba259d37f91bac31e41f7e6aa4642": {
+  "TestRestApiDeploymentE31B12656be0631da8d65a9595d57514d0cdd866": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "REST API for testing Gateway API Gateway target integration",
@@ -377,7 +352,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "TestRestApiDeploymentE31B12659b3ba259d37f91bac31e41f7e6aa4642"
+     "Ref": "TestRestApiDeploymentE31B12656be0631da8d65a9595d57514d0cdd866"
     },
     "RestApiId": {
      "Ref": "TestRestApiB7B4EFDA"
@@ -415,7 +390,15 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
        {
         "Ref": "AWS::AccountId"
        },
@@ -448,7 +431,15 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
        {
         "Ref": "AWS::AccountId"
        },
@@ -474,7 +465,15 @@
       "Fn::Join": [
        "",
        [
-        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
           "BackendFunction63314140",
@@ -532,7 +531,15 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
        {
         "Ref": "AWS::AccountId"
        },
@@ -565,7 +572,15 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
        {
         "Ref": "AWS::AccountId"
        },
@@ -591,7 +606,15 @@
       "Fn::Join": [
        "",
        [
-        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
           "BackendFunction63314140",
@@ -783,7 +806,11 @@
       {
        "Ref": "TestRestApiB7B4EFDA"
       },
-      ".execute-api.us-east-1.",
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
       {
        "Ref": "AWS::URLSuffix"
       },
@@ -821,7 +848,11 @@
       {
        "Ref": "TestRestApiB7B4EFDA"
       },
-      ".execute-api.us-east-1.",
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
       {
        "Ref": "AWS::URLSuffix"
       },
