@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "TablePartitionSortIntegTest/DefaultTest": {
+      "stacks": [
+        "TableWithPartitionSortStack"
+      ],
+      "assertionStack": "TablePartitionSortIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TablePartitionSortIntegTestDefaultTestDeployAssertC1659EB1"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

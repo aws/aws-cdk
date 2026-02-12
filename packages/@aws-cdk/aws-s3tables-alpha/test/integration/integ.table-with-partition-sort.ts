@@ -1,4 +1,4 @@
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as s3tables from '../../lib';
@@ -14,42 +14,42 @@ class TableWithPartitionSortStack extends core.Stack {
   constructor(scope: Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
 
+    const base = id.toLowerCase();
+
+    // Bucket: allow a-z0-9- only
+    const baseDash = base.replace(/[^a-z0-9-]/g, '-');
+
+    // Namespace/Table: allow a-z0-9_ only
+    const baseUnderscore = base.replace(/[^a-z0-9_]/g, '_');
+
+    // Suffix: make unique, but also conform to underscore rule
+    const suffix = core.Names.uniqueId(this).slice(-8).toLowerCase();
+
+    const bucketName = `${baseDash}-${suffix}-bucket`;
+    const namespaceName = `${baseUnderscore}_${suffix}_ns`;
+    const tableName = `${baseUnderscore}_${suffix}_table`;
+
     this.tableBucket = new s3tables.TableBucket(this, 'PartitionSortBucket', {
-      tableBucketName: 'partition-sort-table-bucket',
+      tableBucketName: bucketName,
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
     this.namespace = new s3tables.Namespace(this, 'PartitionSortNamespace', {
-      namespaceName: 'partition_sort_namespace',
+      namespaceName,
       tableBucket: this.tableBucket,
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
     this.table = new s3tables.Table(this, 'PartitionSortTable', {
-      tableName: 'partition_sort_table',
+      tableName,
       namespace: this.namespace,
       openTableFormat: s3tables.OpenTableFormat.ICEBERG,
       icebergMetadata: {
         icebergSchema: {
           schemaFieldList: [
-            {
-              id: 1,
-              name: 'day',
-              type: 'date',
-              required: true,
-            },
-            {
-              id: 2,
-              name: 'person_name',
-              type: 'string',
-              required: true,
-            },
-            {
-              id: 3,
-              name: 'classes_taken',
-              type: 'int',
-              required: false,
-            },
+            { id: 1, name: 'day', type: 'date', required: true },
+            { id: 2, name: 'person_name', type: 'string', required: true },
+            { id: 3, name: 'classes_taken', type: 'int', required: false },
           ],
         },
         // Partition by day
@@ -100,29 +100,39 @@ const integ = new IntegTest(app, 'TablePartitionSortIntegTest', {
   testCases: [partitionSortTest],
 });
 
-// Assert table exists
+// Assert table exists (use the actual generated name)
 const listTables = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'ListTablesCommand', {
   tableBucketARN: partitionSortTest.tableBucket.tableBucketArn,
   namespace: partitionSortTest.namespace.namespaceName,
 });
 
-listTables.expect(ExpectedResult.objectLike({
-  tables: [
-    {
-      name: 'partition_sort_table',
-    },
-  ],
-}));
+listTables.expect(
+  ExpectedResult.objectLike({
+    tables: Match.arrayWith([
+      Match.objectLike({
+        name: partitionSortTest.table.tableName,
+      }),
+    ]),
+  }),
+);
 
-// Assert table metadata location exists and contains partition spec, sort order
-const getMetadataLocation = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'GetTableMetadataLocationCommand', {
-  tableBucketARN: partitionSortTest.tableBucket.tableBucketArn,
-  namespace: partitionSortTest.namespace.namespaceName,
-  name: 'partition_sort_table',
-});
+// Assert metadata location exists
+const getMetadataLocation = integ.assertions.awsApiCall(
+  '@aws-sdk/client-s3tables',
+  'GetTableMetadataLocationCommand',
+  {
+    tableBucketARN: partitionSortTest.tableBucket.tableBucketArn,
+    namespace: partitionSortTest.namespace.namespaceName,
+    name: partitionSortTest.table.tableName,
+  },
+);
 
-getMetadataLocation.expect(ExpectedResult.objectLike({
-  metadataLocation: ExpectedResult.stringLikeRegexp('s3://.*'),
-}));
+getMetadataLocation.expect(
+  ExpectedResult.objectLike({
+    metadataLocation: Match.stringLikeRegexp('^s3://.*metadata.*\\.json$'),
+    warehouseLocation: Match.stringLikeRegexp('^s3://'),
+    versionToken: Match.stringLikeRegexp('.+'),
+  }),
+);
 
 app.synth();
