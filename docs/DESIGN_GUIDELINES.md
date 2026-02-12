@@ -1347,7 +1347,7 @@ exposing higher-level interfaces:
 
 - `IResourcePolicyFactory` wraps an L1 into an object implementing `IResourceWithPolicyV2`, enabling resource policy 
 manipulation.
-- `IEncryptedResourceFactory` wraps an L1 into an object implementing `IResourceWithPolicyV2`, enabling KMS key grants.
+- `IEncryptedResourceFactory` wraps an L1 into an object implementing `IEncryptedResource`, enabling KMS key grants.
 
 `IResourceWithPolicyV2` and `IEncryptedResource` are collectively called "traits". For now, these are the only two 
 traits we have, but we might add more in the future if we find other common patterns in L1 resources that can be 
