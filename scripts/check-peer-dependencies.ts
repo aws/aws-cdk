@@ -22,7 +22,7 @@ function main() {
   const packageName = pkg.name || 'unknown';
   
   console.log(`Checking peer dependencies for ${packageName}...`);
-  const bundled = new Set(pkg.bundleDependencies || []);
+  const bundled = new Set(pkg.bundleDependencies || pkg.bundledDependencies || []);
   const deps = pkg.dependencies || {};
   
   const errors = [];

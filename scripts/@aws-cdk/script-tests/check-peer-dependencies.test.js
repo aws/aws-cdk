@@ -157,4 +157,76 @@ describe('check-peer-dependencies', () => {
     const result = runScript(tmpDir);
     expect(result.success).toBe(true);
   });
+
+  test('fails when package.json not found', () => {
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(false);
+    expect(result.stderr).toContain('package.json not found');
+  });
+
+  test('skips bundled dependency not in node_modules', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      bundleDependencies: ['missing-package'],
+      dependencies: { 'missing-package': '^1.0.0' },
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(true);
+  });
+
+  test('fails when multiple peer dependencies have issues', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      bundleDependencies: ['foo'],
+      dependencies: {
+        foo: '^1.0.0',
+        bar: '^1.0.0',
+      },
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const fooDir = path.join(tmpDir, 'node_modules', 'foo');
+    fs.mkdirSync(fooDir, { recursive: true });
+    fs.writeFileSync(path.join(fooDir, 'package.json'), JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+      peerDependencies: {
+        bar: '>=2.0.0',
+        baz: '>=1.0.0',
+      },
+    }));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(false);
+    expect(result.stderr).toContain('bar@>=2.0.0');
+    expect(result.stderr).toContain('baz@>=1.0.0');
+  });
+
+  test('handles bundledDependencies spelling variant', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      bundledDependencies: ['foo'],
+      dependencies: {
+        foo: '^1.0.0',
+        bar: '^2.0.0',
+      },
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const fooDir = path.join(tmpDir, 'node_modules', 'foo');
+    fs.mkdirSync(fooDir, { recursive: true });
+    fs.writeFileSync(path.join(fooDir, 'package.json'), JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+      peerDependencies: { bar: '>=2.0.0' },
+    }));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(true);
+  });
 });
