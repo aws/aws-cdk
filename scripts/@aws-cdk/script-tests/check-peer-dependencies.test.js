@@ -1,0 +1,160 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const scriptPath = path.join(__dirname, '../../check-peer-dependencies.ts');
+
+describe('check-peer-dependencies', () => {
+  let tmpDir;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'peer-deps-test-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  function runScript(packageDir) {
+    try {
+      execSync(`npx ts-node ${scriptPath} ${packageDir}`, {
+        cwd: path.join(__dirname, '../../..'),
+        encoding: 'utf8',
+        stdio: 'pipe',
+      });
+      return { success: true };
+    } catch (error) {
+      return { success: false, stderr: error.stderr };
+    }
+  }
+
+  test('passes when no bundled dependencies', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      dependencies: {},
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(true);
+  });
+
+  test('passes when bundled dependency has no peer dependencies', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      bundleDependencies: ['foo'],
+      dependencies: { foo: '^1.0.0' },
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const fooDir = path.join(tmpDir, 'node_modules', 'foo');
+    fs.mkdirSync(fooDir, { recursive: true });
+    fs.writeFileSync(path.join(fooDir, 'package.json'), JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+    }));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(true);
+  });
+
+  test('passes when peer dependency is satisfied', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      bundleDependencies: ['foo'],
+      dependencies: {
+        foo: '^1.0.0',
+        bar: '^2.0.0',
+      },
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const fooDir = path.join(tmpDir, 'node_modules', 'foo');
+    fs.mkdirSync(fooDir, { recursive: true });
+    fs.writeFileSync(path.join(fooDir, 'package.json'), JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+      peerDependencies: { bar: '>=2.0.0' },
+    }));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(true);
+  });
+
+  test('fails when peer dependency is missing', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      bundleDependencies: ['foo'],
+      dependencies: { foo: '^1.0.0' },
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const fooDir = path.join(tmpDir, 'node_modules', 'foo');
+    fs.mkdirSync(fooDir, { recursive: true });
+    fs.writeFileSync(path.join(fooDir, 'package.json'), JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+      peerDependencies: { bar: '>=2.0.0' },
+    }));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(false);
+    expect(result.stderr).toContain('foo requires peer bar@>=2.0.0');
+    expect(result.stderr).toContain('test-package does not include it');
+  });
+
+  test('fails when peer dependency version is incompatible', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      bundleDependencies: ['foo'],
+      dependencies: {
+        foo: '^1.0.0',
+        bar: '^1.0.0',
+      },
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const fooDir = path.join(tmpDir, 'node_modules', 'foo');
+    fs.mkdirSync(fooDir, { recursive: true });
+    fs.writeFileSync(path.join(fooDir, 'package.json'), JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+      peerDependencies: { bar: '>=2.0.0' },
+    }));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(false);
+    expect(result.stderr).toContain('foo requires peer bar@>=2.0.0');
+    expect(result.stderr).toContain('test-package has ^1.0.0');
+  });
+
+  test('handles prerelease versions correctly', () => {
+    const pkg = {
+      name: 'test-package',
+      version: '1.0.0',
+      bundleDependencies: ['foo'],
+      dependencies: {
+        foo: '^1.0.0',
+        bar: '^2.0.0-alpha.1',
+      },
+    };
+    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(pkg));
+
+    const fooDir = path.join(tmpDir, 'node_modules', 'foo');
+    fs.mkdirSync(fooDir, { recursive: true });
+    fs.writeFileSync(path.join(fooDir, 'package.json'), JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+      peerDependencies: { bar: '>=2.0.0-alpha.0' },
+    }));
+
+    const result = runScript(tmpDir);
+    expect(result.success).toBe(true);
+  });
+});
