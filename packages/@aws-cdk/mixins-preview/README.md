@@ -190,16 +190,17 @@ const distribution = new cloudfront.Distribution(scope, 'Distribution', {
 });
 
 // Create destination bucket
-const bucket = new s3.Bucket(scope, 'DeliveryBucket');
+const destBucket = new s3.Bucket(scope, 'DeliveryBucket');
 // Add permissions to bucket to facilitate log delivery
-const bucketPolicy = new s3.BucketPolict(scope, 'DeliveryBucketPolicy', {
-  document: iam.PolicyDocument(),
+const bucketPolicy = new s3.BucketPolicy(scope, 'DeliveryBucketPolicy', {
+  bucket: destBucket,
+  document: new iam.PolicyDocument(),
 });
 // Create S3 delivery destination for logs
 const destination = new logs.CfnDeliveryDestination(scope, 'Destination', {
-  deliveryResourceArn: bucket.bucketArn,
-  deliveryDestinationType: 'S3',
+  destinationResourceArn: destBucket.bucketArn,
   name: 'unique-destination-name',
+  deliveryDestinationType: 'S3',
 });
 
 distribution
