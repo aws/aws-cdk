@@ -1,20 +1,27 @@
 /**
- * Validates that bundled dependencies in aws-cdk-lib satisfy their peer dependency requirements.
- * This prevents peer dependency warnings when users install aws-cdk-lib.
+ * Validates that bundled dependencies satisfy their peer dependency requirements.
+ * This prevents peer dependency warnings when users install packages with bundled dependencies.
+ * 
+ * Usage: ts-node check-peer-dependencies.ts <package-directory>
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as semver from 'semver';
 
-const repoRoot = path.join(__dirname, '..');
-const cdkLibDir = path.join(repoRoot, 'packages/aws-cdk-lib');
-const cdkLibPackageJson = path.join(cdkLibDir, 'package.json');
-
 function main() {
-  console.log('Checking peer dependencies...');
+  const packageDir = process.argv[2] || process.cwd();
+  const packageJsonPath = path.join(packageDir, 'package.json');
   
-  const pkg = JSON.parse(fs.readFileSync(cdkLibPackageJson, 'utf8'));
+  if (!fs.existsSync(packageJsonPath)) {
+    console.error(`Error: package.json not found at ${packageJsonPath}`);
+    process.exit(1);
+  }
+  
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const packageName = pkg.name || 'unknown';
+  
+  console.log(`Checking peer dependencies for ${packageName}...`);
   const bundled = new Set(pkg.bundleDependencies || []);
   const deps = pkg.dependencies || {};
   
@@ -23,7 +30,7 @@ function main() {
   for (const [depName, depVersion] of Object.entries(deps)) {
     if (!bundled.has(depName)) continue;
     
-    const depPkgPath = path.join(cdkLibDir, 'node_modules', depName, 'package.json');
+    const depPkgPath = path.join(packageDir, 'node_modules', depName, 'package.json');
     if (!fs.existsSync(depPkgPath)) continue;
     
     const depPkg = JSON.parse(fs.readFileSync(depPkgPath, 'utf8'));
@@ -33,19 +40,19 @@ function main() {
       const installedRange = deps[peerName] as string | undefined;
       const peerRangeStr = peerRange as string;
       if (!installedRange) {
-        errors.push(`${depName} requires peer ${peerName}@${peerRangeStr}, but it's not in aws-cdk-lib dependencies`);
+        errors.push(`${depName} requires peer ${peerName}@${peerRangeStr}, but ${packageName} does not include it`);
         continue;
       }
       
       // Check if the minimum version of the installed range satisfies the peer dependency
       const minVersion = semver.minVersion(installedRange);
       if (!minVersion) {
-        errors.push(`${depName} requires peer ${peerName}@${peerRangeStr}, but aws-cdk-lib has invalid range ${installedRange}`);
+        errors.push(`${depName} requires peer ${peerName}@${peerRangeStr}, but ${packageName} has invalid range ${installedRange}`);
         continue;
       }
       
       if (!semver.satisfies(minVersion.version, peerRangeStr, { includePrerelease: true })) {
-        errors.push(`${depName} requires peer ${peerName}@${peerRangeStr}, but aws-cdk-lib has ${installedRange} (min: ${minVersion.version})`);
+        errors.push(`${depName} requires peer ${peerName}@${peerRangeStr}, but ${packageName} has ${installedRange} (min: ${minVersion.version})`);
       }
     }
   }
