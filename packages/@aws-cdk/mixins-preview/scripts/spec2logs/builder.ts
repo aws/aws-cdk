@@ -137,11 +137,9 @@ class LogsHelper extends ClassType {
   }
 
   public build(mixin: LogsMixin) {
-    const destinations = [];
     for (const dest of this.log.destinations) {
       switch (dest.destinationType) {
         case 'S3':
-          destinations.push(`${dest.destinationType}`);
           const toS3 = this.addMethod({
             name: `to${dest.destinationType}`,
             returnType: mixin.type,
@@ -170,7 +168,6 @@ class LogsHelper extends ClassType {
           ));
           break;
         case 'CWL':
-          destinations.push('Cloudwatch Logs');
           const toCWL = this.addMethod({
             name: 'toLogGroup',
             returnType: mixin.type,
@@ -191,7 +188,6 @@ class LogsHelper extends ClassType {
           ));
           break;
         case 'FH':
-          destinations.push('Firehose');
           const toFH = this.addMethod({
             name: 'toFirehose',
             returnType: mixin.type,
@@ -212,7 +208,6 @@ class LogsHelper extends ClassType {
           ));
           break;
         default:
-          destinations.push('XRay');
           const toXRAY = this.addMethod({
             name: 'toXRay',
             returnType: mixin.type,
@@ -233,8 +228,9 @@ class LogsHelper extends ClassType {
       name: 'toDestination',
       returnType: mixin.type,
       docs: {
-        summary: `Delivers logs to a pre-created delivery destination \nSupported destinations are ${destinations.join(', ')}\n` +
-        'You are responsible for setting up the correct permissions for your delivery destination, toDestinaion() does not set up any permissions for you.\n' +
+        summary: 'Delivers logs to a pre-created delivery destination',
+        remarks: `Supported destinations are ${this.log.destinations.map(d => d.destinationType).join(', ')}\n` +
+        'You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.\n' +
         'Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().',
       },
     });

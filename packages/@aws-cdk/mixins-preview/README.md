@@ -175,7 +175,8 @@ distribution
   .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup));
 ```
 
-Configures vended logs delivery for supported resources when a pre-created destination is provided
+Configures vended logs delivery for supported resources when a pre-created destination is provided:
+
 ```typescript
 import '@aws-cdk/mixins-preview/with';
 import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
