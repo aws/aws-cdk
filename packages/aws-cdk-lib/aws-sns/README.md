@@ -240,7 +240,7 @@ A simpler and more general way of achieving the same result is to use the
 const topic = new sns.Topic(this, 'Topic');
 
 // This would work the same way if topic was a CfnTopic (L1)
-sns.TopicGrants(topic).subscribe(new iam.AnyPrincipal()); 
+sns.TopicGrants.fromTopic(topic).subscribe(new iam.AnyPrincipal()); 
 ```
 
 For convenience, if you are using an L2, you can also call `grants` on the topic: 
