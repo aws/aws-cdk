@@ -40,6 +40,14 @@ const stateMachine = new sfn.StateMachine(stack, 'SM', {
 
 const testCase = new IntegTest(app, 'EmrCreateClusterTestAutoDeletionPolicyIdleTimeout', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      args: {
+        force: true,
+      },
+      expectError: true,
+    },
+  },
 });
 
 testCase.assertions

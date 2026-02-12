@@ -29,7 +29,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1760712947781"
+    "salt": "1770842544378"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -86,6 +86,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "states:DescribeExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -101,7 +110,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -124,7 +133,7 @@
     },
     "service": "StepFunctions",
     "api": "describeExecution",
-    "expected": "{\"$ObjectLike\":{\"output\":{\"$StringLike\":\".*\\\"statusCode\\\":200.*\\\"status\\\":\\\"success\\\".*\\\"message\\\":\\\"Hello from target Lambda\\\".*\"}}}",
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
     "stateMachineArn": {
      "Ref": "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForEDC8A739"
     },
@@ -146,7 +155,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1760712947782"
+    "salt": "1770842544379"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -317,7 +326,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -359,7 +368,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -370,6 +379,48 @@
      ]
     }
    }
+  },
+  "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c1": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "describeExecution",
+    "expected": "{\"$ObjectLike\":{\"output\":{\"$StringLike\":\".*\\\"statusCode\\\":200.*\\\"status\\\":\\\"success\\\".*\\\"message\\\":\\\"Hello from target Lambda\\\".*\"}}}",
+    "parameters": {
+     "executionArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallStepFunctionsstartExecution35b0a9d12ae4d5363f5b001a832be9fa",
+          "apiCallResponse.executionArn"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1770842544381"
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c",
+    "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForIsCompleteProviderInvokeEF8ACA63",
+    "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForEDC8A739",
+    "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForRoleD9C2DF7E",
+    "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForTimeoutProviderInvokeFCAFDA76"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -377,6 +428,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c1",
      "assertion"
     ]
    }

@@ -14,7 +14,7 @@
       }
      ]
     },
-    "Name": "MyGuardrail",
+    "Name": "guardrail-invoke-model-trace-integ",
     "WordPolicyConfig": {
      "WordsConfig": [
       {
@@ -165,7 +165,7 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"test attack\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"tell me a story\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
        {
         "Fn::GetAtt": [
          "Guardrail",
@@ -184,14 +184,14 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"test attack\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"tell me a story\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
        {
         "Fn::GetAtt": [
          "Guardrail",
          "GuardrailArn"
         ]
        },
-       "\",\"GuardrailVersion\":\"1\",\"Trace\":\"ENABLED\"}}},\"TimeoutSeconds\":30}"
+       "\",\"GuardrailVersion\":\"1\",\"Trace\":\"ENABLED\"}}},\"TimeoutSeconds\":120}"
       ]
      ]
     },
@@ -208,16 +208,6 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Outputs": {
-  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
-   "Value": {
-    "Ref": "StateMachine2E01A3A5"
-   },
-   "Export": {
-    "Name": "aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
-   }
   }
  },
  "Parameters": {

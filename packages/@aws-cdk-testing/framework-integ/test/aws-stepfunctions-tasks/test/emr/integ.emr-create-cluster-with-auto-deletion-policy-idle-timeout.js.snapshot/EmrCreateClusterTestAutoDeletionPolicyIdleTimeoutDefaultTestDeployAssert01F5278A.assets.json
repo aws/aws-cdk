@@ -1,29 +1,29 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
-    "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238": {
+    "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff": {
       "source": {
-        "path": "asset.53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.bundle",
+        "path": "asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-4d6ddfe7": {
+        "current_account-current_region-b47a7931": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip",
+          "objectKey": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "961a0daaa29ff530e921554142e2e2395bd88ca5a627e43ed6fe659d08ad57cc": {
+    "01937d87547c8daf4d59ea423f86ea316cc7076c6e1d901c46630022386d9a2a": {
       "displayName": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A Template",
       "source": {
         "path": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9cf09e7a": {
+        "current_account-current_region-d6b5eb12": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "961a0daaa29ff530e921554142e2e2395bd88ca5a627e43ed6fe659d08ad57cc.json",
+          "objectKey": "01937d87547c8daf4d59ea423f86ea316cc7076c6e1d901c46630022386d9a2a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

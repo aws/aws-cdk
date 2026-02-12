@@ -31,10 +31,11 @@ class TestStack extends cdk.Stack {
     });
 
     // Create a cross-region Lambda invoke task using CallAwsServiceCrossRegion
+    // Use the stack's own region so the invoke targets the region where the Lambda is deployed
     const crossRegionInvokeTask = tasks.CallAwsServiceCrossRegion.jsonata(this, 'CrossRegionLambdaInvoke', {
       service: 'lambda',
       action: 'invoke',
-      region: 'us-east-1',
+      region: cdk.Stack.of(this).region,
       parameters: {
         FunctionName: targetLambda.functionArn,
         Payload: JSON.stringify({
@@ -90,8 +91,13 @@ const describe = integ.assertions
 
 // Verify that the output contains the expected Lambda response structure as JSON
 // This ensures the response is properly serialized as JSON, not as byte array
-describe.expect(ExpectedResult.objectLike({
-  output: Match.stringLikeRegexp('.*"statusCode":200.*"status":"success".*"message":"Hello from target Lambda".*'),
-}));
+const describeAfterSuccess = integ.assertions
+  .awsApiCall('StepFunctions', 'describeExecution', {
+    executionArn,
+  })
+  .expect(ExpectedResult.objectLike({
+    output: Match.stringLikeRegexp('.*"statusCode":200.*"status":"success".*"message":"Hello from target Lambda".*'),
+  }));
+describe.next(describeAfterSuccess);
 
 app.synth();

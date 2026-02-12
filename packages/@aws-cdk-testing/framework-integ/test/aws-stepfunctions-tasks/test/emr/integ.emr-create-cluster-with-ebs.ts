@@ -69,6 +69,14 @@ const sm = new sfn.StateMachine(stack, 'SM', {
 
 const integTest = new IntegTest(app, 'emr-create-cluster-ebs-integ', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      args: {
+        force: true,
+      },
+      expectError: true,
+    },
+  },
 });
 
 const start = integTest.assertions.awsApiCall('StepFunctions', 'startExecution', {
