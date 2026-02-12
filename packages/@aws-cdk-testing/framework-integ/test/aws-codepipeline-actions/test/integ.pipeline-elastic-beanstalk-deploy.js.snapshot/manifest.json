@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e56ca708fb3ea09dc3da298e9bc0532e29a23a09e976219b3dbb0b050f807566.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd9dee7afb2f3ac07518a055eb3907ba369b699f75724dddbbd85990359dde74.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -326,10 +326,7 @@
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/service-role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "servicerole2C3CD20E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "servicerole2C3CD20E"
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile-role": [
@@ -341,37 +338,25 @@
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile-role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "instanceprofilerole786BCBC7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "instanceprofilerole786BCBC7"
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "instanceprofile",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "instanceprofile"
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/beastalk-app": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "beastalkapp",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "beastalkapp"
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/beanstlk-env": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "beanstlkenv",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "beanstlkenv"
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline": [
@@ -1197,7 +1182,6 @@
             "explanation": "When enabled, CDK will automatically generate a unique role name that is used for s3 object replication."
           },
           "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
-            "userValue": false,
             "recommendedValue": true,
             "explanation": "Remove the root account principal from Stage addActions trust policy",
             "unconfiguredBehavesLike": {

@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "58d0aa24eab1af99c080a7caee73e6a48f4be2d915a9ff452d2dedf4cde66c13": {
+    "02e8f842273616187af8b799a7a81fe30a430ceedfdb88f0f05f575c47d42d27": {
       "displayName": "aws-cdk-codepipeline-stage-conditions Template",
       "source": {
         "path": "aws-cdk-codepipeline-stage-conditions.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-66118bfd": {
+        "current_account-current_region-73d8229e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "58d0aa24eab1af99c080a7caee73e6a48f4be2d915a9ff452d2dedf4cde66c13.json",
+          "objectKey": "02e8f842273616187af8b799a7a81fe30a430ceedfdb88f0f05f575c47d42d27.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

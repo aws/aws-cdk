@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/994c47a01c4cfabcec2eae450a227e673cc3607e7eb171d418eefd19d380efc2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a4b686e21bb811015b3d7280fa4ad5fbce5fb962c28248cbf9316e85213cea4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -871,7 +871,6 @@
             "explanation": "When enabled, CDK will automatically generate a unique role name that is used for s3 object replication."
           },
           "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
-            "userValue": false,
             "recommendedValue": true,
             "explanation": "Remove the root account principal from Stage addActions trust policy",
             "unconfiguredBehavesLike": {
