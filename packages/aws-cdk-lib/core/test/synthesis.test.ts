@@ -119,7 +119,7 @@ describe('synthesis', () => {
     const session = app.synth();
 
     // THEN
-    expect(session.manifest.artifacts?.['one-stack'].metadata).toEqual({
+    expect(session.getStackByName('one-stack').metadata).toEqual({
       '/one-stack': [
         {
           type: 'aws:cdk:stack-tags',
@@ -419,6 +419,27 @@ describe('synthesis', () => {
     expect(() => {
       Template.fromStack(stack);
     }).toThrow('Synthesis has been called multiple times and the construct tree was modified after the first synthesis');
+  });
+
+  test('metadata gets written to separate file but can still be read', () => {
+    const app = new cdk.App();
+
+    const stack = new cdk.Stack(app, 'SomeStack');
+    for (let i = 0; i < 10; i++) {
+      new cdk.CfnResource(stack, `Resource${i}`, { type: 'Aws::Some::Resource' });
+    }
+
+    const assembly = app.synth();
+
+    const stackArtifact = assembly.getStackByName('SomeStack');
+    expect(stackArtifact.manifest.additionalMetadataFile).toBeDefined();
+
+    expect(stackArtifact.metadata).toEqual(expect.objectContaining({
+      '/SomeStack/Resource0': expect.arrayContaining([{
+        data: 'Resource0',
+        type: 'aws:cdk:logicalId',
+      }]),
+    }));
   });
 });
 
