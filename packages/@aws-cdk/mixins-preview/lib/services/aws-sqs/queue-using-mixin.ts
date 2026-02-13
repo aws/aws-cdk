@@ -1,19 +1,20 @@
-import type * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import type { Construct } from 'constructs';
 import type * as iam from 'aws-cdk-lib/aws-iam';
-import type { IQueueRef, QueueReference } from 'aws-cdk-lib/aws-sqs/lib/sqs.generated';
-import { CfnQueue } from 'aws-cdk-lib/aws-sqs/lib/sqs.generated';
-import { QueueGrants } from 'aws-cdk-lib/aws-sqs/lib/sqs-grants.generated';
 import type { IResource, ResourceProps } from 'aws-cdk-lib/core';
 import { Resource } from 'aws-cdk-lib/core';
 import type * as kms from 'aws-cdk-lib/aws-kms';
-import { KeyGrants } from 'aws-cdk-lib/aws-kms/lib/key-grants';
+import { KeyGrants } from 'aws-cdk-lib/aws-kms';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IMixin } from '../../core';
 import { RedrivePolicyMixin, RedriveAllowPolicyMixin, FifoMixin } from './queue-mixins';
 import { CfnQueuePropsMixin } from './cfn-props-mixins.generated';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
-export interface IQueue2 extends IResource, IQueueRef {
+/**
+ * Represents an SQS queue
+ */
+export interface IQueue2 extends IResource, sqs.IQueueRef {
   /**
    * The ARN of this queue
    * @attribute
@@ -45,7 +46,7 @@ export interface IQueue2 extends IResource, IQueueRef {
   /**
    * Collection of grant methods for this queue
    */
-  readonly grants: QueueGrants;
+  readonly grants: sqs.QueueGrants;
 
 }
 
@@ -81,14 +82,14 @@ export abstract class QueueBase2 extends Resource implements IQueue2 {
   /**
    * Collection of grant methods for a Queue
    */
-  public readonly grants: QueueGrants;
+  public readonly grants: sqs.QueueGrants;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
-    this.grants = QueueGrants.fromQueue(this);
+    this.grants = sqs.QueueGrants.fromQueue(this);
   }
 
-  public get queueRef(): QueueReference {
+  public get queueRef(): sqs.QueueReference {
     return {
       queueUrl: this.queueUrl,
       queueArn: this.queueArn,
@@ -103,10 +104,23 @@ export abstract class QueueBase2 extends Resource implements IQueue2 {
   }
 }
 
+/**
+ * A new Amazon SQS queue
+ * @resource AWS::SQS::Queue
+ * [disable-awslint:props-struct-name]
+ * [disable-awslint:construct-ctor-props-type]
+ * [disable-awslint:from-method]
+ */
+@propertyInjectable
 export class Queue2 extends QueueBase2 {
-// TO-DO
-//  public static fromQueueAttributes(scope: Construct, id: string, attrs: sqs.QueueAttributes): IQueue {
-// }
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sqs.Queue2';
+
+  // TO-DO
+  //  public static fromQueueAttributes(scope: Construct, id: string, attrs: sqs.QueueAttributes): IQueue {
+  // }
 
   @memoizedGetter
   public get queueArn(): string {
@@ -136,14 +150,14 @@ export class Queue2 extends QueueBase2 {
    */
   // public readonly fifo: boolean;
 
-  private readonly cfnQueue: CfnQueue;
+  private readonly cfnQueue: sqs.CfnQueue;
 
   constructor(scope: Construct, id: string, props: sqs.QueueProps = {}) {
     super(scope, id, {
       physicalName: props.queueName,
     });
 
-    const queue = new CfnQueue(this, 'Resource', {
+    const queue = new sqs.CfnQueue(this, 'Resource', {
       queueName: this.physicalName,
     });
 
