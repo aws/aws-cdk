@@ -1421,7 +1421,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       public readonly domainArn = domainArn;
       public readonly domainName = domainName;
       public readonly domainId = domainName;
-      public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '') | undefined;
+      public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '');
 
       constructor() { super(scope, id); }
     };
