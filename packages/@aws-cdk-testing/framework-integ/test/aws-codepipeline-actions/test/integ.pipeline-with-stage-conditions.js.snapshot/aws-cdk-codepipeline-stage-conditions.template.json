@@ -346,14 +346,13 @@
             "AlarmName": {
              "Ref": "ErrorAlarmC73DBEA2"
             },
-            "WaitTime": "300",
-            "FunctionName": "funcName1"
+            "WaitTime": "300"
            },
            "Name": "RollBackOnFailure",
            "RuleTypeId": {
             "Category": "Rule",
             "Owner": "AWS",
-            "Provider": "LambdaInvoke",
+            "Provider": "CloudWatchAlarm",
             "Version": "1"
            }
           }
@@ -371,14 +370,13 @@
             "AlarmName": {
              "Ref": "ErrorAlarmC73DBEA2"
             },
-            "WaitTime": "300",
-            "FunctionName": "funcName2"
+            "WaitTime": "300"
            },
            "Name": "CloudWatchCheck",
            "RuleTypeId": {
             "Category": "Rule",
             "Owner": "AWS",
-            "Provider": "LambdaInvoke",
+            "Provider": "CloudWatchAlarm",
             "Version": "1"
            }
           }
@@ -404,19 +402,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleD68726F7",
+          "Arn"
          ]
         }
        }
@@ -591,19 +579,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleD68726F7",
+          "Arn"
          ]
         }
        }
