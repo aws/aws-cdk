@@ -836,12 +836,14 @@ You can configure an instance lifecycle policy to control how instances are hand
 
 The instance lifecycle policy defines retention triggers that specify when instances should be moved to a Retained state rather than terminated. Retained instances don't count toward desired capacity and remain until you manually terminate them.
 
+**Important:** To use instance lifecycle policies in your Auto Scaling group, you must also configure a termination lifecycle hook. If you configure an instance lifecycle policy but don't have any termination lifecycle hooks, the policy has no effect. Instance lifecycle policies will only apply when termination lifecycle actions are abandoned, not when they complete successfully with the CONTINUE result.
+
 ```ts
 declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
 
-new autoscaling.AutoScalingGroup(this, 'ASG', {
+const asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType,
   machineImage,
@@ -852,6 +854,11 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
       terminateHookAbandon: autoscaling.TerminateHookAbandonAction.RETAIN,
     },
   },
+});
+
+// Add termination lifecycle hook (required for the policy to take effect)
+asg.addLifecycleHook('TerminationHook', {
+  lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
 });
 ```
 
