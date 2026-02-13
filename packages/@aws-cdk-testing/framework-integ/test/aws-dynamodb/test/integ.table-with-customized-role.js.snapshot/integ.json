@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "cdk-dynamodb-customized-role-integ/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStack": "cdk-dynamodb-customized-role-integ/DefaultTest/DeployAssert",
       "assertionStackName": "cdkdynamodbcustomizedroleintegDefaultTestDeployAssertD6C925FC"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

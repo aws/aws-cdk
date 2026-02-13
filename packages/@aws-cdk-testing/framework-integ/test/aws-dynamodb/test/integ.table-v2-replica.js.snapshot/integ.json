@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "48.0.0",
   "testCases": {
     "aws-cdk-global-table-replica-integ/DefaultTest": {
       "stacks": [
@@ -12,5 +12,6 @@
       "assertionStack": "aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
