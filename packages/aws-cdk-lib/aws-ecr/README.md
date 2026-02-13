@@ -214,6 +214,30 @@ declare const repository: ecr.Repository;
 repository.addLifecycleRule({ tagPatternList: ['prod*'], maxImageCount: 9999 });
 ```
 
+You can expire images that have not been pulled recently, or move old images to
+archive storage instead of deleting them:
+
+```ts
+declare const repository: ecr.Repository;
+// Archive images not pulled in 30 days (maxDaysSinceLastPull only allows TRANSITION)
+repository.addLifecycleRule({
+  maxDaysSinceLastPull: Duration.days(30),
+});
+// Archive (don't delete) images older than 60 days; use LifecycleAction.TRANSITION
+repository.addLifecycleRule({
+  maxImageAge: Duration.days(60),
+  action: ecr.LifecycleAction.TRANSITION,
+});
+```
+
+Each rule must specify exactly one of: `maxImageCount`, `maxImageAge`,
+`maxDaysSinceLastPull`, or `maxDaysSinceArchived`. Use `action` to choose
+`LifecycleAction.EXPIRE` (delete) or `LifecycleAction.TRANSITION` (move to
+archive storage). Restrictions: `maxDaysSinceLastPull` only allows TRANSITION;
+`maxDaysSinceArchived` only allows EXPIRE; both actions are allowed for
+`maxImageCount` and `maxImageAge`. Default is EXPIRE (or TRANSITION when using
+`maxDaysSinceLastPull`).
+
 ### Repository deletion
 
 When a repository is removed from a stack (or the stack is deleted), the ECR
