@@ -31,5 +31,5 @@ export interface AliasRecordTargetConfig {
    *
    * @default - no health check configuration
    */
-  readonly evaluateTargetHealth?: boolean;
+  readonly evaluateTargetHealth?: boolean | undefined;
 }

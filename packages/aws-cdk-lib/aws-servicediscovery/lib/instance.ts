@@ -26,14 +26,14 @@ export interface BaseInstanceProps {
    *
    * @default Automatically generated name
    */
-  readonly instanceId?: string;
+  readonly instanceId?: string | undefined;
 
   /**
    * Custom attributes of the instance.
    *
    * @default none
    */
-  readonly customAttributes?: { [key: string]: string };
+  readonly customAttributes?: { [key: string]: string } | undefined;
 }
 
 export abstract class InstanceBase extends Resource implements IInstance {

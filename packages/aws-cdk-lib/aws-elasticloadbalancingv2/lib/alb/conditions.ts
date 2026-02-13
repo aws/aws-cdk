@@ -74,7 +74,7 @@ export interface QueryStringCondition {
    *
    * @default - Any key can be matched.
    */
-  readonly key?: string;
+  readonly key?: string | undefined;
 
   /**
    * The query string value for the condition

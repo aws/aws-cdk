@@ -25,13 +25,13 @@ export interface GenericLogDriverProps {
    * The configuration options to send to the log driver.
    * @default - the log driver options.
    */
-  readonly options?: { [key: string]: string };
+  readonly options?: { [key: string]: string } | undefined;
 
   /**
    * The secrets to pass to the log configuration.
    * @default - no secret options provided.
    */
-  readonly secretOptions?: { [key: string]: Secret };
+  readonly secretOptions?: { [key: string]: Secret } | undefined;
 }
 
 /**

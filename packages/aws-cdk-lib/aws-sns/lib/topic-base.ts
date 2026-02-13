@@ -39,7 +39,7 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
    *
    * @default None
    */
-  readonly masterKey?: IKey;
+  readonly masterKey?: IKey | undefined;
 
   /**
    * Enables content-based deduplication for FIFO topics.
@@ -88,7 +88,7 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 
   public abstract readonly topicName: string;
 
-  public abstract readonly masterKey?: IKey;
+  public abstract readonly masterKey?: IKey | undefined;
 
   public abstract readonly fifo: boolean;
 

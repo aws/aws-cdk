@@ -45,7 +45,7 @@ export class GlobalVariables {
 
 export interface ActionProperties {
   readonly actionName: string;
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The AWS region the given Action resides in.
@@ -56,7 +56,7 @@ export interface ActionProperties {
    *
    * @default the Action resides in the same region as the Pipeline
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * The account the Action is supposed to live in.
@@ -67,14 +67,14 @@ export interface ActionProperties {
    * In general, a concrete Action class should specify either `resource`,
    * or `account` - but not both.
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 
   /**
    * The optional resource that is backing this Action.
    * This is used for automatically handling Actions backed by
    * resources from a different account and/or region.
    */
-  readonly resource?: IResource;
+  readonly resource?: IResource | undefined;
 
   /**
    * The category of the action.
@@ -87,8 +87,8 @@ export interface ActionProperties {
    * The service provider that the action calls.
    */
   readonly provider: string;
-  readonly owner?: string;
-  readonly version?: string;
+  readonly owner?: string | undefined;
+  readonly version?: string | undefined;
 
   /**
    * The order in which AWS CodePipeline runs this action.
@@ -96,31 +96,31 @@ export interface ActionProperties {
    *
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
    */
-  readonly runOrder?: number;
+  readonly runOrder?: number | undefined;
   readonly artifactBounds: ActionArtifactBounds;
-  readonly inputs?: Artifact[];
-  readonly outputs?: Artifact[];
+  readonly inputs?: Artifact[] | undefined;
+  readonly outputs?: Artifact[] | undefined;
 
   /**
    * The name of the namespace to use for variables emitted by this action.
    *
    * @default - a name will be generated, based on the stage and action names
    */
-  readonly variablesNamespace?: string;
+  readonly variablesNamespace?: string | undefined;
 
   /**
    * Shell commands for the Commands action to run.
    *
    * @default - no commands
    */
-  readonly commands?: string[];
+  readonly commands?: string[] | undefined;
 
   /**
    * The names of the variables in your environment that you want to export.
    *
    * @default - no output variables
    */
-  readonly outputVariables?: string[];
+  readonly outputVariables?: string[] | undefined;
 
   /**
    * A timeout duration that can be applied against the ActionType’s default timeout value
@@ -133,7 +133,7 @@ export interface ActionProperties {
    * @default - default timeout value defined by each ActionType
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/limits.html
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 }
 
 export interface ActionBindOptions {
@@ -143,7 +143,7 @@ export interface ActionBindOptions {
 }
 
 export interface ActionConfig {
-  readonly configuration?: any;
+  readonly configuration?: any | undefined;
 }
 
 /**
@@ -343,7 +343,7 @@ export interface CommonActionProps {
    * @default 1
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
    */
-  readonly runOrder?: number;
+  readonly runOrder?: number | undefined;
 
   /**
    * The name of the namespace to use for variables emitted by this action.
@@ -352,7 +352,7 @@ export interface CommonActionProps {
    *   if any of the action's variables were referenced - otherwise,
    *   no namespace will be set
    */
-  readonly variablesNamespace?: string;
+  readonly variablesNamespace?: string | undefined;
 }
 
 /**
@@ -370,7 +370,7 @@ export interface CommonAwsActionProps extends CommonActionProps {
    *
    * @default a new Role will be generated
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

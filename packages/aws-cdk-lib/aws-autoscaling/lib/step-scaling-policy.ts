@@ -26,21 +26,21 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default ChangeInCapacity
    */
-  readonly adjustmentType?: AdjustmentType;
+  readonly adjustmentType?: AdjustmentType | undefined;
 
   /**
    * Grace period after scaling activity.
    *
    * @default Default cooldown period on your AutoScalingGroup
    */
-  readonly cooldown?: Duration;
+  readonly cooldown?: Duration | undefined;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  readonly estimatedInstanceWarmup?: Duration;
+  readonly estimatedInstanceWarmup?: Duration | undefined;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -50,7 +50,7 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default No minimum scaling effect
    */
-  readonly minAdjustmentMagnitude?: number;
+  readonly minAdjustmentMagnitude?: number | undefined;
 
   /**
    * How many evaluation periods of the metric to wait before triggering a scaling action
@@ -63,7 +63,7 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default 1
    */
-  readonly evaluationPeriods?: number;
+  readonly evaluationPeriods?: number | undefined;
 
   /**
    * The number of data points out of the evaluation periods that must be breaching to
@@ -77,7 +77,7 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default - Same as `evaluationPeriods`
    */
-  readonly datapointsToAlarm?: number;
+  readonly datapointsToAlarm?: number | undefined;
 
   /**
    * Aggregation to apply to all data points over the evaluation periods
@@ -86,7 +86,7 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default - The statistic from the metric if applicable (MIN, MAX, AVERAGE), otherwise AVERAGE.
    */
-  readonly metricAggregationType?: MetricAggregationType;
+  readonly metricAggregationType?: MetricAggregationType | undefined;
 }
 
 export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
@@ -104,10 +104,10 @@ export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
  * Implemented using one or more CloudWatch alarms and Step Scaling Policies.
  */
 export class StepScalingPolicy extends Construct {
-  public readonly lowerAlarm?: cloudwatch.Alarm;
-  public readonly lowerAction?: StepScalingAction;
-  public readonly upperAlarm?: cloudwatch.Alarm;
-  public readonly upperAction?: StepScalingAction;
+  public readonly lowerAlarm?: cloudwatch.Alarm | undefined;
+  public readonly lowerAction?: StepScalingAction | undefined;
+  public readonly upperAlarm?: cloudwatch.Alarm | undefined;
+  public readonly upperAction?: StepScalingAction | undefined;
 
   constructor(scope: Construct, id: string, props: StepScalingPolicyProps) {
     super(scope, id);
@@ -237,7 +237,7 @@ export interface ScalingInterval {
    *
    * @default Threshold automatically derived from neighbouring intervals
    */
-  readonly lower?: number;
+  readonly lower?: number | undefined;
 
   /**
    * The upper bound of the interval.
@@ -246,7 +246,7 @@ export interface ScalingInterval {
    *
    * @default Threshold automatically derived from neighbouring intervals
    */
-  readonly upper?: number;
+  readonly upper?: number | undefined;
 
   /**
    * The capacity adjustment to apply in this interval

@@ -20,7 +20,7 @@ export interface CfnMappingProps {
    *
    * @default - No mapping.
    */
-  readonly mapping?: Mapping;
+  readonly mapping?: Mapping | undefined;
 
   /*
    * Synthesize this map in a lazy fashion.
@@ -32,7 +32,7 @@ export interface CfnMappingProps {
    *
    * @default false
    */
-  readonly lazy?: boolean;
+  readonly lazy?: boolean | undefined;
 }
 
 /**
@@ -40,7 +40,7 @@ export interface CfnMappingProps {
  */
 export class CfnMapping extends CfnRefElement {
   private mapping: Mapping;
-  private readonly lazy?: boolean;
+  private readonly lazy?: boolean | undefined;
   private lazyRender = false; // prescribes `_toCloudFormation()` to pass nothing if value from map is returned lazily.
   private lazyInformed = false; // keeps track if user has been sent a message informing them of the possibility to use lazy synthesis.
 

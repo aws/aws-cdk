@@ -69,13 +69,13 @@ export interface ModelOptions {
    *
    * @default 'application/json'
    */
-  readonly contentType?: string;
+  readonly contentType?: string | undefined;
 
   /**
    * A description that identifies this model.
    * @default None
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * A name for the model.
@@ -91,7 +91,7 @@ export interface ModelOptions {
    *  uses that ID for the model name. For more information,
    *  see Name Type.
    */
-  readonly modelName?: string;
+  readonly modelName?: string | undefined;
 
   /**
    * The schema to use to transform data to one or more output formats.

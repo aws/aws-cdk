@@ -59,7 +59,7 @@ export interface AccessKeyProps {
    *
    * @default - No serial value
    */
-  readonly serial?: number;
+  readonly serial?: number | undefined;
 
   /**
    * The status of the access key. An Active access key is allowed to be used
@@ -67,7 +67,7 @@ export interface AccessKeyProps {
    *
    * @default - The access key is active
    */
-  readonly status?: AccessKeyStatus;
+  readonly status?: AccessKeyStatus | undefined;
 
   /**
    * The IAM user this key will belong to.

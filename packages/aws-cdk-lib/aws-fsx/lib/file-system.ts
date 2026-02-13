@@ -48,21 +48,21 @@ export interface FileSystemProps {
    *
    * @default - no backup will be used.
    */
-  readonly backupId?: string;
+  readonly backupId?: string | undefined;
 
   /**
    * The KMS key used for encryption to protect your data at rest.
    *
    * @default - the aws/fsx default KMS key for the AWS account being deployed into.
    */
-  readonly kmsKey?: IKeyRef;
+  readonly kmsKey?: IKeyRef | undefined;
 
   /**
    * Security Group to assign to this file system.
    *
    * @default - creates new security group which allows all outbound traffic.
    */
-  readonly securityGroup?: ISecurityGroup;
+  readonly securityGroup?: ISecurityGroup | undefined;
 
   /**
    * The storage capacity of the file system being created.
@@ -79,7 +79,7 @@ export interface FileSystemProps {
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The storage type for the file system that you're creating.
@@ -88,7 +88,7 @@ export interface FileSystemProps {
    *
    * @default StorageType.SSD
    */
-  readonly storageType?: StorageType;
+  readonly storageType?: StorageType | undefined;
 }
 
 /**

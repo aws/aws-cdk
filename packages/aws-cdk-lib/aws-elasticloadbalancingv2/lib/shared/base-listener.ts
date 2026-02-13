@@ -18,19 +18,19 @@ export interface BaseListenerLookupOptions {
    * Filter listeners by associated load balancer arn
    * @default - does not filter by load balancer arn
    */
-  readonly loadBalancerArn?: string;
+  readonly loadBalancerArn?: string | undefined;
 
   /**
    * Filter listeners by associated load balancer tags
    * @default - does not filter by load balancer tags
    */
-  readonly loadBalancerTags?: Record<string, string>;
+  readonly loadBalancerTags?: Record<string, string> | undefined;
 
   /**
    * Filter listeners by listener port
    * @default - does not filter by listener port
    */
-  readonly listenerPort?: number;
+  readonly listenerPort?: number | undefined;
 }
 
 /**
@@ -52,12 +52,12 @@ export interface ListenerQueryContextProviderOptions {
    * ARN of the listener to look up
    * @default - does not filter by listener arn
    */
-  readonly listenerArn?: string;
+  readonly listenerArn?: string | undefined;
 
   /**
    * Optional protocol of the listener to look up
    */
-  readonly listenerProtocol?: cxschema.LoadBalancerListenerProtocol;
+  readonly listenerProtocol?: cxschema.LoadBalancerListenerProtocol | undefined;
 }
 
 /**

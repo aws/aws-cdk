@@ -94,7 +94,7 @@ export interface DomainNameProps extends EndpointOptions {
    * The mutual TLS authentication configuration for a custom domain name.
    * @default - mTLS is not configured.
    */
-  readonly mtls?: MTLSConfig;
+  readonly mtls?: MTLSConfig | undefined;
 }
 
 /**
@@ -111,19 +111,19 @@ export interface EndpointOptions {
    * The user-friendly name of the certificate that will be used by the endpoint for this domain name.
    * @default - No friendly certificate name
    */
-  readonly certificateName?: string;
+  readonly certificateName?: string | undefined;
 
   /**
    * The type of endpoint for this DomainName.
    * @default EndpointType.REGIONAL
    */
-  readonly endpointType?: EndpointType;
+  readonly endpointType?: EndpointType | undefined;
 
   /**
    * The Transport Layer Security (TLS) version + cipher suite for this domain name.
    * @default SecurityPolicy.TLS_1_2
    */
-  readonly securityPolicy?: SecurityPolicy;
+  readonly securityPolicy?: SecurityPolicy | undefined;
 
   /**
    * A public certificate issued by ACM to validate that you own a custom domain. This parameter is required
@@ -131,7 +131,7 @@ export interface EndpointOptions {
    * for `certificate`. The ownership certificate validates that you have permissions to use the domain name.
    * @default - only required when configuring mTLS
    */
-  readonly ownershipCertificate?: ICertificateRef;
+  readonly ownershipCertificate?: ICertificateRef | undefined;
 
   /**
    * The IP address types that can invoke the API.
@@ -140,7 +140,7 @@ export interface EndpointOptions {
    *
    * @default undefined - AWS default is IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 }
 
 /**
@@ -161,7 +161,7 @@ export interface MTLSConfig {
    *  To specify a version, you must have versioning enabled for the S3 bucket.
    *  @default - latest version
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 /**

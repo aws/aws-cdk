@@ -14,7 +14,7 @@ export interface IntrinsicProps {
    *
    * @default true
    */
-  readonly stackTrace?: boolean;
+  readonly stackTrace?: boolean | undefined;
 
   /**
    *
@@ -22,7 +22,7 @@ export interface IntrinsicProps {
    *
    * @default ResolutionTypeHint.STRING
    */
-  readonly typeHint?: ResolutionTypeHint;
+  readonly typeHint?: ResolutionTypeHint | undefined;
 }
 
 /**
@@ -43,7 +43,7 @@ export class Intrinsic implements IResolvable {
   /**
    * Type that the Intrinsic is expected to evaluate to.
    */
-  public readonly typeHint?: ResolutionTypeHint;
+  public readonly typeHint?: ResolutionTypeHint | undefined;
 
   private readonly value: any;
 

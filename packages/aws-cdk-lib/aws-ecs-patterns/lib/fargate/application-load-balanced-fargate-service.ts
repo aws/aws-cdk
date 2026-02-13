@@ -17,35 +17,35 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * The subnets to associate with the service.
    *
    * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
-  readonly taskSubnets?: SubnetSelection;
+  readonly taskSubnets?: SubnetSelection | undefined;
 
   /**
    * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * @default - A new security group is created.
    */
-  readonly securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroup[] | undefined;
 
   /**
    * The health check command and associated configuration parameters for the container.
    *
    * @default - Health check configuration from container.
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * The minimum number of CPU units to reserve for the container.
    *
    * @default - No minimum CPU units reserved.
    */
-  readonly containerCpu?: number;
+  readonly containerCpu?: number | undefined;
 
   /**
    * The amount (in MiB) of memory to present to the container.
@@ -55,7 +55,7 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    *
    * @default - No memory limit.
    */
-  readonly containerMemoryLimitMiB?: number;
+  readonly containerMemoryLimitMiB?: number | undefined;
 }
 
 /**

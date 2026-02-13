@@ -23,7 +23,7 @@ export interface CognitoUserPoolsAuthorizerProps {
    *
    * @default - the unique construct ID
    */
-  readonly authorizerName?: string;
+  readonly authorizerName?: string | undefined;
 
   /**
    * The user pools to associate with this authorizer.
@@ -36,7 +36,7 @@ export interface CognitoUserPoolsAuthorizerProps {
    *
    * @default Duration.minutes(5)
    */
-  readonly resultsCacheTtl?: Duration;
+  readonly resultsCacheTtl?: Duration | undefined;
 
   /**
    * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
@@ -45,7 +45,7 @@ export interface CognitoUserPoolsAuthorizerProps {
    * @see https://docs.aws.amazon.com/apigateway/latest/api/API_CreateAuthorizer.html#apigw-CreateAuthorizer-request-identitySource
    * @default `IdentitySource.header('Authorization')`
    */
-  readonly identitySource?: string;
+  readonly identitySource?: string | undefined;
 }
 
 /**
@@ -72,7 +72,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
   /**
    * The authorization type of this authorizer.
    */
-  public readonly authorizationType?: AuthorizationType;
+  public readonly authorizationType?: AuthorizationType | undefined;
 
   private restApiId?: string;
 

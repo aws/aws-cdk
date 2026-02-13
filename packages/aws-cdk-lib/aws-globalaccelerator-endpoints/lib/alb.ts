@@ -13,7 +13,7 @@ export interface ApplicationLoadBalancerEndpointOptions {
    *
    * @default 128
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 
   /**
    * Forward the client IP address in an `X-Forwarded-For` header
@@ -26,14 +26,14 @@ export interface ApplicationLoadBalancerEndpointOptions {
    *
    * @default true if available
    */
-  readonly preserveClientIp?: boolean;
+  readonly preserveClientIp?: boolean | undefined;
 }
 
 /**
  * Use an Application Load Balancer as a Global Accelerator Endpoint
  */
 export class ApplicationLoadBalancerEndpoint implements ga.IEndpoint {
-  public readonly region?: string;
+  public readonly region?: string | undefined;
 
   constructor(private readonly loadBalancer: elbv2.IApplicationLoadBalancer, private readonly options: ApplicationLoadBalancerEndpointOptions = {}) {
     validateWeight(loadBalancer, options.weight);

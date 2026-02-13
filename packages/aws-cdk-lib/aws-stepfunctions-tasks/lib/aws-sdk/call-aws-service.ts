@@ -26,7 +26,7 @@ interface CallAwsServiceOptions {
    *
    * @default - no parameters
    */
-  readonly parameters?: { [key: string]: any };
+  readonly parameters?: { [key: string]: any } | undefined;
 
   /**
    * The resources for the IAM statement that will be added to the state
@@ -45,7 +45,7 @@ interface CallAwsServiceOptions {
    *
    * @default - service:action
    */
-  readonly iamAction?: string;
+  readonly iamAction?: string | undefined;
 
   /**
    * Additional IAM statements that will be added to the state machine
@@ -57,7 +57,7 @@ interface CallAwsServiceOptions {
    *
    * @default - no additional statements are added
    */
-  readonly additionalIamStatements?: iam.PolicyStatement[];
+  readonly additionalIamStatements?: iam.PolicyStatement[] | undefined;
 }
 
 /**
@@ -102,8 +102,8 @@ export class CallAwsService extends sfn.TaskStateBase {
     return new CallAwsService(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
   }
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: CallAwsServiceProps) {
     super(scope, id, props);

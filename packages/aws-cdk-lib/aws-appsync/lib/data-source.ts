@@ -33,13 +33,13 @@ export interface BaseDataSourceProps {
    *
    * @default - id of data source
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
   /**
    * the description of the data source
    *
    * @default - None
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -51,7 +51,7 @@ export interface BackedDataSourceProps extends BaseDataSourceProps {
    *
    * @default -  Create a new role
    */
-  readonly serviceRole?: IRole;
+  readonly serviceRole?: IRole | undefined;
 }
 
 /**
@@ -67,46 +67,46 @@ export interface ExtendedDataSourceProps {
    *
    * @default - No config
    */
-  readonly dynamoDbConfig?: CfnDataSource.DynamoDBConfigProperty | IResolvable;
+  readonly dynamoDbConfig?: CfnDataSource.DynamoDBConfigProperty | IResolvable | undefined;
   /**
    * configuration for Elasticsearch data source
    *
    * @deprecated - use `openSearchConfig`
    * @default - No config
    */
-  readonly elasticsearchConfig?: CfnDataSource.ElasticsearchConfigProperty | IResolvable;
+  readonly elasticsearchConfig?: CfnDataSource.ElasticsearchConfigProperty | IResolvable | undefined;
   /**
    * configuration for OpenSearch data source
    *
    * @default - No config
    */
-  readonly openSearchServiceConfig?: CfnDataSource.OpenSearchServiceConfigProperty | IResolvable;
+  readonly openSearchServiceConfig?: CfnDataSource.OpenSearchServiceConfigProperty | IResolvable | undefined;
   /**
    * configuration for HTTP Datasource
    *
    * @default - No config
    */
-  readonly httpConfig?: CfnDataSource.HttpConfigProperty | IResolvable;
+  readonly httpConfig?: CfnDataSource.HttpConfigProperty | IResolvable | undefined;
 
   /**
    * configuration for EventBridge Datasource
    *
    * @default - No config
    */
-  readonly eventBridgeConfig?: CfnDataSource.EventBridgeConfigProperty | IResolvable;
+  readonly eventBridgeConfig?: CfnDataSource.EventBridgeConfigProperty | IResolvable | undefined;
 
   /**
    * configuration for Lambda Datasource
    *
    * @default - No config
    */
-  readonly lambdaConfig?: CfnDataSource.LambdaConfigProperty | IResolvable;
+  readonly lambdaConfig?: CfnDataSource.LambdaConfigProperty | IResolvable | undefined;
   /**
    * configuration for RDS Datasource
    *
    * @default - No config
    */
-  readonly relationalDatabaseConfig?: CfnDataSource.RelationalDatabaseConfigProperty | IResolvable;
+  readonly relationalDatabaseConfig?: CfnDataSource.RelationalDatabaseConfigProperty | IResolvable | undefined;
 }
 
 /**
@@ -229,13 +229,13 @@ export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
    *
    * @default false
    */
-  readonly readOnlyAccess?: boolean;
+  readonly readOnlyAccess?: boolean | undefined;
   /**
    * use credentials of caller to access DynamoDB
    *
    * @default false
    */
-  readonly useCallerCredentials?: boolean;
+  readonly useCallerCredentials?: boolean | undefined;
 }
 
 /**
@@ -295,7 +295,7 @@ export interface HttpDataSourceProps extends BackedDataSourceProps {
    * @default - none
    *
    */
-  readonly authorizationConfig?: AwsIamConfig;
+  readonly authorizationConfig?: AwsIamConfig | undefined;
 }
 
 /**
@@ -402,7 +402,7 @@ export interface RdsDataSourceProps extends BackedDataSourceProps {
    *
    * @default - None
    */
-  readonly databaseName?: string;
+  readonly databaseName?: string | undefined;
 }
 
 /**
@@ -422,7 +422,7 @@ export interface RdsDataSourcePropsV2 extends BackedDataSourceProps {
    *
    * @default - None
    */
-  readonly databaseName?: string;
+  readonly databaseName?: string | undefined;
 }
 
 /**

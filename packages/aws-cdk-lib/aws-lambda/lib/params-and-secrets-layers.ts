@@ -72,7 +72,7 @@ export interface ParamsAndSecretsOptions {
    *
    * @default true
    */
-  readonly cacheEnabled?: boolean;
+  readonly cacheEnabled?: boolean | undefined;
 
   /**
    * The maximum number of secrets and parameters to cache. Must be a value
@@ -83,14 +83,14 @@ export interface ParamsAndSecretsOptions {
    *
    * @default 1000
    */
-  readonly cacheSize?: number;
+  readonly cacheSize?: number | undefined;
 
   /**
    * The port for the local HTTP server. Valid port numbers are 1 - 65535.
    *
    * @default 2773
    */
-  readonly httpPort?: number;
+  readonly httpPort?: number | undefined;
 
   /**
    * The level of logging provided by the Parameters and Secrets Extension.
@@ -99,7 +99,7 @@ export interface ParamsAndSecretsOptions {
    *
    * @default - Logging level will be `info`
    */
-  readonly logLevel?: ParamsAndSecretsLogLevel;
+  readonly logLevel?: ParamsAndSecretsLogLevel | undefined;
 
   /**
    * The maximum number of connection for HTTP clients that the Parameters and
@@ -112,7 +112,7 @@ export interface ParamsAndSecretsOptions {
    *
    * @default 3
    */
-  readonly maxConnections?: number;
+  readonly maxConnections?: number | undefined;
 
   /**
    * The timeout for requests to Secrets Manager. A value of 0 means that there is
@@ -120,7 +120,7 @@ export interface ParamsAndSecretsOptions {
    *
    * @default 0
    */
-  readonly secretsManagerTimeout?: Duration;
+  readonly secretsManagerTimeout?: Duration | undefined;
 
   /**
    * The time-to-live of a secret in the cache. A value of 0 means there is no caching.
@@ -130,7 +130,7 @@ export interface ParamsAndSecretsOptions {
    *
    * @default 300 seconds
    */
-  readonly secretsManagerTtl?: Duration;
+  readonly secretsManagerTtl?: Duration | undefined;
 
   /**
    * The timeout for requests to Parameter Store. A value of 0 means that there is no
@@ -138,7 +138,7 @@ export interface ParamsAndSecretsOptions {
    *
    * @default 0
    */
-  readonly parameterStoreTimeout?: Duration;
+  readonly parameterStoreTimeout?: Duration | undefined;
 
   /**
    * The time-to-live of a parameter in the cache. A value of 0 means there is no caching.
@@ -148,7 +148,7 @@ export interface ParamsAndSecretsOptions {
    *
    * @default 300 seconds
    */
-  readonly parameterStoreTtl?: Duration;
+  readonly parameterStoreTtl?: Duration | undefined;
 }
 
 /**

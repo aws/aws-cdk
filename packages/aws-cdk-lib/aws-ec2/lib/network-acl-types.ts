@@ -58,12 +58,12 @@ export interface AclCidrConfig {
   /**
    * Ipv4 CIDR
    */
-  readonly cidrBlock?: string;
+  readonly cidrBlock?: string | undefined;
 
   /**
    * Ipv6 CIDR
    */
-  readonly ipv6CidrBlock?: string;
+  readonly ipv6CidrBlock?: string | undefined;
 }
 
 /**
@@ -179,14 +179,14 @@ export interface AclTrafficConfig {
    *
    * @default - Required if specifying 1 (ICMP) for the protocol parameter.
    */
-  readonly icmp?: AclIcmp;
+  readonly icmp?: AclIcmp | undefined;
 
   /**
    * The range of port numbers for the UDP/TCP protocol.
    *
    * @default - Required if specifying 6 (TCP) or 17 (UDP) for the protocol parameter
    */
-  readonly portRange?: AclPortRange;
+  readonly portRange?: AclPortRange | undefined;
 
   /**
    * The protocol number.
@@ -217,14 +217,14 @@ export interface AclIcmp {
    * The Internet Control Message Protocol (ICMP) type. You can use -1 to specify all ICMP types.
    * Conditional requirement: Required if you specify 1 (ICMP) for the CreateNetworkAclEntry protocol parameter.
    */
-  readonly type?: number;
+  readonly type?: number | undefined;
 
   /**
    * The Internet Control Message Protocol (ICMP) code. You can use -1 to specify all ICMP
    * codes for the given ICMP type. Requirement is conditional: Required if you
    * specify 1 (ICMP) for the protocol parameter.
    */
-  readonly code?: number;
+  readonly code?: number | undefined;
 }
 
 /**
@@ -236,10 +236,10 @@ export interface AclPortRange {
   /**
    * The first port in the range. Required if you specify 6 (TCP) or 17 (UDP) for the protocol parameter.
    */
-  readonly from?: number;
+  readonly from?: number | undefined;
 
   /**
    * The last port in the range. Required if you specify 6 (TCP) or 17 (UDP) for the protocol parameter.
    */
-  readonly to?: number;
+  readonly to?: number | undefined;
 }

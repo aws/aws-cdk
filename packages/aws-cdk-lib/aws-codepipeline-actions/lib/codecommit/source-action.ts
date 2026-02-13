@@ -77,11 +77,11 @@ export interface ICustomEventRule {
   /**
    * Rulename
    */
-  readonly ruleName?: string;
+  readonly ruleName?: string | undefined;
   /**
    * Description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -96,14 +96,14 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
   /**
    * @default 'master'
    */
-  readonly branch?: string;
+  readonly branch?: string | undefined;
 
   /**
    * How should CodePipeline detect source changes for this Action.
    *
    * @default CodeCommitTrigger.EVENTS
    */
-  readonly trigger?: CodeCommitTrigger;
+  readonly trigger?: CodeCommitTrigger | undefined;
 
   /**
    * The CodeCommit repository.
@@ -116,7 +116,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    *
    * @default a new role will be created.
    */
-  readonly eventRole?: iam.IRole;
+  readonly eventRole?: iam.IRole | undefined;
 
   /**
    * Whether the output should be the contents of the repository
@@ -129,7 +129,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
    */
-  readonly codeBuildCloneOutput?: boolean;
+  readonly codeBuildCloneOutput?: boolean | undefined;
 
   /**
    * You can pass a `customEventRule` to set up a custom event rule for the CodeCommit source action.
@@ -137,7 +137,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * Check which `eventPattern` to use: https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html
    * @default Event rule which is triggered by CodeCommit repository on commit
    */
-  readonly customEventRule?: ICustomEventRule;
+  readonly customEventRule?: ICustomEventRule | undefined;
 }
 
 /**

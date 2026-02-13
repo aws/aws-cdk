@@ -11,14 +11,14 @@ export interface LinuxParametersProps {
    *
    * @default false
    */
-  readonly initProcessEnabled?: boolean;
+  readonly initProcessEnabled?: boolean | undefined;
 
   /**
    * The value for the size of the /dev/shm volume.
    *
    * @default No shared memory.
    */
-  readonly sharedMemorySize?: cdk.Size;
+  readonly sharedMemorySize?: cdk.Size | undefined;
 
   /**
    * The total amount of swap memory a container can use. This parameter
@@ -29,7 +29,7 @@ export interface LinuxParametersProps {
    *
    * @default No swap.
    */
-  readonly maxSwap?: cdk.Size;
+  readonly maxSwap?: cdk.Size | undefined;
 
   /**
    * This allows you to tune a container's memory swappiness behavior. This parameter
@@ -44,7 +44,7 @@ export interface LinuxParametersProps {
    *
    * @default 60
    */
-  readonly swappiness?: number;
+  readonly swappiness?: number | undefined;
 }
 
 /**
@@ -54,22 +54,22 @@ export class LinuxParameters extends Construct {
   /**
    * Whether the init process is enabled
    */
-  protected readonly initProcessEnabled?: boolean;
+  protected readonly initProcessEnabled?: boolean | undefined;
 
   /**
    * The shared memory size (in MiB). Not valid for Fargate launch type
    */
-  protected readonly sharedMemorySize?: cdk.Size;
+  protected readonly sharedMemorySize?: cdk.Size | undefined;
 
   /**
    * The max swap memory
    */
-  protected readonly maxSwap?: cdk.Size;
+  protected readonly maxSwap?: cdk.Size | undefined;
 
   /**
    * The swappiness behavior
    */
-  protected readonly swappiness?: number;
+  protected readonly swappiness?: number | undefined;
 
   /**
    * Device mounts
@@ -146,7 +146,7 @@ export interface Device {
    *
    * @default Same path as the host
    */
-  readonly containerPath?: string;
+  readonly containerPath?: string | undefined;
 
   /**
    * The path for the device on the host container instance.
@@ -159,7 +159,7 @@ export interface Device {
    *
    * @default Readonly
    */
-  readonly permissions?: DevicePermission[];
+  readonly permissions?: DevicePermission[] | undefined;
 }
 
 /**
@@ -182,7 +182,7 @@ export interface Tmpfs {
    *
    * @default none
    */
-  readonly mountOptions?: TmpfsMountOption[];
+  readonly mountOptions?: TmpfsMountOption[] | undefined;
 }
 
 /**

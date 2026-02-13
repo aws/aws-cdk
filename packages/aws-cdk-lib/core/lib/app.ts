@@ -26,7 +26,7 @@ export interface AppProps {
    * @default true if running via CDK CLI (`CDK_OUTDIR` is set), `false`
    * otherwise
    */
-  readonly autoSynth?: boolean;
+  readonly autoSynth?: boolean | undefined;
 
   /**
    * The output directory into which to emit synthesized artifacts.
@@ -40,13 +40,13 @@ export interface AppProps {
    * @default - If this value is _not_ set, considers the environment variable `CDK_OUTDIR`.
    *            If `CDK_OUTDIR` is not defined, uses a temp directory.
    */
-  readonly outdir?: string;
+  readonly outdir?: string | undefined;
 
   /**
    * Include construct creation stack trace in the `aws:cdk:trace` metadata key of all constructs.
    * @default true stack traces are included unless `aws:cdk:disable-stack-trace` is set in the context.
    */
-  readonly stackTraces?: boolean;
+  readonly stackTraces?: boolean | undefined;
 
   /**
    * Include runtime versioning information in the Stacks of this app
@@ -54,14 +54,14 @@ export interface AppProps {
    * @deprecated use `versionReporting` instead
    * @default Value of 'aws:cdk:version-reporting' context key
    */
-  readonly runtimeInfo?: boolean;
+  readonly runtimeInfo?: boolean | undefined;
 
   /**
    * Include runtime versioning information in the Stacks of this app
    *
    * @default Value of 'aws:cdk:version-reporting' context key
    */
-  readonly analyticsReporting?: boolean;
+  readonly analyticsReporting?: boolean | undefined;
 
   /**
    * Additional context values for the application.
@@ -72,7 +72,7 @@ export interface AppProps {
    *
    * @default - no additional context
    */
-  readonly context?: { [key: string]: any };
+  readonly context?: { [key: string]: any } | undefined;
 
   /**
    * Additional context values for the application.
@@ -103,14 +103,14 @@ export interface AppProps {
    *
    * @default - no additional context
    */
-  readonly postCliContext?: { [key: string]: any };
+  readonly postCliContext?: { [key: string]: any } | undefined;
 
   /**
    * Include construct tree metadata as part of the Cloud Assembly.
    *
    * @default true
    */
-  readonly treeMetadata?: boolean;
+  readonly treeMetadata?: boolean | undefined;
 
   /**
    * The stack synthesizer to use by default for all Stacks in the App
@@ -121,20 +121,20 @@ export interface AppProps {
    *
    * @default - A `DefaultStackSynthesizer` with default settings
    */
-  readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
+  readonly defaultStackSynthesizer?: IReusableStackSynthesizer | undefined;
 
   /**
    * Validation plugins to run after synthesis
    *
    * @default - no validation plugins
    */
-  readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
+  readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[] | undefined;
 
   /**
    * A list of IPropertyInjector attached to this App.
    * @default - no PropertyInjectors
    */
-  readonly propertyInjectors?: IPropertyInjector[];
+  readonly propertyInjectors?: IPropertyInjector[] | undefined;
 }
 
 /**

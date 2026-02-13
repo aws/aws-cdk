@@ -16,7 +16,7 @@ export interface BatchJobProps extends TargetBaseProps {
    *
    * @default the entire EventBridge event
    */
-  readonly event?: events.RuleTargetInput;
+  readonly event?: events.RuleTargetInput | undefined;
 
   /**
    * The size of the array, if this is an array batch job.
@@ -25,21 +25,21 @@ export interface BatchJobProps extends TargetBaseProps {
    *
    * @default no arrayProperties are set
    */
-  readonly size?: number;
+  readonly size?: number | undefined;
 
   /**
    * The number of times to attempt to retry, if the job fails. Valid values are 1–10.
    *
    * @default no retryStrategy is set
    */
-  readonly attempts?: number;
+  readonly attempts?: number | undefined;
 
   /**
    * The name of the submitted job
    *
    * @default - Automatically generated
    */
-  readonly jobName?: string;
+  readonly jobName?: string | undefined;
 }
 
 /**

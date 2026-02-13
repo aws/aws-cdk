@@ -169,14 +169,14 @@ export interface PortProps {
    *
    * @default - Not included in the rule
    */
-  readonly fromPort?: number;
+  readonly fromPort?: number | undefined;
 
   /**
    * The ending port for the range
    *
    * @default - Not included in the rule
    */
-  readonly toPort?: number;
+  readonly toPort?: number | undefined;
 
   /**
    * String representation for this object

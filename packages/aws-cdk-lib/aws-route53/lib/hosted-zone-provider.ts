@@ -12,7 +12,7 @@ export interface HostedZoneProviderProps {
    *
    * @default false
    */
-  readonly privateZone?: boolean;
+  readonly privateZone?: boolean | undefined;
 
   /**
    * Specifies the ID of the VPC associated with a private hosted zone.
@@ -22,5 +22,5 @@ export interface HostedZoneProviderProps {
    *
    * @default - No VPC ID
    */
-  readonly vpcId?: string;
+  readonly vpcId?: string | undefined;
 }

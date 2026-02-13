@@ -40,43 +40,43 @@ export interface IdentityPoolProps {
    * The name of the Identity Pool
    * @default - Automatically generated name by CloudFormation at deploy time
    */
-  readonly identityPoolName?: string;
+  readonly identityPoolName?: string | undefined;
 
   /**
    * The default Role to be assumed by authenticated users
    * @default - A default authenticated Role will be added
    */
-  readonly authenticatedRole?: IRole;
+  readonly authenticatedRole?: IRole | undefined;
 
   /**
    * The default Role to be assumed by unauthenticated users
    * @default - A default unauthenticated Role will be added
    */
-  readonly unauthenticatedRole?: IRole;
+  readonly unauthenticatedRole?: IRole | undefined;
 
   /**
    * Whether the Identity Pool supports unauthenticated logins
    * @default - false
    */
-  readonly allowUnauthenticatedIdentities?: boolean;
+  readonly allowUnauthenticatedIdentities?: boolean | undefined;
 
   /**
    * Rules for mapping roles to users
    * @default - no role mappings
    */
-  readonly roleMappings?: IdentityPoolRoleMapping[];
+  readonly roleMappings?: IdentityPoolRoleMapping[] | undefined;
 
   /**
    * Enables the Basic (Classic) authentication flow
    * @default - Classic Flow not allowed
    */
-  readonly allowClassicFlow?: boolean;
+  readonly allowClassicFlow?: boolean | undefined;
 
   /**
    * Authentication Providers for using in Identity Pool
    * @default - No Authentication Providers passed directly to Identity Pool
    */
-  readonly authenticationProviders?: IdentityPoolAuthenticationProviders;
+  readonly authenticationProviders?: IdentityPoolAuthenticationProviders | undefined;
 }
 
 /**
@@ -220,55 +220,55 @@ export interface IdentityPoolAuthenticationProviders {
    * The Facebook Authentication Provider associated with this Identity Pool
    * @default - No Facebook Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly facebook?: IdentityPoolFacebookLoginProvider;
+  readonly facebook?: IdentityPoolFacebookLoginProvider | undefined;
 
   /**
    * The Google Authentication Provider associated with this Identity Pool
    * @default - No Google Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly google?: IdentityPoolGoogleLoginProvider;
+  readonly google?: IdentityPoolGoogleLoginProvider | undefined;
 
   /**
    * The Amazon Authentication Provider associated with this Identity Pool
    * @default -  No Amazon Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly amazon?: IdentityPoolAmazonLoginProvider;
+  readonly amazon?: IdentityPoolAmazonLoginProvider | undefined;
 
   /**
    * The Apple Authentication Provider associated with this Identity Pool
    * @default - No Apple Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly apple?: IdentityPoolAppleLoginProvider;
+  readonly apple?: IdentityPoolAppleLoginProvider | undefined;
 
   /**
    * The Twitter Authentication Provider associated with this Identity Pool
    * @default - No Twitter Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly twitter?: IdentityPoolTwitterLoginProvider;
+  readonly twitter?: IdentityPoolTwitterLoginProvider | undefined;
 
   /**
    * The User Pool Authentication Providers associated with this Identity Pool
    * @default - no User Pools associated
    */
-  readonly userPools?: IUserPoolAuthenticationProvider[];
+  readonly userPools?: IUserPoolAuthenticationProvider[] | undefined;
 
   /**
    * The OpenIdConnect Provider associated with this Identity Pool
    * @default - no OpenIdConnectProvider
    */
-  readonly openIdConnectProviders?: IOIDCProviderRef[];
+  readonly openIdConnectProviders?: IOIDCProviderRef[] | undefined;
 
   /**
    * The Security Assertion Markup Language provider associated with this Identity Pool
    * @default - no SamlProvider
    */
-  readonly samlProviders?: ISAMLProviderRef[];
+  readonly samlProviders?: ISAMLProviderRef[] | undefined;
 
   /**
    * The developer provider name to associate with this Identity Pool
    * @default - no custom provider
    */
-  readonly customProvider?: string;
+  readonly customProvider?: string | undefined;
 }
 
 /**
@@ -285,7 +285,7 @@ export interface IdentityPoolRoleMapping {
    * The key used for the role mapping in the role mapping hash. Required if the providerUrl is a token.
    * @default - The provided providerUrl
    */
-  readonly mappingKey?: string;
+  readonly mappingKey?: string | undefined;
 
   /**
    * If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from Identity Provider.
@@ -293,19 +293,19 @@ export interface IdentityPoolRoleMapping {
    *
    * @default false
    */
-  readonly useToken?: boolean;
+  readonly useToken?: boolean | undefined;
 
   /**
    * Allow for role assumption when results of role mapping are ambiguous
    * @default false - Ambiguous role resolutions will lead to requester being denied
    */
-  readonly resolveAmbiguousRoles?: boolean;
+  readonly resolveAmbiguousRoles?: boolean | undefined;
 
   /**
    * The claim and value that must be matched in order to assume the role. Required if useToken is false
    * @default - No role mapping rule
    */
-  readonly rules?: RoleMappingRule[];
+  readonly rules?: RoleMappingRule[] | undefined;
 }
 
 /**
@@ -357,7 +357,7 @@ export interface RoleMappingRule {
    *
    * @default RoleMappingMatchType.EQUALS
    */
-  readonly matchType?: RoleMappingMatchType;
+  readonly matchType?: RoleMappingMatchType | undefined;
 }
 
 /**
@@ -579,19 +579,19 @@ interface IdentityPoolRoleAttachmentProps {
    * Default authenticated (User) Role
    * @default - No default authenticated Role will be added
    */
-  readonly authenticatedRole?: IRoleRef;
+  readonly authenticatedRole?: IRoleRef | undefined;
 
   /**
    * Default unauthenticated (Guest) Role
    * @default - No default unauthenticated Role will be added
    */
-  readonly unauthenticatedRole?: IRoleRef;
+  readonly unauthenticatedRole?: IRoleRef | undefined;
 
   /**
    * Rules for mapping roles to users
    * @default - No role mappings
    */
-  readonly roleMappings?: IdentityPoolRoleMapping[];
+  readonly roleMappings?: IdentityPoolRoleMapping[] | undefined;
 }
 
 /**

@@ -28,12 +28,12 @@ export interface IntegrationOptions {
    * A list of request parameters whose values are to be cached. It determines
    * request parameters that will make it into the cache key.
    */
-  readonly cacheKeyParameters?: string[];
+  readonly cacheKeyParameters?: string[] | undefined;
 
   /**
    * An API-specific tag group of related cached parameters.
    */
-  readonly cacheNamespace?: string;
+  readonly cacheNamespace?: string | undefined;
 
   /**
    * Specifies how to handle request payload content type conversions.
@@ -43,7 +43,7 @@ export interface IntegrationOptions {
    * modification, provided that the `passthroughBehaviors` property is
    * configured to support payload pass-through.
    */
-  readonly contentHandling?: ContentHandling;
+  readonly contentHandling?: ContentHandling | undefined;
 
   /**
    * An IAM role that API Gateway assumes.
@@ -52,14 +52,14 @@ export interface IntegrationOptions {
    *
    * @default A role is not assumed
    */
-  readonly credentialsRole?: iam.IRole;
+  readonly credentialsRole?: iam.IRole | undefined;
 
   /**
    * Requires that the caller's identity be passed through from the request.
    *
    * @default Caller identity is not passed through
    */
-  readonly credentialsPassthrough?: boolean;
+  readonly credentialsPassthrough?: boolean | undefined;
 
   /**
    * Specifies the pass-through behavior for incoming requests based on the
@@ -68,7 +68,7 @@ export interface IntegrationOptions {
    * There are three valid values: WHEN_NO_MATCH, WHEN_NO_TEMPLATES, and
    * NEVER.
    */
-  readonly passthroughBehavior?: PassthroughBehavior;
+  readonly passthroughBehavior?: PassthroughBehavior | undefined;
 
   /**
    * The request parameters that API Gateway sends with the backend request.
@@ -83,7 +83,7 @@ export interface IntegrationOptions {
    * value. You must enclose static values in single quotation marks and
    * pre-encode these values based on their destination in the request.
    */
-  readonly requestParameters?: { [dest: string]: string };
+  readonly requestParameters?: { [dest: string]: string } | undefined;
 
   /**
    * A map of Apache Velocity templates that are applied on the request
@@ -98,7 +98,7 @@ export interface IntegrationOptions {
    *
    * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
-  readonly requestTemplates?: { [contentType: string]: string };
+  readonly requestTemplates?: { [contentType: string]: string } | undefined;
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
@@ -112,7 +112,7 @@ export interface IntegrationOptions {
    *
    * @default Duration.seconds(29)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * The response that API Gateway provides after a method's backend completes
@@ -121,19 +121,19 @@ export interface IntegrationOptions {
    * responses. For example, you can map the backend status codes to codes
    * that you define.
    */
-  readonly integrationResponses?: IntegrationResponse[];
+  readonly integrationResponses?: IntegrationResponse[] | undefined;
 
   /**
    * The type of network connection to the integration endpoint.
    * @default - ConnectionType.VPC_LINK if `vpcLink` property is configured; ConnectionType.Internet otherwise.
    */
-  readonly connectionType?: ConnectionType;
+  readonly connectionType?: ConnectionType | undefined;
 
   /**
    * The VpcLink used for the integration.
    * Required if connectionType is VPC_LINK
    */
-  readonly vpcLink?: IVpcLink;
+  readonly vpcLink?: IVpcLink | undefined;
 
   /**
    * The response transfer mode for the integration.
@@ -142,7 +142,7 @@ export interface IntegrationOptions {
    *
    * @default ResponseTransferMode.BUFFERED
    */
-  readonly responseTransferMode?: ResponseTransferMode;
+  readonly responseTransferMode?: ResponseTransferMode | undefined;
 }
 
 export interface IntegrationProps {
@@ -164,18 +164,18 @@ export interface IntegrationProps {
    *
    * @see https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/#uri
    */
-  readonly uri?: any;
+  readonly uri?: any | undefined;
 
   /**
    * The integration's HTTP method type.
    * Required unless you use a MOCK integration.
    */
-  readonly integrationHttpMethod?: string;
+  readonly integrationHttpMethod?: string | undefined;
 
   /**
    * Integration options.
    */
-  readonly options?: IntegrationOptions;
+  readonly options?: IntegrationOptions | undefined;
 }
 
 /**
@@ -186,7 +186,7 @@ export interface IntegrationConfig {
    * Integration options.
    * @default - no integration options
    */
-  readonly options?: IntegrationOptions;
+  readonly options?: IntegrationOptions | undefined;
 
   /**
    * Specifies an API method integration type.
@@ -198,7 +198,7 @@ export interface IntegrationConfig {
    * @see https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/#uri
    * @default - no URI. Usually applies to MOCK integration
    */
-  readonly uri?: string;
+  readonly uri?: string | undefined;
 
   /**
    * The integration's HTTP method type.
@@ -206,7 +206,7 @@ export interface IntegrationConfig {
    *
    * @default - no integration method specified.
    */
-  readonly integrationHttpMethod?: string;
+  readonly integrationHttpMethod?: string | undefined;
 
   /**
    * This value is included in computing the Deployment's fingerprint. When the fingerprint
@@ -215,7 +215,7 @@ export interface IntegrationConfig {
    * should trigger a fresh the Deployment needs to be refreshed.
    * @default undefined deployments are not triggered for any change to this integration.
    */
-  readonly deploymentToken?: string;
+  readonly deploymentToken?: string | undefined;
 }
 
 /**
@@ -386,7 +386,7 @@ export interface IntegrationResponse {
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-integration-settings-integration-response.html
    */
-  readonly selectionPattern?: string;
+  readonly selectionPattern?: string | undefined;
 
   /**
    * The status code that API Gateway uses to map the integration response to
@@ -400,7 +400,7 @@ export interface IntegrationResponse {
    * @default none the request payload is passed through from the method
    * request to the integration request without modification.
    */
-  readonly contentHandling?: ContentHandling;
+  readonly contentHandling?: ContentHandling | undefined;
 
   /**
    * The response parameters from the backend response that API Gateway sends
@@ -417,7 +417,7 @@ export interface IntegrationResponse {
    *
    * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
    */
-  readonly responseParameters?: { [destination: string]: string };
+  readonly responseParameters?: { [destination: string]: string } | undefined;
 
   /**
    * The templates that are used to transform the integration response body.
@@ -426,5 +426,5 @@ export interface IntegrationResponse {
    *
    * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
-  readonly responseTemplates?: { [contentType: string]: string };
+  readonly responseTemplates?: { [contentType: string]: string } | undefined;
 }

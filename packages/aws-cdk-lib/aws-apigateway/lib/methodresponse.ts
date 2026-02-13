@@ -16,7 +16,7 @@ export interface MethodResponse {
    * valid, unique header name. The Boolean specifies whether a parameter is required.
    * @default None
    */
-  readonly responseParameters?: { [destination: string]: boolean };
+  readonly responseParameters?: { [destination: string]: boolean } | undefined;
 
   /**
    * The resources used for the response's content type. Specify response models as
@@ -24,5 +24,5 @@ export interface MethodResponse {
    * resource name as the value.
    * @default None
    */
-  readonly responseModels?: { [contentType: string]: IModel };
+  readonly responseModels?: { [contentType: string]: IModel } | undefined;
 }

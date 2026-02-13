@@ -37,7 +37,7 @@ export interface CommonGrantOptions {
    *
    * @default - No conditions
    */
-  readonly conditions?: Record<string, Record<string, unknown>>;
+  readonly conditions?: Record<string, Record<string, unknown>> | undefined;
 }
 
 /**
@@ -60,7 +60,7 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
    *
    * @default Same as regular resource ARNs
    */
-  readonly resourceSelfArns?: string[];
+  readonly resourceSelfArns?: string[] | undefined;
 }
 
 /**
@@ -92,7 +92,7 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
    * @default - the construct in which this construct is defined
    * @deprecated The scope argument is currently unused.
    */
-  readonly scope?: IConstruct;
+  readonly scope?: IConstruct | undefined;
 }
 
 /**
@@ -114,14 +114,14 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
    *
    * @default Same as regular resource ARNs
    */
-  readonly resourceSelfArns?: string[];
+  readonly resourceSelfArns?: string[] | undefined;
 
   /**
    * The principal to use in the statement for the resource policy.
    *
    * @default - the principal of the grantee will be used
    */
-  readonly resourcePolicyPrincipal?: IPrincipal;
+  readonly resourcePolicyPrincipal?: IPrincipal | undefined;
 }
 
 /**
@@ -311,7 +311,7 @@ export class Grant implements IDependable {
    *
    * @deprecated Use `principalStatements` instead
    */
-  public readonly principalStatement?: PolicyStatement;
+  public readonly principalStatement?: PolicyStatement | undefined;
 
   /**
    * The statements that were added to the principal's policy
@@ -323,7 +323,7 @@ export class Grant implements IDependable {
    *
    * @deprecated Use `resourceStatements` instead
    */
-  public readonly resourceStatement?: PolicyStatement;
+  public readonly resourceStatement?: PolicyStatement | undefined;
 
   /**
    * The statements that were added to the resource policy
@@ -414,15 +414,15 @@ function describeGrant(options: CommonGrantOptions) {
 
 interface GrantProps {
   readonly options: CommonGrantOptions;
-  readonly principalStatement?: PolicyStatement;
-  readonly resourceStatement?: PolicyStatement;
+  readonly principalStatement?: PolicyStatement | undefined;
+  readonly resourceStatement?: PolicyStatement | undefined;
 
   /**
    * Constructs whose deployment applies the grant
    *
    * Used to add dependencies on grants
    */
-  readonly policyDependable?: IDependable;
+  readonly policyDependable?: IDependable | undefined;
 }
 
 /**
@@ -434,7 +434,7 @@ export interface GrantOnKeyResult {
    *
    * @default No grant
    */
-  readonly grant?: Grant;
+  readonly grant?: Grant | undefined;
 }
 
 /**
@@ -607,7 +607,7 @@ export interface AddToResourcePolicyResult {
    * @default - If `statementAdded` is true, the resource object itself.
    * Otherwise, no dependable.
    */
-  readonly policyDependable?: IDependable;
+  readonly policyDependable?: IDependable | undefined;
 }
 
 /**

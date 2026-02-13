@@ -40,26 +40,26 @@ export interface AlarmStatusWidgetProps {
    *
    * @default 'Alarm Status'
    */
-  readonly title?: string;
+  readonly title?: string | undefined;
   /**
    * Width of the widget, in a grid of 24 units wide
    *
    * @default 6
    */
-  readonly width?: number;
+  readonly width?: number | undefined;
   /**
    * Height of the widget
    *
    * @default 3
    */
-  readonly height?: number;
+  readonly height?: number | undefined;
 
   /**
    * Specifies how to sort the alarms in the widget.
    *
    * @default - alphabetical order
    */
-  readonly sortBy?: AlarmStatusWidgetSortBy;
+  readonly sortBy?: AlarmStatusWidgetSortBy | undefined;
 
   /**
    * Use this field to filter the list of alarms displayed in the widget to only those alarms currently in the specified states.
@@ -70,7 +70,7 @@ export interface AlarmStatusWidgetProps {
    *
    * @default -  all the alarms specified in alarms are displayed.
    */
-  readonly states?: AlarmState[];
+  readonly states?: AlarmState[] | undefined;
 }
 
 /**

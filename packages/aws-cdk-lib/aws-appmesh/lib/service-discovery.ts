@@ -45,7 +45,7 @@ export interface MeshServiceDiscovery {
    *  For DNS service discovery, the Envoy DNS resolver to prefer using IPv6 and fall back to IPv4.
    *  For CloudMap service discovery, App Mesh will prefer using IPv4 and fall back to IPv6 for IPs returned by CloudMap.
    */
-  readonly ipPreference?: IpPreference;
+  readonly ipPreference?: IpPreference | undefined;
 }
 
 /**
@@ -57,14 +57,14 @@ export interface ServiceDiscoveryConfig {
    *
    * @default - no DNS based service discovery
    */
-  readonly dns?: CfnVirtualNode.DnsServiceDiscoveryProperty;
+  readonly dns?: CfnVirtualNode.DnsServiceDiscoveryProperty | undefined;
 
   /**
    * Cloud Map based Service Discovery
    *
    * @default - no Cloud Map based service discovery
    */
-  readonly cloudmap?: CfnVirtualNode.AwsCloudMapServiceDiscoveryProperty;
+  readonly cloudmap?: CfnVirtualNode.AwsCloudMapServiceDiscoveryProperty | undefined;
 }
 
 /**
@@ -121,8 +121,8 @@ export abstract class ServiceDiscovery {
 
 class DnsServiceDiscovery extends ServiceDiscovery {
   private readonly hostname: string;
-  private readonly responseType?: DnsResponseType;
-  private readonly ipPreference?: IpPreference;
+  private readonly responseType?: DnsResponseType | undefined;
+  private readonly ipPreference?: IpPreference | undefined;
 
   constructor(hostname: string, responseType?: DnsResponseType, ipPreference?: IpPreference) {
     super();
@@ -144,8 +144,8 @@ class DnsServiceDiscovery extends ServiceDiscovery {
 
 class CloudMapServiceDiscovery extends ServiceDiscovery {
   private readonly service: cloudmap.IService;
-  private readonly instanceAttributes?: {[key: string]: string};
-  private readonly ipPreference?: IpPreference;
+  private readonly instanceAttributes?: {[key: string]: string} | undefined;
+  private readonly ipPreference?: IpPreference | undefined;
 
   constructor(service: cloudmap.IService, instanceAttributes?: {[key: string]: string}, ipPreference?: IpPreference) {
     super();

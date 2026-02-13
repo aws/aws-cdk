@@ -15,21 +15,21 @@ export interface UniqueResourceNameOptions {
    *
    * @default - 256
    */
-  readonly maxLength?: number;
+  readonly maxLength?: number | undefined;
 
   /**
    * The separator used between the path components.
    *
    * @default - none
    */
-  readonly separator?: string;
+  readonly separator?: string | undefined;
 
   /**
    * Non-alphanumeric characters allowed in the unique resource name.
    *
    * @default - none
    */
-  readonly allowedSpecialCharacters?: string;
+  readonly allowedSpecialCharacters?: string | undefined;
 }
 
 /**

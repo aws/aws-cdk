@@ -24,7 +24,7 @@ interface RoleReportOptions {
    *
    * @default 'missing role'
    */
-  readonly roleName?: string;
+  readonly roleName?: string | undefined;
 
   /**
    * A list of IAM Policy Statements
@@ -41,7 +41,7 @@ interface RoleReportOptions {
    *
    * @default - no trust policy.
    */
-  readonly assumeRolePolicy?: string;
+  readonly assumeRolePolicy?: string | undefined;
 
   /**
    * Whether or not the role is missing from the list of
@@ -49,7 +49,7 @@ interface RoleReportOptions {
    *
    * @default false
    */
-  readonly missing?: boolean;
+  readonly missing?: boolean | undefined;
 }
 
 interface ManagedPolicyReportOptions {
@@ -64,7 +64,7 @@ interface ManagedPolicyReportOptions {
    *
    * @default - no roles are attached to the policy
    */
-  readonly roles?: string[];
+  readonly roles?: string[] | undefined;
 }
 
 interface PolicyReport {
@@ -92,28 +92,28 @@ interface PolicyReportRole {
    *
    * @default false
    */
-  readonly missing?: boolean;
+  readonly missing?: boolean | undefined;
 
   /**
    * The assume role (trust) policy of the role
    *
    * @default - no assume role policy
    */
-  readonly assumeRolePolicy?: string[];
+  readonly assumeRolePolicy?: string[] | undefined;
 
   /**
    * The managed policy ARNs that have been attached to the role
    *
    * @default - no managed policy ARNs
    */
-  readonly managedPolicyArns?: string[];
+  readonly managedPolicyArns?: string[] | undefined;
 
   /**
    * The managed policy statements that have been attached to the role
    *
    * @default - no managed policy statements
    */
-  readonly managedPolicyStatements?: string[];
+  readonly managedPolicyStatements?: string[] | undefined;
 
   /**
    * The policy statements that have been attached to the role
@@ -121,7 +121,7 @@ interface PolicyReportRole {
    *
    * @default - no inline statements
    */
-  readonly identityPolicyStatements?: string[];
+  readonly identityPolicyStatements?: string[] | undefined;
 }
 
 /**
@@ -487,14 +487,14 @@ export interface CustomizeRoleConfig {
    *
    * @default - false if enabled=false otherwise true
    */
-  readonly preventSynthesis?: boolean;
+  readonly preventSynthesis?: boolean | undefined;
 
   /**
    * The physical name of the precreated role.
    *
    * @default - no precreated role
    */
-  readonly precreatedRoleName?: string;
+  readonly precreatedRoleName?: string | undefined;
 }
 
 export const CUSTOMIZE_ROLES_CONTEXT_KEY = '@aws-cdk/iam:customizeRoles';

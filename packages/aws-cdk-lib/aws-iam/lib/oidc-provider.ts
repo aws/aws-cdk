@@ -56,7 +56,7 @@ export interface OpenIdConnectProviderProps {
    *
    * @default - no clients are allowed
    */
-  readonly clientIds?: string[];
+  readonly clientIds?: string[] | undefined;
 
   /**
    * A list of server certificate thumbprints for the OpenID Connect (OIDC)
@@ -81,14 +81,14 @@ export interface OpenIdConnectProviderProps {
    * the thumbprint of the root certificate authority will be obtained from the
    * provider's server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
    */
-  readonly thumbprints?: string[];
+  readonly thumbprints?: string[] | undefined;
 
   /**
    * The removal policy to apply to the OpenID Connect Provider
    *
    * @default - RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

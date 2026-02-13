@@ -24,21 +24,21 @@ export interface BaseTargetTrackingProps {
    *
    * @default false
    */
-  readonly disableScaleIn?: boolean;
+  readonly disableScaleIn?: boolean | undefined;
 
   /**
    * Period after a scaling completes before another scaling activity can start.
    *
    * @default - The default cooldown configured on the AutoScalingGroup.
    */
-  readonly cooldown?: Duration;
+  readonly cooldown?: Duration | undefined;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default - Same as the cooldown.
    */
-  readonly estimatedInstanceWarmup?: Duration;
+  readonly estimatedInstanceWarmup?: Duration | undefined;
 }
 
 /**
@@ -60,7 +60,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default - No predefined metric.
    */
-  readonly predefinedMetric?: PredefinedMetric;
+  readonly predefinedMetric?: PredefinedMetric | undefined;
 
   /**
    * A custom metric for application autoscaling
@@ -72,7 +72,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default - No custom metric.
    */
-  readonly customMetric?: cloudwatch.IMetric;
+  readonly customMetric?: cloudwatch.IMetric | undefined;
 
   /**
    * The resource label associated with the predefined metric
@@ -84,7 +84,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default - No resource label.
    */
-  readonly resourceLabel?: string;
+  readonly resourceLabel?: string | undefined;
 }
 
 /**

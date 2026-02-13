@@ -21,7 +21,7 @@ export interface ApplicationListenerCertificateProps {
    * @deprecated Use `certificates` instead.
    * @default - One of 'certificates' and 'certificateArns' is required.
    */
-  readonly certificateArns?: string[];
+  readonly certificateArns?: string[] | undefined;
 
   /**
    * Certificates to attach
@@ -30,7 +30,7 @@ export interface ApplicationListenerCertificateProps {
    *
    * @default - One of 'certificates' and 'certificateArns' is required.
    */
-  readonly certificates?: IListenerCertificate[];
+  readonly certificates?: IListenerCertificate[] | undefined;
 }
 
 /**

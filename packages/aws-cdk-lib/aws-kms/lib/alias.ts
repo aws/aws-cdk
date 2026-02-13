@@ -57,7 +57,7 @@ export interface AliasProps {
    *
    * @default - The alias will be deleted
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 abstract class AliasBase extends Resource implements IAlias {

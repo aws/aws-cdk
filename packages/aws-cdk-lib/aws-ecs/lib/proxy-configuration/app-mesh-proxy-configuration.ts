@@ -12,13 +12,13 @@ export interface AppMeshProxyConfigurationProps {
    * The user ID (UID) of the proxy container as defined by the user parameter in a container definition.
    * This is used to ensure the proxy ignores its own traffic. If IgnoredGID is specified, this field can be empty.
    */
-  readonly ignoredUID?: number;
+  readonly ignoredUID?: number | undefined;
 
   /**
    * The group ID (GID) of the proxy container as defined by the user parameter in a container definition.
    * This is used to ensure the proxy ignores its own traffic. If IgnoredUID is specified, this field can be empty.
    */
-  readonly ignoredGID?: number;
+  readonly ignoredGID?: number | undefined;
 
   /**
    * The list of ports that the application uses.
@@ -39,12 +39,12 @@ export interface AppMeshProxyConfigurationProps {
   /**
    * The egress traffic going to these specified ports is ignored and not redirected to the ProxyEgressPort. It can be an empty list.
    */
-  readonly egressIgnoredPorts?: number[];
+  readonly egressIgnoredPorts?: number[] | undefined;
 
   /**
    * The egress traffic going to these specified IP addresses is ignored and not redirected to the ProxyEgressPort. It can be an empty list.
    */
-  readonly egressIgnoredIPs?: string[];
+  readonly egressIgnoredIPs?: string[] | undefined;
 }
 
 /**

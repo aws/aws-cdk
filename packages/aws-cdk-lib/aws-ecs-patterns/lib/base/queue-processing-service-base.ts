@@ -22,7 +22,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - CloudFormation-generated name.
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 
   /**
    * The name of the cluster that hosts the service.
@@ -30,7 +30,7 @@ export interface QueueProcessingServiceBaseProps {
    * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
    * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
-  readonly cluster?: ICluster;
+  readonly cluster?: ICluster | undefined;
 
   /**
    * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
@@ -38,7 +38,7 @@ export interface QueueProcessingServiceBaseProps {
    * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
    * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
-  readonly vpc?: IVpc;
+  readonly vpc?: IVpc | undefined;
 
   /**
    * The image used to start a container.
@@ -48,7 +48,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - the image of the task definition is used for Fargate, required otherwise
    */
-  readonly image?: ContainerImage;
+  readonly image?: ContainerImage | undefined;
 
   /**
    * The command that is passed to the container.
@@ -57,7 +57,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - CMD value built into container image.
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
@@ -66,14 +66,14 @@ export interface QueueProcessingServiceBaseProps {
    * when updating an existing service.
    * @deprecated - Use `minScalingCapacity` or a literal object instead.
    */
-  readonly desiredTaskCount?: number;
+  readonly desiredTaskCount?: number | undefined;
 
   /**
    * Flag to indicate whether to enable logging.
    *
    * @default true
    */
-  readonly enableLogging?: boolean;
+  readonly enableLogging?: boolean | undefined;
 
   /**
    * The environment variables to pass to the container.
@@ -83,14 +83,14 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default 'QUEUE_NAME: queue.queueName'
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
-  readonly secrets?: { [key: string]: Secret };
+  readonly secrets?: { [key: string]: Secret } | undefined;
 
   /**
    * A queue for which to process items from.
@@ -100,7 +100,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default 'SQSQueue with CloudFormation-generated name'
    */
-  readonly queue?: IQueue;
+  readonly queue?: IQueue | undefined;
 
   /**
    * The maximum number of times that a message can be received by consumers.
@@ -109,7 +109,7 @@ export interface QueueProcessingServiceBaseProps {
    * If the queue construct is specified, maxReceiveCount should be omitted.
    * @default 3
    */
-  readonly maxReceiveCount?: number;
+  readonly maxReceiveCount?: number | undefined;
 
   /**
    * Timeout of processing a single message. After dequeuing, the processor has this much time to handle the message and delete it from the queue
@@ -118,7 +118,7 @@ export interface QueueProcessingServiceBaseProps {
    * If the queue construct is specified, visibilityTimeout should be omitted.
    * @default Duration.seconds(30)
    */
-  readonly visibilityTimeout?: Duration;
+  readonly visibilityTimeout?: Duration | undefined;
 
   /**
    * The number of seconds that Dead Letter Queue retains a message.
@@ -126,21 +126,21 @@ export interface QueueProcessingServiceBaseProps {
    * If the queue construct is specified, retentionPeriod should be omitted.
    * @default Duration.days(14)
    */
-  readonly retentionPeriod?: Duration;
+  readonly retentionPeriod?: Duration | undefined;
 
   /**
    * Maximum capacity to scale to.
    *
    * @default 2
    */
-  readonly maxScalingCapacity?: number;
+  readonly maxScalingCapacity?: number | undefined;
 
   /**
    * Minimum capacity to scale to.
    *
    * @default 1
    */
-  readonly minScalingCapacity?: number;
+  readonly minScalingCapacity?: number | undefined;
 
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
@@ -150,7 +150,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
-  readonly scalingSteps?: ScalingInterval[];
+  readonly scalingSteps?: ScalingInterval[] | undefined;
 
   /**
    * Grace period after scaling activity in seconds.
@@ -163,14 +163,14 @@ export interface QueueProcessingServiceBaseProps {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
    * @default 300 seconds
    */
-  readonly cooldown?: Duration;
+  readonly cooldown?: Duration | undefined;
 
   /**
    * The log driver to use.
    *
    * @default - AwsLogDriver if enableLogging is true
    */
-  readonly logDriver?: LogDriver;
+  readonly logDriver?: LogDriver | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -178,7 +178,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - none
    */
-  readonly propagateTags?: PropagatedTagSource;
+  readonly propagateTags?: PropagatedTagSource | undefined;
 
   /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
@@ -186,14 +186,14 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default false
    */
-  readonly enableECSManagedTags?: boolean;
+  readonly enableECSManagedTags?: boolean | undefined;
 
   /**
    * The name of a family that the task definition is registered to. A family groups multiple versions of a task definition.
    *
    * @default - Automatically generated name.
    */
-  readonly family?: string;
+  readonly family?: string | undefined;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -202,7 +202,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - default from underlying service.
    */
-  readonly maxHealthyPercent?: number;
+  readonly maxHealthyPercent?: number | undefined;
 
   /**
    * The minimum number of tasks, specified as a percentage of
@@ -211,7 +211,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - default from underlying service.
    */
-  readonly minHealthyPercent?: number;
+  readonly minHealthyPercent?: number | undefined;
 
   /**
    * Specifies which deployment controller to use for the service. For more information, see
@@ -219,14 +219,14 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - Rolling update (ECS)
    */
-  readonly deploymentController?: DeploymentController;
+  readonly deploymentController?: DeploymentController | undefined;
 
   /**
    * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
    * enabled.
    * @default - disabled
    */
-  readonly circuitBreaker?: DeploymentCircuitBreaker;
+  readonly circuitBreaker?: DeploymentCircuitBreaker | undefined;
 
   /**
    * A list of Capacity Provider strategies used to place a service.
@@ -234,28 +234,28 @@ export interface QueueProcessingServiceBaseProps {
    * @default - undefined
    *
    */
-  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[] | undefined;
 
   /**
    * Whether ECS Exec should be enabled
    *
    * @default - false
    */
-  readonly enableExecuteCommand?: boolean;
+  readonly enableExecuteCommand?: boolean | undefined;
 
   /**
    * Flag to disable CPU based auto scaling strategy on the service.
    *
    * @default - false
    */
-  readonly disableCpuBasedScaling?: boolean;
+  readonly disableCpuBasedScaling?: boolean | undefined;
 
   /**
    * The target CPU utilization percentage for CPU based scaling strategy when enabled.
    *
    * @default - 50
    */
-  readonly cpuTargetUtilizationPercent?: number;
+  readonly cpuTargetUtilizationPercent?: number | undefined;
 }
 
 /**
@@ -270,7 +270,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The dead letter queue for the primary SQS queue
    */
-  public readonly deadLetterQueue?: IQueue;
+  public readonly deadLetterQueue?: IQueue | undefined;
 
   /**
    * The cluster where your service will be deployed
@@ -288,7 +288,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The secret environment variables.
    */
-  public readonly secrets?: { [key: string]: Secret };
+  public readonly secrets?: { [key: string]: Secret } | undefined;
 
   /**
    * The minimum number of tasks to run.
@@ -315,12 +315,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * Grace period after scaling activity in seconds.
    * @default 300 seconds
    */
-  private readonly cooldown?: Duration;
+  private readonly cooldown?: Duration | undefined;
 
   /**
    * The AwsLogDriver to use for logging if logging is enabled.
    */
-  public readonly logDriver?: LogDriver;
+  public readonly logDriver?: LogDriver | undefined;
 
   /**
    * Flag to disable CPU based auto scaling strategy on the service.

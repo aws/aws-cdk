@@ -39,7 +39,7 @@ export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default 'latest'
    */
-  readonly imageTag?: string;
+  readonly imageTag?: string | undefined;
 
   /**
    *

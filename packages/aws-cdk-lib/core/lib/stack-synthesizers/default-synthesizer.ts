@@ -45,7 +45,7 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME
    */
-  readonly fileAssetsBucketName?: string;
+  readonly fileAssetsBucketName?: string | undefined;
 
   /**
    * Name of the ECR repository to hold Docker Image assets
@@ -58,7 +58,7 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
    */
-  readonly imageAssetsRepositoryName?: string;
+  readonly imageAssetsRepositoryName?: string | undefined;
 
   /**
    * The role to use to publish file assets to the S3 bucket in this environment
@@ -71,14 +71,14 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN
    */
-  readonly fileAssetPublishingRoleArn?: string;
+  readonly fileAssetPublishingRoleArn?: string | undefined;
 
   /**
    * External ID to use when assuming role for file asset publishing
    *
    * @default - No external ID
    */
-  readonly fileAssetPublishingExternalId?: string;
+  readonly fileAssetPublishingExternalId?: string | undefined;
 
   /**
    * The role to use to publish image assets to the ECR repository in this environment
@@ -91,21 +91,21 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN
    */
-  readonly imageAssetPublishingRoleArn?: string;
+  readonly imageAssetPublishingRoleArn?: string | undefined;
 
   /**
    * The role to use to look up values from the target AWS account during synthesis
    *
    * @default - None
    */
-  readonly lookupRoleArn?: string;
+  readonly lookupRoleArn?: string | undefined;
 
   /**
    * External ID to use when assuming lookup role
    *
    * @default - No external ID
    */
-  readonly lookupRoleExternalId?: string;
+  readonly lookupRoleExternalId?: string | undefined;
 
   /**
    * Use the bootstrapped lookup role for (read-only) stack operations
@@ -117,21 +117,21 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default true
    */
-  readonly useLookupRoleForStackOperations?: boolean;
+  readonly useLookupRoleForStackOperations?: boolean | undefined;
 
   /**
    * External ID to use when assuming role for image asset publishing
    *
    * @default - No external ID
    */
-  readonly imageAssetPublishingExternalId?: string;
+  readonly imageAssetPublishingExternalId?: string | undefined;
 
   /**
    * External ID to use when assuming role for cloudformation deployments
    *
    * @default - No external ID
    */
-  readonly deployRoleExternalId?: string;
+  readonly deployRoleExternalId?: string | undefined;
 
   /**
    * The role to assume to initiate a deployment in this environment
@@ -144,7 +144,7 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN
    */
-  readonly deployRoleArn?: string;
+  readonly deployRoleArn?: string | undefined;
 
   /**
    * The role CloudFormation will assume when deploying the Stack
@@ -157,7 +157,7 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN
    */
-  readonly cloudFormationExecutionRole?: string;
+  readonly cloudFormationExecutionRole?: string | undefined;
 
   /**
    * Name of the CloudFormation Export with the asset key name
@@ -171,7 +171,7 @@ export interface DefaultStackSynthesizerProps {
    * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME
    * @deprecated This property is not used anymore
    */
-  readonly fileAssetKeyArnExportName?: string;
+  readonly fileAssetKeyArnExportName?: string | undefined;
 
   /**
    * Qualifier to disambiguate multiple environments in the same account
@@ -181,7 +181,7 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
-  readonly qualifier?: string;
+  readonly qualifier?: string | undefined;
 
   /**
    * Whether to add a Rule to the stack template verifying the bootstrap stack version
@@ -191,14 +191,14 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default true
    */
-  readonly generateBootstrapVersionRule?: boolean;
+  readonly generateBootstrapVersionRule?: boolean | undefined;
 
   /**
    * bucketPrefix to use while storing S3 Assets
    *
    * @default - DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
    */
-  readonly bucketPrefix?: string;
+  readonly bucketPrefix?: string | undefined;
 
   /**
    * A prefix to use while tagging and uploading Docker images to ECR.
@@ -208,7 +208,7 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default - DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX
    */
-  readonly dockerTagPrefix?: string;
+  readonly dockerTagPrefix?: string | undefined;
 
   /**
    * Bootstrap stack version SSM parameter.
@@ -217,7 +217,7 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER
    */
-  readonly bootstrapStackVersionSsmParameter?: string;
+  readonly bootstrapStackVersionSsmParameter?: string | undefined;
 
   /**
    * Additional options to pass to STS when assuming the deploy role.
@@ -229,7 +229,7 @@ export interface DefaultStackSynthesizerProps {
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
    * @default - No additional options.
    */
-  readonly deployRoleAdditionalOptions?: { [key: string]: any };
+  readonly deployRoleAdditionalOptions?: { [key: string]: any } | undefined;
 
   /**
    * Additional options to pass to STS when assuming the lookup role.
@@ -241,7 +241,7 @@ export interface DefaultStackSynthesizerProps {
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
    * @default - No additional options.
    */
-  readonly lookupRoleAdditionalOptions?: { [key: string]: any };
+  readonly lookupRoleAdditionalOptions?: { [key: string]: any } | undefined;
 
   /**
    * Additional options to pass to STS when assuming the file asset publishing.
@@ -253,7 +253,7 @@ export interface DefaultStackSynthesizerProps {
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
    * @default - No additional options.
    */
-  readonly fileAssetPublishingRoleAdditionalOptions?: { [key: string]: any };
+  readonly fileAssetPublishingRoleAdditionalOptions?: { [key: string]: any } | undefined;
 
   /**
    * Additional options to pass to STS when assuming the image asset publishing.
@@ -265,7 +265,7 @@ export interface DefaultStackSynthesizerProps {
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
    * @default - No additional options.
    */
-  readonly imageAssetPublishingRoleAdditionalOptions?: { [key: string]: any };
+  readonly imageAssetPublishingRoleAdditionalOptions?: { [key: string]: any } | undefined;
 }
 
 /**

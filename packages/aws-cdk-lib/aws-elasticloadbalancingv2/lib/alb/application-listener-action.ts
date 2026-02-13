@@ -219,7 +219,7 @@ export interface ForwardOptions {
    *
    * @default - No stickiness
    */
-  readonly stickinessDuration?: Duration;
+  readonly stickinessDuration?: Duration | undefined;
 }
 
 /**
@@ -238,7 +238,7 @@ export interface WeightedTargetGroup {
    *
    * @default 1
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 }
 
 /**
@@ -252,14 +252,14 @@ export interface FixedResponseOptions {
    *
    * @default - Automatically determined
    */
-  readonly contentType?: string;
+  readonly contentType?: string | undefined;
 
   /**
    * The response body
    *
    * @default - No body
    */
-  readonly messageBody?: string;
+  readonly messageBody?: string | undefined;
 }
 
 /**
@@ -289,7 +289,7 @@ export interface RedirectOptions {
    *
    * @default - No change
    */
-  readonly host?: string;
+  readonly host?: string | undefined;
 
   /**
    * The absolute path, starting with the leading "/".
@@ -298,7 +298,7 @@ export interface RedirectOptions {
    *
    * @default - No change
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * The port.
@@ -307,7 +307,7 @@ export interface RedirectOptions {
    *
    * @default - No change
    */
-  readonly port?: string;
+  readonly port?: string | undefined;
 
   /**
    * The protocol.
@@ -316,7 +316,7 @@ export interface RedirectOptions {
    *
    * @default - No change
    */
-  readonly protocol?: string;
+  readonly protocol?: string | undefined;
 
   /**
    * The query parameters, URL-encoded when necessary, but not percent-encoded.
@@ -325,7 +325,7 @@ export interface RedirectOptions {
    *
    * @default - No change
    */
-  readonly query?: string;
+  readonly query?: string | undefined;
 
   /**
    * The HTTP redirect code.
@@ -334,7 +334,7 @@ export interface RedirectOptions {
    *
    * @default false
    */
-  readonly permanent?: boolean;
+  readonly permanent?: boolean | undefined;
 }
 
 /**
@@ -351,7 +351,7 @@ export interface AuthenticateOidcOptions {
    *
    * @default - No extra parameters
    */
-  readonly authenticationRequestExtraParams?: Record<string, string>;
+  readonly authenticationRequestExtraParams?: Record<string, string> | undefined;
 
   /**
    * The authorization endpoint of the IdP.
@@ -382,7 +382,7 @@ export interface AuthenticateOidcOptions {
    *
    * @default UnauthenticatedAction.AUTHENTICATE
    */
-  readonly onUnauthenticatedRequest?: UnauthenticatedAction;
+  readonly onUnauthenticatedRequest?: UnauthenticatedAction | undefined;
 
   /**
    * The set of user claims to be requested from the IdP.
@@ -391,21 +391,21 @@ export interface AuthenticateOidcOptions {
    *
    * @default "openid"
    */
-  readonly scope?: string;
+  readonly scope?: string | undefined;
 
   /**
    * The name of the cookie used to maintain session information.
    *
    * @default "AWSELBAuthSessionCookie"
    */
-  readonly sessionCookieName?: string;
+  readonly sessionCookieName?: string | undefined;
 
   /**
    * The maximum duration of the authentication session.
    *
    * @default Duration.days(7)
    */
-  readonly sessionTimeout?: Duration;
+  readonly sessionTimeout?: Duration | undefined;
 
   /**
    * The token endpoint of the IdP.
@@ -431,7 +431,7 @@ export interface AuthenticateOidcOptions {
    * @default true
    * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
    */
-  readonly allowHttpsOutbound?: boolean;
+  readonly allowHttpsOutbound?: boolean | undefined;
 }
 
 /**

@@ -18,14 +18,14 @@ export interface StepScalingActionProps {
    *
    * @default Automatically generated name
    */
-  readonly policyName?: string;
+  readonly policyName?: string | undefined;
 
   /**
    * How the adjustment numbers are interpreted
    *
    * @default ChangeInCapacity
    */
-  readonly adjustmentType?: AdjustmentType;
+  readonly adjustmentType?: AdjustmentType | undefined;
 
   /**
    * Grace period after scaling activity.
@@ -39,7 +39,7 @@ export interface StepScalingActionProps {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
    * @default No cooldown period
    */
-  readonly cooldown?: cdk.Duration;
+  readonly cooldown?: cdk.Duration | undefined;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -49,14 +49,14 @@ export interface StepScalingActionProps {
    *
    * @default No minimum scaling effect
    */
-  readonly minAdjustmentMagnitude?: number;
+  readonly minAdjustmentMagnitude?: number | undefined;
 
   /**
    * The aggregation type for the CloudWatch metrics.
    *
    * @default Average
    */
-  readonly metricAggregationType?: MetricAggregationType;
+  readonly metricAggregationType?: MetricAggregationType | undefined;
 }
 
 /**
@@ -181,7 +181,7 @@ export interface AdjustmentTier {
    *
    * @default -Infinity if this is the first tier, otherwise the upperBound of the previous tier
    */
-  readonly lowerBound?: number;
+  readonly lowerBound?: number | undefined;
 
   /**
    * Upper bound where this scaling tier applies
@@ -191,5 +191,5 @@ export interface AdjustmentTier {
    *
    * @default +Infinity
    */
-  readonly upperBound?: number;
+  readonly upperBound?: number | undefined;
 }

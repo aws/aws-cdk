@@ -26,57 +26,57 @@ export enum JsonSchemaType {
  */
 export interface JsonSchema {
   // Special keywords
-  readonly schema?: JsonSchemaVersion;
-  readonly id?: string;
-  readonly ref?: string;
+  readonly schema?: JsonSchemaVersion | undefined;
+  readonly id?: string | undefined;
+  readonly ref?: string | undefined;
 
   // Common properties
-  readonly type?: JsonSchemaType | JsonSchemaType[];
-  readonly title?: string;
-  readonly description?: string;
-  readonly enum?: any[];
+  readonly type?: JsonSchemaType | JsonSchemaType[] | undefined;
+  readonly title?: string | undefined;
+  readonly description?: string | undefined;
+  readonly enum?: any[] | undefined;
   /**
    * The default value if you use an enum.
    *
    * @default - not set
    */
-  readonly default?: any;
-  readonly format?: string;
-  readonly definitions?: { [name: string]: JsonSchema };
+  readonly default?: any | undefined;
+  readonly format?: string | undefined;
+  readonly definitions?: { [name: string]: JsonSchema } | undefined;
 
   // Number or Integer
-  readonly multipleOf?: number;
-  readonly maximum?: number;
-  readonly exclusiveMaximum?: boolean;
-  readonly minimum?: number;
-  readonly exclusiveMinimum?: boolean;
+  readonly multipleOf?: number | undefined;
+  readonly maximum?: number | undefined;
+  readonly exclusiveMaximum?: boolean | undefined;
+  readonly minimum?: number | undefined;
+  readonly exclusiveMinimum?: boolean | undefined;
 
   // String
-  readonly maxLength?: number;
-  readonly minLength?: number;
-  readonly pattern?: string;
+  readonly maxLength?: number | undefined;
+  readonly minLength?: number | undefined;
+  readonly pattern?: string | undefined;
 
   // Array
-  readonly items?: JsonSchema | JsonSchema[];
-  readonly additionalItems?: JsonSchema | boolean;
-  readonly maxItems?: number;
-  readonly minItems?: number;
-  readonly uniqueItems?: boolean;
-  readonly contains?: JsonSchema | JsonSchema[];
+  readonly items?: JsonSchema | JsonSchema[] | undefined;
+  readonly additionalItems?: JsonSchema | boolean | undefined;
+  readonly maxItems?: number | undefined;
+  readonly minItems?: number | undefined;
+  readonly uniqueItems?: boolean | undefined;
+  readonly contains?: JsonSchema | JsonSchema[] | undefined;
 
   // Object
-  readonly maxProperties?: number;
-  readonly minProperties?: number;
-  readonly required?: string[];
-  readonly properties?: { [name: string]: JsonSchema };
-  readonly additionalProperties?: JsonSchema | boolean;
-  readonly patternProperties?: { [name: string]: JsonSchema };
-  readonly dependencies?: { [name: string]: JsonSchema | string[] };
-  readonly propertyNames?: JsonSchema;
+  readonly maxProperties?: number | undefined;
+  readonly minProperties?: number | undefined;
+  readonly required?: string[] | undefined;
+  readonly properties?: { [name: string]: JsonSchema } | undefined;
+  readonly additionalProperties?: JsonSchema | boolean | undefined;
+  readonly patternProperties?: { [name: string]: JsonSchema } | undefined;
+  readonly dependencies?: { [name: string]: JsonSchema | string[] } | undefined;
+  readonly propertyNames?: JsonSchema | undefined;
 
   // Conditional
-  readonly allOf?: JsonSchema[];
-  readonly anyOf?: JsonSchema[];
-  readonly oneOf?: JsonSchema[];
-  readonly not?: JsonSchema;
+  readonly allOf?: JsonSchema[] | undefined;
+  readonly anyOf?: JsonSchema[] | undefined;
+  readonly oneOf?: JsonSchema[] | undefined;
+  readonly not?: JsonSchema | undefined;
 }

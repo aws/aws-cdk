@@ -33,7 +33,7 @@ export class StateMachineInput {
    * @default - the Action will not have any inputs
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html#action-reference-StepFunctions-example
    */
-  public readonly inputArtifact?: codepipeline.Artifact;
+  public readonly inputArtifact?: codepipeline.Artifact | undefined;
 
   /**
    * Optional StateMachine InputType
@@ -41,7 +41,7 @@ export class StateMachineInput {
    *
    * @default - Literal
    */
-  public readonly inputType?: string;
+  public readonly inputType?: string | undefined;
 
   /**
    * When InputType is set to Literal (default), the Input field is used
@@ -71,7 +71,7 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
    *
    * @default the Action will not have any outputs
    */
-  readonly output?: codepipeline.Artifact;
+  readonly output?: codepipeline.Artifact | undefined;
 
   /**
    * The state machine to invoke.
@@ -84,7 +84,7 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
    *
    * @default - none
    */
-  readonly stateMachineInput?: StateMachineInput;
+  readonly stateMachineInput?: StateMachineInput | undefined;
 
   /**
    * Prefix (optional)
@@ -95,7 +95,7 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
    *
    * @default - action execution ID
    */
-  readonly executionNamePrefix?: string;
+  readonly executionNamePrefix?: string | undefined;
 }
 
 /**

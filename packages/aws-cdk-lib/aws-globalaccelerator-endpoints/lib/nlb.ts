@@ -13,7 +13,7 @@ export interface NetworkLoadBalancerEndpointProps {
    *
    * @default 128
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 
   /**
    * Forward the client IP address in an `X-Forwarded-For` header
@@ -26,14 +26,14 @@ export interface NetworkLoadBalancerEndpointProps {
    *
    * @default false
    */
-  readonly preserveClientIp?: boolean;
+  readonly preserveClientIp?: boolean | undefined;
 }
 
 /**
  * Use a Network Load Balancer as a Global Accelerator Endpoint
  */
 export class NetworkLoadBalancerEndpoint implements ga.IEndpoint {
-  public readonly region?: string;
+  public readonly region?: string | undefined;
 
   constructor(private readonly loadBalancer: elbv2.INetworkLoadBalancer, private readonly options: NetworkLoadBalancerEndpointProps = {}) {
     validateWeight(loadBalancer, options.weight);

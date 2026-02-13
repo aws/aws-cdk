@@ -741,63 +741,63 @@ export interface PolicyStatementProps {
    *
    * @default - no sid
    */
-  readonly sid?: string;
+  readonly sid?: string | undefined;
 
   /**
    * List of actions to add to the statement
    *
    * @default - no actions
    */
-  readonly actions?: string[];
+  readonly actions?: string[] | undefined;
 
   /**
    * List of not actions to add to the statement
    *
    * @default - no not-actions
    */
-  readonly notActions?: string[];
+  readonly notActions?: string[] | undefined;
 
   /**
    * List of principals to add to the statement
    *
    * @default - no principals
    */
-  readonly principals?: IPrincipal[];
+  readonly principals?: IPrincipal[] | undefined;
 
   /**
    * List of not principals to add to the statement
    *
    * @default - no not principals
    */
-  readonly notPrincipals?: IPrincipal[];
+  readonly notPrincipals?: IPrincipal[] | undefined;
 
   /**
    * Resource ARNs to add to the statement
    *
    * @default - no resources
    */
-  readonly resources?: string[];
+  readonly resources?: string[] | undefined;
 
   /**
    * NotResource ARNs to add to the statement
    *
    * @default - no not-resources
    */
-  readonly notResources?: string[];
+  readonly notResources?: string[] | undefined;
 
   /**
    * Conditions to add to the statement
    *
    * @default - no condition
    */
-  readonly conditions?: {[key: string]: any};
+  readonly conditions?: {[key: string]: any} | undefined;
 
   /**
    * Whether to allow or deny the actions in this statement
    *
    * @default Effect.ALLOW
    */
-  readonly effect?: Effect;
+  readonly effect?: Effect | undefined;
 }
 
 class JsonPrincipal extends PrincipalBase {

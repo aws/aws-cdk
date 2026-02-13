@@ -15,5 +15,5 @@ export interface Location {
   /**
    * The S3 object version.
    */
-  readonly objectVersion?: string;
+  readonly objectVersion?: string | undefined;
 }

@@ -42,7 +42,7 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default 1
    */
-  readonly taskCount?: number;
+  readonly taskCount?: number | undefined;
 
   /**
    * Container setting overrides
@@ -50,14 +50,14 @@ export interface EcsTaskProps extends TargetBaseProps {
    * Key is the name of the container to override, value is the
    * values you want to override.
    */
-  readonly containerOverrides?: ContainerOverride[];
+  readonly containerOverrides?: ContainerOverride[] | undefined;
 
   /**
    * The CPU override for the task.
    *
    * @default - The task definition's CPU value
    */
-  readonly cpu?: string;
+  readonly cpu?: string | undefined;
 
   /**
    * The ephemeral storage setting override for the task.
@@ -68,7 +68,7 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default - The task definition's ephemeral storage value
    */
-  readonly ephemeralStorage?: EphemeralStorageOverride;
+  readonly ephemeralStorage?: EphemeralStorageOverride | undefined;
 
   /**
    * The execution role for the task.
@@ -77,28 +77,28 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default - The task definition's execution role
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole | undefined;
 
   /**
    * The Elastic Inference accelerator override for the task.
    *
    * @default - The task definition's inference accelerator overrides
    */
-  readonly inferenceAcceleratorOverrides?: InferenceAcceleratorOverride[];
+  readonly inferenceAcceleratorOverrides?: InferenceAcceleratorOverride[] | undefined;
 
   /**
    * The memory override for the task.
    *
    * @default - The task definition's memory value
    */
-  readonly memory?: string;
+  readonly memory?: string | undefined;
 
   /**
    * The IAM role for the task.
    *
    * @default - The task definition's task role
    */
-  readonly taskRole?: iam.IRole;
+  readonly taskRole?: iam.IRole | undefined;
 
   /**
    * In what subnets to place the task's ENIs
@@ -107,7 +107,7 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default Private subnets
    */
-  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly subnetSelection?: ec2.SubnetSelection | undefined;
 
   /**
    * Existing security group to use for the task's ENIs
@@ -117,7 +117,7 @@ export interface EcsTaskProps extends TargetBaseProps {
    * @default A new security group is created
    * @deprecated use securityGroups instead
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Existing security groups to use for the task's ENIs
@@ -126,14 +126,14 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default A new security group is created
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Existing IAM role to run the ECS task
    *
    * @default A new IAM role is created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The platform version on which to run your task
@@ -144,7 +144,7 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default - ECS will set the Fargate platform version to 'LATEST'
    */
-  readonly platformVersion?: ecs.FargatePlatformVersion;
+  readonly platformVersion?: ecs.FargatePlatformVersion | undefined;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
@@ -152,21 +152,21 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default - true if the subnet type is PUBLIC, otherwise false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
    *
    * @default - Tags will not be propagated
    */
-  readonly propagateTags?: ecs.PropagatedTagSource;
+  readonly propagateTags?: ecs.PropagatedTagSource | undefined;
 
   /**
    * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
    *
    * @default - No additional tags are applied to the task
    */
-  readonly tags?: Tag[];
+  readonly tags?: Tag[] | undefined;
 
   /**
    * Whether or not to enable the execute command functionality for the containers in this task.
@@ -174,7 +174,7 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default - false
    */
-  readonly enableExecuteCommand?: boolean;
+  readonly enableExecuteCommand?: boolean | undefined;
 
   /**
    * Specifies the launch type on which your task is running. The launch type that you specify here
@@ -182,7 +182,7 @@ export interface EcsTaskProps extends TargetBaseProps {
    *
    * @default - 'EC2' if `isEc2Compatible` for the `taskDefinition` is true, otherwise 'FARGATE'
    */
-  readonly launchType?: ecs.LaunchType;
+  readonly launchType?: ecs.LaunchType | undefined;
 }
 
 /**
@@ -197,24 +197,24 @@ export class EcsTask implements events.IRuleTarget {
    * @default - A new security group is created.
    * @deprecated use securityGroups instead.
    */
-  public readonly securityGroup?: ec2.ISecurityGroup;
+  public readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * The security groups associated with the task. Only applicable with awsvpc network mode.
    *
    * @default - A new security group is created.
    */
-  public readonly securityGroups?: ec2.ISecurityGroup[];
+  public readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
   private readonly cluster: ecs.ICluster;
   private readonly taskDefinition: ecs.ITaskDefinition;
   private readonly taskCount: number;
   private readonly role: iam.IRole;
-  private readonly platformVersion?: ecs.FargatePlatformVersion;
-  private readonly assignPublicIp?: boolean;
-  private readonly propagateTags?: ecs.PropagatedTagSource;
-  private readonly tags?: Tag[];
-  private readonly enableExecuteCommand?: boolean;
-  private readonly launchType?: ecs.LaunchType;
+  private readonly platformVersion?: ecs.FargatePlatformVersion | undefined;
+  private readonly assignPublicIp?: boolean | undefined;
+  private readonly propagateTags?: ecs.PropagatedTagSource | undefined;
+  private readonly tags?: Tag[] | undefined;
+  private readonly enableExecuteCommand?: boolean | undefined;
+  private readonly launchType?: ecs.LaunchType | undefined;
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {

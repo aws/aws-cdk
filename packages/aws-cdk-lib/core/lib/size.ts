@@ -196,7 +196,7 @@ export interface SizeConversionOptions {
    * How conversions should behave when it encounters a non-integer result
    * @default SizeRoundingBehavior.FAIL
    */
-  readonly rounding?: SizeRoundingBehavior;
+  readonly rounding?: SizeRoundingBehavior | undefined;
 }
 
 class StorageUnit {

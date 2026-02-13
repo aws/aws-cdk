@@ -11,28 +11,28 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
    *
    * @default OriginProtocolPolicy.HTTPS_ONLY
    */
-  readonly protocolPolicy?: cloudfront.OriginProtocolPolicy;
+  readonly protocolPolicy?: cloudfront.OriginProtocolPolicy | undefined;
 
   /**
    * The SSL versions to use when interacting with the origin.
    *
    * @default OriginSslPolicy.TLS_V1_2
    */
-  readonly originSslProtocols?: cloudfront.OriginSslPolicy[];
+  readonly originSslProtocols?: cloudfront.OriginSslPolicy[] | undefined;
 
   /**
    * The HTTP port that CloudFront uses to connect to the origin.
    *
    * @default 80
    */
-  readonly httpPort?: number;
+  readonly httpPort?: number | undefined;
 
   /**
    * The HTTPS port that CloudFront uses to connect to the origin.
    *
    * @default 443
    */
-  readonly httpsPort?: number;
+  readonly httpsPort?: number | undefined;
 
   /**
    * Specifies how long, in seconds, CloudFront waits for a response from the origin, also known as the origin response timeout.
@@ -43,7 +43,7 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
    *
    * @default Duration.seconds(30)
    */
-  readonly readTimeout?: cdk.Duration;
+  readonly readTimeout?: cdk.Duration | undefined;
 
   /**
    * Specifies how long, in seconds, CloudFront persists its connection to the origin.
@@ -54,7 +54,7 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
    *
    * @default Duration.seconds(5)
    */
-  readonly keepaliveTimeout?: cdk.Duration;
+  readonly keepaliveTimeout?: cdk.Duration | undefined;
 
   /**
    * Specifies which IP protocol CloudFront uses when connecting to your origin.
@@ -63,7 +63,7 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
    *
    * @default undefined - AWS Cloudfront default is IPv4
    */
-  readonly ipAddressType?: cloudfront.OriginIpAddressType;
+  readonly ipAddressType?: cloudfront.OriginIpAddressType | undefined;
 }
 
 /**

@@ -66,7 +66,7 @@ export interface DataBucketConfiguration {
    *
    * @default - root of the bucket
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 }
 
 /**
@@ -124,14 +124,14 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - no client request token
    */
-  readonly clientRequestToken?: string;
+  readonly clientRequestToken?: string | undefined;
 
   /**
    * The customization type.
    *
    * @default FINE_TUNING
    */
-  readonly customizationType?: CustomizationType;
+  readonly customizationType?: CustomizationType | undefined;
 
   /**
    * The custom model is encrypted at rest using this key.
@@ -140,7 +140,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - encrypted with the AWS owned key
    */
-  readonly customModelKmsKey?: kms.IKey;
+  readonly customModelKmsKey?: kms.IKey | undefined;
 
   /**
    * A name for the resulting custom model.
@@ -156,7 +156,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - no tags
    */
-  readonly customModelTags?: CustomModelTag[];
+  readonly customModelTags?: CustomModelTag[] | undefined;
 
   /**
    * Parameters related to tuning the model.
@@ -165,7 +165,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - use default hyperparameters
    */
-  readonly hyperParameters?: { [key: string]: string };
+  readonly hyperParameters?: { [key: string]: string } | undefined;
 
   /**
    * A name for the fine-tuning job.
@@ -180,7 +180,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - no tags
    */
-  readonly jobTags?: CustomModelTag[];
+  readonly jobTags?: CustomModelTag[] | undefined;
 
   /**
    * The S3 bucket configuration where the output data is stored.
@@ -198,7 +198,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - use auto generated role
    */
-  readonly role?: iam.IRoleRef;
+  readonly role?: iam.IRoleRef | undefined;
 
   /**
    * The S3 bucket configuration where the training data is stored.
@@ -217,14 +217,14 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_Validator.html
    */
-  readonly validationData?: ValidationBucketConfiguration[];
+  readonly validationData?: ValidationBucketConfiguration[] | undefined;
 
   /**
    * The VPC configuration.
    *
    * @default - no VPC configuration
    */
-  readonly vpcConfig?: IBedrockCreateModelCustomizationJobVpcConfig;
+  readonly vpcConfig?: IBedrockCreateModelCustomizationJobVpcConfig | undefined;
 }
 
 /**
@@ -236,8 +236,8 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role: iam.IRoleRef;

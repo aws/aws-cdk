@@ -26,13 +26,13 @@ interface EksCallOptions {
    * Query Parameters part of HTTP request
    * @default - no query parameters
    */
-  readonly queryParameters?: { [key: string]: string[] };
+  readonly queryParameters?: { [key: string]: string[] } | undefined;
 
   /**
    * Request body part of HTTP request
    * @default - No request body
    */
-  readonly requestBody?: sfn.TaskInput;
+  readonly requestBody?: sfn.TaskInput | undefined;
 }
 
 /**
@@ -84,8 +84,8 @@ export class EksCall extends sfn.TaskStateBase {
   /** No policies are required due to eks:call is an Http service integration and does not call and EKS API directly
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html#connect-eks-permissions
    */
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

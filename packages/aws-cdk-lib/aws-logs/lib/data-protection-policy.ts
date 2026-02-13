@@ -134,14 +134,14 @@ export interface DataProtectionPolicyProps {
    *
    * @default - 'data-protection-policy-cdk'
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * Description of the data protection policy
    *
    * @default - 'cdk generated data protection policy'
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * List of data protection identifiers.
@@ -156,21 +156,21 @@ export interface DataProtectionPolicyProps {
    *
    * @default - no CloudWatch Logs audit destination
    */
-  readonly logGroupAuditDestination?: ILogGroupRef;
+  readonly logGroupAuditDestination?: ILogGroupRef | undefined;
 
   /**
    * S3 bucket to send audit findings to. The bucket must already exist.
    *
    * @default - no S3 bucket audit destination
    */
-  readonly s3BucketAuditDestination?: IBucketRef;
+  readonly s3BucketAuditDestination?: IBucketRef | undefined;
 
   /**
    * Amazon Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
    *
    * @default - no firehose delivery stream audit destination
    */
-  readonly deliveryStreamNameAuditDestination?: string;
+  readonly deliveryStreamNameAuditDestination?: string | undefined;
 }
 
 /**

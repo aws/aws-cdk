@@ -25,7 +25,7 @@ export interface SnsProps {
    *
    * @default UTF-8
    */
-  readonly encoding?: EmailEncoding;
+  readonly encoding?: EmailEncoding | undefined;
 
   /**
    * The SNS topic to notify.

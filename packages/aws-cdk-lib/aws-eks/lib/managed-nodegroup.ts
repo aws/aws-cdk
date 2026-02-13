@@ -146,7 +146,7 @@ export interface NodegroupRemoteAccess {
    *
    * @default - port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    */
-  readonly sourceSecurityGroups?: ISecurityGroup[];
+  readonly sourceSecurityGroups?: ISecurityGroup[] | undefined;
 }
 
 /**
@@ -162,7 +162,7 @@ export interface LaunchTemplateSpec {
    *
    * @default - the default version of the launch template
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 /**
@@ -203,19 +203,19 @@ export interface TaintSpec {
    *
    * @default - None
    */
-  readonly effect?: TaintEffect;
+  readonly effect?: TaintEffect | undefined;
   /**
    * Taint key
    *
    * @default - None
    */
-  readonly key?: string;
+  readonly key?: string | undefined;
   /**
    * Taint value
    *
    * @default - None
    */
-  readonly value?: string;
+  readonly value?: string | undefined;
 }
 
 /**
@@ -227,7 +227,7 @@ export interface NodegroupOptions {
    *
    * @default - resource ID
    */
-  readonly nodegroupName?: string;
+  readonly nodegroupName?: string | undefined;
   /**
    * The subnets to use for the Auto Scaling group that is created for your node group. By specifying the
    * SubnetSelection, the selected subnets will automatically apply required tags i.e.
@@ -236,39 +236,39 @@ export interface NodegroupOptions {
    *
    * @default - private subnets
    */
-  readonly subnets?: SubnetSelection;
+  readonly subnets?: SubnetSelection | undefined;
   /**
    * The AMI type for your node group. If you explicitly specify the launchTemplate with custom AMI, do not specify this property, or
    * the node group deployment will fail. In other cases, you will need to specify correct amiType for the nodegroup.
    *
    * @default - auto-determined from the instanceTypes property when launchTemplateSpec property is not specified
    */
-  readonly amiType?: NodegroupAmiType;
+  readonly amiType?: NodegroupAmiType | undefined;
   /**
    * The root device disk size (in GiB) for your node group instances.
    *
    * @default 20
    */
-  readonly diskSize?: number;
+  readonly diskSize?: number | undefined;
   /**
    * The current number of worker nodes that the managed node group should maintain. If not specified,
    * the nodewgroup will initially create `minSize` instances.
    *
    * @default 2
    */
-  readonly desiredSize?: number;
+  readonly desiredSize?: number | undefined;
   /**
    * The maximum number of worker nodes that the managed node group can scale out to. Managed node groups can support up to 100 nodes by default.
    *
    * @default - desiredSize
    */
-  readonly maxSize?: number;
+  readonly maxSize?: number | undefined;
   /**
    * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than or equal to zero.
    *
    * @default 1
    */
-  readonly minSize?: number;
+  readonly minSize?: number | undefined;
   /**
    * Force the update if the existing node group's pods are unable to be drained due to a pod disruption budget issue.
    * If an update fails because pods could not be drained, you can force the update after it fails to terminate the old
@@ -277,7 +277,7 @@ export interface NodegroupOptions {
    *
    * @default true
    */
-  readonly forceUpdate?: boolean;
+  readonly forceUpdate?: boolean | undefined;
   /**
    * The instance type to use for your node group. Currently, you can specify a single instance type for a node group.
    * The default value for this parameter is `t3.medium`. If you choose a GPU instance type, be sure to specify the
@@ -286,25 +286,25 @@ export interface NodegroupOptions {
    * @default t3.medium
    * @deprecated Use `instanceTypes` instead.
    */
-  readonly instanceType?: InstanceType;
+  readonly instanceType?: InstanceType | undefined;
   /**
    * The instance types to use for your node group.
    * @default t3.medium will be used according to the cloudformation document.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
    */
-  readonly instanceTypes?: InstanceType[];
+  readonly instanceTypes?: InstanceType[] | undefined;
   /**
    * The Kubernetes labels to be applied to the nodes in the node group when they are created.
    *
    * @default - None
    */
-  readonly labels?: { [name: string]: string };
+  readonly labels?: { [name: string]: string } | undefined;
   /**
    * The Kubernetes taints to be applied to the nodes in the node group when they are created.
    *
    * @default - None
    */
-  readonly taints?: TaintSpec[];
+  readonly taints?: TaintSpec[] | undefined;
   /**
    * The IAM role to associate with your node group. The Amazon EKS worker node kubelet daemon
    * makes calls to AWS APIs on your behalf. Worker nodes receive permissions for these API calls through
@@ -313,13 +313,13 @@ export interface NodegroupOptions {
    *
    * @default - None. Auto-generated if not specified.
    */
-  readonly nodeRole?: IRole;
+  readonly nodeRole?: IRole | undefined;
   /**
    * The AMI version of the Amazon EKS-optimized AMI to use with your node group (for example, `1.14.7-YYYYMMDD`).
    *
    * @default - The latest available AMI version for the node group's current Kubernetes version is used.
    */
-  readonly releaseVersion?: string;
+  readonly releaseVersion?: string | undefined;
   /**
    * The remote access (SSH) configuration to use with your node group. Disabled by default, however, if you
    * specify an Amazon EC2 SSH key but do not specify a source security group when you create a managed node group,
@@ -327,7 +327,7 @@ export interface NodegroupOptions {
    *
    * @default - disabled
    */
-  readonly remoteAccess?: NodegroupRemoteAccess;
+  readonly remoteAccess?: NodegroupRemoteAccess | undefined;
   /**
    * The metadata to apply to the node group to assist with categorization and organization. Each tag consists of
    * a key and an optional value, both of which you define. Node group tags do not propagate to any other resources
@@ -335,19 +335,19 @@ export interface NodegroupOptions {
    *
    * @default - None
    */
-  readonly tags?: { [name: string]: string };
+  readonly tags?: { [name: string]: string } | undefined;
   /**
    * Launch template specification used for the nodegroup
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
-  readonly launchTemplateSpec?: LaunchTemplateSpec;
+  readonly launchTemplateSpec?: LaunchTemplateSpec | undefined;
   /**
    * The capacity type of the nodegroup.
    *
    * @default - ON_DEMAND
    */
-  readonly capacityType?: CapacityType;
+  readonly capacityType?: CapacityType | undefined;
 
   /**
    * The maximum number of nodes unavailable at once during a version update.
@@ -358,7 +358,7 @@ export interface NodegroupOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailable
    * @default 1
    */
-  readonly maxUnavailable?: number;
+  readonly maxUnavailable?: number | undefined;
 
   /**
    * The maximum percentage of nodes unavailable during a version update.
@@ -369,7 +369,7 @@ export interface NodegroupOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailablepercentage
    * @default undefined - node groups will update instances one at a time
    */
-  readonly maxUnavailablePercentage?: number;
+  readonly maxUnavailablePercentage?: number | undefined;
 
   /**
    * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
@@ -377,7 +377,7 @@ export interface NodegroupOptions {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair
    * @default - disabled
    */
-  readonly enableNodeAutoRepair?: boolean;
+  readonly enableNodeAutoRepair?: boolean | undefined;
 
   /**
    * The removal policy applied to the managed node group.
@@ -391,7 +391,7 @@ export interface NodegroupOptions {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

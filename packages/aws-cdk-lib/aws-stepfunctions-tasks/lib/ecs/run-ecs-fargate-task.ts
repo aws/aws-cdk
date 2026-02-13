@@ -14,21 +14,21 @@ export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * In what subnets to place the task's ENIs
    *
    * @default Private subnet if assignPublicIp, public subnets otherwise
    */
-  readonly subnets?: ec2.SubnetSelection;
+  readonly subnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Existing security group to use for the tasks
    *
    * @default A new security group is created
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Fargate platform version to run this service on
@@ -38,7 +38,7 @@ export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
    *
    * @default Latest
    */
-  readonly platformVersion?: ecs.FargatePlatformVersion;
+  readonly platformVersion?: ecs.FargatePlatformVersion | undefined;
 }
 
 /**

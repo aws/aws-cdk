@@ -55,14 +55,14 @@ export interface IJobQueue extends IResource, IJobQueueRef {
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
    *
    * @default - no scheduling policy
    */
-  readonly schedulingPolicy?: ISchedulingPolicy;
+  readonly schedulingPolicy?: ISchedulingPolicy | undefined;
 
   /**
    * Add a `ComputeEnvironment` to this Queue.
@@ -88,7 +88,7 @@ export interface JobQueueProps {
    *
    * @default none
    */
-  readonly computeEnvironments?: OrderedComputeEnvironment[];
+  readonly computeEnvironments?: OrderedComputeEnvironment[] | undefined;
 
   /**
    * The priority of the job queue.
@@ -98,7 +98,7 @@ export interface JobQueueProps {
    *
    * @default 1
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 
   /**
    * The name of the job queue. It can be up to 128 letters long.
@@ -106,7 +106,7 @@ export interface JobQueueProps {
    *
    * @default - no name
    */
-  readonly jobQueueName?: string;
+  readonly jobQueueName?: string | undefined;
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -114,14 +114,14 @@ export interface JobQueueProps {
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
    *
    * @default - no scheduling policy
    */
-  readonly schedulingPolicy?: ISchedulingPolicyRef;
+  readonly schedulingPolicy?: ISchedulingPolicyRef | undefined;
 
   /**
    * The set of actions that AWS Batch perform on jobs that remain at the head of the job queue in
@@ -129,7 +129,7 @@ export interface JobQueueProps {
    *
    * @default - no actions
    */
-  readonly jobStateTimeLimitActions?: JobStateTimeLimitAction[];
+  readonly jobStateTimeLimitActions?: JobStateTimeLimitAction[] | undefined;
 }
 
 /**
@@ -159,7 +159,7 @@ export interface JobStateTimeLimitAction {
    *
    * @default JobStateTimeLimitActionsAction.CANCEL
    */
-  readonly action?: JobStateTimeLimitActionsAction;
+  readonly action?: JobStateTimeLimitActionsAction | undefined;
 
   /**
    * The approximate amount of time, that must pass with the job in the specified
@@ -181,7 +181,7 @@ export interface JobStateTimeLimitAction {
    *
    * @default JobStateTimeLimitActionsState.RUNNABLE
    */
-  readonly state?: JobStateTimeLimitActionsState;
+  readonly state?: JobStateTimeLimitActionsState | undefined;
 }
 
 /**
@@ -268,8 +268,8 @@ export class JobQueue extends Resource implements IJobQueue {
 
   public readonly computeEnvironments: OrderedComputeEnvironment[];
   public readonly priority: number;
-  public readonly enabled?: boolean;
-  private readonly _schedulingPolicy?: ISchedulingPolicyRef;
+  public readonly enabled?: boolean | undefined;
+  private readonly _schedulingPolicy?: ISchedulingPolicyRef | undefined;
 
   private readonly resource: CfnJobQueue;
 

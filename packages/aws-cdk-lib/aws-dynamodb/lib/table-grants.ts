@@ -17,7 +17,7 @@ export interface TableGrantsProps {
    *
    * @default - No regions
    */
-  readonly regions?: string[];
+  readonly regions?: string[] | undefined;
 
   /**
    * Whether this table has indexes
@@ -26,7 +26,7 @@ export interface TableGrantsProps {
    *
    * @default false
    */
-  readonly hasIndex?: boolean;
+  readonly hasIndex?: boolean | undefined;
 
   /**
    * The encrypted resource on which actions will be allowed
@@ -36,7 +36,7 @@ export interface TableGrantsProps {
    *
    * @default - A best-effort attempt will be made to discover an associated KMS key and grant permissions to it.
    */
-  readonly encryptedResource?: iam.IEncryptedResource;
+  readonly encryptedResource?: iam.IEncryptedResource | undefined;
 
   /**
    * The resource with policy on which actions will be allowed
@@ -46,7 +46,7 @@ export interface TableGrantsProps {
    *
    * @default - A best-effort attempt will be made to discover a resource policy and add permissions to it.
    */
-  readonly policyResource?: iam.IResourceWithPolicyV2;
+  readonly policyResource?: iam.IResourceWithPolicyV2 | undefined;
 }
 
 /**
@@ -62,8 +62,8 @@ export class TableGrants {
 
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
-  private readonly encryptedResource?: iam.IEncryptedResource;
-  private readonly policyResource?: iam.IResourceWithPolicyV2;
+  private readonly encryptedResource?: iam.IEncryptedResource | undefined;
+  private readonly policyResource?: iam.IResourceWithPolicyV2 | undefined;
 
   constructor(props: TableGrantsProps) {
     this.table = props.table;

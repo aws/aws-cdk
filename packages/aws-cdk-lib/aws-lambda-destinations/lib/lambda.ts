@@ -23,7 +23,7 @@ export interface LambdaDestinationOptions {
    *
    * @default false The destination function receives the full invocation record.
    */
-  readonly responseOnly?: boolean;
+  readonly responseOnly?: boolean | undefined;
 }
 
 /**

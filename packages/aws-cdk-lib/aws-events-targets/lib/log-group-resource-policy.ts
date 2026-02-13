@@ -10,7 +10,7 @@ export interface LogGroupResourcePolicyProps {
   /**
    * The log group resource policy name
    */
-  readonly policyName?: string;
+  readonly policyName?: string | undefined;
   /**
    * The policy statements for the log group resource logs
    */
@@ -20,7 +20,7 @@ export interface LogGroupResourcePolicyProps {
    *
    * @default - install latest AWS SDK
    */
-  readonly installLatestAwsSdk?: boolean;
+  readonly installLatestAwsSdk?: boolean | undefined;
 }
 
 /**

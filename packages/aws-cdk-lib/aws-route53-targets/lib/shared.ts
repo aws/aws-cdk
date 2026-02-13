@@ -7,12 +7,12 @@ export interface IAliasRecordTargetProps {
    *
    * @default - hosted zone ID for the EBS endpoint will be retrieved based on the stack's region.
    */
-  readonly hostedZoneId?: string;
+  readonly hostedZoneId?: string | undefined;
 
   /**
    * Evaluate target health
    *
    * @default - no health check configuration
    */
-  readonly evaluateTargetHealth?: boolean;
+  readonly evaluateTargetHealth?: boolean | undefined;
 }

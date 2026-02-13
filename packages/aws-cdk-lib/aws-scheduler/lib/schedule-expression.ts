@@ -65,7 +65,7 @@ export abstract class ScheduleExpression {
   /**
    * Retrieve the expression for this schedule
    */
-  public abstract readonly timeZone?: TimeZone;
+  public abstract readonly timeZone?: TimeZone | undefined;
 
   protected constructor() { }
 }
@@ -84,7 +84,7 @@ export interface CronOptionsWithTimezone extends events.CronOptions {
    *
    * @default - TimeZone.ETC_UTC
    */
-  readonly timeZone?: TimeZone;
+  readonly timeZone?: TimeZone | undefined;
 }
 
 const DEFAULT_TIMEZONE = TimeZone.ETC_UTC;

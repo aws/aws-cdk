@@ -25,14 +25,14 @@ export interface UserPoolSESOptions {
    *
    * @default - no name
    */
-  readonly fromName?: string;
+  readonly fromName?: string | undefined;
 
   /**
    * The destination to which the receiver of the email should reply to.
    *
    * @default - same as the fromEmail
    */
-  readonly replyTo?: string;
+  readonly replyTo?: string | undefined;
 
   /**
    * The name of a configuration set in Amazon SES that should
@@ -42,7 +42,7 @@ export interface UserPoolSESOptions {
    *
    * @default - no configuration set
    */
-  readonly configurationSetName?: string;
+  readonly configurationSetName?: string | undefined;
 
   /**
    * Required if the UserPool region is different than the SES region.
@@ -54,14 +54,14 @@ export interface UserPoolSESOptions {
    *
    * @default - The same region as the Cognito UserPool
    */
-  readonly sesRegion?: string;
+  readonly sesRegion?: string | undefined;
 
   /**
    * SES Verified custom domain to be used to verify the identity
    *
    * @default - no domain
    */
-  readonly sesVerifiedDomain?: string;
+  readonly sesVerifiedDomain?: string | undefined;
 }
 
 /**
@@ -73,7 +73,7 @@ export interface UserPoolEmailConfig {
    *
    * @default - none
    */
-  readonly configurationSet?: string;
+  readonly configurationSet?: string | undefined;
 
   /**
    * Specifies whether to use Cognito's built in email functionality
@@ -81,7 +81,7 @@ export interface UserPoolEmailConfig {
    *
    * @default - Cognito built in email functionality
    */
-  readonly emailSendingAccount?: string;
+  readonly emailSendingAccount?: string | undefined;
 
   /**
    * Identifies either the sender's email address or the sender's
@@ -91,14 +91,14 @@ export interface UserPoolEmailConfig {
    *
    * @default 'no-reply@verificationemail.com'
    */
-  readonly from?: string;
+  readonly from?: string | undefined;
 
   /**
    * The destination to which the receiver of the email should reply to.
    *
    * @default - same as `from`
    */
-  readonly replyToEmailAddress?: string;
+  readonly replyToEmailAddress?: string | undefined;
 
   /**
    * The ARN of a verified email address in Amazon SES.
@@ -108,7 +108,7 @@ export interface UserPoolEmailConfig {
    *
    * @default - none
    */
-  readonly sourceArn?: string;
+  readonly sourceArn?: string | undefined;
 }
 
 /**

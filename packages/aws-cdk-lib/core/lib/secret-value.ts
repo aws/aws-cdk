@@ -253,7 +253,7 @@ export interface SecretsManagerSecretOptions {
    *
    * @default AWSCURRENT
    */
-  readonly versionStage?: string;
+  readonly versionStage?: string | undefined;
 
   /**
    * Specifies the unique identifier of the version of the secret you want to use.
@@ -262,7 +262,7 @@ export interface SecretsManagerSecretOptions {
    *
    * @default AWSCURRENT
    */
-  readonly versionId?: string;
+  readonly versionId?: string | undefined;
 
   /**
    * The key of a JSON field to retrieve. This can only be used if the secret
@@ -270,7 +270,7 @@ export interface SecretsManagerSecretOptions {
    *
    * @default - returns all the content stored in the Secrets Manager secret.
    */
-  readonly jsonField?: string;
+  readonly jsonField?: string | undefined;
 }
 
 const SECRET_VALUE_SYM = Symbol.for('@aws-cdk/core.SecretValue');

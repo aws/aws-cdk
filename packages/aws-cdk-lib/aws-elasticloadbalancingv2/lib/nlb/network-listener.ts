@@ -38,7 +38,7 @@ export interface BaseNetworkListenerProps {
    *
    * @default - None.
    */
-  readonly defaultTargetGroups?: INetworkTargetGroup[];
+  readonly defaultTargetGroups?: INetworkTargetGroup[] | undefined;
 
   /**
    * Default action to take for requests to this listener
@@ -51,28 +51,28 @@ export interface BaseNetworkListenerProps {
    *
    * @default - None.
    */
-  readonly defaultAction?: NetworkListenerAction;
+  readonly defaultAction?: NetworkListenerAction | undefined;
 
   /**
    * Protocol for listener, expects TCP, TLS, UDP, or TCP_UDP.
    *
    * @default - TLS if certificates are provided. TCP otherwise.
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: Protocol | undefined;
 
   /**
    * Certificate list of ACM cert ARNs. You must provide exactly one certificate if the listener protocol is HTTPS or TLS.
    *
    * @default - No certificates.
    */
-  readonly certificates?: IListenerCertificate[];
+  readonly certificates?: IListenerCertificate[] | undefined;
 
   /**
    * SSL Policy
    *
    * @default - Current predefined security policy.
    */
-  readonly sslPolicy?: SslPolicy;
+  readonly sslPolicy?: SslPolicy | undefined;
 
   /**
    * Application-Layer Protocol Negotiation (ALPN) is a TLS extension that is sent on the initial TLS handshake hello messages.
@@ -82,14 +82,14 @@ export interface BaseNetworkListenerProps {
    *
    * @default - None
    */
-  readonly alpnPolicy?: AlpnPolicy;
+  readonly alpnPolicy?: AlpnPolicy | undefined;
 
   /**
    * The load balancer TCP idle timeout.
    *
    * @default Duration.seconds(350)
    */
-  readonly tcpIdleTimeout?: Duration;
+  readonly tcpIdleTimeout?: Duration | undefined;
 }
 
 /**
@@ -120,7 +120,7 @@ export interface NetworkListenerLookupOptions extends BaseListenerLookupOptions 
    * Protocol of the listener port
    * @default - listener is not filtered by protocol
    */
-  readonly listenerProtocol?: Protocol;
+  readonly listenerProtocol?: Protocol | undefined;
 }
 
 /**
@@ -411,7 +411,7 @@ export interface AddNetworkTargetsProps {
    *
    * @default - inherits the protocol of the listener
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: Protocol | undefined;
 
   /**
    * The targets to add to this target group.
@@ -420,7 +420,7 @@ export interface AddNetworkTargetsProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  readonly targets?: INetworkLoadBalancerTarget[];
+  readonly targets?: INetworkLoadBalancerTarget[] | undefined;
 
   /**
    * The name of the target group.
@@ -431,7 +431,7 @@ export interface AddNetworkTargetsProps {
    *
    * @default Automatically generated
    */
-  readonly targetGroupName?: string;
+  readonly targetGroupName?: string | undefined;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -440,14 +440,14 @@ export interface AddNetworkTargetsProps {
    *
    * @default Duration.minutes(5)
    */
-  readonly deregistrationDelay?: Duration;
+  readonly deregistrationDelay?: Duration | undefined;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
    *
    * @default false
    */
-  readonly proxyProtocolV2?: boolean;
+  readonly proxyProtocolV2?: boolean | undefined;
 
   /**
    * Indicates whether client IP preservation is enabled.
@@ -455,7 +455,7 @@ export interface AddNetworkTargetsProps {
    * @default false if the target group type is IP address and the
    * target group protocol is TCP or TLS. Otherwise, true.
    */
-  readonly preserveClientIp?: boolean;
+  readonly preserveClientIp?: boolean | undefined;
 
   /**
    * Health check configuration
@@ -463,5 +463,5 @@ export interface AddNetworkTargetsProps {
    * @default - The default value for each property in this configuration varies depending on the target.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 }

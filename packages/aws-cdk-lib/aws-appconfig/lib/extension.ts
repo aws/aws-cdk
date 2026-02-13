@@ -56,7 +56,7 @@ export interface IEventDestination {
   /**
    * The IAM policy document to invoke the event destination.
    */
-  readonly policyDocument?: iam.PolicyDocument;
+  readonly policyDocument?: iam.PolicyDocument | undefined;
 }
 
 /**
@@ -65,7 +65,7 @@ export interface IEventDestination {
 export class LambdaDestination implements IEventDestination {
   public readonly extensionUri: string;
   public readonly type: SourceType;
-  public readonly policyDocument?: iam.PolicyDocument;
+  public readonly policyDocument?: iam.PolicyDocument | undefined;
 
   constructor(func: lambda.IFunction) {
     this.extensionUri = func.functionArn;
@@ -96,7 +96,7 @@ export class LambdaDestination implements IEventDestination {
 export class SqsDestination implements IEventDestination {
   public readonly extensionUri: string;
   public readonly type: SourceType;
-  public readonly policyDocument?: iam.PolicyDocument;
+  public readonly policyDocument?: iam.PolicyDocument | undefined;
 
   constructor(queue: sqs.IQueue) {
     this.extensionUri = queue.queueArn;
@@ -118,7 +118,7 @@ export class SqsDestination implements IEventDestination {
 export class SnsDestination implements IEventDestination {
   public readonly extensionUri: string;
   public readonly type: SourceType;
-  public readonly policyDocument?: iam.PolicyDocument;
+  public readonly policyDocument?: iam.PolicyDocument | undefined;
 
   constructor(topic: sns.ITopic) {
     this.extensionUri = topic.topicArn;
@@ -166,21 +166,21 @@ export interface ActionProps {
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The execution role for the action.
    *
    * @default - A role is generated.
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole | undefined;
 
   /**
    * The description for the action.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The flag that specifies whether or not to create the execution role.
@@ -191,7 +191,7 @@ export interface ActionProps {
    *
    * @default false
    */
-  readonly invokeWithoutExecutionRole?: boolean;
+  readonly invokeWithoutExecutionRole?: boolean | undefined;
 }
 
 /**
@@ -211,22 +211,22 @@ export class Action {
   /**
    * The name for the action.
    */
-  public readonly name?: string;
+  public readonly name?: string | undefined;
 
   /**
    * The execution role for the action.
    */
-  public readonly executionRole?: iam.IRole;
+  public readonly executionRole?: iam.IRole | undefined;
 
   /**
    * The description for the action.
    */
-  public readonly description?: string;
+  public readonly description?: string | undefined;
 
   /**
    * The flag that specifies whether to create the execution role.
    */
-  readonly invokeWithoutExecutionRole?: boolean;
+  readonly invokeWithoutExecutionRole?: boolean | undefined;
 
   public constructor(props: ActionProps) {
     this.actionPoints = props.actionPoints;
@@ -277,12 +277,12 @@ export class Parameter {
   /**
    * The value of the parameter.
    */
-  public readonly value?: string;
+  public readonly value?: string | undefined;
 
   /**
    * The description of the parameter.
    */
-  public readonly description?: string;
+  public readonly description?: string | undefined;
 
   private constructor(name: string, isRequired: boolean, value?: string, description?: string) {
     this.name = name;
@@ -311,28 +311,28 @@ export interface ExtensionAttributes {
    *
    * @default - The extension ARN is generated.
    */
-  readonly extensionArn?: string;
+  readonly extensionArn?: string | undefined;
 
   /**
    * The actions of the extension.
    *
    * @default - None.
    */
-  readonly actions?: Action[];
+  readonly actions?: Action[] | undefined;
 
   /**
    * The name of the extension.
    *
    * @default - None.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The description of the extension.
    *
    * @default - None.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -344,14 +344,14 @@ export interface ExtensionOptions {
    *
    * @default - A name is generated.
    */
-  readonly extensionName?: string;
+  readonly extensionName?: string | undefined;
 
   /**
    * A description of the extension
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The latest version number of the extension. When you create a new version,
@@ -360,14 +360,14 @@ export interface ExtensionOptions {
    *
    * @default - None.
    */
-  readonly latestVersionNumber?: number;
+  readonly latestVersionNumber?: number | undefined;
 
   /**
    * The parameters accepted for the extension.
    *
    * @default - None.
    */
-  readonly parameters?: Parameter[];
+  readonly parameters?: Parameter[] | undefined;
 }
 
 /**
@@ -476,27 +476,27 @@ export class Extension extends Resource implements IExtension {
   /**
    * The actions for the extension.
    */
-  public readonly actions?: Action[];
+  public readonly actions?: Action[] | undefined;
 
   /**
    * The name of the extension.
    */
-  public readonly name?: string;
+  public readonly name?: string | undefined;
 
   /**
    * The description of the extension.
    */
-  public readonly description?: string;
+  public readonly description?: string | undefined;
 
   /**
    * The latest version number of the extension.
    */
-  public readonly latestVersionNumber?: number;
+  public readonly latestVersionNumber?: number | undefined;
 
   /**
    * The parameters of the extension.
    */
-  public readonly parameters?: Parameter[];
+  public readonly parameters?: Parameter[] | undefined;
 
   /**
    * The Amazon Resource Name (ARN) of the extension.
@@ -601,27 +601,27 @@ export interface IExtension extends IResource, IExtensionRef {
   /**
    * The actions for the extension.
    */
-  readonly actions?: Action[];
+  readonly actions?: Action[] | undefined;
 
   /**
    * The name of the extension.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The description of the extension.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The latest version number of the extension.
    */
-  readonly latestVersionNumber?: number;
+  readonly latestVersionNumber?: number | undefined;
 
   /**
    * The parameters of the extension.
    */
-  readonly parameters?: Parameter[];
+  readonly parameters?: Parameter[] | undefined;
 
   /**
    * The Amazon Resource Name (ARN) of the extension.

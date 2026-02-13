@@ -26,7 +26,7 @@ interface CloudFormationActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default No output artifact generated
    */
-  readonly outputFileName?: string;
+  readonly outputFileName?: string | undefined;
 
   /**
    * The name of the output artifact to generate
@@ -35,7 +35,7 @@ interface CloudFormationActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default Automatically generated artifact name.
    */
-  readonly output?: codepipeline.Artifact;
+  readonly output?: codepipeline.Artifact | undefined;
 
   /**
    * The AWS region the given Action resides in.
@@ -46,7 +46,7 @@ interface CloudFormationActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default the Action resides in the same region as the Pipeline
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * The AWS account this Action is supposed to operate in.
@@ -55,7 +55,7 @@ interface CloudFormationActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default - action resides in the same account as the pipeline
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 }
 
 /**
@@ -154,7 +154,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    *
    * @default A fresh role with full or no permissions (depending on the value of `adminPermissions`).
    */
-  readonly deploymentRole?: iam.IRole;
+  readonly deploymentRole?: iam.IRole | undefined;
 
   /**
    * Acknowledge certain changes made as part of deployment
@@ -168,7 +168,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    * @default None, unless `adminPermissions` is true
    * @deprecated use `cfnCapabilities` instead
    */
-  readonly capabilities?: cloudformation.CloudFormationCapabilities[];
+  readonly capabilities?: cloudformation.CloudFormationCapabilities[] | undefined;
 
   /**
    * Acknowledge certain changes made as part of deployment.
@@ -183,7 +183,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    */
-  readonly cfnCapabilities?: cdk.CfnCapabilities[];
+  readonly cfnCapabilities?: cdk.CfnCapabilities[] | undefined;
 
   /**
    * Whether to grant full permissions to CloudFormation while deploying this template.
@@ -214,7 +214,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    *
    * @default No template configuration based on input artifacts
    */
-  readonly templateConfiguration?: codepipeline.ArtifactPath;
+  readonly templateConfiguration?: codepipeline.ArtifactPath | undefined;
 
   /**
    * Additional template parameters.
@@ -233,7 +233,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    *
    * @default No overrides
    */
-  readonly parameterOverrides?: { [name: string]: any };
+  readonly parameterOverrides?: { [name: string]: any } | undefined;
 
   /**
    * The list of additional input Artifacts for this Action.
@@ -250,7 +250,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    * you need to make sure to include them in the `extraInputs` -
    * otherwise, you'll get an "unrecognized Artifact" error during your Pipeline's execution.
    */
-  readonly extraInputs?: codepipeline.Artifact[];
+  readonly extraInputs?: codepipeline.Artifact[] | undefined;
 }
 
 /**
@@ -427,7 +427,7 @@ export interface CloudFormationCreateUpdateStackActionProps extends CloudFormati
    *
    * @default false
    */
-  readonly replaceOnFailure?: boolean;
+  readonly replaceOnFailure?: boolean | undefined;
 }
 
 /**

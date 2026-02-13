@@ -25,7 +25,7 @@ export interface IEksJobDefinition extends IJobDefinition {
    *
    * @default `DnsPolicy.CLUSTER_FIRST`
    */
-  readonly dnsPolicy?: DnsPolicy;
+  readonly dnsPolicy?: DnsPolicy | undefined;
 
   /**
    * If specified, the Pod used by this Job Definition will use the host's network IP address.
@@ -37,7 +37,7 @@ export interface IEksJobDefinition extends IJobDefinition {
    * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces
    * @see https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking
    */
-  readonly useHostNetwork?: boolean;
+  readonly useHostNetwork?: boolean | undefined;
 
   /**
    * The name of the service account that's used to run the container.
@@ -50,7 +50,7 @@ export interface IEksJobDefinition extends IJobDefinition {
    *
    * @default - the default service account of the container
    */
-  readonly serviceAccount?: string;
+  readonly serviceAccount?: string | undefined;
 }
 
 /**
@@ -69,7 +69,7 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    *
    * @default `DnsPolicy.CLUSTER_FIRST`
    */
-  readonly dnsPolicy?: DnsPolicy;
+  readonly dnsPolicy?: DnsPolicy | undefined;
 
   /**
    * If specified, the Pod used by this Job Definition will use the host's network IP address.
@@ -81,7 +81,7 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces
    * @see https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking
    */
-  readonly useHostNetwork?: boolean;
+  readonly useHostNetwork?: boolean | undefined;
 
   /**
    * The name of the service account that's used to run the container.
@@ -94,7 +94,7 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    *
    * @default - the default service account of the container
    */
-  readonly serviceAccount?: string;
+  readonly serviceAccount?: string | undefined;
 }
 
 /**
@@ -150,9 +150,9 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
   }
 
   public readonly container: EksContainerDefinition;
-  public readonly dnsPolicy?: DnsPolicy;
-  public readonly useHostNetwork?: boolean;
-  public readonly serviceAccount?: string;
+  public readonly dnsPolicy?: DnsPolicy | undefined;
+  public readonly useHostNetwork?: boolean | undefined;
+  public readonly serviceAccount?: string | undefined;
 
   private readonly resource: CfnJobDefinition;
 

@@ -100,7 +100,7 @@ export interface WebSocketIntegrationProps {
    *
    * @default - No HTTP method required.
    */
-  readonly integrationMethod?: string;
+  readonly integrationMethod?: string | undefined;
 
   /**
    * Specifies how to handle response payload content type conversions.
@@ -108,14 +108,14 @@ export interface WebSocketIntegrationProps {
    * @default - The response payload will be passed through from the integration response to
    * the route response or method response without modification.
    */
-  readonly contentHandling?: ContentHandling;
+  readonly contentHandling?: ContentHandling | undefined;
 
   /**
    * Specifies the IAM role required for the integration.
    *
    * @default - No IAM role required.
    */
-  readonly credentialsRole?: IRole;
+  readonly credentialsRole?: IRole | undefined;
 
   /**
    * The request parameters that API Gateway sends with the backend request.
@@ -124,7 +124,7 @@ export interface WebSocketIntegrationProps {
    *
    * @default - No request parameters required.
    */
-  readonly requestParameters?: { [dest: string]: string };
+  readonly requestParameters?: { [dest: string]: string } | undefined;
 
   /**
    * A map of Apache Velocity templates that are applied on the request
@@ -136,14 +136,14 @@ export interface WebSocketIntegrationProps {
    *
    * @default - No request templates required.
    */
-  readonly requestTemplates?: { [contentType: string]: string };
+  readonly requestTemplates?: { [contentType: string]: string } | undefined;
 
   /**
    * The template selection expression for the integration.
    *
    * @default - No template selection expression required.
    */
-  readonly templateSelectionExpression?: string;
+  readonly templateSelectionExpression?: string | undefined;
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
@@ -151,7 +151,7 @@ export interface WebSocketIntegrationProps {
    *
    * @default Duration.seconds(29)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Specifies the pass-through behavior for incoming requests based on the
@@ -162,7 +162,7 @@ export interface WebSocketIntegrationProps {
    *
    * @default - No passthrough behavior required.
    */
-  readonly passthroughBehavior?: PassthroughBehavior;
+  readonly passthroughBehavior?: PassthroughBehavior | undefined;
 }
 
 /**
@@ -302,7 +302,7 @@ export interface WebSocketRouteIntegrationConfig {
    *
    * @default - No integration method.
    */
-  readonly method?: string;
+  readonly method?: string | undefined;
 
   /**
    * Specifies how to handle response payload content type conversions.
@@ -310,35 +310,35 @@ export interface WebSocketRouteIntegrationConfig {
    * @default - The response payload will be passed through from the integration response to
    * the route response or method response without modification.
    */
-  readonly contentHandling?: ContentHandling;
+  readonly contentHandling?: ContentHandling | undefined;
 
   /**
    * Credentials role
    *
    * @default - No role provided.
    */
-  readonly credentialsRole?: IRole;
+  readonly credentialsRole?: IRole | undefined;
 
   /**
    * Request template
    *
    * @default - No request template provided.
    */
-  readonly requestTemplates?: { [contentType: string]: string };
+  readonly requestTemplates?: { [contentType: string]: string } | undefined;
 
   /**
    * Request parameters
    *
    * @default - No request parameters provided.
    */
-  readonly requestParameters?: { [dest: string]: string };
+  readonly requestParameters?: { [dest: string]: string } | undefined;
 
   /**
    * Template selection expression
    *
    * @default - No template selection expression.
    */
-  readonly templateSelectionExpression?: string;
+  readonly templateSelectionExpression?: string | undefined;
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
@@ -346,12 +346,12 @@ export interface WebSocketRouteIntegrationConfig {
    *
    * @default Duration.seconds(29)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Integration passthrough behaviors.
    *
    * @default - No pass through bahavior.
    */
-  readonly passthroughBehavior?: PassthroughBehavior;
+  readonly passthroughBehavior?: PassthroughBehavior | undefined;
 }

@@ -221,7 +221,7 @@ export interface ParseToOCSFProperty {
    * Path to the field in the log event that will be parsed. Use dot notation to access child fields.
    * @default '@message'
    */
-  readonly source?: string;
+  readonly source?: string | undefined;
 
   /**
    * Type of input log event source to convert to OCSF format.
@@ -246,12 +246,12 @@ export interface ParseJSONProperty {
    * Path to the field in the log event that will be parsed. Use dot notation to access child fields.
    * @default '@message'
    */
-  readonly source?: string;
+  readonly source?: string | undefined;
   /**
    * The location to put the parsed key value pair into.
    * @default - Placed under root of log event
    */
-  readonly destination?: string;
+  readonly destination?: string | undefined;
 }
 
 /**
@@ -263,37 +263,37 @@ export interface ParseKeyValueProperty {
    * Path to the field in the log event that will be parsed. Use dot notation to access child fields.
    * @default '@message'
    */
-  readonly source?: string;
+  readonly source?: string | undefined;
   /**
    * The destination field to put the extracted key-value pairs into.
    * @default - Places at the root of the JSON input.
    */
-  readonly destination?: string;
+  readonly destination?: string | undefined;
   /**
    * The field delimiter string that is used between key-value pairs in the original log events.
    * @default KeyValuePairDelimiter.AMPERSAND
    */
-  readonly fieldDelimiter?: KeyValuePairDelimiter;
+  readonly fieldDelimiter?: KeyValuePairDelimiter | undefined;
   /**
    * The delimiter string to use between the key and value in each pair in the transformed log event.
    * @default KeyValueDelimiter.EQUAL
    */
-  readonly keyValueDelimiter?: KeyValueDelimiter;
+  readonly keyValueDelimiter?: KeyValueDelimiter | undefined;
   /**
    * If you want to add a prefix to all transformed keys, specify it here.
    * @default - No prefix is added to the keys.
    */
-  readonly keyPrefix?: string;
+  readonly keyPrefix?: string | undefined;
   /**
    * A value to insert into the value field in the result, when a key-value pair is not successfully split.
    * @default - No values is inserted when split is not successful.
    */
-  readonly nonMatchValue?: string;
+  readonly nonMatchValue?: string | undefined;
   /**
    * Specifies whether to overwrite the value if the destination key already exists.
    * @default false
    */
-  readonly overwriteIfExists?: boolean;
+  readonly overwriteIfExists?: boolean | undefined;
 }
 
 /**
@@ -315,22 +315,22 @@ export interface CsvProperty {
    * Character used as a text qualifier for a single column of data.
    * @default QuoteCharacter.DOUBLE_QUOTE
    */
-  readonly quoteCharacter?: QuoteCharacter;
+  readonly quoteCharacter?: QuoteCharacter | undefined;
   /**
    * Character used to separate each column in the original comma-separated value log event.
    * @default DelimiterCharacter.COMMA
    */
-  readonly delimiter?: DelimiterCharacter;
+  readonly delimiter?: DelimiterCharacter | undefined;
   /**
    * The path to the field in the log event that has the comma separated values to be parsed.
    * @default '@message'
    */
-  readonly source?: string;
+  readonly source?: string | undefined;
   /**
    * An array of names to use for the columns in the transformed log event.
    * @default - Column names ([column_1, column_2 ...]) are used
    */
-  readonly columns?: Array<string>;
+  readonly columns?: Array<string> | undefined;
 }
 
 /**
@@ -352,7 +352,7 @@ export interface DateTimeConverterProperty {
    * The datetime format to use for the converted data in the target field.
    * @default "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
    */
-  readonly targetFormat?: string;
+  readonly targetFormat?: string | undefined;
 
   /**
    * A list of patterns to match against the source field.
@@ -363,13 +363,13 @@ export interface DateTimeConverterProperty {
    * The time zone of the source field.
    * @default UTC
    */
-  readonly sourceTimezone?: string;
+  readonly sourceTimezone?: string | undefined;
 
   /**
    * The time zone of the target field.
    * @default UTC
    */
-  readonly targetTimezone?: string;
+  readonly targetTimezone?: string | undefined;
 
   /**
    * The locale of the source field.
@@ -386,7 +386,7 @@ export interface GrokProperty {
    * The path to the field in the log event that you want to parse.
    * @default '@message'
    */
-  readonly source?: string;
+  readonly source?: string | undefined;
 
   /**
    * The grok pattern to match against the log event. For a list of supported grok patterns,
@@ -415,26 +415,26 @@ export interface ListToMapProperty {
    * and put into the values of the generated map.
    * @default - Original objects in the source list will be put into the values of the generated map
    */
-  readonly valueKey?: string;
+  readonly valueKey?: string | undefined;
 
   /**
    * The key of the field that will hold the generated map.
    * @default - Stored at the root of the log event
    */
-  readonly target?: string;
+  readonly target?: string | undefined;
 
   /**
    * A Boolean value to indicate whether the list will be flattened into single items.
    * @default false
    */
-  readonly flatten?: boolean;
+  readonly flatten?: boolean | undefined;
 
   /**
    * If you set flatten to true, use flattenedElement to specify which element, first or last, to keep.
    * You must specify this parameter if flatten is true.
    * @default - Must be specified if flatten is true and if flatten is false, has no effect
    */
-  readonly flattenedElement?: string;
+  readonly flattenedElement?: string | undefined;
 }
 
 /**
@@ -552,27 +552,27 @@ export interface ParserProcessorProps extends BaseProcessorProps {
    * Options for JSON parser. Required when type is JSON.
    * @default - No JSON parser is created if props not set
    */
-  readonly jsonOptions?: ParseJSONProperty;
+  readonly jsonOptions?: ParseJSONProperty | undefined;
   /**
    * Options for key-value parser. Required when type is KEY_VALUE.
    * @default - No key-value parser is created if props not set
    */
-  readonly keyValueOptions?: ParseKeyValueProperty;
+  readonly keyValueOptions?: ParseKeyValueProperty | undefined;
   /**
    * Options for CSV parser. Required when type is CSV.
    * @default - No CSV parser is created if props not set
    */
-  readonly csvOptions?: CsvProperty;
+  readonly csvOptions?: CsvProperty | undefined;
   /**
    * Options for Grok parser. Required when type is GROK.
    * @default - No Grok parser is created if props not set
    */
-  readonly grokOptions?: GrokProperty;
+  readonly grokOptions?: GrokProperty | undefined;
   /**
    * Options for ParseToOCSF parser. Required when type is set to OCSF
    * @default - no OCSF parser is created.
    */
-  readonly parseToOCSFOptions?: ParseToOCSFProperty;
+  readonly parseToOCSFOptions?: ParseToOCSFProperty | undefined;
 }
 
 /** Properties for creating AWS vended log parsers */
@@ -583,7 +583,7 @@ export interface VendedLogParserProps extends BaseProcessorProps {
    * Source field to parse.
    * @default @message
    */
-  readonly source?: string;
+  readonly source?: string | undefined;
 }
 
 /** Properties for creating string mutator processors */
@@ -594,27 +594,27 @@ export interface StringMutatorProps extends BaseProcessorProps {
    * Keys for strings to convert to lowercase. Required when type is LOWER_CASE.
    * @default - No lowercase processor is created if props not set
    */
-  readonly lowerCaseKeys?: Array<string>;
+  readonly lowerCaseKeys?: Array<string> | undefined;
   /**
    * Keys for strings to convert to uppercase. Required when type is UPPER_CASE.
    * @default - No uppercase processor is created if props not set
    */
-  readonly upperCaseKeys?: Array<string>;
+  readonly upperCaseKeys?: Array<string> | undefined;
   /**
    * Keys for strings to trim. Required when type is TRIM.
    * @default - No trim processor is created if props not set
    */
-  readonly trimKeys?: Array<string>;
+  readonly trimKeys?: Array<string> | undefined;
   /**
    * Options for string splitting. Required when type is SPLIT.
    * @default - No string splitting processor is created if props not set
    */
-  readonly splitOptions?: SplitStringProperty;
+  readonly splitOptions?: SplitStringProperty | undefined;
   /**
    * Options for string substitution. Required when type is SUBSTITUTE.
    * @default - No string substitution processor is created if props not set
    */
-  readonly substituteOptions?: SubstituteStringProperty;
+  readonly substituteOptions?: SubstituteStringProperty | undefined;
 }
 
 /** Properties for creating JSON mutator processors */
@@ -625,32 +625,32 @@ export interface JsonMutatorProps extends BaseProcessorProps {
    * Options for adding keys. Required when type is ADD_KEYS.
    * @default - No adding keys processor is created if props not set
    */
-  readonly addKeysOptions?: AddKeysProperty;
+  readonly addKeysOptions?: AddKeysProperty | undefined;
   /**
    * Keys to delete. Required when type is DELETE_KEYS.
    * @default - No delete key processor is created if props not set
    */
-  readonly deleteKeysOptions?: ProcessorDeleteKeysProperty;
+  readonly deleteKeysOptions?: ProcessorDeleteKeysProperty | undefined;
   /**
    * Options for moving keys. Required when type is MOVE_KEYS.
    * @default - No move key processor is created if props not set
    */
-  readonly moveKeysOptions?: MoveKeysProperty;
+  readonly moveKeysOptions?: MoveKeysProperty | undefined;
   /**
    * Options for renaming keys. Required when type is RENAME_KEYS.
    * @default - No rename key processor is created if props not set
    */
-  readonly renameKeysOptions?: RenameKeysProperty;
+  readonly renameKeysOptions?: RenameKeysProperty | undefined;
   /**
    * Options for copying values. Required when type is COPY_VALUE.
    * @default - No copy value processor is created if props not set
    */
-  readonly copyValueOptions?: CopyValueProperty;
+  readonly copyValueOptions?: CopyValueProperty | undefined;
   /**
    * Options for converting lists to maps. Required when type is LIST_TO_MAP.
    * @default - No list-to-map processor is created if props not set
    */
-  readonly listToMapOptions?: ListToMapProperty;
+  readonly listToMapOptions?: ListToMapProperty | undefined;
 }
 
 /** Properties for creating data converter processors */
@@ -661,12 +661,12 @@ export interface DataConverterProps extends BaseProcessorProps {
    * Options for type conversion. Required when type is TYPE_CONVERTER.
    * @default - No type convertor processor is created if not set
    */
-  readonly typeConverterOptions?: TypeConverterProperty;
+  readonly typeConverterOptions?: TypeConverterProperty | undefined;
   /**
    * Options for datetime conversion. Required when type is DATETIME_CONVERTER.
    * @default - No date time converter processor is created if not set
    */
-  readonly dateTimeConverterOptions?: DateTimeConverterProperty;
+  readonly dateTimeConverterOptions?: DateTimeConverterProperty | undefined;
 }
 
 /**
@@ -686,7 +686,7 @@ export interface AddKeyEntryProperty {
    * Specifies whether to overwrite the value if the key already exists.
    * @default false
    */
-  readonly overwriteIfExists?: boolean;
+  readonly overwriteIfExists?: boolean | undefined;
 }
 
 /**
@@ -706,7 +706,7 @@ export interface CopyValueEntryProperty {
    * Specifies whether to overwrite the value if the target key already exists.
    * @default false
    */
-  readonly overwriteIfExists?: boolean;
+  readonly overwriteIfExists?: boolean | undefined;
 }
 
 /**
@@ -726,7 +726,7 @@ export interface MoveKeyEntryProperty {
    * Specifies whether to overwrite the value if the target key already exists.
    * @default false
    */
-  readonly overwriteIfExists?: boolean;
+  readonly overwriteIfExists?: boolean | undefined;
 }
 
 /**
@@ -747,7 +747,7 @@ export interface RenameKeyEntryProperty {
    * Whether to overwrite the target key if it already exists.
    * @default false
    */
-  readonly overwriteIfExists?: boolean;
+  readonly overwriteIfExists?: boolean | undefined;
 }
 
 /**

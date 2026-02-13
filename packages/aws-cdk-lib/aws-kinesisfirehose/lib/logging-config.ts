@@ -19,7 +19,7 @@ export interface ILoggingConfig {
    *
    * @default - if `logging` is set to `true`, a log group will be created for you.
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroup | undefined;
 }
 
 /**
@@ -31,7 +31,7 @@ export interface ILoggingConfig {
  * If no log group is provided, a default one will be created automatically.
  */
 export class EnableLogging implements ILoggingConfig {
-  public readonly logGroup?: logs.ILogGroup;
+  public readonly logGroup?: logs.ILogGroup | undefined;
   public readonly logging: boolean;
 
   constructor(logGroup?: logs.ILogGroup) {

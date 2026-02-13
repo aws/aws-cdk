@@ -32,7 +32,7 @@ interface EcsRunTaskOptions {
    *
    * @default - '$latest'
    */
-  readonly revisionNumber?: number;
+  readonly revisionNumber?: number | undefined;
 
   /**
    * Container setting overrides
@@ -41,28 +41,28 @@ interface EcsRunTaskOptions {
    *
    * @default - No overrides
    */
-  readonly containerOverrides?: ContainerOverride[];
+  readonly containerOverrides?: ContainerOverride[] | undefined;
 
   /**
    * Subnets to place the task's ENIs
    *
    * @default - Public subnets if assignPublicIp is set. Private subnets otherwise.
    */
-  readonly subnets?: ec2.SubnetSelection;
+  readonly subnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Existing security groups to use for the tasks
    *
    * @default - A new security group is created
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Assign public IP addresses to each task
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * An Amazon ECS launch type determines the type of infrastructure on which your
@@ -80,7 +80,7 @@ interface EcsRunTaskOptions {
    *
    * @default - No tags are propagated.
    */
-  readonly propagatedTagSource?: ecs.PropagatedTagSource;
+  readonly propagatedTagSource?: ecs.PropagatedTagSource | undefined;
 
   /**
    * Whether ECS Exec should be enabled
@@ -89,21 +89,21 @@ interface EcsRunTaskOptions {
    *
    * @default false
    */
-  readonly enableExecuteCommand?: boolean;
+  readonly enableExecuteCommand?: boolean | undefined;
 
   /**
    * Cpu setting override
    * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
    * @default - No override
    */
-  readonly cpu?: string;
+  readonly cpu?: string | undefined;
 
   /**
    * Memory setting override
    * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
    * @default - No override
    */
-  readonly memoryMiB?: string;
+  readonly memoryMiB?: string | undefined;
 }
 
 /**
@@ -132,7 +132,7 @@ export interface LaunchTargetBindOptions {
    *
    * @default - No cluster
    */
-  readonly cluster?: ecs.ICluster;
+  readonly cluster?: ecs.ICluster | undefined;
 }
 
 /**
@@ -144,7 +144,7 @@ export interface EcsLaunchTargetConfig {
    *
    * @default - No additional parameters passed
    */
-  readonly parameters?: { [key: string]: any };
+  readonly parameters?: { [key: string]: any } | undefined;
 }
 
 /**
@@ -174,7 +174,7 @@ export interface EcsFargateLaunchTargetOptions {
    * @default - 'FARGATE' LaunchType running tasks on AWS Fargate On-Demand
    * infrastructure is used without the capacity provider strategy.
    */
-  readonly capacityProviderOptions?: CapacityProviderOptions;
+  readonly capacityProviderOptions?: CapacityProviderOptions | undefined;
 }
 
 /**
@@ -186,14 +186,14 @@ export interface EcsEc2LaunchTargetOptions {
    *
    * @default  - None
    */
-  readonly placementConstraints?: ecs.PlacementConstraint[];
+  readonly placementConstraints?: ecs.PlacementConstraint[] | undefined;
 
   /**
    * Placement strategies
    *
    * @default - None
    */
-  readonly placementStrategies?: ecs.PlacementStrategy[];
+  readonly placementStrategies?: ecs.PlacementStrategy[] | undefined;
 
   /**
    * The capacity provider options to use for the task.
@@ -209,7 +209,7 @@ export interface EcsEc2LaunchTargetOptions {
    * @default - 'EC2' LaunchType running tasks on Amazon EC2 instances registered to
    * your cluster is used without the capacity provider strategy.
    */
-  readonly capacityProviderOptions?: CapacityProviderOptions;
+  readonly capacityProviderOptions?: CapacityProviderOptions | undefined;
 }
 
 /**
@@ -401,8 +401,8 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
    */
   public readonly connections: ec2.Connections = new ec2.Connections();
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private securityGroups: ec2.ISecurityGroup[] = [];
   private networkConfiguration?: any;

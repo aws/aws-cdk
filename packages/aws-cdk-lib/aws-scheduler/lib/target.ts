@@ -33,48 +33,48 @@ export interface ScheduleTargetConfig {
    *  What input to pass to the target
    * @default - No input
    */
-  readonly input?: ScheduleTargetInput;
+  readonly input?: ScheduleTargetInput | undefined;
 
   /**
    * A `RetryPolicy` object that includes information about the retry policy settings, including the maximum age of an event, and the maximum number of times EventBridge Scheduler will try to deliver the event to a target.
    * @default - Maximum retry attempts of 185 and maximum age of 86400 seconds (1 day)
    */
-  readonly retryPolicy?: CfnSchedule.RetryPolicyProperty;
+  readonly retryPolicy?: CfnSchedule.RetryPolicyProperty | undefined;
 
   /**
    * An object that contains information about an Amazon SQS queue that EventBridge Scheduler uses as a dead-letter queue for your schedule.
    * If specified, EventBridge Scheduler delivers failed events that could not be successfully delivered to a target to the queue.
    * @default - No dead-letter queue
    */
-  readonly deadLetterConfig?: CfnSchedule.DeadLetterConfigProperty;
+  readonly deadLetterConfig?: CfnSchedule.DeadLetterConfigProperty | undefined;
 
   /**
    *  The templated target type for the Amazon ECS RunTask API Operation.
    * @default - No parameters
    */
-  readonly ecsParameters?: CfnSchedule.EcsParametersProperty;
+  readonly ecsParameters?: CfnSchedule.EcsParametersProperty | undefined;
 
   /**
    * The templated target type for the EventBridge PutEvents API operation.
    * @default - No parameters
    */
-  readonly eventBridgeParameters?: CfnSchedule.EventBridgeParametersProperty;
+  readonly eventBridgeParameters?: CfnSchedule.EventBridgeParametersProperty | undefined;
 
   /**
    * The templated target type for the Amazon Kinesis PutRecord API operation.
    * @default - No parameters
    */
-  readonly kinesisParameters?: CfnSchedule.KinesisParametersProperty;
+  readonly kinesisParameters?: CfnSchedule.KinesisParametersProperty | undefined;
 
   /**
    * The templated target type for the Amazon SageMaker StartPipelineExecution API operation.
    * @default - No parameters
    */
-  readonly sageMakerPipelineParameters?: CfnSchedule.SageMakerPipelineParametersProperty;
+  readonly sageMakerPipelineParameters?: CfnSchedule.SageMakerPipelineParametersProperty | undefined;
 
   /**
    * The templated target type for the Amazon SQS SendMessage API Operation
    * @default - No parameters
    */
-  readonly sqsParameters?: CfnSchedule.SqsParametersProperty;
+  readonly sqsParameters?: CfnSchedule.SqsParametersProperty | undefined;
 }

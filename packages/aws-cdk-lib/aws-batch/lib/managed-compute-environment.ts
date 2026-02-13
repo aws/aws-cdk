@@ -44,7 +44,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
    */
-  readonly replaceComputeEnvironment?: boolean;
+  readonly replaceComputeEnvironment?: boolean | undefined;
 
   /**
    * Whether or not to use spot instances.
@@ -54,7 +54,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    *
    * @default false
    */
-  readonly spot?: boolean;
+  readonly spot?: boolean | undefined;
 
   /**
    * Only meaningful if `terminateOnUpdate` is `false`. If so,
@@ -64,7 +64,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    * @see https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
    * @default 30 minutes
    */
-  readonly updateTimeout?: Duration;
+  readonly updateTimeout?: Duration | undefined;
 
   /**
    * Whether or not any running jobs will be immediately terminated when an infrastructure update
@@ -75,7 +75,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    *
    * @default false
    */
-  readonly terminateOnUpdate?: boolean;
+  readonly terminateOnUpdate?: boolean | undefined;
 
   /**
    * The security groups this Compute Environment will launch instances in.
@@ -85,7 +85,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
   /**
    * The VPC Subnets this Compute Environment will launch instances in.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Whether or not the AMI is updated to the latest one supported by Batch
@@ -100,7 +100,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    *
    * @default false
    */
-  readonly updateToLatestImageVersion?: boolean;
+  readonly updateToLatestImageVersion?: boolean | undefined;
 }
 
 /**
@@ -118,7 +118,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * @default 256
    */
-  readonly maxvCpus?: number;
+  readonly maxvCpus?: number | undefined;
 
   /**
    * Specifies whether this Compute Environment is replaced if an update is made that requires
@@ -139,7 +139,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * @default false
    */
-  readonly replaceComputeEnvironment?: boolean;
+  readonly replaceComputeEnvironment?: boolean | undefined;
 
   /**
    * Whether or not to use spot instances.
@@ -149,7 +149,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * @default false
    */
-  readonly spot?: boolean;
+  readonly spot?: boolean | undefined;
 
   /**
    * Only meaningful if `terminateOnUpdate` is `false`. If so,
@@ -160,7 +160,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * @default 30 minutes
    */
-  readonly updateTimeout?: Duration;
+  readonly updateTimeout?: Duration | undefined;
 
   /**
    * Whether or not any running jobs will be immediately terminated when an infrastructure update
@@ -171,7 +171,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * @default false
    */
-  readonly terminateOnUpdate?: boolean;
+  readonly terminateOnUpdate?: boolean | undefined;
 
   /**
    * VPC in which this Compute Environment will launch Instances
@@ -183,14 +183,14 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * @default new security groups will be created
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The VPC Subnets this Compute Environment will launch instances in.
    *
    * @default new subnets will be created
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Whether or not the AMI is updated to the latest one supported by Batch
@@ -205,7 +205,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * @default false
    */
-  readonly updateToLatestImageVersion?: boolean;
+  readonly updateToLatestImageVersion?: boolean | undefined;
 }
 
 /**
@@ -214,12 +214,12 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
  */
 export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase implements IManagedComputeEnvironment {
   public readonly maxvCpus: number;
-  public readonly replaceComputeEnvironment?: boolean;
-  public readonly spot?: boolean;
-  public readonly updateTimeout?: Duration;
-  public readonly terminateOnUpdate?: boolean;
+  public readonly replaceComputeEnvironment?: boolean | undefined;
+  public readonly spot?: boolean | undefined;
+  public readonly updateTimeout?: Duration | undefined;
+  public readonly terminateOnUpdate?: boolean | undefined;
   public readonly securityGroups: ec2.ISecurityGroup[];
-  public readonly updateToLatestImageVersion?: boolean;
+  public readonly updateToLatestImageVersion?: boolean | undefined;
   public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
   public readonly connections: ec2.Connections;
@@ -256,7 +256,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * @default
    * - ECS_AL2 compatible AMI ids for non-GPU instances, ECS_AL2_NVIDIA compatible AMI ids for GPU instances
    */
-  readonly images?: EcsMachineImage[];
+  readonly images?: EcsMachineImage[] | undefined;
 
   /**
    * The allocation strategy to use if not enough instances of
@@ -265,7 +265,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
    * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
-  readonly allocationStrategy?: AllocationStrategy;
+  readonly allocationStrategy?: AllocationStrategy | undefined;
 
   /**
    * The maximum percentage that a Spot Instance price can be when compared with the
@@ -277,7 +277,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @default - 100%
    */
-  readonly spotBidPercentage?: number;
+  readonly spotBidPercentage?: number | undefined;
 
   /**
    * The service-linked role that Spot Fleet needs to launch instances on your behalf.
@@ -286,7 +286,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @default - a new Role will be created
    */
-  readonly spotFleetRole?: iam.IRole;
+  readonly spotFleetRole?: iam.IRole | undefined;
 
   /**
    * The instance types that this Compute Environment can launch.
@@ -309,14 +309,14 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @default true
    */
-  readonly useOptimalInstanceClasses?: boolean;
+  readonly useOptimalInstanceClasses?: boolean | undefined;
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
    *
    * @default - a role will be created
    */
-  readonly instanceRole?: iam.IRole;
+  readonly instanceRole?: iam.IRole | undefined;
 
   /**
    * The Launch Template that this Compute Environment
@@ -329,7 +329,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @default no launch template
    */
-  readonly launchTemplate?: ec2.ILaunchTemplate;
+  readonly launchTemplate?: ec2.ILaunchTemplate | undefined;
 
   /**
    * The minimum vCPUs that an environment should maintain,
@@ -337,7 +337,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @default 0
    */
-  readonly minvCpus?: number;
+  readonly minvCpus?: number | undefined;
 
   /**
    * The EC2 placement group to associate with your compute resources.
@@ -350,7 +350,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroup;
+  readonly placementGroup?: ec2.IPlacementGroup | undefined;
 
   /**
    * Add an instance type to this compute environment
@@ -373,7 +373,7 @@ interface MachineImage {
    *
    * @default - chosen by batch
    */
-  readonly image?: ec2.IMachineImage;
+  readonly image?: ec2.IMachineImage | undefined;
 }
 
 /**
@@ -385,7 +385,7 @@ export interface EcsMachineImage extends MachineImage {
    *
    * @default - 'ECS_AL2' for non-gpu instances, 'ECS_AL2_NVIDIA' for gpu instances
    */
-  readonly imageType?: EcsMachineImageType;
+  readonly imageType?: EcsMachineImageType | undefined;
 }
 
 /**
@@ -397,7 +397,7 @@ export interface EksMachineImage extends MachineImage{
    *
    * @default - 'EKS_AL2' for non-gpu instances, 'EKS_AL2_NVIDIA' for gpu instances
    */
-  readonly imageType?: EksMachineImageType;
+  readonly imageType?: EksMachineImageType | undefined;
 }
 
 /**
@@ -513,7 +513,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * @see https://docs.aws.amazon.com/batch/latest/userguide/instance-type-compute-table.html
    * @default - choose from instanceTypes and instanceClasses
    */
-  readonly defaultInstanceClasses?: DefaultInstanceClass[];
+  readonly defaultInstanceClasses?: DefaultInstanceClass[] | undefined;
 
   /**
    * Whether or not to use batch's optimal instance type.
@@ -523,7 +523,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default true
    */
-  readonly useOptimalInstanceClasses?: boolean;
+  readonly useOptimalInstanceClasses?: boolean | undefined;
 
   /**
    * Configure which AMIs this Compute Environment can launch.
@@ -535,7 +535,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * @default
    * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances
    */
-  readonly images?: EcsMachineImage[];
+  readonly images?: EcsMachineImage[] | undefined;
 
   /**
    * The allocation strategy to use if not enough instances of
@@ -544,7 +544,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
    * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
-  readonly allocationStrategy?: AllocationStrategy;
+  readonly allocationStrategy?: AllocationStrategy | undefined;
 
   /**
    * The maximum percentage that a Spot Instance price can be when compared with the
@@ -558,7 +558,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default 100%
    */
-  readonly spotBidPercentage?: number;
+  readonly spotBidPercentage?: number | undefined;
 
   /**
    * The service-linked role that Spot Fleet needs to launch instances on your behalf.
@@ -567,7 +567,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - a new role will be created
    */
-  readonly spotFleetRole?: iam.IRole;
+  readonly spotFleetRole?: iam.IRole | undefined;
 
   /**
    * The instance types that this Compute Environment can launch.
@@ -575,7 +575,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - the instances Batch considers will be used (currently C4, M4, and R4)
    */
-  readonly instanceTypes?: ec2.InstanceType[];
+  readonly instanceTypes?: ec2.InstanceType[] | undefined;
 
   /**
    * The instance classes that this Compute Environment can launch.
@@ -584,14 +584,14 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - the instances Batch considers will be used (currently C4, M4, and R4)
    */
-  readonly instanceClasses?: ec2.InstanceClass[];
+  readonly instanceClasses?: ec2.InstanceClass[] | undefined;
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
    *
    * @default - a role will be created
    */
-  readonly instanceRole?: iam.IRole;
+  readonly instanceRole?: iam.IRole | undefined;
 
   /**
    * The Launch Template that this Compute Environment
@@ -604,7 +604,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default no launch template
    */
-  readonly launchTemplate?: ec2.ILaunchTemplate;
+  readonly launchTemplate?: ec2.ILaunchTemplate | undefined;
 
   /**
    * The minimum vCPUs that an environment should maintain,
@@ -612,7 +612,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default 0
    */
-  readonly minvCpus?: number;
+  readonly minvCpus?: number | undefined;
 
   /**
    * The EC2 placement group to associate with your compute resources.
@@ -625,7 +625,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroupRef;
+  readonly placementGroup?: ec2.IPlacementGroupRef | undefined;
 }
 
 /**
@@ -691,17 +691,17 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     return this.getResourceNameAttribute(this.resource.ref);
   }
 
-  public readonly images?: EcsMachineImage[];
-  public readonly allocationStrategy?: AllocationStrategy;
-  public readonly spotBidPercentage?: number;
-  public readonly spotFleetRole?: iam.IRole;
+  public readonly images?: EcsMachineImage[] | undefined;
+  public readonly allocationStrategy?: AllocationStrategy | undefined;
+  public readonly spotBidPercentage?: number | undefined;
+  public readonly spotFleetRole?: iam.IRole | undefined;
   public readonly instanceTypes: ec2.InstanceType[];
   public readonly instanceClasses: ec2.InstanceClass[];
-  public readonly instanceRole?: iam.IRole;
-  public readonly launchTemplate?: ec2.ILaunchTemplate;
-  public readonly minvCpus?: number;
+  public readonly instanceRole?: iam.IRole | undefined;
+  public readonly launchTemplate?: ec2.ILaunchTemplate | undefined;
+  public readonly minvCpus?: number | undefined;
 
-  private readonly _placementGroup?: ec2.IPlacementGroupRef;
+  private readonly _placementGroup?: ec2.IPlacementGroupRef | undefined;
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
@@ -801,7 +801,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    *
    * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
    */
-  readonly kubernetesNamespace?: string;
+  readonly kubernetesNamespace?: string | undefined;
 
   /**
    * The cluster that backs this Compute Environment. Required
@@ -823,7 +823,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * @default
    * EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
    */
-  readonly images?: EksMachineImage[];
+  readonly images?: EksMachineImage[] | undefined;
 
   /**
    * The allocation strategy to use if not enough instances of
@@ -832,7 +832,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
    * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
-  readonly allocationStrategy?: AllocationStrategy;
+  readonly allocationStrategy?: AllocationStrategy | undefined;
 
   /**
    * The maximum percentage that a Spot Instance price can be when compared with the
@@ -846,7 +846,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    *
    * @default - 100%
    */
-  readonly spotBidPercentage?: number;
+  readonly spotBidPercentage?: number | undefined;
 
   /**
    * The instance types that this Compute Environment can launch.
@@ -865,7 +865,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    *
    * @default - a role will be created
    */
-  readonly instanceRole?: iam.IRole;
+  readonly instanceRole?: iam.IRole | undefined;
 
   /**
    * The Launch Template that this Compute Environment
@@ -878,7 +878,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    *
    * @default - no launch template
    */
-  readonly launchTemplate?: ec2.ILaunchTemplate;
+  readonly launchTemplate?: ec2.ILaunchTemplate | undefined;
 
   /**
    * The minimum vCPUs that an environment should maintain,
@@ -886,7 +886,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    *
    * @default 0
    */
-  readonly minvCpus?: number;
+  readonly minvCpus?: number | undefined;
 
   /**
    * The EC2 placement group to associate with your compute resources.
@@ -899,7 +899,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroup;
+  readonly placementGroup?: ec2.IPlacementGroup | undefined;
 
   /**
    * Add an instance type to this compute environment
@@ -943,7 +943,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * @see https://docs.aws.amazon.com/batch/latest/userguide/instance-type-compute-table.html
    * @default - choose from instanceTypes and instanceClasses
    */
-  readonly defaultInstanceClasses?: DefaultInstanceClass[];
+  readonly defaultInstanceClasses?: DefaultInstanceClass[] | undefined;
 
   /**
    * Whether or not to use batch's optimal instance type.
@@ -953,7 +953,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default true
    */
-  readonly useOptimalInstanceClasses?: boolean;
+  readonly useOptimalInstanceClasses?: boolean | undefined;
 
   /**
    * Configure which AMIs this Compute Environment can launch.
@@ -964,7 +964,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * Otherwise,
    * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances,
    */
-  readonly images?: EksMachineImage[];
+  readonly images?: EksMachineImage[] | undefined;
 
   /**
    * The allocation strategy to use if not enough instances of
@@ -973,7 +973,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
    * `SPOT_PRICE_CAPACITY_OPTIMIZED` if using Spot instances.
    */
-  readonly allocationStrategy?: AllocationStrategy;
+  readonly allocationStrategy?: AllocationStrategy | undefined;
 
   /**
    * The maximum percentage that a Spot Instance price can be when compared with the
@@ -987,7 +987,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - 100%
    */
-  readonly spotBidPercentage?: number;
+  readonly spotBidPercentage?: number | undefined;
 
   /**
    * The instance types that this Compute Environment can launch.
@@ -995,7 +995,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - the instances Batch considers will be used (currently C4, M4, and R4)
    */
-  readonly instanceTypes?: ec2.InstanceType[];
+  readonly instanceTypes?: ec2.InstanceType[] | undefined;
 
   /**
    * The instance types that this Compute Environment can launch.
@@ -1004,14 +1004,14 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - the instances Batch considers will be used (currently C4, M4, and R4)
    */
-  readonly instanceClasses?: ec2.InstanceClass[];
+  readonly instanceClasses?: ec2.InstanceClass[] | undefined;
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
    *
    * @default - a role will be created
    */
-  readonly instanceRole?: iam.IRole;
+  readonly instanceRole?: iam.IRole | undefined;
 
   /**
    * The Launch Template that this Compute Environment
@@ -1024,7 +1024,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - no launch template
    */
-  readonly launchTemplate?: ec2.ILaunchTemplate;
+  readonly launchTemplate?: ec2.ILaunchTemplate | undefined;
 
   /**
    * The minimum vCPUs that an environment should maintain,
@@ -1032,7 +1032,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default 0
    */
-  readonly minvCpus?: number;
+  readonly minvCpus?: number | undefined;
 
   /**
    * The EC2 placement group to associate with your compute resources.
@@ -1045,7 +1045,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroupRef;
+  readonly placementGroup?: ec2.IPlacementGroupRef | undefined;
 }
 
 /**
@@ -1057,7 +1057,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
 export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ManagedEc2EksComputeEnvironment';
-  public readonly kubernetesNamespace?: string;
+  public readonly kubernetesNamespace?: string | undefined;
   public readonly eksCluster: eks.ICluster;
 
   private readonly resource: CfnComputeEnvironment;
@@ -1076,16 +1076,16 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     });
   }
 
-  public readonly images?: EksMachineImage[];
-  public readonly allocationStrategy?: AllocationStrategy;
-  public readonly spotBidPercentage?: number;
+  public readonly images?: EksMachineImage[] | undefined;
+  public readonly allocationStrategy?: AllocationStrategy | undefined;
+  public readonly spotBidPercentage?: number | undefined;
   public readonly instanceTypes: ec2.InstanceType[];
   public readonly instanceClasses: ec2.InstanceClass[];
-  public readonly instanceRole?: iam.IRole;
-  public readonly launchTemplate?: ec2.ILaunchTemplate;
-  public readonly minvCpus?: number;
+  public readonly instanceRole?: iam.IRole | undefined;
+  public readonly launchTemplate?: ec2.ILaunchTemplate | undefined;
+  public readonly minvCpus?: number | undefined;
 
-  private readonly _placementGroup?: ec2.IPlacementGroupRef;
+  private readonly _placementGroup?: ec2.IPlacementGroupRef | undefined;
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {

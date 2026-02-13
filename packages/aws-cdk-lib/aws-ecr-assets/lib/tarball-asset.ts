@@ -46,7 +46,7 @@ export interface TarballImageAssetProps {
    *
    * @default - Stack-relative construct path
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 /**

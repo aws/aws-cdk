@@ -17,14 +17,14 @@ export interface BasePathMappingOptions {
    * @default - map requests from the domain root (e.g. `example.com`). If this
    * is undefined, no additional mappings will be allowed on this domain name.
    */
-  readonly basePath?: string;
+  readonly basePath?: string | undefined;
 
   /**
    * The Deployment stage of API
    * [disable-awslint:ref-via-interface]
    * @default - map to deploymentStage of restApi otherwise stage needs to pass in URL
    */
-  readonly stage?: Stage;
+  readonly stage?: Stage | undefined;
 
   /**
    * Whether to attach the base path mapping to a stage.
@@ -32,7 +32,7 @@ export interface BasePathMappingOptions {
    * This property is ignored if `stage` is provided.
    * @default - true
    */
-  readonly attachToStage?: boolean;
+  readonly attachToStage?: boolean | undefined;
 }
 
 export interface BasePathMappingProps extends BasePathMappingOptions {

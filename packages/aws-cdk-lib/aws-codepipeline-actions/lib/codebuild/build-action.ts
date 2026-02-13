@@ -44,7 +44,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * For more information,
    * see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html .
    */
-  readonly extraInputs?: codepipeline.Artifact[];
+  readonly extraInputs?: codepipeline.Artifact[] | undefined;
 
   /**
    * The list of output Artifacts for this action.
@@ -56,7 +56,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default the action will not have any outputs
    */
-  readonly outputs?: codepipeline.Artifact[];
+  readonly outputs?: codepipeline.Artifact[] | undefined;
 
   /**
    * The action's Project.
@@ -69,7 +69,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default CodeBuildActionType.BUILD
    */
-  readonly type?: CodeBuildActionType;
+  readonly type?: CodeBuildActionType | undefined;
 
   /**
    * The environment variables to pass to the CodeBuild project when this action executes.
@@ -78,7 +78,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default - No additional environment variables are specified.
    */
-  readonly environmentVariables?: { [name: string]: codebuild.BuildEnvironmentVariable };
+  readonly environmentVariables?: { [name: string]: codebuild.BuildEnvironmentVariable } | undefined;
 
   /**
    * Whether to check for the presence of any secrets in the environment variables of the default type, BuildEnvironmentVariableType.PLAINTEXT.
@@ -89,7 +89,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default true
    */
-  readonly checkSecretsInPlainTextEnvVariables?: boolean;
+  readonly checkSecretsInPlainTextEnvVariables?: boolean | undefined;
 
   /**
    * Trigger a batch build.
@@ -98,7 +98,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default false
    */
-  readonly executeBatchBuild?: boolean;
+  readonly executeBatchBuild?: boolean | undefined;
 
   /**
    * Combine the build artifacts for a batch builds.
@@ -108,7 +108,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default false
    */
-  readonly combineBatchBuildArtifacts?: boolean;
+  readonly combineBatchBuildArtifacts?: boolean | undefined;
 }
 
 /**

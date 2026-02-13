@@ -66,14 +66,14 @@ export interface CloudFormationProductVersion {
    * The description of the product version
    * @default - No description provided
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Whether the specified product template will be validated by CloudFormation.
    * If turned off, an invalid template configuration can be stored.
    * @default true
    */
-  readonly validateTemplate?: boolean;
+  readonly validateTemplate?: boolean | undefined;
 
   /**
    * The S3 template that points to the provisioning version template
@@ -84,7 +84,7 @@ export interface CloudFormationProductVersion {
    * The name of the product version.
    * @default - No product version name provided
    */
-  readonly productVersionName?: string;
+  readonly productVersionName?: string | undefined;
 }
 
 /**
@@ -112,50 +112,50 @@ export interface CloudFormationProductProps {
    *
    * @default - English
    */
-  readonly messageLanguage?: MessageLanguage;
+  readonly messageLanguage?: MessageLanguage | undefined;
 
   /**
    * The description of the product.
    * @default - No description provided
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The distributor of the product.
    * @default - No distributor provided
    */
-  readonly distributor?: string;
+  readonly distributor?: string | undefined;
 
   /**
    * Whether to give provisioning artifacts a new unique identifier when the product attributes or provisioning artifacts is updated
    * @default false
    */
-  readonly replaceProductVersionIds?: boolean;
+  readonly replaceProductVersionIds?: boolean | undefined;
 
   /**
    * The support information about the product
    * @default - No support description provided
    */
-  readonly supportDescription?: string;
+  readonly supportDescription?: string | undefined;
 
   /**
    * The contact email for product support.
    * @default - No support email provided
    */
-  readonly supportEmail?: string;
+  readonly supportEmail?: string | undefined;
 
   /**
    * The contact URL for product support.
    * @default - No support URL provided
    */
-  readonly supportUrl?: string;
+  readonly supportUrl?: string | undefined;
 
   /**
    * TagOptions associated directly to a product.
    *
    * @default - No tagOptions provided
    */
-  readonly tagOptions?: TagOptions;
+  readonly tagOptions?: TagOptions | undefined;
 }
 
 /**

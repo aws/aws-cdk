@@ -65,7 +65,7 @@ export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.Metri
    *
    * @default - All operations available by DynamoDB tables will be considered.
    */
-  readonly operations?: Operation[];
+  readonly operations?: Operation[] | undefined;
 }
 
 /**
@@ -97,12 +97,12 @@ export interface WarmThroughput {
    * Configures the number of read units per second a table will be able to handle instantly
    * @default - no readUnitsPerSecond configured
    */
-  readonly readUnitsPerSecond?: number;
+  readonly readUnitsPerSecond?: number | undefined;
   /**
    * Configures the number of write units per second a table will be able to handle instantly
    * @default - no writeUnitsPerSecond configured
    */
-  readonly writeUnitsPerSecond?: number;
+  readonly writeUnitsPerSecond?: number | undefined;
 }
 
 /**
@@ -121,7 +121,7 @@ export interface PointInTimeRecoverySpecification {
    * If no value is provided, the value will default to 35.
    * @default 35
    */
-  readonly recoveryPeriodInDays?: number;
+  readonly recoveryPeriodInDays?: number | undefined;
 }
 
 /**
@@ -190,7 +190,7 @@ export interface ContributorInsightsSpecification {
    * Indicates the type of metrics captured by contributor insights.
    * @default ACCESSED_AND_THROTTLED_KEYS
    */
-  readonly mode?: ContributorInsightsMode;
+  readonly mode?: ContributorInsightsMode | undefined;
 }
 
 /**
@@ -319,13 +319,13 @@ export interface SecondaryIndexProps {
    * The set of attributes that are projected into the secondary index.
    * @default ALL
    */
-  readonly projectionType?: ProjectionType;
+  readonly projectionType?: ProjectionType | undefined;
 
   /**
    * The non-key attributes that are projected into the secondary index.
    * @default - No additional attributes
    */
-  readonly nonKeyAttributes?: string[];
+  readonly nonKeyAttributes?: string[] | undefined;
 }
 
 /**
@@ -361,13 +361,13 @@ export interface ITable extends IResource, ITableRef {
    *
    * @attribute
    */
-  readonly tableStreamArn?: string;
+  readonly tableStreamArn?: string | undefined;
 
   /**
    *
    * Optional KMS encryption key associated with this table.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * Adds an IAM policy statement associated with this table to an IAM

@@ -18,7 +18,7 @@ export interface RunGlueJobTaskProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern | undefined;
 
   /**
    * The job arguments specifically for this run.
@@ -27,7 +27,7 @@ export interface RunGlueJobTaskProps {
    *
    * @default - Default arguments set in the job definition
    */
-  readonly arguments?: { [key: string]: string };
+  readonly arguments?: { [key: string]: string } | undefined;
 
   /**
    * The job run timeout.
@@ -37,7 +37,7 @@ export interface RunGlueJobTaskProps {
    *
    * @default - Default timeout set in the job definition
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * The name of the SecurityConfiguration structure to be used with this job run.
@@ -47,7 +47,7 @@ export interface RunGlueJobTaskProps {
    *
    * @default - Default configuration set in the job definition
    */
-  readonly securityConfiguration?: string;
+  readonly securityConfiguration?: string | undefined;
 
   /**
    * After a job run starts, the number of minutes to wait before sending a job run delay notification.
@@ -56,7 +56,7 @@ export interface RunGlueJobTaskProps {
    *
    * @default - Default delay set in the job definition
    */
-  readonly notifyDelayAfter?: Duration;
+  readonly notifyDelayAfter?: Duration | undefined;
 }
 
 /**

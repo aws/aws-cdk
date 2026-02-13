@@ -14,9 +14,9 @@ import type * as secretsmanager from '../../aws-secretsmanager';
  */
 interface LinuxArmBuildImageProps {
   readonly imageId: string;
-  readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  readonly repository?: ecr.IRepository;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
+  readonly repository?: ecr.IRepository | undefined;
 }
 
 /**
@@ -98,9 +98,9 @@ export class LinuxArmBuildImage implements IBuildImage {
   public readonly type = EnvironmentType.ARM_CONTAINER as string;
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
-  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  public readonly repository?: ecr.IRepository;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
+  public readonly repository?: ecr.IRepository | undefined;
 
   private constructor(props: LinuxArmBuildImageProps) {
     this.imageId = props.imageId;

@@ -28,7 +28,7 @@ interface DynamoPutItemOptions {
    *
    * @default - No condition expression
    */
-  readonly conditionExpression?: string;
+  readonly conditionExpression?: string | undefined;
 
   /**
    * One or more substitution tokens for attribute names in an expression
@@ -37,7 +37,7 @@ interface DynamoPutItemOptions {
    *
    * @default - No expression attribute names
    */
-  readonly expressionAttributeNames?: { [key: string]: string };
+  readonly expressionAttributeNames?: { [key: string]: string } | undefined;
 
   /**
    * One or more values that can be substituted in an expression.
@@ -46,7 +46,7 @@ interface DynamoPutItemOptions {
    *
    * @default - No expression attribute values
    */
-  readonly expressionAttributeValues?: { [key: string]: DynamoAttributeValue };
+  readonly expressionAttributeValues?: { [key: string]: DynamoAttributeValue } | undefined;
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response
@@ -55,7 +55,7 @@ interface DynamoPutItemOptions {
    *
    * @default DynamoConsumedCapacity.NONE
    */
-  readonly returnConsumedCapacity?: DynamoConsumedCapacity;
+  readonly returnConsumedCapacity?: DynamoConsumedCapacity | undefined;
 
   /**
    * The item collection metrics to returned in the response
@@ -64,7 +64,7 @@ interface DynamoPutItemOptions {
    *
    * @default DynamoItemCollectionMetrics.NONE
    */
-  readonly returnItemCollectionMetrics?: DynamoItemCollectionMetrics;
+  readonly returnItemCollectionMetrics?: DynamoItemCollectionMetrics | undefined;
 
   /**
    * Use ReturnValues if you want to get the item attributes as they appeared
@@ -74,7 +74,7 @@ interface DynamoPutItemOptions {
    *
    * @default DynamoReturnValues.NONE
    */
-  readonly returnValues?: DynamoReturnValues;
+  readonly returnValues?: DynamoReturnValues | undefined;
 }
 
 /**
@@ -110,8 +110,8 @@ export class DynamoPutItem extends sfn.TaskStateBase {
     return new DynamoPutItem(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
   }
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: DynamoPutItemProps) {
     super(scope, id, props);

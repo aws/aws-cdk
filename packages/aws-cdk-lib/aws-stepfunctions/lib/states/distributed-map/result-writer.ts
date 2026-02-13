@@ -19,7 +19,7 @@ export interface ResultWriterProps {
    *
    * @default - No prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 }
 
 /**
@@ -30,28 +30,28 @@ export interface ResultWriterV2Props {
    * S3 Bucket in which to save Map Run results
    * @default - specify a bucket
    */
-  readonly bucket?: IBucket;
+  readonly bucket?: IBucket | undefined;
 
   /**
    * S3 bucket name in which to save Map Run results, as JsonPath
    *
    * @default - no bucket path
    */
-  readonly bucketNamePath?: string;
+  readonly bucketNamePath?: string | undefined;
 
   /**
    * S3 prefix in which to save Map Run results
    *
    * @default - No prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * Configuration to format the output of the Child Workflow executions
    *
    * @default - Specify both Transformation and OutputType
    */
-  readonly writerConfig?: WriterConfig;
+  readonly writerConfig?: WriterConfig | undefined;
 }
 
 /**
@@ -181,7 +181,7 @@ export class ResultWriter {
    *
    * @default - No prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   constructor(props: ResultWriterProps) {
     this.bucket = props.bucket;
@@ -226,24 +226,24 @@ export class ResultWriterV2 {
   /**
    * S3 Bucket in which to save Map Run results
    */
-  readonly bucket?: IBucket;
+  readonly bucket?: IBucket | undefined;
 
   /**
    * S3 bucket name in which to save Map Run results, as JsonPath
    */
-  readonly bucketNamePath?: string;
+  readonly bucketNamePath?: string | undefined;
 
   /**
    * S3 prefix in which to save Map Run results
    *
    * @default - No prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * Configuration to format the output of the Child Workflow executions
    */
-  readonly writerConfig?: WriterConfig;
+  readonly writerConfig?: WriterConfig | undefined;
 
   constructor(props: ResultWriterV2Props) {
     this.bucket = props.bucket;

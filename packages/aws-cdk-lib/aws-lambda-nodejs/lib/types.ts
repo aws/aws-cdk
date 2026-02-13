@@ -9,14 +9,14 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default false
    */
-  readonly minify?: boolean;
+  readonly minify?: boolean | undefined;
 
   /**
    * Whether to include source maps when bundling.
    *
    * @default false
    */
-  readonly sourceMap?: boolean;
+  readonly sourceMap?: boolean | undefined;
 
   /**
    * Source map mode to be used when bundling.
@@ -24,7 +24,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default SourceMapMode.DEFAULT
    */
-  readonly sourceMapMode?: SourceMapMode;
+  readonly sourceMapMode?: SourceMapMode | undefined;
 
   /**
    * Whether to include original source code in source maps when bundling.
@@ -33,7 +33,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default true
    */
-  readonly sourcesContent?: boolean;
+  readonly sourcesContent?: boolean | undefined;
 
   /**
    * Target environment for the generated JavaScript code.
@@ -42,7 +42,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - the node version of the runtime
    */
-  readonly target?: string;
+  readonly target?: string | undefined;
 
   /**
    * Use loaders to change how a given input file is interpreted.
@@ -56,7 +56,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - use esbuild default loaders
    */
-  readonly loader?: { [ext: string]: string };
+  readonly loader?: { [ext: string]: string } | undefined;
 
   /**
    * Log level for esbuild. This is also propagated to the package manager and
@@ -64,7 +64,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default LogLevel.WARNING
    */
-  readonly logLevel?: LogLevel;
+  readonly logLevel?: LogLevel | undefined;
 
   /**
    * Whether to preserve the original `name` values even in minified code.
@@ -82,7 +82,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default false
    */
-  readonly keepNames?: boolean;
+  readonly keepNames?: boolean | undefined;
 
   /**
    * Normally the esbuild automatically discovers `tsconfig.json` files and reads their contents during a build.
@@ -124,7 +124,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * @see https://esbuild.github.io/api/#metafile
    * @default false
    */
-  readonly metafile?: boolean;
+  readonly metafile?: boolean | undefined;
 
   /**
    * Use this to insert an arbitrary string at the beginning of generated JavaScript files.
@@ -159,7 +159,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * @see https://esbuild.github.io/api/#charset
    * @default Charset.ASCII
    */
-  readonly charset?: Charset;
+  readonly charset?: Charset | undefined;
 
   /**
    * Replace global identifiers with constant expressions.
@@ -170,7 +170,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no replacements are made
    */
-  readonly define?: { [key: string]: string };
+  readonly define?: { [key: string]: string } | undefined;
 
   /**
    * A list of modules that should be considered as externals (already available
@@ -178,7 +178,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no replacements are made
    */
-  readonly externalModules?: string[];
+  readonly externalModules?: string[] | undefined;
 
   /**
    * Includes AWS SDK in the bundle asset.
@@ -187,7 +187,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * if `true` the `aws-sdk` will be included in the asset bundle and not be
    * resolved to the Lambda provided sdk.
    */
-  readonly bundleAwsSDK?: boolean;
+  readonly bundleAwsSDK?: boolean | undefined;
 
   /**
    * A list of modules that should be installed instead of bundled. Modules are
@@ -196,14 +196,14 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - all modules are bundled
    */
-  readonly nodeModules?: string[];
+  readonly nodeModules?: string[] | undefined;
 
   /**
    * The version of esbuild to use when running in a Docker container.
    *
    * @default - latest v0
    */
-  readonly esbuildVersion?: string;
+  readonly esbuildVersion?: string | undefined;
 
   /**
    * Build arguments to pass into esbuild.
@@ -223,14 +223,14 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no additional esbuild arguments are passed
    */
-  readonly esbuildArgs?: { [key: string]: string | boolean };
+  readonly esbuildArgs?: { [key: string]: string | boolean } | undefined;
 
   /**
    * Build arguments to pass when building the bundling image.
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key: string]: string };
+  readonly buildArgs?: { [key: string]: string } | undefined;
 
   /**
    * Force bundling in a Docker container even if local bundling is
@@ -240,7 +240,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default false
    */
-  readonly forceDockerBundling?: boolean;
+  readonly forceDockerBundling?: boolean | undefined;
 
   /**
    * Run compilation using tsc before running file through bundling step.
@@ -250,7 +250,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default false
    */
-  readonly preCompilation?: boolean;
+  readonly preCompilation?: boolean | undefined;
 
   /**
    * A custom bundling Docker image.
@@ -263,14 +263,14 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - use the Docker image provided by aws-cdk-lib/aws-lambda-nodejs
    */
-  readonly dockerImage?: DockerImage;
+  readonly dockerImage?: DockerImage | undefined;
 
   /**
    * Command hooks
    *
    * @default - do not run additional commands
    */
-  readonly commandHooks?: ICommandHooks;
+  readonly commandHooks?: ICommandHooks | undefined;
 
   /**
    * Specify a custom hash for this asset. For consistency, this custom hash will
@@ -285,14 +285,14 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - asset hash is calculated based on the bundled output
    */
-  readonly assetHash?: string;
+  readonly assetHash?: string | undefined;
 
   /**
    * Output format for the generated JavaScript files
    *
    * @default OutputFormat.CJS
    */
-  readonly format?: OutputFormat;
+  readonly format?: OutputFormat | undefined;
 
   /**
    * How to determine the entry point for modules.
@@ -300,7 +300,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default []
    */
-  readonly mainFields?: string[];
+  readonly mainFields?: string[] | undefined;
 
   /**
    * This option allows you to automatically replace a global variable with an
@@ -309,13 +309,13 @@ export interface BundlingOptions extends DockerRunOptions {
    * @see https://esbuild.github.io/api/#inject
    * @default - no code is injected
    */
-  readonly inject?: string[];
+  readonly inject?: string[] | undefined;
 
   /**
    * Which option to use to copy the source files to the docker container and output files back
    * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly bundlingFileAccess?: BundlingFileAccess;
+  readonly bundlingFileAccess?: BundlingFileAccess | undefined;
 }
 
 /**

@@ -23,7 +23,7 @@ export interface CommonMetricOptions {
    *
    * @default Duration.minutes(5)
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration | undefined;
 
   /**
    * What function to use for aggregating.
@@ -46,7 +46,7 @@ export interface CommonMetricOptions {
    *
    * @default Average
    */
-  readonly statistic?: string;
+  readonly statistic?: string | undefined;
 
   /**
    * Dimensions of the metric
@@ -55,14 +55,14 @@ export interface CommonMetricOptions {
    *
    * @deprecated Use 'dimensionsMap' instead.
    */
-  readonly dimensions?: DimensionHash;
+  readonly dimensions?: DimensionHash | undefined;
 
   /**
    * Dimensions of the metric
    *
    * @default - No dimensions.
    */
-  readonly dimensionsMap?: DimensionsMap;
+  readonly dimensionsMap?: DimensionsMap | undefined;
 
   /**
    * Unit used to filter the metric stream
@@ -78,7 +78,7 @@ export interface CommonMetricOptions {
    *
    * @default - All metric datums in the given metric stream
    */
-  readonly unit?: Unit;
+  readonly unit?: Unit | undefined;
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
@@ -96,14 +96,14 @@ export interface CommonMetricOptions {
    *
    * @default - No label
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
    * The `Color` class has a set of standard colors that can be used here.
    * @default - Automatic color
    */
-  readonly color?: string;
+  readonly color?: string | undefined;
 
   /**
    * Unique identifier for this metric when used in dashboard widgets.
@@ -114,7 +114,7 @@ export interface CommonMetricOptions {
    *
    * @default - No ID
    */
-  readonly id?: string;
+  readonly id?: string | undefined;
 
   /**
    * Whether this metric should be visible in dashboard graphs.
@@ -124,35 +124,35 @@ export interface CommonMetricOptions {
    *
    * @default true
    */
-  readonly visible?: boolean;
+  readonly visible?: boolean | undefined;
 
   /**
    * Account which this metric comes from.
    *
    * @default - Deployment account.
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 
   /**
    * Region which this metric comes from.
    *
    * @default - Deployment region.
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Account of the stack this metric is attached to.
    *
    * @default - Deployment account.
    */
-  readonly stackAccount?: string;
+  readonly stackAccount?: string | undefined;
 
   /**
    * Region of the stack this metric is attached to.
    *
    * @default - Deployment region.
    */
-  readonly stackRegion?: string;
+  readonly stackRegion?: string | undefined;
 }
 
 /**
@@ -206,14 +206,14 @@ export interface MathExpressionOptions {
    *
    * @default - Expression value is used as label
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * Color for this metric when added to a Graph in a Dashboard
    *
    * @default - Automatic color
    */
-  readonly color?: string;
+  readonly color?: string | undefined;
 
   /**
    * The period over which the math expression's statistics are applied.
@@ -223,7 +223,7 @@ export interface MathExpressionOptions {
    *
    * @default Duration.minutes(5)
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration | undefined;
 
   /**
    * Account to evaluate search expressions within.
@@ -233,7 +233,7 @@ export interface MathExpressionOptions {
    *
    * @default - Deployment account.
    */
-  readonly searchAccount?: string;
+  readonly searchAccount?: string | undefined;
 
   /**
    * Region to evaluate search expressions within.
@@ -243,7 +243,7 @@ export interface MathExpressionOptions {
    *
    * @default - Deployment region.
    */
-  readonly searchRegion?: string;
+  readonly searchRegion?: string | undefined;
 }
 
 /**
@@ -295,7 +295,7 @@ export interface MathExpressionProps extends MathExpressionOptions {
    *
    * @default - Empty map.
    */
-  readonly usingMetrics?: Record<string, IMetric>;
+  readonly usingMetrics?: Record<string, IMetric> | undefined;
 }
 
 /**
@@ -327,7 +327,7 @@ export interface SearchExpressionOptions {
    *
    * @default - No label.
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * Color for the metric produced by the search expression.
@@ -337,7 +337,7 @@ export interface SearchExpressionOptions {
    *
    * @default - Automatically assigned.
    */
-  readonly color?: string;
+  readonly color?: string | undefined;
 
   /**
    * The period over which the search expression's statistics are applied.
@@ -346,21 +346,21 @@ export interface SearchExpressionOptions {
    *
    * @default Duration.minutes(5)
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration | undefined;
 
   /**
    * Account to evaluate search expressions within.
    *
    * @default - Deployment account.
    */
-  readonly searchAccount?: string;
+  readonly searchAccount?: string | undefined;
 
   /**
    * Region to evaluate search expressions within.
    *
    * @default - Deployment region.
    */
-  readonly searchRegion?: string;
+  readonly searchRegion?: string | undefined;
 }
 
 /**
@@ -437,7 +437,7 @@ export class Metric implements IMetric {
   }
 
   /** Dimensions of this metric */
-  public readonly dimensions?: DimensionHash;
+  public readonly dimensions?: DimensionHash | undefined;
   /** Namespace of this metric */
   public readonly namespace: string;
   /** Name of this metric */
@@ -447,37 +447,37 @@ export class Metric implements IMetric {
   /** Statistic of this metric */
   public readonly statistic: string;
   /** Label for this metric when added to a Graph in a Dashboard */
-  public readonly label?: string;
+  public readonly label?: string | undefined;
   /** The hex color code used when this metric is rendered on a graph. */
-  public readonly color?: string;
+  public readonly color?: string | undefined;
   /** Unique identifier for this metric when used in dashboard widgets. */
-  public readonly id?: string;
+  public readonly id?: string | undefined;
   /** Whether this metric should be visible in dashboard graphs. */
-  public readonly visible?: boolean;
+  public readonly visible?: boolean | undefined;
 
   /** Unit of the metric. */
-  public readonly unit?: Unit;
+  public readonly unit?: Unit | undefined;
 
   /** Account of the stack this metric is attached to. */
-  readonly #stackAccount?: string;
+  readonly #stackAccount?: string | undefined;
 
   /** Region of the stack this metric is attached to. */
-  readonly #stackRegion?: string;
+  readonly #stackRegion?: string | undefined;
 
   /** Account set directly on the metric, taking precedence over the stack account. */
-  readonly #accountOverride?: string;
+  readonly #accountOverride?: string | undefined;
 
   /** Region set directly on the metric, taking precedence over the stack region. */
-  readonly #regionOverride?: string;
+  readonly #regionOverride?: string | undefined;
 
   /**
    * Warnings attached to this metric.
    * @deprecated - use warningsV2
    **/
-  public readonly warnings?: string[];
+  public readonly warnings?: string[] | undefined;
 
   /** Warnings attached to this metric. */
-  public readonly warningsV2?: { [id: string]: string };
+  public readonly warningsV2?: { [id: string]: string } | undefined;
 
   constructor(props: MetricProps) {
     this.period = props.period || cdk.Duration.minutes(5);
@@ -789,13 +789,13 @@ export class MathExpression implements IMetric {
   /**
    * Label for this metric when added to a Graph.
    */
-  public readonly label?: string;
+  public readonly label?: string | undefined;
 
   /**
    * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
    * The `Color` class has a set of standard colors that can be used here.
    */
-  public readonly color?: string;
+  public readonly color?: string | undefined;
 
   /**
    * Aggregation period of this metric
@@ -805,23 +805,23 @@ export class MathExpression implements IMetric {
   /**
    * Account to evaluate search expressions within.
    */
-  public readonly searchAccount?: string;
+  public readonly searchAccount?: string | undefined;
 
   /**
    * Region to evaluate search expressions within.
    */
-  public readonly searchRegion?: string;
+  public readonly searchRegion?: string | undefined;
 
   /**
    * Warnings generated by this math expression
    * @deprecated - use warningsV2
    */
-  public readonly warnings?: string[];
+  public readonly warnings?: string[] | undefined;
 
   /**
    * Warnings generated by this math expression
    */
-  public readonly warningsV2?: { [id: string]: string };
+  public readonly warningsV2?: { [id: string]: string } | undefined;
 
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
@@ -1012,13 +1012,13 @@ export class SearchExpression implements IMetric {
   /**
    * The label is used as a prefix for the title of each metric returned by the search expression.
    */
-  public readonly label?: string;
+  public readonly label?: string | undefined;
 
   /**
    * Hex color code (e.g. '#00ff00'), to use when rendering the resulting metrics in a graph.
    * If multiple time series are returned, color is assigned to the first metric, color for the other metrics is automatically assigned
    */
-  public readonly color?: string;
+  public readonly color?: string | undefined;
 
   /**
    * The aggregation period for the metrics produced by the Search Expression.
@@ -1028,23 +1028,23 @@ export class SearchExpression implements IMetric {
   /**
    * Account to evaluate search expressions within.
    */
-  public readonly searchAccount?: string;
+  public readonly searchAccount?: string | undefined;
 
   /**
    * Region to evaluate search expressions within.
    */
-  public readonly searchRegion?: string;
+  public readonly searchRegion?: string | undefined;
 
   /**
    * Warnings generated by this search expression
    * @deprecated - use warningsV2
    */
-  public readonly warnings?: string[];
+  public readonly warnings?: string[] | undefined;
 
   /**
    * Warnings generated by this search expression
    */
-  public readonly warningsV2?: { [id: string]: string };
+  public readonly warningsV2?: { [id: string]: string } | undefined;
 
   constructor(props: SearchExpressionProps) {
     this.expression = props.expression;
@@ -1152,7 +1152,7 @@ export interface CreateAlarmOptions extends CreateAlarmOptionsBase {
    *
    * @default GreaterThanOrEqualToThreshold
    */
-  readonly comparisonOperator?: ComparisonOperator;
+  readonly comparisonOperator?: ComparisonOperator | undefined;
 
   /**
    * The value against which the specified statistic is compared.
@@ -1180,7 +1180,7 @@ export interface AnomalyDetectionMetricOptions extends MathExpressionOptions {
    *
    * @default 2
    */
-  readonly stdDevs?: number;
+  readonly stdDevs?: number | undefined;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {

@@ -220,28 +220,28 @@ export interface SynthesizeStackArtifactOptions {
    *
    * @default - No additional dependencies
    */
-  readonly additionalDependencies?: string[];
+  readonly additionalDependencies?: string[] | undefined;
 
   /**
    * Values for CloudFormation stack parameters that should be passed when the stack is deployed.
    *
    * @default - No parameters
    */
-  readonly parameters?: { [id: string]: string };
+  readonly parameters?: { [id: string]: string } | undefined;
 
   /**
    * The role that needs to be assumed to deploy the stack
    *
    * @default - No role is assumed (current credentials are used)
    */
-  readonly assumeRoleArn?: string;
+  readonly assumeRoleArn?: string | undefined;
 
   /**
    * The externalID to use with the assumeRoleArn
    *
    * @default - No externalID is used
    */
-  readonly assumeRoleExternalId?: string;
+  readonly assumeRoleExternalId?: string | undefined;
 
   /**
    * Additional options to pass to STS when assuming the role for cloudformation deployments.
@@ -253,35 +253,35 @@ export interface SynthesizeStackArtifactOptions {
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
    * @default - No additional options.
    */
-  readonly assumeRoleAdditionalOptions?: { [key: string]: any };
+  readonly assumeRoleAdditionalOptions?: { [key: string]: any } | undefined;
 
   /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
    */
-  readonly cloudFormationExecutionRoleArn?: string;
+  readonly cloudFormationExecutionRoleArn?: string | undefined;
 
   /**
    * The role to use to look up values from the target AWS account
    *
    * @default - None
    */
-  readonly lookupRole?: cxschema.BootstrapRole;
+  readonly lookupRole?: cxschema.BootstrapRole | undefined;
 
   /**
    * If the stack template has already been included in the asset manifest, its asset URL
    *
    * @default - Not uploaded yet, upload just before deploying
    */
-  readonly stackTemplateAssetObjectUrl?: string;
+  readonly stackTemplateAssetObjectUrl?: string | undefined;
 
   /**
    * Version of bootstrap stack required to deploy this stack
    *
    * @default - No bootstrap stack required
    */
-  readonly requiresBootstrapStackVersion?: number;
+  readonly requiresBootstrapStackVersion?: number | undefined;
 
   /**
    * SSM parameter where the bootstrap stack version number can be found
@@ -296,7 +296,7 @@ export interface SynthesizeStackArtifactOptions {
    *
    * @default - Bootstrap stack version number looked up
    */
-  readonly bootstrapStackVersionSsmParameter?: string;
+  readonly bootstrapStackVersionSsmParameter?: string | undefined;
 }
 
 function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileAssetSource {

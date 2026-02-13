@@ -90,7 +90,7 @@ export interface AliasConfiguration {
    * @default SSLMethod.SNI
    * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html
    */
-  readonly sslMethod?: SSLMethod;
+  readonly sslMethod?: SSLMethod | undefined;
 
   /**
    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
@@ -100,7 +100,7 @@ export interface AliasConfiguration {
    *
    * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
    */
-  readonly securityPolicy?: SecurityPolicyProtocol;
+  readonly securityPolicy?: SecurityPolicyProtocol | undefined;
 }
 
 /**
@@ -112,32 +112,32 @@ export interface LoggingConfiguration {
    *
    * @default - A logging bucket is automatically created.
    */
-  readonly bucket?: s3.IBucket;
+  readonly bucket?: s3.IBucket | undefined;
 
   /**
    * Whether to include the cookies in the logs
    *
    * @default false
    */
-  readonly includeCookies?: boolean;
+  readonly includeCookies?: boolean | undefined;
 
   /**
    * Where in the bucket to store logs
    *
    * @default - No prefix.
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 }
 
 // Subset of SourceConfiguration for rendering properties internally
 interface SourceConfigurationRender {
-  readonly connectionAttempts?: number;
-  readonly connectionTimeout?: cdk.Duration;
-  readonly s3OriginSource?: S3OriginConfig;
-  readonly customOriginSource?: CustomOriginConfig;
-  readonly originPath?: string;
-  readonly originHeaders?: { [key: string]: string };
-  readonly originShieldRegion?: string;
+  readonly connectionAttempts?: number | undefined;
+  readonly connectionTimeout?: cdk.Duration | undefined;
+  readonly s3OriginSource?: S3OriginConfig | undefined;
+  readonly customOriginSource?: CustomOriginConfig | undefined;
+  readonly originPath?: string | undefined;
+  readonly originHeaders?: { [key: string]: string } | undefined;
+  readonly originShieldRegion?: string | undefined;
 }
 
 /**
@@ -155,7 +155,7 @@ export interface SourceConfiguration {
    *
    * @default 3
    */
-  readonly connectionAttempts?: number;
+  readonly connectionAttempts?: number | undefined;
 
   /**
    * The number of seconds that CloudFront waits when trying to establish a connection to the origin.
@@ -163,38 +163,38 @@ export interface SourceConfiguration {
    *
    * @default cdk.Duration.seconds(10)
    */
-  readonly connectionTimeout?: cdk.Duration;
+  readonly connectionTimeout?: cdk.Duration | undefined;
 
   /**
    * An s3 origin source - if you're using s3 for your assets
    */
-  readonly s3OriginSource?: S3OriginConfig;
+  readonly s3OriginSource?: S3OriginConfig | undefined;
 
   /**
    * A custom origin source - for all non-s3 sources.
    */
-  readonly customOriginSource?: CustomOriginConfig;
+  readonly customOriginSource?: CustomOriginConfig | undefined;
 
   /**
    * An s3 origin source for failover in case the s3OriginSource returns invalid status code
    *
    * @default - no failover configuration
    */
-  readonly failoverS3OriginSource?: S3OriginConfig;
+  readonly failoverS3OriginSource?: S3OriginConfig | undefined;
 
   /**
    * A custom origin source for failover in case the s3OriginSource returns invalid status code
    *
    * @default - no failover configuration
    */
-  readonly failoverCustomOriginSource?: CustomOriginConfig;
+  readonly failoverCustomOriginSource?: CustomOriginConfig | undefined;
 
   /**
    * HTTP status code to failover to second origin
    *
    * @default [500, 502, 503, 504]
    */
-  readonly failoverCriteriaStatusCodes?: FailoverStatusCode[];
+  readonly failoverCriteriaStatusCodes?: FailoverStatusCode[] | undefined;
 
   /**
    * The behaviors associated with this source.
@@ -208,7 +208,7 @@ export interface SourceConfiguration {
    * @default /
    * @deprecated Use originPath on s3OriginSource or customOriginSource
    */
-  readonly originPath?: string;
+  readonly originPath?: string | undefined;
 
   /**
    * Any additional headers to pass to the origin
@@ -216,7 +216,7 @@ export interface SourceConfiguration {
    * @default - No additional headers are passed.
    * @deprecated Use originHeaders on s3OriginSource or customOriginSource
    */
-  readonly originHeaders?: { [key: string]: string };
+  readonly originHeaders?: { [key: string]: string } | undefined;
 
   /**
    * When you enable Origin Shield in the AWS Region that has the lowest latency to your origin, you can get better network performance
@@ -225,7 +225,7 @@ export interface SourceConfiguration {
    *
    * @default - origin shield not enabled
    */
-  readonly originShieldRegion?: string;
+  readonly originShieldRegion?: string | undefined;
 }
 
 /**
@@ -242,63 +242,63 @@ export interface CustomOriginConfig {
    *
    * @default 80
    */
-  readonly httpPort?: number;
+  readonly httpPort?: number | undefined;
 
   /**
    * The origin HTTPS port
    *
    * @default 443
    */
-  readonly httpsPort?: number;
+  readonly httpsPort?: number | undefined;
 
   /**
    * The keep alive timeout when making calls in seconds.
    *
    * @default Duration.seconds(5)
    */
-  readonly originKeepaliveTimeout?: cdk.Duration;
+  readonly originKeepaliveTimeout?: cdk.Duration | undefined;
 
   /**
    * The protocol (http or https) policy to use when interacting with the origin.
    *
    * @default OriginProtocolPolicy.HttpsOnly
    */
-  readonly originProtocolPolicy?: OriginProtocolPolicy;
+  readonly originProtocolPolicy?: OriginProtocolPolicy | undefined;
 
   /**
    * The read timeout when calling the origin in seconds
    *
    * @default Duration.seconds(30)
    */
-  readonly originReadTimeout?: cdk.Duration;
+  readonly originReadTimeout?: cdk.Duration | undefined;
 
   /**
    * The SSL versions to use when interacting with the origin.
    *
    * @default OriginSslPolicy.TLS_V1_2
    */
-  readonly allowedOriginSSLVersions?: OriginSslPolicy[];
+  readonly allowedOriginSSLVersions?: OriginSslPolicy[] | undefined;
 
   /**
    * The relative path to the origin root to use for sources.
    *
    * @default /
    */
-  readonly originPath?: string;
+  readonly originPath?: string | undefined;
 
   /**
    * Any additional headers to pass to the origin
    *
    * @default - No additional headers are passed.
    */
-  readonly originHeaders?: { [key: string]: string };
+  readonly originHeaders?: { [key: string]: string } | undefined;
 
   /**
    * When you enable Origin Shield in the AWS Region that has the lowest latency to your origin, you can get better network performance
    *
    * @default - origin shield not enabled
    */
-  readonly originShieldRegion?: string;
+  readonly originShieldRegion?: string | undefined;
 }
 
 export enum OriginSslPolicy {
@@ -322,28 +322,28 @@ export interface S3OriginConfig {
    *
    * @default No Origin Access Identity which requires the S3 bucket to be public accessible
    */
-  readonly originAccessIdentity?: ICloudFrontOriginAccessIdentityRef & iam.IGrantable;
+  readonly originAccessIdentity?: ICloudFrontOriginAccessIdentityRef & iam.IGrantable | undefined;
 
   /**
    * The relative path to the origin root to use for sources.
    *
    * @default /
    */
-  readonly originPath?: string;
+  readonly originPath?: string | undefined;
 
   /**
    * Any additional headers to pass to the origin
    *
    * @default - No additional headers are passed.
    */
-  readonly originHeaders?: { [key: string]: string };
+  readonly originHeaders?: { [key: string]: string } | undefined;
 
   /**
    * When you enable Origin Shield in the AWS Region that has the lowest latency to your origin, you can get better network performance
    *
    * @default - origin shield not enabled
    */
-  readonly originShieldRegion?: string;
+  readonly originShieldRegion?: string | undefined;
 }
 
 /**
@@ -373,7 +373,7 @@ export interface Behavior {
    *
    * @default true
    */
-  readonly compress?: boolean;
+  readonly compress?: boolean | undefined;
 
   /**
    * If this behavior is the default behavior for the distribution.
@@ -381,7 +381,7 @@ export interface Behavior {
    * You must specify exactly one default distribution per CloudFront distribution.
    * The default behavior is allowed to omit the "path" property.
    */
-  readonly isDefaultBehavior?: boolean;
+  readonly isDefaultBehavior?: boolean | undefined;
 
   /**
    * Trusted signers is how CloudFront allows you to serve private content.
@@ -390,7 +390,7 @@ export interface Behavior {
    * If you pass a non empty value, all requests for this behavior must be signed (no public access will be allowed)
    * @deprecated - We recommend using trustedKeyGroups instead of trustedSigners.
    */
-  readonly trustedSigners?: string[];
+  readonly trustedSigners?: string[] | undefined;
 
   /**
    * A list of Key Groups that CloudFront can use to validate signed URLs or signed cookies.
@@ -398,7 +398,7 @@ export interface Behavior {
    * @default - no KeyGroups are associated with cache behavior
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
-  readonly trustedKeyGroups?: IKeyGroupRef[];
+  readonly trustedKeyGroups?: IKeyGroupRef[] | undefined;
 
   /**
    *
@@ -409,28 +409,28 @@ export interface Behavior {
    * @default 86400 (1 day)
    *
    */
-  readonly defaultTtl?: cdk.Duration;
+  readonly defaultTtl?: cdk.Duration | undefined;
 
   /**
    * The method this CloudFront distribution responds do.
    *
    * @default GET_HEAD
    */
-  readonly allowedMethods?: CloudFrontAllowedMethods;
+  readonly allowedMethods?: CloudFrontAllowedMethods | undefined;
 
   /**
    * The path this behavior responds to.
    * Required for all non-default behaviors. (The default behavior implicitly has "*" as the path pattern. )
    *
    */
-  readonly pathPattern?: string;
+  readonly pathPattern?: string | undefined;
 
   /**
    * Which methods are cached by CloudFront by default.
    *
    * @default GET_HEAD
    */
-  readonly cachedMethods?: CloudFrontAllowedCachedMethods;
+  readonly cachedMethods?: CloudFrontAllowedCachedMethods | undefined;
 
   /**
    * The values CloudFront will forward to the origin when making a request.
@@ -438,13 +438,13 @@ export interface Behavior {
    * @default none (no cookies - no headers)
    *
    */
-  readonly forwardedValues?: CfnDistribution.ForwardedValuesProperty;
+  readonly forwardedValues?: CfnDistribution.ForwardedValuesProperty | undefined;
 
   /**
    * The minimum amount of time that you want objects to stay in the cache
    * before CloudFront queries your origin.
    */
-  readonly minTtl?: cdk.Duration;
+  readonly minTtl?: cdk.Duration | undefined;
 
   /**
    * The max amount of time you want objects to stay in the cache
@@ -452,28 +452,28 @@ export interface Behavior {
    *
    * @default Duration.seconds(31536000) (one year)
    */
-  readonly maxTtl?: cdk.Duration;
+  readonly maxTtl?: cdk.Duration | undefined;
 
   /**
    * Declares associated lambda@edge functions for this distribution behaviour.
    *
    * @default No lambda function associated
    */
-  readonly lambdaFunctionAssociations?: LambdaFunctionAssociation[];
+  readonly lambdaFunctionAssociations?: LambdaFunctionAssociation[] | undefined;
 
   /**
    * The CloudFront functions to invoke before serving the contents.
    *
    * @default - no functions will be invoked
    */
-  readonly functionAssociations?: FunctionAssociation[];
+  readonly functionAssociations?: FunctionAssociation[] | undefined;
 
   /**
    * The viewer policy for this behavior.
    *
    * @default - the distribution wide viewer protocol policy will be used
    */
-  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy | undefined;
 }
 
 export interface LambdaFunctionAssociation {
@@ -496,7 +496,7 @@ export interface LambdaFunctionAssociation {
    *
    * @default false
    */
-  readonly includeBody?: boolean;
+  readonly includeBody?: boolean | undefined;
 }
 
 export interface ViewerCertificateOptions {
@@ -508,7 +508,7 @@ export interface ViewerCertificateOptions {
    * @default SSLMethod.SNI
    * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html
    */
-  readonly sslMethod?: SSLMethod;
+  readonly sslMethod?: SSLMethod | undefined;
 
   /**
    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
@@ -518,12 +518,12 @@ export interface ViewerCertificateOptions {
    *
    * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
    */
-  readonly securityPolicy?: SecurityPolicyProtocol;
+  readonly securityPolicy?: SecurityPolicyProtocol | undefined;
 
   /**
    * Domain names on the certificate (both main domain name and Subject Alternative names)
    */
-  readonly aliases?: string[];
+  readonly aliases?: string[] | undefined;
 }
 
 /**
@@ -592,56 +592,56 @@ export interface CloudFrontWebDistributionProps {
    * @default - None.
    * @deprecated see `CloudFrontWebDistributionProps#viewerCertificate` with `ViewerCertificate#acmCertificate`
    */
-  readonly aliasConfiguration?: AliasConfiguration;
+  readonly aliasConfiguration?: AliasConfiguration | undefined;
 
   /**
    * A comment for this distribution in the CloudFront console.
    *
    * @default - No comment is added to distribution.
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * Enable or disable the distribution.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The default object to serve.
    *
    * @default - "index.html" is served.
    */
-  readonly defaultRootObject?: string;
+  readonly defaultRootObject?: string | undefined;
 
   /**
    * If your distribution should have IPv6 enabled.
    *
    * @default true
    */
-  readonly enableIpV6?: boolean;
+  readonly enableIpV6?: boolean | undefined;
 
   /**
    * The max supported HTTP Versions.
    *
    * @default HttpVersion.HTTP2
    */
-  readonly httpVersion?: HttpVersion;
+  readonly httpVersion?: HttpVersion | undefined;
 
   /**
    * The price class for the distribution (this impacts how many locations CloudFront uses for your distribution, and billing)
    *
    * @default PriceClass.PRICE_CLASS_100 the cheapest option for CloudFront is picked by default.
    */
-  readonly priceClass?: PriceClass;
+  readonly priceClass?: PriceClass | undefined;
 
   /**
    * The default viewer policy for incoming clients.
    *
    * @default RedirectToHTTPs
    */
-  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy | undefined;
 
   /**
    * The origin configurations for this distribution. Behaviors are a part of the origin.
@@ -655,7 +655,7 @@ export interface CloudFrontWebDistributionProps {
    *
    * @default - no logging is enabled by default.
    */
-  readonly loggingConfig?: LoggingConfiguration;
+  readonly loggingConfig?: LoggingConfiguration | undefined;
 
   /**
    * How CloudFront should handle requests that are not successful (eg PageNotFound)
@@ -665,7 +665,7 @@ export interface CloudFrontWebDistributionProps {
    *
    * @default - No custom error configuration.
    */
-  readonly errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
+  readonly errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[] | undefined;
 
   /**
    * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
@@ -680,7 +680,7 @@ export interface CloudFrontWebDistributionProps {
    *
    * @default - No AWS Web Application Firewall web access control list (web ACL).
    */
-  readonly webACLId?: string;
+  readonly webACLId?: string | undefined;
 
   /**
    * Specifies whether you want viewers to use HTTP or HTTPS to request your objects,
@@ -691,14 +691,14 @@ export interface CloudFrontWebDistributionProps {
    *
    * @see https://aws.amazon.com/premiumsupport/knowledge-center/custom-ssl-certificate-cloudfront/
    */
-  readonly viewerCertificate?: ViewerCertificate;
+  readonly viewerCertificate?: ViewerCertificate | undefined;
 
   /**
    * Controls the countries in which your content is distributed.
    *
    * @default No geo restriction
    */
-  readonly geoRestriction?: GeoRestriction;
+  readonly geoRestriction?: GeoRestriction | undefined;
 }
 
 /**
@@ -814,7 +814,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
    */
-  public readonly loggingBucket?: s3.IBucket;
+  public readonly loggingBucket?: s3.IBucket | undefined;
 
   /**
    * The domain name created by CloudFront for this distribution.

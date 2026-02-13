@@ -63,21 +63,21 @@ export interface SubnetMapping {
    *
    * @default undefined - AWS default is to allocate a new IP address for internet-facing load balancers
    */
-  readonly allocationId?: string;
+  readonly allocationId?: string | undefined;
 
   /**
    * The IPv6 address.
    *
    * @default undefined - AWS default is to allocate an IPv6 address from the subnet's pool
    */
-  readonly ipv6Address?: string;
+  readonly ipv6Address?: string | undefined;
 
   /**
    * The private IPv4 address for an internal load balancer.
    *
    * @default undefined - AWS default is to allocate a private IPv4 address from the subnet's pool
    */
-  readonly privateIpv4Address?: string;
+  readonly privateIpv4Address?: string | undefined;
 
   /**
    * The IPv6 prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
@@ -87,7 +87,7 @@ export interface SubnetMapping {
    *
    * @default undefined - AWS default is `SourceNatIpv6Prefix.autoAssigned()` for IPv6 load balancers
    */
-  readonly sourceNatIpv6Prefix?: SourceNatIpv6Prefix;
+  readonly sourceNatIpv6Prefix?: SourceNatIpv6Prefix | undefined;
 }
 
 /**
@@ -99,7 +99,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default - Automatically generated name.
    */
-  readonly loadBalancerName?: string;
+  readonly loadBalancerName?: string | undefined;
 
   /**
    * The VPC network to place the load balancer in
@@ -111,7 +111,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default false
    */
-  readonly internetFacing?: boolean;
+  readonly internetFacing?: boolean | undefined;
 
   /**
    * Which subnets place the load balancer in
@@ -119,14 +119,14 @@ export interface BaseLoadBalancerProps {
    * @default - the Vpc default strategy.
    *
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Indicates whether deletion protection is enabled.
    *
    * @default false
    */
-  readonly deletionProtection?: boolean;
+  readonly deletionProtection?: boolean | undefined;
 
   /**
    * Indicates whether cross-zone load balancing is enabled.
@@ -135,14 +135,14 @@ export interface BaseLoadBalancerProps {
    * This can not be `false` for Application Load Balancers.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-loadbalancer-loadbalancerattribute.html
    */
-  readonly crossZoneEnabled?: boolean;
+  readonly crossZoneEnabled?: boolean | undefined;
 
   /**
    * Indicates whether the load balancer blocks traffic through the Internet Gateway (IGW).
    *
    * @default - false for internet-facing load balancers and true for internal load balancers
    */
-  readonly denyAllIgwTraffic?: boolean;
+  readonly denyAllIgwTraffic?: boolean | undefined;
 
   /**
    * The minimum capacity (LCU) for a load balancer.
@@ -153,7 +153,7 @@ export interface BaseLoadBalancerProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/capacity-unit-reservation.html
    * @see https://exampleloadbalancer.com/ondemand_capacity_reservation_calculator.html
    */
-  readonly minimumCapacityUnit?: number;
+  readonly minimumCapacityUnit?: number | undefined;
 }
 
 export interface ILoadBalancerV2 extends IResource, aws_elasticloadbalancingv2.ILoadBalancerRef {
@@ -184,13 +184,13 @@ export interface BaseLoadBalancerLookupOptions {
    * Find by load balancer's ARN
    * @default - does not search by load balancer arn
    */
-  readonly loadBalancerArn?: string;
+  readonly loadBalancerArn?: string | undefined;
 
   /**
    * Match load balancer tags.
    * @default - does not match load balancers by tags
    */
-  readonly loadBalancerTags?: Record<string, string>;
+  readonly loadBalancerTags?: Record<string, string> | undefined;
 }
 
 /**
@@ -313,7 +313,7 @@ export abstract class BaseLoadBalancer extends Resource {
    *
    * This property is always defined (not `null` or `undefined`) for sub-classes of `BaseLoadBalancer`.
    */
-  public readonly vpc?: ec2.IVpc;
+  public readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Attributes set on this load balancer

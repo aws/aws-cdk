@@ -24,9 +24,9 @@ export class Stage implements IStage {
   public readonly stageName: string;
   public readonly transitionToEnabled: boolean;
   public readonly transitionDisabledReason: string;
-  private readonly beforeEntry?: Conditions;
-  private readonly onSuccess?: Conditions;
-  private readonly onFailure?: FailureConditions;
+  private readonly beforeEntry?: Conditions | undefined;
+  private readonly onSuccess?: Conditions | undefined;
+  private readonly onFailure?: FailureConditions | undefined;
   private readonly scope: Construct;
   private readonly _pipeline: Pipeline;
   private readonly _actions = new Array<FullActionDescriptor>();

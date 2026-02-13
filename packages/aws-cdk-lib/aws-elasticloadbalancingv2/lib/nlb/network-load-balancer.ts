@@ -45,7 +45,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default - No security groups associated with the load balancer.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The type of IP addresses to use
@@ -55,7 +55,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default IpAddressType.IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 
   /**
    * The AZ affinity routing policy
@@ -64,14 +64,14 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default - AZ affinity is disabled.
    */
-  readonly clientRoutingPolicy?: ClientRoutingPolicy;
+  readonly clientRoutingPolicy?: ClientRoutingPolicy | undefined;
 
   /**
    * Indicates whether to evaluate inbound security group rules for traffic sent to a Network Load Balancer through AWS PrivateLink.
    *
    * @default true
    */
-  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
+  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean | undefined;
 
   /**
    * Indicates whether zonal shift is enabled
@@ -80,7 +80,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  readonly zonalShift?: boolean;
+  readonly zonalShift?: boolean | undefined;
 
   /**
    * Indicates whether to use an IPv6 prefix from each subnet for source NAT.
@@ -89,14 +89,14 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default undefined - NLB default behavior is false
    */
-  readonly enablePrefixForIpv6SourceNat?: boolean;
+  readonly enablePrefixForIpv6SourceNat?: boolean | undefined;
 
   /**
    * Subnet information for the load balancer.
    *
    * @default undefined - The VPC default strategy for subnets is used
    */
-  readonly subnetMappings?: SubnetMapping[];
+  readonly subnetMappings?: SubnetMapping[] | undefined;
 
   /**
    * Create a Network Load Balancer without security groups.
@@ -109,7 +109,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  readonly disableSecurityGroups?: boolean;
+  readonly disableSecurityGroups?: boolean | undefined;
 }
 
 /**
@@ -126,14 +126,14 @@ export interface NetworkLoadBalancerAttributes {
    *
    * @default - When not provided, LB cannot be used as Route53 Alias target.
    */
-  readonly loadBalancerCanonicalHostedZoneId?: string;
+  readonly loadBalancerCanonicalHostedZoneId?: string | undefined;
 
   /**
    * The DNS name of this load balancer
    *
    * @default - When not provided, LB cannot be used as Route53 Alias target.
    */
-  readonly loadBalancerDnsName?: string;
+  readonly loadBalancerDnsName?: string | undefined;
 
   /**
    * The VPC to associate with the load balancer.
@@ -141,14 +141,14 @@ export interface NetworkLoadBalancerAttributes {
    * @default - When not provided, listeners cannot be created on imported load
    * balancers.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Security groups to associate with this load balancer
    *
    * @default - No security groups associated with the load balancer.
    */
-  readonly loadBalancerSecurityGroups?: string[];
+  readonly loadBalancerSecurityGroups?: string[] | undefined;
 }
 
 /**
@@ -284,10 +284,10 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   }
 
   public readonly metrics: INetworkLoadBalancerMetrics;
-  public readonly ipAddressType?: IpAddressType;
+  public readonly ipAddressType?: IpAddressType | undefined;
   public readonly connections: ec2.Connections;
   private readonly isSecurityGroupsPropertyDefined: boolean;
-  private readonly _enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
+  private readonly _enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean | undefined;
   private enablePrefixForIpv6SourceNat?: boolean;
 
   /**
@@ -607,7 +607,7 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
   /**
    * The VPC this load balancer has been created in (if available)
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * All metrics available for this load balancer
@@ -617,21 +617,21 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
   /**
    * Security groups associated with this load balancer
    */
-  readonly securityGroups?: string[];
+  readonly securityGroups?: string[] | undefined;
 
   /**
    * The type of IP addresses to use
    *
    * @default IpAddressType.IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 
   /**
    * Indicates whether to evaluate inbound security group rules for traffic sent to a Network Load Balancer through AWS PrivateLink
    *
    * @default on
    */
-  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string;
+  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string | undefined;
 
   /**
    * Add a listener to this load balancer
@@ -648,10 +648,10 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;
   public readonly loadBalancerArn: string;
-  public readonly vpc?: ec2.IVpc;
+  public readonly vpc?: ec2.IVpc | undefined;
   public readonly metrics: INetworkLoadBalancerMetrics;
-  public readonly securityGroups?: string[];
-  public readonly ipAddressType?: IpAddressType;
+  public readonly securityGroups?: string[] | undefined;
+  public readonly ipAddressType?: IpAddressType | undefined;
   public readonly connections: ec2.Connections;
 
   public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {

@@ -149,7 +149,7 @@ export interface CapacityConfig {
    * @default - no dedicated master nodes
    * @deprecated use opensearchservice module instead
    */
-  readonly masterNodes?: number;
+  readonly masterNodes?: number | undefined;
 
   /**
    * The hardware configuration of the computer that hosts the dedicated master
@@ -161,7 +161,7 @@ export interface CapacityConfig {
    * @default - r5.large.elasticsearch
    * @deprecated use opensearchservice module instead
    */
-  readonly masterNodeInstanceType?: string;
+  readonly masterNodeInstanceType?: string | undefined;
 
   /**
    * The number of data nodes (instances) to use in the Amazon ES domain.
@@ -169,7 +169,7 @@ export interface CapacityConfig {
    * @default - 1
    * @deprecated use opensearchservice module instead
    */
-  readonly dataNodes?: number;
+  readonly dataNodes?: number | undefined;
 
   /**
    * The instance type for your data nodes, such as
@@ -180,7 +180,7 @@ export interface CapacityConfig {
    * @default - r5.large.elasticsearch
    * @deprecated use opensearchservice module instead
    */
-  readonly dataNodeInstanceType?: string;
+  readonly dataNodeInstanceType?: string | undefined;
 
   /**
    * The number of UltraWarm nodes (instances) to use in the Amazon ES domain.
@@ -188,7 +188,7 @@ export interface CapacityConfig {
    * @default - no UltraWarm nodes
    * @deprecated use opensearchservice module instead
    */
-  readonly warmNodes?: number;
+  readonly warmNodes?: number | undefined;
 
   /**
    * The instance type for your UltraWarm node, such as `ultrawarm1.medium.elasticsearch`.
@@ -199,7 +199,7 @@ export interface CapacityConfig {
    * @default - ultrawarm1.medium.elasticsearch
    * @deprecated use opensearchservice module instead
    */
-  readonly warmInstanceType?: string;
+  readonly warmInstanceType?: string | undefined;
 
 }
 
@@ -223,7 +223,7 @@ export interface ZoneAwarenessConfig {
    * @default - false
    * @deprecated use opensearchservice module instead
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * If you enabled multiple Availability Zones (AZs), the number of AZs that you
@@ -232,7 +232,7 @@ export interface ZoneAwarenessConfig {
    * @default - 2 if zone awareness is enabled.
    * @deprecated use opensearchservice module instead
    */
-  readonly availabilityZoneCount?: number;
+  readonly availabilityZoneCount?: number | undefined;
 }
 
 /**
@@ -252,7 +252,7 @@ export interface EbsOptions {
    * @default - true
    * @deprecated use opensearchservice module instead
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The number of I/O operations per second (IOPS) that the volume
@@ -262,7 +262,7 @@ export interface EbsOptions {
    * @default - iops are not set.
    * @deprecated use opensearchservice module instead
    */
-  readonly iops?: number;
+  readonly iops?: number | undefined;
 
   /**
    * The size (in GiB) of the EBS volume for each data node. The minimum and
@@ -275,7 +275,7 @@ export interface EbsOptions {
    * @default 10
    * @deprecated use opensearchservice module instead
    */
-  readonly volumeSize?: number;
+  readonly volumeSize?: number | undefined;
 
   /**
    * The EBS volume type to use with the Amazon ES domain, such as standard, gp2, io1.
@@ -286,7 +286,7 @@ export interface EbsOptions {
    * @default gp2
    * @deprecated use opensearchservice module instead
    */
-  readonly volumeType?: ec2.EbsDeviceVolumeType;
+  readonly volumeType?: ec2.EbsDeviceVolumeType | undefined;
 }
 
 /**
@@ -302,7 +302,7 @@ export interface LoggingOptions {
    * @default - false
    * @deprecated use opensearchservice module instead
    */
-  readonly slowSearchLogEnabled?: boolean;
+  readonly slowSearchLogEnabled?: boolean | undefined;
 
   /**
    * Log slow searches to this log group.
@@ -310,7 +310,7 @@ export interface LoggingOptions {
    * @default - a new log group is created if slow search logging is enabled
    * @deprecated use opensearchservice module instead
    */
-  readonly slowSearchLogGroup?: logs.ILogGroupRef;
+  readonly slowSearchLogGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * Specify if slow index logging should be set up.
@@ -319,7 +319,7 @@ export interface LoggingOptions {
    * @default - false
    * @deprecated use opensearchservice module instead
    */
-  readonly slowIndexLogEnabled?: boolean;
+  readonly slowIndexLogEnabled?: boolean | undefined;
 
   /**
    * Log slow indices to this log group.
@@ -327,7 +327,7 @@ export interface LoggingOptions {
    * @default - a new log group is created if slow index logging is enabled
    * @deprecated use opensearchservice module instead
    */
-  readonly slowIndexLogGroup?: logs.ILogGroupRef;
+  readonly slowIndexLogGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * Specify if Elasticsearch application logging should be set up.
@@ -336,7 +336,7 @@ export interface LoggingOptions {
    * @default - false
    * @deprecated use opensearchservice module instead
    */
-  readonly appLogEnabled?: boolean;
+  readonly appLogEnabled?: boolean | undefined;
 
   /**
    * Log Elasticsearch application logs to this log group.
@@ -344,7 +344,7 @@ export interface LoggingOptions {
    * @default - a new log group is created if app logging is enabled
    * @deprecated use opensearchservice module instead
    */
-  readonly appLogGroup?: logs.ILogGroupRef;
+  readonly appLogGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * Specify if Elasticsearch audit logging should be set up.
@@ -353,7 +353,7 @@ export interface LoggingOptions {
    * @default - false
    * @deprecated use opensearchservice module instead
    */
-  readonly auditLogEnabled?: boolean;
+  readonly auditLogEnabled?: boolean | undefined;
 
   /**
    * Log Elasticsearch audit logs to this log group.
@@ -361,7 +361,7 @@ export interface LoggingOptions {
    * @default - a new log group is created if audit logging is enabled
    * @deprecated use opensearchservice module instead
    */
-  readonly auditLogGroup?: logs.ILogGroupRef;
+  readonly auditLogGroup?: logs.ILogGroupRef | undefined;
 }
 
 /**
@@ -378,7 +378,7 @@ export interface EncryptionAtRestOptions {
    * @default - encryption at rest is disabled.
    * @deprecated use opensearchservice module instead
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * Supply if using KMS key for encryption at rest.
@@ -386,7 +386,7 @@ export interface EncryptionAtRestOptions {
    * @default - uses default aws/es KMS key.
    * @deprecated use opensearchservice module instead
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 }
 
 /**
@@ -442,7 +442,7 @@ export interface AdvancedSecurityOptions {
    * @default - fine-grained access control is disabled
    * @deprecated use opensearchservice module instead
    */
-  readonly masterUserArn?: string;
+  readonly masterUserArn?: string | undefined;
 
   /**
    * Username for the master user. Only specify this or masterUserArn, but not both.
@@ -450,7 +450,7 @@ export interface AdvancedSecurityOptions {
    * @default - fine-grained access control is disabled
    * @deprecated use opensearchservice module instead
    */
-  readonly masterUserName?: string;
+  readonly masterUserName?: string | undefined;
 
   /**
    * Password for the master user.
@@ -462,7 +462,7 @@ export interface AdvancedSecurityOptions {
    * @default - A Secrets Manager generated password
    * @deprecated use opensearchservice module instead
    */
-  readonly masterUserPassword?: cdk.SecretValue;
+  readonly masterUserPassword?: cdk.SecretValue | undefined;
 }
 
 /**
@@ -483,14 +483,14 @@ export interface CustomEndpointOptions {
    * @default - create a new one
    * @deprecated use opensearchservice module instead
    */
-  readonly certificate?: ICertificateRef;
+  readonly certificate?: ICertificateRef | undefined;
 
   /**
    * The hosted zone in Route53 to create the CNAME record in
    * @default - do not create a CNAME
    * @deprecated use opensearchservice module instead
    */
-  readonly hostedZone?: route53.IHostedZone;
+  readonly hostedZone?: route53.IHostedZone | undefined;
 }
 
 /**
@@ -505,7 +505,7 @@ export interface DomainProps {
    * @default - No access policies.
    * @deprecated use opensearchservice module instead
    */
-  readonly accessPolicies?: iam.PolicyStatement[];
+  readonly accessPolicies?: iam.PolicyStatement[] | undefined;
 
   /**
    * Additional options to specify for the Amazon ES domain.
@@ -514,7 +514,7 @@ export interface DomainProps {
    * @default - no advanced options are specified
    * @deprecated use opensearchservice module instead
    */
-  readonly advancedOptions?: { [key: string]: (string) };
+  readonly advancedOptions?: { [key: string]: (string) } | undefined;
 
   /**
    * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
@@ -522,7 +522,7 @@ export interface DomainProps {
    * @default - Cognito not used for authentication to Kibana.
    * @deprecated use opensearchservice module instead
    */
-  readonly cognitoKibanaAuth?: CognitoOptions;
+  readonly cognitoKibanaAuth?: CognitoOptions | undefined;
 
   /**
    * Enforces a particular physical domain name.
@@ -530,7 +530,7 @@ export interface DomainProps {
    * @default - A name will be auto-generated.
    * @deprecated use opensearchservice module instead
    */
-  readonly domainName?: string;
+  readonly domainName?: string | undefined;
 
   /**
    * The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that
@@ -542,7 +542,7 @@ export interface DomainProps {
    * @default - 10 GiB General Purpose (SSD) volumes per node.
    * @deprecated use opensearchservice module instead
    */
-  readonly ebs?: EbsOptions;
+  readonly ebs?: EbsOptions | undefined;
 
   /**
    * The cluster capacity configuration for the Amazon ES domain.
@@ -550,7 +550,7 @@ export interface DomainProps {
    * @default - 1 r5.large.elasticsearch data node; no dedicated master nodes.
    * @deprecated use opensearchservice module instead
    */
-  readonly capacity?: CapacityConfig;
+  readonly capacity?: CapacityConfig | undefined;
 
   /**
    * The cluster zone awareness configuration for the Amazon ES domain.
@@ -558,7 +558,7 @@ export interface DomainProps {
    * @default - no zone awareness (1 AZ)
    * @deprecated use opensearchservice module instead
    */
-  readonly zoneAwareness?: ZoneAwarenessConfig;
+  readonly zoneAwareness?: ZoneAwarenessConfig | undefined;
 
   /**
    * The Elasticsearch version that your domain will leverage.
@@ -573,7 +573,7 @@ export interface DomainProps {
    * @default - No encryption at rest
    * @deprecated use opensearchservice module instead
    */
-  readonly encryptionAtRest?: EncryptionAtRestOptions;
+  readonly encryptionAtRest?: EncryptionAtRestOptions | undefined;
 
   /**
    * Configuration log publishing configuration options.
@@ -581,7 +581,7 @@ export interface DomainProps {
    * @default - No logs are published
    * @deprecated use opensearchservice module instead
    */
-  readonly logging?: LoggingOptions;
+  readonly logging?: LoggingOptions | undefined;
 
   /**
    * Specify true to enable node to node encryption.
@@ -590,7 +590,7 @@ export interface DomainProps {
    * @default - Node to node encryption is not enabled.
    * @deprecated use opensearchservice module instead
    */
-  readonly nodeToNodeEncryption?: boolean;
+  readonly nodeToNodeEncryption?: boolean | undefined;
 
   /**
    * The hour in UTC during which the service takes an automated daily snapshot
@@ -600,7 +600,7 @@ export interface DomainProps {
    * @default - Hourly automated snapshots not used
    * @deprecated use opensearchservice module instead
    */
-  readonly automatedSnapshotStartHour?: number;
+  readonly automatedSnapshotStartHour?: number | undefined;
 
   /**
    * Place the domain inside this VPC.
@@ -609,7 +609,7 @@ export interface DomainProps {
    * @default - Domain is not placed in a VPC.
    * @deprecated use opensearchservice module instead
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The list of security groups that are associated with the VPC endpoints
@@ -621,7 +621,7 @@ export interface DomainProps {
    * @default - One new security group is created.
    * @deprecated use opensearchservice module instead
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The specific vpc subnets the domain will be placed in. You must provide one subnet for each Availability Zone
@@ -634,7 +634,7 @@ export interface DomainProps {
    * @default - All private subnets.
    * @deprecated use opensearchservice module instead
    */
-  readonly vpcSubnets?: ec2.SubnetSelection[];
+  readonly vpcSubnets?: ec2.SubnetSelection[] | undefined;
 
   /**
    * True to require that all traffic to the domain arrive over HTTPS.
@@ -642,7 +642,7 @@ export interface DomainProps {
    * @default - false
    * @deprecated use opensearchservice module instead
    */
-  readonly enforceHttps?: boolean;
+  readonly enforceHttps?: boolean | undefined;
 
   /**
    * The minimum TLS version required for traffic to the domain.
@@ -650,7 +650,7 @@ export interface DomainProps {
    * @default - TLSSecurityPolicy.TLS_1_0
    * @deprecated use opensearchservice module instead
    */
-  readonly tlsSecurityPolicy?: TLSSecurityPolicy;
+  readonly tlsSecurityPolicy?: TLSSecurityPolicy | undefined;
 
   /**
    * Specifies options for fine-grained access control.
@@ -661,7 +661,7 @@ export interface DomainProps {
    * @default - fine-grained access control is disabled
    * @deprecated use opensearchservice module instead
    */
-  readonly fineGrainedAccessControl?: AdvancedSecurityOptions;
+  readonly fineGrainedAccessControl?: AdvancedSecurityOptions | undefined;
 
   /**
    * Configures the domain so that unsigned basic auth is enabled. If no master user is provided a default master user
@@ -676,7 +676,7 @@ export interface DomainProps {
    * @default - false
    * @deprecated use opensearchservice module instead
    */
-  readonly useUnsignedBasicAuth?: boolean;
+  readonly useUnsignedBasicAuth?: boolean | undefined;
 
   /**
    * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
@@ -686,7 +686,7 @@ export interface DomainProps {
    * @default - false
    * @deprecated use opensearchservice module instead
    */
-  readonly enableVersionUpgrade?: boolean;
+  readonly enableVersionUpgrade?: boolean | undefined;
 
   /**
    * Policy to apply when the domain is removed from the stack
@@ -694,7 +694,7 @@ export interface DomainProps {
    * @default RemovalPolicy.RETAIN
    * @deprecated use opensearchservice module instead
    */
-  readonly removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: cdk.RemovalPolicy | undefined;
 
   /**
    * To configure a custom domain configure these options
@@ -703,7 +703,7 @@ export interface DomainProps {
    * @default - no custom domain endpoint will be configured
    * @deprecated use opensearchservice module instead
    */
-  readonly customEndpoint?: CustomEndpointOptions;
+  readonly customEndpoint?: CustomEndpointOptions | undefined;
 }
 
 /**
@@ -1421,7 +1421,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     return new class extends DomainBase {
       public readonly domainArn = domainArn;
       public readonly domainName = domainName;
-      public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '');
+      public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '') | undefined;
 
       constructor() { super(scope, id); }
     };
@@ -1493,12 +1493,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    *
    * @deprecated use opensearchservice module instead
    */
-  public readonly masterUserPassword?: cdk.SecretValue;
+  public readonly masterUserPassword?: cdk.SecretValue | undefined;
 
-  private readonly _slowSearchLogGroup?: logs.ILogGroupRef;
-  private readonly _slowIndexLogGroup?: logs.ILogGroupRef;
-  private readonly _appLogGroup?: logs.ILogGroupRef;
-  private readonly _auditLogGroup?: logs.ILogGroupRef;
+  private readonly _slowSearchLogGroup?: logs.ILogGroupRef | undefined;
+  private readonly _slowIndexLogGroup?: logs.ILogGroupRef | undefined;
+  private readonly _appLogGroup?: logs.ILogGroupRef | undefined;
+  private readonly _auditLogGroup?: logs.ILogGroupRef | undefined;
 
   private accessPolicy?: ElasticsearchAccessPolicy;
   private encryptionAtRestOptions?: EncryptionAtRestOptions;

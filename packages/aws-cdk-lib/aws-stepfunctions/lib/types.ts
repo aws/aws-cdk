@@ -117,14 +117,14 @@ export interface RetryProps {
    *
    * @default All errors
    */
-  readonly errors?: string[];
+  readonly errors?: string[] | undefined;
 
   /**
    * How many seconds to wait initially before retrying
    *
    * @default Duration.seconds(1)
    */
-  readonly interval?: Duration;
+  readonly interval?: Duration | undefined;
 
   /**
    * How many times to retry this particular error.
@@ -134,28 +134,28 @@ export interface RetryProps {
    *
    * @default 3
    */
-  readonly maxAttempts?: number;
+  readonly maxAttempts?: number | undefined;
 
   /**
    * Maximum limit on retry interval growth during exponential backoff.
    *
    * @default - No max delay
    */
-  readonly maxDelay?: Duration;
+  readonly maxDelay?: Duration | undefined;
 
   /**
    * Introduces a randomization over the retry interval.
    *
    * @default - No jitter strategy
    */
-  readonly jitterStrategy?: JitterType;
+  readonly jitterStrategy?: JitterType | undefined;
 
   /**
    * Multiplication for how much longer the wait interval gets on every retry
    *
    * @default 2
    */
-  readonly backoffRate?: number;
+  readonly backoffRate?: number | undefined;
 }
 
 /**
@@ -170,7 +170,7 @@ export interface CatchProps {
    *
    * @default All errors
    */
-  readonly errors?: string[];
+  readonly errors?: string[] | undefined;
 
   /**
    * JSONPath expression to indicate where to inject the error data
@@ -180,7 +180,7 @@ export interface CatchProps {
    *
    * @default $
    */
-  readonly resultPath?: string;
+  readonly resultPath?: string | undefined;
 
   /**
    * This option for JSONata only. When you use JSONPath, then the state ignores this property.
@@ -195,7 +195,7 @@ export interface CatchProps {
    *
    * @default - $states.result or $states.errorOutput
    */
-  readonly outputs?: any;
+  readonly outputs?: any | undefined;
 
   /**
    * Workflow variables to store in this step.
@@ -206,7 +206,7 @@ export interface CatchProps {
    *
    * @default - Not assign variables
    */
-  readonly assign?: { [name: string]: any };
+  readonly assign?: { [name: string]: any } | undefined;
 }
 
 /**
@@ -248,7 +248,7 @@ export interface ProcessorConfig {
    *
    * @default - ProcessorMode.INLINE if using the `Map` class, ProcessorMode.DISTRIBUTED if using the `DistributedMap` class
    */
-  readonly mode?: ProcessorMode;
+  readonly mode?: ProcessorMode | undefined;
 
   /**
    * Specifies the execution type for the Map workflow.
@@ -260,7 +260,7 @@ export interface ProcessorConfig {
    *
    * @default - no execution type
    */
-  readonly executionType?: ProcessorType;
+  readonly executionType?: ProcessorType | undefined;
 }
 
 /**

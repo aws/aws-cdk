@@ -21,7 +21,7 @@ export abstract class CallApiGatewayEndpointBase extends sfn.TaskStateBase {
 
   protected abstract readonly apiEndpoint: string;
   protected abstract readonly arnForExecuteApi: string;
-  protected abstract readonly stageName?: string;
+  protected abstract readonly stageName?: string | undefined;
 
   constructor(scope: Construct, id: string, props: CallApiGatewayEndpointBaseProps) {
     super(scope, id, props);

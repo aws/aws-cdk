@@ -18,21 +18,21 @@ export interface GetContextKeyOptions {
   /**
    * Provider-specific properties.
    */
-  readonly props?: { [key: string]: any };
+  readonly props?: { [key: string]: any } | undefined;
 
   /**
    * Whether to include the stack's account and region automatically.
    *
    * @default true
    */
-  readonly includeEnvironment?: boolean;
+  readonly includeEnvironment?: boolean | undefined;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
-  readonly additionalCacheKey?: string;
+  readonly additionalCacheKey?: string | undefined;
 }
 
 /**
@@ -93,7 +93,7 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
    *
    * @default true
    */
-  readonly mustExist?: boolean;
+  readonly mustExist?: boolean | undefined;
 
   /**
    * Ignore a lookup failure and return the `dummyValue` instead
@@ -104,7 +104,7 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
    * @default false
    * @deprecated Use mustExist instead
    */
-  readonly ignoreErrorOnMissingContext?: boolean;
+  readonly ignoreErrorOnMissingContext?: boolean | undefined;
 }
 
 /**
@@ -117,7 +117,7 @@ export interface GetContextKeyResult {
 /**
  */
 export interface GetContextValueResult {
-  readonly value?: any;
+  readonly value?: any | undefined;
 }
 
 /**

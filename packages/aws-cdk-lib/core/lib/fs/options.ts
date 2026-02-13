@@ -65,14 +65,14 @@ interface FileOptions {
    *
    * @default - nothing is excluded
    */
-  readonly exclude?: string[];
+  readonly exclude?: string[] | undefined;
 
   /**
    * The ignore behavior to use for `exclude` patterns.
    *
    * @default IgnoreMode.GLOB
    */
-  readonly ignoreMode?: IgnoreMode;
+  readonly ignoreMode?: IgnoreMode | undefined;
 }
 
 /**
@@ -84,7 +84,7 @@ export interface CopyOptions extends FileOptions {
    *
    * @default SymlinkFollowMode.NEVER
    */
-  readonly follow?: SymlinkFollowMode;
+  readonly follow?: SymlinkFollowMode | undefined;
 }
 
 /**
@@ -96,7 +96,7 @@ export interface FileCopyOptions extends FileOptions {
    *
    * @default SymlinkFollowMode.NEVER
    */
-  readonly followSymlinks?: SymlinkFollowMode;
+  readonly followSymlinks?: SymlinkFollowMode | undefined;
 }
 
 interface ExtraHashOptions {
@@ -106,7 +106,7 @@ interface ExtraHashOptions {
    *
    * @default - hash is only based on source content
    */
-  readonly extraHash?: string;
+  readonly extraHash?: string | undefined;
 }
 
 /**

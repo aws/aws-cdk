@@ -9,7 +9,7 @@ import type { IOriginAccessControlRef } from '../../interfaces/generated/aws-clo
 
 interface BucketPolicyAction {
   readonly action: string;
-  readonly needsBucketArn?: boolean;
+  readonly needsBucketArn?: boolean | undefined;
 }
 
 const BUCKET_ACTIONS: Record<string, BucketPolicyAction[]> = {
@@ -39,7 +39,7 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
    *
    * @default - an Origin Access Control will be created.
    */
-  readonly originAccessControl?: IOriginAccessControlRef;
+  readonly originAccessControl?: IOriginAccessControlRef | undefined;
 
   /**
    * The level of permissions granted in the bucket policy and key policy (if applicable)
@@ -47,7 +47,7 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
    *
    * @default [AccessLevel.READ]
    */
-  readonly originAccessLevels?: AccessLevel[];
+  readonly originAccessLevels?: AccessLevel[] | undefined;
 }
 
 /**
@@ -59,7 +59,7 @@ export interface S3BucketOriginWithOAIProps extends S3BucketOriginBaseProps {
    *
    * @default - an Origin Access Identity will be created.
    */
-  readonly originAccessIdentity?: cloudfront.ICloudFrontOriginAccessIdentityRef & iam.IGrantable;
+  readonly originAccessIdentity?: cloudfront.ICloudFrontOriginAccessIdentityRef & iam.IGrantable | undefined;
 }
 
 /**

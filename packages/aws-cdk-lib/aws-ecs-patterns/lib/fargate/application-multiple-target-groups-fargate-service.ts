@@ -20,7 +20,7 @@ export interface ApplicationMultipleTargetGroupsFargateServiceProps extends Appl
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 }
 
 /**

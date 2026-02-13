@@ -20,7 +20,7 @@ export interface BaseTargetTrackingProps {
    *
    * @default - Automatically generated name.
    */
-  readonly policyName?: string;
+  readonly policyName?: string | undefined;
 
   /**
    * Indicates whether scale in by the target tracking policy is disabled.
@@ -32,7 +32,7 @@ export interface BaseTargetTrackingProps {
    *
    * @default false
    */
-  readonly disableScaleIn?: boolean;
+  readonly disableScaleIn?: boolean | undefined;
 
   /**
    * Period after a scale in activity completes before another scale in activity can start.
@@ -44,7 +44,7 @@ export interface BaseTargetTrackingProps {
    * global secondary indexes, Amazon Comprehend document classification endpoints,
    * Lambda provisioned concurrency
    */
-  readonly scaleInCooldown?: cdk.Duration;
+  readonly scaleInCooldown?: cdk.Duration | undefined;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
@@ -56,7 +56,7 @@ export interface BaseTargetTrackingProps {
    * global secondary indexes, Amazon Comprehend document classification endpoints,
    * Lambda provisioned concurrency
    */
-  readonly scaleOutCooldown?: cdk.Duration;
+  readonly scaleOutCooldown?: cdk.Duration | undefined;
 }
 
 /**
@@ -78,7 +78,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default - No predefined metrics.
    */
-  readonly predefinedMetric?: PredefinedMetric;
+  readonly predefinedMetric?: PredefinedMetric | undefined;
 
   /**
    * Identify the resource associated with the metric type.
@@ -89,7 +89,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default - No resource label.
    */
-  readonly resourceLabel?: string;
+  readonly resourceLabel?: string | undefined;
 
   /**
    * A custom metric for application autoscaling
@@ -101,7 +101,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default - No custom metric.
    */
-  readonly customMetric?: cloudwatch.IMetric;
+  readonly customMetric?: cloudwatch.IMetric | undefined;
 }
 
 /**

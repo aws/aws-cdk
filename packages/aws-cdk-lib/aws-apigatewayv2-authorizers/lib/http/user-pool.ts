@@ -12,26 +12,26 @@ export interface HttpUserPoolAuthorizerProps {
    * The user pool clients that should be used to authorize requests with the user pool.
    * @default - a new client will be created for the given user pool
    */
-  readonly userPoolClients?: IUserPoolClient[];
+  readonly userPoolClients?: IUserPoolClient[] | undefined;
 
   /**
    * The AWS region in which the user pool is present
    * @default - same region as the Route the authorizer is attached to.
    */
-  readonly userPoolRegion?: string;
+  readonly userPoolRegion?: string | undefined;
 
   /**
    * Friendly name of the authorizer
    * @default - same value as `id` passed in the constructor
    */
-  readonly authorizerName?: string;
+  readonly authorizerName?: string | undefined;
 
   /**
    * The identity source for which authorization is requested.
    *
    * @default ['$request.header.Authorization']
    */
-  readonly identitySource?: string[];
+  readonly identitySource?: string[] | undefined;
 }
 
 /**

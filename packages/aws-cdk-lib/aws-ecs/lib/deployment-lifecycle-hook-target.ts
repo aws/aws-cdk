@@ -49,7 +49,7 @@ export interface DeploymentLifecycleHookTargetConfig {
    * The IAM role that grants permissions to invoke the target
    * @default - a role will be created automatically
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The lifecycle stages when this hook should be executed
@@ -77,7 +77,7 @@ export interface DeploymentLifecycleLambdaTargetProps {
    * The IAM role that grants permissions to invoke the lambda target
    * @default - A unique role will be generated for this lambda function.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The lifecycle stages when this hook should be executed

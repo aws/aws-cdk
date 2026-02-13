@@ -12,7 +12,7 @@ export interface KinesisStreamProps extends TargetBaseProps {
    *
    * @default - eventId as the partition key
    */
-  readonly partitionKeyPath?: string;
+  readonly partitionKeyPath?: string | undefined;
 
   /**
    * The message to send to the stream.
@@ -21,7 +21,7 @@ export interface KinesisStreamProps extends TargetBaseProps {
    *
    * @default - the entire CloudWatch event
    */
-  readonly message?: events.RuleTargetInput;
+  readonly message?: events.RuleTargetInput | undefined;
 
 }
 

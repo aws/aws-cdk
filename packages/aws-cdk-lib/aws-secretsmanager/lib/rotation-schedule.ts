@@ -28,14 +28,14 @@ export interface RotationScheduleOptions {
    *
    * @default - either `rotationLambda` or `hostedRotation` must be specified
    */
-  readonly rotationLambda?: lambda.IFunction;
+  readonly rotationLambda?: lambda.IFunction | undefined;
 
   /**
    * Hosted rotation
    *
    * @default - either `rotationLambda` or `hostedRotation` must be specified
    */
-  readonly hostedRotation?: HostedRotation;
+  readonly hostedRotation?: HostedRotation | undefined;
 
   /**
    * Specifies the number of days after the previous rotation before
@@ -48,7 +48,7 @@ export interface RotationScheduleOptions {
    *
    * @default Duration.days(30)
    */
-  readonly automaticallyAfter?: Duration;
+  readonly automaticallyAfter?: Duration | undefined;
 
   /**
    * Specifies whether to rotate the secret immediately or wait until the next
@@ -56,7 +56,7 @@ export interface RotationScheduleOptions {
    *
    * @default true
    */
-  readonly rotateImmediatelyOnUpdate?: boolean;
+  readonly rotateImmediatelyOnUpdate?: boolean | undefined;
 }
 
 /**
@@ -182,28 +182,28 @@ export interface SingleUserHostedRotationOptions {
    *
    * @default - a CloudFormation generated name
    */
-  readonly functionName?: string;
+  readonly functionName?: string | undefined;
 
   /**
    * A list of security groups for the Lambda created to rotate the secret
    *
    * @default - a new security group is created
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The VPC where the Lambda rotation function will run.
    *
    * @default - the Lambda is not deployed in a VPC
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The type of subnets in the VPC where the Lambda rotation function will run.
    *
    * @default - the Vpc default strategy if not specified.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * A string of the characters that you don't want in the password
@@ -211,7 +211,7 @@ export interface SingleUserHostedRotationOptions {
    * @default the same exclude characters as the ones used for the
    * secret or " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
    */
-  readonly excludeCharacters?: string;
+  readonly excludeCharacters?: string | undefined;
 }
 
 /**

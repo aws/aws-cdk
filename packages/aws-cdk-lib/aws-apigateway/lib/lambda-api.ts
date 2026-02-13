@@ -25,7 +25,7 @@ export interface LambdaRestApiProps extends RestApiProps {
    *
    * @default see defaults defined in `LambdaIntegrationOptions`.
    */
-  readonly integrationOptions?: LambdaIntegrationOptions;
+  readonly integrationOptions?: LambdaIntegrationOptions | undefined;
 
   /**
    * If true, route all requests to the Lambda Function
@@ -35,7 +35,7 @@ export interface LambdaRestApiProps extends RestApiProps {
    *
    * @default true
    */
-  readonly proxy?: boolean;
+  readonly proxy?: boolean | undefined;
 
   /**
    * @deprecated the `LambdaRestApiProps` now extends `RestApiProps`, so all
@@ -44,7 +44,7 @@ export interface LambdaRestApiProps extends RestApiProps {
    *
    * @default - no options.
    */
-  readonly options?: RestApiProps;
+  readonly options?: RestApiProps | undefined;
 }
 
 /**

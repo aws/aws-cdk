@@ -31,7 +31,7 @@ export interface BastionHostLinuxProps {
    *
    * @default - Random zone.
    */
-  readonly availabilityZone?: string;
+  readonly availabilityZone?: string | undefined;
 
   /**
    * VPC to launch the instance in.
@@ -43,7 +43,7 @@ export interface BastionHostLinuxProps {
    *
    * @default 'BastionHost'
    */
-  readonly instanceName?: string;
+  readonly instanceName?: string | undefined;
 
   /**
    * Select the subnets to run the bastion host in.
@@ -52,20 +52,20 @@ export interface BastionHostLinuxProps {
    *
    * @default - private subnets of the supplied VPC
    */
-  readonly subnetSelection?: SubnetSelection;
+  readonly subnetSelection?: SubnetSelection | undefined;
 
   /**
    * Security Group to assign to this instance
    *
    * @default - create new security group with no inbound and all outbound traffic allowed
    */
-  readonly securityGroup?: ISecurityGroup;
+  readonly securityGroup?: ISecurityGroup | undefined;
 
   /**
    * Type of instance to launch
    * @default 't3.nano'
    */
-  readonly instanceType?: InstanceType;
+  readonly instanceType?: InstanceType | undefined;
 
   /**
    * The machine image to use, assumed to have SSM Agent preinstalled.
@@ -73,7 +73,7 @@ export interface BastionHostLinuxProps {
    * @default - An Amazon Linux 2023 image if the `@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault` feature flag is enabled. Otherwise, an Amazon Linux 2 image. In both cases, the image is kept up-to-date automatically (the instance
    * may be replaced on every deployment) and already has SSM Agent installed.
    */
-  readonly machineImage?: IMachineImage;
+  readonly machineImage?: IMachineImage | undefined;
 
   /**
    * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
@@ -87,14 +87,14 @@ export interface BastionHostLinuxProps {
    *
    * @default - Uses the block device mapping of the AMI
    */
-  readonly blockDevices?: BlockDevice[];
+  readonly blockDevices?: BlockDevice[] | undefined;
 
   /**
    * Apply the given CloudFormation Init configuration to the instance at startup
    *
    * @default - no CloudFormation init
    */
-  readonly init?: CloudFormationInit;
+  readonly init?: CloudFormationInit | undefined;
 
   /**
    * Use the given options for applying CloudFormation Init
@@ -103,14 +103,14 @@ export interface BastionHostLinuxProps {
    *
    * @default - default options
    */
-  readonly initOptions?: ApplyCloudFormationInitOptions;
+  readonly initOptions?: ApplyCloudFormationInitOptions | undefined;
 
   /**
    * Whether IMDSv2 should be required on this instance
    *
    * @default - false
    */
-  readonly requireImdsv2?: boolean;
+  readonly requireImdsv2?: boolean | undefined;
 
   /**
    * Determines whether changes to the UserData will force instance replacement.
@@ -129,7 +129,7 @@ export interface BastionHostLinuxProps {
    *
    * @default - `true` if `initOptions` is specified, otherwise `false`.
    */
-  readonly userDataCausesReplacement?: boolean;
+  readonly userDataCausesReplacement?: boolean | undefined;
 }
 
 /**

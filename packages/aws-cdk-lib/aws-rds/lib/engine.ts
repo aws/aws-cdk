@@ -16,7 +16,7 @@ export interface IEngine {
    *
    * @default - use the default version for this engine type
    */
-  readonly engineVersion?: EngineVersion;
+  readonly engineVersion?: EngineVersion | undefined;
 
   /**
    * The family to use for ParameterGroups using this engine.
@@ -27,7 +27,7 @@ export interface IEngine {
    * @default - the ParameterGroup family is not known
    *   (which means the major version of the engine is also not known)
    */
-  readonly parameterGroupFamily?: string;
+  readonly parameterGroupFamily?: string | undefined;
 
   /**
    * The family this engine belongs to,
@@ -38,12 +38,12 @@ export interface IEngine {
    *
    * @default - the engine doesn't belong to any family
    */
-  readonly engineFamily?: string;
+  readonly engineFamily?: string | undefined;
 
   /**
    * The default name of the master database user if one was not provided explicitly.
    * The global default of 'admin' will be used if this is `undefined`.
    * Note that 'admin' is a reserved word in PostgreSQL and cannot be used.
    */
-  readonly defaultUsername?: string;
+  readonly defaultUsername?: string | undefined;
 }

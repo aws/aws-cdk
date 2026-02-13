@@ -35,7 +35,7 @@ export interface DashboardProps {
    *
    * @default - automatically generated name
    */
-  readonly dashboardName?: string;
+  readonly dashboardName?: string | undefined;
 
   /**
    * Interval duration for metrics.
@@ -45,7 +45,7 @@ export interface DashboardProps {
    *
    * @default When the dashboard loads, the defaultInterval time will be the default time range.
    */
-  readonly defaultInterval?: Duration;
+  readonly defaultInterval?: Duration | undefined;
 
   /**
    * The start of the time range to use for each widget on the dashboard.
@@ -59,7 +59,7 @@ export interface DashboardProps {
    *
    * @default When the dashboard loads, the start time will be the default time range.
    */
-  readonly start?: string;
+  readonly start?: string | undefined;
 
   /**
    * The end of the time range to use for each widget on the dashboard when the dashboard loads.
@@ -68,7 +68,7 @@ export interface DashboardProps {
    *
    * @default When the dashboard loads, the end date will be the current time.
    */
-  readonly end?: string;
+  readonly end?: string | undefined;
 
   /**
    * Use this field to specify the period for the graphs when the dashboard loads.
@@ -77,7 +77,7 @@ export interface DashboardProps {
    *
    * @default Auto
    */
-  readonly periodOverride?: PeriodOverride;
+  readonly periodOverride?: PeriodOverride | undefined;
 
   /**
    * Initial set of widgets on the dashboard
@@ -86,7 +86,7 @@ export interface DashboardProps {
    *
    * @default - No widgets
    */
-  readonly widgets?: IWidget[][];
+  readonly widgets?: IWidget[][] | undefined;
 
   /**
    * A list of dashboard variables
@@ -95,7 +95,7 @@ export interface DashboardProps {
    *
    * @default - No variables
    */
-  readonly variables?: IVariable[];
+  readonly variables?: IVariable[] | undefined;
 }
 
 /**

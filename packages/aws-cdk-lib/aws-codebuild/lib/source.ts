@@ -19,14 +19,14 @@ import { UnscopedValidationError } from '../../core';
 export interface SourceConfig {
   readonly sourceProperty: CfnProject.SourceProperty;
 
-  readonly buildTriggers?: CfnProject.ProjectTriggersProperty;
+  readonly buildTriggers?: CfnProject.ProjectTriggersProperty | undefined;
 
   /**
    * `AWS::CodeBuild::Project.SourceVersion`
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html#cfn-codebuild-project-sourceversion
    * @default the latest version
    */
-  readonly sourceVersion?: string;
+  readonly sourceVersion?: string | undefined;
 }
 
 /**
@@ -34,7 +34,7 @@ export interface SourceConfig {
  * Implemented by `Source`.
  */
 export interface ISource {
-  readonly identifier?: string;
+  readonly identifier?: string | undefined;
 
   readonly type: string;
 
@@ -51,7 +51,7 @@ export interface SourceProps {
    * The source identifier.
    * This property is required on secondary sources.
    */
-  readonly identifier?: string;
+  readonly identifier?: string | undefined;
 }
 
 /**
@@ -78,7 +78,7 @@ export abstract class Source implements ISource {
     return new BitBucketSource(props);
   }
 
-  public readonly identifier?: string;
+  public readonly identifier?: string | undefined;
   public abstract readonly type: string;
   public readonly badgeSupported: boolean = false;
 
@@ -110,7 +110,7 @@ interface GitSourceProps extends SourceProps {
    * If this value is 0, greater than 25, or not provided,
    * then the full history is downloaded with each build of the project.
    */
-  readonly cloneDepth?: number;
+  readonly cloneDepth?: number | undefined;
 
   /**
    * The commit ID, pull request ID, branch name, or tag name that corresponds to
@@ -119,23 +119,23 @@ interface GitSourceProps extends SourceProps {
    * @example 'mybranch'
    * @default the default branch's HEAD commit ID is used
    */
-  readonly branchOrRef?: string;
+  readonly branchOrRef?: string | undefined;
 
   /**
    * Whether to fetch submodules while cloning git repo.
    *
    * @default false
    */
-  readonly fetchSubmodules?: boolean;
+  readonly fetchSubmodules?: boolean | undefined;
 }
 
 /**
  * A common superclass of all build sources that are backed by Git.
  */
 abstract class GitSource extends Source {
-  private readonly cloneDepth?: number;
-  private readonly branchOrRef?: string;
-  private readonly fetchSubmodules?: boolean;
+  private readonly cloneDepth?: number | undefined;
+  private readonly branchOrRef?: string | undefined;
+  private readonly fetchSubmodules?: boolean | undefined;
 
   protected constructor(props: GitSourceProps) {
     super(props);
@@ -523,14 +523,14 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
    *
    * @default true
    */
-  readonly reportBuildStatus?: boolean;
+  readonly reportBuildStatus?: boolean | undefined;
 
   /**
    * Whether to create a webhook that will trigger a build every time an event happens in the repository.
    *
    * @default true if any `webhookFilters` were provided, false otherwise
    */
-  readonly webhook?: boolean;
+  readonly webhook?: boolean | undefined;
 
   /**
    * Trigger a batch build from a webhook instead of a standard one.
@@ -539,7 +539,7 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
    *
    * @default false
    */
-  readonly webhookTriggersBatchBuild?: boolean;
+  readonly webhookTriggersBatchBuild?: boolean | undefined;
 
   /**
    * A list of webhook filters that can constraint what events in the repository will trigger a build.
@@ -548,7 +548,7 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
    *
    * @default every push and every Pull Request (create or update) triggers a build
    */
-  readonly webhookFilters?: FilterGroup[];
+  readonly webhookFilters?: FilterGroup[] | undefined;
 
   /**
    * The URL that the build will report back to the source provider.
@@ -560,7 +560,7 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
    * @example "$CODEBUILD_PUBLIC_BUILD_URL"
    * @default - link to the AWS Console for CodeBuild to a particular build execution
    */
-  readonly buildStatusUrl?: string;
+  readonly buildStatusUrl?: string | undefined;
 }
 
 /**
@@ -570,9 +570,9 @@ abstract class ThirdPartyGitSource extends GitSource {
   public readonly badgeSupported: boolean = true;
   protected readonly webhookFilters: FilterGroup[];
   private readonly reportBuildStatus: boolean;
-  private readonly webhook?: boolean;
-  private readonly webhookTriggersBatchBuild?: boolean;
-  protected readonly buildStatusUrl?: string;
+  private readonly webhook?: boolean | undefined;
+  private readonly webhookTriggersBatchBuild?: boolean | undefined;
+  protected readonly buildStatusUrl?: string | undefined;
 
   protected constructor(props: ThirdPartyGitSourceProps) {
     super(props);
@@ -667,7 +667,7 @@ export interface S3SourceProps extends SourceProps {
    *
    * @default latest
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 /**
@@ -677,7 +677,7 @@ class S3Source extends Source {
   public readonly type = S3_SOURCE_TYPE;
   private readonly bucket: s3.IBucket;
   private readonly path: string;
-  private readonly version?: string;
+  private readonly version?: string | undefined;
 
   constructor(props: S3SourceProps) {
     super(props);
@@ -714,11 +714,11 @@ interface CommonGithubSourceProps extends ThirdPartyGitSourceProps {
    * @example "My build #$CODEBUILD_BUILD_NUMBER"
    * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
    */
-  readonly buildStatusContext?: string;
+  readonly buildStatusContext?: string | undefined;
 }
 
 abstract class CommonGithubSource extends ThirdPartyGitSource {
-  private readonly buildStatusContext?: string;
+  private readonly buildStatusContext?: string | undefined;
 
   constructor(props: CommonGithubSourceProps) {
     super(props);
@@ -760,7 +760,7 @@ export interface GitHubSourceProps extends CommonGithubSourceProps {
    * @example 'aws-cdk'
    * @default undefined will create an organization webhook
    */
-  readonly repo?: string;
+  readonly repo?: string | undefined;
 }
 
 /**
@@ -769,7 +769,7 @@ export interface GitHubSourceProps extends CommonGithubSourceProps {
 class GitHubSource extends CommonGithubSource {
   public readonly type = GITHUB_SOURCE_TYPE;
   private readonly sourceLocation: string;
-  private readonly organization?: string;
+  private readonly organization?: string | undefined;
   protected readonly webhookFilters: FilterGroup[];
   constructor(props: GitHubSourceProps) {
     super(props);
@@ -811,7 +811,7 @@ export interface GitHubEnterpriseSourceProps extends CommonGithubSourceProps {
    *
    * @default false
    */
-  readonly ignoreSslErrors?: boolean;
+  readonly ignoreSslErrors?: boolean | undefined;
 }
 
 /**
@@ -820,7 +820,7 @@ export interface GitHubEnterpriseSourceProps extends CommonGithubSourceProps {
 class GitHubEnterpriseSource extends CommonGithubSource {
   public readonly type = GITHUB_ENTERPRISE_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
-  private readonly ignoreSslErrors?: boolean;
+  private readonly ignoreSslErrors?: boolean | undefined;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
@@ -896,7 +896,7 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
    * @example "My build #$CODEBUILD_BUILD_NUMBER"
    * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
    */
-  readonly buildStatusName?: string;
+  readonly buildStatusName?: string | undefined;
 }
 
 /**
@@ -905,7 +905,7 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
 class BitBucketSource extends ThirdPartyGitSource {
   public readonly type = BITBUCKET_SOURCE_TYPE;
   private readonly httpsCloneUrl: any;
-  private readonly buildStatusName?: string;
+  private readonly buildStatusName?: string | undefined;
 
   constructor(props: BitBucketSourceProps) {
     super(props);

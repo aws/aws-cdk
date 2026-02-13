@@ -50,21 +50,21 @@ export interface KeyPairProps extends ResourceProps {
    *
    * @default A generated name
    */
-  readonly keyPairName?: string;
+  readonly keyPairName?: string | undefined;
 
   /**
    * The format of the key pair.
    *
    * @default PEM
    */
-  readonly format?: KeyPairFormat;
+  readonly format?: KeyPairFormat | undefined;
 
   /**
    * The type of key pair.
    *
    * @default RSA (ignored if keyMaterial is provided)
    */
-  readonly type?: KeyPairType;
+  readonly type?: KeyPairType | undefined;
 
   /**
    * The public key material.
@@ -76,7 +76,7 @@ export interface KeyPairProps extends ResourceProps {
    *
    * @default a public and private key will be generated
    */
-  readonly publicKeyMaterial?: string;
+  readonly publicKeyMaterial?: string | undefined;
 }
 
 /**
@@ -93,7 +93,7 @@ export interface KeyPairAttributes {
    *
    * @default no type specified
    */
-  readonly type?: KeyPairType;
+  readonly type?: KeyPairType | undefined;
 }
 
 /**
@@ -110,7 +110,7 @@ export interface IKeyPair extends IResource, IKeyPairRef {
   /**
    * The type of the key pair.
    */
-  readonly type?: KeyPairType;
+  readonly type?: KeyPairType | undefined;
 
   /**
    * Used internally to determine whether the key pair is compatible with an OS type.
@@ -143,7 +143,7 @@ export class KeyPair extends Resource implements IKeyPair {
   public static fromKeyPairAttributes(scope: Construct, id: string, attrs: KeyPairAttributes): IKeyPair {
     class Import extends Resource implements IKeyPair {
       public readonly keyPairName: string;
-      public readonly type?: KeyPairType;
+      public readonly type?: KeyPairType | undefined;
 
       constructor() {
         super(scope, id);
@@ -200,7 +200,7 @@ export class KeyPair extends Resource implements IKeyPair {
   /**
    * The type of the key pair.
    */
-  public readonly type?: KeyPairType;
+  public readonly type?: KeyPairType | undefined;
 
   /**
    * The format of the key pair.

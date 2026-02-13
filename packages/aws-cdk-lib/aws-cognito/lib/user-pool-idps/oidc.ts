@@ -31,7 +31,7 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
    *
    * @default - the unique ID of the construct
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The OAuth 2.0 scopes that you will request from OpenID Connect. Scopes are
@@ -39,7 +39,7 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
    *
    * @default ['openid']
    */
-  readonly scopes?: string[];
+  readonly scopes?: string[] | undefined;
 
   /**
    * Identifiers
@@ -48,21 +48,21 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
    *
    * @default - no identifiers used
    */
-  readonly identifiers?: string[];
+  readonly identifiers?: string[] | undefined;
 
   /**
    * The method to use to request attributes
    *
    * @default OidcAttributeRequestMethod.GET
    */
-  readonly attributeRequestMethod?: OidcAttributeRequestMethod;
+  readonly attributeRequestMethod?: OidcAttributeRequestMethod | undefined;
 
   /**
    * OpenID connect endpoints
    *
    * @default - auto discovered with issuer URL
    */
-  readonly endpoints?: OidcEndpoints;
+  readonly endpoints?: OidcEndpoints | undefined;
 }
 
 /**

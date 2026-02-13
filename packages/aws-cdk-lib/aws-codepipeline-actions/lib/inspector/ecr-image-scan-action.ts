@@ -20,7 +20,7 @@ export interface InspectorEcrImageScanActionProps extends InspectorScanActionBas
    *
    * @default 'latest'
    */
-  readonly imageTag?: string;
+  readonly imageTag?: string | undefined;
 }
 
 /**

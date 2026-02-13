@@ -18,7 +18,7 @@ interface StepFunctionsStartExecutionOptions {
    *
    * @default - The state input (JSON path '$')
    */
-  readonly input?: sfn.TaskInput;
+  readonly input?: sfn.TaskInput | undefined;
 
   /**
    * The name of the execution, same as that of StartExecution.
@@ -27,7 +27,7 @@ interface StepFunctionsStartExecutionOptions {
    *
    * @default - None
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * Pass the execution ID from the context object to the execution input.
@@ -39,7 +39,7 @@ interface StepFunctionsStartExecutionOptions {
    *
    * @default - false
    */
-  readonly associateWithParent?: boolean;
+  readonly associateWithParent?: boolean | undefined;
 }
 
 /**
@@ -90,8 +90,8 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

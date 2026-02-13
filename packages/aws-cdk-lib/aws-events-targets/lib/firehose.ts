@@ -17,7 +17,7 @@ export interface KinesisFirehoseStreamProps {
    *
    * @default - the entire Event Bridge event
    */
-  readonly message?: events.RuleTargetInput;
+  readonly message?: events.RuleTargetInput | undefined;
 }
 
 /**
@@ -31,7 +31,7 @@ export interface FirehoseDeliveryStreamProps {
    *
    * @default - the entire Event Bridge event
    */
-  readonly message?: events.RuleTargetInput;
+  readonly message?: events.RuleTargetInput | undefined;
 }
 
 /**

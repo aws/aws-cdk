@@ -38,7 +38,7 @@ export interface BaseTargetGroupProps {
    *
    * @default - Automatically generated.
    */
-  readonly targetGroupName?: string;
+  readonly targetGroupName?: string | undefined;
 
   /**
    * The virtual private cloud (VPC).
@@ -47,7 +47,7 @@ export interface BaseTargetGroupProps {
    *
    * @default - undefined
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -56,7 +56,7 @@ export interface BaseTargetGroupProps {
    *
    * @default 300
    */
-  readonly deregistrationDelay?: cdk.Duration;
+  readonly deregistrationDelay?: cdk.Duration | undefined;
 
   /**
    * Health check configuration
@@ -64,7 +64,7 @@ export interface BaseTargetGroupProps {
    * @default - The default value for each property in this configuration varies depending on the target.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * The type of targets registered to this TargetGroup, either IP or Instance.
@@ -75,7 +75,7 @@ export interface BaseTargetGroupProps {
    *
    * @default - Determined automatically.
    */
-  readonly targetType?: TargetType;
+  readonly targetType?: TargetType | undefined;
 
   /**
    * Indicates whether cross zone load balancing is enabled.
@@ -83,14 +83,14 @@ export interface BaseTargetGroupProps {
    * @default - use load balancer configuration
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-targetgroup-targetgroupattribute.html
    */
-  readonly crossZoneEnabled?: boolean;
+  readonly crossZoneEnabled?: boolean | undefined;
 
   /**
    * The type of IP addresses of the targets registered with the target group.
    *
    * @default undefined - ELB defaults to IPv4
    */
-  readonly ipAddressType?: TargetGroupIpAddressType;
+  readonly ipAddressType?: TargetGroupIpAddressType | undefined;
 
   /**
    * Configuring target group health.
@@ -98,7 +98,7 @@ export interface BaseTargetGroupProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
    * @default - use default configuration
    */
-  readonly targetGroupHealth?: TargetGroupHealth;
+  readonly targetGroupHealth?: TargetGroupHealth | undefined;
 }
 
 /**
@@ -112,7 +112,7 @@ export interface TargetGroupHealth {
    * Use 0 for "off".
    * @default 1
    */
-  readonly dnsMinimumHealthyTargetCount?: number;
+  readonly dnsMinimumHealthyTargetCount?: number | undefined;
 
   /**
    * The minimum percentage of targets that must be healthy for DNS failover.
@@ -120,14 +120,14 @@ export interface TargetGroupHealth {
    * Use 0 for "off".
    * @default 0
    */
-  readonly dnsMinimumHealthyTargetPercentage?: number;
+  readonly dnsMinimumHealthyTargetPercentage?: number | undefined;
 
   /**
    * The minimum number of targets that must be healthy for unhealthy state routing.
    * If below this value, send traffic to all targets including unhealthy ones.
    * @default 1
    */
-  readonly routingMinimumHealthyTargetCount?: number;
+  readonly routingMinimumHealthyTargetCount?: number | undefined;
 
   /**
    * The minimum percentage of targets that must be healthy for unhealthy state routing.
@@ -135,7 +135,7 @@ export interface TargetGroupHealth {
    * Use 0 for "off".
    * @default 0
    */
-  readonly routingMinimumHealthyTargetPercentage?: number;
+  readonly routingMinimumHealthyTargetPercentage?: number | undefined;
 }
 
 /**
@@ -150,7 +150,7 @@ export interface HealthCheck {
    *
    * @default - Determined automatically.
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The approximate number of seconds between health checks for an individual target.
@@ -158,21 +158,21 @@ export interface HealthCheck {
    *
    * @default - 10 seconds if protocol is `GENEVE`, 35 seconds if target type is `lambda`, else 30 seconds
    */
-  readonly interval?: cdk.Duration;
+  readonly interval?: cdk.Duration | undefined;
 
   /**
    * The ping path destination where Elastic Load Balancing sends health check requests.
    *
    * @default /
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * The port that the load balancer uses when performing health checks on the targets.
    *
    * @default 'traffic-port'
    */
-  readonly port?: string;
+  readonly port?: string | undefined;
 
   /**
    * The protocol the load balancer uses when performing health checks on targets.
@@ -182,7 +182,7 @@ export interface HealthCheck {
    *
    * @default - HTTP for ALBs, TCP for NLBs
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: Protocol | undefined;
 
   /**
    * The amount of time, in seconds, during which no response from a target means a failed health check.
@@ -190,7 +190,7 @@ export interface HealthCheck {
    *
    * @default - 6 seconds if the protocol is HTTP, 5 seconds if protocol is `GENEVE`, 30 seconds if target type is `lambda`, 10 seconds for TCP, TLS, or HTTPS
    */
-  readonly timeout?: cdk.Duration;
+  readonly timeout?: cdk.Duration | undefined;
 
   /**
    * The number of consecutive health checks successes required before considering an unhealthy target healthy.
@@ -199,7 +199,7 @@ export interface HealthCheck {
    *
    * @default - 5 for ALBs, 3 for NLBs
    */
-  readonly healthyThresholdCount?: number;
+  readonly healthyThresholdCount?: number | undefined;
 
   /**
    * The number of consecutive health check failures required before considering a target unhealthy.
@@ -209,7 +209,7 @@ export interface HealthCheck {
    *
    * @default 2
    */
-  readonly unhealthyThresholdCount?: number;
+  readonly unhealthyThresholdCount?: number | undefined;
 
   /**
    * GRPC code to use when checking for a successful response from a target.
@@ -219,7 +219,7 @@ export interface HealthCheck {
    *
    * @default 12
    */
-  readonly healthyGrpcCodes?: string;
+  readonly healthyGrpcCodes?: string | undefined;
 
   /**
    * HTTP code to use when checking for a successful response from a target.
@@ -228,7 +228,7 @@ export interface HealthCheck {
    * 499, and the default value is 200. You can specify multiple values (for
    * example, "200,202") or a range of values (for example, "200-299").
    */
-  readonly healthyHttpCodes?: string;
+  readonly healthyHttpCodes?: string | undefined;
 }
 
 /**
@@ -542,12 +542,12 @@ export interface TargetGroupAttributes {
    *
    * @deprecated - This property is unused and the wrong type. No need to use it.
    */
-  readonly defaultPort?: string;
+  readonly defaultPort?: string | undefined;
 
   /**
    * A Token representing the list of ARNs for the load balancer routing to this target group
    */
-  readonly loadBalancerArns?: string;
+  readonly loadBalancerArns?: string | undefined;
 }
 
 /**
@@ -597,7 +597,7 @@ export interface LoadBalancerTargetProps {
    *
    * May be omitted if the target is going to register itself later.
    */
-  readonly targetJson?: any;
+  readonly targetJson?: any | undefined;
 }
 
 /**

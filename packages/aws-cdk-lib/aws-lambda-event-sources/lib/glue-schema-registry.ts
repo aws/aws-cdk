@@ -15,13 +15,13 @@ export interface GlueSchemaRegistryProps extends SchemaRegistryProps {
    *
    * @default - none
    */
-  readonly schemaRegistry?: CfnRegistry;
+  readonly schemaRegistry?: CfnRegistry | undefined;
   /**
    * The Arn of your glue schema registry.
    *
    * @default - none
    */
-  readonly schemaRegistryArn?: string;
+  readonly schemaRegistryArn?: string | undefined;
 }
 
 /**

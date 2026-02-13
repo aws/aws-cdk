@@ -30,7 +30,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default - No target groups.
    */
-  readonly targetGroups?: IApplicationTargetGroup[];
+  readonly targetGroups?: IApplicationTargetGroup[] | undefined;
 
   /**
    * Action to perform when requests are received
@@ -39,7 +39,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default - No action
    */
-  readonly action?: ListenerAction;
+  readonly action?: ListenerAction | undefined;
 
   /**
    * Fixed response to return.
@@ -49,7 +49,7 @@ export interface BaseApplicationListenerRuleProps {
    * @default - No fixed response.
    * @deprecated Use `action` instead.
    */
-  readonly fixedResponse?: FixedResponse;
+  readonly fixedResponse?: FixedResponse | undefined;
 
   /**
    * Redirect response to return.
@@ -59,7 +59,7 @@ export interface BaseApplicationListenerRuleProps {
    * @default - No redirect response.
    * @deprecated Use `action` instead.
    */
-  readonly redirectResponse?: RedirectResponse;
+  readonly redirectResponse?: RedirectResponse | undefined;
 
   /**
    * Rule applies if matches the conditions.
@@ -68,7 +68,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default - No conditions.
    */
-  readonly conditions?: ListenerCondition[];
+  readonly conditions?: ListenerCondition[] | undefined;
 
   /**
    * Rule applies if the requested host matches the indicated host
@@ -80,7 +80,7 @@ export interface BaseApplicationListenerRuleProps {
    * @default - No host condition.
    * @deprecated Use `conditions` instead.
    */
-  readonly hostHeader?: string;
+  readonly hostHeader?: string | undefined;
 
   /**
    * Rule applies if the requested path matches the given path pattern
@@ -89,7 +89,7 @@ export interface BaseApplicationListenerRuleProps {
    * @default - No path condition.
    * @deprecated Use `conditions` instead.
    */
-  readonly pathPattern?: string;
+  readonly pathPattern?: string | undefined;
 
   /**
    * Rule applies if the requested path matches any of the given patterns.
@@ -100,7 +100,7 @@ export interface BaseApplicationListenerRuleProps {
    * @default - No path conditions.
    * @deprecated Use `conditions` instead.
    */
-  readonly pathPatterns?: string[];
+  readonly pathPatterns?: string[] | undefined;
 }
 
 /**
@@ -140,14 +140,14 @@ export interface FixedResponse {
    *
    * @default text/plain
    */
-  readonly contentType?: ContentType;
+  readonly contentType?: ContentType | undefined;
 
   /**
    * The message
    *
    * @default no message
    */
-  readonly messageBody?: string;
+  readonly messageBody?: string | undefined;
 }
 
 /**
@@ -160,27 +160,27 @@ export interface RedirectResponse {
    *
    * @default origin host of request
    */
-  readonly host?: string;
+  readonly host?: string | undefined;
   /**
    * The absolute path, starting with the leading "/". This component is not percent-encoded.
    * The path can contain #{host}, #{path}, and #{port}.
    *
    * @default origin path of request
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
   /**
    * The port. You can specify a value from 1 to 65535 or #{port}.
    *
    * @default origin port of request
    */
-  readonly port?: string;
+  readonly port?: string | undefined;
   /**
    * The protocol. You can specify HTTP, HTTPS, or #{protocol}. You can redirect HTTP to HTTP,
    * HTTP to HTTPS, and HTTPS to HTTPS. You cannot redirect HTTPS to HTTP.
    *
    * @default origin protocol of request
    */
-  readonly protocol?: string;
+  readonly protocol?: string | undefined;
   /**
    * The query parameters, URL-encoded when necessary, but not percent-encoded.
    * Do not include the leading "?", as it is automatically added.
@@ -188,7 +188,7 @@ export interface RedirectResponse {
    *
    * @default origin query string of request
    */
-  readonly query?: string;
+  readonly query?: string | undefined;
   /**
    * The HTTP redirect code (HTTP_301 or HTTP_302)
    */

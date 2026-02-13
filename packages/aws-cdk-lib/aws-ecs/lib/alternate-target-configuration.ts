@@ -66,13 +66,13 @@ export interface AlternateTargetConfig {
    * The production listener rule ARN (ALB) or listener ARN (NLB)
    * @default - none
    */
-  readonly productionListenerRule?: string;
+  readonly productionListenerRule?: string | undefined;
 
   /**
    * The test listener rule ARN (ALB) or listener ARN (NLB)
    * @default - none
    */
-  readonly testListenerRule?: string;
+  readonly testListenerRule?: string | undefined;
 }
 
 /**
@@ -96,13 +96,13 @@ export interface AlternateTargetOptions {
    * The IAM role for the configuration
    * @default - a new role will be created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The test listener configuration
    * @default - none
    */
-  readonly testListener?: ListenerRuleConfiguration;
+  readonly testListener?: ListenerRuleConfiguration | undefined;
 }
 
 /**

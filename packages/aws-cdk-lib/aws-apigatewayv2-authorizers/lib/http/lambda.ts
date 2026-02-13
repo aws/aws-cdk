@@ -34,14 +34,14 @@ export interface HttpLambdaAuthorizerProps {
    * Friendly authorizer name
    * @default - same value as `id` passed in the constructor.
    */
-  readonly authorizerName?: string;
+  readonly authorizerName?: string | undefined;
 
   /**
    * The identity source for which authorization is requested.
    *
    * @default ['$request.header.Authorization']
    */
-  readonly identitySource?: string[];
+  readonly identitySource?: string[] | undefined;
 
   /**
    * How long APIGateway should cache the results. Max 1 hour.
@@ -49,7 +49,7 @@ export interface HttpLambdaAuthorizerProps {
    *
    * @default Duration.minutes(5)
    */
-  readonly resultsCacheTtl?: Duration;
+  readonly resultsCacheTtl?: Duration | undefined;
 
   /**
    * The types of responses the lambda can return
@@ -61,7 +61,7 @@ export interface HttpLambdaAuthorizerProps {
    *
    * @default [HttpLambdaResponseType.IAM]
    */
-  readonly responseTypes?: HttpLambdaResponseType[];
+  readonly responseTypes?: HttpLambdaResponseType[] | undefined;
 }
 
 /**

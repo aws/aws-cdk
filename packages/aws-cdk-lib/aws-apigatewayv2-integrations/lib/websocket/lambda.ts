@@ -22,7 +22,7 @@ export interface WebSocketLambdaIntegrationProps {
    *
    * @default Duration.seconds(29)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Specifies how to handle response payload content type conversions.
@@ -30,7 +30,7 @@ export interface WebSocketLambdaIntegrationProps {
    * @default - The response payload will be passed through from the integration response to
    * the route response or method response without modification.
    */
-  readonly contentHandling?: ContentHandling;
+  readonly contentHandling?: ContentHandling | undefined;
 }
 
 /**

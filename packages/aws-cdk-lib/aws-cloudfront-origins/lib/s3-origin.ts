@@ -14,7 +14,7 @@ export interface S3OriginProps extends cloudfront.OriginProps {
    *
    * @default - An Origin Access Identity will be created.
    */
-  readonly originAccessIdentity?: cloudfront.ICloudFrontOriginAccessIdentityRef & iam.IGrantable;
+  readonly originAccessIdentity?: cloudfront.ICloudFrontOriginAccessIdentityRef & iam.IGrantable | undefined;
 }
 
 /**

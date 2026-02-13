@@ -5,8 +5,8 @@ import { ValidationError } from '../../core/lib/errors';
 export const AUTOGEN_MARKER = '$$autogen$$';
 
 export interface ArnForParameterNameOptions {
-  readonly physicalName?: string;
-  readonly simpleName?: boolean;
+  readonly physicalName?: string | undefined;
+  readonly simpleName?: boolean | undefined;
 }
 
 /**

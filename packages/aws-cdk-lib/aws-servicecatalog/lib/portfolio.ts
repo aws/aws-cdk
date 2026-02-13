@@ -29,7 +29,7 @@ export interface PortfolioShareOptions {
    *
    * @default - share not specified
    */
-  readonly shareTagOptions?: boolean;
+  readonly shareTagOptions?: boolean | undefined;
 
   /**
    * The message language of the share.
@@ -37,7 +37,7 @@ export interface PortfolioShareOptions {
    *
    * @default - English
    */
-  readonly messageLanguage?: MessageLanguage;
+  readonly messageLanguage?: MessageLanguage | undefined;
 }
 
 /**
@@ -295,21 +295,21 @@ export interface PortfolioProps {
    *
    * @default - English
    */
-  readonly messageLanguage?: MessageLanguage;
+  readonly messageLanguage?: MessageLanguage | undefined;
 
   /**
    * Description for portfolio.
    *
    * @default - No description provided
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * TagOptions associated directly to a portfolio.
    *
    * @default - No tagOptions provided
    */
-  readonly tagOptions?: TagOptions;
+  readonly tagOptions?: TagOptions | undefined;
 }
 
 /**

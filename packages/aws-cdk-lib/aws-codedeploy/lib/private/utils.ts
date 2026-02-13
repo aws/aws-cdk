@@ -42,7 +42,7 @@ export interface renderAlarmConfigProps {
   /**
    * Whether to ignore failure to fetch the status of alarms from CloudWatch
    */
-  readonly ignorePollAlarmFailure?: boolean;
+  readonly ignorePollAlarmFailure?: boolean | undefined;
 
   /**
    * When no alarms are provided on an update, removes previously existing alarms from the construct.
@@ -50,7 +50,7 @@ export interface renderAlarmConfigProps {
    *
    * @default true
    */
-  readonly removeAlarms?: boolean;
+  readonly removeAlarms?: boolean | undefined;
 
   /**
    * Whether to skip the step of checking CloudWatch alarms during the deployment process

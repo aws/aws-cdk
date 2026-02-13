@@ -233,7 +233,7 @@ export interface GatewayVpcEndpointOptions {
    *
    *
    */
-  readonly subnets?: SubnetSelection[];
+  readonly subnets?: SubnetSelection[] | undefined;
 }
 
 /**
@@ -330,7 +330,7 @@ export interface IInterfaceVpcEndpointService {
   /**
    * Whether Private DNS is supported by default.
    */
-  readonly privateDnsDefault?: boolean;
+  readonly privateDnsDefault?: boolean | undefined;
 }
 
 /**
@@ -368,7 +368,7 @@ export interface InterfaceVpcEndpointAwsServiceProps {
    *
    * @default false
    */
-  readonly global?: boolean;
+  readonly global?: boolean | undefined;
 }
 
 /**
@@ -901,7 +901,7 @@ export interface InterfaceVpcEndpointOptions {
    * @default set by the instance of IInterfaceVpcEndpointService, or true if
    * not defined by the instance of IInterfaceVpcEndpointService
    */
-  readonly privateDnsEnabled?: boolean;
+  readonly privateDnsEnabled?: boolean | undefined;
 
   /**
    * The subnets in which to create an endpoint network interface. At most one
@@ -909,14 +909,14 @@ export interface InterfaceVpcEndpointOptions {
    *
    * @default - private subnets
    */
-  readonly subnets?: SubnetSelection;
+  readonly subnets?: SubnetSelection | undefined;
 
   /**
    * The security groups to associate with this interface VPC endpoint.
    *
    * @default - a new security group is created
    */
-  readonly securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroup[] | undefined;
 
   /**
    * Whether to automatically allow VPC traffic to the endpoint
@@ -926,7 +926,7 @@ export interface InterfaceVpcEndpointOptions {
    *
    * @default true
    */
-  readonly open?: boolean;
+  readonly open?: boolean | undefined;
 
   /**
    * Limit to only those availability zones where the endpoint service can be created
@@ -936,28 +936,28 @@ export interface InterfaceVpcEndpointOptions {
    *
    * @default false
    */
-  readonly lookupSupportedAzs?: boolean;
+  readonly lookupSupportedAzs?: boolean | undefined;
 
   /**
    * The IP address type for the endpoint.
    *
    * @default not specified
    */
-  readonly ipAddressType?: VpcEndpointIpAddressType;
+  readonly ipAddressType?: VpcEndpointIpAddressType | undefined;
 
   /**
    * Type of DNS records created for the VPC endpoint.
    *
    * @default not specified
    */
-  readonly dnsRecordIpType?: VpcEndpointDnsRecordIpType;
+  readonly dnsRecordIpType?: VpcEndpointDnsRecordIpType | undefined;
 
   /**
    * Whether to enable private DNS only for inbound endpoints.
    *
    * @default not specified
    */
-  readonly privateDnsOnlyForInboundResolverEndpoint?: VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint;
+  readonly privateDnsOnlyForInboundResolverEndpoint?: VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint | undefined;
 
   /**
    * The region where the VPC endpoint service is located.
@@ -966,7 +966,7 @@ export interface InterfaceVpcEndpointOptions {
    *
    * @default - Same region as the interface VPC endpoint
    */
-  readonly serviceRegion?: string;
+  readonly serviceRegion?: string | undefined;
 }
 
 /**
@@ -1220,7 +1220,7 @@ export interface InterfaceVpcEndpointAttributes {
    *
    * @deprecated use `securityGroups` instead
    */
-  readonly securityGroupId?: string;
+  readonly securityGroupId?: string | undefined;
 
   /**
    * The security groups associated with the interface VPC endpoint.
@@ -1228,7 +1228,7 @@ export interface InterfaceVpcEndpointAttributes {
    * If you wish to manage the network connections associated with this endpoint,
    * you will need to specify its security groups.
    */
-  readonly securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroup[] | undefined;
 
   /**
    * The port of the service of the interface VPC endpoint.

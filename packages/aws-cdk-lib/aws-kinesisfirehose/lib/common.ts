@@ -71,7 +71,7 @@ interface DestinationLoggingProps {
    *
    * @default - errors will be logged and a log group will be created for you.
    */
-  readonly loggingConfig?: ILoggingConfig;
+  readonly loggingConfig?: ILoggingConfig | undefined;
 }
 
 /**
@@ -87,7 +87,7 @@ export interface CommonDestinationS3Props {
    *
    * @default Duration.seconds(300)
    */
-  readonly bufferingInterval?: cdk.Duration;
+  readonly bufferingInterval?: cdk.Duration | undefined;
 
   /**
    * The size of the buffer that Amazon Data Firehose uses for incoming data before
@@ -98,7 +98,7 @@ export interface CommonDestinationS3Props {
    *
    * @default Size.mebibytes(5) when record data format conversion is disabled, Size.mebibytes(128) when it is enabled
    */
-  readonly bufferingSize?: cdk.Size;
+  readonly bufferingSize?: cdk.Size | undefined;
 
   /**
    * The type of compression that Amazon Data Firehose uses to compress the data
@@ -110,14 +110,14 @@ export interface CommonDestinationS3Props {
    *
    * @default - UNCOMPRESSED
    */
-  readonly compression?: Compression;
+  readonly compression?: Compression | undefined;
 
   /**
    * The AWS KMS key used to encrypt the data that it delivers to your Amazon S3 bucket.
    *
    * @default - Data is not encrypted.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * A prefix that Amazon Data Firehose evaluates and adds to failed records before writing them to S3.
@@ -127,7 +127,7 @@ export interface CommonDestinationS3Props {
    *
    * @default "YYYY/MM/DD/HH"
    */
-  readonly errorOutputPrefix?: string;
+  readonly errorOutputPrefix?: string | undefined;
 
   /**
    * A prefix that Amazon Data Firehose evaluates and adds to records before writing them to S3.
@@ -137,7 +137,7 @@ export interface CommonDestinationS3Props {
    *
    * @default "YYYY/MM/DD/HH"
    */
-  readonly dataOutputPrefix?: string;
+  readonly dataOutputPrefix?: string | undefined;
 }
 
 /**
@@ -151,7 +151,7 @@ export interface DestinationS3BackupProps extends DestinationLoggingProps, Commo
    *
    * @default - If `mode` is set to `BackupMode.ALL` or `BackupMode.FAILED`, a bucket will be created for you.
    */
-  readonly bucket?: s3.IBucket;
+  readonly bucket?: s3.IBucket | undefined;
 
   /**
    * Indicates the mode by which incoming records should be backed up to S3, if any.
@@ -161,7 +161,7 @@ export interface DestinationS3BackupProps extends DestinationLoggingProps, Commo
    * @default - If `bucket` is provided, the default will be `BackupMode.ALL`. Otherwise,
    * source records are not backed up to S3.
    */
-  readonly mode?: BackupMode;
+  readonly mode?: BackupMode | undefined;
 }
 
 /**
@@ -175,7 +175,7 @@ export interface CommonDestinationProps extends DestinationLoggingProps {
    *
    * @default - a role will be created with default permissions.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The data transformation that should be performed on the data before writing to the destination.
@@ -183,19 +183,19 @@ export interface CommonDestinationProps extends DestinationLoggingProps {
    * @default - no data transformation will occur.
    * @deprecated Use `processors` instead.
    */
-  readonly processor?: IDataProcessor;
+  readonly processor?: IDataProcessor | undefined;
 
   /**
    * The data transformation that should be performed on the data before writing to the destination.
    *
    * @default - no data transformation will occur.
    */
-  readonly processors?: IDataProcessor[];
+  readonly processors?: IDataProcessor[] | undefined;
 
   /**
    * The configuration for backing up source records to S3.
    *
    * @default - source records will not be backed up to S3.
    */
-  readonly s3Backup?: DestinationS3BackupProps;
+  readonly s3Backup?: DestinationS3BackupProps | undefined;
 }

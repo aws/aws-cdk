@@ -15,7 +15,7 @@ export interface CodePipelineTargetOptions extends TargetBaseProps {
    *
    * @default - a new role will be created
    */
-  readonly eventRole?: iam.IRole;
+  readonly eventRole?: iam.IRole | undefined;
 }
 
 /**

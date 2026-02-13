@@ -22,7 +22,7 @@ export interface BounceTemplateProps {
    *
    * @see https://tools.ietf.org/html/rfc3463
    */
-  readonly statusCode?: string;
+  readonly statusCode?: string | undefined;
 }
 
 /**
@@ -83,7 +83,7 @@ export interface BounceProps {
    *
    * @default no notification
    */
-  readonly topic?: sns.ITopic;
+  readonly topic?: sns.ITopic | undefined;
 }
 
 /**

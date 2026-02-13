@@ -159,7 +159,7 @@ export interface NatGatewayProps {
    *
    * @default - No fixed EIPs allocated for the NAT gateways
    */
-  readonly eipAllocationIds?: string[];
+  readonly eipAllocationIds?: string[] | undefined;
 }
 
 /**
@@ -186,7 +186,7 @@ export interface NatInstanceProps {
    *
    * @default - Latest NAT instance image
    */
-  readonly machineImage?: IMachineImage;
+  readonly machineImage?: IMachineImage | undefined;
 
   /**
    * Instance type of the NAT instance
@@ -198,7 +198,7 @@ export interface NatInstanceProps {
    *
    * @default undefined - No public IP address associated
    */
-  readonly associatePublicIpAddress?: boolean;
+  readonly associatePublicIpAddress?: boolean | undefined;
 
   /**
    * Name of SSH keypair to grant access to instance
@@ -206,14 +206,14 @@ export interface NatInstanceProps {
    * @default - No SSH access will be possible.
    * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
-  readonly keyName?: string;
+  readonly keyName?: string | undefined;
 
   /**
    * The SSH keypair to grant access to the instance.
    *
    * @default - No SSH access will be possible.
    */
-  readonly keyPair?: IKeyPair;
+  readonly keyPair?: IKeyPair | undefined;
 
   /**
    * Security Group for NAT instances
@@ -241,7 +241,7 @@ export interface NatInstanceProps {
    *    gatewayInstance.addSecurityGroup(securityGroup);
    * }
    */
-  readonly securityGroup?: ISecurityGroup;
+  readonly securityGroup?: ISecurityGroup | undefined;
 
   /**
    * Allow all inbound traffic through the NAT instance
@@ -255,7 +255,7 @@ export interface NatInstanceProps {
    * @default true
    * @deprecated - Use `defaultAllowedTraffic`.
    */
-  readonly allowAllTraffic?: boolean;
+  readonly allowAllTraffic?: boolean | undefined;
 
   /**
    * Direction to allow all traffic through the NAT instance by default.
@@ -270,7 +270,7 @@ export interface NatInstanceProps {
    *
    * @default NatTrafficDirection.INBOUND_AND_OUTBOUND
    */
-  readonly defaultAllowedTraffic?: NatTrafficDirection;
+  readonly defaultAllowedTraffic?: NatTrafficDirection | undefined;
 
   /**
    * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
@@ -278,7 +278,7 @@ export interface NatInstanceProps {
    *
    * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
    */
-  readonly creditSpecification?: CpuCredits;
+  readonly creditSpecification?: CpuCredits | undefined;
 
   /**
    * Custom user data to run on the NAT instances
@@ -286,7 +286,7 @@ export interface NatInstanceProps {
    * @default UserData.forLinux().addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);  - Appropriate user data commands to initialize and configure the NAT instances
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 }
 
 /**

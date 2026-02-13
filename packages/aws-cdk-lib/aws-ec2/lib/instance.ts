@@ -117,28 +117,28 @@ export interface InstanceProps {
    * @default - No SSH access will be possible.
    * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
-  readonly keyName?: string;
+  readonly keyName?: string | undefined;
 
   /**
    * The SSH keypair to grant access to the instance.
    *
    * @default - No SSH access will be possible.
    */
-  readonly keyPair?: IKeyPair;
+  readonly keyPair?: IKeyPair | undefined;
 
   /**
    * Where to place the instance within the VPC
    *
    * @default - Private subnets.
    */
-  readonly vpcSubnets?: SubnetSelection;
+  readonly vpcSubnets?: SubnetSelection | undefined;
 
   /**
    * In which AZ to place the instance within the VPC
    *
    * @default - Random zone.
    */
-  readonly availabilityZone?: string;
+  readonly availabilityZone?: string | undefined;
 
   /**
    * Whether the instance could initiate connections to anywhere by default.
@@ -146,7 +146,7 @@ export interface InstanceProps {
    *
    * @default true
    */
-  readonly allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean | undefined;
 
   /**
    * Whether the instance could initiate IPv6 connections to anywhere by default.
@@ -154,7 +154,7 @@ export interface InstanceProps {
    *
    * @default false
    */
-  readonly allowAllIpv6Outbound?: boolean;
+  readonly allowAllIpv6Outbound?: boolean | undefined;
 
   /**
    * The length of time to wait for the resourceSignalCount
@@ -163,7 +163,7 @@ export interface InstanceProps {
    *
    * @default Duration.minutes(5)
    */
-  readonly resourceSignalTimeout?: Duration;
+  readonly resourceSignalTimeout?: Duration | undefined;
 
   /**
    * VPC to launch the instance in.
@@ -175,7 +175,7 @@ export interface InstanceProps {
    *
    * @default - create new security group
    */
-  readonly securityGroup?: ISecurityGroup;
+  readonly securityGroup?: ISecurityGroup | undefined;
 
   /**
    * Type of instance to launch
@@ -195,7 +195,7 @@ export interface InstanceProps {
    * @default - A UserData object appropriate for the MachineImage's
    * Operating System is created.
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 
   /**
    * Changes to the UserData force replacement
@@ -215,7 +215,7 @@ export interface InstanceProps {
    *
    * @default - true if `initOptions` is specified, false otherwise.
    */
-  readonly userDataCausesReplacement?: boolean;
+  readonly userDataCausesReplacement?: boolean | undefined;
 
   /**
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
@@ -230,7 +230,7 @@ export interface InstanceProps {
    *
    * @default - A role will automatically be created, it can be accessed via the `role` property
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The instance profile used to pass role information to EC2 instances.
@@ -239,14 +239,14 @@ export interface InstanceProps {
    *
    * @default - No instance profile
    */
-  readonly instanceProfile?: iam.IInstanceProfile;
+  readonly instanceProfile?: iam.IInstanceProfile | undefined;
 
   /**
    * The name of the instance
    *
    * @default - CDK generated name
    */
-  readonly instanceName?: string;
+  readonly instanceName?: string | undefined;
 
   /**
    * Specifies whether to enable an instance launched in a VPC to perform NAT.
@@ -256,7 +256,7 @@ export interface InstanceProps {
    *
    * @default true
    */
-  readonly sourceDestCheck?: boolean;
+  readonly sourceDestCheck?: boolean | undefined;
 
   /**
    * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
@@ -270,7 +270,7 @@ export interface InstanceProps {
    *
    * @default - Uses the block device mapping of the AMI
    */
-  readonly blockDevices?: BlockDevice[];
+  readonly blockDevices?: BlockDevice[] | undefined;
 
   /**
    * Defines a private IP address to associate with an instance.
@@ -279,21 +279,21 @@ export interface InstanceProps {
    *
    * @default - no association
    */
-  readonly privateIpAddress?: string;
+  readonly privateIpAddress?: string | undefined;
 
   /**
    * Propagate the EC2 instance tags to the EBS volumes.
    *
    * @default - false
    */
-  readonly propagateTagsToVolumeOnCreation?: boolean;
+  readonly propagateTagsToVolumeOnCreation?: boolean | undefined;
 
   /**
    * Apply the given CloudFormation Init configuration to the instance at startup
    *
    * @default - no CloudFormation init
    */
-  readonly init?: CloudFormationInit;
+  readonly init?: CloudFormationInit | undefined;
 
   /**
    * Use the given options for applying CloudFormation Init
@@ -302,7 +302,7 @@ export interface InstanceProps {
    *
    * @default - default options
    */
-  readonly initOptions?: ApplyCloudFormationInitOptions;
+  readonly initOptions?: ApplyCloudFormationInitOptions | undefined;
 
   /**
    * Whether IMDSv2 should be required on this instance.
@@ -315,7 +315,7 @@ export interface InstanceProps {
    *
    * @default - false
    */
-  readonly requireImdsv2?: boolean;
+  readonly requireImdsv2?: boolean | undefined;
 
   /**
    * Enables or disables the HTTP metadata endpoint on your instances.
@@ -324,7 +324,7 @@ export interface InstanceProps {
    *
    * @default true
    */
-  readonly httpEndpoint?: boolean;
+  readonly httpEndpoint?: boolean | undefined;
 
   /**
    * Enables or disables the IPv6 endpoint for the instance metadata service.
@@ -333,7 +333,7 @@ export interface InstanceProps {
    *
    * @default false
    */
-  readonly httpProtocolIpv6?: boolean;
+  readonly httpProtocolIpv6?: boolean | undefined;
 
   /**
    * The desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel.
@@ -344,7 +344,7 @@ export interface InstanceProps {
    *
    * @default - No default value specified by CloudFormation
    */
-  readonly httpPutResponseHopLimit?: number;
+  readonly httpPutResponseHopLimit?: number | undefined;
 
   /**
    * The state of token usage for your instance metadata requests.
@@ -359,7 +359,7 @@ export interface InstanceProps {
    * - If the AMI's `ImdsSupport` is `v2.0` and the account level default is `V1 or V2`, the default is `HttpTokens.OPTIONAL`
    * - See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-options.html#instance-metadata-options-order-of-precedence
    */
-  readonly httpTokens?: HttpTokens;
+  readonly httpTokens?: HttpTokens | undefined;
 
   /**
    * Set to enabled to allow access to instance tags from the instance metadata. Set to disabled to turn off access to instance tags from the instance metadata.
@@ -368,7 +368,7 @@ export interface InstanceProps {
    *
    * @default false
    */
-  readonly instanceMetadataTags?: boolean;
+  readonly instanceMetadataTags?: boolean | undefined;
 
   /**
    * Whether "Detailed Monitoring" is enabled for this instance
@@ -377,7 +377,7 @@ export interface InstanceProps {
    * @see http://aws.amazon.com/cloudwatch/pricing/
    * @default - false
    */
-  readonly detailedMonitoring?: boolean;
+  readonly detailedMonitoring?: boolean | undefined;
 
   /**
    * Add SSM session permissions to the instance role
@@ -394,7 +394,7 @@ export interface InstanceProps {
    *
    * @default false
    */
-  readonly ssmSessionPermissions?: boolean;
+  readonly ssmSessionPermissions?: boolean | undefined;
 
   /**
    * Whether to associate a public IP address to the primary network interface attached to this instance.
@@ -403,7 +403,7 @@ export interface InstanceProps {
    *
    * @default - public IP address is automatically assigned based on default behavior
    */
-  readonly associatePublicIpAddress?: boolean;
+  readonly associatePublicIpAddress?: boolean | undefined;
 
   /**
    * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
@@ -411,7 +411,7 @@ export interface InstanceProps {
    *
    * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
    */
-  readonly creditSpecification?: CpuCredits;
+  readonly creditSpecification?: CpuCredits | undefined;
 
   /**
    * Indicates whether the instance is optimized for Amazon EBS I/O.
@@ -422,7 +422,7 @@ export interface InstanceProps {
    *
    * @default false
    */
-  readonly ebsOptimized?: boolean;
+  readonly ebsOptimized?: boolean | undefined;
 
   /**
    * If true, the instance will not be able to be terminated using the Amazon EC2 console, CLI, or API.
@@ -435,7 +435,7 @@ export interface InstanceProps {
    *
    * @default false
    */
-  readonly disableApiTermination?: boolean;
+  readonly disableApiTermination?: boolean | undefined;
 
   /**
    * Indicates whether an instance stops or terminates when you initiate shutdown from the instance
@@ -445,14 +445,14 @@ export interface InstanceProps {
    *
    * @default InstanceInitiatedShutdownBehavior.STOP
    */
-  readonly instanceInitiatedShutdownBehavior?: InstanceInitiatedShutdownBehavior;
+  readonly instanceInitiatedShutdownBehavior?: InstanceInitiatedShutdownBehavior | undefined;
 
   /**
    * The placement group that you want to launch the instance into.
    *
    * @default - no placement group will be used for this instance.
    */
-  readonly placementGroup?: IPlacementGroupRef;
+  readonly placementGroup?: IPlacementGroupRef | undefined;
 
   /**
    * Whether the instance is enabled for AWS Nitro Enclaves.
@@ -467,7 +467,7 @@ export interface InstanceProps {
    *
    * @default - false
    */
-  readonly enclaveEnabled?: boolean;
+  readonly enclaveEnabled?: boolean | undefined;
 
   /**
    * Whether the instance is enabled for hibernation.
@@ -478,7 +478,7 @@ export interface InstanceProps {
    *
    * @default - false
    */
-  readonly hibernationEnabled?: boolean;
+  readonly hibernationEnabled?: boolean | undefined;
 
   /**
    * The number of IPv6 addresses to associate with the primary network interface.
@@ -489,7 +489,7 @@ export interface InstanceProps {
    *
    * @default - For instances associated with an IPv6 subnet, use 1; otherwise, use 0.
    */
-  readonly ipv6AddressCount?: number;
+  readonly ipv6AddressCount?: number | undefined;
 }
 
 /**
@@ -922,14 +922,14 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default ['default']
    */
-  readonly configSets?: string[];
+  readonly configSets?: string[] | undefined;
 
   /**
    * Timeout waiting for the configuration to be applied
    *
    * @default Duration.minutes(5)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Force instance replacement by embedding a config fingerprint
@@ -952,7 +952,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default true
    */
-  readonly embedFingerprint?: boolean;
+  readonly embedFingerprint?: boolean | undefined;
 
   /**
    * Print the results of running cfn-init to the Instance System Log
@@ -967,7 +967,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default true
    */
-  readonly printLog?: boolean;
+  readonly printLog?: boolean | undefined;
 
   /**
    * Don't fail the instance creation when cfn-init fails
@@ -977,7 +977,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default false
    */
-  readonly ignoreFailures?: boolean;
+  readonly ignoreFailures?: boolean | undefined;
 
   /**
    * Include --url argument when running cfn-init and cfn-signal commands
@@ -987,7 +987,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default false
    */
-  readonly includeUrl?: boolean;
+  readonly includeUrl?: boolean | undefined;
 
   /**
    * Include --role argument when running cfn-init and cfn-signal commands
@@ -996,5 +996,5 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default false
    */
-  readonly includeRole?: boolean;
+  readonly includeRole?: boolean | undefined;
 }

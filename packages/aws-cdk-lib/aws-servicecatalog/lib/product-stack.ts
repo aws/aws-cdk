@@ -18,7 +18,7 @@ export interface ProductStackProps {
    *
    * @default - No Bucket provided and Assets will not be supported.
    */
-  readonly assetBucket?: IBucket;
+  readonly assetBucket?: IBucket | undefined;
 
   /**
    * A ServerSideEncryption can be enabled to encrypt assets that are put into assetBucket
@@ -43,14 +43,14 @@ export interface ProductStackProps {
    *
    * @default 128
    */
-  readonly memoryLimit?: number;
+  readonly memoryLimit?: number | undefined;
 
   /**
    * A description of the stack.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Include runtime versioning information in this Stack
@@ -58,7 +58,7 @@ export interface ProductStackProps {
    * @default - `analyticsReporting` setting of containing `App`, or value of
    * 'aws:cdk:version-reporting' context key
    */
-  readonly analyticsReporting?: boolean;
+  readonly analyticsReporting?: boolean | undefined;
 }
 
 /**

@@ -44,7 +44,7 @@ export interface RouteBaseProps {
    *
    * @default - An automatically generated name
    */
-  readonly routeName?: string;
+  readonly routeName?: string | undefined;
 
   /**
    * Protocol specific spec

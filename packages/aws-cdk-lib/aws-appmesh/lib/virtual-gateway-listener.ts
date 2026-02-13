@@ -22,21 +22,21 @@ interface VirtualGatewayListenerCommonOptions {
    *
    * @default - 8080
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The health check information for the listener
    *
    * @default - no healthcheck
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * Represents the configuration for enabling TLS on a listener
    *
    * @default - none
    */
-  readonly tls?: ListenerTlsOptions;
+  readonly tls?: ListenerTlsOptions | undefined;
 }
 
 /**
@@ -48,7 +48,7 @@ export interface HttpGatewayListenerOptions extends VirtualGatewayListenerCommon
    *
    * @default - None
    */
-  readonly connectionPool?: HttpConnectionPool;
+  readonly connectionPool?: HttpConnectionPool | undefined;
 }
 
 /**
@@ -60,7 +60,7 @@ export interface Http2GatewayListenerOptions extends VirtualGatewayListenerCommo
    *
    * @default - None
    */
-  readonly connectionPool?: Http2ConnectionPool;
+  readonly connectionPool?: Http2ConnectionPool | undefined;
 }
 
 /**
@@ -72,7 +72,7 @@ export interface GrpcGatewayListenerOptions extends VirtualGatewayListenerCommon
    *
    * @default - None
    */
-  readonly connectionPool?: GrpcConnectionPool;
+  readonly connectionPool?: GrpcConnectionPool | undefined;
 }
 
 /**

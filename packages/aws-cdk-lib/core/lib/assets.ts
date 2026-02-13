@@ -30,7 +30,7 @@ export interface AssetOptions {
    *
    * @default - based on `assetHashType`
    */
-  readonly assetHash?: string;
+  readonly assetHash?: string | undefined;
 
   /**
    * Specifies the type of hash to calculate for this asset.
@@ -41,7 +41,7 @@ export interface AssetOptions {
    * @default - the default is `AssetHashType.SOURCE`, but if `assetHash` is
    * explicitly specified this value defaults to `AssetHashType.CUSTOM`.
    */
-  readonly assetHashType?: AssetHashType;
+  readonly assetHashType?: AssetHashType | undefined;
 
   /**
    * Bundle the asset by executing a command in a Docker container or a custom bundling provider.
@@ -54,7 +54,7 @@ export interface AssetOptions {
    * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
    * archived into a .zip file and uploaded to S3 otherwise
    */
-  readonly bundling?: BundlingOptions;
+  readonly bundling?: BundlingOptions | undefined;
 }
 
 /**
@@ -112,7 +112,7 @@ export interface FileAssetSource {
    *
    * @default - Exactly one of `fileName` and `executable` is required
    */
-  readonly executable?: string[];
+  readonly executable?: string[] | undefined;
 
   /**
    * The path, relative to the root of the cloud assembly, in which this asset
@@ -121,14 +121,14 @@ export interface FileAssetSource {
    *
    * @default - Exactly one of `fileName` and `executable` is required
    */
-  readonly fileName?: string;
+  readonly fileName?: string | undefined;
 
   /**
    * Which type of packaging to perform.
    *
    * @default - Required if `fileName` is specified.
    */
-  readonly packaging?: FileAssetPackaging;
+  readonly packaging?: FileAssetPackaging | undefined;
 
   /**
    * Whether or not the asset needs to exist beyond deployment time; i.e.
@@ -143,7 +143,7 @@ export interface FileAssetSource {
    *
    * @default false
    */
-  readonly deployTime?: boolean;
+  readonly deployTime?: boolean | undefined;
 
   /**
    * A display name for this asset
@@ -153,7 +153,7 @@ export interface FileAssetSource {
    *
    * @default - The asset hash is used to display the asset
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 export interface DockerImageAssetSource {
@@ -174,7 +174,7 @@ export interface DockerImageAssetSource {
    *
    * @default - Exactly one of `directoryName` and `executable` is required
    */
-  readonly executable?: string[];
+  readonly executable?: string[] | undefined;
 
   /**
    * The directory where the Dockerfile is stored, must be relative
@@ -182,7 +182,7 @@ export interface DockerImageAssetSource {
    *
    * @default - Exactly one of `directoryName` and `executable` is required
    */
-  readonly directoryName?: string;
+  readonly directoryName?: string | undefined;
 
   /**
    * Build args to pass to the `docker build` command.
@@ -195,7 +195,7 @@ export interface DockerImageAssetSource {
    *
    * @default - no build args are passed
    */
-  readonly dockerBuildArgs?: { [key: string]: string };
+  readonly dockerBuildArgs?: { [key: string]: string } | undefined;
 
   /**
    * Build secrets to pass to the `docker build` command.
@@ -208,7 +208,7 @@ export interface DockerImageAssetSource {
    *
    * @default - no build secrets are passed
    */
-  readonly dockerBuildSecrets?: { [key: string]: string };
+  readonly dockerBuildSecrets?: { [key: string]: string } | undefined;
 
   /**
    * SSH agent socket or keys to pass to the `docker buildx` command.
@@ -216,7 +216,7 @@ export interface DockerImageAssetSource {
    *
    * @default - no ssh arg is passed
    */
-  readonly dockerBuildSsh?: string;
+  readonly dockerBuildSsh?: string | undefined;
 
   /**
    * Docker target to build to
@@ -225,7 +225,7 @@ export interface DockerImageAssetSource {
    *
    * @default - no target
    */
-  readonly dockerBuildTarget?: string;
+  readonly dockerBuildTarget?: string | undefined;
 
   /**
    * Path to the Dockerfile (relative to the directory).
@@ -234,7 +234,7 @@ export interface DockerImageAssetSource {
    *
    * @default - no file
    */
-  readonly dockerFile?: string;
+  readonly dockerFile?: string | undefined;
 
   /**
    * ECR repository name
@@ -246,7 +246,7 @@ export interface DockerImageAssetSource {
    * @default - automatically derived from the asset's ID.
    * @deprecated repository name should be specified at the environment-level and not at the image level
    */
-  readonly repositoryName?: string;
+  readonly repositoryName?: string | undefined;
 
   /**
    * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
@@ -255,7 +255,7 @@ export interface DockerImageAssetSource {
    *
    * @default - no networking mode specified
    */
-  readonly networkMode?: string;
+  readonly networkMode?: string | undefined;
 
   /**
    * Platform to build for. _Requires Docker Buildx_.
@@ -264,14 +264,14 @@ export interface DockerImageAssetSource {
    *
    * @default - no platform specified (the current machine architecture will be used)
    */
-  readonly platform?: string;
+  readonly platform?: string | undefined;
 
   /**
    * Outputs to pass to the `docker build` command.
    *
    * @default - no build args are passed
    */
-  readonly dockerOutputs?: string[];
+  readonly dockerOutputs?: string[] | undefined;
 
   /**
    * Unique identifier of the docker image asset and its potential revisions.
@@ -279,28 +279,28 @@ export interface DockerImageAssetSource {
    *
    * @default - no asset name
    */
-  readonly assetName?: string;
+  readonly assetName?: string | undefined;
 
   /**
    * Cache from options to pass to the `docker build` command.
    *
    * @default - no cache from args are passed
    */
-  readonly dockerCacheFrom?: DockerCacheOption[];
+  readonly dockerCacheFrom?: DockerCacheOption[] | undefined;
 
   /**
    * Cache to options to pass to the `docker build` command.
    *
    * @default - no cache to args are passed
    */
-  readonly dockerCacheTo?: DockerCacheOption;
+  readonly dockerCacheTo?: DockerCacheOption | undefined;
 
   /**
    * Disable the cache and pass `--no-cache` to the `docker build` command.
    *
    * @default - cache is used
    */
-  readonly dockerCacheDisabled?: boolean;
+  readonly dockerCacheDisabled?: boolean | undefined;
 
   /**
    * A display name for this asset
@@ -310,7 +310,7 @@ export interface DockerImageAssetSource {
    *
    * @default - The asset hash is used to display the asset
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 /**
@@ -350,7 +350,7 @@ export interface FileAssetLocation {
    * @default - value specified in `httpUrl` is used.
    * @deprecated use `httpUrl`
    */
-  readonly s3Url?: string;
+  readonly s3Url?: string | undefined;
 
   /**
    * The HTTP URL of this asset on Amazon S3.
@@ -382,7 +382,7 @@ export interface FileAssetLocation {
    * @default - Asset bucket is not encrypted, or decryption permissions are
    * defined by a Key Policy.
    */
-  readonly kmsKeyArn?: string;
+  readonly kmsKeyArn?: string | undefined;
 
   /**
    * Like `s3ObjectUrl`, but not suitable for CloudFormation consumption
@@ -392,7 +392,7 @@ export interface FileAssetLocation {
    *
    * @default - This feature cannot be used
    */
-  readonly s3ObjectUrlWithPlaceholders?: string;
+  readonly s3ObjectUrlWithPlaceholders?: string | undefined;
 }
 
 /**
@@ -414,7 +414,7 @@ export interface DockerImageAssetLocation {
    * The tag of the image in Amazon ECR.
    * @default - the hash of the asset, or the `dockerTagPrefix` concatenated with the asset hash if a `dockerTagPrefix` is specified in the stack synthesizer
    */
-  readonly imageTag?: string;
+  readonly imageTag?: string | undefined;
 }
 
 /**
@@ -442,5 +442,5 @@ export interface DockerCacheOption {
    *   mode: "max",
    * };
    */
-  readonly params?: { [key: string]: string };
+  readonly params?: { [key: string]: string } | undefined;
 }

@@ -31,7 +31,7 @@ export interface ProduceActionOptions {
    *
    * @default - Step doesn't produce any outputs
    */
-  readonly variablesNamespace?: string;
+  readonly variablesNamespace?: string | undefined;
 
   /**
    * Helper object to translate FileSets to CodePipeline Artifacts
@@ -47,7 +47,7 @@ export interface ProduceActionOptions {
    *
    * @default - A fallback artifact does not exist
    */
-  readonly fallbackArtifact?: cp.Artifact;
+  readonly fallbackArtifact?: cp.Artifact | undefined;
 
   /**
    * The pipeline the action is being generated for
@@ -59,7 +59,7 @@ export interface ProduceActionOptions {
    *
    * @default - No CodeBuild project defaults
    */
-  readonly codeBuildDefaults?: CodeBuildOptions;
+  readonly codeBuildDefaults?: CodeBuildOptions | undefined;
 
   /**
    * Whether or not this action is inserted before self mutation.
@@ -70,7 +70,7 @@ export interface ProduceActionOptions {
    *
    * @default false
    */
-  readonly beforeSelfMutation?: boolean;
+  readonly beforeSelfMutation?: boolean | undefined;
 
   /**
    * Helper object to produce variables exported from stack deployments.
@@ -119,5 +119,5 @@ export interface CodePipelineActionFactoryResult {
    *
    * @default - This factory did not create a CodeBuild project
    */
-  readonly project?: cb.IProject;
+  readonly project?: cb.IProject | undefined;
 }

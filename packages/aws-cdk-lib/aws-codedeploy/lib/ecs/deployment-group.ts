@@ -83,7 +83,7 @@ export interface EcsBlueGreenDeploymentConfig {
    *
    * @default No test listener will be added
    */
-  readonly testListener?: elbv2.IListenerRef;
+  readonly testListener?: elbv2.IListenerRef | undefined;
 
   /**
    * Specify how long CodeDeploy waits for approval to continue a blue-green deployment before it stops the deployment.
@@ -101,7 +101,7 @@ export interface EcsBlueGreenDeploymentConfig {
    *
    * @default 0
    */
-  readonly deploymentApprovalWaitTime?: cdk.Duration;
+  readonly deploymentApprovalWaitTime?: cdk.Duration | undefined;
 
   /**
    * Specify how long CodeDeploy waits before it terminates the original 'blue' ECS task set when a blue-green deployment is complete.
@@ -115,7 +115,7 @@ export interface EcsBlueGreenDeploymentConfig {
    *
    * @default 0
    */
-  readonly terminationWaitTime?: cdk.Duration;
+  readonly terminationWaitTime?: cdk.Duration | undefined;
 }
 
 /**
@@ -127,21 +127,21 @@ export interface EcsDeploymentGroupProps {
    *
    * @default One will be created for you.
    */
-  readonly application?: IApplicationRef;
+  readonly application?: IApplicationRef | undefined;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
    * @default An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: string;
+  readonly deploymentGroupName?: string | undefined;
 
   /**
    * The Deployment Configuration this Deployment Group uses.
    *
    * @default EcsDeploymentConfig.ALL_AT_ONCE
    */
-  readonly deploymentConfig?: IDeploymentConfigRef;
+  readonly deploymentConfig?: IDeploymentConfigRef | undefined;
 
   /**
    * The CloudWatch alarms associated with this Deployment Group.
@@ -153,14 +153,14 @@ export interface EcsDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: IAlarmRef[];
+  readonly alarms?: IAlarmRef[] | undefined;
 
   /**
    * The service Role of this Deployment Group.
    *
    * @default - A new Role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The ECS service to deploy with this Deployment Group.
@@ -177,21 +177,21 @@ export interface EcsDeploymentGroupProps {
    *
    * @default false
    */
-  readonly ignorePollAlarmsFailure?: boolean;
+  readonly ignorePollAlarmsFailure?: boolean | undefined;
 
   /**
    * The auto-rollback configuration for this Deployment Group.
    *
    * @default - default AutoRollbackConfig.
    */
-  readonly autoRollback?: AutoRollbackConfig;
+  readonly autoRollback?: AutoRollbackConfig | undefined;
 
   /**
    * Whether to skip the step of checking CloudWatch alarms during the deployment process
    *
    * @default - false
    */
-  readonly ignoreAlarmConfiguration?: boolean;
+  readonly ignoreAlarmConfiguration?: boolean | undefined;
 }
 
 /**
@@ -379,7 +379,7 @@ export interface EcsDeploymentGroupAttributes {
    *
    * @default EcsDeploymentConfig.ALL_AT_ONCE
    */
-  readonly deploymentConfig?: IDeploymentConfigRef;
+  readonly deploymentConfig?: IDeploymentConfigRef | undefined;
 }
 
 @propertyInjectable

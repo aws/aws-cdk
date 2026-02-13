@@ -17,14 +17,14 @@ export interface VariableProps {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The default value of a pipeline-level variable.
    *
    * @default - No default value.
    */
-  readonly defaultValue?: string;
+  readonly defaultValue?: string | undefined;
 }
 
 /**
@@ -36,8 +36,8 @@ export class Variable {
    */
   public readonly variableName: string;
 
-  private readonly description?: string;
-  private readonly defaultValue?: string;
+  private readonly description?: string | undefined;
+  private readonly defaultValue?: string | undefined;
 
   constructor(props: VariableProps) {
     this.variableName = props.variableName;

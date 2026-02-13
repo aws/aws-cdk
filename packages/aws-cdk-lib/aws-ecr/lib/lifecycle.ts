@@ -18,14 +18,14 @@ export interface LifecycleRule {
    *
    * @default Automatically assigned
    */
-  readonly rulePriority?: number;
+  readonly rulePriority?: number | undefined;
 
   /**
    * Describes the purpose of the rule
    *
    * @default No description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Select images based on tags
@@ -36,7 +36,7 @@ export interface LifecycleRule {
    * @default TagStatus.Tagged if tagPrefixList or tagPatternList is
    * given, TagStatus.Any otherwise
    */
-  readonly tagStatus?: TagStatus;
+  readonly tagStatus?: TagStatus | undefined;
 
   /**
    * Select images that have ALL the given prefixes in their tag.
@@ -46,7 +46,7 @@ export interface LifecycleRule {
    *
    * Only if tagStatus == TagStatus.Tagged
    */
-  readonly tagPrefixList?: string[];
+  readonly tagPrefixList?: string[] | undefined;
 
   /**
    * Select images that have ALL the given patterns in their tag.
@@ -60,21 +60,21 @@ export interface LifecycleRule {
    *
    * Only if tagStatus == TagStatus.Tagged
    */
-  readonly tagPatternList?: string[];
+  readonly tagPatternList?: string[] | undefined;
 
   /**
    * The maximum number of images to retain
    *
    * Specify exactly one of maxImageCount and maxImageAge.
    */
-  readonly maxImageCount?: number;
+  readonly maxImageCount?: number | undefined;
 
   /**
    * The maximum age of images to retain. The value must represent a number of days.
    *
    * Specify exactly one of maxImageCount and maxImageAge.
    */
-  readonly maxImageAge?: Duration;
+  readonly maxImageAge?: Duration | undefined;
 }
 
 /**

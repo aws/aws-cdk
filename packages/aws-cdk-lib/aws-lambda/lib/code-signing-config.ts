@@ -60,14 +60,14 @@ export interface CodeSigningConfigProps {
    *
    * @default UntrustedArtifactOnDeployment.WARN
    */
-  readonly untrustedArtifactOnDeployment?: UntrustedArtifactOnDeployment;
+  readonly untrustedArtifactOnDeployment?: UntrustedArtifactOnDeployment | undefined;
 
   /**
    * Code signing configuration description.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**

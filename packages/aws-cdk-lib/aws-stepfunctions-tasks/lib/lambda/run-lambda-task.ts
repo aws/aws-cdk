@@ -15,7 +15,7 @@ export interface RunLambdaTaskProps {
    *
    * @default - The state input (JSON path '$')
    */
-  readonly payload?: sfn.TaskInput;
+  readonly payload?: sfn.TaskInput | undefined;
 
   /**
    * The service integration pattern indicates different ways to invoke Lambda function.
@@ -29,21 +29,21 @@ export interface RunLambdaTaskProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern | undefined;
 
   /**
    * Invocation type of the Lambda function
    *
    * @default RequestResponse
    */
-  readonly invocationType?: InvocationType;
+  readonly invocationType?: InvocationType | undefined;
 
   /**
    * Client context to pass to the function
    *
    * @default - No context
    */
-  readonly clientContext?: string;
+  readonly clientContext?: string | undefined;
 
   /**
    * Version or alias of the function to be invoked
@@ -51,7 +51,7 @@ export interface RunLambdaTaskProps {
    * @default - No qualifier
    * @deprecated pass a Version or Alias object as lambdaFunction instead
    */
-  readonly qualifier?: string;
+  readonly qualifier?: string | undefined;
 }
 
 /**

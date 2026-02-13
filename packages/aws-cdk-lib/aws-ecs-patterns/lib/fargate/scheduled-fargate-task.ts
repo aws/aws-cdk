@@ -16,7 +16,7 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
    *
    * @default none
    */
-  readonly scheduledFargateTaskDefinitionOptions?: ScheduledFargateTaskDefinitionOptions;
+  readonly scheduledFargateTaskDefinitionOptions?: ScheduledFargateTaskDefinitionOptions | undefined;
 
   /**
    * The properties to define if the construct is to create a TaskDefinition.
@@ -24,7 +24,7 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
    *
    * @default none
    */
-  readonly scheduledFargateTaskImageOptions?: ScheduledFargateTaskImageOptions;
+  readonly scheduledFargateTaskImageOptions?: ScheduledFargateTaskImageOptions | undefined;
 }
 
 /**

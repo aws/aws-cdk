@@ -17,7 +17,7 @@ export interface WarmPoolOptions {
    *
    * @default false
    */
-  readonly reuseOnScaleIn?: boolean;
+  readonly reuseOnScaleIn?: boolean | undefined;
 
   /**
    * The maximum number of instances that are allowed to be in the warm pool
@@ -28,19 +28,19 @@ export interface WarmPoolOptions {
    *
    * @default - max size of the Auto Scaling group
    */
-  readonly maxGroupPreparedCapacity?: number;
+  readonly maxGroupPreparedCapacity?: number | undefined;
   /**
    * The minimum number of instances to maintain in the warm pool.
    *
    * @default 0
    */
-  readonly minSize?: number;
+  readonly minSize?: number | undefined;
   /**
    * The instance state to transition to after the lifecycle actions are complete.
    *
    * @default PoolState.STOPPED
    */
-  readonly poolState?: PoolState;
+  readonly poolState?: PoolState | undefined;
 }
 
 /**

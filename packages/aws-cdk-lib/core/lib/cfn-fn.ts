@@ -507,7 +507,7 @@ class FnFindInMap extends FnBase {
   private readonly mapName: string;
   private readonly topLevelKey: string;
   private readonly secondLevelKey: string;
-  private readonly defaultValue?: string;
+  private readonly defaultValue?: string | undefined;
 
   constructor(mapName: string, topLevelKey: any, secondLevelKey: any, defaultValue?: string) {
     super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey, defaultValue !== undefined ? { DefaultValue: defaultValue } : undefined]);

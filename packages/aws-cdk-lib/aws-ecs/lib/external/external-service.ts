@@ -32,7 +32,7 @@ export interface ExternalServiceProps extends BaseServiceOptions {
    *
    * @default - A new security group is created.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * By default, service use REPLICA scheduling strategy, this parameter enable DAEMON scheduling strategy.
@@ -43,7 +43,7 @@ export interface ExternalServiceProps extends BaseServiceOptions {
    *
    * @default false
    */
-  readonly daemon?: boolean;
+  readonly daemon?: boolean | undefined;
 }
 
 /**
@@ -67,14 +67,14 @@ export interface ExternalServiceAttributes {
    *
    * @default - either this, or `serviceName`, is required
    */
-  readonly serviceArn?: string;
+  readonly serviceArn?: string | undefined;
 
   /**
    * The name of the service.
    *
    * @default - either this, or `serviceArn`, is required
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 }
 
 /**

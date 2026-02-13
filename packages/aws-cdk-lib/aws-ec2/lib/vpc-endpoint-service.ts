@@ -96,7 +96,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
    * Whether to enable the built-in Contributor Insights rules provided by AWS PrivateLink.
    *
    */
-  public readonly contributorInsightsEnabled?: boolean;
+  public readonly contributorInsightsEnabled?: boolean | undefined;
 
   /**
    * One or more Principal ARNs to allow inbound connections to.
@@ -113,12 +113,12 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   /**
    * IP address types supported for this VPC endpoint service.
    */
-  private readonly supportedIpAddressTypes?: IpAddressType[];
+  private readonly supportedIpAddressTypes?: IpAddressType[] | undefined;
 
   /**
    * The Regions from which service consumers can access the service.
    */
-  private readonly allowedRegions?: string[];
+  private readonly allowedRegions?: string[] | undefined;
 
   /**
    * The id of the VPC Endpoint Service, like vpce-svc-xxxxxxxxxxxxxxxx.
@@ -197,7 +197,7 @@ export interface VpcEndpointServiceProps {
    * @deprecated This property is not used
    * @default - CDK generated name
    */
-  readonly vpcEndpointServiceName?: string;
+  readonly vpcEndpointServiceName?: string | undefined;
 
   /**
    * One or more load balancers to host the VPC Endpoint Service.
@@ -211,14 +211,14 @@ export interface VpcEndpointServiceProps {
    * @default true
    *
    */
-  readonly acceptanceRequired?: boolean;
+  readonly acceptanceRequired?: boolean | undefined;
 
   /**
    * Indicates whether to enable the built-in Contributor Insights rules provided by AWS PrivateLink.
    * @default false
    *
    */
-  readonly contributorInsights?: boolean;
+  readonly contributorInsights?: boolean | undefined;
 
   /**
    * IAM users, IAM roles, or AWS accounts to allow inbound connections from.
@@ -227,7 +227,7 @@ export interface VpcEndpointServiceProps {
    * @default - no principals
    * @deprecated use `allowedPrincipals`
    */
-  readonly whitelistedPrincipals?: ArnPrincipal[];
+  readonly whitelistedPrincipals?: ArnPrincipal[] | undefined;
 
   /**
    * IAM users, IAM roles, or AWS accounts to allow inbound connections from.
@@ -236,17 +236,17 @@ export interface VpcEndpointServiceProps {
    * @default - no principals
    *
    */
-  readonly allowedPrincipals?: ArnPrincipal[];
+  readonly allowedPrincipals?: ArnPrincipal[] | undefined;
 
   /**
    * Specify which IP address types are supported for VPC endpoint service.
    * @default - No specific IP address types configured
    */
-  readonly supportedIpAddressTypes?: IpAddressType[];
+  readonly supportedIpAddressTypes?: IpAddressType[] | undefined;
 
   /**
    * The Regions from which service consumers can access the service.
    * @default - No Region restrictions
    */
-  readonly allowedRegions?: string[];
+  readonly allowedRegions?: string[] | undefined;
 }

@@ -14,7 +14,7 @@ interface RequireImdsv2AspectProps {
    *
    * @default - false
    */
-  readonly suppressWarnings?: boolean;
+  readonly suppressWarnings?: boolean | undefined;
 }
 
 /**
@@ -55,7 +55,7 @@ export interface InstanceRequireImdsv2AspectProps extends RequireImdsv2AspectPro
    *
    * @default - false
    */
-  readonly suppressLaunchTemplateWarning?: boolean;
+  readonly suppressLaunchTemplateWarning?: boolean | undefined;
 }
 
 /**

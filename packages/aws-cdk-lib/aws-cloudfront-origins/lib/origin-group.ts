@@ -21,7 +21,7 @@ export interface OriginGroupProps {
    *
    * @default - 500, 502, 503 and 504
    */
-  readonly fallbackStatusCodes?: number[];
+  readonly fallbackStatusCodes?: number[] | undefined;
 
   /**
    * The selection criteria for the origin group.
@@ -30,7 +30,7 @@ export interface OriginGroupProps {
    *
    * @default - OriginSelectionCriteria.DEFAULT
    */
-  readonly selectionCriteria?: cloudfront.OriginSelectionCriteria;
+  readonly selectionCriteria?: cloudfront.OriginSelectionCriteria | undefined;
 }
 
 /**

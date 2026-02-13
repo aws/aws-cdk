@@ -22,7 +22,7 @@ export interface LambdaAuthorizerProps {
    *
    * @default - the unique construct ID
    */
-  readonly authorizerName?: string;
+  readonly authorizerName?: string | undefined;
 
   /**
    * The handler for the authorizer lambda function.
@@ -40,7 +40,7 @@ export interface LambdaAuthorizerProps {
    *
    * @default - Duration.minutes(5)
    */
-  readonly resultsCacheTtl?: Duration;
+  readonly resultsCacheTtl?: Duration | undefined;
 
   /**
    * An optional IAM role for APIGateway to assume before calling the Lambda-based authorizer. The IAM role must be
@@ -48,7 +48,7 @@ export interface LambdaAuthorizerProps {
    *
    * @default - A resource policy is added to the Lambda function allowing apigateway.amazonaws.com to invoke the function.
    */
-  readonly assumeRole?: iam.IRole;
+  readonly assumeRole?: iam.IRole | undefined;
 }
 
 abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
@@ -71,7 +71,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
   /**
    * The IAM role that the API Gateway service assumes while invoking the Lambda function.
    */
-  protected readonly role?: iam.IRole;
+  protected readonly role?: iam.IRole | undefined;
 
   protected restApiId?: string;
 
@@ -183,7 +183,7 @@ export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
    *
    * @default - no regex filter will be applied.
    */
-  readonly validationRegex?: string;
+  readonly validationRegex?: string | undefined;
 
   /**
    * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
@@ -192,7 +192,7 @@ export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
    * @see https://docs.aws.amazon.com/apigateway/latest/api/API_CreateAuthorizer.html#apigw-CreateAuthorizer-request-identitySource
    * @default `IdentitySource.header('Authorization')`
    */
-  readonly identitySource?: string;
+  readonly identitySource?: string | undefined;
 }
 
 /**

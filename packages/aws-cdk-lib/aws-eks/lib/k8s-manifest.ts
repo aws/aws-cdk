@@ -35,14 +35,14 @@ export interface KubernetesManifestOptions {
    * @default - based on the prune option of the cluster, which is `true` unless
    * otherwise specified.
    */
-  readonly prune?: boolean;
+  readonly prune?: boolean | undefined;
 
   /**
    * A flag to signify if the manifest validation should be skipped
    *
    * @default false
    */
-  readonly skipValidation?: boolean;
+  readonly skipValidation?: boolean | undefined;
 
   /**
    * Automatically detect `Ingress` resources in the manifest and annotate them so they
@@ -50,7 +50,7 @@ export interface KubernetesManifestOptions {
    *
    * @default false
    */
-  readonly ingressAlb?: boolean;
+  readonly ingressAlb?: boolean | undefined;
 
   /**
    * Specify the ALB scheme that should be applied to `Ingress` resources.
@@ -58,7 +58,7 @@ export interface KubernetesManifestOptions {
    *
    * @default AlbScheme.INTERNAL
    */
-  readonly ingressAlbScheme?: AlbScheme;
+  readonly ingressAlbScheme?: AlbScheme | undefined;
 
   /**
    * The removal policy applied to the custom resource that manages the Kubernetes manifest.
@@ -72,7 +72,7 @@ export interface KubernetesManifestOptions {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
 }
 
@@ -119,7 +119,7 @@ export interface KubernetesManifestProps extends KubernetesManifestOptions {
    *
    * @default false
    */
-  readonly overwrite?: boolean;
+  readonly overwrite?: boolean | undefined;
 }
 
 /**

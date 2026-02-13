@@ -27,7 +27,7 @@ export interface EdgeFunctionProps extends lambda.FunctionProps {
    *
    * @default - `edge-lambda-stack-${region}`
    */
-  readonly stackId?: string;
+  readonly stackId?: string | undefined;
 }
 
 /**
@@ -56,7 +56,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly isBoundToVpc = false;
   public readonly permissionsNode: Node;
-  public readonly role?: iam.IRole;
+  public readonly role?: iam.IRole | undefined;
   public readonly version: string;
   public readonly architecture: lambda.Architecture;
   public readonly resourceArnsForGrantInvoke: string[];

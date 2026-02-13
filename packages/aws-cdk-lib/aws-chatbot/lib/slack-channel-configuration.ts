@@ -25,7 +25,7 @@ export interface SlackChannelConfigurationProps {
    *
    * @default - A role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The ID of the Slack workspace authorized with AWS Chatbot.
@@ -50,7 +50,7 @@ export interface SlackChannelConfigurationProps {
    *
    * @default None
    */
-  readonly notificationTopics?: sns.ITopic[];
+  readonly notificationTopics?: sns.ITopic[] | undefined;
 
   /**
    * Specifies the logging level for this configuration.
@@ -58,7 +58,7 @@ export interface SlackChannelConfigurationProps {
    *
    * @default LoggingLevel.NONE
    */
-  readonly loggingLevel?: LoggingLevel;
+  readonly loggingLevel?: LoggingLevel | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
@@ -67,7 +67,7 @@ export interface SlackChannelConfigurationProps {
    *
    * @default logs.RetentionDays.INFINITE
    */
-  readonly logRetention?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays | undefined;
 
   /**
    * The IAM role for the Lambda function associated with the custom resource
@@ -75,7 +75,7 @@ export interface SlackChannelConfigurationProps {
    *
    * @default - A new role is created.
    */
-  readonly logRetentionRole?: iam.IRole;
+  readonly logRetentionRole?: iam.IRole | undefined;
 
   /**
    * When log retention is specified, a custom resource attempts to create the CloudWatch log group.
@@ -83,20 +83,20 @@ export interface SlackChannelConfigurationProps {
    *
    * @default - Default AWS SDK retry options.
    */
-  readonly logRetentionRetryOptions?: logs.LogRetentionRetryOptions;
+  readonly logRetentionRetryOptions?: logs.LogRetentionRetryOptions | undefined;
 
   /**
    * A list of IAM managed policies that are applied as channel guardrails.
    * @default - The AWS managed 'AdministratorAccess' policy is applied as a default if this is not set.
    */
-  readonly guardrailPolicies?: iam.IManagedPolicy[];
+  readonly guardrailPolicies?: iam.IManagedPolicy[] | undefined;
 
   /**
    * Enables use of a user role requirement in your chat configuration.
    *
    * @default false
    */
-  readonly userRoleRequired?: boolean;
+  readonly userRoleRequired?: boolean | undefined;
 }
 
 /**
@@ -144,7 +144,7 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
    *
    * @default - A role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Adds a statement to the IAM role.
@@ -167,7 +167,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 
   abstract readonly grantPrincipal: iam.IPrincipal;
 
-  abstract readonly role?: iam.IRole;
+  abstract readonly role?: iam.IRole | undefined;
 
   /**
    * Adds extra permission to iam-role of Slack channel configuration
@@ -287,7 +287,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   readonly slackChannelConfigurationName: string;
 
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   readonly grantPrincipal: iam.IPrincipal;
 

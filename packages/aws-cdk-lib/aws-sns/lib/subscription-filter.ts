@@ -10,40 +10,40 @@ export interface StringConditions {
    * @deprecated use `allowlist`
    * @default - None
    */
-  readonly whitelist?: string[];
+  readonly whitelist?: string[] | undefined;
 
   /**
    * Match any value that doesn't include any of the specified values.
    * @deprecated use `denylist`
    * @default - None
    */
-  readonly blacklist?: string[];
+  readonly blacklist?: string[] | undefined;
 
   /**
    * Match one or more values.
    * @default - None
    */
-  readonly allowlist?: string[];
+  readonly allowlist?: string[] | undefined;
 
   /**
    * Match any value that doesn't include any of the specified values.
    * @default - None
    */
-  readonly denylist?: string[];
+  readonly denylist?: string[] | undefined;
 
   /**
    * Matches values that begins with the specified prefixes.
    *
    * @default - None
    */
-  readonly matchPrefixes?: string[];
+  readonly matchPrefixes?: string[] | undefined;
 
   /**
    * Matches values that end with the specified suffixes.
    *
    * @default - None
    */
-  readonly matchSuffixes?: string[];
+  readonly matchSuffixes?: string[] | undefined;
 }
 
 /**
@@ -70,56 +70,56 @@ export interface NumericConditions {
    * @deprecated use `allowlist`
    * @default - None
    */
-  readonly whitelist?: number[];
+  readonly whitelist?: number[] | undefined;
 
   /**
    * Match one or more values.
    *
    * @default - None
    */
-  readonly allowlist?: number[];
+  readonly allowlist?: number[] | undefined;
 
   /**
    * Match values that are greater than the specified value.
    *
    * @default - None
    */
-  readonly greaterThan?: number;
+  readonly greaterThan?: number | undefined;
 
   /**
    * Match values that are greater than or equal to the specified value.
    *
    * @default - None
    */
-  readonly greaterThanOrEqualTo?: number;
+  readonly greaterThanOrEqualTo?: number | undefined;
 
   /**
    * Match values that are less than the specified value.
    *
    * @default - None
    */
-  readonly lessThan?: number;
+  readonly lessThan?: number | undefined;
 
   /**
    * Match values that are less than or equal to the specified value.
    *
    * @default - None
    */
-  readonly lessThanOrEqualTo?: number;
+  readonly lessThanOrEqualTo?: number | undefined;
 
   /**
    * Match values that are between the specified values.
    *
    * @default - None
    */
-  readonly between?: BetweenCondition;
+  readonly between?: BetweenCondition | undefined;
 
   /**
    * Match values that are strictly between the specified values.
    *
    * @default - None
    */
-  readonly betweenStrict?: BetweenCondition;
+  readonly betweenStrict?: BetweenCondition | undefined;
 }
 
 /**

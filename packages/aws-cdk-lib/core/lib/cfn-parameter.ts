@@ -12,7 +12,7 @@ export interface CfnParameterProps {
    *
    * @default String
    */
-  readonly type?: string;
+  readonly type?: string | undefined;
 
   /**
    * A value of the appropriate type for the template to use if no value is specified
@@ -21,21 +21,21 @@ export interface CfnParameterProps {
    *
    * @default - No default value for parameter.
    */
-  readonly default?: any;
+  readonly default?: any | undefined;
 
   /**
    * A regular expression that represents the patterns to allow for String types.
    *
    * @default - No constraints on patterns allowed for parameter.
    */
-  readonly allowedPattern?: string;
+  readonly allowedPattern?: string | undefined;
 
   /**
    * An array containing the list of values allowed for the parameter.
    *
    * @default - No constraints on values allowed for parameter.
    */
-  readonly allowedValues?: string[];
+  readonly allowedValues?: string[] | undefined;
 
   /**
    * A string that explains a constraint when the constraint is violated.
@@ -45,42 +45,42 @@ export interface CfnParameterProps {
    *
    * @default - No description with customized error message when user specifies invalid values.
    */
-  readonly constraintDescription?: string;
+  readonly constraintDescription?: string | undefined;
 
   /**
    * A string of up to 4000 characters that describes the parameter.
    *
    * @default - No description for the parameter.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * An integer value that determines the largest number of characters you want to allow for String types.
    *
    * @default - None.
    */
-  readonly maxLength?: number;
+  readonly maxLength?: number | undefined;
 
   /**
    * A numeric value that determines the largest numeric value you want to allow for Number types.
    *
    * @default - None.
    */
-  readonly maxValue?: number;
+  readonly maxValue?: number | undefined;
 
   /**
    * An integer value that determines the smallest number of characters you want to allow for String types.
    *
    * @default - None.
    */
-  readonly minLength?: number;
+  readonly minLength?: number | undefined;
 
   /**
    * A numeric value that determines the smallest numeric value you want to allow for Number types.
    *
    * @default - None.
    */
-  readonly minValue?: number;
+  readonly minValue?: number | undefined;
 
   /**
    * Whether to mask the parameter value when anyone makes a call that describes the stack.
@@ -88,7 +88,7 @@ export interface CfnParameterProps {
    *
    * @default - Parameter values are not masked.
    */
-  readonly noEcho?: boolean;
+  readonly noEcho?: boolean | undefined;
 }
 
 /**

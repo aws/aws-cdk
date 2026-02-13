@@ -57,21 +57,21 @@ export interface ResourceProps {
    *
    * @default - The physical name will be allocated by CloudFormation at deployment time
    */
-  readonly physicalName?: string;
+  readonly physicalName?: string | undefined;
 
   /**
    * The AWS account ID this resource belongs to.
    *
    * @default - the resource is in the same account as the stack it belongs to
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 
   /**
    * The AWS region this resource belongs to.
    *
    * @default - the resource is in the same region as the stack it belongs to
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * ARN to deduce region and account from
@@ -83,7 +83,7 @@ export interface ResourceProps {
    *
    * @default - take environment from `account`, `region` parameters, or use Stack environment.
    */
-  readonly environmentFromArn?: string;
+  readonly environmentFromArn?: string | undefined;
 }
 
 /**

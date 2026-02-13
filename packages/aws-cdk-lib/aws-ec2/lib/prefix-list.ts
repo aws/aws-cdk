@@ -38,7 +38,7 @@ export interface PrefixListOptions {
    *
    * @default Automatically-calculated
    */
-  readonly maxEntries?: number;
+  readonly maxEntries?: number | undefined;
 }
 
 /**
@@ -50,7 +50,7 @@ export interface PrefixListProps extends PrefixListOptions {
    *
    * @default AddressFamily.IP_V4
    */
-  readonly addressFamily?: AddressFamily;
+  readonly addressFamily?: AddressFamily | undefined;
 
   /**
    * The name of the prefix list.
@@ -60,14 +60,14 @@ export interface PrefixListProps extends PrefixListOptions {
    * @remarks
    * It is not recommended to use an explicit name.
    */
-  readonly prefixListName?: string;
+  readonly prefixListName?: string | undefined;
 
   /**
    * The list of entries for the prefix list.
    *
    * @default []
    */
-  readonly entries?: CfnPrefixList.EntryProperty[];
+  readonly entries?: CfnPrefixList.EntryProperty[] | undefined;
 }
 
 /**
@@ -128,13 +128,13 @@ export interface PrefixListLookupOptions {
    *
    * @default - Don't filter on ownerId
    */
-  readonly ownerId?: string;
+  readonly ownerId?: string | undefined;
   /**
    * The address family of the managed prefix list.
    *
    * @default - Don't filter on addressFamily
    */
-  readonly addressFamily?: AddressFamily;
+  readonly addressFamily?: AddressFamily | undefined;
 }
 
 /**

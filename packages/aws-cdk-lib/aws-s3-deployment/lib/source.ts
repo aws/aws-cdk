@@ -27,13 +27,13 @@ export interface SourceConfig {
    * A set of markers to substitute in the source content.
    * @default - no markers
    */
-  readonly markers?: Record<string, any>;
+  readonly markers?: Record<string, any> | undefined;
 
   /**
    * A configuration for markers substitution strategy.
    * @default - no configuration
    */
-  readonly markersConfig?: MarkersConfig;
+  readonly markersConfig?: MarkersConfig | undefined;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface MarkersConfig {
    * will be a valid JSON string.
    * @default - false
    */
-  readonly jsonEscape?: boolean;
+  readonly jsonEscape?: boolean | undefined;
 }
 
 /**
@@ -57,7 +57,7 @@ export interface JsonProcessingOptions {
    * will be a valid JSON string.
    * @default - false
    */
-  readonly escape?: boolean;
+  readonly escape?: boolean | undefined;
 }
 
 /**

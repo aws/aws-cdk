@@ -13,8 +13,8 @@ export function writeTemplateConfiguration(filename: string, config: TemplateCon
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-cfn-artifacts.html#w2ab1c13c17c15
  */
 export interface TemplateConfiguration {
-  readonly Parameters?: Record<string, string>;
-  readonly Tags?: Record<string, string>;
+  readonly Parameters?: Record<string, string> | undefined;
+  readonly Tags?: Record<string, string> | undefined;
   readonly StackPolicy?: {
     readonly Statements: Array<Record<string, string>>;
   };

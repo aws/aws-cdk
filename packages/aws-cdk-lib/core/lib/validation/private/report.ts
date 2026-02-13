@@ -24,14 +24,14 @@ export interface ValidationViolatingConstruct extends report.PolicyViolatingReso
    *
    * @default - construct path will be empty if the cli is not run with `--debug`
    */
-  readonly constructPath?: string;
+  readonly constructPath?: string | undefined;
 
   /**
    * A stack of constructs that lead to the violation.
    *
    * @default - stack will be empty if the cli is not run with `--debug`
    */
-  readonly constructStack?: ConstructTrace;
+  readonly constructStack?: ConstructTrace | undefined;
 }
 
 /**
@@ -67,7 +67,7 @@ export interface PluginReportJson {
   /**
    * Plugin version.
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 /**
@@ -90,7 +90,7 @@ export interface PolicyValidationReportSummary {
    *
    * @default - no metadata
    */
-  readonly metadata?: { readonly [key: string]: string };
+  readonly metadata?: { readonly [key: string]: string } | undefined;
 }
 
 /**

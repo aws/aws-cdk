@@ -326,7 +326,7 @@ export interface ParseCfnOptions {
    *
    * @default - the default context (no special behavior)
    */
-  readonly context?: CfnParsingContext;
+  readonly context?: CfnParsingContext | undefined;
 
   /**
    * Values provided here will replace references to parameters in the parsed template.

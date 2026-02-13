@@ -11,14 +11,14 @@ export interface AmazonLinuxImageSsmParameterCommonOptions extends AmazonLinuxIm
    *
    * @default AmazonLinuxEdition.Standard
    */
-  readonly edition?: AmazonLinuxEdition;
+  readonly edition?: AmazonLinuxEdition | undefined;
 
   /**
    * CPU Type
    *
    * @default AmazonLinuxCpuType.X86_64
    */
-  readonly cpuType?: AmazonLinuxCpuType;
+  readonly cpuType?: AmazonLinuxCpuType | undefined;
 }
 
 /**
@@ -44,21 +44,21 @@ export interface AmazonLinuxImageSsmParameterBaseOptions {
    *
    * @default false
    */
-  readonly cachedInContext?: boolean;
+  readonly cachedInContext?: boolean | undefined;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
-  readonly additionalCacheKey?: string;
+  readonly additionalCacheKey?: string | undefined;
 
   /**
    * Initial user data
    *
    * @default - Empty UserData for Linux machines
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 }
 
 /**

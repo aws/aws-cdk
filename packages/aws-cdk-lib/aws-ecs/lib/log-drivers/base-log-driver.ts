@@ -6,7 +6,7 @@ export interface BaseLogDriverProps {
    *
    * @default - The first 12 characters of the container ID
    */
-  readonly tag?: string;
+  readonly tag?: string | undefined;
 
   /**
    * The labels option takes an array of keys. If there is collision
@@ -15,7 +15,7 @@ export interface BaseLogDriverProps {
    *
    * @default - No labels
    */
-  readonly labels?: string[];
+  readonly labels?: string[] | undefined;
 
   /**
    * The env option takes an array of keys. If there is collision between
@@ -24,7 +24,7 @@ export interface BaseLogDriverProps {
    *
    * @default - No env
    */
-  readonly env?: string[];
+  readonly env?: string[] | undefined;
 
   /**
    * The env-regex option is similar to and compatible with env. Its value is a regular
@@ -33,5 +33,5 @@ export interface BaseLogDriverProps {
    *
    * @default - No envRegex
    */
-  readonly envRegex?: string;
+  readonly envRegex?: string | undefined;
 }

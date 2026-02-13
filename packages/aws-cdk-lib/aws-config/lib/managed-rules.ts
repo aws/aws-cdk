@@ -17,7 +17,7 @@ export interface AccessKeysRotatedProps extends RuleProps {
    *
    * @default Duration.days(90)
    */
-  readonly maxAge?: Duration;
+  readonly maxAge?: Duration | undefined;
 }
 
 /**
@@ -59,7 +59,7 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
    *
    * @default false
    */
-  readonly ownStackOnly?: boolean;
+  readonly ownStackOnly?: boolean | undefined;
 
   /**
    * The IAM role to use for this rule. It must have permissions to detect drift
@@ -69,7 +69,7 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
    *
    * @default - A role will be created
    */
-  readonly role?: iam.IRoleRef;
+  readonly role?: iam.IRoleRef | undefined;
 }
 
 /**
@@ -117,7 +117,7 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
    *
    * @default - No topics.
    */
-  readonly topics?: sns.ITopic[];
+  readonly topics?: sns.ITopic[] | undefined;
 }
 
 /**

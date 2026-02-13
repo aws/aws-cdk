@@ -12,103 +12,103 @@ export interface StandardAttributes {
    * The user's postal address.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly address?: StandardAttribute;
+  readonly address?: StandardAttribute | undefined;
 
   /**
    * The user's birthday, represented as an ISO 8601:2004 format.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly birthdate?: StandardAttribute;
+  readonly birthdate?: StandardAttribute | undefined;
 
   /**
    * The user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly email?: StandardAttribute;
+  readonly email?: StandardAttribute | undefined;
 
   /**
    * The surname or last name of the user.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly familyName?: StandardAttribute;
+  readonly familyName?: StandardAttribute | undefined;
 
   /**
    * The user's gender.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly gender?: StandardAttribute;
+  readonly gender?: StandardAttribute | undefined;
 
   /**
    * The user's first name or give name.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly givenName?: StandardAttribute;
+  readonly givenName?: StandardAttribute | undefined;
 
   /**
    * The user's locale, represented as a BCP47 [RFC5646] language tag.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly locale?: StandardAttribute;
+  readonly locale?: StandardAttribute | undefined;
 
   /**
    * The user's middle name.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly middleName?: StandardAttribute;
+  readonly middleName?: StandardAttribute | undefined;
 
   /**
    * The user's full name in displayable form, including all name parts, titles and suffixes.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly fullname?: StandardAttribute;
+  readonly fullname?: StandardAttribute | undefined;
 
   /**
    * The user's nickname or casual name.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly nickname?: StandardAttribute;
+  readonly nickname?: StandardAttribute | undefined;
 
   /**
    * The user's telephone number.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly phoneNumber?: StandardAttribute;
+  readonly phoneNumber?: StandardAttribute | undefined;
 
   /**
    * The URL to the user's profile picture.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly profilePicture?: StandardAttribute;
+  readonly profilePicture?: StandardAttribute | undefined;
 
   /**
    * The user's preferred username, different from the immutable user name.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly preferredUsername?: StandardAttribute;
+  readonly preferredUsername?: StandardAttribute | undefined;
 
   /**
    * The URL to the user's profile page.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly profilePage?: StandardAttribute;
+  readonly profilePage?: StandardAttribute | undefined;
 
   /**
    * The user's time zone.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly timezone?: StandardAttribute;
+  readonly timezone?: StandardAttribute | undefined;
 
   /**
    * The time, the user's information was last updated.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly lastUpdateTime?: StandardAttribute;
+  readonly lastUpdateTime?: StandardAttribute | undefined;
 
   /**
    * The URL to the user's web page or blog.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly website?: StandardAttribute;
+  readonly website?: StandardAttribute | undefined;
 
   /**
    * DEPRECATED
@@ -116,7 +116,7 @@ export interface StandardAttributes {
    * It is a Cognito built-in attribute and cannot be controlled as part of user pool creation.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly emailVerified?: StandardAttribute;
+  readonly emailVerified?: StandardAttribute | undefined;
 
   /**
    * DEPRECATED
@@ -124,7 +124,7 @@ export interface StandardAttributes {
    * It is a Cognito built-in attribute and cannot be controlled as part of user pool creation.
    * @default - see the defaults under `StandardAttribute`
    */
-  readonly phoneNumberVerified?: StandardAttribute;
+  readonly phoneNumberVerified?: StandardAttribute | undefined;
 }
 
 /**
@@ -141,14 +141,14 @@ export interface StandardAttribute {
    *
    * @default true
    */
-  readonly mutable?: boolean;
+  readonly mutable?: boolean | undefined;
   /**
    * Specifies whether the attribute is required upon user registration.
    * If the attribute is required and the user does not provide a value, registration or sign-in will fail.
    *
    * @default false
    */
-  readonly required?: boolean;
+  readonly required?: boolean | undefined;
 }
 
 /**
@@ -176,13 +176,13 @@ export interface CustomAttributeConfig {
    * The constraints for a custom attribute of 'String' data type.
    * @default - None.
    */
-  readonly stringConstraints?: StringAttributeConstraints;
+  readonly stringConstraints?: StringAttributeConstraints | undefined;
 
   /**
    * The constraints for a custom attribute of the 'Number' data type.
    * @default - None.
    */
-  readonly numberConstraints?: NumberAttributeConstraints;
+  readonly numberConstraints?: NumberAttributeConstraints | undefined;
 
   /**
    * Specifies whether the value of the attribute can be changed.
@@ -192,7 +192,7 @@ export interface CustomAttributeConfig {
    *
    * @default false
    */
-  readonly mutable?: boolean;
+  readonly mutable?: boolean | undefined;
 }
 
 /**
@@ -207,7 +207,7 @@ export interface CustomAttributeProps {
    *
    * @default false
    */
-  readonly mutable?: boolean;
+  readonly mutable?: boolean | undefined;
 }
 
 /**
@@ -218,13 +218,13 @@ export interface StringAttributeConstraints {
    * Minimum length of this attribute.
    * @default 0
    */
-  readonly minLen?: number;
+  readonly minLen?: number | undefined;
 
   /**
    * Maximum length of this attribute.
    * @default 2048
    */
-  readonly maxLen?: number;
+  readonly maxLen?: number | undefined;
 }
 
 /**
@@ -237,9 +237,9 @@ export interface StringAttributeProps extends StringAttributeConstraints, Custom
  * The String custom attribute type.
  */
 export class StringAttribute implements ICustomAttribute {
-  private readonly minLen?: number;
-  private readonly maxLen?: number;
-  private readonly mutable?: boolean;
+  private readonly minLen?: number | undefined;
+  private readonly maxLen?: number | undefined;
+  private readonly mutable?: boolean | undefined;
 
   constructor(props: StringAttributeProps = {}) {
     if (props.minLen && !Token.isUnresolved(props.minLen) && props.minLen < 0) {
@@ -278,13 +278,13 @@ export interface NumberAttributeConstraints {
    * Minimum value of this attribute.
    * @default - no minimum value
    */
-  readonly min?: number;
+  readonly min?: number | undefined;
 
   /**
    * Maximum value of this attribute.
    * @default - no maximum value
    */
-  readonly max?: number;
+  readonly max?: number | undefined;
 }
 
 /**
@@ -297,9 +297,9 @@ export interface NumberAttributeProps extends NumberAttributeConstraints, Custom
  * The Number custom attribute type.
  */
 export class NumberAttribute implements ICustomAttribute {
-  private readonly min?: number;
-  private readonly max?: number;
-  private readonly mutable?: boolean;
+  private readonly min?: number | undefined;
+  private readonly max?: number | undefined;
+  private readonly mutable?: boolean | undefined;
 
   constructor(props: NumberAttributeProps = {}) {
     this.min = props?.min;
@@ -328,7 +328,7 @@ export class NumberAttribute implements ICustomAttribute {
  * The Boolean custom attribute type.
  */
 export class BooleanAttribute implements ICustomAttribute {
-  private readonly mutable?: boolean;
+  private readonly mutable?: boolean | undefined;
 
   constructor(props: CustomAttributeProps = {}) {
     this.mutable = props?.mutable;
@@ -346,7 +346,7 @@ export class BooleanAttribute implements ICustomAttribute {
  * The DateTime custom attribute type.
  */
 export class DateTimeAttribute implements ICustomAttribute {
-  private readonly mutable?: boolean;
+  private readonly mutable?: boolean | undefined;
 
   constructor(props: CustomAttributeProps = {}) {
     this.mutable = props?.mutable;
@@ -370,115 +370,115 @@ export interface StandardAttributesMask {
    * The user's postal address.
    * @default false
    */
-  readonly address?: boolean;
+  readonly address?: boolean | undefined;
 
   /**
    * The user's birthday, represented as an ISO 8601:2004 format.
    * @default false
    */
-  readonly birthdate?: boolean;
+  readonly birthdate?: boolean | undefined;
 
   /**
    * The user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec.
    * @default false
    */
-  readonly email?: boolean;
+  readonly email?: boolean | undefined;
 
   /**
    * The surname or last name of the user.
    * @default false
    */
-  readonly familyName?: boolean;
+  readonly familyName?: boolean | undefined;
 
   /**
    * The user's gender.
    * @default false
    */
-  readonly gender?: boolean;
+  readonly gender?: boolean | undefined;
 
   /**
    * The user's first name or give name.
    * @default false
    */
-  readonly givenName?: boolean;
+  readonly givenName?: boolean | undefined;
 
   /**
    * The user's locale, represented as a BCP47 [RFC5646] language tag.
    * @default false
    */
-  readonly locale?: boolean;
+  readonly locale?: boolean | undefined;
 
   /**
    * The user's middle name.
    * @default false
    */
-  readonly middleName?: boolean;
+  readonly middleName?: boolean | undefined;
 
   /**
    * The user's full name in displayable form, including all name parts, titles and suffixes.
    * @default false
    */
-  readonly fullname?: boolean;
+  readonly fullname?: boolean | undefined;
 
   /**
    * The user's nickname or casual name.
    * @default false
    */
-  readonly nickname?: boolean;
+  readonly nickname?: boolean | undefined;
 
   /**
    * The user's telephone number.
    * @default false
    */
-  readonly phoneNumber?: boolean;
+  readonly phoneNumber?: boolean | undefined;
 
   /**
    * The URL to the user's profile picture.
    * @default false
    */
-  readonly profilePicture?: boolean;
+  readonly profilePicture?: boolean | undefined;
 
   /**
    * The user's preferred username, different from the immutable user name.
    * @default false
    */
-  readonly preferredUsername?: boolean;
+  readonly preferredUsername?: boolean | undefined;
 
   /**
    * The URL to the user's profile page.
    * @default false
    */
-  readonly profilePage?: boolean;
+  readonly profilePage?: boolean | undefined;
 
   /**
    * The user's time zone.
    * @default false
    */
-  readonly timezone?: boolean;
+  readonly timezone?: boolean | undefined;
 
   /**
    * The time, the user's information was last updated.
    * @default false
    */
-  readonly lastUpdateTime?: boolean;
+  readonly lastUpdateTime?: boolean | undefined;
 
   /**
    * The URL to the user's web page or blog.
    * @default false
    */
-  readonly website?: boolean;
+  readonly website?: boolean | undefined;
 
   /**
    * Whether the email address has been verified.
    * @default false
    */
-  readonly emailVerified?: boolean;
+  readonly emailVerified?: boolean | undefined;
 
   /**
    * Whether the phone number has been verified.
    * @default false
    */
-  readonly phoneNumberVerified?: boolean;
+  readonly phoneNumberVerified?: boolean | undefined;
 }
 
 /**

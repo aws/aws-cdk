@@ -32,7 +32,7 @@ export interface MergeStatementOptions {
    *
    * @default false
    */
-  readonly limitSize?: boolean;
+  readonly limitSize?: boolean | undefined;
 
   /**
    * Merge statements if they can be combined to produce the same effects.
@@ -41,7 +41,7 @@ export interface MergeStatementOptions {
    *
    * @default true
    */
-  readonly mergeIfCombinable?: boolean;
+  readonly mergeIfCombinable?: boolean | undefined;
 }
 
 /**

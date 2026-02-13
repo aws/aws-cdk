@@ -14,14 +14,14 @@ export interface HttpTimeout {
    *
    * @default - none
    */
-  readonly idle?: cdk.Duration;
+  readonly idle?: cdk.Duration | undefined;
 
   /**
    * Represents per request timeout.
    *
    * @default - 15 s
    */
-  readonly perRequest?: cdk.Duration;
+  readonly perRequest?: cdk.Duration | undefined;
 }
 
 /**
@@ -33,14 +33,14 @@ export interface GrpcTimeout {
    *
    * @default - none
    */
-  readonly idle?: cdk.Duration;
+  readonly idle?: cdk.Duration | undefined;
 
   /**
    * Represents per request timeout.
    *
    * @default - 15 s
    */
-  readonly perRequest?: cdk.Duration;
+  readonly perRequest?: cdk.Duration | undefined;
 }
 
 /**
@@ -52,7 +52,7 @@ export interface TcpTimeout {
    *
    * @default - none
    */
-  readonly idle?: cdk.Duration;
+  readonly idle?: cdk.Duration | undefined;
 }
 
 /**
@@ -103,14 +103,14 @@ export interface AccessLogConfig {
    *
    * @default - no access logging
    */
-  readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty;
+  readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty | undefined;
 
   /**
    * VirtualGateway CFN configuration for Access Logging
    *
    * @default - no access logging
    */
-  readonly virtualGatewayAccessLog?: CfnVirtualGateway.VirtualGatewayAccessLogProperty;
+  readonly virtualGatewayAccessLog?: CfnVirtualGateway.VirtualGatewayAccessLogProperty | undefined;
 }
 
 /**
@@ -143,8 +143,8 @@ class FileAccessLog extends AccessLog {
    * @default - no file based access logging
    */
   public readonly filePath: string;
-  private readonly virtualNodeLoggingFormat?: CfnVirtualNode.LoggingFormatProperty;
-  private readonly virtualGatewayLoggingFormat?: CfnVirtualGateway.LoggingFormatProperty;
+  private readonly virtualNodeLoggingFormat?: CfnVirtualNode.LoggingFormatProperty | undefined;
+  private readonly virtualGatewayLoggingFormat?: CfnVirtualGateway.LoggingFormatProperty | undefined;
 
   constructor(filePath: string, loggingFormat?: LoggingFormat) {
     super();
@@ -181,7 +181,7 @@ export interface LoggingFormatConfig {
    *
    * @default - no access logging format
    */
-  readonly formatConfig?: CfnVirtualNode.LoggingFormatProperty;
+  readonly formatConfig?: CfnVirtualNode.LoggingFormatProperty | undefined;
 }
 
 /**
@@ -262,7 +262,7 @@ export interface BackendDefaults {
    *
    * @default - none
    */
-  readonly tlsClientPolicy?: TlsClientPolicy;
+  readonly tlsClientPolicy?: TlsClientPolicy | undefined;
 }
 
 /**
@@ -275,7 +275,7 @@ export interface VirtualServiceBackendOptions {
    *
    * @default - none
    */
-  readonly tlsClientPolicy?: TlsClientPolicy;
+  readonly tlsClientPolicy?: TlsClientPolicy | undefined;
 }
 
 /**

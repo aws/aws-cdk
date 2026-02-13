@@ -40,7 +40,7 @@ export interface EcsRunTaskBaseProps extends ScheduleTargetBaseProps {
    *
    * @default - No capacity provider strategy
    */
-  readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
+  readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[] | undefined;
 
   /**
    * The subnets associated with the task. These subnets must all be in the same VPC.
@@ -48,7 +48,7 @@ export interface EcsRunTaskBaseProps extends ScheduleTargetBaseProps {
    *
    * @default - all private subnets of the VPC are selected.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The security groups associated with the task. These security groups must all be in the same VPC.
@@ -56,13 +56,13 @@ export interface EcsRunTaskBaseProps extends ScheduleTargetBaseProps {
    *
    * @default - The security group for the VPC is used.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Specifies whether to enable Amazon ECS managed tags for the task.
    * @default - false
    */
-  readonly enableEcsManagedTags?: boolean;
+  readonly enableEcsManagedTags?: boolean | undefined;
 
   /**
    * Whether to enable execute command functionality for the containers in this task.
@@ -70,14 +70,14 @@ export interface EcsRunTaskBaseProps extends ScheduleTargetBaseProps {
    *
    * @default - false
    */
-  readonly enableExecuteCommand?: boolean;
+  readonly enableExecuteCommand?: boolean | undefined;
 
   /**
    * Specifies an ECS task group for the task.
    *
    * @default - No group
    */
-  readonly group?: string;
+  readonly group?: string | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition to the task.
@@ -85,14 +85,14 @@ export interface EcsRunTaskBaseProps extends ScheduleTargetBaseProps {
    *
    * @default - No tag propagation
    */
-  readonly propagateTags?: boolean;
+  readonly propagateTags?: boolean | undefined;
 
   /**
    * The reference ID to use for the task.
    *
    * @default - No reference ID.
    */
-  readonly referenceId?: string;
+  readonly referenceId?: string | undefined;
 
   /**
    * The metadata that you apply to the task to help you categorize and organize them.
@@ -100,14 +100,14 @@ export interface EcsRunTaskBaseProps extends ScheduleTargetBaseProps {
    *
    * @default - No tags
    */
-  readonly tags?: Tag[];
+  readonly tags?: Tag[] | undefined;
 
   /**
    * The number of tasks to create based on TaskDefinition.
    *
    * @default 1
    */
-  readonly taskCount?: number;
+  readonly taskCount?: number | undefined;
 
 }
 
@@ -122,7 +122,7 @@ export interface FargateTaskProps extends EcsRunTaskBaseProps {
    *
    * @default - true if the subnet type is PUBLIC, otherwise false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * Specifies the platform version for the task.
@@ -131,7 +131,7 @@ export interface FargateTaskProps extends EcsRunTaskBaseProps {
    *
    * @default - LATEST
    */
-  readonly platformVersion?: ecs.FargatePlatformVersion;
+  readonly platformVersion?: ecs.FargatePlatformVersion | undefined;
 }
 
 /**
@@ -143,14 +143,14 @@ export interface Ec2TaskProps extends EcsRunTaskBaseProps {
    *
    * @default - No placement constraints.
    */
-  readonly placementConstraints?: ecs.PlacementConstraint[];
+  readonly placementConstraints?: ecs.PlacementConstraint[] | undefined;
 
   /**
    * The algorithm for selecting container instances for task placement.
    *
    * @default - No placement strategies.
    */
-  readonly placementStrategies?: ecs.PlacementStrategy[];
+  readonly placementStrategies?: ecs.PlacementStrategy[] | undefined;
 }
 
 /**
@@ -199,10 +199,10 @@ export abstract class EcsRunTask extends ScheduleTargetBase implements ISchedule
  * Schedule an ECS Task on Fargate using AWS EventBridge Scheduler.
  */
 export class EcsRunFargateTask extends EcsRunTask {
-  private readonly subnetSelection?: ec2.SubnetSelection;
-  private readonly assignPublicIp?: boolean;
-  private readonly platformVersion?: string;
-  private readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
+  private readonly subnetSelection?: ec2.SubnetSelection | undefined;
+  private readonly assignPublicIp?: boolean | undefined;
+  private readonly platformVersion?: string | undefined;
+  private readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[] | undefined;
 
   constructor(
     cluster: ecs.ICluster,
@@ -262,9 +262,9 @@ export class EcsRunFargateTask extends EcsRunTask {
  * Schedule an ECS Task on EC2 using AWS EventBridge Scheduler.
  */
 export class EcsRunEc2Task extends EcsRunTask {
-  private readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
-  private readonly placementConstraints?: ecs.PlacementConstraint[];
-  private readonly placementStrategies?: ecs.PlacementStrategy[];
+  private readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[] | undefined;
+  private readonly placementConstraints?: ecs.PlacementConstraint[] | undefined;
+  private readonly placementStrategies?: ecs.PlacementStrategy[] | undefined;
 
   constructor(
     cluster: ecs.ICluster,

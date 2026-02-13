@@ -60,13 +60,13 @@ export interface StagePlacement {
    * Inserts the new Stage as a parent of the given Stage
    * (changing its current parent Stage, if it had one).
    */
-  readonly rightBefore?: IStage;
+  readonly rightBefore?: IStage | undefined;
 
   /**
    * Inserts the new Stage as a child of the given Stage
    * (changing its current child Stage, if it had one).
    */
-  readonly justAfter?: IStage;
+  readonly justAfter?: IStage | undefined;
 }
 
 /**
@@ -80,14 +80,14 @@ export interface Condition {
    *
    * @default - No rules are applied
    */
-  readonly rules?: Rule[];
+  readonly rules?: Rule[] | undefined;
 
   /**
    * The action to be done when the condition is met.
    *
    * @default - No result action is taken
    */
-  readonly result?: Result;
+  readonly result?: Result | undefined;
 }
 
 /**
@@ -99,7 +99,7 @@ export interface Conditions {
    *
    * @default - No conditions are configured
    */
-  readonly conditions?: Condition[];
+  readonly conditions?: Condition[] | undefined;
 }
 
 /**
@@ -111,14 +111,14 @@ export interface FailureConditions extends Conditions {
    *
    * @default FAIL
    */
-  readonly result?: Result;
+  readonly result?: Result | undefined;
 
   /**
    * The method that you want to configure for automatic stage retry on stage failure.
    *
    * @default ALL_ACTIONS
    */
-  readonly retryMode?: RetryMode;
+  readonly retryMode?: RetryMode | undefined;
 }
 /**
  * Construction properties of a Pipeline Stage.
@@ -133,14 +133,14 @@ export interface StageProps {
    * The list of Actions to create this Stage with.
    * You can always add more Actions later by calling `IStage#addAction`.
    */
-  readonly actions?: IAction[];
+  readonly actions?: IAction[] | undefined;
 
   /**
    * Whether to enable transition to this stage.
    *
    * @default true
    */
-  readonly transitionToEnabled?: boolean;
+  readonly transitionToEnabled?: boolean | undefined;
 
   /**
    * The reason for disabling transition to this stage. Only applicable
@@ -148,32 +148,32 @@ export interface StageProps {
    *
    * @default 'Transition disabled'
    */
-  readonly transitionDisabledReason?: string;
+  readonly transitionDisabledReason?: string | undefined;
   /**
    * The method to use when a stage allows entry.
    *
    * @default - No conditions are applied before stage entry
    */
-  readonly beforeEntry?: Conditions;
+  readonly beforeEntry?: Conditions | undefined;
 
   /**
    * The method to use when a stage has not completed successfully.
    *
    * @default - No failure conditions are applied
    */
-  readonly onFailure?: FailureConditions;
+  readonly onFailure?: FailureConditions | undefined;
 
   /**
    * The method to use when a stage has succeeded.
    *
    * @default - No success conditions are applied
    */
-  readonly onSuccess?: Conditions;
+  readonly onSuccess?: Conditions | undefined;
 
 }
 
 export interface StageOptions extends StageProps {
-  readonly placement?: StagePlacement;
+  readonly placement?: StagePlacement | undefined;
 }
 
 /**
@@ -264,28 +264,28 @@ export interface PipelineProps {
    *
    * @default - A new S3 bucket will be created.
    */
-  readonly artifactBucket?: s3.IBucket;
+  readonly artifactBucket?: s3.IBucket | undefined;
 
   /**
    * The IAM role to be assumed by this Pipeline.
    *
    * @default a new IAM role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
    *
    * @default false
    */
-  readonly restartExecutionOnUpdate?: boolean;
+  readonly restartExecutionOnUpdate?: boolean | undefined;
 
   /**
    * Name of the pipeline.
    *
    * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
-  readonly pipelineName?: string;
+  readonly pipelineName?: string | undefined;
 
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
@@ -295,7 +295,7 @@ export interface PipelineProps {
    *
    * @default - None.
    */
-  readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
+  readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket } | undefined;
 
   /**
    * The list of Stages, in order,
@@ -304,7 +304,7 @@ export interface PipelineProps {
    *
    * @default - None.
    */
-  readonly stages?: StageProps[];
+  readonly stages?: StageProps[] | undefined;
 
   /**
    * Create KMS keys for cross-account deployments.
@@ -322,7 +322,7 @@ export interface PipelineProps {
    * @default false - false if the feature flag `CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE`
    * is true, true otherwise
    */
-  readonly crossAccountKeys?: boolean;
+  readonly crossAccountKeys?: boolean | undefined;
 
   /**
    * Enable KMS key rotation for the generated KMS keys.
@@ -332,14 +332,14 @@ export interface PipelineProps {
    *
    * @default - false (key rotation is disabled)
    */
-  readonly enableKeyRotation?: boolean;
+  readonly enableKeyRotation?: boolean | undefined;
 
   /**
    * Reuse the same cross region support stack for all pipelines in the App.
    *
    * @default - true (Use the same support stack for all pipelines in App)
    */
-  readonly reuseCrossRegionSupportStacks?: boolean;
+  readonly reuseCrossRegionSupportStacks?: boolean | undefined;
 
   /**
    * Type of the pipeline.
@@ -349,7 +349,7 @@ export interface PipelineProps {
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
    */
-  readonly pipelineType?: PipelineType;
+  readonly pipelineType?: PipelineType | undefined;
 
   /**
    * A list that defines the pipeline variables for a pipeline resource.
@@ -359,7 +359,7 @@ export interface PipelineProps {
    *
    * @default - No variables
    */
-  readonly variables?: Variable[];
+  readonly variables?: Variable[] | undefined;
 
   /**
    * The trigger configuration specifying a type of event, such as Git tags, that
@@ -373,21 +373,21 @@ export interface PipelineProps {
    *
    * @default - No triggers
    */
-  readonly triggers?: TriggerProps[];
+  readonly triggers?: TriggerProps[] | undefined;
 
   /**
    * The method that the pipeline will use to handle multiple executions.
    *
    * @default - ExecutionMode.SUPERSEDED
    */
-  readonly executionMode?: ExecutionMode;
+  readonly executionMode?: ExecutionMode | undefined;
 
   /**
    * Use pipeline service role for actions if no action role configured
    *
    * @default - false
    */
-  readonly usePipelineRoleForActions?: boolean;
+  readonly usePipelineRoleForActions?: boolean | undefined;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -578,7 +578,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
-  private readonly enableKeyRotation?: boolean;
+  private readonly enableKeyRotation?: boolean | undefined;
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
   private readonly pipelineType: PipelineType;
@@ -1486,7 +1486,7 @@ export interface CrossRegionSupport {
 interface CrossRegionInfo {
   readonly artifactBucket: s3.IBucket;
 
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 function enumerate<A>(xs: A[]): Array<[number, A]> {

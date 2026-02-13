@@ -95,14 +95,14 @@ export interface SourceApiAssociationProps {
    *
    * @default - AUTO_MERGE
    */
-  readonly mergeType?: MergeType;
+  readonly mergeType?: MergeType | undefined;
 
   /**
    * The description of the source api association
    *
    * @default - None
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -171,7 +171,7 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
   /**
    * The merged api execution role for attaching the access policy.
    */
-  private readonly mergedApiExecutionRole?: IRole;
+  private readonly mergedApiExecutionRole?: IRole | undefined;
 
   constructor(scope: Construct, id: string, props: SourceApiAssociationProps) {
     super(scope, id);

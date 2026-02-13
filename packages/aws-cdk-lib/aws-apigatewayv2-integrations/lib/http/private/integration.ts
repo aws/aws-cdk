@@ -24,14 +24,14 @@ export interface VpcLinkConfigurationOptions {
    *
    * @default - a new VpcLink is created
    */
-  readonly vpcLink?: IVpcLink;
+  readonly vpcLink?: IVpcLink | undefined;
 
   /**
    * The vpc for which the VpcLink needs to be created
    *
    * @default undefined
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 }
 
 /**

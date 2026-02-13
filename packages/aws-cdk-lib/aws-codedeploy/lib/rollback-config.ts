@@ -7,14 +7,14 @@ export interface AutoRollbackConfig {
    *
    * @default true
    */
-  readonly failedDeployment?: boolean;
+  readonly failedDeployment?: boolean | undefined;
 
   /**
    * Whether to automatically roll back a deployment that was manually stopped.
    *
    * @default false
    */
-  readonly stoppedDeployment?: boolean;
+  readonly stoppedDeployment?: boolean | undefined;
 
   /**
    * Whether to automatically roll back a deployment during which one of the configured
@@ -22,5 +22,5 @@ export interface AutoRollbackConfig {
    *
    * @default true if you've provided any Alarms with the `alarms` property, false otherwise
    */
-  readonly deploymentInAlarm?: boolean;
+  readonly deploymentInAlarm?: boolean | undefined;
 }

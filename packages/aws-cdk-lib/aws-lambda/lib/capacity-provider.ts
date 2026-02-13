@@ -42,7 +42,7 @@ export interface CapacityProviderProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that
    * ID for the capacity provider's name.
    */
-  readonly capacityProviderName?: string;
+  readonly capacityProviderName?: string | undefined;
 
   /**
    * A list of security group IDs to associate with EC2 instances launched by the capacity provider.
@@ -61,7 +61,7 @@ export interface CapacityProviderProps {
    *
    * @default - A role will be generated containing the AWSLambdaManagedEC2ResourceOperator managed policy
    */
-  readonly operatorRole?: iam.IRole;
+  readonly operatorRole?: iam.IRole | undefined;
 
   /**
    * The instruction set architecture required for compute instances.
@@ -69,35 +69,35 @@ export interface CapacityProviderProps {
    *
    * @default - No architecture constraints specified
    */
-  readonly architectures?: Architecture[];
+  readonly architectures?: Architecture[] | undefined;
 
   /**
    * Configuration for filtering instance types that the capacity provider can use.
    *
    * @default - No instance type filtering applied
    */
-  readonly instanceTypeFilter?: InstanceTypeFilter;
+  readonly instanceTypeFilter?: InstanceTypeFilter | undefined;
 
   /**
    * The maximum number of vCPUs that the capacity provider can scale up to.
    *
    * @default - No maximum limit specified, service default is 400
    */
-  readonly maxVCpuCount?: number;
+  readonly maxVCpuCount?: number | undefined;
 
   /**
    * The options for scaling a capacity provider, including scaling policies.
    *
    * @default - The `Auto` option is applied by default
    */
-  readonly scalingOptions?: ScalingOptions;
+  readonly scalingOptions?: ScalingOptions | undefined;
 
   /**
    * The AWS Key Management Service (KMS) key used to encrypt data associated with the capacity provider.
    *
    * @default - No KMS key specified, uses an AWS-managed key instead
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 }
 
 /**
@@ -125,12 +125,12 @@ export class InstanceTypeFilter {
   /**
    * A list of instance types that the capacity provider is allowed to use.
    */
-  public readonly allowedInstanceTypes?: ec2.InstanceType[];
+  public readonly allowedInstanceTypes?: ec2.InstanceType[] | undefined;
 
   /**
    * A list of instance types that the capacity provider should not use.
    */
-  public readonly excludedInstanceTypes?: ec2.InstanceType[];
+  public readonly excludedInstanceTypes?: ec2.InstanceType[] | undefined;
 
   /**
    * Creates a new InstanceTypeFilter.
@@ -174,7 +174,7 @@ export class ScalingOptions {
   /**
    * The target tracking scaling policies used when scaling mode is 'Manual'.
    */
-  public readonly scalingPolicies?: TargetTrackingScalingPolicy[];
+  public readonly scalingPolicies?: TargetTrackingScalingPolicy[] | undefined;
 
   /**
    * Creates a new ScalingOptions.
@@ -272,28 +272,28 @@ export interface CapacityProviderFunctionOptions {
    *
    * @default Maximum is set to 10
    */
-  readonly perExecutionEnvironmentMaxConcurrency?: number;
+  readonly perExecutionEnvironmentMaxConcurrency?: number | undefined;
 
   /**
    * Specifies the execution environment memory per VCPU, in GiB.
    *
    * @default 2.0
    */
-  readonly executionEnvironmentMemoryGiBPerVCpu?: number;
+  readonly executionEnvironmentMemoryGiBPerVCpu?: number | undefined;
 
   /**
    * A boolean determining whether or not to automatically publish to the $LATEST.PUBLISHED version.
    *
    * @default - True
    */
-  readonly publishToLatestPublished?: boolean;
+  readonly publishToLatestPublished?: boolean | undefined;
 
   /**
    * The scaling options that are applied to the $LATEST.PUBLISHED version.
    *
    * @default - No scaling limitations are applied to the $LATEST.PUBLISHED version.
    */
-  readonly latestPublishedScalingConfig?: LatestPublishedScalingConfig;
+  readonly latestPublishedScalingConfig?: LatestPublishedScalingConfig | undefined;
 }
 
 /**
@@ -309,7 +309,7 @@ export interface LatestPublishedScalingConfig {
    *
    * @default - 3 execution environments are set to be the minimum
    */
-  readonly minExecutionEnvironments?: number;
+  readonly minExecutionEnvironments?: number | undefined;
 
   /**
    * The maximum number of execution environments allowed for the $LATEST.PUBLISHED version
@@ -320,7 +320,7 @@ export interface LatestPublishedScalingConfig {
    *
    * @default - No maximum specified
    */
-  readonly maxExecutionEnvironments?: number;
+  readonly maxExecutionEnvironments?: number | undefined;
 }
 
 /**
