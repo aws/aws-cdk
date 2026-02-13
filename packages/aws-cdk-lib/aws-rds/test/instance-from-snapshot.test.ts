@@ -1,6 +1,6 @@
-import { RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { RemovalPolicy, Stack } from '../../core';
+import { Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
 import * as rds from '../lib';
 
 describe('DatabaseInstanceFromSnapshot', () => {
