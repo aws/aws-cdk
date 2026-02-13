@@ -46,6 +46,19 @@ export class CfnThingApplicationLogs {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
     }
   }
+
+  /**
+   * Delivers logs to a pre-created delivery destination
+   *
+   * Supported destinations are S3, CWL, FH
+   * You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.
+   * Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().
+   */
+  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.DestinationLogsDelivery(destination));
+    }
+  }
 }
 
 /**
@@ -83,6 +96,19 @@ export class CfnThingAccessLogs {
   public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
+    }
+  }
+
+  /**
+   * Delivers logs to a pre-created delivery destination
+   *
+   * Supported destinations are S3, CWL, FH
+   * You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.
+   * Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().
+   */
+  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.DestinationLogsDelivery(destination));
     }
   }
 }
