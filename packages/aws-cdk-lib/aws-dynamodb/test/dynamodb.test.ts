@@ -7,28 +7,37 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { App, ArnFormat, Aws, CfnDeletionPolicy, Duration, Fn, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
+import {
+  App,
+  ArnFormat,
+  Aws,
+  CfnDeletionPolicy,
+  Duration,
+  Fn,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Tags,
+} from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
-import type {
-  Attribute,
-  GlobalSecondaryIndexProps,
-  LocalSecondaryIndexProps,
-} from '../lib';
+import type { Attribute, GlobalSecondaryIndexProps, LocalSecondaryIndexProps } from '../lib';
 import {
+  ApproximateCreationDateTimePrecision,
   AttributeType,
   BillingMode,
+  CfnTable,
+  ContributorInsightsMode,
+  InputCompressionType,
+  InputFormat,
+  Operation,
   ProjectionType,
   StreamViewType,
   Table,
   TableClass,
   TableEncryption,
-  Operation,
-  CfnTable,
-  InputCompressionType,
-  InputFormat,
-  ApproximateCreationDateTimePrecision,
-  ContributorInsightsMode,
+  TableGrants,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -5031,4 +5040,111 @@ test('Throws when more than four multi-attribute sort keys are specified', () =>
         { name: 'gsiSortKeyFive', type: AttributeType.BINARY }],
     });
   }).toThrow('Maximum of 4 sort keys allowed');
+});
+
+describe('L1 table grants', () => {
+  test('grant read permission to service principal (L1)', () => {
+    const stack = new Stack();
+    const table = new CfnTable(stack, 'Table', {
+      keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+      attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    });
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    TableGrants.fromTable(table).readData(principal);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: Match.arrayWith([{
+            Action: ['dynamodb:BatchGetItem', 'dynamodb:Query', 'dynamodb:GetItem', 'dynamodb:Scan', 'dynamodb:ConditionCheckItem', 'dynamodb:DescribeTable'],
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: '*',
+          }]),
+        },
+      },
+    });
+  });
+});
+
+test('grant read permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).readData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
+});
+
+test('grant write permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).writeData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
+});
+
+test('grant readWrite permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).readWriteData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
 });
