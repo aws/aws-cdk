@@ -1,7 +1,7 @@
 import * as iam from '../../aws-iam';
-import { ISchedule, ScheduleTargetConfig, ScheduleTargetInput } from '../../aws-scheduler';
-import { CfnSchedule } from '../../aws-scheduler/lib/scheduler.generated';
-import * as sqs from '../../aws-sqs';
+import type { ISchedule, ScheduleTargetConfig, ScheduleTargetInput } from '../../aws-scheduler';
+import type { CfnSchedule } from '../../aws-scheduler/lib/scheduler.generated';
+import type * as sqs from '../../aws-sqs';
 import { Duration, PhysicalName, Stack, Token, UnscopedValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 

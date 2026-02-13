@@ -1,41 +1,47 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { ClusterGrants } from './cluster-grants';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
+import type {
+  IClusterRef,
+  ClusterReference,
+} from './ecs.generated';
 import {
   CfnCluster,
   CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
-  IClusterRef,
-  ClusterReference,
 } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { InstanceRequirementsConfig } from '../../aws-ec2';
+import type { InstanceRequirementsConfig } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IKey, IKeyRef } from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as kms from '../../aws-kms';
+import type * as logs from '../../aws-logs';
+import type * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
+import type {
+  IResource,
+  IAspect,
+  Size,
+} from '../../core';
 import {
   Aws,
   Duration,
-  IResource,
   Resource,
   Stack,
   Aspects,
   ArnFormat,
-  IAspect,
   Token,
   Names,
   Annotations,
   ValidationError,
-  Size,
+  Lazy,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -209,16 +215,6 @@ export class Cluster extends Resource implements ICluster {
   public readonly vpc: ec2.IVpc;
 
   /**
-   * The Amazon Resource Name (ARN) that identifies the cluster.
-   */
-  public readonly clusterArn: string;
-
-  /**
-   * The name of the cluster.
-   */
-  public readonly clusterName: string;
-
-  /**
    * Collection of grant methods for a Cluster
    */
   public readonly grants = ClusterGrants.fromCluster(this);
@@ -268,6 +264,20 @@ export class Cluster extends Resource implements ICluster {
    * CfnCluster instance
    */
   private _cfnCluster: CfnCluster;
+
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.getResourceArnAttribute(this._cfnCluster.attrArn, {
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(this._cfnCluster.ref);
+  }
 
   /**
    * Constructs a new instance of the Cluster class.
@@ -321,13 +331,6 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings,
       configuration: this.renderClusterConfiguration(),
     });
-
-    this.clusterArn = this.getResourceArnAttribute(this._cfnCluster.attrArn, {
-      service: 'ecs',
-      resource: 'cluster',
-      resourceName: this.physicalName,
-    });
-    this.clusterName = this.getResourceNameAttribute(this._cfnCluster.ref);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
@@ -468,7 +471,7 @@ export class Cluster extends Resource implements ICluster {
     }
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
-      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupName,
+      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupRef.logGroupName,
       s3BucketName: logConfiguration?.s3Bucket?.bucketName,
       s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
       s3KeyPrefix: logConfiguration?.s3KeyPrefix,
@@ -777,6 +780,7 @@ export class Cluster extends Resource implements ICluster {
    * Grants an ECS Task Protection API permission to the specified grantee.
    * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
    * permission, enabling the grantee to manage task protection in the ECS cluster.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
    */
@@ -1322,7 +1326,7 @@ export interface ExecuteCommandLogConfiguration {
    * The name of the CloudWatch log group to send logs to. The CloudWatch log group must already be created.
    * @default - none
    */
-  readonly cloudWatchLogGroup?: logs.ILogGroup;
+  readonly cloudWatchLogGroup?: logs.ILogGroupRef;
 
   /**
    * The name of the S3 bucket to send logs to. The S3 bucket must already be created.
@@ -1450,7 +1454,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly fargateEphemeralStorageKmsKey?: IKey;
+  readonly fargateEphemeralStorageKmsKey?: kms.IKey;
 
   /**
    * Customer KMS Key used to encrypt ECS managed Storage.
@@ -1459,7 +1463,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly kmsKey?: IKeyRef;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -1493,6 +1497,21 @@ export enum PropagateManagedInstancesTags {
 }
 
 /**
+ * The capacity option type for instances launched by a Managed Instances Capacity Provider.
+ */
+export enum CapacityOptionType {
+  /**
+   * Launch instances as On-Demand instances
+   */
+  ON_DEMAND = 'ON_DEMAND',
+
+  /**
+   * Launch instances as Spot instances
+   */
+  SPOT = 'SPOT',
+}
+
+/**
  * The options for creating a Managed Instances Capacity Provider.
  */
 export interface ManagedInstancesCapacityProviderProps {
@@ -1522,8 +1541,17 @@ export interface ManagedInstancesCapacityProviderProps {
    * This instance profile must contain the necessary IAM permissions for ECS container instances
    * to register with the cluster and run tasks. At minimum, it should include permissions for
    * ECS agent communication, ECR image pulling, and CloudWatch logging.
+   *
+   * If you are using Amazon ECS Managed Instances with the AWS-managed Infrastructure policy (`AmazonECSInfrastructureRolePolicyForManagedInstances`),
+   * the instance profile must be prefixed with `ecsInstanceRole` for the built in PassRole policy to apply.
+   *
+   * If you are using a custom policy for the Infrastructure role, the instance profile can have an alternative name.
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html
+   * @see https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonECSInfrastructureRolePolicyForManagedInstances.html
+   *
+   * @default - A new instance profile prefixed with 'ecsInstanceRole' will be created
    */
-  readonly ec2InstanceProfile: iam.IInstanceProfile;
+  readonly ec2InstanceProfile?: iam.IInstanceProfile;
 
   /**
    * The VPC subnets where EC2 instances will be launched.
@@ -1535,11 +1563,8 @@ export interface ManagedInstancesCapacityProviderProps {
   /**
    * The security groups to associate with the launched EC2 instances.
    * These security groups control the network traffic allowed to and from the instances.
-   * If not specified, the default security group of the VPC containing the subnets will be used.
-   *
-   * @default - default security group of the VPC
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
    * The size of the task volume storage attached to each instance.
@@ -1579,6 +1604,14 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default PropagateManagedInstancesTags.NONE - no tag propagation
    */
   readonly propagateTags?: PropagateManagedInstancesTags;
+
+  /**
+   * Specifies the capacity option type for instances launched by this capacity provider.
+   * This determines whether instances are launched as On-Demand or Spot instances.
+   *
+   * @default - `ON_DEMAND`
+   */
+  readonly capacityOptionType?: CapacityOptionType;
 }
 
 /**
@@ -1603,9 +1636,31 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
   readonly connections: ec2.Connections;
 
   /**
+   * The IAM role that ECS uses to manage the infrastructure for the capacity provider
+   */
+  readonly infrastructureRole: iam.IRole;
+
+  /**
+   * The EC2 instance profile attached to instances launched by this capacity provider
+   */
+  readonly ec2InstanceProfile: iam.IInstanceProfile;
+
+  /**
    * The CloudFormation capacity provider resource
    */
   private capacityProvider: CfnCapacityProvider;
+
+  /**
+   * The cluster this capacity provider is associated with
+   */
+  private _cluster?: ICluster;
+
+  /**
+   * The cluster this capacity provider is associated with
+   */
+  public get cluster(): ICluster | undefined {
+    return this._cluster;
+  }
 
   constructor(scope: Construct, id: string, props: ManagedInstancesCapacityProviderProps) {
     super(scope, id);
@@ -1617,14 +1672,20 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       throw new ValidationError('Subnets are required and should be non-empty.', this);
     }
 
+    if (props.securityGroups.length === 0) {
+      throw new ValidationError('Security groups cannot be an empty array. Provide at least one security group.', this);
+    }
+
     // Create or use provided infrastructure role
     const roleId = `${id}Role`;
-    const infrastructureRole = props.infrastructureRole ?? new iam.Role(this, roleId, {
+    this.infrastructureRole = props.infrastructureRole ?? new iam.Role(this, roleId, {
       assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInfrastructureRolePolicyForManagedInstances'),
       ],
     });
+
+    this.ec2InstanceProfile = props.ec2InstanceProfile ?? this.createDefaultInstanceProfile(scope);
 
     // Handle capacity provider name generation similar to AsgCapacityProvider
     let capacityProviderName = props.capacityProviderName;
@@ -1644,9 +1705,10 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
 
     // Build the managed instances provider configuration
     const managedInstancesProviderConfig: CfnCapacityProvider.ManagedInstancesProviderProperty = {
-      infrastructureRoleArn: infrastructureRole.roleArn,
+      infrastructureRoleArn: this.infrastructureRole.roleArn,
       instanceLaunchTemplate: {
-        ec2InstanceProfileArn: props.ec2InstanceProfile.instanceProfileArn,
+        capacityOptionType: props.capacityOptionType,
+        ec2InstanceProfileArn: this.ec2InstanceProfile.instanceProfileArn,
         networkConfiguration: {
           subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),
           ...(props.securityGroups && {
@@ -1689,6 +1751,97 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
    */
   public bind(cluster: ICluster): void {
     this.capacityProvider.clusterName = cluster.clusterName;
+    this._cluster = cluster;
+  }
+
+  /**
+   * Creates a default instance profile for ECS managed instances prefixed with "ecsInstanceRole".
+   * The created instance profile will have a custom scoped-down policy attached.
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html
+   */
+  private createDefaultInstanceProfile(scope: Construct): iam.IInstanceProfile {
+    /**
+     * The managed policy `AmazonECSInfrastructureRolePolicyForManagedInstances` requires
+     * that the instance profile name starts with `ecsInstanceRole` to allow ECS to
+     * pass the role to the instances.
+     * @see https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonECSInfrastructureRolePolicyForManagedInstances.html
+     * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html
+     */
+    const instanceProfileNamePrefix = 'ecsInstanceRole';
+    const roleName = `${instanceProfileNamePrefix}${Names.uniqueResourceName(this, { maxLength: 64 - instanceProfileNamePrefix.length })}`;
+    const instanceRole = new iam.Role(this, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      roleName,
+      inlinePolicies: {
+        /**
+         * Scoped down version of AmazonECSInstanceRolePolicyForManagedInstances
+         * @see https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonECSInstanceRolePolicyForManagedInstances.html
+         */
+        ECSInstancePolicy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              sid: 'ECSAgentDiscoverPollEndpointPermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:DiscoverPollEndpoint'],
+              resources: ['*'], // DiscoverPollEndpoint does not support resource scoping.
+            }),
+            new iam.PolicyStatement({
+              sid: 'ECSAgentRegisterPermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:RegisterContainerInstance'],
+              resources: [Lazy.string({
+                produce: () => {
+                  if (!this._cluster) {
+                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster.', scope);
+                  }
+                  return this._cluster.clusterArn;
+                },
+              })],
+            }),
+            new iam.PolicyStatement({
+              sid: 'ECSAgentPollPermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:Poll'],
+              resources: [Stack.of(this).formatArn({
+                service: 'ecs',
+                resource: 'container-instance',
+                resourceName: '*',
+              })],
+            }),
+            new iam.PolicyStatement({
+              sid: 'ECSAgentTelemetryPermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:StartTelemetrySession', 'ecs:PutSystemLogEvents'],
+              resources: [Stack.of(this).formatArn({
+                service: 'ecs',
+                resource: 'container-instance',
+                resourceName: '*',
+              })],
+            }),
+            new iam.PolicyStatement({
+              sid: 'ECSAgentStateChangePermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:SubmitAttachmentStateChanges', 'ecs:SubmitTaskStateChange'],
+              resources: [Lazy.string({
+                produce: () => {
+                  if (!this._cluster) {
+                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster.', scope);
+                  }
+                  return this._cluster.clusterArn;
+                },
+              })],
+            }),
+          ],
+        }),
+      },
+    });
+
+    const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+      instanceProfileName: roleName,
+      role: instanceRole,
+    });
+
+    return instanceProfile;
   }
 
   /**

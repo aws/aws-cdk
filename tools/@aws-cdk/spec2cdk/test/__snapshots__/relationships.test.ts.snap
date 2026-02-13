@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`resource with array of nested properties with relationship 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
@@ -55,11 +55,6 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   }
 
   /**
-   * @cloudformationAttribute RoleArn
-   */
-  public readonly attrRoleArn: string;
-
-  /**
    * Create a new \`AWS::IAM::Role\`.
    *
    * @param scope Scope in which this resource is defined
@@ -72,13 +67,19 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
       properties: props
     });
 
-    this.attrRoleArn = cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get roleRef(): RoleReference {
     return {
       roleArn: this.attrRoleArn
     };
+  }
+
+  /**
+   * @cloudformationAttribute RoleArn
+   */
+  public get attrRoleArn(): string {
+    return cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -405,11 +406,6 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   }
 
   /**
-   * @cloudformationAttribute RoleArn
-   */
-  public readonly attrRoleArn: string;
-
-  /**
    * Create a new \`AWS::IAM::Role\`.
    *
    * @param scope Scope in which this resource is defined
@@ -422,13 +418,19 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
       properties: props
     });
 
-    this.attrRoleArn = cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get roleRef(): RoleReference {
     return {
       roleArn: this.attrRoleArn
     };
+  }
+
+  /**
+   * @cloudformationAttribute RoleArn
+   */
+  public get attrRoleArn(): string {
+    return cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -546,11 +548,6 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
   }
 
   /**
-   * @cloudformationAttribute UserArn
-   */
-  public readonly attrUserArn: string;
-
-  /**
    * Create a new \`AWS::IAM::User\`.
    *
    * @param scope Scope in which this resource is defined
@@ -563,13 +560,19 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
       properties: props
     });
 
-    this.attrUserArn = cdk.Token.asString(this.getAtt("UserArn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get userRef(): UserReference {
     return {
       userArn: this.attrUserArn
     };
+  }
+
+  /**
+   * @cloudformationAttribute UserArn
+   */
+  public get attrUserArn(): string {
+    return cdk.Token.asString(this.getAtt("UserArn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -840,11 +843,6 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   }
 
   /**
-   * @cloudformationAttribute RoleArn
-   */
-  public readonly attrRoleArn: string;
-
-  /**
    * Create a new \`AWS::IAM::Role\`.
    *
    * @param scope Scope in which this resource is defined
@@ -857,13 +855,19 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
       properties: props
     });
 
-    this.attrRoleArn = cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get roleRef(): RoleReference {
     return {
       roleArn: this.attrRoleArn
     };
+  }
+
+  /**
+   * @cloudformationAttribute RoleArn
+   */
+  public get attrRoleArn(): string {
+    return cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1189,11 +1193,6 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   }
 
   /**
-   * @cloudformationAttribute RoleArn
-   */
-  public readonly attrRoleArn: string;
-
-  /**
    * Create a new \`AWS::IAM::Role\`.
    *
    * @param scope Scope in which this resource is defined
@@ -1206,13 +1205,19 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
       properties: props
     });
 
-    this.attrRoleArn = cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get roleRef(): RoleReference {
     return {
       roleArn: this.attrRoleArn
     };
+  }
+
+  /**
+   * @cloudformationAttribute RoleArn
+   */
+  public get attrRoleArn(): string {
+    return cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1601,11 +1606,6 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   }
 
   /**
-   * @cloudformationAttribute RoleArn
-   */
-  public readonly attrRoleArn: string;
-
-  /**
    * Create a new \`AWS::IAM::Role\`.
    *
    * @param scope Scope in which this resource is defined
@@ -1618,13 +1618,19 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
       properties: props
     });
 
-    this.attrRoleArn = cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get roleRef(): RoleReference {
     return {
       roleArn: this.attrRoleArn
     };
+  }
+
+  /**
+   * @cloudformationAttribute RoleArn
+   */
+  public get attrRoleArn(): string {
+    return cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {

@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExternalCompatible, isManagedInstancesCompatible } from './task-definition';
-import { IRole } from '../../../aws-iam';
+import type { Construct } from 'constructs';
+import type { NetworkMode } from './task-definition';
+import { Compatibility, isEc2Compatible, isFargateCompatible, isExternalCompatible, isManagedInstancesCompatible } from './task-definition';
+import type { IRole } from '../../../aws-iam';
 import { Resource, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
-import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
+import type { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
+import type { TaskDefinitionReference } from '../ecs.generated';
+import type { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
 
 /**
  * The properties of ImportedTaskDefinition
@@ -135,5 +137,14 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
    */
   public get isManagedInstancesCompatible(): boolean {
     return isManagedInstancesCompatible(this.compatibility);
+  }
+
+  /**
+   * A reference to this task definition.
+   */
+  public get taskDefinitionRef(): TaskDefinitionReference {
+    return {
+      taskDefinitionArn: this.taskDefinitionArn,
+    };
   }
 }

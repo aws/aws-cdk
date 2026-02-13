@@ -4,7 +4,7 @@ import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-distribution-function', { env: { region: 'eu-west-1' } });
+const stack = new cdk.Stack(app, 'integ-distribution-function-runtime');
 
 const cfFunctionRequest = new cloudfront.Function(stack, 'FunctionRequest', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),

@@ -11,6 +11,7 @@
  *  and limitations under the License.
  */
 
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -18,8 +19,11 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Gateway } from '../../../lib';
+import { CustomClaimOperator } from '../../../lib/common/types';
 import { GatewayExceptionLevel } from '../../../lib/gateway/gateway-base';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
+import { GatewayCustomClaim } from '../../../lib/gateway/inbound-auth/custom-claim';
+import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
 import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
 import { McpProtocolConfiguration, MCPProtocolVersion, McpGatewaySearchType } from '../../../lib/gateway/protocol';
@@ -147,6 +151,34 @@ describe('Gateway Core Tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
       AuthorizerType: 'CUSTOM_JWT',
     });
+  });
+
+  test('Should create Gateway with custom JWT authorizer including allowedScopes', () => {
+    new Gateway(stack, 'TestGatewayWithScopes', {
+      gatewayName: 'test-gateway-scopes',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+        allowedAudience: ['my-app'],
+        allowedClients: ['client-123'],
+        allowedScopes: ['read', 'write'],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayResource = Object.values(resources)[0];
+
+    expect(gatewayResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = gatewayResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedAudience).toEqual(['my-app']);
+      expect(jwtConfig.AllowedClients).toEqual(['client-123']);
+      expect(jwtConfig.AllowedScopes).toEqual(['read', 'write']);
+    }
   });
 
   test('Should create Gateway with KMS encryption', () => {
@@ -1023,6 +1055,7 @@ describe('Authorizer Configuration Tests', () => {
       discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
       allowedAudience: ['app1', 'app2', 'app3'],
       allowedClients: ['client1', 'client2'],
+      allowedScopes: ['read', 'write', 'admin'],
     });
 
     // Just verify the authorizer is created with correct type
@@ -1061,6 +1094,158 @@ describe('Authorizer Configuration Tests', () => {
     const authorizer = GatewayAuthorizer.usingCustomJwt({
       discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
       allowedClients: ['client-123'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create custom JWT authorizer with only allowedScopes', () => {
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      allowedScopes: ['read', 'write'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create Cognito authorizer with allowedScopes', () => {
+    const userPool = new cdk.aws_cognito.UserPool(stack, 'TestUserPool', {
+      userPoolName: 'test-pool',
+    });
+
+    const client1 = userPool.addClient('Client1');
+
+    const authorizer = GatewayAuthorizer.usingCognito({
+      userPool: userPool,
+      allowedClients: [client1],
+      allowedAudiences: ['cognito-audience'],
+      allowedScopes: ['read', 'write'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should render Gateway with custom JWT authorizer including allowedScopes in CloudFormation', () => {
+    new Gateway(stack, 'TestGatewayRenderScopes', {
+      gatewayName: 'test-gateway-render-scopes',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://oauth.provider.com/.well-known/openid-configuration',
+        allowedAudience: ['aud1', 'aud2'],
+        allowedClients: ['client-456'],
+        allowedScopes: ['openid', 'profile', 'email'],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayResource = Object.values(resources)[0];
+
+    expect(gatewayResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = gatewayResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://oauth.provider.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedAudience).toEqual(['aud1', 'aud2']);
+      expect(jwtConfig.AllowedClients).toEqual(['client-456']);
+      expect(jwtConfig.AllowedScopes).toEqual(['openid', 'profile', 'email']);
+    }
+  });
+
+  test('Should create custom JWT authorizer with custom claims', () => {
+    const stringClaim = GatewayCustomClaim.withStringValue('department', 'engineering');
+    const arrayClaim = GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS);
+    const arrayClaimAny = GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
+
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      allowedAudience: ['app1'],
+      customClaims: [stringClaim, arrayClaim, arrayClaimAny],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create Cognito authorizer with custom claims', () => {
+    const userPool = new cdk.aws_cognito.UserPool(stack, 'TestUserPool', {
+      userPoolName: 'test-pool',
+    });
+
+    const client1 = userPool.addClient('Client1');
+
+    const customClaims = [
+      GatewayCustomClaim.withStringValue('department', 'engineering'),
+      GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS),
+    ];
+
+    const authorizer = GatewayAuthorizer.usingCognito({
+      userPool: userPool,
+      allowedClients: [client1],
+      customClaims: customClaims,
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should render Gateway with custom JWT authorizer including custom claims in CloudFormation', () => {
+    const stringClaim = GatewayCustomClaim.withStringValue('department', 'engineering');
+    const arrayClaim = GatewayCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.CONTAINS);
+    const arrayClaimAny = GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
+
+    new Gateway(stack, 'TestGatewayRenderCustomClaims', {
+      gatewayName: 'test-gateway-render-custom-claims',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://oauth.provider.com/.well-known/openid-configuration',
+        allowedAudience: ['aud1'],
+        customClaims: [stringClaim, arrayClaim, arrayClaimAny],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayResource = Object.values(resources)[0];
+
+    expect(gatewayResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = gatewayResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig).toHaveProperty('CustomClaims');
+      expect(jwtConfig.CustomClaims).toHaveLength(3);
+
+      // Check first claim (string)
+      const stringClaimConfig = jwtConfig.CustomClaims[0];
+      expect(stringClaimConfig.InboundTokenClaimName).toBe('department');
+      expect(stringClaimConfig.InboundTokenClaimValueType).toBe('STRING');
+      expect(stringClaimConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('EQUALS');
+      expect(stringClaimConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueString).toBe('engineering');
+
+      // Check second claim (string array with CONTAINS)
+      const arrayClaimConfig = jwtConfig.CustomClaims[1];
+      expect(arrayClaimConfig.InboundTokenClaimName).toBe('roles');
+      expect(arrayClaimConfig.InboundTokenClaimValueType).toBe('STRING_ARRAY');
+      expect(arrayClaimConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('CONTAINS');
+      expect(arrayClaimConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueString).toBe('admin');
+
+      // Check third claim (string array with CONTAINS_ANY)
+      const arrayClaimAnyConfig = jwtConfig.CustomClaims[2];
+      expect(arrayClaimAnyConfig.InboundTokenClaimName).toBe('permissions');
+      expect(arrayClaimAnyConfig.InboundTokenClaimValueType).toBe('STRING_ARRAY');
+      expect(arrayClaimAnyConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('CONTAINS_ANY');
+      expect(arrayClaimAnyConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueStringList).toEqual(['read', 'write']);
+    }
+  });
+
+  test('Should create custom JWT authorizer with only customClaims (no other validations)', () => {
+    const customClaims = [
+      GatewayCustomClaim.withStringValue('department', 'engineering'),
+    ];
+
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      customClaims: customClaims,
     });
 
     expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
@@ -2305,5 +2490,378 @@ describe('MCP Server Target Configuration Tests', () => {
 
     expect(target.targetType).toBe('MCP_SERVER');
     expect(target.credentialProviderConfigurations).toHaveLength(1);
+  });
+});
+
+describe('Gateway M2M Authentication Tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create default Cognito authorizer with M2M support', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: ['client_credentials'],
+      AllowedOAuthFlowsUserPoolClient: true,
+      GenerateSecret: true,
+    });
+
+    // Resource Server identifier is auto-generated using Names.uniqueResourceName()
+    template.hasResourceProperties('AWS::Cognito::UserPoolResourceServer', {
+      Scopes: [
+        { ScopeName: 'read', ScopeDescription: 'Read access to gateway tools' },
+        { ScopeName: 'write', ScopeDescription: 'Write access to gateway tools' },
+      ],
+    });
+
+    // Domain name is auto-generated using Names.uniqueResourceName()
+    template.resourceCountIs('AWS::Cognito::UserPoolDomain', 1);
+  });
+
+  test('Should set tokenEndpointUrl property with default Cognito authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeDefined();
+    expect(gateway.tokenEndpointUrl).toContain('.auth.us-east-1.amazoncognito.com/oauth2/token');
+  });
+
+  test('Should set oauthScopes property with default Cognito authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.oauthScopes).toBeDefined();
+    expect(gateway.oauthScopes).toHaveLength(2);
+    expect(gateway.oauthScopes![0]).toContain('/read');
+    expect(gateway.oauthScopes![1]).toContain('/write');
+  });
+
+  test('Should not set tokenEndpointUrl and oauthScopes when using custom authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeUndefined();
+    expect(gateway.oauthScopes).toBeUndefined();
+  });
+
+  test('Should not set tokenEndpointUrl and oauthScopes when using custom JWT authorizer', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingCustomJwt({
+        discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+        allowedAudience: ['my-app'],
+      }),
+    });
+
+    expect(gateway.tokenEndpointUrl).toBeUndefined();
+    expect(gateway.oauthScopes).toBeUndefined();
+  });
+});
+
+describe('Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create Gateway without gatewayName (auto-generated)', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+    });
+
+    expect(gateway.name).toBeDefined();
+    expect(gateway.name).not.toBe('');
+  });
+});
+
+describe('Gateway Target Optional Physical Names', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should create Lambda target without gatewayTargetName (auto-generated)', () => {
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    const target = gateway.addLambdaTarget('TestTarget', {
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create OpenAPI target without gatewayTargetName (auto-generated)', () => {
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
+
+    const target = gateway.addOpenApiTarget('TestTarget', {
+      apiSchema: apiSchema,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
+          providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          credentialLocation: ApiKeyCredentialLocation.header(),
+        }),
+      ],
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create Smithy target without gatewayTargetName (auto-generated)', () => {
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+
+    const target = gateway.addSmithyTarget('TestTarget', {
+      smithyModel: smithyModel,
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+
+  test('Should create MCP server target without gatewayTargetName (auto-generated)', () => {
+    const target = gateway.addMcpServerTarget('TestTarget', {
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read', 'write'],
+        }),
+      ],
+    });
+
+    expect(target.name).toBeDefined();
+    expect(target.name).not.toBe('');
+  });
+});
+
+describe('Gateway Interceptor Tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should add REQUEST and RESPONSE interceptors using addInterceptor method', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const requestInterceptorFn = new lambda.Function(stack, 'RequestInterceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
+    });
+
+    const responseInterceptorFn = new lambda.Function(stack, 'ResponseInterceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
+    });
+
+    gateway.addInterceptor(LambdaInterceptor.forRequest(requestInterceptorFn, { passRequestHeaders: true }));
+    gateway.addInterceptor(LambdaInterceptor.forResponse(responseInterceptorFn));
+
+    const template = Template.fromStack(stack);
+
+    // Verify the gateway has interceptor configurations
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'test-gateway',
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: true,
+          },
+        }),
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        }),
+      ]),
+    });
+
+    // Verify Lambda invoke permissions are granted
+    const resources = template.findResources('AWS::IAM::Policy');
+    const policyStatements = Object.values(resources)[0].Properties.PolicyDocument.Statement;
+
+    // Find the Lambda invoke statement
+    const lambdaInvokeStatement = policyStatements.find(
+      (stmt: any) => stmt.Action === 'lambda:InvokeFunction',
+    );
+
+    expect(lambdaInvokeStatement).toBeDefined();
+    expect(lambdaInvokeStatement.Effect).toBe('Allow');
+    expect(Array.isArray(lambdaInvokeStatement.Resource)).toBe(true);
+    expect(lambdaInvokeStatement.Resource.length).toBe(2);
+  });
+
+  test('Should add interceptors via constructor configuration', () => {
+    const requestInterceptorFn = new lambda.Function(stack, 'RequestInterceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
+    });
+
+    const responseInterceptorFn = new lambda.Function(stack, 'ResponseInterceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async (event) => ({ statusCode: 200, body: event });'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestInterceptorFn, { passRequestHeaders: false }),
+        LambdaInterceptor.forResponse(responseInterceptorFn, { passRequestHeaders: true }),
+      ],
+    });
+
+    expect(gateway.name).toBe('test-gateway');
+
+    const template = Template.fromStack(stack);
+
+    // Verify the gateway has interceptor configurations
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'test-gateway',
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        }),
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: true,
+          },
+        }),
+      ]),
+    });
+
+    // Verify Lambda invoke permissions are granted to both interceptors
+    const resources = template.findResources('AWS::IAM::Policy');
+    const policyStatements = Object.values(resources)[0].Properties.PolicyDocument.Statement;
+
+    // Find the Lambda invoke statement
+    const lambdaInvokeStatement = policyStatements.find(
+      (stmt: any) => stmt.Action === 'lambda:InvokeFunction',
+    );
+
+    expect(lambdaInvokeStatement).toBeDefined();
+    expect(lambdaInvokeStatement.Effect).toBe('Allow');
+    expect(Array.isArray(lambdaInvokeStatement.Resource)).toBe(true);
+    expect(lambdaInvokeStatement.Resource.length).toBe(2);
+  });
+});
+
+describe('Multiple Schema Binding Tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should bind multiple ApiSchemas from local assets in the same scope without collision', () => {
+    const schema1 = ApiSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'openapi', 'user-api.json'));
+    const schema2 = ApiSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'openapi', 'pet-api.json'));
+
+    // Both schemas should bind successfully without throwing 'Construct with id already exists' error
+    expect(() => {
+      schema1.bind(stack);
+      schema2.bind(stack);
+    }).not.toThrow();
+  });
+
+  test('Should bind multiple ToolSchemas from local assets in the same scope without collision', () => {
+    const schema1 = ToolSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'tool', 'schema1.json'));
+    const schema2 = ToolSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'tool', 'schema2.json'));
+
+    // Both schemas should bind successfully without throwing 'Construct with id already exists' error
+    expect(() => {
+      schema1.bind(stack);
+      schema2.bind(stack);
+    }).not.toThrow();
   });
 });

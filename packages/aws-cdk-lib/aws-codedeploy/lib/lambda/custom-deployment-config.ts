@@ -1,9 +1,12 @@
-import { Construct } from 'constructs';
-import { ILambdaDeploymentConfig } from './deployment-config';
-import { Duration, Names, Resource, ValidationError } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import type { Construct } from 'constructs';
+import type { ILambdaDeploymentConfig } from './deployment-config';
+import type { Duration } from '../../../core';
+import { Names, Resource, ValidationError } from '../../../core';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
+import type { IBindableDeploymentConfig } from '../base-deployment-config';
+import type { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../codedeploy.generated';
 import { arnForDeploymentConfig, validateName } from '../private/utils';
 
 /**
@@ -67,7 +70,7 @@ export interface CustomLambdaDeploymentConfigProps {
  * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use `LambdaDeploymentConfig`.
  */
 @propertyInjectable
-export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
+export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig, IBindableDeploymentConfig {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.CustomLambdaDeploymentConfig';
   /**
@@ -83,6 +86,12 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
    * @deprecated Use `LambdaDeploymentConfig`
    */
   public readonly deploymentConfigArn: string;
+
+  public get deploymentConfigRef(): DeploymentConfigReference {
+    return {
+      deploymentConfigName: this.deploymentConfigName,
+    };
+  }
 
   public constructor(scope: Construct, id: string, props: CustomLambdaDeploymentConfigProps) {
     super(scope, id);
@@ -162,6 +171,14 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
     });
 
     this.node.addValidation({ validate: () => validateName('Deployment config', this.deploymentConfigName) });
+  }
+
+  @MethodMetadata()
+  public bindEnvironment(deploymentGroup: IDeploymentGroupRef): IDeploymentConfigRef {
+    // This construct creates a deployment config by side effect, so we should add a dependency
+    // to make sure this construct gets executed first.
+    deploymentGroup.node.addDependency(this);
+    return this;
   }
 
   // Validate the inputs. The percentage/interval limits come from CodeDeploy

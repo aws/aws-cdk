@@ -1,14 +1,18 @@
-import { Construct } from 'constructs';
-import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
+import type { Construct } from 'constructs';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
+import type { IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
+import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
-import { ISecurityGroup, SecurityGroup } from './security-group';
+import type { ISecurityGroup } from './security-group';
+import { SecurityGroup } from './security-group';
 import { allRouteTableIds, flatten } from './util';
-import { ISubnet, IVpc, SubnetSelection } from './vpc';
+import type { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Aws, ContextProvider, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -848,12 +852,18 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub',
         'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
         'workspaces', 'xray'],
+      'eusc-de-east-1': ['ecr.dkr', 'ecr.api', 'execute-api', 'securityhub'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
-      return 'cn.com.amazonaws';
-    } else {
-      return 'com.amazonaws';
+      switch (region) {
+        case 'eusc-de-east-1':
+          return 'eu.amazonaws';
+        case 'cn-north-1':
+        case 'cn-northwest-1':
+          return 'cn.com.amazonaws';
+      }
     }
+    return 'com.amazonaws';
   }
 
   /**

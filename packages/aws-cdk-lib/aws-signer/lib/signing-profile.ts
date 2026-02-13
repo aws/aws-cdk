@@ -1,9 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { SigningProfileReference } from './signer.generated';
 import { CfnSigningProfile } from './signer.generated';
-import { Duration, FeatureFlags, IResource, Resource, Stack } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { FeatureFlags, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import type { aws_signer } from '../../interfaces';
 
 // Feature flag is defined in cx-api
 
@@ -63,7 +66,7 @@ export class Platform {
 /**
  * A Signer Profile
  */
-export interface ISigningProfile extends IResource {
+export interface ISigningProfile extends IResource, aws_signer.ISigningProfileRef {
   /**
    * The ARN of the signing profile.
    * @attribute
@@ -154,6 +157,12 @@ export class SigningProfile extends Resource implements ISigningProfile {
       public readonly signingProfileVersion = attrs.signingProfileVersion;
       public readonly signingProfileVersionArn: string;
 
+      public get signingProfileRef(): SigningProfileReference {
+        return {
+          signingProfileArn: this.signingProfileArn,
+        };
+      }
+
       constructor(signingProfileArn: string, signingProfileProfileVersionArn: string) {
         super(scope, id);
         this.signingProfileArn = signingProfileArn;
@@ -177,6 +186,12 @@ export class SigningProfile extends Resource implements ISigningProfile {
   public readonly signingProfileName: string;
   public readonly signingProfileVersion: string;
   public readonly signingProfileVersionArn: string;
+
+  public get signingProfileRef(): SigningProfileReference {
+    return {
+      signingProfileArn: this.signingProfileArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: SigningProfileProps) {
     super(scope, id);

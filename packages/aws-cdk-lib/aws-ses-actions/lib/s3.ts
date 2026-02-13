@@ -1,8 +1,8 @@
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
-import * as ses from '../../aws-ses';
-import * as sns from '../../aws-sns';
+import type * as kms from '../../aws-kms';
+import type * as s3 from '../../aws-s3';
+import type * as ses from '../../aws-ses';
+import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 
 /**
@@ -45,7 +45,7 @@ export class S3 implements ses.IReceiptRuleAction {
   constructor(private readonly props: S3Props) {
   }
 
-  public bind(rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     // Allow SES to write to S3 bucket
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-s3
     const keyPattern = this.props.objectKeyPrefix || '';

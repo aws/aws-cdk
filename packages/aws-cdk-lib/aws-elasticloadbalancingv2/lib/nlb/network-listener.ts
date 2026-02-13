@@ -1,17 +1,21 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { NetworkListenerAction } from './network-listener-action';
 import { NetworkListenerCertificate } from './network-listener-certificate';
-import { INetworkLoadBalancer } from './network-load-balancer';
-import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
+import type { INetworkLoadBalancer } from './network-load-balancer';
+import type { INetworkLoadBalancerTarget, INetworkTargetGroup } from './network-target-group';
+import { NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
-import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
-import { IListenerCertificate } from '../shared/listener-certificate';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { BaseListenerLookupOptions, IListener } from '../shared/base-listener';
+import { BaseListener } from '../shared/base-listener';
+import type { HealthCheck } from '../shared/base-target-group';
+import type { AlpnPolicy, SslPolicy } from '../shared/enums';
+import { Protocol } from '../shared/enums';
+import type { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
 /**
@@ -154,7 +158,14 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     });
 
     class LookedUp extends Resource implements INetworkListener {
+      public readonly isNetworkListener = true;
       public listenerArn = props.listenerArn;
+
+      public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
 
     return new LookedUp(scope, id);
@@ -165,11 +176,20 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
     class Import extends Resource implements INetworkListener {
+      public readonly isNetworkListener = true;
       public listenerArn = networkListenerArn;
+
+      public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
 
     return new Import(scope, id);
   }
+
+  public readonly isNetworkListener = true;
 
   /**
    * The load balancer this listener is attached to
@@ -347,9 +367,22 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 }
 
 /**
+ * Indicates that this resource can be referenced as an NLB Listener
+ */
+export interface INetworkListenerRef extends IListener {
+  /**
+   * Indicates that this is an NLB listener
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isNetworkListener: boolean;
+}
+
+/**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends IListener {
+export interface INetworkListener extends IListener, INetworkListenerRef {
 }
 
 /**
