@@ -920,8 +920,8 @@ describe('S3 destination', () => {
           destination: destination,
         });
       }).toThrow(`Invalid timezone format '${timezone.timezoneName}'. Use standard IANA timezone identifiers ` +
-      `(e.g., 'America/New_York', 'Europe/London'). ` +
-      `See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html for more details`,);
+      '(e.g., \'America/New_York\', \'Europe/London\'). ' +
+      'See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html for more details');
     });
   });
 
