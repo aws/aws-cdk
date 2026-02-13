@@ -14,8 +14,8 @@ import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import type { BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { BaseListener } from '../shared/base-listener';
 import type { HealthCheck } from '../shared/base-target-group';
-import type { AlpnPolicy, SslPolicy } from '../shared/enums';
-import { Protocol } from '../shared/enums';
+import type { AlpnPolicy } from '../shared/enums';
+import { Protocol, SslPolicy } from '../shared/enums';
 import type { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
