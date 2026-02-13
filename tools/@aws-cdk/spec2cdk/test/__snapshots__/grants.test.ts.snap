@@ -60,7 +60,7 @@ export class TopicGrants {
   /**
    * Grant the given identity custom permissions
    */
-  public actions(grantee: iam.IGrantable, actions: Array<string>, options: cdk.EncryptedPermissionsOptions): iam.Grant {
+  public actions(grantee: iam.IGrantable, actions: Array<string>, options: cdk.EncryptedPermissionsOptions = {}): iam.Grant {
     const result = (this.policyResource ? iam.Grant.addToPrincipalOrResource({
       actions: actions,
       grantee: grantee,
