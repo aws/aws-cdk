@@ -13,9 +13,12 @@ import {
 } from '@cdklabs/typewriter';
 import type { PropertySpec } from '@cdklabs/typewriter/lib/property';
 import { classNameFromResource } from '../naming';
+import { CDK_CORE } from './cdk';
 import type { Referenceable } from './resource-class';
 
 const $this = $E(expr.this_());
+
+const encryptedResourcePropName = 'encryptedResource';
 
 /**
  * From some data, generate grants
@@ -30,7 +33,9 @@ export class GrantsModule extends Module {
     private readonly db: SpecDatabase,
     private readonly schema: GrantsFileSchema,
     private readonly iamModulePath: string,
-    public readonly isStable: boolean) {
+    public readonly isStable: boolean,
+    private readonly coreModulePath: string,
+  ) {
     super(`${service.shortName}.grants`);
   }
 
@@ -38,7 +43,6 @@ export class GrantsModule extends Module {
     let hasContent = false;
     const resources = this.db.follow('hasResource', this.service);
     const resourceIndex = Object.fromEntries(resources.map(r => [r.entity.name, r.entity]));
-    const encryptedResourcePropName = 'encryptedResource';
 
     // Generate one <Resource>Grants class per construct available in the schema, for this module.
     for (const [name, config] of Object.entries(this.schema.resources ?? {})) {
@@ -48,6 +52,12 @@ export class GrantsModule extends Module {
       const hasPolicy = config.hasResourcePolicy ?? false;
       const hasKeyActions = Object.values(config.grants)
         .some(grant => grant.keyActions && grant.keyActions.length > 0);
+
+      if (config.isEncrypted === false && hasKeyActions) {
+        throw new Error(`Config for ${name} contains key actions but isEncrypted is explicitly set to false. 
+        Please set isEncrypted to true to grant key permissions, or remove key actions from the config.`);
+      }
+      const isEncrypted = hasKeyActions || Boolean(config.isEncrypted);
 
       const resourceClass = resourceClasses[resource.cloudFormationType];
 
@@ -85,7 +95,7 @@ export class GrantsModule extends Module {
           },
         });
       }
-      if (hasKeyActions) {
+      if (isEncrypted) {
         propsProperties.push({
           name: encryptedResourcePropName,
           type: Type.fromName(this, 'iam.IEncryptedResource'),
@@ -137,7 +147,7 @@ export class GrantsModule extends Module {
 
       init.addBody(stmt.assign($this.resource, propsParameter.prop('resource')));
 
-      if (hasKeyActions) {
+      if (isEncrypted) {
         const iEncryptedResourceType = Type.fromName(this, 'iam.IEncryptedResource');
         classType.addProperty({
           name: encryptedResourcePropName,
@@ -180,7 +190,7 @@ export class GrantsModule extends Module {
         resource: staticResourceParam,
       };
 
-      if (hasKeyActions) {
+      if (isEncrypted) {
         props[encryptedResourcePropName] = $E(expr.ident('iam.EncryptedResources')).of(staticResourceParam);
       }
 
@@ -192,14 +202,11 @@ export class GrantsModule extends Module {
         stmt.ret(Type.fromName(this, className).newInstance(expr.object(props))),
       );
 
+      // Add a general method that allows granting any set of permissions
+      this.arbitraryActionsMethod(classType, hasPolicy, isEncrypted, resource, nameSuffix);
+
       // Add one method per entry in the config
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
-        const arnFormat = grantSchema.arnFormat;
-        const arnFormats = Array.isArray(arnFormat) ? arnFormat : [arnFormat];
-        const resourceArns = expr.list(
-          arnFormats.map(format => makeArnCall(this.service.shortName, resource, nameSuffix, format)),
-        );
-
         const method = classType.addMethod({
           name: methodName,
           returnType: Type.fromName(this, 'iam.Grant'),
@@ -214,42 +221,16 @@ export class GrantsModule extends Module {
         });
 
         const actions = expr.ident('actions');
-
-        const commonStatementProps: Record<string, Expression> = {
-          actions,
-          grantee,
-          resourceArns,
-        };
-        if (grantSchema.conditions != null) {
-          commonStatementProps.conditions = expr.lit(grantSchema.conditions);
-        }
-
-        const addToPrincipalExpr = $E(expr.ident('iam.Grant'))
-          .addToPrincipal(expr.object(commonStatementProps));
-
-        const addToBothExpr = $E(expr.ident('iam.Grant'))
-          .addToPrincipalOrResource(expr.object({
-            ...commonStatementProps,
-            resource: $this.policyResource,
-          }));
-
         method.addBody(stmt.constVar(actions, expr.lit(grantSchema.actions)));
 
-        const result = expr.ident('result');
-        if (hasPolicy) {
-          method.addBody(stmt.constVar(result, expr.cond($this.policyResource, addToBothExpr, addToPrincipalExpr)));
-        } else {
-          method.addBody(stmt.constVar(result, addToPrincipalExpr));
-        }
-
-        if (grantSchema && grantSchema.keyActions && grantSchema.keyActions.length > 0) {
-          const grantOnKey = $this.prop(`${encryptedResourcePropName}?`)
-            .callMethod('grantOnKey', grantee, ...grantSchema.keyActions.map((a) => expr.lit(a)));
-
-          method.addBody(grantOnKey);
-        }
-
-        method.addBody(stmt.ret(result));
+        const optionsArgument = this.makeOptionsArgument(grantSchema, resource, nameSuffix);
+        /*
+        return this.actions(grantee, actions, {
+          keyActions: [...],
+          resourceArns: [...],
+        });
+         */
+        method.addBody(stmt.ret($this.callMethod('actions', grantee, actions, optionsArgument)));
 
         hasContent = true;
       }
@@ -260,11 +241,109 @@ export class GrantsModule extends Module {
         new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
           .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
         new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam', { fromLocation: this.iamModulePath });
+        CDK_CORE.import(this, 'cdk', { fromLocation: this.coreModulePath });
       } else {
         new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
         new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
+        new ExternalModule('aws-cdk-lib').import(this, 'cdk');
       }
     }
+  }
+
+  private makeOptionsArgument(grantSchema: GrantSchema, resource: Resource, nameSuffix?: string): Expression {
+    const keyActions = grantSchema.keyActions != null ? expr.lit(grantSchema.keyActions) : undefined;
+    let resourceArns: Expression | undefined = undefined;
+    const arnFormat = grantSchema.arnFormat;
+    if (arnFormat != null) {
+      const arnFormats = Array.isArray(arnFormat) ? arnFormat : [arnFormat];
+      resourceArns = expr.list(
+        arnFormats.map(format => makeArnCall(this.service.shortName, resource, nameSuffix, format)),
+      );
+    }
+    const result: {[k: string]: any} = {};
+
+    if (resourceArns) { result.resourceArns = resourceArns; }
+    if (keyActions) { result.keyActions = keyActions; }
+
+    return expr.object(result);
+  }
+
+  private arbitraryActionsMethod(
+    classType: ClassType,
+    hasPolicy: boolean,
+    isEncrypted: boolean,
+    resource: Resource,
+    nameSuffix?: string) {
+    const method = classType.addMethod({
+      name: 'actions',
+      returnType: Type.fromName(this, 'iam.Grant'),
+      docs: {
+        summary: 'Grant the given identity custom permissions',
+      },
+    });
+
+    const grantee = method.addParameter({
+      name: 'grantee',
+      type: Type.fromName(this, 'iam.IGrantable'),
+    });
+
+    const actions = expr.ident('actions');
+
+    method.addParameter({
+      name: actions._identifier_,
+      type: Type.arrayOf(Type.STRING),
+    });
+
+    const optionsParameter = method.addParameter({
+      name: 'options',
+      type: isEncrypted ? CDK_CORE.type('EncryptedPermissionsOptions') : CDK_CORE.type('PermissionsOptions'),
+    });
+
+    const commonStatementProps: Record<string, Expression> = {
+      actions,
+      grantee,
+      resourceArns: expr.binOp(expr.ident(optionsParameter._identifier_).prop('resourceArns'), '??', expr.list([makeArnCall(this.service.shortName, resource, nameSuffix)])),
+    };
+
+    const addToPrincipalExpr = $E(expr.ident('iam.Grant'))
+      .addToPrincipal(expr.object(commonStatementProps));
+
+    const addToPrincipalOrResourceExpr = $E(expr.ident('iam.Grant'))
+      .addToPrincipalOrResource(expr.object({
+        ...commonStatementProps,
+        resource: $this.policyResource,
+      }));
+
+    const result = expr.ident('result');
+    if (hasPolicy) {
+      // const result = this.policyResource ? iam.Grant.addToPrincipalOrResource(...) : iam.Grant.addToPrincipal(...);
+      method.addBody(stmt.constVar(result, expr.cond($this.policyResource, addToPrincipalOrResourceExpr, addToPrincipalExpr)));
+    } else {
+      // const result = iam.Grant.addToPrincipalOrResource(...);
+      method.addBody(stmt.constVar(result, addToPrincipalExpr));
+    }
+
+    if (isEncrypted) {
+      const keyActions = expr.ident(optionsParameter._identifier_).prop('keyActions');
+      const $keyActions = keyActions;
+      /*
+        if (options.keyActions && options.keyActions.length > 0) {
+          this.encryptedResource?.grantOnKey(grantee, ...options.keyActions);
+        }
+       */
+      const grantOnKey = stmt.if_(expr.binOp(
+        $keyActions,
+        '&&',
+        expr.binOp($keyActions.prop('length'), '>', expr.lit(0))),
+      ).then(
+        $this.prop(`${encryptedResourcePropName}?`)
+          .callMethod('grantOnKey', grantee, expr.splat(keyActions)),
+      );
+
+      method.addBody(grantOnKey);
+    }
+
+    method.addBody(stmt.ret(result));
   }
 }
 
@@ -275,6 +354,7 @@ export interface GrantsFileSchema {
 
 export interface ResourceSchema {
   readonly hasResourcePolicy?: boolean;
+  readonly isEncrypted?: boolean;
   readonly grants: Record<string, GrantSchema>;
 }
 

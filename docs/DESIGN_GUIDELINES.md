@@ -1389,6 +1389,7 @@ so on). The `grants.json` file has the following general structure:
 {
   "resources": {
     "Topic": {
+      "isEncrypted": true,
       "hasResourcePolicy": true,
       "grants": {
         "publish": {
@@ -1409,6 +1410,11 @@ so on). The `grants.json` file has the following general structure:
 where:
 
 * `Topic` - the class to generate grants for. This will lead to a class named TopicGrants.
+* `isEncrypted` - indicates whether the resource is encrypted with a KMS key. When true, the `actions()` method will
+have an `options` parameter of type `EncryptedPermissionOptions` that allows users to specify additional KMS permissions
+to be granted on the key. If left undefined, but at least one grant method includes `keyActions`, the CDK will assume 
+that the resource is encrypted and the same behavior will apply. Note that if `isEncrypted` is explicitly set to false, 
+it is an error to specify `keyActions` in any of the grants.
 * `hasResourcePolicy` - indicates whether the resource supports a resource policy. When true, all auto-generated methods in the Grants class will attempt to add statements to the resource policy when applicable. When false, the methods will only modify the principal's policy.
 * `publish` - the name of a grant.
 * `actions` - the actions to encompass in the grant.
