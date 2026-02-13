@@ -43,7 +43,7 @@ export function addStackArtifactToAssembly(
     if (resolvedTags.length > 0) {
       stack.node.addMetadata(
         cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-        resolvedTags.map(([key, value]) => ({ Key: key, Value: value })));
+        resolvedTags.map(([key, value]) => ({ key, value })));
     }
   }
 
@@ -74,11 +74,11 @@ export function addStackArtifactToAssembly(
     ...stackNameProperty,
   };
 
-  const metaFile = path.join(session.assembly.outdir, `${stack.artifactId}.metadata.json`);
+  const metaFile = `${stack.artifactId}.metadata.json`;
   const hasMeta = Object.keys(meta).length > 0;
 
   if (hasMeta) {
-    fs.writeFileSync(metaFile, JSON.stringify(meta, undefined, 2), 'utf-8');
+    fs.writeFileSync(path.join(session.assembly.outdir, metaFile), JSON.stringify(meta, undefined, 2), 'utf-8');
   }
 
   // add an artifact that represents this stack
@@ -87,7 +87,7 @@ export function addStackArtifactToAssembly(
     environment: stack.environment,
     properties,
     dependencies: deps.length > 0 ? deps : undefined,
-    metadataFile: hasMeta ? metaFile : undefined,
+    additionalMetadataFile: hasMeta ? metaFile : undefined,
     displayName: stack.node.path,
   });
 }

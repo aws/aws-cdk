@@ -66,18 +66,18 @@
     "@aws-cdk/service-spec-types" "^0.0.215"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/cloud-assembly-api@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-api/-/cloud-assembly-api-2.0.0.tgz#f4a97025d9deb43b9664beff168dbda7a5b32cd4"
-  integrity sha512-4WrZotQ8X4+GRBc+u9oecO7qtP4mXKV0+MiNa/mljhDQEOl1VnSp+RrA7ZMrlNiG/58mmtlpS4rO//o80bIYkg==
+"@aws-cdk/cloud-assembly-api@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-api/-/cloud-assembly-api-2.1.0.tgz#c05e31cbf9f0a2bfd118471599e8eaf998ea4458"
+  integrity sha512-fKNGg0aDAKKKwJJtuauvYYAcNwKZlZ18/Ow2Uq9CKIScfiZuvZFDZpMdYmEvvoD7FViYr/XP4K3yL3fYVZODRw==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.3"
 
-"@aws-cdk/cloud-assembly-schema@^50.1.0":
-  version "50.4.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-50.4.0.tgz#56399b22494e2e970614ae32ef53316b3b028440"
-  integrity sha512-9Cplwc5C+SNe3hMfqZET7gXeM68tiH2ytQytCi+zz31Bn7O3GAgAnC2dYe+HWnZAgVH788ZkkBwnYXkeqx7v4g==
+"@aws-cdk/cloud-assembly-schema@^52":
+  version "52.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-52.0.0.tgz#c5530feb6d0e4510c3718b77440dcdf1d66137be"
+  integrity sha512-tKRePCGlQxjG23/AQH4BCVpwH6uUt2jrgCzeyn1T2hf6P21SVqGx2LWuc8gc1y6qI9mfTQRCt7niQILbVtPjUQ==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.3"

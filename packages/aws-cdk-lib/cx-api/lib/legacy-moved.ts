@@ -327,6 +327,11 @@ export declare class CloudArtifact {
    * id. Should only be used in user interfaces.
    */
   get hierarchicalId(): string;
+
+  /**
+   * Returns the metadata associated with this Cloud Artifact
+   */
+  get metadata(): Record<string, cxschema.MetadataEntry[]>;
 }
 // Make these classes equal to the upstream versions
 exports.CloudArtifact = CloudArtifact_;
