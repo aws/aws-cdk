@@ -40,6 +40,7 @@
       "ts-node ./scripts/verify-imports-resolve-same.ts",
       "ts-node ./scripts/verify-imports-shielded.ts",
       "ts-node ./cx-api/build-tools/flag-report.ts",
+      "ts-node ../../scripts/check-peer-dependencies.ts",
       "env QUIET=1 lazify ."
     ]
   },
@@ -118,7 +119,7 @@
     "@aws-cdk/cloud-assembly-api": "^2.0.0",
     "@aws-cdk/asset-awscli-v1": "2.2.263",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^48.20.0",
+    "@aws-cdk/cloud-assembly-schema": "^50.1.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
@@ -132,9 +133,8 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
-    "@aws-cdk/aws-service-spec": "^0.1.147",
+    "@aws-cdk/aws-service-spec": "^0.1.149",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",

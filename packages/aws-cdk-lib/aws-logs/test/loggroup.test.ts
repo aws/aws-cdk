@@ -5,7 +5,7 @@ import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
 import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor } from '../lib';
+import { LogGroupGrants, LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor, CfnLogGroup } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -438,6 +438,36 @@ describe('log group', () => {
         ],
       },
       PolicyName: 'LogGroupPolicy643B329C',
+    });
+  });
+
+  test('grant write to service principal for CfnLogGroup', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cfnLogGroup = new CfnLogGroup(stack, 'CfnLogGroup');
+    const sp = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    // WHEN
+    LogGroupGrants.fromLogGroup(cfnLogGroup).write(sp);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Resource":"',
+            {
+              'Fn::GetAtt': [
+                'CfnLogGroup',
+                'Arn',
+              ],
+            },
+            '"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
     });
   });
 

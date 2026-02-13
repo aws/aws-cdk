@@ -8,3 +8,5 @@ export * from './strings';
 export { constructInfoFromConstruct } from '../private/runtime-info';
 export { constructAnalyticsFromScope } from '../private/stack-metadata';
 export * from './memoize';
+export * from './reflections';
+export * from './traits';
