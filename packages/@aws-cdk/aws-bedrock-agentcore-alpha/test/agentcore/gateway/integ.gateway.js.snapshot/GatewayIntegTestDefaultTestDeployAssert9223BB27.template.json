@@ -16,7 +16,7 @@
      "FunctionName": "\"integ-test-gateway-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1768584769832"
+    "salt": "1770656654974"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -88,7 +88,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -116,7 +116,7 @@
      "FunctionName": "\"integ-test-gateway-request-interceptor\""
     },
     "flattenResponse": "false",
-    "salt": "1768584769832"
+    "salt": "1770656654975"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -137,7 +137,7 @@
      "FunctionName": "\"integ-test-gateway-response-interceptor\""
     },
     "flattenResponse": "false",
-    "salt": "1768584769833"
+    "salt": "1770656654976"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
