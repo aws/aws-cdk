@@ -502,9 +502,31 @@ export enum DefaultInstanceClass {
 }
 
 /**
+ * Props for a ManagedEc2ComputeEnvironment
+ */
+export interface ManagedEc2ComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
+  /**
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   *
+   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
+   */
+  readonly instanceTypes?: ec2.InstanceType[];
+
+  /**
+   * The instance classes that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   * Batch will automatically choose the instance size.
+   *
+   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
+   */
+  readonly instanceClasses?: ec2.InstanceClass[];
+}
+
+/**
  * Props for a ManagedEc2EcsComputeEnvironment
  */
-export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
+export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedEc2ComputeEnvironmentProps {
   /**
    * Use batch's default instance types.
    * A simpler way to choose up-to-date instance classes based on region
@@ -570,23 +592,6 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
   readonly spotFleetRole?: iam.IRole;
 
   /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   *
-   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
-   */
-  readonly instanceTypes?: ec2.InstanceType[];
-
-  /**
-   * The instance classes that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   * Batch will automatically choose the instance size.
-   *
-   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
-   */
-  readonly instanceClasses?: ec2.InstanceClass[];
-
-  /**
    * The execution Role that instances launched by this Compute Environment will use.
    *
    * @default - a role will be created
@@ -629,12 +634,67 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
 }
 
 /**
+ * A ManagedComputeEnvironment that uses EC2 instances.
+ */
+interface IManagedEc2ComputeEnvironment extends IManagedComputeEnvironment {
+  /**
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   */
+  readonly instanceTypes: ec2.InstanceType[];
+
+  /**
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   */
+  readonly instanceClasses: ec2.InstanceClass[];
+
+  /**
+   * Add an instance type to this compute environment
+   */
+  addInstanceType(instanceType: ec2.InstanceType): void;
+
+  /**
+   * Add an instance class to this compute environment
+   */
+  addInstanceClass(instanceClass: ec2.InstanceClass): void;
+}
+
+/**
+ * A ManagedComputeEnvironment that uses EC2 instances.
+ *
+ */
+abstract class ManagedEc2ComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2ComputeEnvironment {
+  public readonly instanceTypes: ec2.InstanceType[];
+  public readonly instanceClasses: ec2.InstanceClass[];
+
+  constructor(scope: Construct, id: string, props: ManagedEc2ComputeEnvironmentProps) {
+    super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.instanceTypes = props.instanceTypes ?? [];
+    this.instanceClasses = props.instanceClasses ?? [];
+  }
+
+  @MethodMetadata()
+  public addInstanceType(instanceType: ec2.InstanceType): void {
+    this.instanceTypes.push(instanceType);
+  }
+
+  @MethodMetadata()
+  public addInstanceClass(instanceClass: ec2.InstanceClass): void {
+    this.instanceClasses.push(instanceClass);
+  }
+}
+
+/**
  * A ManagedComputeEnvironment that uses ECS orchestration on EC2 instances.
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
 @propertyInjectable
-export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
+export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironment implements IManagedEc2EcsComputeEnvironment {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ManagedEc2EcsComputeEnvironment';
 
@@ -695,8 +755,6 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly allocationStrategy?: AllocationStrategy;
   public readonly spotBidPercentage?: number;
   public readonly spotFleetRole?: iam.IRole;
-  public readonly instanceTypes: ec2.InstanceType[];
-  public readonly instanceClasses: ec2.InstanceClass[];
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
@@ -723,8 +781,6 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         : undefined
     );
 
-    this.instanceTypes = props.instanceTypes ?? [];
-    this.instanceClasses = props.instanceClasses ?? [];
     if (this.images?.find(image => image.imageType === EcsMachineImageType.ECS_AL2023) &&
       (this.instanceClasses.includes(ec2.InstanceClass.A1) ||
        this.instanceTypes.find(instanceType => instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE))))
@@ -778,22 +834,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public get placementGroup(): ec2.IPlacementGroup | undefined {
     return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
   }
-
-  @MethodMetadata()
-  public addInstanceType(instanceType: ec2.InstanceType): void {
-    this.instanceTypes.push(instanceType);
-  }
-
-  @MethodMetadata()
-  public addInstanceClass(instanceClass: ec2.InstanceClass): void {
-    this.instanceClasses.push(instanceClass);
-  }
 }
 
 /**
  * A ManagedComputeEnvironment that uses EKS orchestration on EC2 instances.
  */
-interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
+interface IManagedEc2EksComputeEnvironment extends IManagedEc2ComputeEnvironment {
   /**
    * The namespace of the Cluster
    *
@@ -849,18 +895,6 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
   readonly spotBidPercentage?: number;
 
   /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   */
-  readonly instanceTypes: ec2.InstanceType[];
-
-  /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   */
-  readonly instanceClasses: ec2.InstanceClass[];
-
-  /**
    * The execution Role that instances launched by this Compute Environment will use.
    *
    * @default - a role will be created
@@ -900,22 +934,12 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
-
-  /**
-   * Add an instance type to this compute environment
-   */
-  addInstanceType(instanceType: ec2.InstanceType): void;
-
-  /**
-   * Add an instance class to this compute environment
-   */
-  addInstanceClass(instanceClass: ec2.InstanceClass): void;
 }
 
 /**
  * Props for a ManagedEc2EksComputeEnvironment
  */
-export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
+export interface ManagedEc2EksComputeEnvironmentProps extends ManagedEc2ComputeEnvironmentProps {
   /**
    * The namespace of the Cluster
    */
@@ -990,23 +1014,6 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
   readonly spotBidPercentage?: number;
 
   /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   *
-   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
-   */
-  readonly instanceTypes?: ec2.InstanceType[];
-
-  /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   * Batch will automatically choose the instance size.
-   *
-   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
-   */
-  readonly instanceClasses?: ec2.InstanceClass[];
-
-  /**
    * The execution Role that instances launched by this Compute Environment will use.
    *
    * @default - a role will be created
@@ -1054,7 +1061,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
  * @resource AWS::Batch::ComputeEnvironment
  */
 @propertyInjectable
-export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
+export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironment implements IManagedEc2EksComputeEnvironment {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ManagedEc2EksComputeEnvironment';
   public readonly kubernetesNamespace?: string;
@@ -1079,8 +1086,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly images?: EksMachineImage[];
   public readonly allocationStrategy?: AllocationStrategy;
   public readonly spotBidPercentage?: number;
-  public readonly instanceTypes: ec2.InstanceType[];
-  public readonly instanceClasses: ec2.InstanceClass[];
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
@@ -1106,8 +1111,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
       throw new ValidationError(`ManagedEc2EksComputeEnvironment '${id}' uses invalid allocation strategy 'AllocationStrategy.BEST_FIT'`, this);
     }
     this.spotBidPercentage = props.spotBidPercentage;
-    this.instanceTypes = props.instanceTypes ?? [];
-    this.instanceClasses = props.instanceClasses ?? [];
 
     const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
     this.instanceRole = instanceRole;
@@ -1157,16 +1160,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
   public get placementGroup(): ec2.IPlacementGroup | undefined {
     return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
-  }
-
-  @MethodMetadata()
-  public addInstanceType(instanceType: ec2.InstanceType): void {
-    this.instanceTypes.push(instanceType);
-  }
-
-  @MethodMetadata()
-  public addInstanceClass(instanceClass: ec2.InstanceClass): void {
-    this.instanceClasses.push(instanceClass);
   }
 }
 
