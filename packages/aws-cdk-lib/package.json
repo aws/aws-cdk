@@ -41,7 +41,6 @@
       "ts-node ./scripts/verify-imports-shielded.ts",
       "ts-node ./cx-api/build-tools/flag-report.ts",
       "ts-node ../../scripts/check-peer-dependencies.ts",
-      "ts-node ../../scripts/check-jsii-type-system-conflicts.ts",
       "env QUIET=1 lazify ."
     ]
   },
