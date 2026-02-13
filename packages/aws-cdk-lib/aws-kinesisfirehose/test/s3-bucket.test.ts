@@ -872,22 +872,45 @@ describe('S3 destination', () => {
       });
     });
 
-    it('throws when customTimeZone pattern does not match', () => {
+    it('sets customTimeZone UTC', () => {
       const destination = new firehose.S3Bucket(bucket, {
         role: destinationRole,
-        timeZone: cdk.TimeZone.ETC_GMT_MINUS_1,
+        timeZone: cdk.TimeZone.of('UTC'),
       });
-      expect(() => {
-        new firehose.DeliveryStream(stack, 'DeliveryStream', {
-          destination: destination,
-        });
-      }).toThrow('Member must satisfy regular expression pattern: ^$|[a-zA-Z/_]+');
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CustomTimeZone: 'UTC',
+        },
+      });
+    });
+
+    it('sets customTimeZone from a token', () => {
+      const timeZone = new cdk.CfnParameter(stack, 'TimeZone');
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        timeZone: cdk.TimeZone.of(timeZone.valueAsString),
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CustomTimeZone: { Ref: 'TimeZone' },
+        },
+      });
     });
 
     test.each([
       cdk.TimeZone.EST,
       cdk.TimeZone.ETC_UTC,
-    ])('throws when customTimeZone is 3-latter IANA time zones: %s', (timezone: cdk.TimeZone) => {
+      cdk.TimeZone.EST5EDT,
+      cdk.TimeZone.ETC_GMT_MINUS_1,
+    ])('throws when customTimeZone is not a standard IANA timezone: %s', (timezone: cdk.TimeZone) => {
       const destination = new firehose.S3Bucket(bucket, {
         role: destinationRole,
         timeZone: timezone,
@@ -896,7 +919,9 @@ describe('S3 destination', () => {
         new firehose.DeliveryStream(stack, 'DeliveryStream', {
           destination: destination,
         });
-      }).toThrow('Custom time zones are limited to UTC and non-3-letter IANA time zones');
+      }).toThrow(`Invalid timezone format '${timezone.timezoneName}'. Use standard IANA timezone identifiers ` +
+      `(e.g., 'America/New_York', 'Europe/London'). ` +
+      `See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html for more details`,);
     });
   });
 

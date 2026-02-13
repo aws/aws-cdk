@@ -26,10 +26,9 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
   /**
    * The time zone you prefer.
    *
-   * Custom time zones are limited to UTC and non-3-letter IANA time zones and allowed patterns: `^$|[a-zA-Z/_]+`
+   * AWS Kinesis Data Firehose supports standard IANA time zone identifiers (e.g., 'America/New_York', 'Europe/London', 'Asia/Tokyo').
    *
-   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#timestamp-namespace
-   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html
    * @default - UTC
    */
   readonly timeZone?: cdk.TimeZone;
