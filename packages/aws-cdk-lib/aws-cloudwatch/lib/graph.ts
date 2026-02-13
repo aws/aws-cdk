@@ -446,7 +446,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
  * A dashboard widget that displays metrics
  */
 export class GraphWidget extends ConcreteWidget {
-  private static readonly ISO8601_REGEX = /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$/ | undefined;
+  private static readonly ISO8601_REGEX = /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$/;
 
   private static isIso8601(date: string): boolean {
     return this.ISO8601_REGEX.test(date);
